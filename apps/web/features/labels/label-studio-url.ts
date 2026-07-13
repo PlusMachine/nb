@@ -12,6 +12,8 @@
  * вызову эндпоинта рендера).
  */
 
+import { preferredGravityUnits, type PreferredGravityUnit } from "../system/gravity-units";
+
 import {
   isValidIsoDate,
   LABEL_DPI_VALUES,
@@ -83,11 +85,13 @@ export type LabelStudioState = {
   preset: LabelPresetId;
   layout: LabelStudioLayout;
   dpi: LabelDpi;
+  /** Шкала OG/FG на наклейке; не обязана совпадать с настройкой профиля. */
+  gravityUnit: PreferredGravityUnit;
   /** ISO-дата YYYY-MM-DD или "" (дата не печатается). */
   bottlingDate: string;
   fields: LabelStudioFields;
   withQr: boolean;
-  /** Печатать эмблему («Линейный крафт», большая наклейка). */
+  /** Печатать эмблему («Крафт», большая наклейка). */
   withLogo: boolean;
   /** Печатать шкалу горечи (большая наклейка). */
   withIbuScale: boolean;
@@ -119,6 +123,9 @@ export const serializeLabelStudioState = (
   }
   if (state.dpi !== defaults.dpi) {
     params.set("dpi", String(state.dpi));
+  }
+  if (state.gravityUnit !== defaults.gravityUnit) {
+    params.set("gravityUnit", state.gravityUnit);
   }
   if (state.bottlingDate !== defaults.bottlingDate) {
     params.set("bottlingDate", state.bottlingDate);
@@ -178,6 +185,10 @@ export const parseLabelStudioQuery = (
   const dpi = Number(query.dpi);
   if ((LABEL_DPI_VALUES as readonly number[]).includes(dpi)) {
     result.dpi = dpi as LabelDpi;
+  }
+
+  if (query.gravityUnit && (preferredGravityUnits as readonly string[]).includes(query.gravityUnit)) {
+    result.gravityUnit = query.gravityUnit as PreferredGravityUnit;
   }
 
   // Присутствие ключа отличаем от отсутствия: пустой `bottlingDate=` — это

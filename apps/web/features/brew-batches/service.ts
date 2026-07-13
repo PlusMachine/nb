@@ -46,6 +46,7 @@ export const mapBrewBatchDto = (row: typeof brewBatches.$inferSelect): BrewBatch
   recipeId: row.recipeId,
   status: row.status,
   name: row.name,
+  brewNumber: row.brewNumber,
   deviceId: row.deviceId,
   brewPlanSnapshot: brewPlanSnapshotSchema.parse(row.brewPlanSnapshot),
   brewDayProgress: normalizeBrewDayProgress(row.brewDayProgress),
@@ -126,27 +127,31 @@ export const createBrewBatchFromRecipe = async (
     columns: { displayName: true }
   });
   const brewPlanSnapshot = buildBrewPlanSnapshot(recipe, { recipeEfficiencyPct });
-  // Автоимя партии (F5): первая партия рецепта = просто название рецепта; повтор
-  // того же (userId, recipeId) — «<Название> №2», «№3»… Считаем ВСЕ существующие
-  // партии этой пары, включая отменённые — лёгкий count, без тяжёлой выборки строк
-  // (см. listBrewBatchesForRecipe). input.name, если передан, приоритетнее.
+  // Автоимя партии и номер варки (F5): имя партии = просто название рецепта —
+  // номер варки живёт в отдельной колонке brew_number, а не в суффиксе имени.
+  // Считаем ВСЕ существующие партии этой пары (userId, recipeId), включая
+  // отменённые — лёгкий count, без тяжёлой выборки строк (см.
+  // listBrewBatchesForRecipe). Одно вычисление кормит и имя, и номер.
+  // input.name, если передан, приоритетнее автоимени (но не номера — тот
+  // назначается всегда).
   // Нумерация best-effort, не атомарна: count и insert не в одной транзакции,
   // поэтому при гонке двух конкурентных «Сварить» без общего idempotencyKey
-  // обе могут прочитать один и тот же count и получить одинаковый номер/имя.
-  // Это осознанно — имя партии не уникальный ключ, блокировка ради косметики
+  // обе могут прочитать один и тот же count и получить одинаковый номер. Это
+  // осознанно — номер партии не уникальный ключ, блокировка ради косметики
   // нумерации не заводится.
   const [existingCountRow] = await db
     .select({ value: count() })
     .from(brewBatches)
     .where(and(eq(brewBatches.userId, userId), eq(brewBatches.recipeId, recipe.id)));
   const existingCount = existingCountRow?.value ?? 0;
-  const autoName = existingCount === 0 ? recipe.title : `${recipe.title} №${existingCount + 1}`;
+  const brewNumber = existingCount + 1;
   const insert = db.insert(brewBatches).values({
     userId,
     recipeId: recipe.id,
     status: "planned",
     idempotencyKey,
-    name: input.name?.trim() || autoName,
+    name: input.name?.trim() || recipe.title,
+    brewNumber,
     brewPlanSnapshot,
     // Самодостаточный слепок: таргеты og/fg/abv (сравнение план↔факт без живого
     // рецепта) + атрибуция автора («по рецепту X от Y», в т.ч. для чужого).
@@ -215,6 +220,7 @@ export const getBrewBatchById = async (
 const brewBatchListColumns = {
   id: true,
   name: true,
+  brewNumber: true,
   status: true,
   recipeId: true,
   deviceId: true,
@@ -237,6 +243,7 @@ const mapBrewBatchListItem = (
   return {
     id: row.id,
     name: row.name,
+    brewNumber: row.brewNumber,
     status: row.status,
     recipeId: row.recipeId,
     recipeTitle: recipeSnapshot?.title ?? planSnapshot?.recipe?.title ?? row.name,

@@ -7,6 +7,7 @@ import {
   renderLabelPdf,
   renderLabelPng,
   renderLabelPreviewPng,
+  resolveDescriptionFixes,
   resolveDescriptionPrintState,
   resolveQrPrintState
 } from "@/features/labels/render";
@@ -49,7 +50,9 @@ export async function GET(request: Request, context: { params: Promise<{ recipeI
     const overrides = labelOverridesSchema.parse(Object.fromEntries(url.searchParams));
     const { recipe, slots } = await getOwnedRecipeLabelContext(user.id, recipeId, {
       bottlingDate: query.bottlingDate ?? null,
-      gravityUnit: resolvePreferredGravityUnit(user.preferredGravityUnit),
+      // Шкалу наклейки задаёт студия (по умолчанию — из профиля): печатают её
+      // не для владельца профиля, а для тех, кто будет пить пиво.
+      gravityUnit: query.gravityUnit ?? resolvePreferredGravityUnit(user.preferredGravityUnit),
       overrides
     });
 
@@ -82,7 +85,10 @@ export async function GET(request: Request, context: { params: Promise<{ recipeI
         // Молча исчезнувший QR читается как поломка — говорим студии правду.
         "X-Label-Qr": resolveQrPrintState(renderParams),
         // То же про описание: оно урезается по остатку высоты.
-        "X-Label-Description": resolveDescriptionPrintState(renderParams)
+        "X-Label-Description": resolveDescriptionPrintState(renderParams),
+        // И чем именно его спасать: советовать тумблер, который на этой вёрстке
+        // ничего не освободит, — обманывать пользователя.
+        "X-Label-Description-Fix": resolveDescriptionFixes(renderParams).join(",")
       }
     });
   } catch (error) {

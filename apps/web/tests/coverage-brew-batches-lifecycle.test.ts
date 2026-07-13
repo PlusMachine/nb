@@ -587,6 +587,7 @@ const seedBatch = (overrides: Partial<Record<string, any>> = {}) => {
     recipeId: RECIPE_ID,
     status: "planned" as BrewBatchStatus,
     name: `Партия ${batchSeq}`,
+    brewNumber: batchSeq,
     deviceId: null,
     brewPlanSnapshot: validSnapshot(overrides.recipeId ?? RECIPE_ID),
     brewDayProgress: null,
@@ -640,11 +641,12 @@ beforeEach(() => {
 // --- createBrewBatchFromRecipe -----------------------------------------------
 
 describe("createBrewBatchFromRecipe", () => {
-  it("создаёт планируемую партию из рецепта владельца: снапшот плана + дефолтное имя (F5: первая партия = название рецепта) + снапшот рецепта", async () => {
+  it("создаёт планируемую партию из рецепта владельца: снапшот плана + дефолтное имя (F5: первая партия = название рецепта, brewNumber = 1) + снапшот рецепта", async () => {
     const batch = await createBrewBatchFromRecipe(USER_ID, RECIPE_ID);
 
     expect(batch.status).toBe("planned");
     expect(batch.name).toBe("Тестовый IPA");
+    expect(batch.brewNumber).toBe(1);
     expect(batch.userId).toBe(USER_ID);
     expect(batch.recipeId).toBe(RECIPE_ID);
     expect(batch.brewPlanSnapshot.recipe.id).toBe(RECIPE_ID);
@@ -658,21 +660,25 @@ describe("createBrewBatchFromRecipe", () => {
     expect(store.brewBatches).toHaveLength(1);
   });
 
-  it("F5: вторая партия того же рецепта того же юзера получает имя «<Название> №2», третья — «№3»", async () => {
+  it("F5: вторая и третья партии того же рецепта того же юзера сохраняют имя = название рецепта, а brewNumber растёт (2, 3)", async () => {
     const first = await createBrewBatchFromRecipe(USER_ID, RECIPE_ID);
     const second = await createBrewBatchFromRecipe(USER_ID, RECIPE_ID);
     const third = await createBrewBatchFromRecipe(USER_ID, RECIPE_ID);
 
     expect(first.name).toBe("Тестовый IPA");
-    expect(second.name).toBe("Тестовый IPA №2");
-    expect(third.name).toBe("Тестовый IPA №3");
+    expect(first.brewNumber).toBe(1);
+    expect(second.name).toBe("Тестовый IPA");
+    expect(second.brewNumber).toBe(2);
+    expect(third.name).toBe("Тестовый IPA");
+    expect(third.brewNumber).toBe(3);
   });
 
   it("F5: отменённые партии тоже считаются в нумерации", async () => {
     const first = await createBrewBatchFromRecipe(USER_ID, RECIPE_ID);
     await updateBrewBatchStatus(USER_ID, first.id, "cancelled");
     const second = await createBrewBatchFromRecipe(USER_ID, RECIPE_ID);
-    expect(second.name).toBe("Тестовый IPA №2");
+    expect(second.name).toBe("Тестовый IPA");
+    expect(second.brewNumber).toBe(2);
   });
 
   it("F5: партии ДРУГОГО юзера того же рецепта не влияют на счёт нумерации", async () => {
@@ -681,15 +687,31 @@ describe("createBrewBatchFromRecipe", () => {
 
     const other = await createBrewBatchFromRecipe(OTHER_USER, PUBLIC_RECIPE);
     expect(other.name).toBe("Тестовый IPA");
+    expect(other.brewNumber).toBe(1);
 
     const mine = await createBrewBatchFromRecipe(USER_ID, PUBLIC_RECIPE);
     expect(mine.name).toBe("Тестовый IPA");
+    expect(mine.brewNumber).toBe(1);
   });
 
-  it("F5: input.name, если передан, приоритетнее автоимени", async () => {
+  it("F5: партии РАЗНЫХ рецептов того же юзера нумеруются независимо", async () => {
+    const SECOND_RECIPE = uuid(8);
+    fixtures.recipeDetails.push(makeRecipeDetail(SECOND_RECIPE, USER_ID));
+
+    await createBrewBatchFromRecipe(USER_ID, RECIPE_ID);
+    await createBrewBatchFromRecipe(USER_ID, RECIPE_ID);
+    const firstOfSecondRecipe = await createBrewBatchFromRecipe(USER_ID, SECOND_RECIPE);
+
+    // Счёт по RECIPE_ID (2 партии) не просочился в счёт SECOND_RECIPE — своя пара
+    // (userId, recipeId) начинает нумерацию заново, с 1.
+    expect(firstOfSecondRecipe.brewNumber).toBe(1);
+  });
+
+  it("F5: input.name, если передан, приоритетнее автоимени — но не brewNumber, тот назначается всегда", async () => {
     await createBrewBatchFromRecipe(USER_ID, RECIPE_ID);
     const named = await createBrewBatchFromRecipe(USER_ID, RECIPE_ID, { name: "Особая партия" });
     expect(named.name).toBe("Особая партия");
+    expect(named.brewNumber).toBe(2);
   });
 
   it("обрезает пользовательское имя партии", async () => {
@@ -805,6 +827,8 @@ const myProfile = () => ({
   grainAbsorptionLPerKg: 0.9,
   coolingShrinkagePct: 4,
   mashThicknessLPerKg: 3,
+  mashTunDeadspaceL: 0,
+  minMashVolumeL: null,
   maxMashVolumeL: null,
   maxKettleVolumeL: null,
   hopUtilizationFactor: 1,

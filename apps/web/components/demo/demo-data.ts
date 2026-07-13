@@ -585,6 +585,7 @@ const buildDashboardBrews = (now: Date): ActiveBrewProgressItem[] => [
   {
     id: "demo-batch-lager",
     name: "Czech Lager — весенняя партия",
+    brewNumber: 1,
     status: "fermenting",
     recipeId: "demo-recipe-lager",
     recipeTitle: "Czech Premium Pale Lager",
@@ -602,6 +603,7 @@ const buildDashboardBrews = (now: Date): ActiveBrewProgressItem[] => [
   {
     id: "demo-batch-ipa-4",
     name: "American IPA — варка №4",
+    brewNumber: 4,
     status: "planned",
     recipeId: "demo-recipe-ipa",
     recipeTitle: "American IPA",

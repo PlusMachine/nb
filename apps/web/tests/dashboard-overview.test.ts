@@ -8,6 +8,7 @@ const NOW = new Date("2026-07-06T12:00:00Z");
 const baseBatch: ActiveBrewProgressItem = {
   id: "bb-1",
   name: "Batch",
+  brewNumber: 1,
   status: "planned",
   recipeId: "r-1",
   recipeTitle: "Recipe",

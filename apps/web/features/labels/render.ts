@@ -83,6 +83,35 @@ export const resolveDescriptionPrintState = (params: LabelRenderParams): "none" 
   return svg.includes(`${DESCRIPTION_SVG_ATTR}="trimmed"`) ? "trimmed" : "dropped";
 };
 
+/** Тумблеры наклейки, которыми пользователь может освободить место описанию. */
+export type LabelDescriptionFix = "logo" | "ibuScale";
+
+/**
+ * Что реально поможет описанию влезть. Совет «выключите шкалу IBU» бесполезен,
+ * если шкала стоит в другой колонке и место описанию не отдаёт, — а неверный
+ * совет хуже отсутствия совета: пользователь выключает блок и не видит эффекта.
+ * Поэтому проверяем каждый тумблер вёрсткой: оставляем только те, после которых
+ * описание печатается лучше, чем сейчас.
+ */
+export const resolveDescriptionFixes = (params: LabelRenderParams): LabelDescriptionFix[] => {
+  const state = resolveDescriptionPrintState(params);
+  if (state !== "trimmed" && state !== "dropped") {
+    return [];
+  }
+  const helps = (slots: LabelSlots): boolean => {
+    const next = resolveDescriptionPrintState({ ...params, slots });
+    return next === "ok" || (state === "dropped" && next === "trimmed");
+  };
+  const fixes: LabelDescriptionFix[] = [];
+  if (params.slots.showLogo && helps({ ...params.slots, showLogo: false })) {
+    fixes.push("logo");
+  }
+  if (params.slots.showIbuScale && params.slots.ibu !== null && helps({ ...params.slots, showIbuScale: false })) {
+    fixes.push("ibuScale");
+  }
+  return fixes;
+};
+
 export const renderLabelSvg = (params: LabelRenderParams): { svg: string; widthPx: number; heightPx: number } => {
   const preset = LABEL_PRESETS[params.preset];
   const widthPx = mmToPx(preset.widthMm, params.dpi);

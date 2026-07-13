@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { BeerPresentation } from "@/components/beer/beer-presentation";
+import { parseBottleParams } from "@/features/beer-page/bottle-params";
 import { getBeerPresentationBySlug } from "@/features/beer-page/service";
 import { getSessionUser } from "@/lib/auth";
 import { getServerEnv } from "@/lib/env";
@@ -10,9 +11,14 @@ import { getServerEnv } from "@/lib/env";
 // Гостевая страница пива: сюда ведёт QR с наклейки на бутылке. Группа (present)
 // без PublicShell — обложка рисуется от края до края, без сайтового хрома.
 // published-рецепт открыт всем; draft/private — владельцу или по ключу ?k=
-// (см. features/beer-page/share-key.ts).
+// (см. features/beer-page/share-key.ts). Кроме ключа, наклейка может нести
+// факты конкретной бутылки — дату розлива (b), номер партии (n) и фактическую
+// крепость (abv), см. features/beer-page/bottle-params.ts.
 
-type RouteParams = { params: Promise<{ slug: string }>; searchParams: Promise<{ k?: string }> };
+type RouteParams = {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ k?: string; b?: string; n?: string; abv?: string }>;
+};
 
 // Дедуп между generateMetadata и телом страницы (одинаковые аргументы → один SELECT).
 const loadBeer = cache((slug: string, shareKey: string | null, viewerId: string | null) =>
@@ -54,10 +60,14 @@ export async function generateMetadata(route: RouteParams): Promise<Metadata> {
 }
 
 export default async function BeerPresentationRoute(route: RouteParams) {
-  const beer = await loadBeerFromRoute(route);
+  const [beer, { b, n, abv }] = await Promise.all([loadBeerFromRoute(route), route.searchParams]);
   if (!beer) {
     notFound();
   }
 
-  return <BeerPresentation beer={beer} />;
+  // Детали конкретной бутылки/визита — не часть DTO рецепта (service.ts),
+  // поэтому идут отдельным пропом, а не примешиваются к beer.
+  const bottle = parseBottleParams({ b, n, abv });
+
+  return <BeerPresentation beer={beer} bottle={bottle} />;
 }

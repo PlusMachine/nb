@@ -1,11 +1,24 @@
 import { z } from "zod";
 
+import { preferredGravityUnits } from "../system/gravity-units";
+
 // Генератор наклеек на бутылки: контракты и физические константы.
 // Термопечать: точная пиксельная сетка под dpi, строго ч/б без полутонов.
 // Логика рендера — в features/labels/render.ts, шаблоны — в features/labels/templates/.
 
+// Разрешение растра. Это не «качество печати», а печатная сетка, в которую мы
+// растрируем: 1-битная картинка, рассчитанная под 203 dpi, на 300-dpi голове (и
+// наоборот) пересчитывается драйвером с некратным множителем — дизеринг идёт
+// муаром, линейки 0,25 мм плывут, модули QR дробятся. Поэтому dpi не спрашивают
+// у пользователя, а выводят из формата (см. label-studio.tsx): A4-лист печатают
+// на обычном принтере (300), одиночную наклейку — на термопринтере (у
+// большинства домашних моделей голова 203).
 export const LABEL_DPI_VALUES = [203, 300] as const;
 export type LabelDpi = (typeof LABEL_DPI_VALUES)[number];
+/** Термопринтер: 203 dpi у большинства домашних моделей. */
+export const LABEL_DPI_THERMAL: LabelDpi = 203;
+/** Обычный принтер (A4-лист): 203 dpi для лазерника просто грубо. */
+export const LABEL_DPI_SHEET: LabelDpi = 300;
 
 // Термоголовки «203 dpi» физически имеют ровно 8 точек/мм (203,2 dpi) —
 // считаем по 8, чтобы попадать в родную точечную сетку принтера.
@@ -147,8 +160,12 @@ export type LabelFieldKey = keyof typeof LABEL_FIELD_LIMITS;
 export const LABEL_NUMBER_MAX = 999;
 /** Шаблон печатает максимум 8 имён и сворачивает остаток в «+N»; дюжина — запас. */
 export const LABEL_LIST_MAX_NAMES = 12;
-/** Длина одного имени в списке: длиннее шаблон всё равно режет по ширине. */
-export const LABEL_LIST_NAME_MAX_LENGTH = 40;
+/**
+ * Длина одного имени в списке: длиннее шаблон всё равно режет по ширине. Запас
+ * над длинными каталожными именами нужен под долю в засыпи — «Caramel/Crystal
+ * Malt - 20L 10%» не должен потерять хвост «10%» на обрезке.
+ */
+export const LABEL_LIST_NAME_MAX_LENGTH = 48;
 
 const limited = (key: LabelFieldKey) => z.string().max(LABEL_FIELD_LIMITS[key]).optional();
 
@@ -168,13 +185,13 @@ export const labelOverridesSchema = z.object({
   ebc: limited("ebc"),
   og: limited("og"),
   fg: limited("fg"),
-  /** Списки — через запятую: «Pilsner, Munich». */
+  /** Списки — через запятую; у солода имя несёт долю в засыпи: «Pale Ale 97%». */
   malts: limited("malts"),
   hops: limited("hops"),
   yeast: limited("yeast"),
   /** Пара предложений о пиве; места хватает только на большой наклейке. */
   description: limited("description"),
-  /** Эмблема (шишка хмеля в «Линейном крафте»); выключается правкой. */
+  /** Эмблема (шишка хмеля в «Крафте»); выключается правкой. */
   logo: z.enum(["0", "1"]).optional(),
   /** Шкала горечи на большой наклейке; выключается правкой. */
   ibuScale: z.enum(["0", "1"]).optional(),
@@ -246,6 +263,12 @@ export const isValidIsoDate = (value: string): boolean => {
 export const labelRenderRequestSchema = labelOverridesSchema.extend({
   template: z.enum(LABEL_TEMPLATE_IDS).default("typographic"),
   preset: z.enum(LABEL_PRESET_IDS).default("M"),
+  /**
+   * Шкала OG/FG. Значения полей приходят голыми числами («15.2»), единицу
+   * печатает шаблон — и он должен знать какую. Не задана — берётся из профиля
+   * (у анонима °P): плотность в СНГ указывают в Плато.
+   */
+  gravityUnit: z.enum(preferredGravityUnits).optional(),
   /** A4-режим: PDF-лист с сеткой наклеек выбранного пресета. */
   sheet: z
     .enum(["0", "1"])
@@ -283,14 +306,23 @@ export type LabelSlots = {
   ibu: number | null;
   /** Округлённый EBC — и для колонки «ЦВЕТ», и для плотности дизеринга. */
   ebc: number | null;
+  /** Голое число без единицы («15.2», «1.048») — единицу печатает шаблон. */
   ogText: string | null;
   fgText: string | null;
+  /** Суффикс шкалы OG/FG («°P», «°Bx»); null у SG — там суффикс не пишут. */
+  gravityUnitText: string | null;
   hops: string[];
+  /**
+   * Солод. Доля в засыпи — часть имени сорта («Pale Ale 97%»), а не отдельное
+   * поле: список приходит из формы одной строкой, и что в поле — то и печатается.
+   * Не нужна — стирается там же, руками. У хмеля долей нет: по массе они врали бы
+   * (30 г на горечь и 30 г на сухое охмеление — это не «50 / 50»).
+   */
   malts: string[];
   yeast: string | null;
   /** Пара предложений о пиве; печатается только на большой наклейке (на S/M нет места). */
   description: string | null;
-  /** Печатать эмблему (шишка хмеля в «Линейном крафте»). */
+  /** Печатать эмблему (шишка хмеля в «Крафте»). */
   showLogo: boolean;
   /** Печатать шкалу горечи (большая наклейка). */
   showIbuScale: boolean;

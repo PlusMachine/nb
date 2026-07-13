@@ -12,6 +12,7 @@ import {
   renderLabelPdf,
   renderLabelPng,
   renderLabelPreviewPng,
+  resolveDescriptionFixes,
   resolveDescriptionPrintState,
   resolveQrPrintState
 } from "@/features/labels/render";
@@ -74,7 +75,17 @@ export async function GET(request: Request) {
     const overrides = labelOverridesSchema.parse(Object.fromEntries(url.searchParams));
     const { APP_URL } = getServerEnv();
     const recipeQrUrl = overrides.qr === "0" ? null : await resolveRecipeQrUrl(overrides.recipeSlug, APP_URL);
-    const slots = buildCustomLabelSlots({ bottlingDate: query.bottlingDate ?? null, overrides, recipeQrUrl });
+    const slots = buildCustomLabelSlots({
+      bottlingDate: query.bottlingDate ?? null,
+      // Эндпоинт анонимный, профиля тут нет: шкалу присылает студия (её дефолт —
+      // °P), иначе «15.2» напечаталось бы без «°P».
+      gravityUnit: query.gravityUnit,
+      overrides,
+      recipeQrUrl,
+      // Для мирроринга фактов розлива в QR: recipeQrUrl обязан вести на нашу
+      // /beer/<slug>, а не на что-то ещё.
+      baseUrl: APP_URL
+    });
 
     const renderParams = { template: query.template, preset: query.preset, dpi: query.dpi, slots };
     const body = query.sheet
@@ -104,7 +115,10 @@ export async function GET(request: Request) {
         // Молча исчезнувший QR читается как поломка — говорим студии правду.
         "X-Label-Qr": resolveQrPrintState(renderParams),
         // То же про описание: оно урезается по остатку высоты.
-        "X-Label-Description": resolveDescriptionPrintState(renderParams)
+        "X-Label-Description": resolveDescriptionPrintState(renderParams),
+        // И чем именно его спасать: советовать тумблер, который на этой вёрстке
+        // ничего не освободит, — обманывать пользователя.
+        "X-Label-Description-Fix": resolveDescriptionFixes(renderParams).join(",")
       }
     });
   } catch (error) {

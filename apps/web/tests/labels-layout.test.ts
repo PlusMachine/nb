@@ -3,10 +3,16 @@ import { describe, expect, it } from "vitest";
 import { beerStyleTaglinesRu } from "@nb/brewing-core";
 
 import { A4_SHEET, computeA4Grid, LABEL_PRESETS, mmToPx, QR_SIZE_MM_M, type LabelSlots } from "../features/labels/contracts";
-import { fitTextLines, inkExtentsPx } from "../features/labels/fonts";
+import { fitTextLines, inkExtentsPx, measureTextPx } from "../features/labels/fonts";
 import { buildQrSvg } from "../features/labels/qr";
-import { renderLabelSvg, resolveDescriptionPrintState, resolveQrPrintState } from "../features/labels/render";
+import {
+  renderLabelSvg,
+  resolveDescriptionFixes,
+  resolveDescriptionPrintState,
+  resolveQrPrintState
+} from "../features/labels/render";
 import { HOP_MARK_D } from "../features/labels/hop-mark";
+import { fitNamesToLines, joinWithOverflow } from "../features/labels/templates/blocks";
 
 const fullSlots: LabelSlots = {
   title: "Жигулёвское юбилейное нефильтрованное",
@@ -16,6 +22,7 @@ const fullSlots: LabelSlots = {
   ebc: 12,
   ogText: "1.048",
   fgText: "1.011",
+  gravityUnitText: null,
   hops: ["Saaz", "Sladek"],
   malts: ["Pilsner"],
   yeast: "Fermentis W-34/70",
@@ -38,6 +45,7 @@ const emptySlots: LabelSlots = {
   ebc: null,
   ogText: null,
   fgText: null,
+  gravityUnitText: null,
   hops: [],
   malts: [],
   yeast: null,
@@ -493,5 +501,120 @@ describe("горизонтальная большая наклейка (120×75 
     expect(noScale).not.toContain(markMarker);
     expect((withScale.match(/>100</g) ?? []).length).toBeGreaterThan(0);
     expect((noScale.match(/>100</g) ?? []).length).toBe(0);
+  });
+});
+
+describe("горизонтальная 120×75: описание, подвал и ширина колонок", () => {
+  // Тот самый рецепт, на котором описание не влезало: эмблема, полный набор
+  // данных и пара предложений о пиве.
+  const slots: LabelSlots = {
+    ...fullSlots,
+    title: "Каскад цветочно-ванильный",
+    styleName: "Американский пейл-эль",
+    malts: ["Пэйл эль"],
+    hops: ["Каскад"],
+    yeast: "US-05",
+    description:
+      "Светлый американский эль: цитрус, хвоя и косточковые фрукты от американского хмеля на аккуратной солодовой подложке. Свежесть и бодрая горчинка."
+  };
+
+  it("описание печатается целиком: подвал с QR уступает ему место, уехав в колонку данных", () => {
+    for (const template of ["typographic", "craft"] as const) {
+      const params = { template, preset: "LW" as const, dpi: 203 as const, slots };
+      expect(resolveDescriptionPrintState(params), template).toBe("ok");
+      expect(resolveQrPrintState(params), template).toBe("ok");
+    }
+    // QR стоит в правой половине наклейки — там, где раньше пустовала колонка
+    // данных, а не под лицом, где он отнимал строки у описания.
+    const { svg, widthPx } = renderLabelSvg({ template: "craft", preset: "LW", dpi: 203, slots });
+    const qr = /<g transform="translate\((\d+) \d+\)"><g shape-rendering="crispEdges"/.exec(svg);
+    expect(qr).not.toBeNull();
+    expect(Number(qr?.[1])).toBeGreaterThan(widthPx / 2);
+  });
+
+  it("ширину у состава не отнимают: имена сортов не режутся ради описания", () => {
+    // Богатый состав + длинное описание: раскладка вправе расширить лицевую
+    // колонку, но не настолько, чтобы сорта ушли в «…».
+    const rich: LabelSlots = {
+      ...slots,
+      malts: ["Pale Ale 62%", "Мюнхенский 12%", "Карамельный 60 8%"],
+      hops: ["Magnum", "Chinook", "Columbus"],
+      yeast: "Lallemand Windsor"
+    };
+    for (const template of ["typographic", "craft"] as const) {
+      const { svg } = renderLabelSvg({ template, preset: "LW", dpi: 203, slots: rich });
+      expect(svg, template).toContain("PALE ALE 62%");
+      expect(svg, template).toContain("LALLEMAND WINDSOR");
+    }
+  });
+
+  it("совет по описанию честен: предлагаем только тумблеры, которые правда дают место", () => {
+    const params = { template: "craft" as const, preset: "LW" as const, dpi: 203 as const, slots };
+    // Всё влезло — советовать нечего.
+    expect(resolveDescriptionFixes(params)).toEqual([]);
+
+    // Набит состав: описание урезано, и оба тумблера действительно его спасают
+    // (эмблема освобождает лицевую колонку, шкала — высоту под подвал справа).
+    const packed: LabelSlots = {
+      ...slots,
+      malts: ["Pale Ale 62%", "Мюнхенский 12%", "Карамельный 60 8%", "Шоколадный 7%", "Жжёный 5%", "Овёс 6%"],
+      hops: ["Magnum", "Chinook", "Columbus", "Simcoe"],
+      yeast: "Lallemand Windsor"
+    };
+    const packedParams = { ...params, slots: packed };
+    expect(resolveDescriptionPrintState(packedParams)).toBe("trimmed");
+    for (const fix of resolveDescriptionFixes(packedParams)) {
+      const relaxed: LabelSlots =
+        fix === "logo" ? { ...packed, showLogo: false } : { ...packed, showIbuScale: false };
+      expect(resolveDescriptionPrintState({ ...params, slots: relaxed }), fix).toBe("ok");
+    }
+  });
+});
+
+describe("строка состава: разделители и перенос", () => {
+  it("длинное слово не вылезает за ширину: строка меряется целиком", () => {
+    // Слово, начавшее новую строку последним, раньше не измерялось вовсе —
+    // «ЦВЕТОЧНО-ВАНИЛЬНЫЙ» печаталось поверх всей наклейки.
+    const maxWidthPx = 430;
+    const fitted = fitTextLines("КАСКАД ЦВЕТОЧНО-ВАНИЛЬНЫЙ", {
+      fontId: "displayBold",
+      maxWidthPx,
+      maxLines: 2,
+      maxSizePx: 64,
+      minSizePx: 32
+    });
+    for (const line of fitted.lines) {
+      expect(measureTextPx(line, "displayBold", fitted.fontSizePx)).toBeLessThanOrEqual(maxWidthPx);
+    }
+  });
+
+
+  it("имена соединяются точками, остаток сворачивается в «+N»", () => {
+    expect(joinWithOverflow(["Citra", "Mosaic", "Simcoe"], 3)).toBe("Citra • Mosaic • Simcoe");
+    expect(joinWithOverflow(["Citra", "Mosaic", "Simcoe"], 2)).toBe("Citra • Mosaic +1");
+  });
+
+  it("перенос идёт по границе сорта, а не по пробелу внутри имени", () => {
+    // «CARA CLAIR 7%», разорванное между строками, читается как два разных солода
+    // (а «7%» в начале строки — вообще как отдельный ингредиент).
+    const names = ["Pale Ale 78%", "Munich 12%", "Cara Clair 7%", "Овсяные хлопья 3%"];
+    const lines = fitNamesToLines(names, {
+      maxNames: 8,
+      fontId: "body",
+      sizePx: 28,
+      // Ширина заведомо мала для одной строки — раскладка обязана перенести.
+      maxWidthPx: 420,
+      maxLines: 2
+    });
+
+    expect(lines.length).toBeGreaterThan(1);
+    const printable = new Set(names.map((name) => name.toUpperCase()));
+    for (const line of lines) {
+      for (const token of line.split(" • ")) {
+        // Последний токен строки может нести хвост «+N».
+        const name = token.replace(/ \+\d+$/, "");
+        expect(printable.has(name)).toBe(true);
+      }
+    }
   });
 });

@@ -28,6 +28,7 @@ const slots = (overrides: Partial<LabelSlots> = {}): LabelSlots => ({
   ebc: 12,
   ogText: "1.048",
   fgText: "1.011",
+  gravityUnitText: null,
   hops: ["Saaz"],
   malts: ["Pilsner"],
   yeast: "W-34/70",
@@ -183,5 +184,30 @@ describe("описание и переключатели блоков в пра�
     expect(applyLabelOverrides(slots({ showLogo: false }), { logo: "1" }).showLogo).toBe(false);
     expect(applyLabelOverrides(slots(), {}).showLogo).toBe(true);
     expect(applyLabelOverrides(slots(), {}).showIbuScale).toBe(true);
+  });
+});
+
+describe("список солода в правках", () => {
+  it("доля — часть имени сорта: что в поле, то и печатается", () => {
+    // Отдельного переключателя долей нет намеренно: список приходит из формы
+    // одной строкой, и «Pale Ale 97%» в поле обязано совпадать с наклейкой.
+    // Не нужна доля — пользователь стирает её в поле, как любой другой текст.
+    expect(applyLabelOverrides(slots(), { malts: "Pale Ale 97%, Cara Clair 3%" }).malts).toEqual([
+      "Pale Ale 97%",
+      "Cara Clair 3%"
+    ]);
+    expect(applyLabelOverrides(slots(), { malts: "Pale Ale, Cara Clair" }).malts).toEqual(["Pale Ale", "Cara Clair"]);
+  });
+
+  it("разделителем принимается и «•» — его печатает наклейка, его же и копируют", () => {
+    expect(applyLabelOverrides(slots(), { malts: "Pale Ale 80% • Munich 20%" }).malts).toEqual([
+      "Pale Ale 80%",
+      "Munich 20%"
+    ]);
+    expect(applyLabelOverrides(slots(), { hops: "Citra • Mosaic" }).hops).toEqual(["Citra", "Mosaic"]);
+  });
+
+  it("пустая строка убирает состав с наклейки", () => {
+    expect(applyLabelOverrides(slots(), { malts: "" }).malts).toEqual([]);
   });
 });

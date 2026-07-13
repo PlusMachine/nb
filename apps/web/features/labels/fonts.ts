@@ -158,6 +158,12 @@ export const fitTextLines = (
       }
     }
     if (current.length > 0) {
+      // Последнее слово измеряем отдельно: строку, которую собрали дописыванием,
+      // проверил цикл, а вот слово, начавшее новую строку последним, — никто.
+      // Без этой проверки «ЦВЕТОЧНО-ВАНИЛЬНЫЙ» уезжало за рамку на всю наклейку.
+      if (measureTextPx(current, fontId, sizePx, letterSpacingPx) > maxWidthPx) {
+        return null;
+      }
       lines.push(current);
     }
     return lines.length <= maxLines ? lines : null;

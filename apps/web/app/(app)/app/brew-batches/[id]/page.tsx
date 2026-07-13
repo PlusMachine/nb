@@ -28,7 +28,7 @@ import { mapFermentationPlanToDeviceSteps } from "@/features/brew-controller/fer
 import { getRecipeById } from "@/features/recipes/service";
 import { computeRecipeMatch } from "@/features/recipes/match-service";
 import { isShoppingGapLine } from "@/features/shopping/service";
-import { formatGravity, resolvePreferredGravityUnit } from "@/features/system/gravity-units";
+import { formatGravity, formatGravityNumber, resolvePreferredGravityUnit } from "@/features/system/gravity-units";
 import { formatRelativeTimestamp } from "@/features/recipes/format";
 import { resolveFermenterBindingStatus } from "@/features/brew-batches/fermenter-status";
 import { BrewCompletionSummary } from "@/features/brew-batches/components/brew-completion-summary";
@@ -213,25 +213,50 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
   // brew-day.ts:613 — отдельного акта «Розлив» нет, поэтому вход даём в
   // fermentation/done). Дата розлива: completedAt для завершённой варки, иначе
   // сегодня — отдельного поля даты розлива у партии нет.
+  // Фактические замеры партии важнее расчётных цифр рецепта/снапшота: наклейка
+  // описывает пиво, которое получилось, а не план. OG — первый замер, FG — только
+  // финальный, ABV считается от этой пары (см. summarizeBrewMeasurements); чего
+  // нет фактически — остаётся расчётным.
   // Свой рецепт (или authorId в снапшоте отсутствует — старые снапшоты без
-  // атрибуции считаем своими) → полная студия по рецепту с QR и стилем.
+  // атрибуции считаем своими) → полная студия по рецепту с QR и стилем; факт
+  // партии уезжает override-параметрами поверх полей рецепта.
   // Чужой рецепт/рецепт удалён → ручной режим с тем, что есть в снапшоте
   // (стиля/IBU/цвета там нет — это слепок из момента старта варки, не карточка рецепта).
-  const bottlingDateIso = (batch.completedAt ?? new Date()).toISOString().slice(0, 10);
+  // Дата — локальная, как в шапке «завершена …» (fmtDate): UTC-срез toISOString
+  // для вечерней варки печатал на наклейке вчерашний день.
+  const bottlingSource = batch.completedAt ?? new Date();
+  const bottlingDateIso = [
+    bottlingSource.getFullYear(),
+    String(bottlingSource.getMonth() + 1).padStart(2, "0"),
+    String(bottlingSource.getDate()).padStart(2, "0")
+  ].join("-");
   const isOwnSnapshotRecipe = !recipeSnapshot?.authorId || recipeSnapshot.authorId === batch.userId;
+  const labelGravityUnit = resolvePreferredGravityUnit(user.preferredGravityUnit);
+  // OG/FG — голым числом: единицу («°P») наклейка ставит сама, одну на строку;
+  // formatGravity с суффиксом давал на печати «FG 2.5 °P °P».
+  const labelParams = new URLSearchParams({ bottlingDate: bottlingDateIso });
+  labelParams.set("batch", String(batch.brewNumber));
+  const actualOgText = formatGravityNumber(summary.og, labelGravityUnit);
+  if (actualOgText) labelParams.set("og", actualOgText);
+  const actualFgText = formatGravityNumber(summary.fg, labelGravityUnit);
+  if (actualFgText) labelParams.set("fg", actualFgText);
+  const actualAbvText = formatAbvLabel(summary.abv);
+  if (actualAbvText) labelParams.set("abv", actualAbvText);
   let labelsHref: string | null = null;
   if (batch.recipeId && isOwnSnapshotRecipe) {
-    labelsHref = `/app/recipes/${batch.recipeId}/labels?bottlingDate=${bottlingDateIso}`;
+    labelsHref = `/app/recipes/${batch.recipeId}/labels?${labelParams.toString()}`;
   } else if (recipeSnapshot) {
-    const gravityUnit = resolvePreferredGravityUnit(user.preferredGravityUnit);
-    const manualParams = new URLSearchParams({ bottlingDate: bottlingDateIso });
-    if (recipeSnapshot.title) manualParams.set("title", recipeSnapshot.title);
-    if (recipeSnapshot.og != null) manualParams.set("og", formatGravity(recipeSnapshot.og, gravityUnit));
-    if (recipeSnapshot.fg != null) manualParams.set("fg", formatGravity(recipeSnapshot.fg, gravityUnit));
-    const abvText = formatAbvLabel(recipeSnapshot.abv ?? null);
-    if (abvText) manualParams.set("abv", abvText);
-    if (recipeSnapshot.authorName) manualParams.set("author", recipeSnapshot.authorName);
-    labelsHref = `/labels?${manualParams.toString()}`;
+    if (recipeSnapshot.title) labelParams.set("title", recipeSnapshot.title);
+    const snapshotOgText = summary.og == null ? formatGravityNumber(recipeSnapshot.og ?? null, labelGravityUnit) : null;
+    if (snapshotOgText) labelParams.set("og", snapshotOgText);
+    const snapshotFgText = summary.fg == null ? formatGravityNumber(recipeSnapshot.fg ?? null, labelGravityUnit) : null;
+    if (snapshotFgText) labelParams.set("fg", snapshotFgText);
+    if (actualAbvText == null) {
+      const snapshotAbvText = formatAbvLabel(recipeSnapshot.abv ?? null);
+      if (snapshotAbvText) labelParams.set("abv", snapshotAbvText);
+    }
+    if (recipeSnapshot.authorName) labelParams.set("author", recipeSnapshot.authorName);
+    labelsHref = `/labels?${labelParams.toString()}`;
   }
 
   return (
@@ -262,6 +287,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
           <p className="text-sm text-muted-foreground">
             {batch.brewPlanSnapshot.recipe.title}
             {isForeignRecipe && sourceAuthorName ? <span className="text-muted-foreground"> · автор {sourceAuthorName}</span> : null}
+            {` · Партия №${batch.brewNumber}`}
             {completed ? ` · завершена ${completed}` : started ? ` · начата ${started}` : planned ? ` · запланирована на ${planned}` : ""}
           </p>
         </div>

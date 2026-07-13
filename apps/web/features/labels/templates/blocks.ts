@@ -35,14 +35,14 @@ export const truncateToWidth = (text: string, fontId: LabelFontId, sizePx: numbe
   return `${text.slice(0, cut).trimEnd()}…`;
 };
 
-/** «HOP1, HOP2 +N» — не больше maxNames имён, остальное числом. */
+/** «HOP1 • HOP2 +N» — не больше maxNames имён, остальное числом. */
 export const joinWithOverflow = (names: string[], maxNames: number): string | null => {
   if (names.length === 0) {
     return null;
   }
   const visible = names.slice(0, maxNames);
   const rest = names.length - visible.length;
-  return rest > 0 ? `${visible.join(", ")} +${rest}` : visible.join(", ");
+  return rest > 0 ? `${visible.join(" • ")} +${rest}` : visible.join(" • ");
 };
 
 /**
@@ -68,6 +68,9 @@ export const fitNamesToWidth = (
  * строк заданного кегля, остальное уводим в «+N». На 75×120 мм строка состава
  * может занять две строки — так на наклейку попадает весь солод, а не первые
  * два сорта и «+4».
+ *
+ * Переносим по разделителю имён, а не по пробелам: сорт — неделимая единица, и
+ * «CARA / CLAIR 7%», разорванное между строками, читается как два разных солода.
  */
 export const fitNamesToLines = (
   names: string[],
@@ -76,34 +79,48 @@ export const fitNamesToLines = (
   if (names.length === 0) {
     return [];
   }
-  const wrap = (text: string): string[] | null => {
+  const fits = (text: string): boolean => measureTextPx(text, params.fontId, params.sizePx) <= params.maxWidthPx;
+
+  const wrap = (items: string[], overflow: number): string[] | null => {
     const lines: string[] = [];
     let current = "";
-    for (const word of text.split(" ")) {
-      const candidate = current.length > 0 ? `${current} ${word}` : word;
-      if (measureTextPx(candidate, params.fontId, params.sizePx) <= params.maxWidthPx) {
+    for (const item of items) {
+      const candidate = current.length > 0 ? `${current} • ${item}` : item;
+      if (fits(candidate)) {
         current = candidate;
         continue;
       }
       if (current.length === 0) {
-        // Одно слово шире строки — этот набор имён не разложить.
+        // Одно имя шире строки — этот набор не разложить.
         return null;
       }
       lines.push(current);
-      current = word;
+      current = item;
       if (lines.length === params.maxLines) {
         return null;
       }
     }
-    if (current.length > 0) {
-      lines.push(current);
+    if (current.length === 0) {
+      return null;
     }
+    if (overflow > 0) {
+      const withOverflow = `${current} +${overflow}`;
+      // «+N» не влез в последнюю строку — пробуем набор поменьше: перенести его
+      // на отдельную строку значило бы потратить её целиком на два символа.
+      if (!fits(withOverflow)) {
+        return null;
+      }
+      current = withOverflow;
+    }
+    lines.push(current);
     return lines.length <= params.maxLines ? lines : null;
   };
 
   for (let count = Math.min(params.maxNames, names.length); count >= 1; count -= 1) {
-    const joined = joinWithOverflow(names, count);
-    const lines = joined ? wrap(joined.toUpperCase()) : null;
+    const lines = wrap(
+      names.slice(0, count).map((name) => name.toUpperCase()),
+      names.length - count
+    );
     if (lines) {
       return lines;
     }
@@ -352,6 +369,51 @@ export const statLine = (ctx: LabelRenderContext, params: { cx: number; width: n
 /** Высота стат-строки (для вертикального бюджета). */
 export const statLineHeight = (ctx: LabelRenderContext): number => Math.round(ctx.mm(3.4) * 1.3);
 
+/** Метрики строк состава: одни и те же у рендера и у оценки нужной ширины. */
+const ingredientRowMetrics = (ctx: LabelRenderContext, withIcons: boolean) => {
+  const { mm } = ctx;
+  // На 75×120 мм состав — главный текстовый блок: кегль и иконка мельче, метка
+  // короче, значение переносится на вторую строку. Так на наклейку попадают
+  // все сорта солода и хмеля, а не первые два и «+4».
+  const wide = ctx.tier === "L";
+  const labelSize = wide ? mm(2.4) : mm(2.8);
+  const iconSize = wide ? mm(3.2) : mm(3.6);
+  const labelSpacing = Math.round(labelSize * 0.1);
+  const gap = wide ? mm(1.4) : mm(2);
+  return {
+    wide,
+    labelSize,
+    iconSize,
+    labelSpacing,
+    gap,
+    lineHeight: Math.round(labelSize * 1.24),
+    maxLines: wide ? 2 : 1,
+    iconOffset: withIcons ? iconSize + gap : 0,
+    // Ширину считаем по самой длинной метке: значения всех трёх строк должны
+    // начинаться с одной вертикали.
+    maxLabelWidth: Math.max(
+      ...["СОЛОД:", "ХМЕЛЬ:", "ДРОЖЖИ:"].map((label) => measureTextPx(label, "bodyBold", labelSize, labelSpacing))
+    )
+  };
+};
+
+/**
+ * Ширина, на которой самое длинное имя состава ещё печатается целиком. Уже —
+ * и «PALE ALE 62%» превращается в «PALE ALE 62%…», а остальные сорта уходят в
+ * «+N». Горизонтальный макет по ней решает, можно ли отдать ширину лицевой
+ * колонке: описание того не стоит, если ценой ему — потерянный состав.
+ */
+export const ingredientRowsDesiredWidth = (ctx: LabelRenderContext, params: { icons: boolean }): number => {
+  const { slots } = ctx;
+  const names = [...slots.malts, ...slots.hops, ...(slots.yeast ? [slots.yeast] : [])];
+  if (names.length === 0) {
+    return 0;
+  }
+  const metrics = ingredientRowMetrics(ctx, params.icons);
+  const widest = Math.max(...names.map((name) => measureTextPx(name.toUpperCase(), "body", metrics.labelSize)));
+  return metrics.iconOffset + metrics.maxLabelWidth + metrics.gap + widest;
+};
+
 /**
  * Строки «СОЛОД / ХМЕЛЬ / ДРОЖЖИ» с линейными иконками (референс) —
  * только заполненные; между строками тонкие линейки.
@@ -361,29 +423,19 @@ export const ingredientRows = (
   params: { x: number; width: number; y: number; icons: { grain: string; hop: string; yeast: string } | null }
 ): BlockResult => {
   const { slots, mm } = ctx;
-  // На 75×120 мм состав — главный текстовый блок: кегль и иконка мельче, метка
-  // короче, значение переносится на вторую строку. Так на наклейку попадают
-  // все сорта солода и хмеля, а не первые два и «+4».
-  const wide = ctx.tier === "L";
-  const labelSize = wide ? mm(2.4) : mm(2.8);
-  const iconSize = wide ? mm(3.2) : mm(3.6);
-  const lineHeight = Math.round(labelSize * 1.24);
-  const maxLines = wide ? 2 : 1;
-  const labelSpacing = Math.round(labelSize * 0.1);
-  const gap = wide ? mm(1.4) : mm(2);
+  const { wide, labelSize, iconSize, lineHeight, maxLines, labelSpacing, gap, iconOffset, maxLabelWidth } =
+    ingredientRowMetrics(ctx, params.icons !== null);
 
   // Ширина под значение (за вычетом иконки и самой длинной метки) — чтобы
   // «+N» подбирался по реальному месту, а не резался с «…» на середине имени.
-  const iconOffset = params.icons ? iconSize + gap : 0;
-  const maxLabelWidth = Math.max(
-    ...["СОЛОД:", "ХМЕЛЬ:", "ДРОЖЖИ:"].map((label) => measureTextPx(label, "bodyBold", labelSize, labelSpacing))
-  );
   const valueMax = params.width - iconOffset - maxLabelWidth - gap;
 
   const fitNames = (names: string[], maxNames: number): string[] =>
     fitNamesToLines(names, { maxNames, fontId: "body", sizePx: labelSize, maxWidthPx: valueMax, maxLines });
 
   const rows: Array<{ icon: "grain" | "hop" | "yeast"; label: string; lines: string[] }> = [];
+  // Доля в засыпи уже внутри имени («PALE ALE 97%»): для раскладки это одно имя —
+  // либо влезает целиком, либо уходит в «+N»; рвать его между строк нельзя.
   const malts = fitNames(slots.malts, wide ? 8 : 3);
   const hops = fitNames(slots.hops, wide ? 8 : 4);
   if (malts.length > 0) {
@@ -430,8 +482,12 @@ export const ingredientRows = (
   return { svg: parts.join(""), height: y - params.y };
 };
 
-/** Описание влезло целиком, влезло не полностью или не влезло вовсе. */
-export type DescriptionBlockResult = BlockResult & { trimmed: boolean };
+/**
+ * Описание влезло целиком, влезло не полностью или не влезло вовсе.
+ * printedChars — сколько символов реально попало на наклейку: по нему шаблон
+ * выбирает раскладку, когда целиком текст не влезает ни в одну из них.
+ */
+export type DescriptionBlockResult = BlockResult & { trimmed: boolean; printedChars: number };
 
 /** Признак блока описания в готовом SVG (см. resolveDescriptionPrintState). */
 export const DESCRIPTION_SVG_ATTR = "data-label-description";
@@ -457,7 +513,7 @@ export const descriptionBlock = (
 ): DescriptionBlockResult => {
   const { slots, mm } = ctx;
   if (!slots.description) {
-    return { ...EMPTY_BLOCK, trimmed: false };
+    return { ...EMPTY_BLOCK, trimmed: false, printedChars: 0 };
   }
   const source = slots.description.trim().replace(/\s+/g, " ");
   const maxLines = params.maxLines ?? 3;
@@ -495,12 +551,13 @@ export const descriptionBlock = (
     return {
       svg: `<g ${DESCRIPTION_SVG_ATTR}="${trimmed ? "trimmed" : "full"}">${parts.join("")}</g>`,
       height,
-      trimmed
+      trimmed,
+      printedChars: fitted.lines.join(" ").length
     };
   }
 
   // Не влезло ни одной полноценной строки — описание не печатаем (но и не молчим).
-  return { ...EMPTY_BLOCK, trimmed: true };
+  return { ...EMPTY_BLOCK, trimmed: true, printedChars: 0 };
 };
 
 // Шкалы-инфографика (L-tier). Общий язык обеих: ось от 0 до максимума,
@@ -759,7 +816,7 @@ export const bottomMetaDesiredHeight = (
  * (QR только при slots.qrUrl — т.е. только для опубликованных).
  */
 export const bottomMeta = (ctx: LabelRenderContext, params: BottomMetaParams): BlockResult => {
-  const { mm } = ctx;
+  const { slots, mm } = ctx;
   const plan = planBottomMeta(ctx, params);
   const { lineSize, lineGap } = plan;
   const lines = [...plan.lines];
@@ -804,7 +861,9 @@ export const bottomMeta = (ctx: LabelRenderContext, params: BottomMetaParams): B
         y: Math.max(params.y, qy) + qr.sizePx + lineSize,
         fontId: "body",
         sizePx: mm(2),
-        text: "рецепт",
+        // Подпись = что получит сканирующий: страница пива (/beer/…, режим
+        // рецепта) или страница рецепта (ручной режим со ссылкой на рецепт).
+        text: slots.qrUrl && slots.qrUrl.includes("/beer/") ? "о пиве" : "рецепт",
         anchor: "middle"
       })
     );

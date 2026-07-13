@@ -3,40 +3,71 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { ArrowLeft, Download, RotateCcw } from "lucide-react";
+import { ArrowLeft, Download, Maximize2, RotateCcw } from "lucide-react";
 
-import { buttonVariants } from "@nb/ui";
+import { Button, buttonVariants, Dialog, DialogFooter, useToast } from "@nb/ui";
 
 import { CopyLinkButton } from "@/components/shared/copy-link-button";
 import {
   computeA4Grid,
   isLargePreset,
+  LABEL_DPI_SHEET,
+  LABEL_DPI_THERMAL,
   LABEL_FIELD_LIMITS,
   LABEL_PRESETS,
   LABEL_PRESET_IDS,
   LABEL_TEMPLATE_IDS,
-  type LabelDpi,
   type LabelPresetId,
   type LabelSlots,
   type LabelTemplateId
 } from "@/features/labels/contracts";
 import {
-  clampLabelStudioFields,
   parseLabelStudioQuery,
   serializeLabelStudioState,
   type LabelStudioFields,
   type LabelStudioState
 } from "@/features/labels/label-studio-url";
+import {
+  LABEL_RECIPE_FIELD_KEYS,
+  LABEL_RECIPE_FIELD_LABELS,
+  labelFieldsFromSlots,
+  mergeRecipeFields,
+  type LabelFillMode,
+  type LabelRecipeFields
+} from "@/features/labels/recipe-fields";
+import {
+  convertGravityFieldValue,
+  gravityUnitLabels,
+  toCalculatorGravityUnit,
+  type PreferredGravityUnit
+} from "@/features/system/gravity-units";
 
-// Конфигуратор наклеек: формат → шаблон → печать → поля → превью.
+// Конфигуратор наклеек: формат → шаблон → поля → превью.
 // Поля подставлены из рецепта, но каждое можно поправить или очистить
 // (пустое поле = блок не печатается). Свободного позиционирования нет:
 // раскладку держит шаблон. Состояние зеркалится в URL страницы (не путать со
 // служебными query-параметрами рендера, см. features/labels/label-studio-url.ts).
 
 const TEMPLATE_LABELS: Record<LabelTemplateId, string> = {
-  typographic: "Типографский",
-  craft: "Линейный крафт"
+  typographic: "Классика",
+  craft: "Крафт"
+};
+
+/**
+ * Шкала OG/FG на наклейке. Brix здесь не предлагаем, хотя профиль его знает:
+ * это шкала рефрактометра (показания после брожения занижены), а на бутылке
+ * печатают плотность — численно тот же Plato. Профиль с Brix открывает студию
+ * в °P.
+ */
+const LABEL_GRAVITY_UNITS = ["plato", "sg"] as const satisfies readonly PreferredGravityUnit[];
+
+const resolveLabelGravityUnit = (unit: PreferredGravityUnit): (typeof LABEL_GRAVITY_UNITS)[number] =>
+  unit === "sg" ? "sg" : "plato";
+
+/** Плейсхолдер OG/FG — в той шкале, в которой поле сейчас печатается. */
+const GRAVITY_PLACEHOLDERS: Record<(typeof LABEL_GRAVITY_UNITS)[number], { og: string; fg: string }> = {
+  plato: { og: "12.0", fg: "2.8" },
+  sg: { og: "1.048", fg: "1.011" }
 };
 
 type FormatId = LabelPresetId | "A4";
@@ -44,34 +75,26 @@ type FormatId = LabelPresetId | "A4";
 /** Поля-правки: ровно ключи labelOverridesSchema, значения — строки формы. */
 type LabelFields = LabelStudioFields;
 
-// Значения из рецепта режем по лимитам поля наклейки: название рецепта (до 180)
-// и склеенный список солодов (за 240) длиннее лимита, а maxLength у <input> не
-// трогает предзаполненное значение — без обрезки форма собрала бы запрос,
-// который рендер отвергнет 400-ым (превью замрёт, «Скачать» уведёт на JSON).
-const fieldsFromSlots = (slots: LabelSlots): LabelFields =>
-  clampLabelStudioFields({
-    title: slots.title,
-    style: slots.styleName ?? "",
-    abv: slots.abvText ?? "",
-    ibu: slots.ibu === null ? "" : String(slots.ibu),
-    ebc: slots.ebc === null ? "" : String(slots.ebc),
-    og: slots.ogText ?? "",
-    fg: slots.fgText ?? "",
-    malts: slots.malts.join(", "),
-    hops: slots.hops.join(", "),
-    yeast: slots.yeast ?? "",
-    description: slots.description ?? "",
-    author: slots.authorName ?? "",
-    brand: slots.brandText ?? "",
-    volume: slots.volumeText ?? "",
-    batch: slots.batchText ?? ""
-  });
+/** Что именно приедет из рецепта — этим списком студия отвечает в диалоге. */
+const RECIPE_FIELDS_SUMMARY = LABEL_RECIPE_FIELD_KEYS.map((key) => LABEL_RECIPE_FIELD_LABELS[key]).join(", ");
 
 const todayIsoDate = (): string => {
   const now = new Date();
   const mm = String(now.getMonth() + 1).padStart(2, "0");
   const dd = String(now.getDate()).padStart(2, "0");
   return `${now.getFullYear()}-${mm}-${dd}`;
+};
+
+// Совет по описанию собираем из того, что прислал рендер (X-Label-Description-Fix):
+// он один знает, какой блок на этой вёрстке действительно отдаст место тексту.
+const DESCRIPTION_FIX_LABELS: Record<string, string> = { logo: "эмблему", ibuScale: "шкалу IBU" };
+
+const describeDescriptionFixes = (fixes: string[]): string => {
+  const named = fixes.map((fix) => DESCRIPTION_FIX_LABELS[fix]).filter(Boolean);
+  if (named.length === 0) {
+    return "Сократите текст.";
+  }
+  return `Сократите текст или выключите ${named.join(" либо ")}.`;
 };
 
 // text-base на мобиле — иначе iOS зумит страницу при фокусе на поле с кеглем < 16px.
@@ -134,13 +157,21 @@ export type LabelStudioProps = {
   qrUnavailableReason?: "custom" | null;
   /** Опубликованные рецепты автора для выбора цели QR — только ручной режим, только залогиненным. */
   myRecipes?: Array<{ slug: string; title: string }>;
+  /** Ссылка на вход в подсказке QR — передаётся только гостю (ручной режим). */
+  loginHref?: string;
   backLink?: { href: string; label: string };
   /** Подпись «откуда данные» — в ручном режиме её нет. */
   resetLabel?: string;
+  /**
+   * Шкала OG/FG, в которой сервер посчитал defaultSlots (профиль пользователя,
+   * у анонима — °P). Студия даёт переключить её на самой наклейке, не трогая
+   * настройку сайта.
+   */
+  gravityUnit: PreferredGravityUnit;
 };
 
 export function LabelStudio(props: LabelStudioProps) {
-  const defaults = useMemo(() => fieldsFromSlots(props.defaultSlots), [props.defaultSlots]);
+  const defaults = useMemo(() => labelFieldsFromSlots(props.defaultSlots), [props.defaultSlots]);
   const isManualQr = props.qrUnavailableReason === "custom";
   const myRecipes = props.myRecipes ?? [];
 
@@ -164,7 +195,16 @@ export function LabelStudio(props: LabelStudioProps) {
     initialQuery.layout === "a4" ? initialQuery.preset ?? "M" : "M"
   );
   const [template, setTemplate] = useState<LabelTemplateId>(() => initialQuery.template ?? "typographic");
-  const [dpi, setDpi] = useState<LabelDpi>(() => initialQuery.dpi ?? 203);
+  // Растр печатается в сетку конкретной печатающей головы (см. LABEL_DPI_VALUES),
+  // но выбирать dpi пользователь не должен: он выбирает, КУДА печатает. A4-лист
+  // идёт на обычный принтер (300), одиночная наклейка — на термопринтер, а у тех
+  // почти всегда 203. Редкие 300-dpi термоголовы включают это галочкой.
+  const [thermal300, setThermal300] = useState<boolean>(
+    () => initialQuery.layout !== "a4" && initialQuery.dpi === LABEL_DPI_SHEET
+  );
+  const [gravityUnit, setGravityUnit] = useState<(typeof LABEL_GRAVITY_UNITS)[number]>(() =>
+    resolveLabelGravityUnit(initialQuery.gravityUnit ?? props.gravityUnit)
+  );
   const initialDateRef = useRef(todayIsoDate());
   const [bottlingDate, setBottlingDate] = useState<string>(() => initialQuery.bottlingDate ?? initialDateRef.current);
   const [fields, setFields] = useState<LabelFields>(() => ({ ...defaults, ...initialQuery.fields }));
@@ -173,9 +213,18 @@ export function LabelStudio(props: LabelStudioProps) {
   const [withIbuScale, setWithIbuScale] = useState<boolean>(() => initialQuery.withIbuScale ?? true);
   const [recipeSlugInput, setRecipeSlugInput] = useState<string>(() => initialQuery.recipeSlug ?? "");
   const [printView, setPrintView] = useState<boolean>(false);
+  const [zoomed, setZoomed] = useState<boolean>(false);
+  // Заполнение полей из рецепта (ручной режим): загрузка → возможный вопрос о
+  // перезаписи → слияние. Загруженные данные ждут в fillOffer, пока человек не
+  // решит, что делать с уже набранным.
+  const [fillPending, setFillPending] = useState<boolean>(false);
+  const [fillError, setFillError] = useState<string | null>(null);
+  const [fillOffer, setFillOffer] = useState<{ title: string; fields: LabelRecipeFields } | null>(null);
+  const { show: showToast } = useToast();
 
   const isSheet = format === "A4";
   const preset = isSheet ? sheetPreset : format;
+  const dpi = isSheet ? LABEL_DPI_SHEET : thermal300 ? LABEL_DPI_SHEET : LABEL_DPI_THERMAL;
   // Описание, шкала горечи и эмблема печатаются только на большой наклейке —
   // в обеих ориентациях (75×120 и 120×75), это один и тот же набор блоков.
   const isLarge = isLargePreset(preset);
@@ -186,6 +235,68 @@ export function LabelStudio(props: LabelStudioProps) {
   );
 
   const setField = (key: keyof LabelFields) => (value: string) => setFields((prev) => ({ ...prev, [key]: value }));
+
+  // Смена шкалы пересчитывает уже введённые числа: иначе «12.0», набранное в °P,
+  // молча уехало бы на наклейку как 12.0 SG. Пересчёт — общесистемный, тот же,
+  // что у переключателей в калькуляторах.
+  const changeGravityUnit = (next: (typeof LABEL_GRAVITY_UNITS)[number]) => {
+    if (next === gravityUnit) {
+      return;
+    }
+    const from = toCalculatorGravityUnit(gravityUnit);
+    const to = toCalculatorGravityUnit(next);
+    setFields((prev) => ({
+      ...prev,
+      og: prev.og ? convertGravityFieldValue(prev.og, from, to) : prev.og,
+      fg: prev.fg ? convertGravityFieldValue(prev.fg, from, to) : prev.fg
+    }));
+    setGravityUnit(next);
+  };
+
+  // Сброс возвращает и шкалу: поля рецепта посчитаны в ней, и оставить
+  // переключатель в другой единице значит напечатать «1.048 °P».
+  const resetFields = () => {
+    setFields(defaults);
+    setGravityUnit(resolveLabelGravityUnit(props.gravityUnit));
+  };
+
+  const applyRecipeFields = (incoming: LabelRecipeFields, mode: LabelFillMode) => {
+    setFields((prev) => mergeRecipeFields({ current: prev, incoming, defaults, mode }));
+    setFillOffer(null);
+    // Форма длинная: заполненные поля могут остаться за краем экрана, и без
+    // подтверждения кнопка выглядит как «ничего не сделала».
+    showToast({ title: mode === "replace" ? "Поля заполнены из рецепта" : "Пустые поля заполнены из рецепта" });
+  };
+
+  // Данные рецепта тянем по кнопке, а не по выбору в списке: выбор в списке —
+  // это ещё и цель QR, и он не должен трогать поля сам по себе.
+  const loadRecipeFields = async () => {
+    const target = recipeSlugInput.trim();
+    if (target.length === 0 || fillPending) {
+      return;
+    }
+    setFillPending(true);
+    setFillError(null);
+    try {
+      const params = new URLSearchParams({ recipe: target, gravityUnit });
+      const response = await fetch(`/api/labels/recipe-fields?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error("recipe fields request failed");
+      }
+      const data = (await response.json()) as { title: string; fields: LabelRecipeFields };
+      // Пустая форма — заполняем молча: терять нечего. Если человек уже что-то
+      // набрал, решение за ним (см. диалог ниже): автомат не стирает чужую работу.
+      if (isDirty) {
+        setFillOffer(data);
+      } else {
+        applyRecipeFields(data.fields, "replace");
+      }
+    } catch {
+      setFillError("Не удалось загрузить рецепт. Проверьте ссылку — рецепт должен быть опубликован.");
+    } finally {
+      setFillPending(false);
+    }
+  };
 
   // Пресет S физически не помещает QR-блок (шаблон его не рисует); ручной
   // режим без выбранного рецепта — тоже нет цели для QR.
@@ -201,7 +312,7 @@ export function LabelStudio(props: LabelStudioProps) {
 
   // Правки уходят теми же query-параметрами, что и настройки рендера.
   const query = useMemo(() => {
-    const params = new URLSearchParams({ template, preset, dpi: String(dpi) });
+    const params = new URLSearchParams({ template, preset, dpi: String(dpi), gravityUnit });
     for (const [key, value] of Object.entries(fields)) {
       params.set(key, value);
     }
@@ -224,7 +335,20 @@ export function LabelStudio(props: LabelStudioProps) {
       params.set("sheet", "1");
     }
     return params;
-  }, [template, preset, dpi, fields, bottlingDate, resolvedWithQr, withLogo, withIbuScale, isManualQr, recipeSlugInput, isSheet]);
+  }, [
+    template,
+    preset,
+    dpi,
+    gravityUnit,
+    fields,
+    bottlingDate,
+    resolvedWithQr,
+    withLogo,
+    withIbuScale,
+    isManualQr,
+    recipeSlugInput,
+    isSheet
+  ]);
 
   const previewSrc = useMemo(() => {
     // Превью — одна наклейка; для A4 количество на листе показываем подписью.
@@ -255,6 +379,10 @@ export function LabelStudio(props: LabelStudioProps) {
   const [previewFailed, setPreviewFailed] = useState(false);
   const [qrDropped, setQrDropped] = useState(false);
   const [descriptionFit, setDescriptionFit] = useState<"none" | "ok" | "trimmed" | "dropped">("none");
+  // Какие тумблеры реально освободят место описанию на ЭТОЙ вёрстке: на
+  // горизонтальной наклейке шкала IBU стоит в колонке данных и описанию ничего
+  // не отдаёт — советовать её выключить бессмысленно.
+  const [descriptionFixes, setDescriptionFixes] = useState<string[]>([]);
   const shownSrcRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -280,6 +408,9 @@ export function LabelStudio(props: LabelStudioProps) {
         setQrDropped(response.headers.get("x-label-qr") === "dropped");
         const fit = response.headers.get("x-label-description");
         setDescriptionFit(fit === "ok" || fit === "trimmed" || fit === "dropped" ? fit : "none");
+        setDescriptionFixes(
+          (response.headers.get("x-label-description-fix") ?? "").split(",").filter((fix) => fix.length > 0)
+        );
         setPreviewFailed(false);
         setPreviewLoading(false);
       })
@@ -328,7 +459,8 @@ export function LabelStudio(props: LabelStudioProps) {
       template: "typographic",
       preset: "M",
       layout: "single",
-      dpi: 203,
+      dpi: LABEL_DPI_THERMAL,
+      gravityUnit: resolveLabelGravityUnit(props.gravityUnit),
       bottlingDate: initialDateRef.current,
       fields: defaults,
       withQr: true,
@@ -336,7 +468,7 @@ export function LabelStudio(props: LabelStudioProps) {
       withIbuScale: true,
       recipeSlug: ""
     }),
-    [defaults]
+    [defaults, props.gravityUnit]
   );
 
   const studioState = useMemo<LabelStudioState>(
@@ -344,7 +476,10 @@ export function LabelStudio(props: LabelStudioProps) {
       template,
       preset,
       layout: isSheet ? "a4" : "single",
-      dpi,
+      // В ссылке живёт не итоговое разрешение рендера (у A4 оно всегда 300, и
+      // тащить его в URL незачем), а выбор пользователя: термоголова 300 dpi.
+      dpi: thermal300 ? LABEL_DPI_SHEET : LABEL_DPI_THERMAL,
+      gravityUnit,
       bottlingDate,
       fields,
       withQr,
@@ -352,7 +487,19 @@ export function LabelStudio(props: LabelStudioProps) {
       withIbuScale,
       recipeSlug: recipeSlugInput
     }),
-    [template, preset, isSheet, dpi, bottlingDate, fields, withQr, withLogo, withIbuScale, recipeSlugInput]
+    [
+      template,
+      preset,
+      isSheet,
+      thermal300,
+      gravityUnit,
+      bottlingDate,
+      fields,
+      withQr,
+      withLogo,
+      withIbuScale,
+      recipeSlugInput
+    ]
   );
 
   const latestStateRef = useRef(studioState);
@@ -482,28 +629,88 @@ export function LabelStudio(props: LabelStudioProps) {
             ) : null}
           </section>
 
-          <section className="flex flex-wrap items-end gap-6">
-            <div className="space-y-2">
-              <h2 className="text-sm font-medium text-muted-foreground">Шаблон</h2>
-              <div className="flex gap-2">
-                {LABEL_TEMPLATE_IDS.map((id) => (
-                  <button key={id} type="button" onClick={() => setTemplate(id)} className={chipClass(template === id)}>
-                    {TEMPLATE_LABELS[id]}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="space-y-2">
-              <h2 className="text-sm font-medium text-muted-foreground">Печать</h2>
-              <div className="flex gap-2">
-                {([203, 300] as const).map((value) => (
-                  <button key={value} type="button" onClick={() => setDpi(value)} className={chipClass(dpi === value)}>
-                    {value} dpi
-                  </button>
-                ))}
-              </div>
+          <section className="space-y-2">
+            <h2 className="text-sm font-medium text-muted-foreground">Шаблон</h2>
+            <div className="flex gap-2">
+              {LABEL_TEMPLATE_IDS.map((id) => (
+                <button key={id} type="button" onClick={() => setTemplate(id)} className={chipClass(template === id)}>
+                  {TEMPLATE_LABELS[id]}
+                </button>
+              ))}
             </div>
           </section>
+
+          {/* Рецепт — источник данных, поэтому стоит ДО полей, а не после: иначе
+              человек набивает всё руками, а внизу натыкается на кнопку, которая
+              его работу перепишет. Он же задаёт цель QR. */}
+          {isManualQr ? (
+            <section className="space-y-2">
+              <h2 className="text-sm font-medium text-muted-foreground">Рецепт</h2>
+              {myRecipes.length > 0 ? (
+                <div className="flex flex-wrap items-center gap-2">
+                  <select
+                    id="lb-recipe-pick"
+                    aria-label="Выбрать рецепт"
+                    value={myRecipes.some((recipe) => recipe.slug === recipeSlugInput) ? recipeSlugInput : ""}
+                    onChange={(event) => {
+                      setRecipeSlugInput(event.target.value);
+                      setFillError(null);
+                      flushSync();
+                    }}
+                    className={`${inputClass} sm:w-64`}
+                  >
+                    <option value="">Не выбран</option>
+                    {myRecipes.map((recipe) => (
+                      <option key={recipe.slug} value={recipe.slug}>
+                        {recipe.title}
+                      </option>
+                    ))}
+                  </select>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => void loadRecipeFields()}
+                    disabled={recipeSlugInput.trim().length === 0 || fillPending}
+                  >
+                    {fillPending ? "Загрузка…" : "Заполнить поля"}
+                  </Button>
+                </div>
+              ) : null}
+              <div className="flex flex-wrap items-end gap-2">
+                <Field
+                  id="lb-recipe-slug"
+                  label={myRecipes.length > 0 ? "Или ссылка на рецепт" : "Ссылка на рецепт"}
+                  value={recipeSlugInput}
+                  maxLength={LABEL_FIELD_LIMITS.recipeSlug}
+                  onChange={(value) => {
+                    setRecipeSlugInput(value);
+                    setFillError(null);
+                  }}
+                  onBlur={flushSync}
+                  placeholder="https://…/recipes/moy-el"
+                  className="min-w-[16rem] flex-1"
+                />
+                {myRecipes.length === 0 ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => void loadRecipeFields()}
+                    disabled={recipeSlugInput.trim().length === 0 || fillPending}
+                  >
+                    {fillPending ? "Загрузка…" : "Заполнить поля"}
+                  </Button>
+                ) : null}
+              </div>
+              {fillError ? (
+                <p
+                  role="alert"
+                  className="rounded-md border border-destructive/30 bg-destructive-subtle px-2 py-1.5 text-xs text-destructive-subtle-foreground"
+                >
+                  {fillError}
+                </p>
+              ) : null}
+            </section>
+          ) : null}
         </div>
 
         <section className="space-y-3 sticky top-[var(--chrome-top,0px)] z-10 lg:col-start-2 lg:row-span-2 lg:top-4 lg:self-start">
@@ -519,17 +726,29 @@ export function LabelStudio(props: LabelStudioProps) {
           </div>
           <div className="flex justify-center overflow-auto rounded-lg border border-border bg-muted/30 p-4">
             {shownSrc ? (
-              // eslint-disable-next-line @next/next/no-img-element -- превью — blob-URL с сервера, не статический актив
-              <img
-                src={shownSrc}
-                alt={`Превью наклейки «${fields.title}»`}
-                className={`max-h-[560px] w-auto max-w-full border border-border bg-white shadow-sm transition-opacity ${
-                  previewLoading ? "opacity-60" : "opacity-100"
-                }`}
-                // «Как напечатается» — реальный 1-бит растр в масштабе 1:1 (пиксель
-                // растра = пиксель экрана), иначе — сглаженный рендер.
-                style={printView ? { imageRendering: "pixelated" } : undefined}
-              />
+              // Наклейка в колонке превью мелкая, а рассматривают её придирчиво
+              // (мелкий шрифт, дизеринг): клик открывает её во весь экран.
+              <button
+                type="button"
+                onClick={() => setZoomed(true)}
+                className="group relative cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                aria-label="Открыть превью во весь экран"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element -- превью — blob-URL с сервера, не статический актив */}
+                <img
+                  src={shownSrc}
+                  alt={`Превью наклейки «${fields.title}»`}
+                  className={`max-h-[560px] w-auto max-w-full border border-border bg-white shadow-sm transition-opacity ${
+                    previewLoading ? "opacity-60" : "opacity-100"
+                  }`}
+                  // «Как напечатается» — реальный 1-бит растр в масштабе 1:1 (пиксель
+                  // растра = пиксель экрана), иначе — сглаженный рендер.
+                  style={printView ? { imageRendering: "pixelated" } : undefined}
+                />
+                <span className="pointer-events-none absolute right-2 top-2 rounded-md bg-background/80 p-1.5 text-muted-foreground opacity-0 shadow-sm transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+                  <Maximize2 className="h-4 w-4" aria-hidden />
+                </span>
+              </button>
             ) : (
               <div
                 // Сбой на первом рендере: вечно пульсирующий скелет читается как
@@ -562,6 +781,22 @@ export function LabelStudio(props: LabelStudioProps) {
               Скачать PDF
             </a>
           </div>
+          {/* Разрешение — следствие того, куда печатают, а не отдельный выбор:
+              лист A4 идёт на обычный принтер (300 dpi), наклейку печатает
+              термопринтер (у домашних моделей голова 203 dpi). Исключение —
+              редкие 300-dpi термоголовы: им нужен свой растр, но ради них
+              незачем спрашивать про dpi всех остальных. */}
+          {!isSheet ? (
+            <label className="flex items-center gap-2 text-xs text-muted-foreground">
+              <input
+                type="checkbox"
+                checked={thermal300}
+                onChange={(event) => setThermal300(event.target.checked)}
+                className="h-3.5 w-3.5 rounded border-border"
+              />
+              У меня термопринтер 300 dpi
+            </label>
+          ) : null}
           <CopyLinkButton
             buildHref={() => {
               const qs = serializeLabelStudioState(studioState, studioDefaults).toString();
@@ -572,13 +807,73 @@ export function LabelStudio(props: LabelStudioProps) {
           />
         </section>
 
+        <Dialog open={zoomed && shownSrc !== null} onOpenChange={setZoomed} title="Превью наклейки" size="lg">
+          <div className="flex max-h-[86vh] justify-center overflow-auto bg-muted/30 p-4">
+            {shownSrc ? (
+              // eslint-disable-next-line @next/next/no-img-element -- тот же blob-URL, что и в колонке превью
+              <img
+                src={shownSrc}
+                alt={`Превью наклейки «${fields.title}»`}
+                className="h-auto w-auto max-w-full border border-border bg-white shadow-sm"
+                style={printView ? { imageRendering: "pixelated" } : undefined}
+              />
+            ) : null}
+          </div>
+        </Dialog>
+
+        {/* Человек мог набрать поля до того, как вспомнил про рецепт: молча
+            переписать его работу нельзя. Решение — за ним, и оба исхода
+            равноправны (кнопка «Заменить всё» не единственная). */}
+        <Dialog
+          open={fillOffer !== null}
+          onOpenChange={(next) => {
+            if (!next) {
+              setFillOffer(null);
+            }
+          }}
+          title={fillOffer ? `Заполнить из рецепта «${fillOffer.title}»?` : "Заполнить из рецепта"}
+          size="md"
+        >
+          <div className="space-y-2 p-5 text-sm">
+            <p>В полях уже есть данные — что с ними сделать?</p>
+            <p className="text-muted-foreground">Из рецепта приедут: {RECIPE_FIELDS_SUMMARY}.</p>
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setFillOffer(null)}>
+              Отмена
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                if (fillOffer) {
+                  applyRecipeFields(fillOffer.fields, "keep-mine");
+                }
+              }}
+            >
+              Только пустые
+            </Button>
+            <Button
+              type="button"
+              variant="primary"
+              onClick={() => {
+                if (fillOffer) {
+                  applyRecipeFields(fillOffer.fields, "replace");
+                }
+              }}
+            >
+              Заменить всё
+            </Button>
+          </DialogFooter>
+        </Dialog>
+
         <section className="space-y-3 lg:col-start-1">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-medium text-muted-foreground">Данные</h2>
             {isDirty && props.resetLabel ? (
               <button
                 type="button"
-                onClick={() => setFields(defaults)}
+                onClick={resetFields}
                 className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
               >
                 <RotateCcw className="h-3.5 w-3.5" aria-hidden />
@@ -600,8 +895,33 @@ export function LabelStudio(props: LabelStudioProps) {
               <Field id="lb-ibu" label="IBU" value={fields.ibu} maxLength={LABEL_FIELD_LIMITS.ibu} onChange={setField("ibu")} onBlur={flushSync} placeholder="38" inputMode="decimal" />
               <Field id="lb-ebc" label="EBC" value={fields.ebc} maxLength={LABEL_FIELD_LIMITS.ebc} onChange={setField("ebc")} onBlur={flushSync} placeholder="12" inputMode="decimal" />
             </div>
-            <Field id="lb-og" label="OG" value={fields.og} maxLength={LABEL_FIELD_LIMITS.og} onChange={setField("og")} onBlur={flushSync} placeholder="1.048" inputMode="decimal" />
-            <Field id="lb-fg" label="FG" value={fields.fg} maxLength={LABEL_FIELD_LIMITS.fg} onChange={setField("fg")} onBlur={flushSync} placeholder="1.011" inputMode="decimal" />
+            {/* Шкала — не настройка сайта, а свойство наклейки: печатают её для
+                тех, кто будет пить пиво, а не для владельца профиля. Переключение
+                пересчитывает уже введённые числа. */}
+            <div className="flex items-center justify-between gap-2 sm:col-span-2">
+              <span className="text-xs font-medium text-muted-foreground">Плотность</span>
+              <div className="flex gap-1">
+                {LABEL_GRAVITY_UNITS.map((unit) => (
+                  <button
+                    key={unit}
+                    type="button"
+                    onClick={() => {
+                      changeGravityUnit(unit);
+                      flushSync();
+                    }}
+                    className={`rounded-md border px-2 py-1 text-xs transition-colors ${
+                      gravityUnit === unit
+                        ? "border-primary bg-primary/5 text-foreground"
+                        : "border-border text-muted-foreground hover:border-foreground/30"
+                    }`}
+                  >
+                    {gravityUnitLabels[unit]}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <Field id="lb-og" label="OG" value={fields.og} maxLength={LABEL_FIELD_LIMITS.og} onChange={setField("og")} onBlur={flushSync} placeholder={GRAVITY_PLACEHOLDERS[gravityUnit].og} inputMode="decimal" />
+            <Field id="lb-fg" label="FG" value={fields.fg} maxLength={LABEL_FIELD_LIMITS.fg} onChange={setField("fg")} onBlur={flushSync} placeholder={GRAVITY_PLACEHOLDERS[gravityUnit].fg} inputMode="decimal" />
             <Field id="lb-malts" label="Солод (через запятую)" value={fields.malts} maxLength={LABEL_FIELD_LIMITS.malts} onChange={setField("malts")} onBlur={flushSync} className="sm:col-span-2" />
             <Field id="lb-hops" label="Хмель (через запятую)" value={fields.hops} maxLength={LABEL_FIELD_LIMITS.hops} onChange={setField("hops")} onBlur={flushSync} className="sm:col-span-2" />
             <Field id="lb-yeast" label="Дрожжи" value={fields.yeast} maxLength={LABEL_FIELD_LIMITS.yeast} onChange={setField("yeast")} onBlur={flushSync} className="sm:col-span-2" />
@@ -625,11 +945,12 @@ export function LabelStudio(props: LabelStudioProps) {
                   className="w-full resize-y rounded-md border border-border bg-background px-2 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
                 {/* Описание младше всех блоков и урезается по остатку высоты: молча
-                    исчезнувший текст читался бы как поломка. */}
+                    исчезнувший текст читался бы как поломка. Что именно спасёт
+                    текст, знает вёрстка — она и присылает список тумблеров. */}
                 {descriptionFit === "trimmed" || descriptionFit === "dropped" ? (
                   <p className="mt-1 rounded-md border border-warning/30 bg-warning-subtle px-2 py-1.5 text-xs text-warning-subtle-foreground">
-                    {descriptionFit === "trimmed" ? "Описание напечатается не целиком." : "Описание не поместилось."} Сократите
-                    текст{template === "craft" ? ", выключите эмблему или шкалу IBU" : " или выключите шкалу IBU"}.
+                    {descriptionFit === "trimmed" ? "Описание напечатается не целиком." : "Описание не поместилось."}{" "}
+                    {describeDescriptionFixes(descriptionFixes)}
                   </p>
                 ) : null}
               </div>
@@ -656,44 +977,7 @@ export function LabelStudio(props: LabelStudioProps) {
           <p className="text-xs text-muted-foreground">Пустое поле — блок не печатается.</p>
 
           <div className="space-y-2">
-            {isManualQr ? (
-              <div className="space-y-2">
-                {myRecipes.length > 0 ? (
-                  <div>
-                    <label htmlFor="lb-recipe-pick" className="mb-1 block text-xs font-medium text-muted-foreground">
-                      Рецепт для QR
-                    </label>
-                    <select
-                      id="lb-recipe-pick"
-                      value={myRecipes.some((recipe) => recipe.slug === recipeSlugInput) ? recipeSlugInput : ""}
-                      onChange={(event) => {
-                        setRecipeSlugInput(event.target.value);
-                        flushSync();
-                      }}
-                      className={inputClass}
-                    >
-                      <option value="">Указать ссылкой ниже</option>
-                      {myRecipes.map((recipe) => (
-                        <option key={recipe.slug} value={recipe.slug}>
-                          {recipe.title}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                ) : null}
-                <Field
-                  id="lb-recipe-slug"
-                  label="Ссылка на рецепт"
-                  value={recipeSlugInput}
-                  maxLength={LABEL_FIELD_LIMITS.recipeSlug}
-                  onChange={setRecipeSlugInput}
-                  onBlur={flushSync}
-                  placeholder="слаг или ссылка на рецепт"
-                />
-              </div>
-            ) : null}
-
-            {/* Эмблема есть только в «Линейном крафте» на большой наклейке, шкала IBU —
+            {/* Эмблема есть только в «Крафте» на большой наклейке, шкала IBU —
                 на большой наклейке в обоих шаблонах: на остальных форматах переключать нечего. */}
             {isLarge && template === "craft" ? (
               <label className="flex items-center gap-2 text-sm">
@@ -730,6 +1014,25 @@ export function LabelStudio(props: LabelStudioProps) {
             </label>
             {qrReason === "size" ? (
               <p className="text-xs text-muted-foreground">На 43×25 мм QR не помещается.</p>
+            ) : null}
+            {qrReason === "custom" ? (
+              // Молча задизейбленный чекбокс не объясняет, что QR вообще бывает и
+              // что для него нужно: цель выше, а гостю — ещё и аккаунт.
+              <p className="text-xs text-muted-foreground">
+                QR появится, когда выше указан рецепт.
+                {props.loginHref ? (
+                  <>
+                    {" "}
+                    <Link
+                      href={props.loginHref}
+                      className="underline underline-offset-2 transition-colors hover:text-foreground"
+                    >
+                      Войдите
+                    </Link>
+                    , чтобы выбрать из своих опубликованных рецептов.
+                  </>
+                ) : null}
+              </p>
             ) : null}
             {qrDropped ? (
               <p className="rounded-md border border-warning/30 bg-warning-subtle px-2 py-1.5 text-xs text-warning-subtle-foreground">

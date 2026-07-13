@@ -4,6 +4,7 @@ import React, { Suspense } from "react";
 import { LabelStudio } from "@/components/recipes/labels/label-studio";
 import { buildCustomLabelSlots } from "@/features/labels/slots";
 import { listRecipesForAuthor } from "@/features/recipes/service";
+import { defaultPreferredGravityUnit, resolvePreferredGravityUnit } from "@/features/system/gravity-units";
 import { getSessionUser } from "@/lib/auth";
 
 // Наклейки без рецепта: инструмент с ручным заполнением полей. Тот же
@@ -35,15 +36,19 @@ export default async function LabelsPage() {
         .filter((recipe) => recipe.slug.length > 0 && recipe.hiddenAt == null)
         .map((recipe) => ({ slug: recipe.slug, title: recipe.title }))
     : [];
+  // Страница публичная: у анонима шкалы в профиле нет — открываем в °P.
+  const gravityUnit = user ? resolvePreferredGravityUnit(user.preferredGravityUnit) : defaultPreferredGravityUnit;
 
   return (
     <Suspense fallback={null}>
       <LabelStudio
         endpoint="/api/labels/custom"
         heading="Наклейки на бутылки"
-        defaultSlots={buildCustomLabelSlots({})}
+        defaultSlots={buildCustomLabelSlots({ gravityUnit })}
+        gravityUnit={gravityUnit}
         qrUnavailableReason="custom"
         myRecipes={myRecipes}
+        loginHref={user ? undefined : "/login"}
         backLink={{ href: "/calculators", label: "К инструментам" }}
         resetLabel="Очистить поля"
       />

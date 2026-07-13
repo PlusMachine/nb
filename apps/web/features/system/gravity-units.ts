@@ -55,23 +55,44 @@ export const toAbvGravityUnit = (unit: PreferredGravityUnit): Extract<Calculator
   unit === "sg" ? "SG" : "Plato"
 );
 
-/** Единый форматтер плотности — одно число в предпочитаемой единице, без дублей. */
-export const formatGravity = (
+/**
+ * Голое число в предпочитаемой единице, без суффикса. Нужно там, где единицу
+ * печатает не форматтер, а сама вёрстка — например, наклейка ставит «°P» один
+ * раз на строку «OG 15.2 · FG 3.1», а не после каждого числа.
+ */
+export const formatGravityNumber = (
   value: number | null,
   unit: PreferredGravityUnit,
   precision?: number
-): string => {
+): string | null => {
   if (value == null) {
-    return "—";
+    return null;
   }
 
   if (unit === "sg") {
     return value.toFixed(precision ?? 3);
   }
 
-  const converted = sgToGravityUnit(value, toCalculatorGravityUnit(unit));
-  return `${formatConvertedGravity(converted, precision ?? 1)} ${gravityUnitLabels[unit]}`;
+  return formatConvertedGravity(sgToGravityUnit(value, toCalculatorGravityUnit(unit)), precision ?? 1);
 };
+
+/** Единый форматтер плотности — одно число в предпочитаемой единице, без дублей. */
+export const formatGravity = (
+  value: number | null,
+  unit: PreferredGravityUnit,
+  precision?: number
+): string => {
+  const number = formatGravityNumber(value, unit, precision);
+  if (number == null) {
+    return "—";
+  }
+
+  return unit === "sg" ? number : `${number} ${gravityUnitLabels[unit]}`;
+};
+
+/** Суффикс единицы для вёрстки, печатающей его отдельно от числа; у SG суффикса нет. */
+export const gravityUnitSuffix = (unit: PreferredGravityUnit): string | null =>
+  unit === "sg" ? null : gravityUnitLabels[unit];
 
 /**
  * Диапазон плотности («мин–макс») в предпочитаемой единице — единица не дублируется

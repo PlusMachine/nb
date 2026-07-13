@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const plannedBrew = {
   id: "bb-1",
   name: "Planned Brew",
+  brewNumber: 1,
   status: "planned" as const,
   recipeId: "r-1",
   recipeTitle: "Test Recipe",
@@ -21,6 +22,7 @@ const brewingBrew = {
   ...plannedBrew,
   id: "bb-2",
   name: "Brewing Brew",
+  brewNumber: 2,
   status: "brewing" as const,
   startedAt: new Date("2026-06-28T10:00:00Z"),
   createdAt: new Date("2026-06-28T09:00:00Z")
@@ -30,6 +32,7 @@ const completedBrew = {
   ...plannedBrew,
   id: "bb-3",
   name: "Completed Brew",
+  brewNumber: 3,
   status: "completed" as const,
   completedAt: new Date("2026-06-20T10:00:00Z"),
   createdAt: new Date("2026-06-19T09:00:00Z")
@@ -145,6 +148,9 @@ describe("Brew batches page", () => {
     expect(html).toContain("Запланирована");
     expect(html).toContain("Варится");
     expect(html).toContain("Завершена");
+    expect(html).toContain("№1");
+    expect(html).toContain("№2");
+    expect(html).toContain("№3");
     expect(html).toContain('href="/app/brew-batches/bb-1"');
     expect(html).toContain('href="/app/brew-batches/bb-2"');
     expect(html).toContain('href="/app/brew-batches/bb-3"');
@@ -198,6 +204,7 @@ const detail = (overrides: Record<string, unknown> = {}, batchOverrides: Record<
     recipeId: RECIPE_ID,
     status: "completed",
     name: "Летний пилснер · партия 1",
+    brewNumber: 1,
     deviceId: null,
     brewPlanSnapshot: snapshot(),
     brewDayProgress: { steps: {}, updatedAt: null },
@@ -256,6 +263,7 @@ describe("Страница партии — акт «Итог» (A4)", () => {
     expect(html).toContain("Склад");
     expect(html).toContain("Пильзнер");
     expect(html).toContain("История движений");
+    expect(html).toContain("Партия №1");
   });
 
   it("держит рядом два поля: «Заметки о варке» и «Дегустация»", async () => {

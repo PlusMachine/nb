@@ -14,9 +14,8 @@ export default async function RecipeLabelsPage({ params }: { params: Promise<{ i
   const { id } = await params;
 
   try {
-    const { recipe, slots } = await getOwnedRecipeLabelContext(user.id, id, {
-      gravityUnit: resolvePreferredGravityUnit(user.preferredGravityUnit)
-    });
+    const gravityUnit = resolvePreferredGravityUnit(user.preferredGravityUnit);
+    const { recipe, slots } = await getOwnedRecipeLabelContext(user.id, id, { gravityUnit });
     const editHref = `/app/recipes/${recipe.id}/edit`;
     return (
       <Suspense fallback={null}>
@@ -24,6 +23,7 @@ export default async function RecipeLabelsPage({ params }: { params: Promise<{ i
           endpoint={`/api/labels/${recipe.id}`}
           heading={`Наклейки — ${recipe.title}`}
           defaultSlots={slots}
+          gravityUnit={gravityUnit}
           backLink={{ href: editHref, label: "К рецепту" }}
           resetLabel="Вернуть данные рецепта"
         />

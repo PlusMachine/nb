@@ -37,6 +37,7 @@ const slots = (overrides: Partial<LabelSlots> = {}): LabelSlots => ({
   ebc: 12,
   ogText: "1.048",
   fgText: "1.011",
+  gravityUnitText: null,
   hops: ["Saaz"],
   malts: ["Pilsner"],
   yeast: "W-34/70",

@@ -12,17 +12,19 @@ import {
   fitSpacedLine,
   ibuScale,
   ingredientRows,
+  ingredientRowsDesiredWidth,
   statBand,
   statBandHeight,
   statLine,
   statLineHeight,
   titleBlock,
-  type BlockResult
+  type BlockResult,
+  type DescriptionBlockResult
 } from "./blocks";
 import type { LabelRenderContext, LabelTemplate } from "./types";
 
-// «Типографский» — только шрифтовая композиция: жирные линейки, двойная
-// рамка, ни одного изображения. Иконки и значок — в шаблоне «Линейный крафт».
+// «Классика» — только шрифтовая композиция: жирные линейки, двойная рамка,
+// ни одного изображения. Иконки и эмблема — в шаблоне «Крафт».
 
 const svgOpen = (ctx: LabelRenderContext): string =>
   `<svg xmlns="http://www.w3.org/2000/svg" width="${ctx.widthPx}" height="${ctx.heightPx}" viewBox="0 0 ${ctx.widthPx} ${ctx.heightPx}">` +
@@ -56,16 +58,21 @@ const styleLine = (
   return { svg, height: Math.round(fit.sizePx * 1.6) };
 };
 
-/** Строка плотности «OG 1.048 · FG 1.011»; нет данных — блок не печатается. */
+/**
+ * Строка плотности «OG 15.2 · FG 3.1 °P» (в SG — «OG 1.048 · FG 1.011»); нет
+ * данных — блок не печатается. Единица шкалы стоит одна на всю строку: «°P»
+ * после каждого числа — это дубль, который читается как шум.
+ */
 const gravityLine = (ctx: LabelRenderContext, params: { cx: number; y: number }): { svg: string; height: number } => {
   const { slots, mm } = ctx;
   if (!slots.ogText && !slots.fgText) {
     return { svg: "", height: 0 };
   }
   const sizePx = mm(2.8);
-  const text = [slots.ogText ? `OG ${slots.ogText}` : null, slots.fgText ? `FG ${slots.fgText}` : null]
+  const values = [slots.ogText ? `OG ${slots.ogText}` : null, slots.fgText ? `FG ${slots.fgText}` : null]
     .filter(Boolean)
     .join("   ·   ");
+  const text = slots.gravityUnitText ? `${values} ${slots.gravityUnitText}` : values;
   return {
     svg: textEl({ x: params.cx, y: params.y + sizePx, fontId: "mono", sizePx, text, anchor: "middle" }),
     height: Math.round(sizePx * 1.7)
@@ -341,7 +348,7 @@ const renderL = (ctx: LabelRenderContext): string => {
   let natural = buildBody({ title, extra: 0, withColorScale });
 
   // Описание важнее шкалы цвета: EBC уже стоит числом в панели «ЦВЕТ», а
-  // градиентная полоса — самый расходный блок (на «Линейном крафте» её и вовсе
+  // градиентная полоса — самый расходный блок (на «Крафте» её и вовсе
   // нет). Если описание задано, но со шкалой цвета в высоту не влезло — убираем
   // шкалу и отдаём место описанию. Без описания шкала печатается как прежде.
   if (slots.description !== null && !natural.descriptionPrinted && colorProbe.height > 0) {
@@ -376,11 +383,19 @@ const renderL = (ctx: LabelRenderContext): string => {
  * Горизонтальная большая наклейка (120×75 мм). Площадь та же, что у
  * вертикальной, но высоты на одну колонку не хватает: блоки вертикального
  * макета в 75 мм не укладываются. Поэтому контент разложен в две колонки —
- * слева «лицо» (название, стиль, плотность, описание, розлив и QR), справа
- * данные (цифры, состав, шкалы). Каждая колонка центрируется по вертикали
- * отдельно: при разреженных данных пустеет не низ наклейки, а обе колонки
- * поровну.
+ * слева «лицо» (название, стиль, плотность, описание), справа данные (цифры,
+ * состав, шкалы) и подвал с QR.
+ *
+ * Подвал (розлив, автор, марка, QR) стоит в ПРАВОЙ колонке, а не под лицом:
+ * иначе описание урезается, пока в колонке данных зияет пустота. Не влезает
+ * (много состава, обе шкалы) — возвращается под лицо, как раньше.
+ *
+ * Ширина колонок подстраивается под описание: базовая доля 0.52, но ради
+ * текста левой отдаётся до 0.63 — правая это переживает, если имена сортов
+ * всё ещё печатаются целиком.
  */
+const LW_LEFT_RATIOS = [0.52, 0.58, 0.63];
+
 const renderLWide = (ctx: LabelRenderContext): string => {
   const { slots, widthPx, heightPx, mm } = ctx;
   const inset = mm(2);
@@ -396,214 +411,263 @@ const renderLWide = (ctx: LabelRenderContext): string => {
   // панелью под строкой плотности.
   const hasIngredients = slots.malts.length > 0 || slots.hops.length > 0 || slots.yeast !== null;
   const singleColumn = !hasIngredients && slots.ibu === null && slots.ebc === null;
-  const leftWidth = singleColumn ? contentWidth : Math.round((contentWidth - columnGap) * 0.52);
-  const rightWidth = contentWidth - columnGap - leftWidth;
   const leftX = pad;
-  const rightX = pad + leftWidth + columnGap;
-  const leftCx = leftX + Math.round(leftWidth / 2);
+  const top = pad;
   const bottom = pad + contentHeight;
   const qrSizeMm = QR_SIZE_MM_L;
   // Потолок на зазор: у колонок мало блоков, и без потолка пара пустых полей
   // растащила бы их по краям.
   const maxExtraPerGap = mm(3);
 
-  // ЛЕВАЯ КОЛОНКА. Мета-блок с QR прибит к низу колонки, остальное —
-  // группа над ним: описание довольствуется остатком.
-  const metaHeight = bottomMetaDesiredHeight(ctx, { width: leftWidth, qrSizeMm, showAuthor: true });
-  const metaY = bottom - metaHeight;
-  const upperBottom = metaY - mm(2.8);
-  const upperHeight = upperBottom - pad;
-
-  const styleProbe = styleLine(ctx, { cx: leftCx, width: leftWidth, y: 0, sizeMm: 3 });
-  const gravityProbe = gravityLine(ctx, { cx: leftCx, y: 0 });
-  const bandProbe = singleColumn ? statBand(ctx, { x: leftX, width: leftWidth, y: 0 }) : EMPTY_BLOCK;
-  const descriptionProbe = descriptionBlock(ctx, { cx: leftCx, width: leftWidth, y: 0, maxLines: 5 });
-
-  const belowTitle = (reserveDescription: boolean): number =>
-    mm(1.6) +
-    styleProbe.height +
-    mm(3.2) +
-    gravityProbe.height +
-    (bandProbe.height > 0 ? bandProbe.height + mm(2.4) : 0) +
-    (reserveDescription && descriptionProbe.height > 0 ? descriptionProbe.height + mm(2) : 0);
-
-  const titleFor = (reserveDescription: boolean): BlockResult =>
-    titleBlock(ctx, {
-      cx: leftCx,
-      width: leftWidth,
-      maxSizePx: mm(9),
-      minSizePx: mm(4.2),
-      maxHeightPx: upperHeight - belowTitle(reserveDescription)
-    });
-
   type Column = { svg: string; height: number; gapCount: number };
-  type LeftColumn = Column & { descriptionPrinted: boolean; descriptionBudget: number };
+  type Layout = { svg: string; descriptionChars: number; descriptionTrimmed: boolean; rightFits: boolean };
 
-  const buildLeft = (params: { title: BlockResult; extra: number; descriptionBudget?: number }): LeftColumn => {
-    const parts: string[] = [];
-    let gapCount = 0;
-    const gap = (base: number): number => {
-      gapCount += 1;
-      return base + params.extra;
+  const buildLayout = (params: { ratio: number; withColorScale: boolean }): Layout => {
+    const leftWidth = singleColumn ? contentWidth : Math.round((contentWidth - columnGap) * params.ratio);
+    const rightWidth = contentWidth - columnGap - leftWidth;
+    const rightX = leftX + leftWidth + columnGap;
+    const leftCx = leftX + Math.round(leftWidth / 2);
+
+    // ПРАВАЯ КОЛОНКА: цифры → состав → шкала горечи → шкала цвета.
+    const buildRightData = (extra: number): Column => {
+      const parts: string[] = [];
+      let gapCount = 0;
+      const gap = (base: number): number => {
+        gapCount += 1;
+        return base + extra;
+      };
+      let ry = 0;
+      // Высота — по низу последнего НАПЕЧАТАННОГО блока, иначе зазор перед
+      // несостоявшейся шкалой уезжает в высоту колонки.
+      let end = 0;
+
+      const band = statBand(ctx, { x: rightX, width: rightWidth, y: ry });
+      if (band.height > 0) {
+        parts.push(band.svg);
+        ry += band.height;
+        end = ry;
+        ry += gap(mm(2.2));
+        // Разделитель — только если под ним что-то есть: линейка в пустоту.
+        if (hasIngredients) {
+          parts.push(dottedRule(rightX, rightX + rightWidth, ry, thin));
+          ry += gap(mm(2.4));
+        }
+      }
+
+      const rows = ingredientRows(ctx, { x: rightX, width: rightWidth, y: ry, icons: null });
+      if (rows.height > 0) {
+        parts.push(rows.svg);
+        ry += rows.height;
+        end = ry;
+        ry += gap(mm(3));
+      }
+
+      const bitterness = ibuScale(ctx, { x: rightX, width: rightWidth, y: ry });
+      if (bitterness.height > 0) {
+        parts.push(bitterness.svg);
+        ry += bitterness.height;
+        end = ry;
+        ry += gap(mm(2.6));
+      }
+
+      if (params.withColorScale) {
+        const color = colorScale(ctx, { x: rightX, width: rightWidth, y: ry, idPrefix: "ebc" });
+        if (color.height > 0) {
+          parts.push(color.svg);
+          end = ry + color.height;
+        }
+      }
+
+      return { svg: parts.join(""), height: end, gapCount };
     };
 
-    let ly = 0;
-    // Высота колонки — низ последнего НАПЕЧАТАННОГО блока, а не курсор потока:
-    // зазор, выданный перед пустым блоком (нет описания), остаётся в курсоре
-    // «призраком», и центрирование задирает весь контент колонки вверх.
-    let end = 0;
+    // Куда встанет подвал: в правую колонку, если данные оставили ей высоту.
+    const rightData = singleColumn ? { svg: "", height: 0, gapCount: 0 } : buildRightData(0);
+    const metaGap = mm(3.2);
+    const rightMetaHeight = singleColumn ? 0 : bottomMetaDesiredHeight(ctx, { width: rightWidth, qrSizeMm, showAuthor: true });
+    const metaInRight = !singleColumn && rightData.height + metaGap + rightMetaHeight <= contentHeight;
 
-    parts.push(`<g transform="translate(0 ${ly})">${params.title.svg}</g>`);
-    ly += params.title.height;
-    end = ly;
-    ly += gap(mm(1.6));
-
-    const style = styleLine(ctx, { cx: leftCx, width: leftWidth, y: ly, sizeMm: 3 });
-    parts.push(style.svg);
-    ly += style.height;
-    end = ly;
-
-    parts.push(hRule(leftX, leftX + leftWidth, ly + mm(0.8), mm(1)));
-    ly += gap(mm(3.2));
-
-    const gravity = gravityLine(ctx, { cx: leftCx, y: ly });
-    parts.push(gravity.svg);
-    ly += gravity.height;
-    if (gravity.height > 0) {
-      end = ly;
-    }
-
-    if (singleColumn) {
-      const leftBand = statBand(ctx, { x: leftX, width: leftWidth, y: ly });
-      if (leftBand.height > 0) {
-        parts.push(leftBand.svg);
-        ly += leftBand.height;
-        end = ly;
-        ly += gap(mm(2.4));
-      }
-    }
-
-    const descriptionBudget = params.descriptionBudget ?? Math.max(0, upperHeight - ly);
-    const description = descriptionBlock(ctx, {
-      cx: leftCx,
-      width: leftWidth,
-      y: ly,
-      maxLines: 5,
-      maxHeightPx: descriptionBudget
+    const metaWidth = metaInRight ? rightWidth : leftWidth;
+    const metaHeight = metaInRight
+      ? rightMetaHeight
+      : bottomMetaDesiredHeight(ctx, { width: leftWidth, qrSizeMm, showAuthor: true });
+    const metaY = bottom - metaHeight;
+    const meta = bottomMeta(ctx, {
+      x: metaInRight ? rightX : leftX,
+      width: metaWidth,
+      y: metaY,
+      maxHeight: metaHeight,
+      qrSizeMm,
+      showAuthor: true
     });
-    if (description.height > 0) {
-      parts.push(description.svg);
-      end = ly + description.height;
+
+    // Лицевая колонка занимает всю высоту, когда подвал уехал направо.
+    const leftBottom = metaInRight ? bottom : metaY - mm(2.8);
+    const leftHeight = leftBottom - top;
+
+    const styleProbe = styleLine(ctx, { cx: leftCx, width: leftWidth, y: 0, sizeMm: 3 });
+    const gravityProbe = gravityLine(ctx, { cx: leftCx, y: 0 });
+    const bandProbe = singleColumn ? statBand(ctx, { x: leftX, width: leftWidth, y: 0 }) : EMPTY_BLOCK;
+    const descriptionProbe = descriptionBlock(ctx, { cx: leftCx, width: leftWidth, y: 0, maxLines: 5 });
+
+    const belowTitle = (reserveDescription: boolean): number =>
+      mm(1.6) +
+      styleProbe.height +
+      mm(3.2) +
+      gravityProbe.height +
+      (bandProbe.height > 0 ? bandProbe.height + mm(2.4) : 0) +
+      (reserveDescription && descriptionProbe.height > 0 ? descriptionProbe.height + mm(2) : 0);
+
+    const titleFor = (reserveDescription: boolean): BlockResult =>
+      titleBlock(ctx, {
+        cx: leftCx,
+        width: leftWidth,
+        maxSizePx: mm(9),
+        minSizePx: mm(4.2),
+        maxHeightPx: leftHeight - belowTitle(reserveDescription)
+      });
+
+    type LeftColumn = Column & { description: DescriptionBlockResult; descriptionBudget: number };
+
+    const buildLeft = (leftParams: { title: BlockResult; extra: number; descriptionBudget?: number }): LeftColumn => {
+      const parts: string[] = [];
+      let gapCount = 0;
+      const gap = (base: number): number => {
+        gapCount += 1;
+        return base + leftParams.extra;
+      };
+
+      let ly = 0;
+      let end = 0;
+
+      parts.push(`<g transform="translate(0 ${ly})">${leftParams.title.svg}</g>`);
+      ly += leftParams.title.height;
+      end = ly;
+      ly += gap(mm(1.6));
+
+      const style = styleLine(ctx, { cx: leftCx, width: leftWidth, y: ly, sizeMm: 3 });
+      parts.push(style.svg);
+      ly += style.height;
+      end = ly;
+
+      // Линейку под стилем ставим, только если под ней что-то есть.
+      const rule = hRule(leftX, leftX + leftWidth, ly + mm(0.8), mm(1));
+      let ruleEarned = !metaInRight;
+      ly += gap(mm(3.2));
+
+      const gravity = gravityLine(ctx, { cx: leftCx, y: ly });
+      parts.push(gravity.svg);
+      ly += gravity.height;
+      if (gravity.height > 0) {
+        end = ly;
+        ruleEarned = true;
+      }
+
+      if (singleColumn) {
+        const leftBand = statBand(ctx, { x: leftX, width: leftWidth, y: ly });
+        if (leftBand.height > 0) {
+          parts.push(leftBand.svg);
+          ly += leftBand.height;
+          end = ly;
+          ly += gap(mm(2.4));
+          ruleEarned = true;
+        }
+      }
+
+      const descriptionBudget = leftParams.descriptionBudget ?? Math.max(0, leftHeight - ly);
+      const description = descriptionBlock(ctx, {
+        cx: leftCx,
+        width: leftWidth,
+        y: ly,
+        maxLines: 5,
+        maxHeightPx: descriptionBudget
+      });
+      if (description.height > 0) {
+        parts.push(description.svg);
+        end = ly + description.height;
+        ruleEarned = true;
+      }
+      if (ruleEarned) {
+        parts.push(rule);
+      }
+
+      return { svg: parts.join(""), height: end, gapCount, description, descriptionBudget };
+    };
+
+    let title = titleFor(true);
+    let leftNatural = buildLeft({ title, extra: 0 });
+    // Описание зарезервировало высоту, но не поместилось — вернём её названию.
+    if (slots.description !== null && leftNatural.description.height === 0) {
+      title = titleFor(false);
+      leftNatural = buildLeft({ title, extra: 0 });
     }
+    const leftExtra = distributeSlack(leftHeight - leftNatural.height, leftNatural.gapCount, maxExtraPerGap);
+    const left =
+      leftExtra > 0
+        ? buildLeft({ title, extra: leftExtra, descriptionBudget: leftNatural.descriptionBudget })
+        : leftNatural;
+    const leftShift = top + Math.max(0, Math.round((leftHeight - left.height) / 2));
+
+    const rightArea = metaInRight ? contentHeight - metaHeight - metaGap : contentHeight;
+    const rightExtra = distributeSlack(rightArea - rightData.height, rightData.gapCount, maxExtraPerGap);
+    const right = rightExtra > 0 ? buildRightData(rightExtra) : rightData;
+    const rightShift = top + Math.max(0, Math.round((rightArea - right.height) / 2));
+
+    const svg = [
+      svgOpen(ctx),
+      doubleFrame({ widthPx, heightPx, insetPx: inset, thickPx: thick, thinPx: thin, gapPx: mm(0.8) }),
+      `<g transform="translate(0 ${leftShift})">${left.svg}</g>`,
+      singleColumn
+        ? ""
+        : [
+            vRule(rightX - Math.round(columnGap / 2), top, bottom, thin),
+            `<g transform="translate(0 ${rightShift})">${right.svg}</g>`,
+            metaInRight && right.height > 0 ? dottedRule(rightX, rightX + rightWidth, metaY - Math.round(metaGap / 2), thin) : ""
+          ].join(""),
+      meta.svg,
+      "</svg>"
+    ].join("");
 
     return {
-      svg: parts.join(""),
-      height: end,
-      gapCount,
-      descriptionPrinted: description.height > 0,
-      descriptionBudget
+      svg,
+      descriptionChars: left.description.printedChars,
+      descriptionTrimmed: left.description.trimmed,
+      rightFits: singleColumn || rightData.height + (metaInRight ? metaGap + metaHeight : 0) <= contentHeight
     };
   };
 
-  let title = titleFor(true);
-  let leftNatural = buildLeft({ title, extra: 0 });
-  // Описание зарезервировало высоту, но не поместилось — вернём её названию.
-  if (slots.description !== null && !leftNatural.descriptionPrinted) {
-    title = titleFor(false);
-    leftNatural = buildLeft({ title, extra: 0 });
+  // Порядок вариантов = порядок приоритетов: сперва базовая ширина со шкалой
+  // цвета, затем ширина в пользу описания, и лишь в последнюю очередь — без
+  // шкалы цвета (EBC остаётся цифрой в панели, а описание читать нечем).
+  const minRightWidth = ingredientRowsDesiredWidth(ctx, { icons: false });
+  const variants = [true, false].flatMap((withColorScale) =>
+    LW_LEFT_RATIOS.map((ratio) => ({ ratio, withColorScale }))
+  );
+  const layouts: Layout[] = [];
+  for (const variant of variants) {
+    const rightWidth = contentWidth - columnGap - Math.round((contentWidth - columnGap) * variant.ratio);
+    // Ширину у состава не отнимаем: описание не стоит потерянных сортов.
+    if (layouts.length > 0 && rightWidth < minRightWidth) {
+      continue;
+    }
+    const layout = buildLayout(variant);
+    layouts.push(layout);
+    if (layout.rightFits && (!layout.descriptionTrimmed || singleColumn)) {
+      break;
+    }
   }
-  const leftExtra = distributeSlack(upperHeight - leftNatural.height, leftNatural.gapCount, maxExtraPerGap);
-  const left =
-    leftExtra > 0
-      ? buildLeft({ title, extra: leftExtra, descriptionBudget: leftNatural.descriptionBudget })
-      : leftNatural;
-
-  const leftShift = pad + Math.max(0, Math.round((upperHeight - left.height) / 2));
-  const meta = bottomMeta(ctx, { x: leftX, width: leftWidth, y: metaY, maxHeight: metaHeight, qrSizeMm, showAuthor: true });
-
-  // ПРАВАЯ КОЛОНКА. Шкала цвета — младший блок: если полный набор данных не
-  // укладывается в высоту, печатаем всё без неё (EBC остаётся цифрой в панели).
-  const buildRight = (params: { withColorScale: boolean; extra: number }): Column => {
-    const parts: string[] = [];
-    let gapCount = 0;
-    const gap = (base: number): number => {
-      gapCount += 1;
-      return base + params.extra;
-    };
-    let ry = 0;
-    // Как и в левой колонке: высота — по низу последнего напечатанного блока,
-    // иначе зазор перед несостоявшейся шкалой уезжает в высоту колонки.
-    let end = 0;
-
-    const band = statBand(ctx, { x: rightX, width: rightWidth, y: ry });
-    if (band.height > 0) {
-      parts.push(band.svg);
-      ry += band.height;
-      end = ry;
-      ry += gap(mm(2.2));
-      // Разделитель — только если под ним что-то есть: линейка в пустоту.
-      if (hasIngredients) {
-        parts.push(dottedRule(rightX, rightX + rightWidth, ry, thin));
-        ry += gap(mm(2.4));
-      }
-    }
-
-    const rows = ingredientRows(ctx, { x: rightX, width: rightWidth, y: ry, icons: null });
-    if (rows.height > 0) {
-      parts.push(rows.svg);
-      ry += rows.height;
-      end = ry;
-      ry += gap(mm(3));
-    }
-
-    const bitterness = ibuScale(ctx, { x: rightX, width: rightWidth, y: ry });
-    if (bitterness.height > 0) {
-      parts.push(bitterness.svg);
-      ry += bitterness.height;
-      end = ry;
-      ry += gap(mm(2.6));
-    }
-
-    if (params.withColorScale) {
-      const color = colorScale(ctx, { x: rightX, width: rightWidth, y: ry, idPrefix: "ebc" });
-      if (color.height > 0) {
-        parts.push(color.svg);
-        end = ry + color.height;
-      }
-    }
-
-    return { svg: parts.join(""), height: end, gapCount };
-  };
-
-  // Без цифр и состава (singleColumn) блоки правой колонки схлопываются сами.
-  let withColorScale = true;
-  let rightNatural = buildRight({ withColorScale, extra: 0 });
-  if (rightNatural.height > contentHeight) {
-    withColorScale = false;
-    rightNatural = buildRight({ withColorScale, extra: 0 });
-  }
-  const rightExtra = distributeSlack(contentHeight - rightNatural.height, rightNatural.gapCount, maxExtraPerGap);
-  const right = rightExtra > 0 ? buildRight({ withColorScale, extra: rightExtra }) : rightNatural;
-  const rightShift = pad + Math.max(0, Math.round((contentHeight - right.height) / 2));
-
-  return [
-    svgOpen(ctx),
-    doubleFrame({ widthPx, heightPx, insetPx: inset, thickPx: thick, thinPx: thin, gapPx: mm(0.8) }),
-    `<g transform="translate(0 ${leftShift})">${left.svg}</g>`,
-    meta.svg,
-    singleColumn
-      ? ""
-      : [
-          vRule(rightX - Math.round(columnGap / 2), pad, bottom, thin),
-          `<g transform="translate(0 ${rightShift})">${right.svg}</g>`
-        ].join(""),
-    "</svg>"
-  ].join("");
+  const fitting = layouts.filter((layout) => layout.rightFits);
+  const candidates = fitting.length > 0 ? fitting : layouts;
+  const full = candidates.find((layout) => !layout.descriptionTrimmed);
+  return (
+    full ??
+    candidates.reduce((best, layout) => (layout.descriptionChars > best.descriptionChars ? layout : best))
+  ).svg;
 };
 
 export const typographicTemplate: LabelTemplate = {
   id: "typographic",
-  nameRu: "Типографский",
+  nameRu: "Классика",
   render: (ctx) => {
     if (ctx.tier === "S") {
       return renderS(ctx);

@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
+import type { BottleParams } from "@/features/beer-page/bottle-params";
 import type { BeerPresentationDto } from "@/features/beer-page/contracts";
 import { beerColorFromSrm, srmToGlassStops, srmToSoftGradient } from "@/features/recipes/beer-color";
 
@@ -33,6 +34,36 @@ const markerLeft = (share: number): string =>
   `calc(${MARKER_PX / 2}px + (100% - ${MARKER_PX}px) * ${share})`;
 
 const formatAbvRu = (abv: number): string => `${abv.toFixed(1).replace(".", ",")} %`;
+
+// bottlingDate — календарная дата без времени (см. bottle-params.ts), поэтому
+// форматируем в UTC: без явного timeZone Intl читает её в таймзоне сервера и
+// на западных долготах «3 июля» мог бы съехать на «2 июля».
+const bottlingDateFmt = new Intl.DateTimeFormat("ru-RU", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+  timeZone: "UTC"
+});
+
+/**
+ * «Розлито 3 июля 2026 г. · Партия №3» — под заголовком. Номенклатура партии
+ * («Партия №<n>», без пробела перед номером) — та же, что в мета-строке самой
+ * наклейки (features/labels/templates/blocks.ts), чтобы бутылка и страница
+ * говорили одинаково.
+ */
+const bottleLineRu = (bottle: BottleParams | undefined): string | null => {
+  if (!bottle) {
+    return null;
+  }
+  const parts: string[] = [];
+  if (bottle.bottlingDate) {
+    parts.push(`Розлито ${bottlingDateFmt.format(new Date(bottle.bottlingDate))}`);
+  }
+  if (bottle.batchNo) {
+    parts.push(`Партия №${bottle.batchNo}`);
+  }
+  return parts.length > 0 ? parts.join(" · ") : null;
+};
 
 const bitternessWordRu = (ibu: number): string => {
   if (ibu < 10) return "едва заметная";
@@ -90,7 +121,7 @@ function StatTile({
   );
 }
 
-export function BeerPresentation({ beer }: { beer: BeerPresentationDto }) {
+export function BeerPresentation({ beer, bottle }: { beer: BeerPresentationDto; bottle?: BottleParams }) {
   const srm = beer.colorSrm;
   const color = srm != null ? beerColorFromSrm(srm) : null;
   const accent = srm != null ? srmToGlassStops(srm).from : "rgba(245, 240, 232, 0.9)";
@@ -98,7 +129,11 @@ export function BeerPresentation({ beer }: { beer: BeerPresentationDto }) {
   const coverImage = beer.heroPhotoUrl ?? beer.styleImageUrl;
   const coverIsRecipePhoto = beer.heroPhotoUrl != null;
   const authorName = beer.author.displayName;
-  const hasStats = beer.abv != null || beer.ibu != null || srm != null;
+  // Крепость конкретной бутылки (из QR) точнее плановой крепости рецепта —
+  // если она указана, плитка «Крепость» показывает её, а не beer.abv.
+  const abv = bottle?.abv ?? beer.abv;
+  const hasStats = abv != null || beer.ibu != null || srm != null;
+  const bottleLine = bottleLineRu(bottle);
 
   return (
     <article className="relative flex min-h-svh flex-col overflow-hidden bg-[#0e0c0a] text-white">
@@ -151,6 +186,7 @@ export function BeerPresentation({ beer }: { beer: BeerPresentationDto }) {
           >
             {beer.title}
           </h1>
+          {bottleLine ? <p className="mt-2 text-sm text-white/55">{bottleLine}</p> : null}
         </div>
 
         {hasStats ? (
@@ -158,13 +194,8 @@ export function BeerPresentation({ beer }: { beer: BeerPresentationDto }) {
           // «Золотистый» просит ~94px, а треть узкого экрана даёт 73 — в трёх
           // колонках название рвалось посреди слова.
           <dl className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">
-            {beer.abv != null ? (
-              <StatTile
-                label="Крепость"
-                value={formatAbvRu(beer.abv)}
-                share={scaleShare(beer.abv, 12)}
-                gradient={ABV_BAR}
-              />
+            {abv != null ? (
+              <StatTile label="Крепость" value={formatAbvRu(abv)} share={scaleShare(abv, 12)} gradient={ABV_BAR} />
             ) : null}
             {beer.ibu != null ? (
               <StatTile
@@ -249,6 +280,20 @@ export function BeerPresentation({ beer }: { beer: BeerPresentationDto }) {
               </Link>
             ) : null}
           </div>
+
+          {/* Гость с QR — чаще всего не пивовар: вордмарка «NB» сверху ему ничего
+              не говорит, а это единственная страница, которую видят люди вне
+              продукта. Одна поясняющая строка вместо баннера. */}
+          <p className="w-full text-xs text-white/45">
+            Сделано в{" "}
+            <Link
+              href="/"
+              className="font-medium text-white/70 underline decoration-white/30 underline-offset-2 transition-colors hover:text-white"
+            >
+              NB
+            </Link>{" "}
+            — сервисе для домашних пивоваров.
+          </p>
         </div>
       </div>
     </article>

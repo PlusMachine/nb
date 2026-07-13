@@ -22,7 +22,7 @@ const statusOrder: BrewBatchStatus[] = ["brewing", "fermenting", "planned", "com
 const dateFormat = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "short", year: "numeric" });
 
 // F14: подпись с названием рецепта дублирует заголовок партии, когда они совпадают
-// (типично для первой партии рецепта, см. F5 — автоимя = название рецепта).
+// (типично для автоимённых партий — F5: автоимя = название рецепта, без номера).
 const isSameTitle = (a: string, b: string): boolean => a.trim().toLowerCase() === b.trim().toLowerCase();
 
 const relevantDate = (batch: BrewBatchListItem): { label: string; value: Date } => {
@@ -78,7 +78,9 @@ export default async function BrewBatchesPage() {
                   className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3 transition-colors hover:border-border/70"
                 >
                   <div className="min-w-0">
-                    <p className="truncate font-medium text-foreground">{batch.name}</p>
+                    <p className="truncate font-medium text-foreground">
+                      {batch.name} <span className="text-sm font-normal text-muted-foreground">№{batch.brewNumber}</span>
+                    </p>
                     {isSameTitle(batch.name, batch.recipeTitle) ? null : (
                       <p className="truncate text-sm text-muted-foreground">{batch.recipeTitle}</p>
                     )}

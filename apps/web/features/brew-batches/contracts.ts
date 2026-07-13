@@ -82,6 +82,8 @@ export type BrewBatchDto = {
   recipeId: string | null;
   status: BrewBatchStatus;
   name: string;
+  /** Порядковый номер варки в паре (userId, recipeId), с 1; не меняется после создания. */
+  brewNumber: number;
   /** Привязанный контроллер (brew_batches.device_id). NULL — варка без устройства. */
   deviceId: string | null;
   brewPlanSnapshot: BrewPlanSnapshot;
@@ -134,6 +136,7 @@ export type BrewRecipeSnapshot = {
 export type BrewBatchListItem = {
   id: string;
   name: string;
+  brewNumber: number;
   status: BrewBatchStatus;
   recipeId: string | null;
   recipeTitle: string;
