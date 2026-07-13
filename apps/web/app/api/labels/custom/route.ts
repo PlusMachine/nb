@@ -1,22 +1,56 @@
+import { assertRateLimit } from "@nb/auth";
 import { NextResponse } from "next/server";
 
-import { buildLabelFileName, labelOverridesSchema, labelRenderRequestSchema } from "@/features/labels/contracts";
-import { checkLabelRenderRateLimit } from "@/features/labels/rate-limit";
-import { renderA4SheetPdf, renderLabelPdf, renderLabelPng, renderLabelPreviewPng } from "@/features/labels/render";
+import {
+  buildLabelFileName,
+  labelOverridesSchema,
+  labelRenderRequestSchema,
+  parseRecipeSlugInput
+} from "@/features/labels/contracts";
+import {
+  renderA4SheetPdf,
+  renderLabelPdf,
+  renderLabelPng,
+  renderLabelPreviewPng,
+  resolveDescriptionPrintState,
+  resolveQrPrintState
+} from "@/features/labels/render";
 import { buildCustomLabelSlots } from "@/features/labels/slots";
+import { getPublicRecipeBySlug } from "@/features/recipes/service";
+import { isRecipePubliclyVisible } from "@/features/recipes/visibility";
+import { clientIpFrom } from "@/lib/anti-abuse";
+import { getServerEnv } from "@/lib/env";
 
 export const runtime = "nodejs";
 
-// Наклейка без рецепта: все поля приходят из формы (/labels). Рецепта нет —
-// значит нет ни владельца, ни QR: ссылаться не на что. Доступ без логина,
-// поэтому поток растеризации ограничен per-IP.
+// Наклейка без рецепта: все поля приходят из формы (/labels). Владельца нет,
+// поэтому доступ без логина, а поток растеризации ограничен per-IP.
+// QR ведёт только на гостевую страницу пива нашего сайта (recipeSlug):
+// печатать в QR произвольную ссылку нельзя — это превратило бы публичный
+// эндпоинт в генератор QR на любой сайт под нашим брендом. И только для
+// опубликованных: эндпоинт анонимный, share-ключи черновиков здесь не выдаём.
 
-const resolveClientIp = (request: Request): string => {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) {
-    return forwarded.split(",")[0].trim();
+/** URL гостевой страницы пива для QR — только по существующему опубликованному слагу. */
+const resolveRecipeQrUrl = async (input: string | undefined, baseUrl: string): Promise<string | null> => {
+  if (!input) {
+    return null;
   }
-  return request.headers.get("x-real-ip") ?? "unknown";
+  const slug = parseRecipeSlugInput(input, baseUrl);
+  if (!slug) {
+    return null;
+  }
+  try {
+    const recipe = await getPublicRecipeBySlug(slug);
+    // getPublicRecipeBySlug отдаёт только публично видимые, но слот QR — печать:
+    // проверяем видимость явно, а не полагаемся на выборку.
+    if (!isRecipePubliclyVisible(recipe)) {
+      return null;
+    }
+    return `${baseUrl.replace(/\/$/, "")}/beer/${slug}`;
+  } catch {
+    // Нет такого рецепта — QR просто не появится (форма не ломается).
+    return null;
+  }
 };
 
 export async function GET(request: Request) {
@@ -28,13 +62,19 @@ export async function GET(request: Request) {
   const query = parsed.data;
   const format = query.sheet ? "pdf" : query.format;
 
-  if (!checkLabelRenderRateLimit(resolveClientIp(request))) {
+  try {
+    // Анонимный рендер = растеризация SVG (CPU). Лимит per-IP через персистентный
+    // счётчик; окно щедрое — превью перерисовывается на правку полей (с дебаунсом).
+    await assertRateLimit(`ip:${clientIpFrom(request) ?? "unknown"}`, "label_render_custom", 240, 5 * 60);
+  } catch {
     return NextResponse.json({ error: "RATE_LIMITED" }, { status: 429 });
   }
 
   try {
     const overrides = labelOverridesSchema.parse(Object.fromEntries(url.searchParams));
-    const slots = buildCustomLabelSlots({ bottlingDate: query.bottlingDate ?? null, overrides });
+    const { APP_URL } = getServerEnv();
+    const recipeQrUrl = overrides.qr === "0" ? null : await resolveRecipeQrUrl(overrides.recipeSlug, APP_URL);
+    const slots = buildCustomLabelSlots({ bottlingDate: query.bottlingDate ?? null, overrides, recipeQrUrl });
 
     const renderParams = { template: query.template, preset: query.preset, dpi: query.dpi, slots };
     const body = query.sheet
@@ -60,7 +100,11 @@ export async function GET(request: Request) {
         "Content-Type": format === "pdf" ? "application/pdf" : "image/png",
         "Content-Disposition": `${query.download ? "attachment" : "inline"}; filename="${fileName}"`,
         "Cache-Control": "private, no-store",
-        "X-Content-Type-Options": "nosniff"
+        "X-Content-Type-Options": "nosniff",
+        // Молча исчезнувший QR читается как поломка — говорим студии правду.
+        "X-Label-Qr": resolveQrPrintState(renderParams),
+        // То же про описание: оно урезается по остатку высоты.
+        "X-Label-Description": resolveDescriptionPrintState(renderParams)
       }
     });
   } catch (error) {

@@ -1,5 +1,6 @@
 import { getServerEnv } from "@/lib/env";
 
+import { buildBeerShareKey } from "../beer-page/share-key";
 import type { RecipeDetailDto } from "../recipes/contracts";
 import { getOwnedRecipeById } from "../recipes/service";
 import type { PreferredGravityUnit } from "../system/gravity-units";
@@ -28,7 +29,9 @@ export const getOwnedRecipeLabelContext = async (
     baseUrl: APP_URL,
     bottlingDate: options?.bottlingDate ?? null,
     gravityUnit: options?.gravityUnit,
-    overrides: options?.overrides
+    overrides: options?.overrides,
+    // Ключ — для QR непубличного рецепта; контекст и так только владельца.
+    shareKey: buildBeerShareKey(recipe.id)
   });
   return { recipe, slots };
 };

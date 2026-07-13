@@ -78,6 +78,37 @@ export const measureTextPx = (text: string, fontId: LabelFontId, sizePx: number,
   return advance + letterSpacingPx * Math.max(0, [...text].length - 1);
 };
 
+/** Габарит чернил строки относительно базовой линии, px (вниз — положительно). */
+export type InkExtents = { above: number; below: number };
+
+/**
+ * Насколько высоко и низко уходят ЧЕРНИЛА конкретной строки от базовой линии.
+ * Кириллица требует этого от вёрстки: в Oswald прописные с акцентом («Ё», «Й»)
+ * поднимаются на 1.042 em, а выносные («Щ», «Д», «Ц», «У») спускаются на
+ * 0.166 em — то есть две строки капса соприкасаются уже при межстрочнике
+ * 1.21 em, хотя обычным прописным хватает и 1.08. Считать интерлиньяж по
+ * кеглю поэтому нельзя — только по реальным глифам строки.
+ */
+export const inkExtentsPx = (text: string, fontId: LabelFontId, sizePx: number): InkExtents => {
+  const font = loadFont(fontId);
+  const scale = sizePx / font.unitsPerEm;
+  let above = 0;
+  let below = 0;
+  for (const char of text) {
+    if (char === " ") {
+      continue;
+    }
+    const box = font.charToGlyph(char).getBoundingBox();
+    // Пустой глиф (пробел, неизвестный символ) отдаёт вырожденный бокс.
+    if (!Number.isFinite(box.y1) || !Number.isFinite(box.y2)) {
+      continue;
+    }
+    above = Math.max(above, box.y2 * scale);
+    below = Math.max(below, -box.y1 * scale);
+  }
+  return { above, below };
+};
+
 export type FittedText = {
   lines: string[];
   fontSizePx: number;
@@ -151,7 +182,14 @@ export const fitTextLines = (
       cut -= 1;
     }
     if (isLast && cut < rest.length) {
-      lines.push(rest.slice(0, cut).trimEnd() + "…");
+      // Эллипсис ставим по границе слова, а не посреди: «горчинко…» читается как
+      // брак печати, «с деликатной…» — как намеренное сокращение. Назад
+      // отступаем не больше половины строки, чтобы одно длинное слово не съело
+      // её целиком (тогда режем как есть).
+      const slice = rest.slice(0, cut);
+      const lastSpace = slice.lastIndexOf(" ");
+      const end = lastSpace > cut / 2 ? lastSpace : cut;
+      lines.push(rest.slice(0, end).trimEnd() + "…");
       rest = "";
     } else {
       // Стараемся резать по границе слова, если она есть в пределах строки.

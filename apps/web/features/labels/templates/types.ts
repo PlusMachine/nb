@@ -1,8 +1,10 @@
-import type { LabelDpi, LabelSlots, LabelTemplateId, LabelTier } from "../contracts";
+import type { LabelDpi, LabelOrientation, LabelSlots, LabelTemplateId, LabelTier } from "../contracts";
 
 export type LabelRenderContext = {
   slots: LabelSlots;
   tier: LabelTier;
+  /** Ориентация пресета: у tier «L» она решает, одна колонка или две. */
+  orientation: LabelOrientation;
   widthPx: number;
   heightPx: number;
   dpi: LabelDpi;

@@ -31,9 +31,14 @@ const slots = (overrides: Partial<LabelSlots> = {}): LabelSlots => ({
   hops: ["Saaz"],
   malts: ["Pilsner"],
   yeast: "W-34/70",
+  volumeText: null,
+  batchText: null,
   authorName: "Артём",
   bottlingDateText: "11.07.2026",
   qrUrl: "https://example.com/recipes/el",
+  description: null,
+  showLogo: true,
+  showIbuScale: true,
   brandText: "BREWED WITH NB",
   ...overrides
 });
@@ -161,5 +166,22 @@ describe("шкалы: значение — точка на оси", () => {
     for (const match of svg.matchAll(/<path d="M (\d+) \d+ L \d+ \d+ L \d+ \d+ Z" fill="black"\/>/g)) {
       expect(Number(match[1])).toBeLessThanOrEqual(widthPx);
     }
+  });
+});
+
+describe("описание и переключатели блоков в правках", () => {
+  it("описание берётся из правок; пустая строка = не печатать", () => {
+    expect(applyLabelOverrides(slots(), { description: "Тёмный, как ночь." }).description).toBe("Тёмный, как ночь.");
+    expect(applyLabelOverrides(slots({ description: "Было" }), { description: "" }).description).toBeNull();
+    // Ключа нет — значение не трогаем.
+    expect(applyLabelOverrides(slots({ description: "Было" }), {}).description).toBe("Было");
+  });
+
+  it("logo=0 и ibuScale=0 выключают блоки, «1» ничего не включает сверх шаблона", () => {
+    expect(applyLabelOverrides(slots(), { logo: "0" }).showLogo).toBe(false);
+    expect(applyLabelOverrides(slots(), { ibuScale: "0" }).showIbuScale).toBe(false);
+    expect(applyLabelOverrides(slots({ showLogo: false }), { logo: "1" }).showLogo).toBe(false);
+    expect(applyLabelOverrides(slots(), {}).showLogo).toBe(true);
+    expect(applyLabelOverrides(slots(), {}).showIbuScale).toBe(true);
   });
 });

@@ -21,9 +21,24 @@ export type QrSvgFragment = {
  * Строит QR под доступный квадрат availablePx. Возвращает null, если по
  * правилам печати (модуль ≥ QR_MIN_MODULE_PX) код не влезает — тогда блок
  * QR просто не рендерится.
+ *
+ * Уровень коррекции подбирается: сначала «M», при нехватке места — «L». Длинный
+ * слаг рецепта поднимает версию QR (больше модулей → мельче модуль), и на 58×40
+ * мм код уже на грани; «L» кодирует те же данные меньшим числом модулей, то
+ * есть крупной точкой. Понижаем только когда иначе QR не напечатался бы вовсе.
  */
 export const buildQrSvg = (url: string, availablePx: number): QrSvgFragment | null => {
-  const qr = QRCode.create(url, { errorCorrectionLevel: "M" });
+  for (const level of ["M", "L"] as const) {
+    const fragment = buildAtLevel(url, availablePx, level);
+    if (fragment) {
+      return fragment;
+    }
+  }
+  return null;
+};
+
+const buildAtLevel = (url: string, availablePx: number, level: "M" | "L"): QrSvgFragment | null => {
+  const qr = QRCode.create(url, { errorCorrectionLevel: level });
   const size = qr.modules.size;
   const totalModules = size + QR_QUIET_MODULES * 2;
   const modulePx = Math.floor(availablePx / totalModules);

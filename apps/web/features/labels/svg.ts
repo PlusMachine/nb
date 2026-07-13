@@ -1,4 +1,5 @@
 import { LABEL_FONTS, type LabelFontId } from "./fonts";
+import { HOP_MARK_D, HOP_MARK_HEIGHT, HOP_MARK_WIDTH } from "./hop-mark";
 
 // Общие SVG-примитивы шаблонов наклеек. Всё — чистые функции над строками;
 // координаты целочисленные (пиксельная сетка растра), цвета только
@@ -42,6 +43,10 @@ export const diamond = (cx: number, cy: number, r: number, fill: "black" | "whit
 export const hRule = (x1: number, x2: number, y: number, strokeWidth: number): string =>
   `<rect x="${x1}" y="${Math.round(y - strokeWidth / 2)}" width="${x2 - x1}" height="${strokeWidth}" fill="black"/>`;
 
+/** Вертикальная линейка — разделитель колонок горизонтальной наклейки. */
+export const vRule = (x: number, y1: number, y2: number, strokeWidth: number): string =>
+  `<rect x="${Math.round(x - strokeWidth / 2)}" y="${y1}" width="${strokeWidth}" height="${y2 - y1}" fill="black"/>`;
+
 /** Пунктирная линейка «мелким стежком» (как dotted-разделители референса). */
 export const dottedRule = (x1: number, x2: number, y: number, dotPx: number): string => {
   const step = dotPx * 3;
@@ -62,9 +67,18 @@ export const ruleWithDiamond = (x1: number, x2: number, y: number, strokeWidth: 
   return [hRule(x1, cx - gap, y, strokeWidth), diamond(cx, y, diamondR), hRule(cx + gap, x2, y, strokeWidth)].join("");
 };
 
+/** Скруглённый прямоугольник тем же путём, что и внешний контур билетной рамки. */
+const roundedRectPath = (x: number, y: number, w: number, h: number, c: number): string =>
+  `M ${x + c} ${y} H ${x + w - c} A ${c} ${c} 0 0 0 ${x + w} ${y + c} ` +
+  `V ${y + h - c} A ${c} ${c} 0 0 0 ${x + w - c} ${y + h} ` +
+  `H ${x + c} A ${c} ${c} 0 0 0 ${x} ${y + h - c} ` +
+  `V ${y + c} A ${c} ${c} 0 0 0 ${x + c} ${y} Z`;
+
 /**
- * Двойная рамка «крафтового билета»: толстый внешний контур с вогнутыми
- * (срезанными внутрь) уголками + тонкий внутренний прямоугольник.
+ * Двойная рамка «крафтового билета»: толстый внешний контур со скруглёнными
+ * уголками + тонкий внутренний — тот же контур, смещённый внутрь на
+ * innerOffset, с тем же радиусом угла (не эквидистанта: радиус нарочно не
+ * уменьшаем, иначе вырез внутренней рамки выглядит мельче внешнего).
  */
 export const ticketFrame = (params: {
   widthPx: number;
@@ -80,16 +94,18 @@ export const ticketFrame = (params: {
   const y = insetPx;
   const w = widthPx - insetPx * 2;
   const h = heightPx - insetPx * 2;
-  const c = cornerPx;
-  const outer =
-    `M ${x + c} ${y} H ${x + w - c} A ${c} ${c} 0 0 0 ${x + w} ${y + c} ` +
-    `V ${y + h - c} A ${c} ${c} 0 0 0 ${x + w - c} ${y + h} ` +
-    `H ${x + c} A ${c} ${c} 0 0 0 ${x} ${y + h - c} ` +
-    `V ${y + c} A ${c} ${c} 0 0 0 ${x + c} ${y} Z`;
+  const outer = roundedRectPath(x, y, w, h, cornerPx);
   const innerOffset = thickPx + gapPx;
+  const inner = roundedRectPath(
+    x + innerOffset,
+    y + innerOffset,
+    w - innerOffset * 2,
+    h - innerOffset * 2,
+    cornerPx
+  );
   return [
     `<path d="${outer}" fill="none" stroke="black" stroke-width="${thickPx}"/>`,
-    `<rect x="${x + innerOffset}" y="${y + innerOffset}" width="${w - innerOffset * 2}" height="${h - innerOffset * 2}" fill="none" stroke="black" stroke-width="${thinPx}"/>`
+    `<path d="${inner}" fill="none" stroke="black" stroke-width="${thinPx}"/>`
   ].join("");
 };
 
@@ -123,16 +139,45 @@ export const grainIconPath = (strokeWidth: number): string =>
   `<path d="M 12 6 C 10.5 4.5 10.5 3 12 1.5 C 13.5 3 13.5 4.5 12 6"/>` +
   `</g>`;
 
+// Силуэт шишки хмеля: округлый верх, широкая середина, острый низ.
+const HOP_CONE_PATH =
+  "M 12 3.2 C 6.2 3.6 3 7.6 3.2 12.2 C 3.4 17.2 6.8 21.4 12 23.8 C 17.2 21.4 20.6 17.2 20.8 12.2 C 21 7.6 17.8 3.6 12 3.2 Z";
+
 export const hopIconPath = (strokeWidth: number): string =>
-  // Шишка хмеля: контур-«капля» + три шеврона-чешуйки. Нарочно без мелких
-  // прожилок — при 203 dpi и бинаризации плотные детали сливаются в кляксу.
+  // Мелкая иконка для строк ингредиентов: силуэт эмблемы (hopMarkPath), но
+  // контуром и всего с тремя рядами чешуек. Нарочно без мелких прожилок — при
+  // 203 dpi и бинаризации плотные детали сливаются в кляксу.
   `<g fill="none" stroke="black" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round">` +
-  `<path d="M 12 1 V 4"/>` +
-  `<path d="M 12 4 C 5.5 4 2.5 8 3 12 C 3.5 16.5 7 21 12 23 C 17 21 20.5 16.5 21 12 C 21.5 8 18.5 4 12 4 Z"/>` +
-  `<path d="M 6 9 C 8 11.5 10 12.5 12 13 C 14 12.5 16 11.5 18 9"/>` +
-  `<path d="M 7 13.5 C 8.7 15.7 10.3 16.7 12 17.2 C 13.7 16.7 15.3 15.7 17 13.5"/>` +
-  `<path d="M 9 18 C 10 19.3 11 20 12 20.4 C 13 20 14 19.3 15 18"/>` +
+  `<path d="M 12 1 V 3.4"/>` +
+  `<path d="${HOP_CONE_PATH}"/>` +
+  `<path d="M 3.8 9.8 Q 7.9 13.6 12 9.8 Q 16.1 13.6 20.2 9.8"/>` +
+  `<path d="M 5.4 14.6 Q 8.7 18.2 12 14.6 Q 15.3 18.2 18.6 14.6"/>` +
+  `<path d="M 8.4 19 Q 10.2 21.4 12 19 Q 13.8 21.4 15.6 19"/>` +
   `</g>`;
+
+// Эмблема: шишка хмеля с листьями (векторизованный знак, см. hop-mark.ts) в
+// двойном ободе. Знак вписан по большей стороне во внутренний круг с воздухом:
+// гравюрные штрихи у самого обода на печати слипаются с ним.
+const HOP_MARK_INNER_R = 10.4;
+const HOP_MARK_FIT = 0.92;
+
+/**
+ * Эмблема в боксе 24×24 — печатается на «Линейном крафте» (большая наклейка).
+ * Знак штриховой и мелкодетальный: ниже ~14 мм листья и прожилки сливаются,
+ * поэтому в строках ингредиентов используется упрощённый hopIconPath.
+ */
+export const hopMarkPath = (): string => {
+  const scale = (HOP_MARK_INNER_R * 2 * HOP_MARK_FIT) / Math.max(HOP_MARK_WIDTH, HOP_MARK_HEIGHT);
+  const x = 12 - (HOP_MARK_WIDTH * scale) / 2;
+  const y = 12 - (HOP_MARK_HEIGHT * scale) / 2;
+  return (
+    `<circle cx="12" cy="12" r="11.5" fill="none" stroke="black" stroke-width="0.45"/>` +
+    `<circle cx="12" cy="12" r="${HOP_MARK_INNER_R}" fill="none" stroke="black" stroke-width="0.25"/>` +
+    `<g transform="translate(${x.toFixed(3)} ${y.toFixed(3)}) scale(${scale.toFixed(6)})">` +
+    `<path d="${HOP_MARK_D}" fill="black" fill-rule="evenodd"/>` +
+    `</g>`
+  );
+};
 
 export const yeastIconPath = (strokeWidth: number): string =>
   `<g fill="none" stroke="black" stroke-width="${strokeWidth}">` +

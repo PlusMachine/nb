@@ -1,7 +1,7 @@
 import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 
-import { LABEL_PRESETS, mmToPx, type LabelDpi, type LabelSlots } from "../features/labels/contracts";
+import { LABEL_PRESETS, mmToPx, type LabelDpi, type LabelPresetId, type LabelSlots } from "../features/labels/contracts";
 import { renderA4SheetPdf, renderLabelPdf, renderLabelPng } from "../features/labels/render";
 
 const slots: LabelSlots = {
@@ -14,21 +14,28 @@ const slots: LabelSlots = {
   fgText: "1.011",
   hops: ["Saaz", "Sladek", "Kazbek"],
   malts: ["Pilsner", "Munich"],
+  volumeText: "0,5 л",
+  batchText: "3",
   yeast: "Fermentis W-34/70",
   authorName: "Артём",
   bottlingDateText: "11.07.2026",
   qrUrl: "https://example.com/recipes/zhigulyovskoe",
+  description: null,
+  showLogo: true,
+  showIbuScale: true,
   brandText: "BREWED WITH NB"
 };
 
 describe("рендер-smoke PNG", () => {
-  const cases: Array<{ preset: "S" | "M" | "L"; dpi: LabelDpi; template: "typographic" | "craft" }> = [
+  const cases: Array<{ preset: LabelPresetId; dpi: LabelDpi; template: "typographic" | "craft" }> = [
     { preset: "S", dpi: 203, template: "typographic" },
     { preset: "M", dpi: 203, template: "craft" },
     { preset: "L", dpi: 203, template: "typographic" },
+    { preset: "LW", dpi: 203, template: "craft" },
     { preset: "S", dpi: 300, template: "craft" },
     { preset: "M", dpi: 300, template: "typographic" },
-    { preset: "L", dpi: 300, template: "craft" }
+    { preset: "L", dpi: 300, template: "craft" },
+    { preset: "LW", dpi: 300, template: "typographic" }
   ];
 
   for (const { preset, dpi, template } of cases) {
@@ -45,14 +52,21 @@ describe("рендер-smoke PNG", () => {
       expect(meta.height).toBe(mmToPx(def.heightMm, dpi));
 
       // Растр строго ч/б: только 0 и 255, и не «пустой лист».
+      // Проверяем каждый байт, но expect() зовём один раз: на 300dpi здесь >1.2 млн
+      // пикселей, и expect() в цикле стоит ~14 с против 12 мс у обычного прохода —
+      // прогон упирался в CPU и ронял по таймауту соседние файлы.
       const { data } = await sharp(png).greyscale().raw().toBuffer({ resolveWithObject: true });
       let black = 0;
-      for (const value of data) {
-        expect(value === 0 || value === 255).toBe(true);
+      let offGrey = -1;
+      for (let i = 0; i < data.length; i += 1) {
+        const value = data[i];
         if (value === 0) {
           black += 1;
+        } else if (value !== 255 && offGrey < 0) {
+          offGrey = i;
         }
       }
+      expect(offGrey === -1 ? "1-бит" : `байт #${offGrey} = ${data[offGrey]}`).toBe("1-бит");
       expect(black).toBeGreaterThan(data.length * 0.005);
     }, 30000);
   }

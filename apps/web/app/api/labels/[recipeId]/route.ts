@@ -1,7 +1,15 @@
+import { assertRateLimit } from "@nb/auth";
 import { NextResponse } from "next/server";
 
 import { buildLabelFileName, labelOverridesSchema, labelRenderRequestSchema } from "@/features/labels/contracts";
-import { renderA4SheetPdf, renderLabelPdf, renderLabelPng, renderLabelPreviewPng } from "@/features/labels/render";
+import {
+  renderA4SheetPdf,
+  renderLabelPdf,
+  renderLabelPng,
+  renderLabelPreviewPng,
+  resolveDescriptionPrintState,
+  resolveQrPrintState
+} from "@/features/labels/render";
 import { getOwnedRecipeLabelContext } from "@/features/labels/service";
 import { resolvePreferredGravityUnit } from "@/features/system/gravity-units";
 import { getSessionUser } from "@/lib/auth";
@@ -25,6 +33,14 @@ export async function GET(request: Request, context: { params: Promise<{ recipeI
   const user = await getSessionUser();
   if (!user) {
     return NextResponse.json({ error: "AUTH" }, { status: 401 });
+  }
+
+  try {
+    // Рендер = растеризация SVG (resvg + sharp), тяжёлая CPU-операция. Лимит
+    // per-user; окно щедрое — превью перерисовывается на правку полей (с дебаунсом).
+    await assertRateLimit(user.id, "label_render", 120, 5 * 60);
+  } catch {
+    return NextResponse.json({ error: "RATE_LIMITED" }, { status: 429 });
   }
 
   try {
@@ -62,7 +78,11 @@ export async function GET(request: Request, context: { params: Promise<{ recipeI
         "Content-Disposition": `${query.download ? "attachment" : "inline"}; filename="${fileName}"`,
         // Наклейка зависит от данных рецепта — не кешируем.
         "Cache-Control": "private, no-store",
-        "X-Content-Type-Options": "nosniff"
+        "X-Content-Type-Options": "nosniff",
+        // Молча исчезнувший QR читается как поломка — говорим студии правду.
+        "X-Label-Qr": resolveQrPrintState(renderParams),
+        // То же про описание: оно урезается по остатку высоты.
+        "X-Label-Description": resolveDescriptionPrintState(renderParams)
       }
     });
   } catch (error) {

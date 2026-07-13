@@ -7,13 +7,17 @@ import {
   computeA4Grid,
   LABEL_PRESETS,
   mmToPx,
+  presetOrientation,
+  QR_SIZE_MM_BY_TIER,
   type LabelDpi,
   type LabelPresetId,
   type LabelSlots,
   type LabelTemplateId
 } from "./contracts";
 import { labelFontsDir } from "./fonts";
+import { buildQrSvg } from "./qr";
 import { getLabelTemplate } from "./templates";
+import { DESCRIPTION_SVG_ATTR } from "./templates/blocks";
 import type { LabelRenderContext } from "./templates";
 
 // Рендер-пайплайн: SVG-шаблон → растр точного пиксельного размера (resvg,
@@ -36,6 +40,49 @@ export type LabelRenderParams = {
   slots: LabelSlots;
 };
 
+/**
+ * Печатается ли QR на этой наклейке. Молча исчезнувший QR выглядит как поломка,
+ * поэтому «запрошен, но не влез» — отдельное состояние: роут отдаёт его
+ * заголовком, студия объясняет пользователю.
+ *   none    — QR не запрашивали;
+ *   dropped — запрошен, но не помещается (43×25 мм вовсе без мета-блока; либо
+ *             модуль кода мельче печатного минимума, либо не хватило высоты);
+ *   ok      — напечатается.
+ *
+ * Ответ берём из готовой вёрстки, а не из отдельного расчёта: выбросить QR
+ * может и шаблон (не хватило высоты мета-блока), и предсказание «влезет»
+ * разошлось бы с печатью.
+ */
+export const resolveQrPrintState = (params: LabelRenderParams): "none" | "dropped" | "ok" => {
+  if (!params.slots.qrUrl) {
+    return "none";
+  }
+  return renderLabelSvg(params).svg.includes(QR_SVG_MARKER) ? "ok" : "dropped";
+};
+
+// Признак QR в готовом SVG: этим атрибутом помечен только он (см. qr.ts).
+const QR_SVG_MARKER = 'shape-rendering="crispEdges"';
+
+/**
+ * Что стало с описанием: оно младше всех блоков и урезается по остатку высоты.
+ * Молчать об этом нельзя — пользователь набрал текст и должен видеть, что на
+ * печать он попал не целиком (или не попал вовсе).
+ *   none    — описания нет;
+ *   dropped — задано, но не поместилось ни одной строкой (S/M — вовсе без блока);
+ *   trimmed — напечатается частично;
+ *   ok      — напечатается целиком.
+ */
+export const resolveDescriptionPrintState = (params: LabelRenderParams): "none" | "dropped" | "trimmed" | "ok" => {
+  if (!params.slots.description) {
+    return "none";
+  }
+  const { svg } = renderLabelSvg(params);
+  if (svg.includes(`${DESCRIPTION_SVG_ATTR}="full"`)) {
+    return "ok";
+  }
+  return svg.includes(`${DESCRIPTION_SVG_ATTR}="trimmed"`) ? "trimmed" : "dropped";
+};
+
 export const renderLabelSvg = (params: LabelRenderParams): { svg: string; widthPx: number; heightPx: number } => {
   const preset = LABEL_PRESETS[params.preset];
   const widthPx = mmToPx(preset.widthMm, params.dpi);
@@ -43,6 +90,7 @@ export const renderLabelSvg = (params: LabelRenderParams): { svg: string; widthP
   const ctx: LabelRenderContext = {
     slots: params.slots,
     tier: preset.tier,
+    orientation: presetOrientation(preset),
     widthPx,
     heightPx,
     dpi: params.dpi,

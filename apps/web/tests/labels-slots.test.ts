@@ -20,12 +20,17 @@ const baseRecipe = {
 } as unknown as RecipeDetailDto;
 
 describe("buildLabelSlots", () => {
-  it("QR только для опубликованных", () => {
+  it("QR опубликованного ведёт на страницу пива открытой ссылкой", () => {
     const published = buildLabelSlots({ recipe: baseRecipe, baseUrl: "https://nb.example/" });
-    expect(published.qrUrl).toBe("https://nb.example/recipes/testovyy-el");
+    expect(published.qrUrl).toBe("https://nb.example/beer/testovyy-el");
+  });
 
+  it("QR непубличного — только с share-ключом; без ключа QR нет", () => {
     for (const state of ["private", "draft"] as const) {
       const recipe = { ...baseRecipe, publicationState: state } as RecipeDetailDto;
+      expect(buildLabelSlots({ recipe, baseUrl: "https://nb.example", shareKey: "abc123" }).qrUrl).toBe(
+        "https://nb.example/beer/testovyy-el?k=abc123"
+      );
       expect(buildLabelSlots({ recipe, baseUrl: "https://nb.example" }).qrUrl).toBeNull();
     }
   });

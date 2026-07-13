@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
-import React from "react";
+import React, { Suspense } from "react";
 
 import { LabelStudio } from "@/components/recipes/labels/label-studio";
 import { buildCustomLabelSlots } from "@/features/labels/slots";
+import { listRecipesForAuthor } from "@/features/recipes/service";
+import { getSessionUser } from "@/lib/auth";
 
 // Наклейки без рецепта: инструмент с ручным заполнением полей. Тот же
 // генератор и те же шаблоны, что и на странице рецепта, — отличается только
-// источник данных (форма вместо рецепта) и отсутствие QR: ссылаться не на что.
+// источник данных (форма вместо рецепта). QR здесь ведёт на рецепт, который
+// пользователь укажет сам (слаг/ссылка либо выбор из своих опубликованных
+// рецептов, если залогинен) — страница остаётся публичной, анониму список
+// просто не показываем.
 
 export const metadata: Metadata = {
   title: "Наклейки на бутылки",
@@ -22,15 +27,26 @@ export const metadata: Metadata = {
   }
 };
 
-export default function LabelsPage() {
+export default async function LabelsPage() {
+  const user = await getSessionUser();
+  const myRecipes = user
+    ? (await listRecipesForAuthor(user.id, { publicationState: "published" }))
+        // Скрытый модератором рецепт из выбора убираем: QR вёл бы на закрытую страницу.
+        .filter((recipe) => recipe.slug.length > 0 && recipe.hiddenAt == null)
+        .map((recipe) => ({ slug: recipe.slug, title: recipe.title }))
+    : [];
+
   return (
-    <LabelStudio
-      endpoint="/api/labels/custom"
-      heading="Наклейки на бутылки"
-      defaultSlots={buildCustomLabelSlots({})}
-      qrAvailable={false}
-      backLink={{ href: "/calculators", label: "К инструментам" }}
-      resetLabel="Очистить поля"
-    />
+    <Suspense fallback={null}>
+      <LabelStudio
+        endpoint="/api/labels/custom"
+        heading="Наклейки на бутылки"
+        defaultSlots={buildCustomLabelSlots({})}
+        qrUnavailableReason="custom"
+        myRecipes={myRecipes}
+        backLink={{ href: "/calculators", label: "К инструментам" }}
+        resetLabel="Очистить поля"
+      />
+    </Suspense>
   );
 }

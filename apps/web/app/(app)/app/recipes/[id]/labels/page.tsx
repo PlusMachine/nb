@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { notFound } from "next/navigation";
 
 import { LabelStudio } from "@/components/recipes/labels/label-studio";
@@ -17,15 +17,17 @@ export default async function RecipeLabelsPage({ params }: { params: Promise<{ i
     const { recipe, slots } = await getOwnedRecipeLabelContext(user.id, id, {
       gravityUnit: resolvePreferredGravityUnit(user.preferredGravityUnit)
     });
+    const editHref = `/app/recipes/${recipe.id}/edit`;
     return (
-      <LabelStudio
-        endpoint={`/api/labels/${recipe.id}`}
-        heading={`Наклейки — ${recipe.title}`}
-        defaultSlots={slots}
-        qrAvailable={recipe.publicationState === "published"}
-        backLink={{ href: `/app/recipes/${recipe.id}/edit`, label: "К рецепту" }}
-        resetLabel="Вернуть данные рецепта"
-      />
+      <Suspense fallback={null}>
+        <LabelStudio
+          endpoint={`/api/labels/${recipe.id}`}
+          heading={`Наклейки — ${recipe.title}`}
+          defaultSlots={slots}
+          backLink={{ href: editHref, label: "К рецепту" }}
+          resetLabel="Вернуть данные рецепта"
+        />
+      </Suspense>
     );
   } catch (error) {
     if (error instanceof Error && error.message === "NOT_FOUND") {

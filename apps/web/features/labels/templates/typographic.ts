@@ -1,16 +1,23 @@
-import { doubleFrame, hRule, ruleWithDiamond, textEl } from "../svg";
+import { QR_SIZE_MM_L, QR_SIZE_MM_M } from "../contracts";
+import { doubleFrame, hRule, ruleWithDiamond, textEl, vRule } from "../svg";
 
 import {
   bottomMeta,
   bottomMetaDesiredHeight,
   colorScale,
+  descriptionBlock,
+  distributeSlack,
   dottedRule,
+  EMPTY_BLOCK,
   fitSpacedLine,
   ibuScale,
   ingredientRows,
   statBand,
   statBandHeight,
-  titleBlock
+  statLine,
+  statLineHeight,
+  titleBlock,
+  type BlockResult
 } from "./blocks";
 import type { LabelRenderContext, LabelTemplate } from "./types";
 
@@ -47,6 +54,22 @@ const styleLine = (
     letterSpacingPx: fit.spacingPx
   });
   return { svg, height: Math.round(fit.sizePx * 1.6) };
+};
+
+/** Строка плотности «OG 1.048 · FG 1.011»; нет данных — блок не печатается. */
+const gravityLine = (ctx: LabelRenderContext, params: { cx: number; y: number }): { svg: string; height: number } => {
+  const { slots, mm } = ctx;
+  if (!slots.ogText && !slots.fgText) {
+    return { svg: "", height: 0 };
+  }
+  const sizePx = mm(2.8);
+  const text = [slots.ogText ? `OG ${slots.ogText}` : null, slots.fgText ? `FG ${slots.fgText}` : null]
+    .filter(Boolean)
+    .join("   ·   ");
+  return {
+    svg: textEl({ x: params.cx, y: params.y + sizePx, fontId: "mono", sizePx, text, anchor: "middle" }),
+    height: Math.round(sizePx * 1.7)
+  };
 };
 
 const renderS = (ctx: LabelRenderContext): string => {
@@ -88,18 +111,21 @@ const renderM = (ctx: LabelRenderContext): string => {
   const pad = inset + thick + mm(0.8) + thin + mm(2);
   const cx = Math.round(widthPx / 2);
   const contentWidth = widthPx - pad * 2;
-  const parts: string[] = [svgOpen(ctx)];
-  parts.push(doubleFrame({ widthPx, heightPx, insetPx: inset, thickPx: thick, thinPx: thin, gapPx: mm(0.8) }));
-
-  let y = pad + mm(0.5);
+  const bottom = heightPx - pad;
+  const top = pad + mm(0.5);
 
   // Вертикальный бюджет: заголовку достаётся то, что не займут блоки ниже.
+  // 58×40 мм с QR — это выбор, а не «всё сразу»: читаемый код занимает ~16 мм
+  // высоты, поэтому цифры идут одной строкой вместо трёхколоночной панели, а
+  // строка стиля и разделитель уступают ему место (ABV на бутылке важнее).
   const hasStats = slots.abvText !== null || slots.ibu !== null || slots.ebc !== null;
-  const metaHeight = bottomMetaDesiredHeight(ctx, { width: contentWidth, qrSizeMm: 10, showAuthor: false });
+  const withQr = slots.qrUrl !== null;
+  const statsHeight = withQr ? statLineHeight(ctx) : statBandHeight(ctx, true);
+  const metaHeight = bottomMetaDesiredHeight(ctx, { width: contentWidth, qrSizeMm: QR_SIZE_MM_M, showAuthor: false });
   const reserved =
-    (slots.styleName ? Math.round(mm(2.6) * 1.6) : 0) +
-    mm(3.6) +
-    (hasStats ? statBandHeight(ctx, true) + mm(1.6) : 0) +
+    (!withQr && slots.styleName ? Math.round(mm(2.6) * 1.6) : 0) +
+    (withQr ? 0 : mm(3.6)) +
+    (hasStats ? statsHeight + mm(1.6) : 0) +
     metaHeight +
     mm(1);
   const title = titleBlock(ctx, {
@@ -107,34 +133,69 @@ const renderM = (ctx: LabelRenderContext): string => {
     width: contentWidth,
     maxSizePx: mm(6.5),
     minSizePx: mm(2.8),
-    maxHeightPx: heightPx - pad - y - reserved
+    maxHeightPx: bottom - top - reserved
   });
-  parts.push(`<g transform="translate(0 ${y})">${title.svg}</g>`);
-  y += title.height + mm(1.4);
 
-  const style = styleLine(ctx, { cx, width: contentWidth, y, sizeMm: 2.6 });
-  parts.push(style.svg);
-  y += style.height;
+  // Контент собираем отдельно от рамки и дважды: сначала с естественными
+  // зазорами — чтобы узнать остаток высоты, потом с раздутыми. Заголовок
+  // считается ОДИН раз, по естественным зазорам: иначе раздача остатка ужимала
+  // бы название, ради которого этот остаток и появился.
+  const buildBody = (extra: number): { svg: string; end: number; gapCount: number } => {
+    const parts: string[] = [];
+    let gapCount = 0;
+    const gap = (base: number): number => {
+      gapCount += 1;
+      return base + extra;
+    };
 
-  parts.push(ruleWithDiamond(pad, widthPx - pad, y + mm(1), thin, Math.max(2, mm(0.6))));
-  y += mm(2.6);
+    let y = top;
+    parts.push(`<g transform="translate(0 ${y})">${title.svg}</g>`);
+    y += title.height + gap(mm(1.4));
 
-  const band = statBand(ctx, { x: pad, width: contentWidth, y, compact: true });
-  parts.push(band.svg);
-  y += band.height + (band.height > 0 ? mm(1.6) : 0);
+    if (!withQr) {
+      const style = styleLine(ctx, { cx, width: contentWidth, y, sizeMm: 2.6 });
+      parts.push(style.svg);
+      y += style.height;
 
-  const meta = bottomMeta(ctx, {
-    x: pad,
-    width: contentWidth,
-    y,
-    maxHeight: heightPx - pad - y,
-    qrSizeMm: 10,
-    showAuthor: false
-  });
-  parts.push(meta.svg);
+      parts.push(ruleWithDiamond(pad, widthPx - pad, y + mm(1), thin, Math.max(2, mm(0.6))));
+      y += gap(mm(2.6));
+    }
 
-  parts.push("</svg>");
-  return parts.join("");
+    const band = withQr
+      ? statLine(ctx, { cx, width: contentWidth, y })
+      : statBand(ctx, { x: pad, width: contentWidth, y, compact: true });
+    parts.push(band.svg);
+    y += band.height + (band.height > 0 ? gap(mm(1.6)) : 0);
+
+    // Заголовок не умеет быть ниже своего минимального кегля и может перерасти
+    // отведённый бюджет на пару пикселей. Мета-блоку это стоило бы QR (его
+    // выбрасывают по нехватке высоты), поэтому его высоту гарантируем: пусть
+    // лучше низ подожмёт поле, чем с наклейки исчезнет код рецепта.
+    const meta = bottomMeta(ctx, {
+      x: pad,
+      width: contentWidth,
+      y,
+      maxHeight: Math.max(metaHeight, bottom - y),
+      qrSizeMm: QR_SIZE_MM_M,
+      showAuthor: false
+    });
+    parts.push(meta.svg);
+    y += meta.height;
+
+    return { svg: parts.join(""), end: y, gapCount };
+  };
+
+  const natural = buildBody(0);
+  const extra = distributeSlack(bottom - natural.end, natural.gapCount, mm(2));
+  const body = extra > 0 ? buildBody(extra) : natural;
+
+  const shift = Math.max(0, Math.round((bottom - body.end) / 2));
+  return [
+    svgOpen(ctx),
+    doubleFrame({ widthPx, heightPx, insetPx: inset, thickPx: thick, thinPx: thin, gapPx: mm(0.8) }),
+    `<g transform="translate(0 ${shift})">${body.svg}</g>`,
+    "</svg>"
+  ].join("");
 };
 
 const renderL = (ctx: LabelRenderContext): string => {
@@ -145,7 +206,8 @@ const renderL = (ctx: LabelRenderContext): string => {
   const pad = inset + thick + mm(0.8) + thin + mm(2.4);
   const cx = Math.round(widthPx / 2);
   const contentWidth = widthPx - pad * 2;
-  const qrSizeMm = 13;
+  const qrSizeMm = QR_SIZE_MM_L;
+  const bottom = heightPx - pad;
 
   const titleTop = pad + mm(2.4);
 
@@ -153,14 +215,15 @@ const renderL = (ctx: LabelRenderContext): string => {
   // и отдаём заголовку ровно остаток. Так название ужимается само, а не
   // выдавливает данные (и QR) из нижнего блока.
   const styleProbe = styleLine(ctx, { cx, width: contentWidth, y: 0, sizeMm: 3.2 });
-  const gravityHeight = slots.ogText || slots.fgText ? Math.round(mm(2.8) * 1.7) : 0;
+  const gravityHeight = gravityLine(ctx, { cx, y: 0 }).height;
   const rowsProbe = ingredientRows(ctx, { x: pad, width: contentWidth, y: 0, icons: null });
   const bandProbe = statBand(ctx, { x: pad, width: contentWidth, y: 0 });
   const bitternessProbe = ibuScale(ctx, { x: pad, width: contentWidth, y: 0 });
   const colorProbe = colorScale(ctx, { x: pad, width: contentWidth, y: 0, idPrefix: "probe" });
+  const descriptionProbe = descriptionBlock(ctx, { cx, width: contentWidth, y: 0 });
   const metaHeight = bottomMetaDesiredHeight(ctx, { width: contentWidth, qrSizeMm, showAuthor: true });
 
-  const belowTitle =
+  const belowTitle = (reserveDescription: boolean, withColorScale: boolean): number =>
     mm(1.8) +
     styleProbe.height +
     gravityHeight +
@@ -168,87 +231,372 @@ const renderL = (ctx: LabelRenderContext): string => {
     (rowsProbe.height > 0 ? rowsProbe.height + mm(4.6) : 0) +
     (bandProbe.height > 0 ? bandProbe.height + mm(2) : 0) +
     (bitternessProbe.height > 0 ? bitternessProbe.height + mm(2.6) : 0) +
-    (colorProbe.height > 0 ? colorProbe.height + mm(2.4) : 0) +
+    (withColorScale && colorProbe.height > 0 ? colorProbe.height + mm(2.4) : 0) +
+    (reserveDescription && descriptionProbe.height > 0 ? descriptionProbe.height + mm(2.6) : 0) +
     mm(2.6) +
     metaHeight;
 
-  const body: string[] = [];
-  let y = pad;
-  body.push(hRule(pad, widthPx - pad, y + mm(0.5), mm(1)));
-  y = titleTop;
+  const titleFor = (reserveDescription: boolean, withColorScale: boolean): BlockResult =>
+    titleBlock(ctx, {
+      cx,
+      width: contentWidth,
+      maxSizePx: mm(10),
+      minSizePx: mm(4.6),
+      maxHeightPx: bottom - titleTop - belowTitle(reserveDescription, withColorScale)
+    });
 
-  const title = titleBlock(ctx, {
-    cx,
-    width: contentWidth,
-    maxSizePx: mm(10),
-    minSizePx: mm(4.6),
-    maxHeightPx: heightPx - pad - titleTop - belowTitle
-  });
-  body.push(`<g transform="translate(0 ${y})">${title.svg}</g>`);
-  y += title.height + mm(1.8);
+  type Body = { svg: string; end: number; gapCount: number; descriptionPrinted: boolean; descriptionBudget: number };
 
-  const style = styleLine(ctx, { cx, width: contentWidth, y, sizeMm: 3.2 });
-  body.push(style.svg);
-  y += style.height;
+  // Колонка собирается дважды: сперва с естественными зазорами (чтобы узнать,
+  // сколько высоты осталось неиспользованной), потом — с зазорами, в которые
+  // этот остаток роздан. Заголовок и высота, отведённая описанию, фиксируются
+  // по ПЕРВОМУ проходу и во втором не пересчитываются: иначе раздача остатка
+  // отъедала бы у них ту самую высоту, которую раздаёт.
+  const buildBody = (params: { title: BlockResult; extra: number; descriptionBudget?: number; withColorScale: boolean }): Body => {
+    const parts: string[] = [];
+    let gapCount = 0;
+    const gap = (base: number): number => {
+      gapCount += 1;
+      return base + params.extra;
+    };
 
-  if (slots.ogText || slots.fgText) {
-    const gravSize = mm(2.8);
-    const gravLine = [slots.ogText ? `OG ${slots.ogText}` : null, slots.fgText ? `FG ${slots.fgText}` : null]
-      .filter(Boolean)
-      .join("   ·   ");
-    body.push(textEl({ x: cx, y: y + gravSize, fontId: "mono", sizePx: gravSize, text: gravLine, anchor: "middle" }));
-    y += Math.round(gravSize * 1.7);
+    parts.push(hRule(pad, widthPx - pad, pad + mm(0.5), mm(1)));
+    let y = titleTop;
+
+    parts.push(`<g transform="translate(0 ${y})">${params.title.svg}</g>`);
+    y += params.title.height + gap(mm(1.8));
+
+    const style = styleLine(ctx, { cx, width: contentWidth, y, sizeMm: 3.2 });
+    parts.push(style.svg);
+    y += style.height;
+
+    const gravity = gravityLine(ctx, { cx, y });
+    parts.push(gravity.svg);
+    y += gravity.height;
+
+    parts.push(hRule(pad, widthPx - pad, y + mm(0.6), mm(1)));
+    y += gap(mm(3));
+
+    const rows = ingredientRows(ctx, { x: pad, width: contentWidth, y, icons: null });
+    if (rows.height > 0) {
+      parts.push(rows.svg);
+      y += rows.height + gap(mm(2));
+      parts.push(dottedRule(pad, widthPx - pad, y, thin));
+      y += gap(mm(2.6));
+    }
+
+    const band = statBand(ctx, { x: pad, width: contentWidth, y });
+    if (band.height > 0) {
+      parts.push(band.svg);
+      y += band.height + gap(mm(2));
+    }
+
+    const bitterness = ibuScale(ctx, { x: pad, width: contentWidth, y });
+    if (bitterness.height > 0) {
+      parts.push(bitterness.svg);
+      y += bitterness.height + gap(mm(2.6));
+    }
+
+    if (params.withColorScale) {
+      const color = colorScale(ctx, { x: pad, width: contentWidth, y, idPrefix: "ebc" });
+      if (color.height > 0) {
+        parts.push(color.svg);
+        y += color.height + gap(mm(2.4));
+      }
+    }
+
+    // Описание довольствуется остатком: мета-блок с QR ему не уступает ничего.
+    const descriptionBudget = params.descriptionBudget ?? Math.max(0, bottom - y - mm(2.6) - mm(2.6) - metaHeight);
+    const description = descriptionBlock(ctx, { cx, width: contentWidth, y, maxHeightPx: descriptionBudget });
+    if (description.height > 0) {
+      parts.push(description.svg);
+      y += description.height + gap(mm(2.6));
+    }
+
+    parts.push(dottedRule(pad, widthPx - pad, y, thin));
+    y += gap(mm(2.6));
+
+    const meta = bottomMeta(ctx, {
+      x: pad,
+      width: contentWidth,
+      y,
+      maxHeight: Math.max(metaHeight, bottom - y),
+      qrSizeMm,
+      showAuthor: true
+    });
+    parts.push(meta.svg);
+    y += meta.height;
+
+    return {
+      svg: parts.join(""),
+      end: y,
+      gapCount,
+      descriptionPrinted: description.height > 0,
+      descriptionBudget
+    };
+  };
+
+  let withColorScale = true;
+  let title = titleFor(true, withColorScale);
+  let natural = buildBody({ title, extra: 0, withColorScale });
+
+  // Описание важнее шкалы цвета: EBC уже стоит числом в панели «ЦВЕТ», а
+  // градиентная полоса — самый расходный блок (на «Линейном крафте» её и вовсе
+  // нет). Если описание задано, но со шкалой цвета в высоту не влезло — убираем
+  // шкалу и отдаём место описанию. Без описания шкала печатается как прежде.
+  if (slots.description !== null && !natural.descriptionPrinted && colorProbe.height > 0) {
+    withColorScale = false;
+    title = titleFor(true, withColorScale);
+    natural = buildBody({ title, extra: 0, withColorScale });
   }
 
-  body.push(hRule(pad, widthPx - pad, y + mm(0.6), mm(1)));
-  y += mm(3);
-
-  const rows = ingredientRows(ctx, { x: pad, width: contentWidth, y, icons: null });
-  if (rows.height > 0) {
-    body.push(rows.svg);
-    y += rows.height + mm(2);
-    body.push(dottedRule(pad, widthPx - pad, y, Math.max(2, mm(0.25))));
-    y += mm(2.6);
+  // Описание зарезервировало высоту (заголовок под неё ужали), а само так и не
+  // поместилось даже без шкалы цвета — пересобираем без резерва: высвобожденное
+  // место должно вернуться названию, а не остаться пустым полем.
+  if (slots.description !== null && !natural.descriptionPrinted) {
+    title = titleFor(false, withColorScale);
+    natural = buildBody({ title, extra: 0, withColorScale });
   }
 
-  const band = statBand(ctx, { x: pad, width: contentWidth, y });
-  if (band.height > 0) {
-    body.push(band.svg);
-    y += band.height + mm(2);
-  }
+  const extra = distributeSlack(bottom - natural.end, natural.gapCount, mm(2));
+  const body =
+    extra > 0 ? buildBody({ title, extra, descriptionBudget: natural.descriptionBudget, withColorScale }) : natural;
 
-  const bitterness = ibuScale(ctx, { x: pad, width: contentWidth, y });
-  if (bitterness.height > 0) {
-    body.push(bitterness.svg);
-    y += bitterness.height + mm(2.6);
-  }
-
-  const color = colorScale(ctx, { x: pad, width: contentWidth, y, idPrefix: "ebc" });
-  if (color.height > 0) {
-    body.push(color.svg);
-    y += color.height + mm(2.4);
-  }
-
-  body.push(dottedRule(pad, widthPx - pad, y, Math.max(2, mm(0.25))));
-  y += mm(2.6);
-
-  const meta = bottomMeta(ctx, {
-    x: pad,
-    width: contentWidth,
-    y,
-    maxHeight: heightPx - pad - y,
-    qrSizeMm,
-    showAuthor: true
-  });
-  body.push(meta.svg);
-  y += meta.height;
-
-  // Разреженные данные: центрируем колонку контента по вертикали.
-  const shift = Math.max(0, Math.round((heightPx - pad - y) / 2));
+  // Остаток сверх потолка зазоров: центрируем колонку по вертикали.
+  const shift = Math.max(0, Math.round((bottom - body.end) / 2));
   return [
     svgOpen(ctx),
     doubleFrame({ widthPx, heightPx, insetPx: inset, thickPx: thick, thinPx: thin, gapPx: mm(0.8) }),
-    `<g transform="translate(0 ${shift})">${body.join("")}</g>`,
+    `<g transform="translate(0 ${shift})">${body.svg}</g>`,
+    "</svg>"
+  ].join("");
+};
+
+/**
+ * Горизонтальная большая наклейка (120×75 мм). Площадь та же, что у
+ * вертикальной, но высоты на одну колонку не хватает: блоки вертикального
+ * макета в 75 мм не укладываются. Поэтому контент разложен в две колонки —
+ * слева «лицо» (название, стиль, плотность, описание, розлив и QR), справа
+ * данные (цифры, состав, шкалы). Каждая колонка центрируется по вертикали
+ * отдельно: при разреженных данных пустеет не низ наклейки, а обе колонки
+ * поровну.
+ */
+const renderLWide = (ctx: LabelRenderContext): string => {
+  const { slots, widthPx, heightPx, mm } = ctx;
+  const inset = mm(2);
+  const thick = Math.max(4, mm(0.7));
+  const thin = Math.max(2, mm(0.25));
+  const pad = inset + thick + mm(0.8) + thin + mm(2.4);
+  const contentWidth = widthPx - pad * 2;
+  const contentHeight = heightPx - pad * 2;
+  const columnGap = mm(5);
+  // Правая колонка — данные: состав и шкалы. Одного ABV на неё мало (полколонки
+  // под единственную цифру читаются как брак вёрстки), поэтому при бедных данных
+  // колонки нет вовсе: контент идёт одной колонкой во всю ширину, а цифры —
+  // панелью под строкой плотности.
+  const hasIngredients = slots.malts.length > 0 || slots.hops.length > 0 || slots.yeast !== null;
+  const singleColumn = !hasIngredients && slots.ibu === null && slots.ebc === null;
+  const leftWidth = singleColumn ? contentWidth : Math.round((contentWidth - columnGap) * 0.52);
+  const rightWidth = contentWidth - columnGap - leftWidth;
+  const leftX = pad;
+  const rightX = pad + leftWidth + columnGap;
+  const leftCx = leftX + Math.round(leftWidth / 2);
+  const bottom = pad + contentHeight;
+  const qrSizeMm = QR_SIZE_MM_L;
+  // Потолок на зазор: у колонок мало блоков, и без потолка пара пустых полей
+  // растащила бы их по краям.
+  const maxExtraPerGap = mm(3);
+
+  // ЛЕВАЯ КОЛОНКА. Мета-блок с QR прибит к низу колонки, остальное —
+  // группа над ним: описание довольствуется остатком.
+  const metaHeight = bottomMetaDesiredHeight(ctx, { width: leftWidth, qrSizeMm, showAuthor: true });
+  const metaY = bottom - metaHeight;
+  const upperBottom = metaY - mm(2.8);
+  const upperHeight = upperBottom - pad;
+
+  const styleProbe = styleLine(ctx, { cx: leftCx, width: leftWidth, y: 0, sizeMm: 3 });
+  const gravityProbe = gravityLine(ctx, { cx: leftCx, y: 0 });
+  const bandProbe = singleColumn ? statBand(ctx, { x: leftX, width: leftWidth, y: 0 }) : EMPTY_BLOCK;
+  const descriptionProbe = descriptionBlock(ctx, { cx: leftCx, width: leftWidth, y: 0, maxLines: 5 });
+
+  const belowTitle = (reserveDescription: boolean): number =>
+    mm(1.6) +
+    styleProbe.height +
+    mm(3.2) +
+    gravityProbe.height +
+    (bandProbe.height > 0 ? bandProbe.height + mm(2.4) : 0) +
+    (reserveDescription && descriptionProbe.height > 0 ? descriptionProbe.height + mm(2) : 0);
+
+  const titleFor = (reserveDescription: boolean): BlockResult =>
+    titleBlock(ctx, {
+      cx: leftCx,
+      width: leftWidth,
+      maxSizePx: mm(9),
+      minSizePx: mm(4.2),
+      maxHeightPx: upperHeight - belowTitle(reserveDescription)
+    });
+
+  type Column = { svg: string; height: number; gapCount: number };
+  type LeftColumn = Column & { descriptionPrinted: boolean; descriptionBudget: number };
+
+  const buildLeft = (params: { title: BlockResult; extra: number; descriptionBudget?: number }): LeftColumn => {
+    const parts: string[] = [];
+    let gapCount = 0;
+    const gap = (base: number): number => {
+      gapCount += 1;
+      return base + params.extra;
+    };
+
+    let ly = 0;
+    // Высота колонки — низ последнего НАПЕЧАТАННОГО блока, а не курсор потока:
+    // зазор, выданный перед пустым блоком (нет описания), остаётся в курсоре
+    // «призраком», и центрирование задирает весь контент колонки вверх.
+    let end = 0;
+
+    parts.push(`<g transform="translate(0 ${ly})">${params.title.svg}</g>`);
+    ly += params.title.height;
+    end = ly;
+    ly += gap(mm(1.6));
+
+    const style = styleLine(ctx, { cx: leftCx, width: leftWidth, y: ly, sizeMm: 3 });
+    parts.push(style.svg);
+    ly += style.height;
+    end = ly;
+
+    parts.push(hRule(leftX, leftX + leftWidth, ly + mm(0.8), mm(1)));
+    ly += gap(mm(3.2));
+
+    const gravity = gravityLine(ctx, { cx: leftCx, y: ly });
+    parts.push(gravity.svg);
+    ly += gravity.height;
+    if (gravity.height > 0) {
+      end = ly;
+    }
+
+    if (singleColumn) {
+      const leftBand = statBand(ctx, { x: leftX, width: leftWidth, y: ly });
+      if (leftBand.height > 0) {
+        parts.push(leftBand.svg);
+        ly += leftBand.height;
+        end = ly;
+        ly += gap(mm(2.4));
+      }
+    }
+
+    const descriptionBudget = params.descriptionBudget ?? Math.max(0, upperHeight - ly);
+    const description = descriptionBlock(ctx, {
+      cx: leftCx,
+      width: leftWidth,
+      y: ly,
+      maxLines: 5,
+      maxHeightPx: descriptionBudget
+    });
+    if (description.height > 0) {
+      parts.push(description.svg);
+      end = ly + description.height;
+    }
+
+    return {
+      svg: parts.join(""),
+      height: end,
+      gapCount,
+      descriptionPrinted: description.height > 0,
+      descriptionBudget
+    };
+  };
+
+  let title = titleFor(true);
+  let leftNatural = buildLeft({ title, extra: 0 });
+  // Описание зарезервировало высоту, но не поместилось — вернём её названию.
+  if (slots.description !== null && !leftNatural.descriptionPrinted) {
+    title = titleFor(false);
+    leftNatural = buildLeft({ title, extra: 0 });
+  }
+  const leftExtra = distributeSlack(upperHeight - leftNatural.height, leftNatural.gapCount, maxExtraPerGap);
+  const left =
+    leftExtra > 0
+      ? buildLeft({ title, extra: leftExtra, descriptionBudget: leftNatural.descriptionBudget })
+      : leftNatural;
+
+  const leftShift = pad + Math.max(0, Math.round((upperHeight - left.height) / 2));
+  const meta = bottomMeta(ctx, { x: leftX, width: leftWidth, y: metaY, maxHeight: metaHeight, qrSizeMm, showAuthor: true });
+
+  // ПРАВАЯ КОЛОНКА. Шкала цвета — младший блок: если полный набор данных не
+  // укладывается в высоту, печатаем всё без неё (EBC остаётся цифрой в панели).
+  const buildRight = (params: { withColorScale: boolean; extra: number }): Column => {
+    const parts: string[] = [];
+    let gapCount = 0;
+    const gap = (base: number): number => {
+      gapCount += 1;
+      return base + params.extra;
+    };
+    let ry = 0;
+    // Как и в левой колонке: высота — по низу последнего напечатанного блока,
+    // иначе зазор перед несостоявшейся шкалой уезжает в высоту колонки.
+    let end = 0;
+
+    const band = statBand(ctx, { x: rightX, width: rightWidth, y: ry });
+    if (band.height > 0) {
+      parts.push(band.svg);
+      ry += band.height;
+      end = ry;
+      ry += gap(mm(2.2));
+      // Разделитель — только если под ним что-то есть: линейка в пустоту.
+      if (hasIngredients) {
+        parts.push(dottedRule(rightX, rightX + rightWidth, ry, thin));
+        ry += gap(mm(2.4));
+      }
+    }
+
+    const rows = ingredientRows(ctx, { x: rightX, width: rightWidth, y: ry, icons: null });
+    if (rows.height > 0) {
+      parts.push(rows.svg);
+      ry += rows.height;
+      end = ry;
+      ry += gap(mm(3));
+    }
+
+    const bitterness = ibuScale(ctx, { x: rightX, width: rightWidth, y: ry });
+    if (bitterness.height > 0) {
+      parts.push(bitterness.svg);
+      ry += bitterness.height;
+      end = ry;
+      ry += gap(mm(2.6));
+    }
+
+    if (params.withColorScale) {
+      const color = colorScale(ctx, { x: rightX, width: rightWidth, y: ry, idPrefix: "ebc" });
+      if (color.height > 0) {
+        parts.push(color.svg);
+        end = ry + color.height;
+      }
+    }
+
+    return { svg: parts.join(""), height: end, gapCount };
+  };
+
+  // Без цифр и состава (singleColumn) блоки правой колонки схлопываются сами.
+  let withColorScale = true;
+  let rightNatural = buildRight({ withColorScale, extra: 0 });
+  if (rightNatural.height > contentHeight) {
+    withColorScale = false;
+    rightNatural = buildRight({ withColorScale, extra: 0 });
+  }
+  const rightExtra = distributeSlack(contentHeight - rightNatural.height, rightNatural.gapCount, maxExtraPerGap);
+  const right = rightExtra > 0 ? buildRight({ withColorScale, extra: rightExtra }) : rightNatural;
+  const rightShift = pad + Math.max(0, Math.round((contentHeight - right.height) / 2));
+
+  return [
+    svgOpen(ctx),
+    doubleFrame({ widthPx, heightPx, insetPx: inset, thickPx: thick, thinPx: thin, gapPx: mm(0.8) }),
+    `<g transform="translate(0 ${leftShift})">${left.svg}</g>`,
+    meta.svg,
+    singleColumn
+      ? ""
+      : [
+          vRule(rightX - Math.round(columnGap / 2), pad, bottom, thin),
+          `<g transform="translate(0 ${rightShift})">${right.svg}</g>`
+        ].join(""),
     "</svg>"
   ].join("");
 };
@@ -263,6 +611,6 @@ export const typographicTemplate: LabelTemplate = {
     if (ctx.tier === "M") {
       return renderM(ctx);
     }
-    return renderL(ctx);
+    return ctx.orientation === "landscape" ? renderLWide(ctx) : renderL(ctx);
   }
 };

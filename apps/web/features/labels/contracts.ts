@@ -13,10 +13,14 @@ export const pxPerMm = (dpi: LabelDpi): number => (dpi === 203 ? 8 : 300 / 25.4)
 
 export const mmToPx = (mm: number, dpi: LabelDpi): number => Math.round(mm * pxPerMm(dpi));
 
-// Контент-tier совпадает с пресетом размера (S/M/L); A4 — режим листа,
-// а не отдельный tier: на листе тиражируется выбранный пресет.
+// Контент-tier — это НАБОР блоков наклейки (сколько данных на неё влезает), а
+// не её размер: у большой наклейки два пресета одной площади — вертикальный
+// 75×120 и горизонтальный 120×75. Оба несут одинаковый контент (tier "L"), но
+// раскладываются по-разному: вертикальная — одной колонкой, горизонтальная —
+// двумя. A4 — режим листа, а не tier: на листе тиражируется выбранный пресет.
 export type LabelTier = "S" | "M" | "L";
-export type LabelPresetId = LabelTier;
+export type LabelPresetId = "S" | "M" | "L" | "LW";
+export type LabelOrientation = "portrait" | "landscape";
 
 export type LabelPreset = {
   id: LabelPresetId;
@@ -30,10 +34,17 @@ export type LabelPreset = {
 export const LABEL_PRESETS: Record<LabelPresetId, LabelPreset> = {
   S: { id: "S", widthMm: 43, heightMm: 25, tier: "S", sizeLabel: "43×25 мм" },
   M: { id: "M", widthMm: 58, heightMm: 40, tier: "M", sizeLabel: "58×40 мм" },
-  L: { id: "L", widthMm: 75, heightMm: 120, tier: "L", sizeLabel: "75×120 мм" }
+  L: { id: "L", widthMm: 75, heightMm: 120, tier: "L", sizeLabel: "75×120 мм" },
+  LW: { id: "LW", widthMm: 120, heightMm: 75, tier: "L", sizeLabel: "120×75 мм" }
 };
 
-export const LABEL_PRESET_IDS = ["S", "M", "L"] as const satisfies readonly LabelPresetId[];
+export const LABEL_PRESET_IDS = ["S", "M", "L", "LW"] as const satisfies readonly LabelPresetId[];
+
+export const presetOrientation = (preset: LabelPreset): LabelOrientation =>
+  preset.widthMm > preset.heightMm ? "landscape" : "portrait";
+
+/** Большая наклейка — оба её пресета: только там печатаются описание и шкалы. */
+export const isLargePreset = (preset: LabelPresetId): boolean => LABEL_PRESETS[preset].tier === "L";
 
 // Безопасное поле: термопринтеры смещают позиционирование до ~2 мм.
 export const SAFE_MARGIN_MM = 2;
@@ -43,6 +54,14 @@ export const MIN_STROKE_MM = 0.25;
 export const QR_MIN_MODULE_PX = 2;
 // Целевой печатный размер QR — не меньше 10×10 мм.
 export const QR_TARGET_MIN_MM = 10;
+// Сторона QR на наклейке. S не печатает QR вовсе: на 43×25 мм нет мета-блока,
+// и код такого размера всё равно не считался бы.
+// 13 мм — не эстетика, а порог печати: при 10 мм и 203 dpi модуль кода для
+// реального адреса рецепта (~50–80 символов) выходит мельче 0,25 мм, и QR
+// не печатается вовсе. На 13 мм модуль остаётся ≥ 2 px даже для длинных слагов.
+export const QR_SIZE_MM_M = 13;
+export const QR_SIZE_MM_L = 13;
+export const QR_SIZE_MM_BY_TIER: Record<LabelTier, number | null> = { S: null, M: QR_SIZE_MM_M, L: QR_SIZE_MM_L };
 
 // Марка внизу наклейки. Строка-плейсхолдер: финальную формулировку (NB/hmelo)
 // утверждает владелец продукта.
@@ -94,6 +113,46 @@ export const LABEL_TEMPLATE_IDS = ["typographic", "craft"] as const;
 export type LabelTemplateId = (typeof LABEL_TEMPLATE_IDS)[number];
 
 /**
+ * Максимальная длина каждого поля студии — ЕДИНСТВЕННЫЙ источник: отсюда
+ * строится и серверная схема, и `maxLength` полей формы. Разъехавшиеся лимиты
+ * = форма собирает запрос, который сервер отвергает 400-ым, а превью молча
+ * замирает на прошлой картинке.
+ */
+export const LABEL_FIELD_LIMITS = {
+  title: 120,
+  style: 80,
+  abv: 16,
+  ibu: 8,
+  ebc: 8,
+  og: 12,
+  fg: 12,
+  malts: 240,
+  hops: 240,
+  yeast: 80,
+  description: 220,
+  volume: 16,
+  batch: 16,
+  author: 60,
+  brand: 60,
+  recipeSlug: 160
+} as const satisfies Record<string, number>;
+
+export type LabelFieldKey = keyof typeof LABEL_FIELD_LIMITS;
+
+/**
+ * Потолок числовых полей (IBU/EBC). Цифры печатаются в узкой колонке панели
+ * данных и ставят маркер на шкале: 4-значное значение вылезает за колонку, а
+ * отрицательное уводит остриё маркера за край наклейки.
+ */
+export const LABEL_NUMBER_MAX = 999;
+/** Шаблон печатает максимум 8 имён и сворачивает остаток в «+N»; дюжина — запас. */
+export const LABEL_LIST_MAX_NAMES = 12;
+/** Длина одного имени в списке: длиннее шаблон всё равно режет по ширине. */
+export const LABEL_LIST_NAME_MAX_LENGTH = 40;
+
+const limited = (key: LabelFieldKey) => z.string().max(LABEL_FIELD_LIMITS[key]).optional();
+
+/**
  * Правки полей наклейки. Данные подставляются из рецепта автоматически, но
  * любое поле можно переопределить или очистить. Семантика ключа:
  *   ключа нет  → значение из рецепта;
@@ -102,24 +161,87 @@ export type LabelTemplateId = (typeof LABEL_TEMPLATE_IDS)[number];
  * Так «очистить поле» отличается от «не трогать».
  */
 export const labelOverridesSchema = z.object({
-  title: z.string().max(120).optional(),
-  style: z.string().max(80).optional(),
-  abv: z.string().max(16).optional(),
-  ibu: z.string().max(8).optional(),
-  ebc: z.string().max(8).optional(),
-  og: z.string().max(12).optional(),
-  fg: z.string().max(12).optional(),
+  title: limited("title"),
+  style: limited("style"),
+  abv: limited("abv"),
+  ibu: limited("ibu"),
+  ebc: limited("ebc"),
+  og: limited("og"),
+  fg: limited("fg"),
   /** Списки — через запятую: «Pilsner, Munich». */
-  malts: z.string().max(240).optional(),
-  hops: z.string().max(240).optional(),
-  yeast: z.string().max(80).optional(),
-  author: z.string().max(60).optional(),
-  brand: z.string().max(60).optional(),
+  malts: limited("malts"),
+  hops: limited("hops"),
+  yeast: limited("yeast"),
+  /** Пара предложений о пиве; места хватает только на большой наклейке. */
+  description: limited("description"),
+  /** Эмблема (шишка хмеля в «Линейном крафте»); выключается правкой. */
+  logo: z.enum(["0", "1"]).optional(),
+  /** Шкала горечи на большой наклейке; выключается правкой. */
+  ibuScale: z.enum(["0", "1"]).optional(),
+  /** Объём тары («0,5 л») — реквизит бутылки, не объём варки. */
+  volume: limited("volume"),
+  /** Номер партии — печатается как «ПАРТИЯ №3». */
+  batch: limited("batch"),
+  author: limited("author"),
+  brand: limited("brand"),
+  /**
+   * Рецепт, на который ведёт QR (ручной режим /labels): слаг публичной страницы
+   * либо полный URL нашего домена. Произвольные ссылки не принимаем — иначе
+   * публичный эндпоинт становится генератором QR на любой сайт с нашего домена.
+   */
+  recipeSlug: limited("recipeSlug"),
   /** Выключить QR можно всегда; включить — только у опубликованного рецепта. */
   qr: z.enum(["0", "1"]).optional()
 });
 
 export type LabelOverrides = z.infer<typeof labelOverridesSchema>;
+
+/**
+ * Приводит ввод «ссылка на рецепт» к слагу. Принимает голый слаг и полный URL
+ * страницы рецепта или страницы пива (/recipes/…, /beer/…) — но только нашего
+ * домена: QR печатается с нашего бренда, и вести он должен на наш рецепт, а не
+ * на произвольный сайт. Всё остальное — null (QR просто не появится).
+ */
+export const parseRecipeSlugInput = (input: string, baseUrl: string): string | null => {
+  const trimmed = input.trim();
+  if (trimmed.length === 0) {
+    return null;
+  }
+  const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/i;
+  if (slugPattern.test(trimmed)) {
+    return trimmed;
+  }
+  try {
+    const url = new URL(trimmed);
+    const base = new URL(baseUrl);
+    if (url.host !== base.host) {
+      return null;
+    }
+    const match = /^\/(?:recipes|beer)\/([^/?#]+)\/?$/.exec(url.pathname);
+    const slug = match ? decodeURIComponent(match[1]) : null;
+    return slug && slugPattern.test(slug) ? slug : null;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Дата розлива печатается как есть, поэтому проверяем не только формат, но и
+ * календарь: `new Date("2026-02-31")` молча переносит на 03.03.2026, а
+ * «9999-99-99» — на 07.06.10007 (вектор — ссылка, не форма: там `<input
+ * type="date">`).
+ */
+export const isValidIsoDate = (value: string): boolean => {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) {
+    return false;
+  }
+  const [year, month, day] = [Number(match[1]), Number(match[2]), Number(match[3])];
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return (
+    date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day
+  );
+};
 
 export const labelRenderRequestSchema = labelOverridesSchema.extend({
   template: z.enum(LABEL_TEMPLATE_IDS).default("typographic"),
@@ -140,10 +262,7 @@ export const labelRenderRequestSchema = labelOverridesSchema.extend({
     .default("0")
     .transform((value) => value === "1"),
   /** Дата розлива (YYYY-MM-DD); пусто — блоки даты не печатаются. */
-  bottlingDate: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .optional(),
+  bottlingDate: z.string().refine(isValidIsoDate).optional(),
   download: z
     .enum(["0", "1"])
     .default("0")
@@ -169,6 +288,16 @@ export type LabelSlots = {
   hops: string[];
   malts: string[];
   yeast: string | null;
+  /** Пара предложений о пиве; печатается только на большой наклейке (на S/M нет места). */
+  description: string | null;
+  /** Печатать эмблему (шишка хмеля в «Линейном крафте»). */
+  showLogo: boolean;
+  /** Печатать шкалу горечи (большая наклейка). */
+  showIbuScale: boolean;
+  /** Объём тары («0,5 л»); печатается строкой «0,5 Л · ПАРТИЯ №3». */
+  volumeText: string | null;
+  /** Номер партии («3» или «№3»); печатается в той же строке, что и объём. */
+  batchText: string | null;
   authorName: string | null;
   /** «ДД.ММ.ГГГГ» или null — тогда дата не печатается. */
   bottlingDateText: string | null;
