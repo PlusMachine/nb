@@ -1401,21 +1401,24 @@ export const getBatchVolumeLiters = (quantityInput: string, unit: InventoryUnit)
 };
 
 /**
- * Когда показывать инлайн-действие «Пересчитать под объём» (#6): только если
- * известен и сохранённый, и текущий объём, они реально разошлись (не шум
- * округления) и в рецепте есть что масштабировать. Чистый хелпер — без React,
- * чтобы поведение проверялось юнит-тестом отдельно от рендера всего дизайнера.
+ * Когда показывать действие «Пересчитать ингредиенты под N л» (#6): только если
+ * известны и база масштабирования (объём, под который набраны текущие количества),
+ * и текущий объём, они реально разошлись (не шум округления) и в рецепте есть что
+ * масштабировать. База — НЕ «объём последнего сохранения»: автосейв срабатывает
+ * через 1.5 с и раньше сам сдвигал базу под текущий объём, отчего действие
+ * исчезало, не дождавшись пользователя. Чистый хелпер — без React, чтобы
+ * поведение проверялось юнит-тестом отдельно от рендера всего дизайнера.
  */
 export const shouldShowRescaleToVolumeAction = (input: {
-  savedBatchVolumeL: number | null;
+  scaleBaseVolumeL: number | null;
   currentBatchVolumeL: number | null;
   ingredientCount: number;
 }): boolean => (
-  input.savedBatchVolumeL != null
-  && input.savedBatchVolumeL > 0
+  input.scaleBaseVolumeL != null
+  && input.scaleBaseVolumeL > 0
   && input.currentBatchVolumeL != null
   && input.currentBatchVolumeL > 0
-  && Math.abs(input.currentBatchVolumeL - input.savedBatchVolumeL) > 0.001
+  && Math.abs(input.currentBatchVolumeL - input.scaleBaseVolumeL) > 0.001
   && input.ingredientCount > 0
 );
 

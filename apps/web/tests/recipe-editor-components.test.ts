@@ -146,6 +146,8 @@ const buildEquipmentProfile = (overrides: Partial<EquipmentProfileDto> = {}): Eq
   grainAbsorptionLPerKg: 0.8,
   coolingShrinkagePct: 4,
   mashThicknessLPerKg: 3,
+  mashTunDeadspaceL: 0,
+  minMashVolumeL: null,
   maxMashVolumeL: null,
   maxKettleVolumeL: null,
   hopUtilizationFactor: 1,
@@ -1037,44 +1039,44 @@ describe("recipe editor components", () => {
     });
   });
 
-  it("shows the rescale-to-volume action only when saved and current volumes actually diverge (#6)", () => {
+  it("shows the rescale-to-volume action only when the scale base and current volume actually diverge (#6)", () => {
     expect(shouldShowRescaleToVolumeAction({
-      savedBatchVolumeL: 20,
+      scaleBaseVolumeL: 20,
       currentBatchVolumeL: 30,
       ingredientCount: 3
     })).toBe(true);
 
-    // Nothing saved yet (still loading/new recipe) — no baseline to diff against.
+    // No scale base yet (volume field never resolved) — nothing to diff against.
     expect(shouldShowRescaleToVolumeAction({
-      savedBatchVolumeL: null,
+      scaleBaseVolumeL: null,
       currentBatchVolumeL: 30,
       ingredientCount: 3
     })).toBe(false);
 
-    // Same volume as last save — nothing to rescale.
+    // Volume still matches the base the amounts were entered for — nothing to rescale.
     expect(shouldShowRescaleToVolumeAction({
-      savedBatchVolumeL: 20,
+      scaleBaseVolumeL: 20,
       currentBatchVolumeL: 20,
       ingredientCount: 3
     })).toBe(false);
 
     // Tiny float noise from unit conversion shouldn't flip the action on.
     expect(shouldShowRescaleToVolumeAction({
-      savedBatchVolumeL: 20,
+      scaleBaseVolumeL: 20,
       currentBatchVolumeL: 20.0001,
       ingredientCount: 3
     })).toBe(false);
 
     // No ingredients yet — nothing to scale, by default quantities stay untouched.
     expect(shouldShowRescaleToVolumeAction({
-      savedBatchVolumeL: 20,
+      scaleBaseVolumeL: 20,
       currentBatchVolumeL: 30,
       ingredientCount: 0
     })).toBe(false);
 
     // Volume field currently empty/invalid — nothing to compare against.
     expect(shouldShowRescaleToVolumeAction({
-      savedBatchVolumeL: 20,
+      scaleBaseVolumeL: 20,
       currentBatchVolumeL: null,
       ingredientCount: 3
     })).toBe(false);

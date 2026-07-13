@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 
+import { Select } from "@nb/ui";
+import { equipmentPresets } from "@/features/equipment/presets";
 import type { EquipmentProfilePayload } from "@/features/equipment-profiles/contracts";
 
 export const equipmentFormInputClassName = "mt-1 h-9 w-full rounded-md border border-border bg-card px-2.5 text-sm text-foreground";
@@ -18,6 +20,9 @@ type EquipmentProfileFormValues = {
   grainAbsorptionLPerKg: string;
   coolingShrinkagePct: string;
   mashThicknessLPerKg: string;
+  mashTunDeadspaceL: string;
+  minMashVolumeL: string;
+  maxGrainKg: string;
   maxMashVolumeL: string;
   maxKettleVolumeL: string;
   hopUtilizationFactor: string;
@@ -37,6 +42,9 @@ const profileToFormValues = (profile: EquipmentProfilePayload): EquipmentProfile
   grainAbsorptionLPerKg: optionalValue(profile.grainAbsorptionLPerKg),
   coolingShrinkagePct: optionalValue(profile.coolingShrinkagePct),
   mashThicknessLPerKg: optionalValue(profile.mashThicknessLPerKg),
+  mashTunDeadspaceL: optionalValue(profile.mashTunDeadspaceL),
+  minMashVolumeL: optionalValue(profile.minMashVolumeL),
+  maxGrainKg: optionalValue(profile.maxGrainKg),
   maxMashVolumeL: optionalValue(profile.maxMashVolumeL),
   maxKettleVolumeL: optionalValue(profile.maxKettleVolumeL),
   hopUtilizationFactor: optionalValue(profile.hopUtilizationFactor),
@@ -68,6 +76,9 @@ const formValuesToProfile = (values: EquipmentProfileFormValues): EquipmentProfi
   grainAbsorptionLPerKg: toNumber(values.grainAbsorptionLPerKg),
   coolingShrinkagePct: Math.min(Math.max(toNumber(values.coolingShrinkagePct), 0), 20),
   mashThicknessLPerKg: toNumber(values.mashThicknessLPerKg),
+  mashTunDeadspaceL: toNumber(values.mashTunDeadspaceL),
+  minMashVolumeL: toOptionalNumber(values.minMashVolumeL),
+  maxGrainKg: toOptionalNumber(values.maxGrainKg),
   maxMashVolumeL: toOptionalNumber(values.maxMashVolumeL),
   maxKettleVolumeL: toOptionalNumber(values.maxKettleVolumeL),
   hopUtilizationFactor: toNumber(values.hopUtilizationFactor, 1),
@@ -109,15 +120,88 @@ function NumberField({
   );
 }
 
-export function EquipmentProfileFormFields({ profile }: { profile: EquipmentProfilePayload }) {
+const presetGroups = equipmentPresets.reduce<Array<{ brand: string; items: typeof equipmentPresets }>>(
+  (groups, item) => {
+    const group = groups.find((candidate) => candidate.brand === item.brand);
+
+    if (group) {
+      group.items.push(item);
+    } else {
+      groups.push({ brand: item.brand, items: [item] });
+    }
+
+    return groups;
+  },
+  []
+);
+
+/** Имя профиля уникально в пределах пользователя, поэтому второй «Grainfather G30»
+ *  без суффикса упал бы уже на вставке в БД. */
+const buildUnusedName = (name: string, takenNames: string[]) => {
+  const taken = new Set(takenNames);
+
+  if (!taken.has(name)) {
+    return name;
+  }
+
+  for (let index = 2; index < 100; index += 1) {
+    const candidate = `${name} (${index})`;
+
+    if (!taken.has(candidate)) {
+      return candidate;
+    }
+  }
+
+  return name;
+};
+
+export function EquipmentProfileFormFields({
+  profile,
+  showPresets = false,
+  existingNames = []
+}: {
+  profile: EquipmentProfilePayload;
+  showPresets?: boolean;
+  existingNames?: string[];
+}) {
   const [values, setValues] = useState(() => profileToFormValues(profile));
+  const [presetId, setPresetId] = useState("");
 
   const setNumberField = (name: NumberFieldName, value: string) => {
     setValues((current) => ({ ...current, [name]: value }));
   };
 
+  const applyPreset = (nextPresetId: string) => {
+    setPresetId(nextPresetId);
+
+    const selected = equipmentPresets.find((item) => item.id === nextPresetId);
+
+    setValues(profileToFormValues(selected
+      ? { ...selected.profile, name: buildUnusedName(selected.profile.name, existingNames) }
+      : profile));
+  };
+
   return (
     <div className="space-y-4">
+      {showPresets ? (
+        <Select
+          label="Модель пивоварни"
+          value={presetId}
+          onChange={(event) => applyPreset(event.target.value)}
+        >
+          <option value="">Своя сборка</option>
+          {presetGroups.map((group) => (
+            <optgroup key={group.brand} label={group.brand}>
+              {group.items.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.brand} {item.model}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </Select>
+      ) : null}
+
       <section className="space-y-3">
         <div className="grid gap-3 md:grid-cols-3">
           <label className="text-xs font-medium text-muted-foreground md:col-span-3">
@@ -143,6 +227,9 @@ export function EquipmentProfileFormFields({ profile }: { profile: EquipmentProf
         <div className="mt-3 grid gap-3 md:grid-cols-3">
           <NumberField name="fermenterLossL" label="Потери в ферментере, л" value={values.fermenterLossL} onChange={setNumberField} />
           <NumberField name="coolingShrinkagePct" label="Усадка при охлаждении, %" value={values.coolingShrinkagePct} onChange={setNumberField} step={0.1} max={20} />
+          <NumberField name="mashTunDeadspaceL" label="Мертвый объем заторника, л" value={values.mashTunDeadspaceL} onChange={setNumberField} />
+          <NumberField name="minMashVolumeL" label="Мин. объем заторника, л (опц.)" value={values.minMashVolumeL} onChange={setNumberField} />
+          <NumberField name="maxGrainKg" label="Макс. засыпь, кг (опц.)" value={values.maxGrainKg} onChange={setNumberField} />
           <NumberField name="maxMashVolumeL" label="Макс. объем заторника, л (опц.)" value={values.maxMashVolumeL} onChange={setNumberField} />
           <NumberField name="maxKettleVolumeL" label="Макс. объем котла, л (опц)" value={values.maxKettleVolumeL} onChange={setNumberField} />
           <NumberField name="hopUtilizationFactor" label="Калибровка утилизации хмеля" value={values.hopUtilizationFactor} onChange={setNumberField} step={0.01} min={0.01} />

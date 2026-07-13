@@ -15,6 +15,11 @@ import { resolveRecipeFgHelperText, resolveRecipeFgSourceLabel } from "@/feature
 import { formatEquipmentProfilePercentValue, formatEquipmentProfileLitersValue } from "./helpers";
 import { FgSettingsPopover } from "./fg-settings-popover";
 
+// Числовые поля партии держат 3 знака — ширину колонки задаёт подпись, а не поле,
+// поэтому остаток строки достаётся селекту оборудования с длинными именами профилей.
+const numericFieldWidthClass = "w-[92px]";
+const numericInputClass = "h-9 w-full rounded-lg border border-border bg-card px-2.5 pr-7 text-base tabular-nums text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm";
+
 export function RecipeBatchParametersBlock({
   batchSize,
   setBatchSize,
@@ -210,38 +215,24 @@ export function RecipeBatchParametersBlock({
           })}
         </dl>
 
-        <div className="mt-auto border-t border-border pt-3">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 sm:items-end">
+        <div className="mt-auto space-y-2 border-t border-border pt-3">
+          <div className="flex flex-wrap items-end gap-3">
             <label className="space-y-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-              Объём
-              <div className="relative">
-                <NumericInput min={0.1} max={10000} step={0.1} value={batchSize.quantity} onChange={(event) => setBatchSize((current) => ({ ...current, quantity: event.target.value }))} className="h-9 w-full rounded-lg border border-border bg-card px-2.5 pr-10 text-base tabular-nums text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm" />
-                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm font-medium text-muted-foreground">
-                  л
-                </span>
-              </div>
+              Объём, л
+              <NumericInput withSteppers wrapperClassName={numericFieldWidthClass} min={0.1} max={10000} step={1} value={batchSize.quantity} onChange={(event) => setBatchSize((current) => ({ ...current, quantity: event.target.value }))} className={numericInputClass} />
               {sectionErrors.batchSizeEnteredQuantity ? <span className="block text-xs normal-case tracking-normal text-destructive">{sectionErrors.batchSizeEnteredQuantity}</span> : null}
-              {canRescaleToVolume ? (
-                <button
-                  type="button"
-                  onClick={onRescaleToVolume}
-                  className="mt-1 block text-xs font-medium normal-case tracking-normal text-muted-foreground underline decoration-border underline-offset-2 transition-colors hover:text-foreground"
-                >
-                  Пересчитать под объём
-                </button>
-              ) : null}
             </label>
             <label className="space-y-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
               Эффективность, %
-              <NumericInput min={1} max={100} step={0.1} value={efficiency} onChange={(event) => setEfficiency(event.target.value)} className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-base tabular-nums text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm" />
+              <NumericInput withSteppers wrapperClassName={numericFieldWidthClass} min={1} max={100} step={1} value={efficiency} onChange={(event) => setEfficiency(event.target.value)} className={numericInputClass} />
               {sectionErrors.efficiency ? <span className="block text-xs normal-case tracking-normal text-destructive">{sectionErrors.efficiency}</span> : null}
             </label>
             <label className="space-y-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
               Кипячение, мин
-              <NumericInput integer min={1} max={600} step={1} value={boilTimeMinutes} onChange={(event) => setBoilTimeMinutes(event.target.value)} className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-base tabular-nums text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm" />
+              <NumericInput withSteppers wrapperClassName={numericFieldWidthClass} integer min={1} max={600} step={5} value={boilTimeMinutes} onChange={(event) => setBoilTimeMinutes(event.target.value)} className={numericInputClass} />
               {sectionErrors.boilTimeMinutes ? <span className="block text-xs normal-case tracking-normal text-destructive">{sectionErrors.boilTimeMinutes}</span> : null}
             </label>
-            <label className="space-y-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            <label className="min-w-0 flex-1 basis-48 space-y-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
               Оборудование
               <select
                 value={equipmentProfileSelectValue}
@@ -258,6 +249,16 @@ export function RecipeBatchParametersBlock({
               </select>
             </label>
           </div>
+
+          {canRescaleToVolume ? (
+            <button
+              type="button"
+              onClick={onRescaleToVolume}
+              className="inline-flex items-center rounded-lg border border-border bg-muted/60 px-2.5 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent"
+            >
+              Пересчитать ингредиенты под {batchSize.quantity} л
+            </button>
+          ) : null}
         </div>
       </div>
     </div>

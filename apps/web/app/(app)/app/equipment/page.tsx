@@ -24,10 +24,12 @@ type ProfileFormValue = EquipmentProfilePayload & { id?: string };
 
 function EquipmentProfileForm({
   profile,
-  mode
+  mode,
+  existingNames = []
 }: {
   profile: ProfileFormValue;
   mode: "create" | "edit";
+  existingNames?: string[];
 }) {
   const action = mode === "create"
     ? createEquipmentProfileAction
@@ -35,7 +37,11 @@ function EquipmentProfileForm({
 
   return (
     <form action={action} className="space-y-4">
-      <EquipmentProfileFormFields profile={profile} />
+      <EquipmentProfileFormFields
+        profile={profile}
+        showPresets={mode === "create"}
+        existingNames={existingNames}
+      />
       <div className="flex flex-wrap items-center gap-2 border-t border-border pt-4">
         <Button type="submit" size="sm">
           {mode === "create" ? "Создать профиль" : "Сохранить профиль"}
@@ -60,6 +66,9 @@ const toProfileFormValue = (profile: EquipmentProfileDto): ProfileFormValue => (
   grainAbsorptionLPerKg: profile.grainAbsorptionLPerKg,
   coolingShrinkagePct: profile.coolingShrinkagePct,
   mashThicknessLPerKg: profile.mashThicknessLPerKg,
+  mashTunDeadspaceL: profile.mashTunDeadspaceL,
+  minMashVolumeL: profile.minMashVolumeL,
+  maxGrainKg: profile.maxGrainKg,
   maxMashVolumeL: profile.maxMashVolumeL,
   maxKettleVolumeL: profile.maxKettleVolumeL,
   hopUtilizationFactor: profile.hopUtilizationFactor,
@@ -206,7 +215,12 @@ export default async function EquipmentProfilesPage({
               <h2 className="text-base font-semibold text-foreground">Новый профиль</h2>
             </div>
           </div>
-          <EquipmentProfileForm key="create" profile={starterProfile} mode="create" />
+          <EquipmentProfileForm
+            key="create"
+            profile={starterProfile}
+            mode="create"
+            existingNames={profiles.map((profile) => profile.name)}
+          />
         </section>
       ) : null}
 

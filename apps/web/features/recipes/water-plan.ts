@@ -25,7 +25,10 @@ import {
   starterEquipmentProfileDefaults,
   type EquipmentProfileSnapshot,
 } from "../equipment-profiles/contracts";
-import { calculateEquipmentVolumePlan } from "../equipment-profiles/volume-plan";
+import {
+  calculateEquipmentVolumePlan,
+  type EquipmentVolumeLimits,
+} from "../equipment-profiles/volume-plan";
 
 export type RecipeWaterPlanFermentableInput = {
   name?: string | null;
@@ -76,6 +79,9 @@ export type RecipeWaterPlanResult = {
     | null;
   predictedMashPhAfterAcid20C: number | null;
   warnings: string[];
+  /** Лимиты оборудования, на которые ссылаются предупреждения плана: нужны, чтобы
+   *  назвать в тексте конкретные числа («засыпь 8,3 кг при лимите 7 кг»). */
+  equipmentLimits: EquipmentVolumeLimits | null;
 };
 
 const ionKeys: Array<keyof Omit<WaterProfile, "ph">> = [
@@ -413,6 +419,8 @@ export const buildRecipeWaterPlanResult = (input: {
     spargeWaterL: number;
     grainAbsorptionLPerKg?: number | null;
     grainAbsorptionLossL?: number | null;
+    warnings?: string[];
+    limits?: EquipmentVolumeLimits | null;
   } | null;
   grainKg: number;
   beerSrm?: number | null;
@@ -645,11 +653,17 @@ export const buildRecipeWaterPlanResult = (input: {
         })
       : null;
 
+  // Предупреждения объёмного плана (котёл/заторник/засыпь) до сих пор считались
+  // и молча выбрасывались: показать их было негде. Отдаём вместе с водными — это
+  // единственное место, где пользователь видит план варки целиком.
+  const effectiveVolumePlan = input.equipmentVolumePlan ?? estimatedEquipmentVolumePlan;
+
   warnings.push(
     ...buildWarningsForFinalProfile(finalProfile),
     ...(mashPhEstimate?.warnings ?? []),
     ...(mashAcidAddition?.warnings ?? []),
     ...(spargeAcidAddition?.warnings ?? []),
+    ...(effectiveVolumePlan?.warnings ?? []),
   );
 
   return {
@@ -703,5 +717,6 @@ export const buildRecipeWaterPlanResult = (input: {
       mashPhEstimate?.predictedMashPh20C ??
       null,
     warnings: [...new Set(warnings)],
+    equipmentLimits: effectiveVolumePlan?.limits ?? null,
   };
 };

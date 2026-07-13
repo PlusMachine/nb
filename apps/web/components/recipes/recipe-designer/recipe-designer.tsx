@@ -317,6 +317,15 @@ export function RecipeDesigner({
     () => getBatchVolumeLiters(batchSize.quantity, batchSize.unit),
     [batchSize.quantity, batchSize.unit],
   );
+  // Объём, под который набраны текущие количества ингредиентов — база для действия
+  // «Пересчитать ингредиенты под N л». Сдвигается только когда количества и объём
+  // снова сходятся: сам пересчёт, загрузка рецепта (версия/импорт), пустой список
+  // ингредиентов. Автосейв её НЕ трогает — раньше база равнялась объёму последнего
+  // сохранения, и действие исчезало через 1.5 с после смены объёма, так и не дав
+  // по себе кликнуть (профиль оборудования меняет объём — действие мигало и гасло).
+  const [scaleBaseVolumeL, setScaleBaseVolumeL] = useState<number | null>(
+    () => getBatchVolumeLiters(batchSize.quantity, batchSize.unit)
+  );
   const fermentableWeightKg = useMemo(
     () => getFermentableWeightTotalKg(ingredients),
     [ingredients],
@@ -390,8 +399,6 @@ export function RecipeDesigner({
     pendingSave,
     setPendingSave,
     setSavedSignature,
-    savedBatchVolumeL,
-    setSavedBatchVolumeL,
     isDirty,
     isDraftWorthPersisting,
     saveStatus,
@@ -409,7 +416,6 @@ export function RecipeDesigner({
     onSaveStatusChange,
     payload,
     currentSignature,
-    batchVolumeL,
     publicationState,
     setPublicationState,
     setSavedPublicationState
@@ -554,22 +560,31 @@ export function RecipeDesigner({
     setEfficiency(formatEquipmentProfileRecipeValue(profile.brewhouseEfficiencyPct));
   }, [equipmentProfiles]);
 
-  // Инлайн-действие «Пересчитать под объём» (#6): доступно, только когда текущий
-  // объём разошёлся с уже сохранённым и в рецепте есть что масштабировать. По
-  // умолчанию количества НЕ трогаются — это явное действие, а не побочный эффект
-  // ввода объёма. Масштабирует чистой `scaleRecipeToVolume` (features/recipes/scale.ts)
-  // от сохранённого объёма-базы к текущему введённому — не мутирует и не сохраняет сама.
+  // Пустой рецепт нечего масштабировать: пока ингредиентов нет, база едет за объёмом,
+  // чтобы позже не предлагать пересчёт под объём, под который количества и вводились.
+  useEffect(() => {
+    if (ingredients.length === 0 && batchVolumeL != null && batchVolumeL !== scaleBaseVolumeL) {
+      setScaleBaseVolumeL(batchVolumeL);
+    }
+  }, [batchVolumeL, ingredients.length, scaleBaseVolumeL]);
+
+  // Действие «Пересчитать ингредиенты под N л» (#6): доступно, только когда текущий
+  // объём разошёлся с базой (объёмом, под который набраны количества) и в рецепте
+  // есть что масштабировать. По умолчанию количества НЕ трогаются — это явное
+  // действие, а не побочный эффект ввода объёма или смены профиля оборудования.
+  // Масштабирует чистой `scaleRecipeToVolume` (features/recipes/scale.ts) от базы к
+  // текущему введённому объёму — не мутирует и не сохраняет сама.
   const canRescaleToVolume = shouldShowRescaleToVolumeAction({
-    savedBatchVolumeL,
+    scaleBaseVolumeL,
     currentBatchVolumeL: batchVolumeL,
     ingredientCount: ingredients.length
   });
   const handleRescaleToVolume = React.useCallback(() => {
-    if (savedBatchVolumeL == null || savedBatchVolumeL <= 0 || batchVolumeL == null || batchVolumeL <= 0) {
+    if (scaleBaseVolumeL == null || scaleBaseVolumeL <= 0 || batchVolumeL == null || batchVolumeL <= 0) {
       return;
     }
 
-    const scaleInput = buildDesignerScaleInput(ingredients, savedBatchVolumeL);
+    const scaleInput = buildDesignerScaleInput(ingredients, scaleBaseVolumeL);
     const scaled = scaleRecipeToVolume(scaleInput, batchVolumeL);
     if (!scaled.scaled) {
       return;
@@ -582,7 +597,8 @@ export function RecipeDesigner({
         ? { ...ingredient, amountEnteredQuantity: String(scaledIngredient.amountEnteredQuantity) }
         : ingredient;
     }));
-  }, [batchVolumeL, ingredients, savedBatchVolumeL]);
+    setScaleBaseVolumeL(batchVolumeL);
+  }, [batchVolumeL, ingredients, scaleBaseVolumeL]);
 
   const sectionErrors = visibleSaveResult?.fieldErrors ?? {};
   const publicationValidationContext = {
@@ -998,7 +1014,7 @@ export function RecipeDesigner({
     setPreviewError(null);
     setBlockedSignature(null);
     setSavedSignature(nextSignature);
-    setSavedBatchVolumeL(getBatchVolumeLiters(String(recipe.batchSizeEnteredQuantity), recipe.batchSizeEnteredUnit));
+    setScaleBaseVolumeL(getBatchVolumeLiters(String(recipe.batchSizeEnteredQuantity), recipe.batchSizeEnteredUnit));
     setSaveResult({ ok: true, message });
     setSaveResultSignature(nextSignature);
     setOpenEditor(null);

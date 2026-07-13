@@ -5,7 +5,9 @@ import { buildEquipmentProfileVolumeSummary } from "@/features/equipment/summary
 
 const warningLabels: Record<string, string> = {
   mash_volume_limit_exceeded: "Лимит затора",
-  kettle_volume_limit_exceeded: "Лимит котла"
+  kettle_volume_limit_exceeded: "Лимит котла",
+  mash_below_min_volume: "Мало воды в заторнике",
+  grain_bill_limit_exceeded: "Засыпь не влезет"
 };
 
 const formatLiters = (value: number) => Number.isFinite(value) ? `${value.toFixed(1)} л` : "—";

@@ -12,7 +12,6 @@ import type { RecipeDetailDto, RecipePublicationState } from "@/features/recipes
 
 import {
   buildAutosaveBlockedResult,
-  getBatchVolumeLiters,
   isRecipeDraftWorthPersisting,
   normalizeEditorPublicationState,
   normalizeSavePayload,
@@ -36,7 +35,6 @@ export function useRecipeAutosave({
   onSaveStatusChange,
   payload,
   currentSignature,
-  batchVolumeL,
   publicationState,
   setPublicationState,
   setSavedPublicationState
@@ -49,7 +47,6 @@ export function useRecipeAutosave({
   onSaveStatusChange?: (status: RecipeSaveStatus) => void;
   payload: RecipeEditorPayload;
   currentSignature: string;
-  batchVolumeL: number | null;
   publicationState: RecipePublicationState;
   setPublicationState: (state: RecipePublicationState) => void;
   setSavedPublicationState: (state: RecipePublicationState) => void;
@@ -68,10 +65,6 @@ export function useRecipeAutosave({
   // хуже, create и воскресил бы рецепт новой записью.
   const deletedRef = useRef(false);
   const [savedSignature, setSavedSignature] = useState(currentSignature);
-  // Объём партии на момент последнего сохранения — база для инлайн-действия
-  // «Пересчитать под объём» (#6): показываем его только когда текущий объём
-  // разошёлся с уже сохранённым, а не с тем, что было при открытии страницы.
-  const [savedBatchVolumeL, setSavedBatchVolumeL] = useState<number | null>(batchVolumeL);
   const isDirty = currentSignature !== savedSignature;
   const hasCurrentSaveError = saveResultSignature === currentSignature && Boolean(saveResult && !saveResult.ok);
   const persistMode: "create" | "edit" = activeRecipeId ? "edit" : mode;
@@ -213,7 +206,6 @@ export function useRecipeAutosave({
       setPublicationState(normalizedState);
       setSavedPublicationState(normalizedState);
       setSavedSignature(completedSignature);
-      setSavedBatchVolumeL(getBatchVolumeLiters(String(savedRecipe.batchSizeEnteredQuantity), savedRecipe.batchSizeEnteredUnit));
       setSaveResult(result);
       setSaveResultSignature(completedSignature);
       setActiveRecipeSlug(savedRecipe.slug);
@@ -276,8 +268,6 @@ export function useRecipeAutosave({
     setPendingSave,
     savedSignature,
     setSavedSignature,
-    savedBatchVolumeL,
-    setSavedBatchVolumeL,
     isDirty,
     isDraftWorthPersisting,
     saveStatus,

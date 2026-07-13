@@ -32,6 +32,7 @@ import {
   type RecipeWaterManualSaltAdditionTarget,
   type RecipeWaterPlanMeta,
 } from "@/features/recipes/contracts";
+import type { EquipmentVolumeLimits } from "@/features/equipment-profiles/volume-plan";
 import {
   isRecipeWaterMashPhEnabled,
   recipeWaterAcidPresentation,
@@ -285,6 +286,44 @@ const waterWarningLabels: Record<string, string> = {
   chloride_above_practical_range: "Cl выше практического диапазона.",
   sulfate_above_practical_range: "SO4 выше практического диапазона.",
   bicarbonate_above_practical_range: "HCO3 выше практического диапазона.",
+};
+
+const formatKg = (value: number) => `${value.toFixed(1).replace(".", ",")} кг`;
+const formatL = (value: number) => `${value.toFixed(1).replace(".", ",")} л`;
+
+/**
+ * Предупреждения оборудования называют конкретные числа: без них «засыпь не влезает»
+ * не подсказывает, что делать. Лимиты — не догма (у одних в корзину влезает больше,
+ * чем обещает производитель), поэтому текст зовёт поправить профиль, а не запрещает.
+ */
+const buildEquipmentWarningLabel = (
+  warning: string,
+  limits: EquipmentVolumeLimits | null,
+): string | null => {
+  if (!limits) {
+    return null;
+  }
+
+  switch (warning) {
+    case "grain_bill_limit_exceeded":
+      return limits.maxGrainKg != null
+        ? `Засыпь ${formatKg(limits.grainKg)} — больше лимита профиля (${formatKg(limits.maxGrainKg)}). Поднимите лимит в профиле оборудования, если у вас влезает больше.`
+        : null;
+    case "mash_volume_limit_exceeded":
+      return limits.maxMashVolumeL != null
+        ? `Воды в заторе больше, чем вмещает заторник (${formatL(limits.maxMashVolumeL)}). Часть уйдет в промывку.`
+        : null;
+    case "mash_below_min_volume":
+      return limits.minMashVolumeL != null
+        ? `Воды в заторе меньше минимума профиля (${formatL(limits.minMashVolumeL)}): на пивоварнях с ТЭНом в стенке он может оголиться.`
+        : null;
+    case "kettle_volume_limit_exceeded":
+      return limits.maxKettleVolumeL != null
+        ? `Объем до кипячения не помещается в котел (${formatL(limits.maxKettleVolumeL)}). Уменьшите объем партии.`
+        : null;
+    default:
+      return null;
+  }
 };
 
 const lowPriorityWarnings = new Set([
@@ -1953,7 +1992,9 @@ export function WaterSetupWizard({
               key={warning}
               className="rounded-lg border border-warning/30 bg-warning-subtle px-3 py-2 text-sm text-warning-subtle-foreground"
             >
-              {waterWarningLabels[warning] ?? warning}
+              {waterWarningLabels[warning]
+                ?? buildEquipmentWarningLabel(warning, waterPlanResult.equipmentLimits)
+                ?? warning}
             </div>
           ))}
         </div>

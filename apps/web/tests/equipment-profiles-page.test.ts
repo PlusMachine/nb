@@ -14,6 +14,8 @@ const equipmentProfile = {
   grainAbsorptionLPerKg: 0.75,
   coolingShrinkagePct: 4,
   mashThicknessLPerKg: 3,
+  mashTunDeadspaceL: 0,
+  minMashVolumeL: null,
   maxMashVolumeL: null as number | null,
   maxKettleVolumeL: null as number | null,
   hopUtilizationFactor: 1,
