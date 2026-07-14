@@ -115,6 +115,27 @@ export function StreamDeviceConsole({
     return () => window.clearInterval(id);
   }, []);
 
+  // Д1: сразу после визарда сервер URL не может показать повторно (без ключа
+  // шифрования decrypt(tokenEncrypted) → null, см. getStreamIngestUrl) — форма
+  // подключения (connect-stream-device-form.tsx) кладёт свежий ingestUrl в
+  // sessionStorage перед переходом сюда. Читаем один раз при монтировании и сразу
+  // стираем запись — URL показывается один раз, как токен сессии.
+  useEffect(() => {
+    if (initialIngestUrl !== null) return;
+    try {
+      const key = `nb:stream-ingest-url:${device.id}`;
+      const stored = window.sessionStorage.getItem(key);
+      if (stored) {
+        window.sessionStorage.removeItem(key);
+        setIngestUrl(stored);
+        setUrlExpanded(true);
+      }
+    } catch {
+      // sessionStorage недоступен — остаётся фолбэк «Перевыпустить URL» ниже.
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Живая зона: поллинг раз в 5 с, ПОКА не пришла первая точка (§5 F1). Как только
   // readingsCount становится > 0 — интервал больше не выставляется (early return).
   useEffect(() => {
@@ -334,7 +355,7 @@ export function StreamDeviceConsole({
             </div>
           ) : (
             <p className="mt-3 text-sm text-muted-foreground">
-              URL недоступен, перевыпустите.{" "}
+              URL показывается один раз. Перевыпустите, чтобы получить новый.{" "}
               <button
                 type="button"
                 className="font-medium text-foreground underline underline-offset-2"

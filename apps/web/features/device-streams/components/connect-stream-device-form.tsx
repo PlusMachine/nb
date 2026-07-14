@@ -52,6 +52,17 @@ export function ConnectStreamDeviceForm({ onBack }: Props) {
         show({ title: result.message, tone: "danger" });
         return;
       }
+      // Д1: сервер отдаёт ingestUrl только в этом ответе (без ключа шифрования его
+      // потом не восстановить, см. getStreamIngestUrl) — передаём его на страницу
+      // устройства через sessionStorage, а не query-параметром (токен не должен
+      // попадать в историю браузера/логи сервера). Ключ читается и сразу стирается
+      // в stream-device-console.tsx.
+      try {
+        window.sessionStorage.setItem(`nb:stream-ingest-url:${result.deviceId}`, result.ingestUrl);
+      } catch {
+        // sessionStorage недоступен (приватный режим и т.п.) — не критично, страница
+        // устройства предложит «Перевыпустить URL».
+      }
       router.push(`/app/devices/${result.deviceId}`);
     } finally {
       setPending(false);

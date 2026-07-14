@@ -23,7 +23,9 @@ import type { PreferredGravityUnit } from "@nb/auth";
 
 import { formatGravity } from "@/features/system/gravity-units";
 
+import { axisTimeLabels, gravityBounds } from "../chart-scale";
 import { downsampleSeries, smoothGravityMedian5, splitOnGaps, type FermentPointCore } from "../series-core";
+import { formatSessionSince } from "../session-format";
 
 const VB_W = 800;
 const VB_H = 280;
@@ -38,6 +40,16 @@ const DOWNSAMPLE_MAX_POINTS = 600;
 
 /** Циклическая палитра кривых устройств — только существующие токены темы (без новых цветов). */
 const SESSION_COLOR_VARS = ["--primary", "--chart-setpoint", "--warning", "--chart-heater"] as const;
+
+/**
+ * Цвет кривой температуры (Д5, QA 2026-07-14): раньше — `--chart-temp`, который в
+ * тёмной теме (172 66% 50%) слишком близок по тону к `--primary` (161 94% 33%) —
+ * обе кривые читались как «зелёные». `--warning` (оранжевый, 38°) даёт контраст
+ * к зелёному `--primary` в обеих темах; `--chart-temp` не трогаем — им пользуется
+ * не связанный график BrewForge (ferment-history-chart.tsx/telemetry-chart.tsx),
+ * где он контрастирует не с primary, а с --chart-setpoint/--chart-heater.
+ */
+const TEMP_COLOR = "hsl(var(--warning))";
 
 export type FermentChartRange = "24h" | "7d" | "all";
 
@@ -85,6 +97,7 @@ export type FermentChartProps = {
 
 type Bounds = { min: number; max: number };
 
+/** Домен температурной оси (П2: домен плотности — отдельно, chart-scale.ts/gravityBounds — там же вырожденность около SG≈1.0). */
 function niceBounds(values: number[], fallback: Bounds, padRatio = 0.1): Bounds {
   let min = Infinity;
   let max = -Infinity;
@@ -199,7 +212,7 @@ export function FermentChart({ sessions, manualMeasurements, gravityUnit, defaul
     const tMin = Math.min(...tsValues);
     const tMax = Math.max(...tsValues);
     const tSpan = tMax - tMin || 1;
-    const gravity = niceBounds(gravityValues, { min: 0.99, max: 1.06 });
+    const gravity = gravityBounds(gravityValues, { min: 0.99, max: 1.06 });
     const gravitySpan = gravity.max - gravity.min || 1;
     const temp = hasTempData ? niceBounds(tempValues, { min: 15, max: 25 }) : null;
     const tempSpan = temp ? temp.max - temp.min || 1 : 1;
@@ -208,13 +221,58 @@ export function FermentChart({ sessions, manualMeasurements, gravityUnit, defaul
     const y1 = (sg: number) => PAD_T + (1 - (sg - gravity.min) / gravitySpan) * PLOT_H;
     const y2 = (c: number) => PAD_T + (1 - (c - (temp?.min ?? 0)) / tempSpan) * PLOT_H;
 
-    const curves = processedSessions.map((ps) => ({
-      id: ps.session.id,
-      deviceName: ps.session.deviceName,
-      color: ps.color,
-      gravityPaths: ps.segments.map((seg) => buildLinePath(seg, (p) => p.gravitySg, x, y1)).filter(Boolean),
-      tempPaths: hasTempData ? ps.segments.map((seg) => buildLinePath(seg, (p) => p.tempC, x, y2)).filter(Boolean) : []
-    }));
+    // Д4: сеансы одного устройства (карточка устройства показывает всю его историю
+    // на одном графике, §5 F3) делят одно deviceName — легенда «iSpindel»/«iSpindel»
+    // неразличима. Добавляем «с <дата начала>» ТОЛЬКО когда имя дублируется —
+    // обычный случай (разные устройства) легенду не меняет.
+    const deviceNameCounts = new Map<string, number>();
+    for (const s of sessions) {
+      deviceNameCounts.set(s.deviceName, (deviceNameCounts.get(s.deviceName) ?? 0) + 1);
+    }
+
+    const curves = processedSessions.map((ps) => {
+      // Д2: точки с шагом >3× интервала (или ретро-сироты) образуют сегменты из
+      // одной точки — buildLinePath на них строит path "M x y" без "L", SVG его не
+      // рисует. Такие сегменты рендерим отдельно кружком, а не путём.
+      const gravityPaths: string[] = [];
+      const gravityDots: { x: number; y: number }[] = [];
+      const tempPaths: string[] = [];
+      const tempDots: { x: number; y: number }[] = [];
+      for (const seg of ps.segments) {
+        if (seg.length === 1) {
+          const p = seg[0]!;
+          if (p.gravitySg !== null && Number.isFinite(p.gravitySg)) {
+            gravityDots.push({ x: x(p.ts), y: y1(p.gravitySg) });
+          }
+          if (hasTempData && p.tempC !== null && Number.isFinite(p.tempC)) {
+            tempDots.push({ x: x(p.ts), y: y2(p.tempC) });
+          }
+          continue;
+        }
+        const gravityPath = buildLinePath(seg, (point) => point.gravitySg, x, y1);
+        if (gravityPath) gravityPaths.push(gravityPath);
+        if (hasTempData) {
+          const tempPath = buildLinePath(seg, (point) => point.tempC, x, y2);
+          if (tempPath) tempPaths.push(tempPath);
+        }
+      }
+
+      const legendLabel =
+        (deviceNameCounts.get(ps.session.deviceName) ?? 0) > 1
+          ? `${ps.session.deviceName} · ${formatSessionSince(new Date(ps.session.startedAt))}`
+          : ps.session.deviceName;
+
+      return {
+        id: ps.session.id,
+        deviceName: ps.session.deviceName,
+        legendLabel,
+        color: ps.color,
+        gravityPaths,
+        gravityDots,
+        tempPaths,
+        tempDots
+      };
+    });
 
     // Без устройства — соединяем ручные замеры тонкой ломаной (П1 «график по одним ручным
     // замерам»); при наличии кривой устройства замеры — только точки (линия — у устройства).
@@ -237,6 +295,7 @@ export function FermentChart({ sessions, manualMeasurements, gravityUnit, defaul
       empty: false as const,
       tMin,
       tMax,
+      axisLabels: axisTimeLabels(fmtAxisTime(tMin, range), fmtAxisTime(tMax, range)),
       curves,
       manualConnectorPath,
       manualMarkers,
@@ -261,9 +320,9 @@ export function FermentChart({ sessions, manualMeasurements, gravityUnit, defaul
         {geom.showLegend ? (
           <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
             {sessions.length > 1
-              ? geom.curves.map((curve) => <Legend key={curve.id} color={curve.color} label={curve.deviceName} />)
+              ? geom.curves.map((curve) => <Legend key={curve.id} color={curve.color} label={curve.legendLabel} />)
               : null}
-            {geom.hasTempData ? <Legend color="hsl(var(--chart-temp))" label="Температура, °C" /> : null}
+            {geom.hasTempData ? <Legend color={TEMP_COLOR} label="Температура, °C" /> : null}
             {geom.manualMarkers.length > 0 ? <ManualLegend /> : null}
           </div>
         ) : (
@@ -306,11 +365,15 @@ export function FermentChart({ sessions, manualMeasurements, gravityUnit, defaul
                 key={`temp-${curve.id}-${i}`}
                 d={d}
                 fill="none"
-                stroke="hsl(var(--chart-temp))"
+                stroke={TEMP_COLOR}
                 strokeWidth={1.5}
                 opacity={0.75}
               />
             ))
+          )}
+          {/* Д2: изолированные точки температуры (сегмент из одной точки) — кружком. */}
+          {geom.curves.flatMap((curve) =>
+            curve.tempDots.map((d, i) => <circle key={`temp-dot-${curve.id}-${i}`} cx={d.x} cy={d.y} r={2.5} fill={TEMP_COLOR} opacity={0.75} />)
           )}
 
           {geom.curves.flatMap((curve) =>
@@ -325,6 +388,10 @@ export function FermentChart({ sessions, manualMeasurements, gravityUnit, defaul
                 strokeLinecap="round"
               />
             ))
+          )}
+          {/* Д2: изолированные точки плотности (сегмент из одной точки) — кружком, без них график их не рисует вовсе. */}
+          {geom.curves.flatMap((curve) =>
+            curve.gravityDots.map((d, i) => <circle key={`grav-dot-${curve.id}-${i}`} cx={d.x} cy={d.y} r={2.5} fill={curve.color} />)
           )}
 
           {geom.manualConnectorPath ? (
@@ -345,37 +412,53 @@ export function FermentChart({ sessions, manualMeasurements, gravityUnit, defaul
           ))}
         </svg>
 
+        {/*
+          Д3: раньше подписи были в PAD_L (~52/800 ≈ 6.5% ширины) с -translate-x-full —
+          на узких контейнерах (360px) 6.5% ≈ 21px меньше ширины текста («12.5 °P»
+          ≈ 40px+), поэтому левая часть подписи уходила за край контейнера и
+          обрезалась («2.5 °P»). Теперь подписи — слева ВНУТРИ поля графика,
+          зафиксированы у левого края контейнера (не проценты от PAD_L), выравнены
+          по левому краю — целиком видны на любой ширине.
+        */}
         {geom.gravityTicks.map((t, i) => (
           <span
             key={`g-tick-label-${i}`}
-            className="pointer-events-none absolute -translate-y-1/2 -translate-x-full whitespace-nowrap pr-1 text-[11px] text-muted-foreground"
-            style={{ left: `${(PAD_L / VB_W) * 100}%`, top: `${(t.y / VB_H) * 100}%` }}
+            className="pointer-events-none absolute -translate-y-1/2 whitespace-nowrap text-left text-[11px] text-muted-foreground"
+            style={{ left: 2, top: `${(t.y / VB_H) * 100}%` }}
           >
             {t.label}
           </span>
         ))}
+        {/* Тот же приём справа (фикс-пиксельный отступ вместо доли PAD_R) — на всякий случай,
+            чтобы «20°» не резало по правому краю контейнера на узких вьюпортах. */}
         {geom.tempTicks.map((t, i) => (
           <span
             key={`temp-tick-label-${i}`}
-            className="pointer-events-none absolute -translate-y-1/2 whitespace-nowrap pl-1 text-[11px]"
-            style={{ left: `${((VB_W - PAD_R) / VB_W) * 100}%`, top: `${(t.y / VB_H) * 100}%`, color: "hsl(var(--chart-temp))" }}
+            className="pointer-events-none absolute -translate-y-1/2 whitespace-nowrap text-[11px]"
+            style={{ right: 2, top: `${(t.y / VB_H) * 100}%`, color: TEMP_COLOR }}
           >
             {t.v.toFixed(0)}°
           </span>
         ))}
-        <span
-          className="pointer-events-none absolute bottom-0 whitespace-nowrap text-[11px] text-muted-foreground"
-          style={{ left: `${(PAD_L / VB_W) * 100}%` }}
-        >
-          {fmtAxisTime(geom.tMin, range)}
-        </span>
-        <span
-          className="pointer-events-none absolute bottom-0 -translate-x-full whitespace-nowrap text-[11px] text-muted-foreground"
-          style={{ left: `${((VB_W - PAD_R) / VB_W) * 100}%` }}
-        >
-          {fmtAxisTime(geom.tMax, range)}
-        </span>
       </div>
+
+      {/*
+        Дата-подписи оси X — ВНЕ абсолютного оверлея графика (обычный поток, не
+        bottom-0 поверх SVG): на короткой мобильной высоте (viewBox 800×280 при
+        preserveAspectRatio="none" и узком контейнере даёт SVG-высоту ~90px)
+        нижняя подпись плотности (gravityTicks.min, у самого низа поля графика)
+        и bottom-0-оверлей даты делили одни и те же пиксели и налезали друг на
+        друга («3.212.07»). Отдельная строка под графиком исключает коллизию
+        независимо от высоты SVG на любом вьюпорте.
+      */}
+      {geom.axisLabels.mode === "single" ? (
+        <div className="mt-1.5 text-center text-[11px] text-muted-foreground">{geom.axisLabels.label}</div>
+      ) : (
+        <div className="mt-1.5 flex items-center justify-between text-[11px] text-muted-foreground">
+          <span>{geom.axisLabels.start}</span>
+          <span>{geom.axisLabels.end}</span>
+        </div>
+      )}
     </div>
   );
 }
