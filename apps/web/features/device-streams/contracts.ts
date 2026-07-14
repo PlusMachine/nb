@@ -137,3 +137,75 @@ export const INGEST_RATE_WINDOW_SECONDS = 60;
 /** Общий потолок пакетов на IP (защита от перебора/спама чужими токенами). */
 export const INGEST_IP_RATE_LIMIT = 240;
 export const INGEST_IP_RATE_WINDOW_SECONDS = 60;
+
+// =============================================================================
+//  F2 — сеансы (ferment_sessions): привязка устройства к партии. Спека §5 F2, §6.2.
+//  Владелец: features/device-streams/sessions.ts.
+// =============================================================================
+
+/**
+ * ferment_sessions.end_reason (§6.2). 'auto_silence' — автозавершение по молчанию
+ * устройства 7 дней, M5 (периодический скан в apps/bridge) — в M2 не запускается,
+ * значение зарезервировано в типе ради полноты домена/чтения старых строк.
+ */
+export const fermentSessionEndReasons = ["manual", "batch_completed", "auto_silence"] as const;
+export type FermentSessionEndReason = (typeof fermentSessionEndReasons)[number];
+
+/** Поводы, которые сервис принимает от UI/actions в M2 (без bridge-скана). */
+export type ManualFermentSessionEndReason = Extract<FermentSessionEndReason, "manual" | "batch_completed">;
+
+/** Вход createFermentSession (F2, все три точки входа §5). */
+export const createFermentSessionSchema = z.object({
+  deviceId: z.string().min(1),
+  brewBatchId: z.string().min(1),
+  /** «Забрать данные с …» — доприсвоить непривязанные показания устройства (см. §5 «Ретро-привязка»). */
+  retroAttach: z.boolean().optional(),
+  /** Ручной старт сеанса; игнорируется, если retroAttach нашёл более раннюю точку. */
+  startedAt: z.date().optional()
+});
+export type CreateFermentSessionInput = z.infer<typeof createFermentSessionSchema>;
+
+/** Сеанс с именем/видом устройства (для истории на карточке устройства/партии) и счётчиком точек. */
+export type FermentSessionDto = {
+  id: string;
+  userId: string;
+  deviceId: string;
+  deviceName: string;
+  deviceHardwareKind: StreamHardwareKind | null;
+  brewBatchId: string;
+  startedAt: Date;
+  endedAt: Date | null;
+  endReason: FermentSessionEndReason | null;
+  calibrationOffsetSg: number;
+  tempMinC: number | null;
+  tempMaxC: number | null;
+  alertsMuted: boolean;
+  readingsCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+/** Итог previewRetroAttach — для промпта «Забрать данные с … (за N часов, M точек)?». */
+export type RetroAttachPreview = {
+  count: number;
+  oldestTs: Date | null;
+  newestTs: Date | null;
+};
+
+/** Свободное (без активного сеанса) стрим-устройство — шаг «Ареометр уже в сусле?» / «Подключить ареометр». */
+export type AvailableStreamDeviceDto = {
+  id: string;
+  name: string;
+  hardwareKind: StreamHardwareKind | null;
+  lastSeenAt: Date | null;
+  /** Есть непривязанные показания за последние RETRO_ATTACH_WINDOW_DAYS — бейдж ретро-привязки. */
+  hasRetroReadings: boolean;
+};
+
+/** Окно ретро-привязки (§5 F2): «непривязанные показания за последние 7 дней». */
+export const RETRO_ATTACH_WINDOW_DAYS = 7;
+export const RETRO_ATTACH_WINDOW_MS = RETRO_ATTACH_WINDOW_DAYS * 24 * 60 * 60 * 1000;
+
+/** Rate limit создания сеанса (анти-скрипт-флуд, по образцу stream_device_create). */
+export const FERMENT_SESSION_CREATE_RATE_LIMIT = 30;
+export const FERMENT_SESSION_CREATE_RATE_WINDOW_SECONDS = 3600;

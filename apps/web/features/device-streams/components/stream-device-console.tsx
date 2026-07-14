@@ -32,6 +32,8 @@ import {
 } from "@/features/device-streams/contracts";
 import { instructionForKind } from "@/features/device-streams/connect-instructions";
 import { formatReadingSummary } from "@/features/device-streams/reading-summary";
+import { DeviceFermentPanel, type DeviceSessionHistoryItem } from "@/features/device-streams/components/device-ferment-panel";
+import type { FermentChartSession } from "@/features/device-streams/components/ferment-chart";
 
 const STATUS_POLL_MS = 5000;
 const TICK_MS = 5000;
@@ -62,6 +64,9 @@ type Props = {
   initialStatus: StreamDeviceStatusView;
   initialDataCounts: { readingsCount: number; sessionsCount: number };
   preferredGravityUnit: PreferredGravityUnit;
+  /** График+история сеансов (§5 F3, M2-C) — уже собраны сервером (stream-device-view.tsx). */
+  chartSessions: FermentChartSession[];
+  sessionHistory: DeviceSessionHistoryItem[];
 };
 
 export function StreamDeviceConsole({
@@ -69,7 +74,9 @@ export function StreamDeviceConsole({
   initialIngestUrl,
   initialStatus,
   initialDataCounts,
-  preferredGravityUnit
+  preferredGravityUnit,
+  chartSessions,
+  sessionHistory
 }: Props) {
   const router = useRouter();
   const { show } = useToast();
@@ -288,6 +295,9 @@ export function StreamDeviceConsole({
           <p className="text-sm text-foreground">{formatReadingSummary(latest, preferredGravityUnit)}</p>
         ) : null}
       </Card>
+
+      {/* Брожение: график всех сеансов устройства + привязка к партии (§5 F2/F3, вход №3). */}
+      <DeviceFermentPanel deviceId={device.id} gravityUnit={preferredGravityUnit} chartSessions={chartSessions} history={sessionHistory} />
 
       {/* Подключение: URL + инструкция. */}
       <Card className="p-5">

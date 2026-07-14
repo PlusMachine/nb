@@ -96,6 +96,7 @@ function CurrentStepHero({
             variant="primary"
             size="md"
             icon={<ArrowRight className="h-4 w-4" aria-hidden />}
+            appendQueryOnSuccess="just-fermenting=1"
           />
           {lastDone ? (
             <Button
@@ -262,6 +263,7 @@ export function BrewDayBoard({
           size="md"
           icon={<ArrowRight className="h-4 w-4" aria-hidden />}
           confirm={transitionConfirm}
+          appendQueryOnSuccess="just-fermenting=1"
         />
       ) : null}
     </section>

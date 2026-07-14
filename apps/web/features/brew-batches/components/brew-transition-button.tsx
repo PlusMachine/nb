@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
 import { Button } from "@nb/ui";
@@ -23,7 +24,8 @@ export function BrewTransitionButton({
   size = "md",
   icon,
   confirm = null,
-  className
+  className,
+  appendQueryOnSuccess
 }: {
   brewBatchId: string;
   to: BrewBatchStatus;
@@ -34,7 +36,19 @@ export function BrewTransitionButton({
   /** tone — вид кнопки подтверждения; не задан → primary (переход не деструктивен). */
   confirm?: { title: string; description: string; tone?: "primary" | "danger" } | null;
   className?: string;
+  /**
+   * Query-строка («just-fermenting=1»), дописываемая в URL страницы партии после
+   * успешного перехода (§5 F2 вход №1 / промпт завершения сеанса при completed,
+   * docs/specs/third-party-fermentation-devices.md). Акт страницы меняется тем же
+   * рендером (без полной навигации), поэтому клиентское состояние компонента-
+   * триггера (этот) не переживает переключение на другой акт — одноразовый
+   * промпт живёт в query-параметре, который читает уже НОВЫЙ акт (см.
+   * just-fermenting-prompt.tsx/batch-completed-session-prompt.tsx).
+   */
+  appendQueryOnSuccess?: string;
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -53,6 +67,9 @@ export function BrewTransitionButton({
         setError(result.message);
       } else {
         setConfirmOpen(false);
+        if (appendQueryOnSuccess) {
+          router.replace(`${pathname}?${appendQueryOnSuccess}`, { scroll: false });
+        }
       }
     } finally {
       inFlight.current = false;

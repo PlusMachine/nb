@@ -45,6 +45,9 @@ import { FermenterPanel } from "@/features/brew-batches/components/fermenter-pan
 import { BrewHistoryGuide } from "@/features/brew-batches/components/brew-history-guide";
 import { BrewQuickDock } from "@/features/brew-batches/components/brew-quick-dock";
 import { BrewStockNotice } from "@/features/brew-batches/components/brew-stock-notice";
+import { BatchFermentBlock } from "@/features/device-streams/components/batch-ferment-block";
+import { JustFermentingPrompt } from "@/features/device-streams/components/just-fermenting-prompt";
+import { BatchCompletedSessionPrompt } from "@/features/device-streams/components/batch-completed-session-prompt";
 
 const dateFmt = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long", year: "numeric" });
 const fmtDate = (value: Date | null) => (value ? dateFmt.format(new Date(value)) : null);
@@ -302,13 +305,25 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
         // ферментера (§8.4), не живой SSE-дашборд варочного дня.
         <>
           {act === "done" ? (
-            <BrewCompletionSummary
-              summary={summary}
-              preferredGravityUnit={user.preferredGravityUnit}
-              batchVolumeL={batch.brewPlanSnapshot.recipe.batchSizeL}
-              ratingTarget={ratingTarget}
-              labelsHref={labelsHref}
-            />
+            <>
+              <Suspense fallback={null}>
+                <BatchCompletedSessionPrompt brewBatchId={batch.id} />
+              </Suspense>
+              <BrewCompletionSummary
+                summary={summary}
+                preferredGravityUnit={user.preferredGravityUnit}
+                batchVolumeL={batch.brewPlanSnapshot.recipe.batchSizeL}
+                ratingTarget={ratingTarget}
+                labelsHref={labelsHref}
+              />
+              <BatchFermentBlock
+                userId={user.id}
+                brewBatchId={batch.id}
+                batchStatus={batch.status}
+                gravityUnit={user.preferredGravityUnit}
+                variant="history"
+              />
+            </>
           ) : null}
           <div className="space-y-6 rounded-2xl border border-border bg-card p-4 shadow-sm">
             <h2 className="text-base font-semibold text-foreground">Устройство{device?.name ? ` · ${device.name}` : ""}</h2>
@@ -364,6 +379,9 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
         </>
       ) : act === "fermentation" ? (
         <>
+          <Suspense fallback={null}>
+            <JustFermentingPrompt brewBatchId={batch.id} />
+          </Suspense>
           <FermentationBoard
             brewBatchId={batch.id}
             groups={brewDaySteps}
@@ -392,6 +410,13 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
               windowDays={FERMENT_HISTORY_WINDOW_DAYS}
             />
           ) : null}
+          <BatchFermentBlock
+            userId={user.id}
+            brewBatchId={batch.id}
+            batchStatus={batch.status}
+            gravityUnit={user.preferredGravityUnit}
+            variant="active"
+          />
           <BrewJournal
             brewBatchId={batch.id}
             measurements={measurements}
@@ -408,13 +433,25 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
         // done / archived
         <>
           {act === "done" ? (
-            <BrewCompletionSummary
-              summary={summary}
-              preferredGravityUnit={user.preferredGravityUnit}
-              batchVolumeL={batch.brewPlanSnapshot.recipe.batchSizeL}
-              ratingTarget={ratingTarget}
-              labelsHref={labelsHref}
-            />
+            <>
+              <Suspense fallback={null}>
+                <BatchCompletedSessionPrompt brewBatchId={batch.id} />
+              </Suspense>
+              <BrewCompletionSummary
+                summary={summary}
+                preferredGravityUnit={user.preferredGravityUnit}
+                batchVolumeL={batch.brewPlanSnapshot.recipe.batchSizeL}
+                ratingTarget={ratingTarget}
+                labelsHref={labelsHref}
+              />
+              <BatchFermentBlock
+                userId={user.id}
+                brewBatchId={batch.id}
+                batchStatus={batch.status}
+                gravityUnit={user.preferredGravityUnit}
+                variant="history"
+              />
+            </>
           ) : (
             <p className="rounded-2xl border border-border bg-muted p-4 text-sm text-muted-foreground">
               Варка отменена. Вернуть её в план можно через меню в шапке.

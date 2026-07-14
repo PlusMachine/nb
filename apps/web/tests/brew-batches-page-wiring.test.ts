@@ -102,6 +102,13 @@ vi.mock("../features/brew-batches/components/fermentation-board", () => ({
 vi.mock("../features/brew-batches/components/brew-stock-notice", () => ({
   BrewStockNotice: () => null
 }));
+// Блок «Брожение» (M2-C) — асинхронный серверный компонент (сам читает БД через
+// readBatchFermentSeries/listAvailableStreamDevices); renderToStaticMarkup не умеет
+// ждать вложенные async-компоненты (только верхний BrewBatchDetailPage резолвится
+// вручную выше), поэтому мокаем целиком — проводка страницы это не проверяет.
+vi.mock("../features/device-streams/components/batch-ferment-block", () => ({
+  BatchFermentBlock: () => null
+}));
 // Клиентские блоки страницы (меню партии и т.п.) живут в роутере Next — при
 // голом SSR-рендере его контекста нет.
 vi.mock("next/navigation", () => ({

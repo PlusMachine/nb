@@ -9,7 +9,12 @@
 import type { PreferredGravityUnit } from "@nb/auth";
 
 import { getStreamDeviceDataCounts, getStreamDeviceStatus, getStreamIngestUrl } from "@/features/device-streams/service";
+import { listSessionsForDevice } from "@/features/device-streams/sessions";
+import { readDeviceFermentSeries } from "@/features/device-streams/series";
+import { getBrewBatchById } from "@/features/brew-batches/service";
 
+import type { DeviceSessionHistoryItem } from "./device-ferment-panel";
+import type { FermentChartSession } from "./ferment-chart";
 import { StreamDeviceConsole, type StreamDeviceStatusView } from "./stream-device-console";
 
 export type StreamDeviceViewDevice = {
@@ -27,11 +32,39 @@ export async function StreamDeviceView({
   device: StreamDeviceViewDevice;
   preferredGravityUnit: PreferredGravityUnit;
 }) {
-  const [ingestUrl, status, dataCounts] = await Promise.all([
+  const [ingestUrl, status, dataCounts, sessions, seriesResult] = await Promise.all([
     getStreamIngestUrl(userId, device.id),
     getStreamDeviceStatus(userId, device.id),
-    getStreamDeviceDataCounts(userId, device.id)
+    getStreamDeviceDataCounts(userId, device.id),
+    listSessionsForDevice(userId, device.id),
+    readDeviceFermentSeries(userId, device.id)
   ]);
+
+  // Имена партий для истории сеансов (§5 F3 «партия → период → точек») — сеансы
+  // несут только brewBatchId, имя достаём отдельным чтением features/brew-batches
+  // (не владеем), дедуплицируя запросы по уникальным партиям (сеансов у одного
+  // устройства обычно единицы, N+1 здесь не проблема объёма).
+  const batchIds = [...new Set(sessions.map((session) => session.brewBatchId))];
+  const batches = await Promise.all(batchIds.map((batchId) => getBrewBatchById(userId, batchId)));
+  const batchNameById = new Map(batches.filter((batch) => batch !== null).map((batch) => [batch.id, batch.name]));
+
+  const history: DeviceSessionHistoryItem[] = sessions.map((session) => ({
+    id: session.id,
+    brewBatchId: session.brewBatchId,
+    brewBatchName: batchNameById.get(session.brewBatchId) ?? "Партия удалена",
+    startedAt: session.startedAt.getTime(),
+    endedAt: session.endedAt ? session.endedAt.getTime() : null,
+    readingsCount: session.readingsCount
+  }));
+
+  const chartSessions: FermentChartSession[] = seriesResult.sessions.map((session) => ({
+    id: session.session.id,
+    deviceName: session.session.deviceName,
+    startedAt: session.session.startedAt.getTime(),
+    endedAt: session.session.endedAt ? session.session.endedAt.getTime() : null,
+    points: session.points,
+    intervalSeconds: session.intervalSeconds
+  }));
 
   const initialStatus: StreamDeviceStatusView = {
     lastSeenAt: status.lastSeenAt ? status.lastSeenAt.toISOString() : null,
@@ -56,6 +89,8 @@ export async function StreamDeviceView({
       initialStatus={initialStatus}
       initialDataCounts={dataCounts}
       preferredGravityUnit={preferredGravityUnit}
+      chartSessions={chartSessions}
+      sessionHistory={history}
     />
   );
 }

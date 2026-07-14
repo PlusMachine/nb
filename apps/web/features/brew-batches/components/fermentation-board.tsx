@@ -124,6 +124,7 @@ export function FermentationBoard({
           variant={!finishEarly && (cursor.total === 0 || cursor.actComplete) ? "primary" : "outline"}
           size="md"
           confirm={finishConfirm}
+          appendQueryOnSuccess="just-completed=1"
         />
       </div>
     </section>
