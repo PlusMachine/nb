@@ -16,8 +16,22 @@
 //  Никаких импортов series.ts/@nb/db здесь и не будет — только series-core.ts
 //  (чистое ядро без побочных импортов, безопасно на клиенте) для сглаживания/
 //  сегментации/даунсемпла, которые иначе пришлось бы дублировать.
+//
+//  M3-C добавляет два независимых интерактива поверх той же геометрии:
+//  - «Показать исключённые» — внутренний тумблер (по образцу `range`: `defaultRange`
+//    проп + внутренний стейт), рисует excluded-точки полупрозрачными кружками цвета
+//    серии; excluded НИКОГДА не участвуют в сегментах/сглаживании кривой (см. geom —
+//    curvePoints строится из session.points.filter(!excluded) ДО splitOnGaps/smooth).
+//  - Brush-выделение диапазона (проп `interactive`) — драг мышью/тачем (Pointer Events)
+//    по горизонтали. Контролируемый компонент относительно ЗАФИКСИРОВАННОГО выделения
+//    (`selection`/`onRangeSelected`, владелец — родитель, обычно ferment-range-panel.tsx):
+//    во время самого драга рисуется локальный `dragPreview` (не прокинут наружу), на
+//    pointerup — коммит через onRangeSelected({fromTs,toTs}); Esc/клик вне контейнера —
+//    onRangeSelected(null). `children` рендерятся ВНУТРИ того же контейнера (не над ним),
+//    чтобы клик по панели действий брожения (кнопки «Исключить»/«Удалить» и т.п.) не
+//    засчитывался как «клик вне» и не сбрасывал выделение раньше времени.
 // =============================================================================
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 
 import type { PreferredGravityUnit } from "@nb/auth";
 
@@ -64,6 +78,12 @@ const RANGE_MS: Record<Exclude<FermentChartRange, "all">, number> = {
   "7d": 7 * 24 * 3_600_000
 };
 
+/** Выделение диапазона (F4.2/F4.5) — мс-эпоха, как и точки/сеансы. fromTs всегда ≤ toTs. */
+export type FermentChartSelection = { fromTs: number; toTs: number };
+
+/** Минимальная ширина драга в единицах viewBox, ниже которой это «клик», а не выделение. */
+const MIN_DRAG_VB_PX = 4;
+
 /**
  * Один сеанс для графика. startedAt/endedAt — мс-эпоха (не Date): сервер
  * (M2-C) конвертирует `session.startedAt.getTime()` / `endedAt?.getTime() ?? null`
@@ -93,6 +113,14 @@ export type FermentChartProps = {
   gravityUnit: PreferredGravityUnit;
   /** Начальный диапазон переключателя; дальше состояние ведёт компонент. */
   defaultRange?: FermentChartRange;
+  /** M3-C F4.2/F4.5: включает brush-выделение диапазона (драг по горизонтали). */
+  interactive?: boolean;
+  /** Текущее выделение — контролируется родителем (владеет им, чтобы показать панель действий). */
+  selection?: FermentChartSelection | null;
+  /** Коммит выделения на pointerup, либо null при сбросе (Esc/клик вне/смена диапазона). */
+  onRangeSelected?: (range: FermentChartSelection | null) => void;
+  /** Рендерится внутри того же контейнера, что график — клики по нему не считаются «кликом вне». */
+  children?: ReactNode;
 };
 
 type Bounds = { min: number; max: number };
@@ -146,10 +174,51 @@ function buildLinePath(
   return d.trim();
 }
 
-export function FermentChart({ sessions, manualMeasurements, gravityUnit, defaultRange = "all" }: FermentChartProps) {
+export function FermentChart({
+  sessions,
+  manualMeasurements,
+  gravityUnit,
+  defaultRange = "all",
+  interactive = false,
+  selection = null,
+  onRangeSelected,
+  children
+}: FermentChartProps) {
   const [range, setRange] = useState<FermentChartRange>(defaultRange);
+  const [showExcluded, setShowExcluded] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [dragPreview, setDragPreview] = useState<FermentChartSelection | null>(null);
+  const draggingRef = useRef<{ startTs: number; pointerId: number } | null>(null);
 
   const hasAnyDataEver = sessions.some((s) => s.points.length > 0) || manualMeasurements.length > 0;
+  const hasExcludedPoints = sessions.some((s) => s.points.some((p) => p.excluded));
+
+  // Esc/клик вне контейнера сбрасывают выделение (F4.2/F4.5) — активны, только пока
+  // есть что сбрасывать, чтобы не вешать лишние глобальные слушатели на каждый график.
+  useEffect(() => {
+    if (!interactive || !selection) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onRangeSelected?.(null);
+    };
+    const handlePointerDownOutside = (event: PointerEvent) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (containerRef.current?.contains(target)) return;
+      // Radix Dialog (ConfirmActionDialog и т.п.) рендерит контент через Portal в
+      // document.body — физически ВНЕ containerRef, хотя в JSX он передан сюда как
+      // `children` (см. заголовок файла). Без этой оговорки клик по кнопке «Удалить»
+      // внутри диалога читался бы как «клик вне» и обнулял selection ДО onConfirm.
+      if (target.closest('[role="dialog"], [role="alertdialog"]')) return;
+      onRangeSelected?.(null);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("pointerdown", handlePointerDownOutside);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("pointerdown", handlePointerDownOutside);
+    };
+  }, [interactive, selection, onRangeSelected]);
 
   const geom = useMemo(() => {
     // Якорь диапазона — последняя известная точка (устройство или ручной замер), а не
@@ -168,8 +237,12 @@ export function FermentChart({ sessions, manualMeasurements, gravityUnit, defaul
 
     const cutoffMs = range === "all" ? -Infinity : latestTs - RANGE_MS[range];
 
+    // M3-C (F3 «показать исключённые»): excluded НИКОГДА не участвуют в сегментах/
+    // сглаживании кривой — вырезаем их ДО splitOnGaps/smoothGravityMedian5, не полагаясь
+    // только на то, что smoothGravityMedian5 их не сглаживает (она их не трогает, но
+    // buildLinePath ниже рисовал бы через них линию сырым значением, если их не убрать).
     const processedSessions = sessions.map((session, index) => {
-      const filtered = session.points.filter((p) => p.ts >= cutoffMs);
+      const filtered = session.points.filter((p) => p.ts >= cutoffMs && !p.excluded);
       const rawSegments = splitOnGaps(filtered, session.intervalSeconds);
       const segments = rawSegments.map((seg) => downsampleSeries(smoothGravityMedian5(seg), DOWNSAMPLE_MAX_POINTS));
       return {
@@ -179,6 +252,16 @@ export function FermentChart({ sessions, manualMeasurements, gravityUnit, defaul
       };
     });
 
+    // Исключённые точки в диапазоне — рисуются полупрозрачными кружками ТОЛЬКО когда
+    // тумблер включён; на кривую/сглаживание/домен осей не влияют, пока он выключен.
+    const excludedBySession = new Map<string, FermentPointCore[]>();
+    if (showExcluded) {
+      for (const session of sessions) {
+        const points = session.points.filter((p) => p.ts >= cutoffMs && p.excluded && p.gravitySg !== null);
+        if (points.length > 0) excludedBySession.set(session.id, points);
+      }
+    }
+
     const visibleManual = manualMeasurements
       .filter((m) => m.ts >= cutoffMs)
       .sort((a, b) => a.ts - b.ts);
@@ -187,8 +270,9 @@ export function FermentChart({ sessions, manualMeasurements, gravityUnit, defaul
       ps.segments.some((seg) => seg.some((p) => p.gravitySg !== null))
     );
     const hasTempData = processedSessions.some((ps) => ps.segments.some((seg) => seg.some((p) => p.tempC !== null)));
+    const hasVisibleExcluded = excludedBySession.size > 0;
 
-    if (!hasDeviceCurve && visibleManual.length === 0) {
+    if (!hasDeviceCurve && visibleManual.length === 0 && !hasVisibleExcluded) {
       return { empty: true as const, hasAnyDataEver };
     }
 
@@ -207,6 +291,14 @@ export function FermentChart({ sessions, manualMeasurements, gravityUnit, defaul
     for (const m of visibleManual) {
       tsValues.push(m.ts);
       gravityValues.push(m.gravitySg);
+    }
+    // Показанные excluded-точки — тоже в домен осей, иначе выброс за пределами
+    // текущего диапазона кривой обрежется по краю графика вместо честного «вот он».
+    for (const points of excludedBySession.values()) {
+      for (const p of points) {
+        tsValues.push(p.ts);
+        gravityValues.push(p.gravitySg!);
+      }
     }
 
     const tMin = Math.min(...tsValues);
@@ -262,6 +354,13 @@ export function FermentChart({ sessions, manualMeasurements, gravityUnit, defaul
           ? `${ps.session.deviceName} · ${formatSessionSince(new Date(ps.session.startedAt))}`
           : ps.session.deviceName;
 
+      // F3 «показать исключённые» — полупрозрачные кружки цвета серии, отдельно от
+      // кривой (excludedBySession уже отфильтрован по showExcluded/диапазону выше).
+      const excludedDots = (excludedBySession.get(ps.session.id) ?? []).map((p) => ({
+        x: x(p.ts),
+        y: y1(p.gravitySg!)
+      }));
+
       return {
         id: ps.session.id,
         deviceName: ps.session.deviceName,
@@ -270,7 +369,8 @@ export function FermentChart({ sessions, manualMeasurements, gravityUnit, defaul
         gravityPaths,
         gravityDots,
         tempPaths,
-        tempDots
+        tempDots,
+        excludedDots
       };
     });
 
@@ -304,7 +404,14 @@ export function FermentChart({ sessions, manualMeasurements, gravityUnit, defaul
       hasTempData,
       showLegend: sessions.length > 1 || hasTempData || visibleManual.length > 0
     };
-  }, [sessions, manualMeasurements, range, gravityUnit, hasAnyDataEver]);
+  }, [sessions, manualMeasurements, range, gravityUnit, hasAnyDataEver, showExcluded]);
+
+  // Домен пересчитывается при смене диапазона — старое выделение может указывать на
+  // время вне нового домена (или вовсе не иметь смысла), поэтому сбрасываем его тоже.
+  const changeRange = (next: FermentChartRange) => {
+    setRange(next);
+    if (interactive) onRangeSelected?.(null);
+  };
 
   if (geom.empty) {
     return (
@@ -314,8 +421,52 @@ export function FermentChart({ sessions, manualMeasurements, gravityUnit, defaul
     );
   }
 
+  // Координаты brush-драга (F4.2/F4.5): та же линейная проекция ts↔x, что строила geom
+  // (PAD_L/PLOT_W), восстановленная здесь из geom.tMin/tMax для обработчиков указателя.
+  const domainSpanMs = geom.tMax - geom.tMin || 1;
+  const xFromTs = (ts: number) => PAD_L + ((ts - geom.tMin) / domainSpanMs) * PLOT_W;
+  const clampTs = (ts: number) => Math.min(Math.max(ts, geom.tMin), geom.tMax);
+  const tsFromClientX = (clientX: number): number => {
+    const rect = svgRef.current?.getBoundingClientRect();
+    if (!rect || rect.width === 0) return geom.tMin;
+    const vbX = ((clientX - rect.left) / rect.width) * VB_W;
+    const clampedVbX = Math.min(Math.max(vbX, PAD_L), VB_W - PAD_R);
+    return geom.tMin + ((clampedVbX - PAD_L) / PLOT_W) * domainSpanMs;
+  };
+
+  const handlePointerDown = (event: ReactPointerEvent<SVGRectElement>) => {
+    if (!interactive) return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    const ts = tsFromClientX(event.clientX);
+    draggingRef.current = { startTs: ts, pointerId: event.pointerId };
+    setDragPreview({ fromTs: ts, toTs: ts });
+  };
+  const handlePointerMove = (event: ReactPointerEvent<SVGRectElement>) => {
+    if (!draggingRef.current || draggingRef.current.pointerId !== event.pointerId) return;
+    const ts = tsFromClientX(event.clientX);
+    const { startTs } = draggingRef.current;
+    setDragPreview({ fromTs: Math.min(startTs, ts), toTs: Math.max(startTs, ts) });
+  };
+  const handlePointerUp = (event: ReactPointerEvent<SVGRectElement>) => {
+    if (!draggingRef.current || draggingRef.current.pointerId !== event.pointerId) return;
+    const ts = tsFromClientX(event.clientX);
+    const { startTs } = draggingRef.current;
+    draggingRef.current = null;
+    setDragPreview(null);
+    const fromTs = Math.min(startTs, ts);
+    const toTs = Math.max(startTs, ts);
+    // Слишком короткий драг (по сути клик) — трактуем как сброс, а не микровыделение.
+    if (xFromTs(toTs) - xFromTs(fromTs) < MIN_DRAG_VB_PX) {
+      onRangeSelected?.(null);
+      return;
+    }
+    onRangeSelected?.({ fromTs, toTs });
+  };
+
+  const activeSelection = interactive ? (dragPreview ?? selection) : null;
+
   return (
-    <div>
+    <div ref={containerRef}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         {geom.showLegend ? (
           <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
@@ -328,27 +479,44 @@ export function FermentChart({ sessions, manualMeasurements, gravityUnit, defaul
         ) : (
           <span />
         )}
-        <div className="flex gap-1 text-xs" role="group" aria-label="Диапазон графика">
-          {RANGE_OPTIONS.map((option) => (
+        <div className="flex flex-wrap items-center gap-2">
+          {hasExcludedPoints ? (
             <button
-              key={option.key}
               type="button"
-              aria-pressed={range === option.key}
-              onClick={() => setRange(option.key)}
-              className={`min-h-8 rounded-full border px-2.5 py-1 transition-colors ${
-                range === option.key
+              aria-pressed={showExcluded}
+              onClick={() => setShowExcluded((prev) => !prev)}
+              className={`min-h-8 rounded-full border px-2.5 py-1 text-xs transition-colors ${
+                showExcluded
                   ? "border-primary bg-primary text-primary-foreground"
                   : "border-border bg-card text-muted-foreground hover:text-foreground"
               }`}
             >
-              {option.label}
+              Показать исключённые
             </button>
-          ))}
+          ) : null}
+          <div className="flex gap-1 text-xs" role="group" aria-label="Диапазон графика">
+            {RANGE_OPTIONS.map((option) => (
+              <button
+                key={option.key}
+                type="button"
+                aria-pressed={range === option.key}
+                onClick={() => changeRange(option.key)}
+                className={`min-h-8 rounded-full border px-2.5 py-1 transition-colors ${
+                  range === option.key
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-card text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       <div className="relative mt-3">
         <svg
+          ref={svgRef}
           viewBox={`0 0 ${VB_W} ${VB_H}`}
           className="h-auto w-full"
           role="img"
@@ -358,6 +526,22 @@ export function FermentChart({ sessions, manualMeasurements, gravityUnit, defaul
           {geom.gravityTicks.map((t, i) => (
             <line key={`g-tick-${i}`} x1={PAD_L} x2={VB_W - PAD_R} y1={t.y} y2={t.y} stroke="hsl(var(--chart-grid))" strokeWidth={1} />
           ))}
+
+          {/* F4.2/F4.5: подсветка выделенного диапазона — фон, под кривыми (не закрывает данные). */}
+          {activeSelection ? (
+            <rect
+              x={Math.min(xFromTs(clampTs(activeSelection.fromTs)), xFromTs(clampTs(activeSelection.toTs)))}
+              width={Math.abs(xFromTs(clampTs(activeSelection.toTs)) - xFromTs(clampTs(activeSelection.fromTs)))}
+              y={PAD_T}
+              height={PLOT_H}
+              fill="hsl(var(--primary))"
+              fillOpacity={0.12}
+              stroke="hsl(var(--primary))"
+              strokeOpacity={0.5}
+              strokeWidth={1}
+              style={{ pointerEvents: "none" }}
+            />
+          ) : null}
 
           {geom.curves.flatMap((curve) =>
             curve.tempPaths.map((d, i) => (
@@ -394,6 +578,13 @@ export function FermentChart({ sessions, manualMeasurements, gravityUnit, defaul
             curve.gravityDots.map((d, i) => <circle key={`grav-dot-${curve.id}-${i}`} cx={d.x} cy={d.y} r={2.5} fill={curve.color} />)
           )}
 
+          {/* F3 «Показать исключённые» — полупрозрачные кружки цвета серии; никогда не часть кривой/сглаживания. */}
+          {geom.curves.flatMap((curve) =>
+            curve.excludedDots.map((d, i) => (
+              <circle key={`excl-dot-${curve.id}-${i}`} cx={d.x} cy={d.y} r={3} fill={curve.color} opacity={0.35} />
+            ))
+          )}
+
           {geom.manualConnectorPath ? (
             <path d={geom.manualConnectorPath} fill="none" stroke="hsl(var(--muted-foreground))" strokeWidth={1.5} strokeDasharray="4 3" />
           ) : null}
@@ -410,6 +601,27 @@ export function FermentChart({ sessions, manualMeasurements, gravityUnit, defaul
               strokeWidth={m.isFinal ? 2 : 1.5}
             />
           ))}
+
+          {/*
+            F4.2/F4.5: прозрачный оверлей ПОСЛЕДНИМ — топ по z-order, ловит Pointer Events
+            (мышь/тач/перо — одним API) поверх кривых/точек независимо от их fill/stroke.
+            touchAction:"none" — иначе мобильный браузер попытается проскроллить страницу
+            вертикально во время горизонтального драга.
+          */}
+          {interactive ? (
+            <rect
+              x={PAD_L}
+              y={PAD_T}
+              width={PLOT_W}
+              height={PLOT_H}
+              fill="transparent"
+              style={{ cursor: "crosshair", touchAction: "none" }}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerUp}
+            />
+          ) : null}
         </svg>
 
         {/*
@@ -459,6 +671,10 @@ export function FermentChart({ sessions, manualMeasurements, gravityUnit, defaul
           <span>{geom.axisLabels.end}</span>
         </div>
       )}
+
+      {/* Панель действий brush-выделения (ferment-range-panel.tsx) — внутри containerRef,
+          чтобы клик по её кнопкам не засчитался как «клик вне» и не сбросил выделение. */}
+      {children}
     </div>
   );
 }

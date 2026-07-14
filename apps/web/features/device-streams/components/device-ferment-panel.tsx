@@ -23,6 +23,7 @@ import { pluralize } from "@/lib/pluralize";
 
 import { ConnectBatchDialog } from "./connect-batch-dialog";
 import { FermentChart, type FermentChartSession } from "./ferment-chart";
+import { SessionBoundsControl } from "./session-bounds-control";
 
 export type DeviceSessionHistoryItem = {
   id: string;
@@ -116,6 +117,7 @@ export function DeviceFermentPanel({ deviceId, gravityUnit, chartSessions, histo
               <span className="shrink-0 text-xs text-muted-foreground">
                 {session.readingsCount} {pluralize(session.readingsCount, ["точка", "точки", "точек"])}
               </span>
+              <SessionBoundsControl sessionId={session.id} startedAt={session.startedAt} endedAt={session.endedAt} />
             </li>
           ))}
         </ul>

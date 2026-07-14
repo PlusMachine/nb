@@ -39,6 +39,29 @@ import {
   listSessionsForBatch,
   previewRetroAttach
 } from "./sessions";
+import {
+  applySessionCalibration,
+  clearSessionCalibration,
+  confirmGravityFromCurve,
+  countSessionReadingsInRange,
+  deleteSessionData,
+  deleteSessionReadings,
+  setReadingsExcluded,
+  updateSessionBounds
+} from "./corrections";
+import type {
+  ApplySessionCalibrationInput,
+  ConfirmGravityFromCurveInput,
+  ConfirmGravityFromCurveResult,
+  DeleteSessionDataResult,
+  DeleteSessionReadingsInput,
+  DeleteSessionReadingsResult,
+  SessionBoundsResult,
+  SessionCalibrationResult,
+  SetReadingsExcludedInput,
+  SetReadingsExcludedResult,
+  UpdateSessionBoundsInput
+} from "./contracts";
 
 type ActionError = { ok: false; message: string };
 
@@ -280,5 +303,149 @@ export async function listActiveSessionsForBatchAction(
     return { ok: true, sessions: sessions.filter((session) => session.endedAt === null) };
   } catch (error) {
     return toSessionActionError(error);
+  }
+}
+
+// =============================================================================
+//  F4 — коррекция данных (corrections.ts, «сердце ТЗ»). Отдельная карта ошибок:
+//  SESSION_NOT_FOUND здесь однозначно про сеанс (в отличие от NOT_FOUND у
+//  sessions.ts, который мог означать и устройство, и партию) — сообщение точнее.
+// =============================================================================
+
+const CORRECTIONS_ERROR_MESSAGES: Record<string, string> = {
+  SESSION_NOT_FOUND: "Сеанс не найден.",
+  NOT_FOUND: "Партия не найдена.",
+  CALIBRATION_NO_NEARBY_POINT: "Рядом с этим замером нет показаний устройства (в пределах 2 часов). Калибровка невозможна.",
+  SESSION_BOUNDS_INVALID_RANGE: "Начало сеанса должно быть раньше конца.",
+  SESSION_BOUNDS_END_IN_FUTURE: "Дата окончания не может быть в будущем.",
+  CURVE_INSUFFICIENT_POINTS: "Недостаточно показаний устройства для оценки (нужно минимум 3 точки).",
+  CURVE_NOT_STABLE: "Плотность на кривой ещё не стабилизировалась — рано считать брожение завершённым.",
+  RATE_LIMITED: ERROR_MESSAGES.RATE_LIMITED,
+  BREW_MEASUREMENT_QUOTA_REACHED: "Достигнут предел числа замеров для этой партии (300)."
+};
+
+const toCorrectionsActionError = (error: unknown): ActionError => {
+  const code = error instanceof Error ? error.message : "";
+  return { ok: false, message: CORRECTIONS_ERROR_MESSAGES[code] ?? "Не удалось выполнить действие. Попробуйте ещё раз." };
+};
+
+const revalidateSessionPaths = (deviceId: string, brewBatchId: string): void => {
+  revalidatePath(`/app/devices/${deviceId}`);
+  revalidatePath(`/app/brew-batches/${brewBatchId}`);
+};
+
+/** F4.1 «Выровнять по моему замеру» (офсет-калибровка сеанса). */
+export async function applySessionCalibrationAction(
+  input: ApplySessionCalibrationInput
+): Promise<{ ok: true; result: SessionCalibrationResult } | ActionError> {
+  const user = await requireUser();
+  try {
+    const result = await applySessionCalibration(user.id, input);
+    revalidateSessionPaths(result.deviceId, result.brewBatchId);
+    return { ok: true, result };
+  } catch (error) {
+    return toCorrectionsActionError(error);
+  }
+}
+
+/** Отмена калибровки («сбросить офсет» рядом с бейджем «Кривая скорректирована на …»). */
+export async function clearSessionCalibrationAction(
+  sessionId: string
+): Promise<{ ok: true; result: SessionCalibrationResult } | ActionError> {
+  const user = await requireUser();
+  try {
+    const result = await clearSessionCalibration(user.id, sessionId);
+    revalidateSessionPaths(result.deviceId, result.brewBatchId);
+    return { ok: true, result };
+  } catch (error) {
+    return toCorrectionsActionError(error);
+  }
+}
+
+/** F4.2 «Исключить точки» (или вернуть — тем же вызовом с excluded=false). */
+export async function setReadingsExcludedAction(
+  input: SetReadingsExcludedInput
+): Promise<{ ok: true; result: SetReadingsExcludedResult } | ActionError> {
+  const user = await requireUser();
+  try {
+    const result = await setReadingsExcluded(user.id, input);
+    revalidateSessionPaths(result.deviceId, result.brewBatchId);
+    return { ok: true, result };
+  } catch (error) {
+    return toCorrectionsActionError(error);
+  }
+}
+
+/** F4.3 «Границы сеанса» — обрезать начало/конец задним числом. */
+export async function updateSessionBoundsAction(
+  sessionId: string,
+  input: UpdateSessionBoundsInput
+): Promise<{ ok: true; result: SessionBoundsResult } | ActionError> {
+  const user = await requireUser();
+  try {
+    const result = await updateSessionBounds(user.id, sessionId, input);
+    revalidateSessionPaths(result.deviceId, result.brewBatchId);
+    revalidatePath("/app/devices");
+    return { ok: true, result };
+  } catch (error) {
+    return toCorrectionsActionError(error);
+  }
+}
+
+/** F4.4 «Записать OG/FG с ареометра?» — единственный путь, которым коррекции пишут в brew_measurements. */
+export async function confirmGravityFromCurveAction(
+  input: ConfirmGravityFromCurveInput
+): Promise<{ ok: true; result: ConfirmGravityFromCurveResult } | ActionError> {
+  const user = await requireUser();
+  try {
+    const result = await confirmGravityFromCurve(user.id, input);
+    revalidatePath(`/app/brew-batches/${result.measurement.brewBatchId}`);
+    return { ok: true, result };
+  } catch (error) {
+    return toCorrectionsActionError(error);
+  }
+}
+
+/** Предзагрузка счётчика для ConfirmActionDialog перед удалением точек/диапазона (F4.5). */
+export async function countSessionReadingsInRangeAction(
+  sessionId: string,
+  fromTs?: Date,
+  toTs?: Date
+): Promise<{ ok: true; count: number } | ActionError> {
+  const user = await requireUser();
+  try {
+    const value = await countSessionReadingsInRange(user.id, sessionId, fromTs, toTs);
+    return { ok: true, count: value };
+  } catch (error) {
+    return toCorrectionsActionError(error);
+  }
+}
+
+/** F4.5 «Удалить точки» — диапазон или все точки сеанса (сам сеанс остаётся). */
+export async function deleteSessionReadingsAction(
+  input: DeleteSessionReadingsInput
+): Promise<{ ok: true; result: DeleteSessionReadingsResult } | ActionError> {
+  const user = await requireUser();
+  try {
+    const result = await deleteSessionReadings(user.id, input);
+    revalidateSessionPaths(result.deviceId, result.brewBatchId);
+    return { ok: true, result };
+  } catch (error) {
+    return toCorrectionsActionError(error);
+  }
+}
+
+/** F4.5 «Удалить данные сеанса» — точки сеанса + сам сеанс (устройство остаётся). */
+export async function deleteSessionDataAction(
+  sessionId: string
+): Promise<{ ok: true; result: DeleteSessionDataResult } | ActionError> {
+  const user = await requireUser();
+  try {
+    const result = await deleteSessionData(user.id, sessionId);
+    revalidateSessionPaths(result.deviceId, result.brewBatchId);
+    revalidatePath("/app/devices");
+    return { ok: true, result };
+  } catch (error) {
+    return toCorrectionsActionError(error);
   }
 }

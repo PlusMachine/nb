@@ -14,17 +14,80 @@
 //    плитками BrewCompletionSummary/BrewJournal — вторая копия графика не нужна);
 //    без управляющих элементов, диапазон сразу «Всё» — это история, не пульт.
 // =============================================================================
+import Link from "next/link";
+import { AlertTriangle } from "lucide-react";
 import type { PreferredGravityUnit } from "@nb/auth";
 
 import { formatGravity } from "@/features/system/gravity-units";
 import type { BrewBatchStatus } from "@/features/brew-batches/contracts";
+import { buildCalculatorHref } from "@/features/calculators/catalog";
+import { pluralize } from "@/lib/pluralize";
 
+import { previewGravityFromCurve } from "../corrections";
 import { readBatchFermentSeries, type BatchFermentSummary } from "../series";
 import { listAvailableStreamDevices } from "../sessions";
+import type { FermentVerdict } from "../verdict-core";
 import { ActiveSessionRow, AttachDeviceControl } from "./batch-ferment-controls";
-import { FermentChart, type FermentChartSession } from "./ferment-chart";
+import { FermentRangePanel } from "./ferment-range-panel";
+import type { FermentChartSession } from "./ferment-chart";
+import { GravityConfirmRow } from "./gravity-confirm-row";
+import { SessionCalibrationControl } from "./session-calibration-control";
 
 const MIN_HISTORY_MANUAL_MEASUREMENTS = 2;
+
+// Лейблы вердикта (§5 F5) — insufficient_data сюда не попадает (строка вердикта тогда не
+// рендерится вовсе, см. FermentVerdictRow).
+const VERDICT_LABELS: Record<Exclude<FermentVerdict["kind"], "insufficient_data">, string> = {
+  awaiting_start: "Ждём начала брожения",
+  not_started: "Брожение не началось?",
+  active: "Бродит активно",
+  slowing: "Дображивает",
+  possibly_stuck: "Возможен затык",
+  likely_done: "Похоже, добродило"
+};
+
+// ⚠-вердикты (§5 F5) — тревожный тон/иконка, остальные — нейтральный.
+const WARNING_VERDICT_KINDS = new Set<FermentVerdict["kind"]>(["not_started", "possibly_stuck"]);
+
+/**
+ * Строка вердикта в сводке блока «Брожение» (§5 F5). insufficient_data — вообще не
+ * рендерим (нечего сказать, П1: не кричащий блок). У likely_done — обязательная (П5)
+ * приписка «Перед розливом подтвердите плотность ареометром» + ссылка на калькулятор
+ * прайминга с предзаполненной температурой (FG калькулятор не принимает — ни у
+ * priming-sugar, ни у keg-carbonation нет такого поля во входных данных).
+ */
+function FermentVerdictRow({ verdict, tempC }: { verdict: FermentVerdict | null; tempC: number | null }) {
+  if (verdict === null || verdict.kind === "insufficient_data") {
+    return null;
+  }
+
+  const isWarning = WARNING_VERDICT_KINDS.has(verdict.kind);
+
+  return (
+    <div
+      className={`space-y-1.5 rounded-lg px-3 py-2 text-sm ${
+        isWarning ? "bg-warning-subtle text-warning-subtle-foreground" : "bg-muted text-foreground"
+      }`}
+    >
+      <p className="flex items-center gap-2 font-medium">
+        {isWarning ? <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden /> : null}
+        {VERDICT_LABELS[verdict.kind]}
+      </p>
+      {verdict.kind === "likely_done" ? (
+        <p className="text-xs leading-5 text-muted-foreground">
+          Стабильно {verdict.stableDays} {pluralize(verdict.stableDays, ["день", "дня", "дней"])}. Перед розливом
+          подтвердите плотность ареометром.{" "}
+          <Link
+            href={buildCalculatorHref("priming-sugar", { beerTemperatureC: tempC != null ? Number(tempC.toFixed(1)) : undefined })}
+            className="font-medium text-foreground underline-offset-2 hover:underline"
+          >
+            Перейти к розливу
+          </Link>
+        </p>
+      ) : null}
+    </div>
+  );
+}
 
 function SummaryTile({ label, value }: { label: string; value: string }) {
   return (
@@ -64,7 +127,12 @@ export async function BatchFermentBlock({
   gravityUnit: PreferredGravityUnit;
   variant: "active" | "history";
 }) {
-  const { sessions, manualMeasurements, summary } = await readBatchFermentSeries(userId, brewBatchId);
+  // includeExcluded:true всегда (M3-C, F3 «показать исключённые») — тумблер в
+  // FermentChart/FermentRangePanel решает клиентски, показывать ли их точками;
+  // сама кривая/сглаживание/сводка/вердикт excluded и так игнорируют (series.ts).
+  const { sessions, manualMeasurements, summary } = await readBatchFermentSeries(userId, brewBatchId, {
+    includeExcluded: true
+  });
   const hasAnyData = sessions.some((s) => s.points.length > 0) || manualMeasurements.length > 0;
 
   if (variant === "history" && !(sessions.length > 0 || manualMeasurements.length >= MIN_HISTORY_MANUAL_MEASUREMENTS)) {
@@ -87,17 +155,55 @@ export async function BatchFermentBlock({
       ? await listAvailableStreamDevices(userId)
       : [];
 
+  // F4.4 (M3-C): «Записать OG/FG N с ареометра?» — предпросмотр на сеансе, выбранном
+  // тем же правилом, что и вердикт (verdictSessionId), чтобы предложение совпадало с
+  // тем, что человек видит в сводке. Только для активного блока — история read-only.
+  let ogSuggestion: number | null = null;
+  let fgSuggestion: number | null = null;
+  const suggestionSessionId = summary.verdictSessionId;
+  if (variant === "active" && suggestionSessionId) {
+    if (summary.og === null) {
+      ogSuggestion = await previewGravityFromCurve(userId, { sessionId: suggestionSessionId, kind: "og" });
+    }
+    if (summary.verdict?.kind === "likely_done" && summary.fg === null) {
+      fgSuggestion = await previewGravityFromCurve(userId, { sessionId: suggestionSessionId, kind: "fg" });
+    }
+  }
+
+  // F4.1 (M3-C): «Выровнять по моему замеру» — нужен хотя бы один активный сеанс И
+  // хотя бы один ручной замер (офсет считается по интерполяции кривой на момент замера).
+  const calibrationSessions = activeSessions.map((s) => ({
+    id: s.session.id,
+    deviceName: s.session.deviceName,
+    calibrationOffsetSg: s.session.calibrationOffsetSg
+  }));
+  const calibrationMeasurements = manualMeasurements.map((m) => ({ ts: m.ts, gravitySg: m.gravitySg }));
+
   return (
     <section className="space-y-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
       <h2 className="text-base font-semibold text-foreground">Брожение</h2>
 
       {hasAnyData ? <FermentSummaryRow summary={summary} gravityUnit={gravityUnit} /> : null}
 
-      <FermentChart
+      <FermentVerdictRow verdict={summary.verdict} tempC={summary.tempC} />
+
+      {variant === "active" ? (
+        <SessionCalibrationControl sessions={calibrationSessions} measurements={calibrationMeasurements} gravityUnit={gravityUnit} />
+      ) : null}
+
+      {ogSuggestion !== null && suggestionSessionId ? (
+        <GravityConfirmRow sessionId={suggestionSessionId} kind="og" gravitySg={ogSuggestion} gravityUnit={gravityUnit} />
+      ) : null}
+      {fgSuggestion !== null && suggestionSessionId ? (
+        <GravityConfirmRow sessionId={suggestionSessionId} kind="fg" gravitySg={fgSuggestion} gravityUnit={gravityUnit} />
+      ) : null}
+
+      <FermentRangePanel
         sessions={chartSessions}
         manualMeasurements={manualMeasurements}
         gravityUnit={gravityUnit}
         defaultRange={variant === "history" ? "all" : "7d"}
+        interactive={variant === "active"}
       />
 
       {variant === "active" && (activeSessions.length > 0 || availableDevices.length > 0) ? (
@@ -110,7 +216,9 @@ export async function BatchFermentBlock({
                 deviceName: s.session.deviceName,
                 deviceHardwareKind: s.session.hardwareKind,
                 startedAt: s.session.startedAt.getTime(),
-                readingsCount: s.points.length
+                // includeExcluded:true (см. выше) — считаем видимые точки, не все подряд,
+                // «N точек» в строке сеанса не должно вдруг вырасти на число исключённых.
+                readingsCount: s.points.filter((p) => !p.excluded).length
               }}
             />
           ))}

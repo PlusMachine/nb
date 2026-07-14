@@ -20,6 +20,7 @@ import { formatSessionSince } from "@/features/device-streams/session-format";
 import { pluralize } from "@/lib/pluralize";
 
 import { ConnectDeviceDialog } from "./connect-device-dialog";
+import { SessionBoundsControl } from "./session-bounds-control";
 
 export type ActiveFermentSessionView = {
   id: string;
@@ -63,10 +64,13 @@ export function ActiveSessionRow({ session }: { session: ActiveFermentSessionVie
           {pluralize(session.readingsCount, ["точка", "точки", "точек"])}
         </span>
       </span>
-      <Button type="button" variant="outline" size="sm" onClick={() => void finish()} disabled={pending}>
-        {pending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
-        Завершить сеанс
-      </Button>
+      <span className="flex items-center gap-1">
+        <SessionBoundsControl sessionId={session.id} startedAt={session.startedAt} endedAt={null} />
+        <Button type="button" variant="outline" size="sm" onClick={() => void finish()} disabled={pending}>
+          {pending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
+          Завершить сеанс
+        </Button>
+      </span>
     </div>
   );
 }

@@ -7,7 +7,8 @@ import { STREAM_PROVIDER_ID } from "@/features/brew-controller/contracts";
 
 import type { StreamHardwareKind } from "./contracts";
 import { extractIntervalSeconds } from "./stream-device-core";
-import { visibleAttenuation, type FermentPointCore } from "./series-core";
+import { smoothGravityMedian5, visibleAttenuation, type FermentPointCore } from "./series-core";
+import { computeFermentVerdict, type FermentVerdict } from "./verdict-core";
 
 // =============================================================================
 //  features/device-streams — series.ts
@@ -63,6 +64,22 @@ export type BatchFermentSummary = {
   abvEstimate: number | null;
   /** Расчётный FG рецепта из recipeSnapshot партии, если есть — для сравнения на графике/вердикте (M3). */
   targetFg: number | null;
+  /**
+   * Вердикт состояния брожения (§5 F5) — по сглаженной кривой активного/последнего сеанса
+   * устройства без excluded, либо (нет ни одного сеанса) по ручным замерам (П1/F7 —
+   * паритет «без устройства»). null — только для пустой сводки (чужая/несуществующая
+   * партия, см. emptySummary); для существующей партии всегда реальный вердикт (в т.ч.
+   * "insufficient_data", когда точек мало, — UI по конвенции его не показывает).
+   */
+  verdict: FermentVerdict | null;
+  /**
+   * M3-C: id сеанса, на данных которого посчитан verdict (pickVerdictSession) —
+   * тот же сеанс, что логично использовать для previewGravityFromCurve/
+   * confirmGravityFromCurve (F4.4 «Записать OG/FG с ареометра?»), чтобы
+   * предложение согласовывалось с тем, что видно в вердикте. null — сеансов
+   * устройства нет вовсе (вердикт по ручным замерам либо insufficient_data).
+   */
+  verdictSessionId: string | null;
 };
 
 export type BatchFermentSeriesResult = {
@@ -86,7 +103,9 @@ const emptySummary: BatchFermentSummary = {
   fg: null,
   visibleAttenuationPct: null,
   abvEstimate: null,
-  targetFg: null
+  verdict: null,
+  targetFg: null,
+  verdictSessionId: null
 };
 
 type ReadingRow = {
@@ -199,6 +218,57 @@ const buildSessionsSeries = async (
   });
 };
 
+/**
+ * Сеанс для вердикта (§5 F5: «активного/последнего сеанса»): активный (endedAt=null),
+ * при нескольких параллельных активных — с самым поздним стартом; нет активных — самый
+ * поздний по старту завершённый (sessions уже отсортированы по startedAt asc, но берём
+ * max явно — устойчиво к будущим изменениям сортировки).
+ */
+const pickVerdictSession = (sessions: FermentSessionSeries[]): FermentSessionSeries | null => {
+  if (sessions.length === 0) return null;
+  const active = sessions.filter((s) => s.session.endedAt === null);
+  const pool = active.length > 0 ? active : sessions;
+  return pool.reduce((latest, current) => (current.session.startedAt > latest.session.startedAt ? current : latest));
+};
+
+/**
+ * Вердикт состояния брожения (§5 F5) — на данных, что уже прочитаны выше (без доп.
+ * запросов): сглаженная (smoothGravityMedian5) кривая выбранного сеанса устройства без
+ * excluded, либо (сеансов вообще нет) ручные замеры (П1/F7 — паритет «без устройства»).
+ * verdictSession — уже выбран вызывающим кодом (pickVerdictSession), чтобы тот же id
+ * можно было переиспользовать в сводке (BatchFermentSummary.verdictSessionId, M3-C).
+ * ⚠ Если вызывающий код передал windowHours — points сеанса уже урезаны этим окном, и
+ * points[0] может быть не первой точкой сеанса целиком (искажает «падение с начала» из
+ * verdict-core). Сегодня единственный вызывающий (BatchFermentBlock) окно не передаёт;
+ * если появится другой caller с windowHours для этой же сводки — потребуется отдельное
+ * не-урезанное чтение точек именно для вердикта.
+ */
+const computeBatchFermentVerdict = (
+  verdictSession: FermentSessionSeries | null,
+  manualMeasurements: ManualMeasurementPoint[],
+  targetFg: number | null,
+  nowMs: number
+): FermentVerdict => {
+  if (verdictSession) {
+    const smoothed = smoothGravityMedian5(verdictSession.points.filter((p) => !p.excluded));
+    const points: { ts: number; gravitySg: number }[] = [];
+    for (const p of smoothed) {
+      if (p.gravitySg !== null) points.push({ ts: p.ts, gravitySg: p.gravitySg });
+    }
+    return computeFermentVerdict({
+      points,
+      sessionStartTs: verdictSession.session.startedAt.getTime(),
+      targetFg,
+      nowMs
+    });
+  }
+
+  // Нет ни одного сеанса устройства — вердикт по ручным замерам; verdict-core сам вернёт
+  // insufficient_data, если их меньше двух (F5/F7: «грубее, но работает»).
+  const points = manualMeasurements.map((m) => ({ ts: m.ts, gravitySg: m.gravitySg }));
+  return computeFermentVerdict({ points, sessionStartTs: null, targetFg, nowMs });
+};
+
 /** Последняя не-excluded точка (по ts) среди точек всех сеансов, удовлетворяющая предикату. */
 const findLatestAcrossSessions = (
   sessions: FermentSessionSeries[],
@@ -274,6 +344,7 @@ export const readBatchFermentSeries = async (
   const hasAbvPair = og !== null && currentGravitySg !== null && og > currentGravitySg && og > 1;
 
   const targetFg = (batch.recipeSnapshot as { fg?: number | null } | null)?.fg ?? null;
+  const verdictSession = pickVerdictSession(sessions);
 
   const summary: BatchFermentSummary = {
     currentGravitySg,
@@ -282,7 +353,9 @@ export const readBatchFermentSeries = async (
     fg,
     visibleAttenuationPct: visibleAttenuation(og, currentGravitySg),
     abvEstimate: hasAbvPair ? calculateAbv(og!, currentGravitySg!) : null,
-    targetFg
+    targetFg,
+    verdict: computeBatchFermentVerdict(verdictSession, manualMeasurements, targetFg, Date.now()),
+    verdictSessionId: verdictSession?.session.id ?? null
   };
 
   return { sessions, manualMeasurements, summary };

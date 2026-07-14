@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { GRAVITY_SG_MAX, GRAVITY_SG_MIN, type BrewMeasurementDto } from "@/features/brew-batches/contracts";
+
 // =============================================================================
 //  features/device-streams — контракты приёма телеметрии сторонних устройств
 //  ферментации (iSpindel, GravityMon, Tilt, Floaty, BrewPiLess, RAPT…).
@@ -209,3 +211,132 @@ export const RETRO_ATTACH_WINDOW_MS = RETRO_ATTACH_WINDOW_DAYS * 24 * 60 * 60 * 
 /** Rate limit создания сеанса (анти-скрипт-флуд, по образцу stream_device_create). */
 export const FERMENT_SESSION_CREATE_RATE_LIMIT = 30;
 export const FERMENT_SESSION_CREATE_RATE_WINDOW_SECONDS = 3600;
+
+// =============================================================================
+//  F4 — коррекция данных (§5 F4, §3 П2/П3). Спека — сердце ТЗ: офсет-калибровка,
+//  исключение точек, границы сеанса, подтверждение OG/FG с кривой, удаления.
+//  Владелец: features/device-streams/corrections.ts. Пороги — доменные константы,
+//  в UI не настраиваются (по аналогии с verdict-core, MVP).
+// =============================================================================
+
+/** F4.1: если замер вне диапазона точек сеанса — берём ближайшую точку не дальше этого окна. */
+export const CALIBRATION_NEARBY_WINDOW_MS = 2 * 60 * 60 * 1000;
+
+/** F4.4: «OG с кривой» — медиана первых N часов сеанса. */
+export const OG_CONFIRM_WINDOW_HOURS = 6;
+
+/** F4.4: «FG с кривой» — медиана последних N часов (при условии стабильности). */
+export const FG_CONFIRM_WINDOW_HOURS = 48;
+
+/** F4.4: минимум точек в окне, иначе оценка недостаточно надёжна (CURVE_INSUFFICIENT_POINTS). */
+export const CURVE_CONFIRM_MIN_POINTS = 3;
+
+/** F4.4/F5: «стабильна» — размах (max−min) в окне не больше этого значения SG. */
+export const FG_STABILITY_THRESHOLD_SG = 0.0015;
+
+/** Вход applySessionCalibration (F4.1) — «Выровнять по моему замеру». */
+export const applySessionCalibrationSchema = z.object({
+  sessionId: z.string().min(1),
+  measurementTs: z.date(),
+  measurementSg: z.number().min(GRAVITY_SG_MIN).max(GRAVITY_SG_MAX)
+});
+export type ApplySessionCalibrationInput = z.infer<typeof applySessionCalibrationSchema>;
+
+/**
+ * Итог applySessionCalibration/clearSessionCalibration: offsetSg — новая
+ * актуальная величина (перезапись, не накопление, §5 F4.1); previousOffsetSg —
+ * для бейджа «Кривая скорректирована на …» и его отмены. sessionId/deviceId/
+ * brewBatchId — для точечного revalidatePath на стороне actions.ts (тот же
+ * принцип, что у FermentSessionDto из sessions.ts).
+ */
+export type SessionCalibrationResult = {
+  sessionId: string;
+  deviceId: string;
+  brewBatchId: string;
+  offsetSg: number;
+  previousOffsetSg: number;
+};
+
+/** Вход setReadingsExcluded (F4.2) — выделение диапазона на графике → исключить/вернуть. */
+export const setReadingsExcludedSchema = z.object({
+  sessionId: z.string().min(1),
+  fromTs: z.date(),
+  toTs: z.date(),
+  excluded: z.boolean()
+});
+export type SetReadingsExcludedInput = z.infer<typeof setReadingsExcludedSchema>;
+
+export type SetReadingsExcludedResult = {
+  sessionId: string;
+  deviceId: string;
+  brewBatchId: string;
+  /** Число точек, у которых изменился excluded. */
+  affected: number;
+};
+
+/** Вход updateSessionBounds (F4.3) — обрезка начала/конца сеанса задним числом. */
+export const updateSessionBoundsSchema = z.object({
+  startedAt: z.date().optional(),
+  endedAt: z.date().optional()
+});
+export type UpdateSessionBoundsInput = z.infer<typeof updateSessionBoundsSchema>;
+
+/**
+ * Итог updateSessionBounds: точки за новыми границами ОТВЯЗАНЫ от сеанса
+ * (session_id=NULL — «обрезать шум», обратимо ретро-привязкой), не удалены.
+ * detachedReadingsCount — для тоста-квитанции.
+ */
+export type SessionBoundsResult = {
+  sessionId: string;
+  deviceId: string;
+  brewBatchId: string;
+  startedAt: Date;
+  endedAt: Date | null;
+  endReason: FermentSessionEndReason | null;
+  detachedReadingsCount: number;
+};
+
+/** Вход confirmGravityFromCurve (F4.4) — «Записать OG/FG с ареометра?». */
+export const confirmGravityFromCurveSchema = z.object({
+  sessionId: z.string().min(1),
+  kind: z.enum(["og", "fg"])
+});
+export type ConfirmGravityFromCurveInput = z.infer<typeof confirmGravityFromCurveSchema>;
+
+/** Итог confirmGravityFromCurve: обычный ручной замер (features/brew-batches), созданный по подтверждению. */
+export type ConfirmGravityFromCurveResult = {
+  measurement: BrewMeasurementDto;
+  gravitySg: number;
+};
+
+/**
+ * Итог previewGravityFromCurve (M3-C, §5 F4.4) — ПРЕДПРОСМОТР без записи для строки-
+ * предложения «Записать OG/FG с ареометра?» в блоке «Брожение». Та же математика и
+ * входная схема, что confirmGravityFromCurveSchema (sessionId+kind) — недостаточно
+ * точек/нестабильная кривая здесь не ошибка, а просто null (строка-предложение не
+ * показывается).
+ */
+export type PreviewGravityFromCurveResult = number | null;
+
+/** Вход deleteSessionReadings (F4.5) — диапазон или все точки сеанса. */
+export const deleteSessionReadingsSchema = z.object({
+  sessionId: z.string().min(1),
+  fromTs: z.date().optional(),
+  toTs: z.date().optional()
+});
+export type DeleteSessionReadingsInput = z.infer<typeof deleteSessionReadingsSchema>;
+
+export type DeleteSessionReadingsResult = {
+  sessionId: string;
+  deviceId: string;
+  brewBatchId: string;
+  deletedCount: number;
+};
+
+/** Итог deleteSessionData — сеанс и все его точки удалены целиком. */
+export type DeleteSessionDataResult = {
+  sessionId: string;
+  deviceId: string;
+  brewBatchId: string;
+  deletedReadingsCount: number;
+};
