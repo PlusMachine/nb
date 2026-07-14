@@ -11,5 +11,7 @@ export default async function DevicesPage() {
 
   // Демо-пивоварня доступна всегда: в dev — loopback device-sim, в prod — in-process
   // стаб-провайдер (Phase 4.5). Кнопку показываем всем («попробуй до покупки»).
-  return <DevicesManager initialTiles={tiles} demoAvailable />;
+  return (
+    <DevicesManager initialTiles={tiles} demoAvailable preferredGravityUnit={user.preferredGravityUnit} />
+  );
 }

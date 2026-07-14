@@ -19,9 +19,17 @@ export const deviceDtoSchema = z.object({
   hardwareId: z.string(),
   fw: z.string().nullable(),
   capabilities: z.array(z.string()),
+  /** Провайдер устройства объявляет capability recipe_push (см. brew-controller/index.ts
+   *  providerHasCapability) — устройства без неё (стрим-ареометры и т.п.) нельзя
+   *  выбрать для «Сварить на устройстве», UI-пикеры их скрывают. */
+  supportsRecipePush: z.boolean(),
   status: deviceStatusSchema,
   localUrl: z.string().nullable(),
   mqttPrefix: z.string().nullable(),
+  /** Вид стороннего устройства ферментации (docs/specs/third-party-fermentation-devices.md
+   *  §6.1): ispindel/tilt/… у стрим-устройств, NULL у BrewForge-контроллеров. Строка, а не
+   *  StreamHardwareKind — колонка в БД не ограничена enum'ом на уровне схемы. */
+  hardwareKind: z.string().nullable(),
   lastSeenAt: z.date().nullable(),
   createdAt: z.date(),
   updatedAt: z.date()
@@ -110,6 +118,27 @@ export type DeviceTileSnapshot = {
   pausedFrom: number | null;
 };
 
+/**
+ * Last-known срез СТРИМ-устройства (цифровой ареометр/датчик, docs/specs/
+ * third-party-fermentation-devices.md) — иной прибор, иная форма среза: нет
+ * стадии/уставки/аварий BrewForge, зато есть плотность/батарея/RSSI и
+ * собственный порог «молчит» (интервал репорта известен только этому устройству).
+ */
+export type StreamTileSnapshot = {
+  /** Строка brew_devices.hardware_kind — см. комментарий в deviceDtoSchema. */
+  hardwareKind: string | null;
+  gravitySg: number | null;
+  tempC: number | null;
+  batteryV: number | null;
+  batteryPct: number | null;
+  rssi: number | null;
+  /** epoch-мс последней точки; null — пакетов ещё не было («Ждём первый пакет…»). */
+  lastReadingAtMs: number | null;
+  /** Порог «молчит» (мс) ИМЕННО для этого устройства — 3× его заявленный интервал
+   *  (normalize-core.ts staleThresholdMs), а не общий TILE_STALE_AFTER_MS ниже. */
+  staleThresholdMs: number;
+};
+
 /** Плитка устройства для L1-грида: метаданные + last-known срез + sparkline. */
 export type DeviceTile = {
   id: string;
@@ -119,9 +148,13 @@ export type DeviceTile = {
   fw: string | null;
   isDemo: boolean;
   lastSeenAt: string | null; // ISO
-  /** Last-known срез телеметрии; null — истории ещё нет (никто не открывал пульт). */
+  /** Дискриминатор формы среза — BrewForge (snapshot) или стрим-устройство (streamSnapshot). */
+  kind: "brewforge" | "stream";
+  /** Last-known срез телеметрии BrewForge; null — истории ещё нет ИЛИ это стрим-устройство. */
   snapshot: DeviceTileSnapshot | null;
-  /** Недавняя температура (oldest→newest), nulls отброшены — для sparkline. */
+  /** Last-known срез стрим-устройства; null, если kind==="brewforge" или пакетов ещё не было. */
+  streamSnapshot: StreamTileSnapshot | null;
+  /** Недавний тренд (oldest→newest), nulls отброшены — BrewForge: температура, стрим: SG. */
   spark: number[];
 };
 

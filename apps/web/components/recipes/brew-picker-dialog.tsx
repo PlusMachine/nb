@@ -34,7 +34,11 @@ import {
 } from "@/components/recipes/brew-volume-choice";
 import { startBrewOnDeviceFromRecipeAction } from "@/features/brew-controller/brew-recipe-flow";
 import { RemoteDisabledNotice } from "@/features/brew-controller/components/remote-disabled-notice";
-import { DevicePickerList, type PickerDevice } from "@/features/devices/components/device-picker-list";
+import {
+  DevicePickerList,
+  isBrewCapableDevice,
+  type PickerDevice
+} from "@/features/devices/components/device-picker-list";
 import { newIdempotencyKey } from "@/lib/idempotency-key";
 
 type Screen = "gate" | "login" | "mode" | "virtual" | "device-pick" | "device-confirm";
@@ -106,7 +110,10 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
       const data = (await res.json()) as { devices?: PickerDevice[] };
       const list = data.devices ?? [];
       setDevices(list);
-      setSelectedDeviceId((prev) => prev ?? list.find((device) => device.status === "online")?.id ?? null);
+      // Автовыбор — только среди устройств, способных варить (стрим-ареометры
+      // сюда не годятся, даже если формально "online").
+      const brewable = list.filter(isBrewCapableDevice);
+      setSelectedDeviceId((prev) => prev ?? brewable.find((device) => device.status === "online")?.id ?? null);
     } catch {
       setDevicesError("Не удалось загрузить список устройств.");
     } finally {
@@ -163,7 +170,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
     setScreen(authRequired ? "login" : "mode");
   }, [screen, devicesLoading, volumeOptionsLoading, authRequired]);
 
-  const hasDeviceChoice = Boolean(devicesError) || devices.length > 0;
+  const hasDeviceChoice = Boolean(devicesError) || devices.some(isBrewCapableDevice);
   const selectedDevice = devices.find((device) => device.id === selectedDeviceId) ?? null;
   const loginHref = `/login?next=${encodeURIComponent(slug ? `/recipes/${slug}` : "/app/brew-batches")}`;
 

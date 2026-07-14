@@ -17,8 +17,9 @@ import {
 import { requireUser } from "@/lib/auth";
 import { getBrewBatchById, updateBrewBatchStatus } from "@/features/brew-batches/service";
 import type { BrewBatchStatus } from "@/features/brew-batches/contracts";
+import { getDeviceById } from "@/features/devices/service";
 
-import { getProvider } from "./index";
+import { deviceSupportsRecipePush, getProvider } from "./index";
 import { describeStartBrewError, describeStartBrewNack } from "./messages";
 
 /** Гейт владения: сессия должна совпадать с заявленным userId. */
@@ -72,6 +73,19 @@ export async function startBrewOnDevice(input: {
   const batch = await getBrewBatchById(userId, brewBatchId);
   if (!batch) {
     throw new Error("BREW_BATCH_NOT_FOUND");
+  }
+
+  // Гейт по возможностям провайдера (не по «brewforge или нет»): стрим-устройства
+  // (только приём телеметрии — iSpindel/Tilt/…) и прочие provider'ы без recipe_push
+  // не должны доходить до пуша рецепта/START_BREW, даже если вызывающий их как-то
+  // подсунул сюда (UI-пикеры их уже не показывают — см. brew-picker-dialog/
+  // device-picker-list — это защита в глубину на сервере).
+  const device = await getDeviceById(userId, deviceId);
+  if (!device) {
+    throw new Error("DEVICE_NOT_FOUND");
+  }
+  if (!deviceSupportsRecipePush(device.providerId)) {
+    throw new Error("DEVICE_NOT_CAPABLE");
   }
 
   const provider = getProvider("brewforge");

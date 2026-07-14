@@ -18,6 +18,11 @@ export const BREWFORGE_PROVIDER_ID = "brewforge";
  * этим providerId роутятся в simTransport (см. transportForDevice).
  */
 export const BREWFORGE_DEMO_PROVIDER_ID = "brewforge-demo";
+/**
+ * id generic-провайдера стрим-устройств (iSpindel, Tilt, Floaty, RAPT Pill в режиме
+ * стрима, BrewPiLess…) — только приём телеметрии, см. stream-provider.ts.
+ */
+export const STREAM_PROVIDER_ID = "stream";
 
 export type BrewControllerCapability =
   | "telemetry"

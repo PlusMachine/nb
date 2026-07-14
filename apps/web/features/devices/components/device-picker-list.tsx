@@ -25,7 +25,18 @@ export type PickerDevice = {
   status: "online" | "offline" | "unknown";
   localUrl: string | null;
   fw: string | null;
+  /** Провайдер устройства поддерживает пуш рецепта (см. DeviceDto.supportsRecipePush).
+   *  Стрим-устройства (только приём телеметрии) — false, для варки не годятся. */
+  supportsRecipePush: boolean;
 };
+
+/**
+ * Устройства, на которых вообще можно запустить варку (пуш рецепта). Стрим-
+ * устройства (цифровые ареометры и т.п. — только приём телеметрии) не годятся
+ * ни при каком статусе связи и потому не показываются в списке ВООБЩЕ — в
+ * отличие от офлайн-устройств, которые видны, но задизейблены (см. ниже).
+ */
+export const isBrewCapableDevice = (device: PickerDevice): boolean => device.supportsRecipePush;
 
 const STATUS_LABEL: Record<PickerDevice["status"], string> = {
   online: "В сети",
@@ -62,7 +73,11 @@ export function DevicePickerList({
   onDeviceAdded,
   disabled = false
 }: Props) {
-  const [view, setView] = useState<"list" | "pair">(devices.length === 0 ? "pair" : "list");
+  // Стрим-устройства (только телеметрия) в списке варки не показываем вовсе —
+  // не дизейблим строкой, а убираем из массива до любого рендера/расчёта.
+  const brewableDevices = devices.filter(isBrewCapableDevice);
+
+  const [view, setView] = useState<"list" | "pair">(brewableDevices.length === 0 ? "pair" : "list");
   const [pairCode, setPairCode] = useState("");
   const [pairLocalUrl, setPairLocalUrl] = useState("");
   const [pairName, setPairName] = useState("");
@@ -71,12 +86,12 @@ export function DevicePickerList({
   const [issuedToken, setIssuedToken] = useState<string | null>(null);
   const [pairingStatus, setPairingStatus] = useState<PairingDeliveryStatus | null>(null);
 
-  // Список догрузился пустым (нет привязанных устройств) — сразу форма привязки.
+  // Список догрузился пустым (нет привязанных устройств, способных варить) — сразу форма привязки.
   useEffect(() => {
-    if (!loading && !loadError && devices.length === 0) {
+    if (!loading && !loadError && brewableDevices.length === 0) {
       setView("pair");
     }
-  }, [loading, loadError, devices.length]);
+  }, [loading, loadError, brewableDevices.length]);
 
   const busy = disabled || pairing;
 
@@ -168,7 +183,7 @@ export function DevicePickerList({
       {view === "list" ? (
         <>
           <div className="space-y-2">
-            {devices.map((device) => {
+            {brewableDevices.map((device) => {
               const active = device.id === selectedDeviceId;
               const offline = device.status === "offline";
               return (
@@ -265,7 +280,7 @@ export function DevicePickerList({
             />
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            {devices.length > 0 ? (
+            {brewableDevices.length > 0 ? (
               <Button type="button" variant="outline" size="sm" onClick={() => setView("list")} disabled={busy}>
                 Назад к списку
               </Button>

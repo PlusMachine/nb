@@ -22,6 +22,7 @@ import {
   type TelemetryHistoryPoint
 } from "@/features/brew-batches/contracts";
 import { BREWFORGE_DEMO_PROVIDER_ID } from "@/features/brew-controller/contracts";
+import { deviceSupportsRecipePush } from "@/features/brew-controller";
 import { pairDeviceOverLan } from "@/features/brew-controller/transport";
 import { encryptDeviceToken } from "@/lib/device-token-crypto";
 
@@ -81,9 +82,11 @@ const mapDeviceDto = (row: typeof brewDevices.$inferSelect): DeviceDto => ({
   hardwareId: row.hardwareId,
   fw: row.fw,
   capabilities: row.capabilities,
+  supportsRecipePush: deviceSupportsRecipePush(row.providerId),
   status: row.status,
   localUrl: row.localUrl,
   mqttPrefix: row.mqttPrefix,
+  hardwareKind: row.hardwareKind,
   lastSeenAt: row.lastSeenAt,
   createdAt: row.createdAt,
   updatedAt: row.updatedAt

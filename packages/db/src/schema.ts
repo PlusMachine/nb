@@ -838,6 +838,10 @@ export const brewDevices = pgTable("brew_devices", {
   status: brewDeviceStatusEnum("status").default("unknown").notNull(),
   localUrl: text("local_url"),
   mqttPrefix: text("mqtt_prefix"),
+  // Вид стороннего устройства ферментации (docs/specs/third-party-fermentation-devices.md
+  // §6.1): ispindel | gravitymon | tilt | floaty | brewpiless | rapt-pill | rapt-chamber |
+  // rapt-brewzilla | other. NULL у BrewForge-контроллеров. Влияет только на UI (иконка/инструкция).
+  hardwareKind: text("hardware_kind"),
   lastSeenAt: timestamp("last_seen_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
@@ -1053,6 +1057,88 @@ export const firmwareReleases = pgTable("firmware_releases", {
   channelIdx: index("firmware_releases_channel_idx").on(table.providerId, table.channel)
 }));
 
+// =============================================================================
+//  Сторонние устройства ферментации (docs/specs/third-party-fermentation-devices.md).
+//  Устройства сами — строки brewDevices (providerId 'stream'/'rapt-cloud',
+//  hardwareKind выше); здесь — только то, что специфично для этого домена.
+// =============================================================================
+
+// Сеанс = привязка устройства к конкретной партии на период времени (§6.2, F2).
+// Одно устройство — максимум один АКТИВНЫЙ (ended_at is null) сеанс одновременно;
+// у партии их может быть несколько (в т.ч. параллельных — Pill + iSpindel для сверки).
+// calibrationOffsetSg — офсет-калибровка по ручному замеру (F4.1): хранится одна
+// актуальная величина (не история), применяется к кривой на чтении. tempMin/MaxC —
+// коридор алертов сеанса (F6), если не задан ferment-профилем снапшота рецепта.
+export const fermentSessions = pgTable("ferment_sessions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  deviceId: uuid("device_id").notNull().references(() => brewDevices.id, { onDelete: "cascade" }),
+  brewBatchId: uuid("brew_batch_id").notNull().references(() => brewBatches.id, { onDelete: "cascade" }),
+  startedAt: timestamp("started_at", { withTimezone: true }).notNull(),
+  endedAt: timestamp("ended_at", { withTimezone: true }),
+  endReason: text("end_reason"),
+  calibrationOffsetSg: doublePrecision("calibration_offset_sg").default(0).notNull(),
+  tempMinC: real("temp_min_c"),
+  tempMaxC: real("temp_max_c"),
+  alertsMuted: boolean("alerts_muted").default(false).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  activeDeviceUidx: uniqueIndex("ferment_sessions_active_device_uidx")
+    .on(table.deviceId)
+    .where(sql`${table.endedAt} is null`),
+  brewBatchIdx: index("ferment_sessions_brew_batch_idx").on(table.brewBatchId),
+  userIdIdx: index("ferment_sessions_user_id_idx").on(table.userId),
+  deviceStartedIdx: index("ferment_sessions_device_started_idx").on(table.deviceId, table.startedAt)
+}));
+
+// Time-series показаний сторонних устройств (§6.2, F3/F4). Отдельная от brewTelemetry
+// таблица: там BrewForge-форма (stage/seq/heatDuty, дедуп по seq) — разные приборы,
+// разная семантика, смешивать нельзя. gravitySg уже нормализована в SG (§8.3); NULL —
+// либо термоконтроллер (BrewPiLess), либо мусорное значение вне плаузибилити-клампов.
+// sessionId денормализован на вставке и nullable: ретро-привязка (F2) доприсваивает
+// его UPDATE-ом по (deviceId, ts range) уже существующим точкам без сеанса.
+export const fermentReadings = pgTable("ferment_readings", {
+  id: bigserial("id", { mode: "number" }).primaryKey(),
+  deviceId: uuid("device_id").notNull().references(() => brewDevices.id, { onDelete: "cascade" }),
+  sessionId: uuid("session_id").references(() => fermentSessions.id, { onDelete: "set null" }),
+  ts: timestamp("ts", { withTimezone: true }).notNull(),
+  gravitySg: doublePrecision("gravity_sg"),
+  tempC: real("temp_c"),
+  pressureKpa: real("pressure_kpa"),
+  batteryV: real("battery_v"),
+  batteryPct: real("battery_pct"),
+  rssi: integer("rssi"),
+  excluded: boolean("excluded").default(false).notNull(),
+  payload: jsonb("payload").$type<Record<string, unknown>>().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  sessionTsIdx: index("ferment_readings_session_ts_idx").on(table.sessionId, table.ts),
+  // Дедуп ретраев вебхуков (§8.5): onConflictDoNothing по точному совпадению (deviceId, ts).
+  // Уникальный btree покрывает и обычные запросы по (deviceId, ts desc) — Postgres умеет
+  // сканировать его в обратном порядке, отдельный неуникальный индекс тут избыточен.
+  deviceTsUidx: uniqueIndex("ferment_readings_device_ts_uidx").on(table.deviceId, table.ts)
+}));
+
+// Подключение стороннего облачного интеграгора (пока только RAPT, §6.2/F1-RAPT).
+// Одно подключение на (userId, kind). ingestTokenHash — sha256 токена в пути вебхука
+// (по образцу brewDevices.tokenHash); ingestTokenEncrypted — тот же токен обратимо
+// зашифрован для повторного показа URL. apiTokenEncrypted — опциональный API-секрет
+// api.rapt.io для поллинга-бэкфилла истории (волна 2.5, §9.4), не используется в M4.
+export const userIntegrations = pgTable("user_integrations", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  kind: text("kind").notNull(),
+  ingestTokenHash: text("ingest_token_hash").notNull(),
+  ingestTokenEncrypted: text("ingest_token_encrypted"),
+  apiTokenEncrypted: text("api_token_encrypted"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  userKindUidx: uniqueIndex("user_integrations_user_kind_uidx").on(table.userId, table.kind),
+  ingestTokenHashUidx: uniqueIndex("user_integrations_ingest_token_hash_uidx").on(table.ingestTokenHash)
+}));
+
 export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
   accounts: many(accounts),
@@ -1067,7 +1153,9 @@ export const usersRelations = relations(users, ({ many }) => ({
   brewDevices: many(brewDevices),
   devicePairingTokens: many(devicePairingTokens),
   deviceCommands: many(deviceCommands),
-  deviceProfiles: many(deviceProfiles)
+  deviceProfiles: many(deviceProfiles),
+  fermentSessions: many(fermentSessions),
+  integrations: many(userIntegrations)
 }));
 
 export const ingredientsRelations = relations(ingredients, ({ many }) => ({
@@ -1247,7 +1335,8 @@ export const brewBatchesRelations = relations(brewBatches, ({ one, many }) => ({
   telemetry: many(brewTelemetry),
   logEvents: many(brewLogEvents),
   commands: many(deviceCommands),
-  measurements: many(brewMeasurements)
+  measurements: many(brewMeasurements),
+  fermentSessions: many(fermentSessions)
 }));
 
 export const brewMeasurementsRelations = relations(brewMeasurements, ({ one }) => ({
@@ -1315,7 +1404,9 @@ export const brewDevicesRelations = relations(brewDevices, ({ one, many }) => ({
   profiles: many(deviceProfiles),
   controlLease: one(deviceControlLeases),
   recipeSlots: many(deviceRecipeSlots),
-  logFiles: many(deviceLogFiles)
+  logFiles: many(deviceLogFiles),
+  fermentSessions: many(fermentSessions),
+  fermentReadings: many(fermentReadings)
 }));
 
 export const deviceControlLeasesRelations = relations(deviceControlLeases, ({ one }) => ({
@@ -1406,6 +1497,40 @@ export const deviceCommandsRelations = relations(deviceCommands, ({ one }) => ({
   }),
   user: one(users, {
     fields: [deviceCommands.userId],
+    references: [users.id]
+  })
+}));
+
+export const fermentSessionsRelations = relations(fermentSessions, ({ one, many }) => ({
+  user: one(users, {
+    fields: [fermentSessions.userId],
+    references: [users.id]
+  }),
+  device: one(brewDevices, {
+    fields: [fermentSessions.deviceId],
+    references: [brewDevices.id]
+  }),
+  brewBatch: one(brewBatches, {
+    fields: [fermentSessions.brewBatchId],
+    references: [brewBatches.id]
+  }),
+  readings: many(fermentReadings)
+}));
+
+export const fermentReadingsRelations = relations(fermentReadings, ({ one }) => ({
+  device: one(brewDevices, {
+    fields: [fermentReadings.deviceId],
+    references: [brewDevices.id]
+  }),
+  session: one(fermentSessions, {
+    fields: [fermentReadings.sessionId],
+    references: [fermentSessions.id]
+  })
+}));
+
+export const userIntegrationsRelations = relations(userIntegrations, ({ one }) => ({
+  user: one(users, {
+    fields: [userIntegrations.userId],
     references: [users.id]
   })
 }));

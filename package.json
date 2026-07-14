@@ -20,6 +20,7 @@
     "set-role": "pnpm -F @nb/db run set-role",
     "seed:qa": "pnpm -F @nb/db run seed:qa",
     "seed:sample": "pnpm -F @nb/web run seed:sample",
+    "sim:ispindel": "pnpm -F @nb/web run sim:ispindel",
     "seed:articles": "pnpm -F @nb/web run seed:articles",
     "seed:public": "pnpm -F @nb/web run seed:public",
     "firmware:publish": "pnpm -F @nb/web run firmware:publish",

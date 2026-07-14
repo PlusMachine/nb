@@ -21,6 +21,8 @@ export function describeStartBrewError(error: unknown): string {
       return "Партия варки не найдена.";
     case "DEVICE_NOT_FOUND":
       return "Устройство не найдено или не привязано к вам.";
+    case "DEVICE_NOT_CAPABLE":
+      return "Это устройство только передаёт показания и не поддерживает запуск варки. Выберите пивоварню BrewForge.";
     case "DEVICE_NO_LOCAL_URL":
       return "У устройства не задан локальный адрес (localUrl). Допривяжите устройство по адресу в сети.";
     case "PROVIDER_UNAVAILABLE":

@@ -15,12 +15,14 @@ import { useCallback, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { Button, Card, Input } from "@nb/ui";
+import type { PreferredGravityUnit } from "@nb/auth";
 
 import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 import { DeviceTile } from "@/features/devices/components/device-tile";
 import { NotificationOptIn } from "@/features/notifications/components/notification-opt-in";
 import { devicePairingErrorText, pairingDeliveryReasonText } from "@/features/devices/pairing-error-text";
 import type { DeviceTile as DeviceTileData, PairingDeliveryStatus } from "@/features/devices/contracts";
+import { ConnectStreamDeviceForm } from "@/features/device-streams/components/connect-stream-device-form";
 
 // Период health-опроса грида (last-known, не живой стрим) и тик «N назад».
 const TILES_POLL_MS = 15_000;
@@ -30,9 +32,13 @@ type Props = {
   initialTiles: DeviceTileData[];
   /** Демо-пивоварня (loopback device-sim в dev / стаб в prod) доступна. */
   demoAvailable: boolean;
+  preferredGravityUnit: PreferredGravityUnit;
 };
 
-export function DevicesManager({ initialTiles, demoAvailable }: Props) {
+/** Шаг визарда подключения (F1), выражен в URL — шарабельно, переживает reload. */
+type ConnectMode = "none" | "select" | "brewforge" | "stream";
+
+export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUnit }: Props) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -41,19 +47,30 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
   const [creatingDemo, setCreatingDemo] = useState(false);
   const [demoError, setDemoError] = useState<string | null>(null);
 
-  // Привязка (свёрнута по умолчанию — грид плиток герой L1). Состояние — в URL
-  // (?pair=1), чтобы ссылка на форму привязки была шарабельна и переживала reload.
-  const showPair = searchParams.get("pair") === "1";
-  const togglePair = useCallback(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (showPair) {
+  // Визард подключения (свёрнут по умолчанию — грид плиток герой L1). Шаг 1 —
+  // выбор типа устройства (BrewForge / цифровой ареометр); ?pair=1 сохранён для
+  // обратной совместимости (прямая ссылка сразу открывает ветку BrewForge).
+  const connectMode: ConnectMode = (() => {
+    if (searchParams.get("pair") === "1") return "brewforge";
+    const connect = searchParams.get("connect");
+    if (connect === "stream") return "stream";
+    if (connect === "1") return "select";
+    return "none";
+  })();
+  const setConnectMode = useCallback(
+    (mode: ConnectMode) => {
+      const params = new URLSearchParams(searchParams.toString());
       params.delete("pair");
-    } else {
-      params.set("pair", "1");
-    }
-    const query = params.toString();
-    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
-  }, [pathname, router, searchParams, showPair]);
+      params.delete("connect");
+      if (mode === "brewforge") params.set("pair", "1");
+      else if (mode === "select") params.set("connect", "1");
+      else if (mode === "stream") params.set("connect", "stream");
+      const query = params.toString();
+      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+    },
+    [pathname, router, searchParams],
+  );
+  const showPair = connectMode === "brewforge";
   const [claimCode, setClaimCode] = useState("");
   const [name, setName] = useState("");
   const [localUrl, setLocalUrl] = useState("");
@@ -191,7 +208,7 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
             className="text-2xl font-semibold text-foreground sm:text-3xl"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            BrewForge
+            Устройства
           </h1>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -203,8 +220,11 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
               {demoError ? <p role="alert" className="text-xs text-destructive">{demoError}</p> : null}
             </div>
           ) : null}
-          <Button variant="outline" onClick={togglePair}>
-            {showPair ? "Скрыть" : "Привязать устройство"}
+          <Button
+            variant="outline"
+            onClick={() => setConnectMode(connectMode === "none" ? "select" : "none")}
+          >
+            {connectMode === "none" ? "Подключить устройство" : "Скрыть"}
           </Button>
         </div>
       </header>
@@ -212,7 +232,36 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
       {/* Web-push: пуш о засыпи/промывке/авариях вне дома (Phase 6). */}
       <NotificationOptIn />
 
-      {/* Форма привязки (свёрнута по умолчанию). */}
+      {/* Визард подключения, шаг 1 — выбор типа устройства. */}
+      {connectMode === "select" ? (
+        <Card className="p-5">
+          <h2 className="text-sm font-semibold text-foreground">Что подключаем?</h2>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <button
+              type="button"
+              onClick={() => setConnectMode("brewforge")}
+              className="rounded-xl border border-border p-4 text-left transition hover:border-foreground/40 hover:bg-accent"
+            >
+              <p className="text-sm font-semibold text-foreground">BrewForge — контроллер варки</p>
+            </button>
+            <button
+              type="button"
+              onClick={() => setConnectMode("stream")}
+              className="rounded-xl border border-border p-4 text-left transition hover:border-foreground/40 hover:bg-accent"
+            >
+              <p className="text-sm font-semibold text-foreground">Цифровой ареометр или датчик</p>
+              <p className="mt-1 text-xs text-muted-foreground">iSpindel, Tilt, Floaty, BrewPiLess…</p>
+            </button>
+          </div>
+        </Card>
+      ) : null}
+
+      {/* Визард подключения, шаг 2 — стрим-устройство (F1 «Поплавок/датчик»). */}
+      {connectMode === "stream" ? (
+        <ConnectStreamDeviceForm onBack={() => setConnectMode("select")} />
+      ) : null}
+
+      {/* Форма привязки BrewForge (существующий флоу, не меняется). */}
       {showPair ? (
         <Card className="p-5">
           <h2 className="text-sm font-semibold text-foreground">Привязать устройство</h2>
@@ -293,7 +342,7 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
       {/* Грид плиток командного центра. */}
       {tiles.length === 0 ? (
         <Card className="p-6 text-sm text-muted-foreground">
-          Пока нет привязанных устройств. Привяжите контроллер по коду
+          Пока нет подключённых устройств. Подключите BrewForge или цифровой ареометр
           {demoAvailable ? ", либо создайте демо-пивоварню без железа" : ""}.
         </Card>
       ) : (
@@ -304,6 +353,7 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
               tile={tile}
               nowMs={nowMs}
               onRevoke={() => setRevokeTarget(tile)}
+              preferredGravityUnit={preferredGravityUnit}
             />
           ))}
         </div>

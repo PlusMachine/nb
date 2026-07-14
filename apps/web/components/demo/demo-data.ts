@@ -654,9 +654,11 @@ const buildDashboardDevice = (now: Date): DeviceDto => ({
   hardwareId: "BF-3F2A91",
   fw: "1.4.2",
   capabilities: ["telemetry", "manual_control", "recipe_push"],
+  supportsRecipePush: true,
   status: "online",
   localUrl: null,
   mqttPrefix: null,
+  hardwareKind: null,
   lastSeenAt: now,
   createdAt: daysAgo(now, 120),
   updatedAt: now

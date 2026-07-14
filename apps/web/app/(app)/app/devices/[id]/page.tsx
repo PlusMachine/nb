@@ -4,12 +4,14 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { FERMENT_HISTORY_LIMIT, FERMENT_HISTORY_WINDOW_DAYS, TELEMETRY_HISTORY_LIMIT } from "@/features/brew-batches/contracts";
 import { deviceChannel } from "@/features/brew-controller";
+import { STREAM_PROVIDER_ID } from "@/features/brew-controller/contracts";
 import { mapFermentationPlanToDeviceSteps } from "@/features/brew-controller/ferment-profile";
 import { getDeviceById, getDeviceHistory, getLastKnownDeviceMode, isDemoDevice } from "@/features/devices/service";
 import { isFermenterModeRow } from "@/features/devices/fermenter-binding-core";
 import { findBatchForFermenter } from "@/features/devices/fermenter-binding";
 import { listPushableRecipes } from "@/features/devices/onboard-recipes";
 import { DeviceConsole, type DeviceConsoleView } from "@/features/devices/components/device-console";
+import { StreamDeviceView } from "@/features/device-streams/components/stream-device-view";
 import type { FermenterBatchLink } from "@/features/brew-controller/components/ferment-dashboard-view";
 
 // Пульт устройства L2 (зона B): живой нагрев устройства БЕЗ привязки к партии +
@@ -31,6 +33,20 @@ export default async function DeviceConsolePage({ params }: { params: Promise<{ 
   const device = await getDeviceById(user.id, id);
   if (!device) {
     notFound();
+  }
+
+  // Стрим-устройства (цифровые ареометры/датчики, docs/specs/third-party-
+  // fermentation-devices.md) — свой лэйаут, без BrewForge-пульта: только приём
+  // телеметрии, управлять нечем. Ранняя ветка — весь код ниже (история/lease/
+  // рецепты) специфичен BrewForge и стрим-устройству не нужен.
+  if (device.providerId === STREAM_PROVIDER_ID) {
+    return (
+      <StreamDeviceView
+        userId={user.id}
+        device={{ id: device.id, name: device.name, hardwareKind: device.hardwareKind }}
+        preferredGravityUnit={user.preferredGravityUnit}
+      />
+    );
   }
 
   const initialFermentConfig = null;

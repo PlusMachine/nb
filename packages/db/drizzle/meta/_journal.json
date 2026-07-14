@@ -424,6 +424,13 @@
       "when": 1791000000030,
       "tag": "0064_awesome_monster_badoon",
       "breakpoints": true
+    },
+    {
+      "idx": 65,
+      "version": "7",
+      "when": 1791000000031,
+      "tag": "0065_overconfident_stone_men",
+      "breakpoints": true
     }
   ]
 }

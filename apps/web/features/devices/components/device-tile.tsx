@@ -13,6 +13,7 @@ import Link from "next/link";
 import { AlertOctagon, MoreHorizontal, XCircle } from "lucide-react";
 
 import { DropdownMenu, type DropdownMenuItem } from "@nb/ui";
+import type { PreferredGravityUnit } from "@nb/auth";
 
 import { stageLabelForValue } from "@/features/brew-controller/stage-labels";
 import { deriveTileBadge } from "@/features/brew-controller/device-mode";
@@ -22,6 +23,8 @@ import {
   type DeviceTile as DeviceTileData,
 } from "@/features/devices/contracts";
 import { summarizeDeviceConnection } from "@/features/devices/connection";
+import { formatGravity } from "@/features/system/gravity-units";
+import { streamHardwareKindLabels, type StreamHardwareKind } from "@/features/device-streams/contracts";
 
 const STATUS_DOT: Record<DeviceTileData["status"], string> = {
   online: "bg-success",
@@ -46,13 +49,110 @@ function fmtAgo(ageMs: number): string {
   return `${Math.floor(h / 24)} дн назад`;
 }
 
+// Без суффикса «назад» — для «нет связи 4 ч» (П4: ветхость формулируем явно, не как «давно обновлено»).
+function fmtAgoShort(ageMs: number): string {
+  const s = Math.max(0, Math.floor(ageMs / 1000));
+  if (s < 60) return `${s} с`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m} мин`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h} ч`;
+  return `${Math.floor(h / 24)} дн`;
+}
+
 type Props = {
   tile: DeviceTileData;
   nowMs: number;
   onRevoke: () => void;
+  preferredGravityUnit: PreferredGravityUnit;
 };
 
-export function DeviceTile({ tile, nowMs, onRevoke }: Props) {
+export function DeviceTile({ tile, nowMs, onRevoke, preferredGravityUnit }: Props) {
+  // Стрим-устройства (цифровые ареометры/датчики) — иной прибор, иной набор полей
+  // (плотность/батарея/RSSI вместо стадии/уставки/аварий) и своя семантика клика
+  // (страница устройства несёт и подключение, и статус — нет отдельного «Пульта»).
+  if (tile.kind === "stream") {
+    return <StreamDeviceTileCard tile={tile} nowMs={nowMs} preferredGravityUnit={preferredGravityUnit} />;
+  }
+  return <BrewforgeDeviceTileCard tile={tile} nowMs={nowMs} onRevoke={onRevoke} />;
+}
+
+function StreamDeviceTileCard({
+  tile,
+  nowMs,
+  preferredGravityUnit,
+}: {
+  tile: DeviceTileData;
+  nowMs: number;
+  preferredGravityUnit: PreferredGravityUnit;
+}) {
+  const snap = tile.streamSnapshot;
+  const hasData = Boolean(snap) && snap!.lastReadingAtMs !== null;
+  const ageMs = hasData ? nowMs - snap!.lastReadingAtMs! : Infinity;
+  const stale = hasData ? ageMs >= snap!.staleThresholdMs : true;
+  const kindLabel =
+    snap?.hardwareKind && snap.hardwareKind in streamHardwareKindLabels
+      ? streamHardwareKindLabels[snap.hardwareKind as StreamHardwareKind]
+      : "Ареометр";
+  const valueTone = stale ? "text-muted-foreground" : "text-foreground";
+  const batteryLabel = snap?.batteryV != null
+    ? `${snap.batteryV.toFixed(1)} В`
+    : snap?.batteryPct != null
+      ? `${Math.round(snap.batteryPct)}%`
+      : null;
+
+  return (
+    <Link
+      href={`/app/devices/${tile.id}`}
+      className="flex flex-col rounded-2xl border border-border bg-card p-4 shadow-sm transition hover:border-foreground/30"
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0 space-y-1">
+          <h3 className="truncate text-base font-semibold text-foreground">{tile.name}</h3>
+          <p className="truncate text-xs text-muted-foreground">
+            {kindLabel}
+            {snap?.hardwareKind === "tilt" ? (
+              <span className="ml-1.5 inline-flex items-center rounded bg-muted px-1 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                бета
+              </span>
+            ) : null}
+          </p>
+        </div>
+        <span className="inline-flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
+          <span className={`h-2 w-2 rounded-full ${stale ? "bg-muted-foreground" : "bg-success"}`} aria-hidden />
+          {hasData ? (stale ? `нет связи ${fmtAgoShort(ageMs)}` : fmtAgo(ageMs)) : "нет данных"}
+        </span>
+      </div>
+
+      {hasData ? (
+        <div className="mt-3 flex items-end justify-between gap-3">
+          <p className={`text-2xl font-semibold tabular-nums ${valueTone}`}>
+            {formatGravity(snap!.gravitySg, preferredGravityUnit)}
+          </p>
+          <p className={`text-sm tabular-nums ${valueTone}`}>
+            {snap!.tempC !== null ? `${snap!.tempC.toFixed(1)}°` : "—"}
+          </p>
+        </div>
+      ) : (
+        <p className="mt-3 text-sm text-muted-foreground">Ждём первый пакет…</p>
+      )}
+
+      {tile.spark.length >= 2 ? <Sparkline values={tile.spark} muted={stale} /> : null}
+
+      {batteryLabel ? <p className="mt-2 text-xs text-muted-foreground">батарея {batteryLabel}</p> : null}
+    </Link>
+  );
+}
+
+function BrewforgeDeviceTileCard({
+  tile,
+  nowMs,
+  onRevoke,
+}: {
+  tile: DeviceTileData;
+  nowMs: number;
+  onRevoke: () => void;
+}) {
   const snap = tile.snapshot;
   const alarms = snap ? summarizeFaults(snap.faultMask) : { count: 0, top: null as FaultPriority | null };
   const ageMs = snap && snap.ts > 0 ? nowMs - snap.ts : Infinity;

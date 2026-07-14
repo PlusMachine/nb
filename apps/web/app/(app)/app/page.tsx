@@ -34,6 +34,7 @@ import {
 import type { BrewNudge } from "@/features/brew-batches/dashboard";
 import { listUserDevices } from "@/features/devices/service";
 import type { DeviceDto } from "@/features/devices/contracts";
+import { STREAM_PROVIDER_ID } from "@/features/brew-controller/contracts";
 import { buildShoppingListForUser } from "@/features/shopping/service";
 import type { ShoppingListDto } from "@/features/shopping/contracts";
 import { listFavoriteCalculators } from "@/features/calculators/favorites-service";
@@ -101,6 +102,9 @@ const deviceProviderLabel = (providerId: string): string => {
   }
   if (providerId.startsWith("rapt")) {
     return "RAPT";
+  }
+  if (providerId === STREAM_PROVIDER_ID) {
+    return "Ареометр";
   }
   return providerId;
 };
@@ -406,7 +410,7 @@ function DevicesWidget({ devices }: { devices: DeviceDto[] }) {
       <div className="flex flex-col gap-3 rounded-2xl border border-dashed border-border bg-card p-5">
         <WidgetLabel>Оборудование</WidgetLabel>
         <p className="text-sm text-muted-foreground">
-          Подключите BrewForge или RAPT, чтобы вести варку и брожение из приложения.
+          Подключите BrewForge или цифровой ареометр, чтобы вести варку и брожение из приложения.
         </p>
         <div className="mt-auto pt-1">
           <Link
