@@ -1,13 +1,20 @@
 import { z } from "zod";
 
 import { GRAVITY_SG_MAX, GRAVITY_SG_MIN, type BrewMeasurementDto } from "@/features/brew-batches/contracts";
+import { STREAM_PROVIDER_ID } from "@/features/brew-controller/contracts";
+import { RAPT_PROVIDER_ID } from "@/features/brew-controller/rapt-cloud-provider";
 
 // =============================================================================
 //  features/device-streams — контракты приёма телеметрии сторонних устройств
 //  ферментации (iSpindel, GravityMon, Tilt, Floaty, BrewPiLess, RAPT…).
 //  Спека: docs/specs/third-party-fermentation-devices.md §6.1, §8.5, §9.
-//  providerId ('stream') задаётся в features/brew-controller/contracts.ts —
-//  здесь его нет намеренно (отдельная задача/исполнитель).
+//  providerId ('stream'/'rapt-cloud') задаётся в features/brew-controller —
+//  здесь только STREAM_LIKE_PROVIDER_IDS (M4-B): оба provider'а «стрим-подобны»
+//  (устройства кормятся из ferment_readings/ferment_sessions, владение
+//  проверяется одинаково) — ownership-хелперы sessions.ts/service.ts/series.ts
+//  фильтровали строго по STREAM_PROVIDER_ID, из-за чего RAPT-устройства не
+//  проходили owned-проверку и не могли привязаться к партии/переименоваться/
+//  удалиться (M4-B, точечный фикс).
 // =============================================================================
 
 /** brew_devices.hardware_kind для стрим-устройств (§6.1). Влияет только на UI. */
@@ -340,3 +347,76 @@ export type DeleteSessionDataResult = {
   brewBatchId: string;
   deletedReadingsCount: number;
 };
+
+// =============================================================================
+//  M4 — RAPT Cloud (§5 F1-RAPT, §8.4, §6.2 user_integrations). Владелец:
+//  features/device-streams/integrations.ts (подключение, одно на пользователя)
+//  и ingest-rapt.ts (приём вебхука). providerId устройств RAPT — 'rapt-cloud'
+//  (RAPT_PROVIDER_ID, features/brew-controller/rapt-cloud-provider.ts).
+// =============================================================================
+
+/**
+ * providerId'ы «стрим-подобных» устройств (M4-B): generic-стрим (iSpindel и
+ * т.п., STREAM_PROVIDER_ID) и RAPT Cloud (RAPT_PROVIDER_ID) — оба ведут себя
+ * одинаково для владения/сеансов/чтения серии. Массив — для `inArray` в SQL
+ * (расшивать спредом на месте использования, `[...STREAM_LIKE_PROVIDER_IDS]`,
+ * см. ACTIVE_BATCH_STATUSES в device-telemetry-cache.ts); предикат — для
+ * сравнений вне SQL (клиентские плитки, фильтры).
+ */
+export const STREAM_LIKE_PROVIDER_IDS = [STREAM_PROVIDER_ID, RAPT_PROVIDER_ID] as const;
+export const isStreamLikeProviderId = (providerId: string): boolean =>
+  providerId === STREAM_PROVIDER_ID || providerId === RAPT_PROVIDER_ID;
+
+/** `user_integrations.kind` — сейчас единственное значение (§6.2, волна 2.5 не добавляет новых). */
+export const RAPT_INTEGRATION_KIND = "rapt" as const;
+
+/**
+ * Готовый шаблон payload вебхука (§8.4) — пользователь копирует его as-is в поле
+ * «Тело запроса» на портале RAPT (Integrations → Web Hooks → New), @-переменные
+ * подставляет их портал. Держим одну строку — источник истины для UI (визард
+ * подключения) И для parseRaptBody (ingest-rapt.ts, те же имена полей).
+ */
+export const RAPT_PAYLOAD_TEMPLATE = JSON.stringify(
+  {
+    device_id: "@device_id",
+    device_type: "@device_type",
+    device_name: "@device_name",
+    temperature: "@temperature",
+    gravity: "@gravity",
+    battery: "@battery",
+    rssi: "@rssi",
+    ts: "@created_date"
+  },
+  null,
+  2
+);
+
+/** RAPT-подключение пользователя — вебхук-URL + шаблон для копирования (F1-RAPT). */
+export type RaptIntegrationDto = {
+  id: string;
+  userId: string;
+  /** null — ключ шифрования (BREWFORGE_DEVICE_TOKEN_ENC_KEY) не настроен ИЛИ
+   *  значение повреждено; UI в этом случае предлагает «Перевыпустить URL». */
+  webhookUrl: string | null;
+  payloadTemplate: string;
+  createdAt: Date;
+};
+
+/** Итог deleteRaptIntegration: RAPT-устройства пользователя НЕ удаляются (данные ценны) — только счётчик для сведения. */
+export type RaptIntegrationDeleteResult = {
+  deviceCount: number;
+};
+
+/** Итог findRaptIntegrationByToken — минимум, нужный ingest-rapt.ts для авторизации и денормализации. */
+export type RaptIntegrationAuth = {
+  id: string;
+  userId: string;
+};
+
+/** Rate limit создания RAPT-подключения (анти-скрипт-флуд); идемпотентный повторный фетч существующего подключения в лимит НЕ попадает. */
+export const RAPT_INTEGRATION_CREATE_RATE_LIMIT = 5;
+export const RAPT_INTEGRATION_CREATE_RATE_WINDOW_SECONDS = 3600;
+
+/** Rate limit приёма вебхука на ОДНО RAPT-подключение (может кормить сразу несколько устройств — лимит щедрее, чем per-device generic ingest). */
+export const RAPT_INGEST_RATE_LIMIT = 60;
+export const RAPT_INGEST_RATE_WINDOW_SECONDS = 60;

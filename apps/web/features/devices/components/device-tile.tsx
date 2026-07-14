@@ -49,6 +49,18 @@ function fmtAgo(ageMs: number): string {
   return `${Math.floor(h / 24)} дн назад`;
 }
 
+// Свежеобнаруженное RAPT-устройство (M4-B, §5 F1-RAPT шаг 2 «автообнаружение по
+// первому пакету») — бейдж «обнаружен», пока пользователь не освоился с плиткой.
+// Эвристика: createdAt < 24 ч. RAPT отличаем от generic-стрима по hardwareKind
+// (rapt-pill/rapt-chamber/rapt-brewzilla — уже есть в снапшоте бесплатно), без
+// отдельного providerId в контракте плитки — понадобилось добавить только
+// createdAt. Для generic-стрима (iSpindel и т.п.) бейдж не показываем: то
+// устройство подключается явным визардом, «обнаружен» там не подходит по смыслу
+// (не автообнаружение).
+const NEW_DEVICE_BADGE_WINDOW_MS = 24 * 60 * 60 * 1000;
+const isFreshlyDiscoveredRapt = (hardwareKind: string | null | undefined, createdAt: string, nowMs: number): boolean =>
+  Boolean(hardwareKind?.startsWith("rapt-")) && nowMs - Date.parse(createdAt) < NEW_DEVICE_BADGE_WINDOW_MS;
+
 // Без суффикса «назад» — для «нет связи 4 ч» (П4: ветхость формулируем явно, не как «давно обновлено»).
 function fmtAgoShort(ageMs: number): string {
   const s = Math.max(0, Math.floor(ageMs / 1000));
@@ -100,6 +112,7 @@ function StreamDeviceTileCard({
     : snap?.batteryPct != null
       ? `${Math.round(snap.batteryPct)}%`
       : null;
+  const isFreshRapt = isFreshlyDiscoveredRapt(snap?.hardwareKind, tile.createdAt, nowMs);
 
   return (
     <Link
@@ -108,7 +121,14 @@ function StreamDeviceTileCard({
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 space-y-1">
-          <h3 className="truncate text-base font-semibold text-foreground">{tile.name}</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="truncate text-base font-semibold text-foreground">{tile.name}</h3>
+            {isFreshRapt ? (
+              <span className="inline-flex shrink-0 items-center rounded bg-indigo-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300">
+                обнаружен
+              </span>
+            ) : null}
+          </div>
           <p className="truncate text-xs text-muted-foreground">
             {kindLabel}
             {snap?.hardwareKind === "tilt" ? (

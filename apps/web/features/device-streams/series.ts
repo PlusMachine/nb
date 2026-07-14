@@ -3,9 +3,8 @@ import { and, asc, brewDevices, db, eq, fermentReadings, fermentSessions, inArra
 
 import { getBrewBatchById, listBrewMeasurements } from "@/features/brew-batches/service";
 import { summarizeBrewMeasurements } from "@/features/brew-batches/measurements";
-import { STREAM_PROVIDER_ID } from "@/features/brew-controller/contracts";
 
-import type { StreamHardwareKind } from "./contracts";
+import { STREAM_LIKE_PROVIDER_IDS, type StreamHardwareKind } from "./contracts";
 import { extractIntervalSeconds } from "./stream-device-core";
 import { smoothGravityMedian5, visibleAttenuation, type FermentPointCore } from "./series-core";
 import { computeFermentVerdict, type FermentVerdict } from "./verdict-core";
@@ -23,6 +22,10 @@ import { computeFermentVerdict, type FermentVerdict } from "./verdict-core";
 //  Никакой записи здесь нет (это ingest.ts/service.ts, чужие модули) — только
 //  чтение для графика и его сводки. Пороги/сглаживание/сегментация/даунсемпл —
 //  чистое ядро series-core.ts, здесь только сборка данных из БД.
+//
+//  M4-B точечный фикс: readDeviceFermentSeries фильтровала строго providerId=
+//  'stream' — RAPT-устройство не проходило owned-проверку, карточка устройства
+//  показывала пустой график. Фильтр — вхождение в STREAM_LIKE_PROVIDER_IDS.
 // =============================================================================
 
 /** Один сеанс с точками — единица данных графика на кривую устройства. */
@@ -365,8 +368,8 @@ export const readBatchFermentSeries = async (
 //  Чтение серии устройства (§5 F3 «Карточка устройства»): ВСЕ сеансы устройства
 //  (активные и завершённые) с точками, БЕЗ ручных замеров и без сводки — та
 //  часть спеки, что живёт на /app/devices/[id], не на странице партии. Владение —
-//  через (userId, providerId=stream), как service.ts/sessions.ts; чужое/несуществующее
-//  устройство → пустой результат (тот же принцип «без исключений», что у batch-чтения).
+//  через (userId, providerId ∈ STREAM_LIKE_PROVIDER_IDS), как service.ts/sessions.ts;
+//  чужое/несуществующее устройство → пустой результат (тот же принцип «без исключений», что у batch-чтения).
 // =============================================================================
 
 export type DeviceFermentSeriesResult = {
@@ -384,7 +387,13 @@ export const readDeviceFermentSeries = async (
   const [device] = await db
     .select({ id: brewDevices.id })
     .from(brewDevices)
-    .where(and(eq(brewDevices.id, deviceId), eq(brewDevices.userId, userId), eq(brewDevices.providerId, STREAM_PROVIDER_ID)));
+    .where(
+      and(
+        eq(brewDevices.id, deviceId),
+        eq(brewDevices.userId, userId),
+        inArray(brewDevices.providerId, [...STREAM_LIKE_PROVIDER_IDS])
+      )
+    );
   if (!device) {
     return { sessions: [] };
   }

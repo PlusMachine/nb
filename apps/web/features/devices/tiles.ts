@@ -6,10 +6,14 @@
 //  устройств (docs/specs/third-party-fermentation-devices.md) — отдельный оконный
 //  запрос по ferment_readings (иной прибор, иная семантика — не смешиваем таблицы,
 //  см. комментарий схемы). lastSeenAt/свежесть считает клиент (nowMs-тик грида).
+//
+//  M4-B: RAPT-устройства (providerId='rapt-cloud') кормятся из той же
+//  ferment_readings, что и generic-стрим — встают в ту же ветку плиток
+//  (kind:"stream") через isStreamLikeProviderId, а не заводят третью ветку.
 // =============================================================================
 import { db, sql } from "@nb/db";
 
-import { STREAM_PROVIDER_ID } from "@/features/brew-controller/contracts";
+import { isStreamLikeProviderId } from "@/features/device-streams/contracts";
 
 import { listUserDevices, isDemoDevice } from "./service";
 import { emptySnapshot, snapshotFromRow, type TileRow } from "./tile-snapshot";
@@ -34,8 +38,8 @@ export async function listDeviceTiles(userId: string): Promise<DeviceTile[]> {
   const devices = await listUserDevices(userId);
   if (devices.length === 0) return [];
 
-  const brewforgeDevices = devices.filter((d) => d.providerId !== STREAM_PROVIDER_ID);
-  const streamDevices = devices.filter((d) => d.providerId === STREAM_PROVIDER_ID);
+  const brewforgeDevices = devices.filter((d) => !isStreamLikeProviderId(d.providerId));
+  const streamDevices = devices.filter((d) => isStreamLikeProviderId(d.providerId));
 
   const [byDevice, byStreamDevice] = await Promise.all([
     loadBrewforgeTileData(brewforgeDevices.map((d) => d.id)),
@@ -43,7 +47,7 @@ export async function listDeviceTiles(userId: string): Promise<DeviceTile[]> {
   ]);
 
   return devices.map((d) => {
-    if (d.providerId === STREAM_PROVIDER_ID) {
+    if (isStreamLikeProviderId(d.providerId)) {
       const entry = byStreamDevice.get(d.id);
       // hardwareKind живёт на brew_devices (DeviceDto), а не в строке ferment_readings —
       // проставляем его здесь, а не в loadStreamTileData (та не знает вид устройства).
@@ -56,6 +60,7 @@ export async function listDeviceTiles(userId: string): Promise<DeviceTile[]> {
         fw: d.fw,
         isDemo: false,
         lastSeenAt: d.lastSeenAt ? d.lastSeenAt.toISOString() : null,
+        createdAt: d.createdAt.toISOString(),
         kind: "stream",
         snapshot: null,
         streamSnapshot,
@@ -72,6 +77,7 @@ export async function listDeviceTiles(userId: string): Promise<DeviceTile[]> {
       fw: d.fw,
       isDemo: isDemoDevice(d),
       lastSeenAt: d.lastSeenAt ? d.lastSeenAt.toISOString() : null,
+      createdAt: d.createdAt.toISOString(),
       kind: "brewforge",
       snapshot: entry?.snapshot ?? null,
       streamSnapshot: null,

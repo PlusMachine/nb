@@ -23,6 +23,10 @@ import { NotificationOptIn } from "@/features/notifications/components/notificat
 import { devicePairingErrorText, pairingDeliveryReasonText } from "@/features/devices/pairing-error-text";
 import type { DeviceTile as DeviceTileData, PairingDeliveryStatus } from "@/features/devices/contracts";
 import { ConnectStreamDeviceForm } from "@/features/device-streams/components/connect-stream-device-form";
+import { RaptConnectScreen } from "@/features/device-streams/components/rapt-connect-screen";
+import { RaptIntegrationCard } from "@/features/device-streams/components/rapt-integration-card";
+import { getRaptIntegrationAction } from "@/features/device-streams/actions";
+import type { RaptIntegrationDto } from "@/features/device-streams/contracts";
 
 // Период health-опроса грида (last-known, не живой стрим) и тик «N назад».
 const TILES_POLL_MS = 15_000;
@@ -35,8 +39,8 @@ type Props = {
   preferredGravityUnit: PreferredGravityUnit;
 };
 
-/** Шаг визарда подключения (F1), выражен в URL — шарабельно, переживает reload. */
-type ConnectMode = "none" | "select" | "brewforge" | "stream";
+/** Шаг визарда подключения (F1/F1-RAPT), выражен в URL — шарабельно, переживает reload. */
+type ConnectMode = "none" | "select" | "brewforge" | "stream" | "rapt";
 
 export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUnit }: Props) {
   const pathname = usePathname();
@@ -48,12 +52,13 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
   const [demoError, setDemoError] = useState<string | null>(null);
 
   // Визард подключения (свёрнут по умолчанию — грид плиток герой L1). Шаг 1 —
-  // выбор типа устройства (BrewForge / цифровой ареометр); ?pair=1 сохранён для
-  // обратной совместимости (прямая ссылка сразу открывает ветку BrewForge).
+  // выбор типа устройства (BrewForge / цифровой ареометр / RAPT Cloud); ?pair=1
+  // сохранён для обратной совместимости (прямая ссылка сразу открывает ветку BrewForge).
   const connectMode: ConnectMode = (() => {
     if (searchParams.get("pair") === "1") return "brewforge";
     const connect = searchParams.get("connect");
     if (connect === "stream") return "stream";
+    if (connect === "rapt") return "rapt";
     if (connect === "1") return "select";
     return "none";
   })();
@@ -65,6 +70,7 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
       if (mode === "brewforge") params.set("pair", "1");
       else if (mode === "select") params.set("connect", "1");
       else if (mode === "stream") params.set("connect", "stream");
+      else if (mode === "rapt") params.set("connect", "rapt");
       const query = params.toString();
       router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
     },
@@ -85,6 +91,26 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
   // Отзыв.
   const [revokeTarget, setRevokeTarget] = useState<DeviceTileData | null>(null);
   const [revoking, setRevoking] = useState(false);
+
+  // RAPT Cloud подключение (§5 F1-RAPT/F8, M4-B): read-only фетч на маунте — не
+  // создаёт подключение (getRaptIntegrationAction, в отличие от «getOrCreate» в
+  // визарде), только проверяет, есть ли уже что показывать компактной карточкой.
+  // null, пока не загрузилось ИЛИ подключения нет вовсе — тогда карточка не рендерится.
+  const [raptIntegration, setRaptIntegration] = useState<RaptIntegrationDto | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    void getRaptIntegrationAction().then((result) => {
+      if (!cancelled && result.ok && result.integration) {
+        setRaptIntegration(result.integration);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  // Число RAPT-устройств — для текста подтверждения удаления подключения;
+  // считаем из уже загруженных плиток (hardwareKind rapt-*), без доп. запроса.
+  const raptDeviceCount = tiles.filter((tile) => Boolean(tile.streamSnapshot?.hardwareKind?.startsWith("rapt-"))).length;
 
   const refresh = useCallback(async () => {
     try {
@@ -236,7 +262,7 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
       {connectMode === "select" ? (
         <Card className="p-5">
           <h2 className="text-sm font-semibold text-foreground">Что подключаем?</h2>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
             <button
               type="button"
               onClick={() => setConnectMode("brewforge")}
@@ -252,6 +278,14 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
               <p className="text-sm font-semibold text-foreground">Цифровой ареометр или датчик</p>
               <p className="mt-1 text-xs text-muted-foreground">iSpindel, Tilt, Floaty, BrewPiLess…</p>
             </button>
+            <button
+              type="button"
+              onClick={() => setConnectMode("rapt")}
+              className="rounded-xl border border-border p-4 text-left transition hover:border-foreground/40 hover:bg-accent"
+            >
+              <p className="text-sm font-semibold text-foreground">RAPT Cloud</p>
+              <p className="mt-1 text-xs text-muted-foreground">Pill, камера ферментации, BrewZilla</p>
+            </button>
           </div>
         </Card>
       ) : null}
@@ -259,6 +293,19 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
       {/* Визард подключения, шаг 2 — стрим-устройство (F1 «Поплавок/датчик»). */}
       {connectMode === "stream" ? (
         <ConnectStreamDeviceForm onBack={() => setConnectMode("select")} />
+      ) : null}
+
+      {/* Визард подключения, шаг 2 — RAPT Cloud (F1-RAPT). */}
+      {connectMode === "rapt" ? (
+        <RaptConnectScreen
+          preferredGravityUnit={preferredGravityUnit}
+          onBack={() => setConnectMode("select")}
+          onDone={() => {
+            setConnectMode("none");
+            void refresh();
+          }}
+          onIntegrationChange={setRaptIntegration}
+        />
       ) : null}
 
       {/* Форма привязки BrewForge (существующий флоу, не меняется). */}
@@ -337,6 +384,20 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
             </div>
           ) : null}
         </Card>
+      ) : null}
+
+      {/* RAPT Cloud подключение (§5 F8, M4-B) — компактная карточка-«память» визарда,
+          не кричащий блок; скрыта, пока открыт сам визард RAPT (там уже есть URL). */}
+      {raptIntegration && connectMode !== "rapt" ? (
+        <RaptIntegrationCard
+          integration={raptIntegration}
+          deviceCount={raptDeviceCount}
+          onIntegrationChange={setRaptIntegration}
+          onDeleted={() => {
+            setRaptIntegration(null);
+            void refresh();
+          }}
+        />
       ) : null}
 
       {/* Грид плиток командного центра. */}

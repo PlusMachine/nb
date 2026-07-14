@@ -148,6 +148,8 @@ export type DeviceTile = {
   fw: string | null;
   isDemo: boolean;
   lastSeenAt: string | null; // ISO
+  /** Когда создана строка brew_devices (ISO) — для бейджа «обнаружен» у свежих RAPT-устройств (M4-B, createdAt < 24ч). */
+  createdAt: string;
   /** Дискриминатор формы среза — BrewForge (snapshot) или стрим-устройство (streamSnapshot). */
   kind: "brewforge" | "stream";
   /** Last-known срез телеметрии BrewForge; null — истории ещё нет ИЛИ это стрим-устройство. */

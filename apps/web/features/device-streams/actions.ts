@@ -56,12 +56,20 @@ import type {
   DeleteSessionDataResult,
   DeleteSessionReadingsInput,
   DeleteSessionReadingsResult,
+  RaptIntegrationDeleteResult,
+  RaptIntegrationDto,
   SessionBoundsResult,
   SessionCalibrationResult,
   SetReadingsExcludedInput,
   SetReadingsExcludedResult,
   UpdateSessionBoundsInput
 } from "./contracts";
+import {
+  createOrGetRaptIntegration,
+  deleteRaptIntegration,
+  getRaptIntegration,
+  rotateRaptWebhookToken
+} from "./integrations";
 
 type ActionError = { ok: false; message: string };
 
@@ -447,5 +455,77 @@ export async function deleteSessionDataAction(
     return { ok: true, result };
   } catch (error) {
     return toCorrectionsActionError(error);
+  }
+}
+
+// =============================================================================
+//  M4 — RAPT Cloud (integrations.ts, §5 F1-RAPT). Отдельная карта ошибок:
+//  NOT_FOUND здесь ВСЕГДА про ПОДКЛЮЧЕНИЕ (в отличие от ERROR_MESSAGES.NOT_FOUND
+//  выше, которое про устройство) — общая карта дала бы вводящее в заблуждение
+//  сообщение «Устройство не найдено» там, где нет устройства вовсе.
+// =============================================================================
+
+const RAPT_ERROR_MESSAGES: Record<string, string> = {
+  NOT_FOUND: "Подключение RAPT не найдено.",
+  RATE_LIMITED: ERROR_MESSAGES.RATE_LIMITED,
+  RAPT_INTEGRATION_CREATE_FAILED: "Не удалось создать подключение. Попробуйте ещё раз."
+};
+
+const toRaptActionError = (error: unknown): ActionError => {
+  const code = error instanceof Error ? error.message : "";
+  return { ok: false, message: RAPT_ERROR_MESSAGES[code] ?? "Не удалось выполнить действие. Попробуйте ещё раз." };
+};
+
+/** F1-RAPT шаг 1: идемпотентно получить/создать RAPT-подключение — экран показывает URL вебхука + шаблон payload. */
+export async function getOrCreateRaptIntegrationAction(): Promise<
+  { ok: true; integration: RaptIntegrationDto } | ActionError
+> {
+  const user = await requireUser();
+  try {
+    const integration = await createOrGetRaptIntegration(user.id);
+    return { ok: true, integration };
+  } catch (error) {
+    return toRaptActionError(error);
+  }
+}
+
+/** Повторное чтение подключения (карточка устройства/настройки) — без побочных эффектов, null если ещё не создано. */
+export async function getRaptIntegrationAction(): Promise<
+  { ok: true; integration: RaptIntegrationDto | null } | ActionError
+> {
+  const user = await requireUser();
+  try {
+    const integration = await getRaptIntegration(user.id);
+    return { ok: true, integration };
+  } catch (error) {
+    return toRaptActionError(error);
+  }
+}
+
+/** «Перевыпустить URL вебхука» (F8): старый токен умирает сразу — подтверждение на клиенте (ConfirmActionDialog). */
+export async function rotateRaptWebhookTokenAction(): Promise<
+  { ok: true; integration: RaptIntegrationDto } | ActionError
+> {
+  const user = await requireUser();
+  try {
+    const integration = await rotateRaptWebhookToken(user.id);
+    revalidatePath("/app/devices");
+    return { ok: true, integration };
+  } catch (error) {
+    return toRaptActionError(error);
+  }
+}
+
+/** «Удалить подключение RAPT» (F8): RAPT-устройства пользователя остаются — просто перестают пополняться. */
+export async function deleteRaptIntegrationAction(): Promise<
+  { ok: true; result: RaptIntegrationDeleteResult } | ActionError
+> {
+  const user = await requireUser();
+  try {
+    const result = await deleteRaptIntegration(user.id);
+    revalidatePath("/app/devices");
+    return { ok: true, result };
+  } catch (error) {
+    return toRaptActionError(error);
   }
 }

@@ -11,6 +11,7 @@
 // =============================================================================
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Loader2 } from "lucide-react";
 
 import { Button, Card, Dialog, DialogFooter, Input, Select, useToast } from "@nb/ui";
@@ -67,6 +68,13 @@ type Props = {
   /** График+история сеансов (§5 F3, M2-C) — уже собраны сервером (stream-device-view.tsx). */
   chartSessions: FermentChartSession[];
   sessionHistory: DeviceSessionHistoryItem[];
+  /**
+   * M4-B, §5 F8 «для RAPT-подключения дополнительно»: RAPT-устройство не имеет
+   * собственного ingest-токена — вместо блока «URL для вставки» и кнопки
+   * «Перевыпустить URL» показываем строку про подключение RAPT Cloud со ссылкой
+   * на /app/devices (там — управление самим подключением, F8-карточка).
+   */
+  isRaptDevice?: boolean;
 };
 
 export function StreamDeviceConsole({
@@ -76,7 +84,8 @@ export function StreamDeviceConsole({
   initialDataCounts,
   preferredGravityUnit,
   chartSessions,
-  sessionHistory
+  sessionHistory,
+  isRaptDevice = false
 }: Props) {
   const router = useRouter();
   const { show } = useToast();
@@ -320,52 +329,67 @@ export function StreamDeviceConsole({
       {/* Брожение: график всех сеансов устройства + привязка к партии (§5 F2/F3, вход №3). */}
       <DeviceFermentPanel deviceId={device.id} gravityUnit={preferredGravityUnit} chartSessions={chartSessions} history={sessionHistory} />
 
-      {/* Подключение: URL + инструкция. */}
+      {/* Подключение: URL + инструкция (RAPT-устройство — своя строка, §5 F8). */}
       <Card className="p-5">
-        <div className="flex items-center justify-between gap-2">
-          <h2 className="text-sm font-semibold text-foreground">Подключение</h2>
-          {!urlExpanded ? (
-            <Button variant="outline" size="sm" onClick={() => setUrlExpanded(true)}>
-              Показать URL
-            </Button>
-          ) : null}
-        </div>
-
-        {urlExpanded ? (
-          ingestUrl ? (
-            <div className="mt-3 space-y-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <code className="break-all rounded-md bg-muted px-3 py-2 text-sm text-foreground">{ingestUrl}</code>
-                <Button variant="outline" onClick={() => void copyUrl()}>
-                  {copied ? "Скопировано" : "Скопировать"}
-                </Button>
-              </div>
-              <div>
-                <button
-                  type="button"
-                  onClick={() => setInstructionsOpen((value) => !value)}
-                  className="text-xs font-medium text-muted-foreground hover:text-foreground"
-                >
-                  {instructionsOpen ? "Скрыть инструкцию" : "Инструкция по подключению"}
-                </button>
-                {instructionsOpen ? (
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{instructionForKind(hardwareKind)}</p>
-                ) : null}
-              </div>
-            </div>
-          ) : (
+        {isRaptDevice ? (
+          <>
+            <h2 className="text-sm font-semibold text-foreground">Подключение</h2>
             <p className="mt-3 text-sm text-muted-foreground">
-              URL показывается один раз. Перевыпустите, чтобы получить новый.{" "}
-              <button
-                type="button"
-                className="font-medium text-foreground underline underline-offset-2"
-                onClick={() => setRotateOpen(true)}
-              >
-                Перевыпустить URL
-              </button>
+              Данные приходят через{" "}
+              <Link href="/app/devices" className="font-medium text-foreground underline underline-offset-2">
+                подключение RAPT Cloud
+              </Link>
+              .
             </p>
-          )
-        ) : null}
+          </>
+        ) : (
+          <>
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-sm font-semibold text-foreground">Подключение</h2>
+              {!urlExpanded ? (
+                <Button variant="outline" size="sm" onClick={() => setUrlExpanded(true)}>
+                  Показать URL
+                </Button>
+              ) : null}
+            </div>
+
+            {urlExpanded ? (
+              ingestUrl ? (
+                <div className="mt-3 space-y-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <code className="break-all rounded-md bg-muted px-3 py-2 text-sm text-foreground">{ingestUrl}</code>
+                    <Button variant="outline" onClick={() => void copyUrl()}>
+                      {copied ? "Скопировано" : "Скопировать"}
+                    </Button>
+                  </div>
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => setInstructionsOpen((value) => !value)}
+                      className="text-xs font-medium text-muted-foreground hover:text-foreground"
+                    >
+                      {instructionsOpen ? "Скрыть инструкцию" : "Инструкция по подключению"}
+                    </button>
+                    {instructionsOpen ? (
+                      <p className="mt-2 text-sm leading-6 text-muted-foreground">{instructionForKind(hardwareKind)}</p>
+                    ) : null}
+                  </div>
+                </div>
+              ) : (
+                <p className="mt-3 text-sm text-muted-foreground">
+                  URL показывается один раз. Перевыпустите, чтобы получить новый.{" "}
+                  <button
+                    type="button"
+                    className="font-medium text-foreground underline underline-offset-2"
+                    onClick={() => setRotateOpen(true)}
+                  >
+                    Перевыпустить URL
+                  </button>
+                </p>
+              )
+            ) : null}
+          </>
+        )}
       </Card>
 
       {/* Действия. */}
@@ -373,9 +397,11 @@ export function StreamDeviceConsole({
         <Button variant="outline" onClick={openRename}>
           Переименовать
         </Button>
-        <Button variant="outline" onClick={() => setRotateOpen(true)}>
-          Перевыпустить URL
-        </Button>
+        {!isRaptDevice ? (
+          <Button variant="outline" onClick={() => setRotateOpen(true)}>
+            Перевыпустить URL
+          </Button>
+        ) : null}
         <Button variant="dangerOutline" onClick={() => setDeleteOpen(true)}>
           Удалить устройство
         </Button>

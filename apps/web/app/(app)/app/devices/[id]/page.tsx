@@ -4,13 +4,14 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { FERMENT_HISTORY_LIMIT, FERMENT_HISTORY_WINDOW_DAYS, TELEMETRY_HISTORY_LIMIT } from "@/features/brew-batches/contracts";
 import { deviceChannel } from "@/features/brew-controller";
-import { STREAM_PROVIDER_ID } from "@/features/brew-controller/contracts";
+import { RAPT_PROVIDER_ID } from "@/features/brew-controller/rapt-cloud-provider";
 import { mapFermentationPlanToDeviceSteps } from "@/features/brew-controller/ferment-profile";
 import { getDeviceById, getDeviceHistory, getLastKnownDeviceMode, isDemoDevice } from "@/features/devices/service";
 import { isFermenterModeRow } from "@/features/devices/fermenter-binding-core";
 import { findBatchForFermenter } from "@/features/devices/fermenter-binding";
 import { listPushableRecipes } from "@/features/devices/onboard-recipes";
 import { DeviceConsole, type DeviceConsoleView } from "@/features/devices/components/device-console";
+import { isStreamLikeProviderId } from "@/features/device-streams/contracts";
 import { StreamDeviceView } from "@/features/device-streams/components/stream-device-view";
 import type { FermenterBatchLink } from "@/features/brew-controller/components/ferment-dashboard-view";
 
@@ -38,13 +39,17 @@ export default async function DeviceConsolePage({ params }: { params: Promise<{ 
   // Стрим-устройства (цифровые ареометры/датчики, docs/specs/third-party-
   // fermentation-devices.md) — свой лэйаут, без BrewForge-пульта: только приём
   // телеметрии, управлять нечем. Ранняя ветка — весь код ниже (история/lease/
-  // рецепты) специфичен BrewForge и стрим-устройству не нужен.
-  if (device.providerId === STREAM_PROVIDER_ID) {
+  // рецепты) специфичен BrewForge и стрим-устройству не нужен. RAPT-устройства
+  // (providerId='rapt-cloud', M4) — та же ветка: тот же StreamDeviceConsole,
+  // только без блока «URL для вставки» (приём через вебхук RAPT-подключения,
+  // не через собственный токен устройства — см. isRaptDevice в stream-device-view.tsx).
+  if (isStreamLikeProviderId(device.providerId)) {
     return (
       <StreamDeviceView
         userId={user.id}
         device={{ id: device.id, name: device.name, hardwareKind: device.hardwareKind }}
         preferredGravityUnit={user.preferredGravityUnit}
+        isRaptDevice={device.providerId === RAPT_PROVIDER_ID}
       />
     );
   }

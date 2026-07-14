@@ -34,9 +34,16 @@ describe("providerHasCapability / deviceSupportsRecipePush", () => {
     expect(providerHasCapability(BREWFORGE_DEMO_PROVIDER_ID, "manual_control")).toBe(true);
   });
 
-  it("rapt-cloud (enabled:false) не даёт возможностей — даже те, что анонсирует", () => {
+  it("rapt-cloud (enabled:true, M4) поддерживает только приёмные capability — не пуш рецепта/профиля/управление", () => {
+    expect(providerHasCapability("rapt-cloud", "telemetry")).toBe(true);
+    expect(providerHasCapability("rapt-cloud", "fermentation_logging")).toBe(true);
+    expect(providerHasCapability("rapt-cloud", "brew_logging")).toBe(true);
+    // Мы ничего не пушим в RAPT — эти capability сознательно убраны из дескриптора:
+    expect(providerHasCapability("rapt-cloud", "recipe_push")).toBe(false);
+    expect(providerHasCapability("rapt-cloud", "profile_push")).toBe(false);
+    expect(providerHasCapability("rapt-cloud", "manual_control")).toBe(false);
+    // Стрим-гарды («Сварить на устройстве») не должны предлагать RAPT:
     expect(deviceSupportsRecipePush("rapt-cloud")).toBe(false);
-    expect(providerHasCapability("rapt-cloud", "telemetry")).toBe(false);
   });
 
   it("неизвестный providerId → false", () => {

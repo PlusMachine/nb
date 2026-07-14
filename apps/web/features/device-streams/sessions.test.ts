@@ -380,6 +380,29 @@ describe("createFermentSession — владение", () => {
   });
 });
 
+// M4-B: providerId='rapt-cloud' (автообнаруженный RAPT Pill/камера/BrewZilla)
+// должен привязываться к партии ровно как generic-стрим-устройство — раньше
+// getOwnedStreamDeviceRow фильтровала строго providerId==='stream', и RAPT-
+// устройство падало в NOT_FOUND (см. STREAM_LIKE_PROVIDER_IDS, contracts.ts).
+describe("createFermentSession — rapt-устройство привязывается (M4-B)", () => {
+  it("providerId='rapt-cloud' создаёт сеанс наравне со стрим-устройством", async () => {
+    seedDevice({ providerId: "rapt-cloud", hardwareId: "rapt-abc123", hardwareKind: "rapt-pill", name: "RAPT Pill" });
+
+    const session = await createFermentSession(USER, { deviceId: "device-1", brewBatchId: "batch-1" });
+
+    expect(session.deviceId).toBe("device-1");
+    expect(session.deviceName).toBe("RAPT Pill");
+    expect(session.deviceHardwareKind).toBe("rapt-pill");
+    expect(session.endedAt).toBeNull();
+  });
+
+  it("чужое rapt-устройство → NOT_FOUND (владение не ослаблено вместе с расширением providerId)", async () => {
+    seedDevice({ providerId: "rapt-cloud", userId: OTHER_USER, hardwareId: "rapt-other" });
+
+    await expect(createFermentSession(USER, { deviceId: "device-1", brewBatchId: "batch-1" })).rejects.toThrow("NOT_FOUND");
+  });
+});
+
 describe("createFermentSession — статус партии", () => {
   it.each(["planned", "completed", "cancelled"] as const)(
     "статус партии %s → SESSION_INVALID_BATCH_STATUS",
@@ -590,5 +613,17 @@ describe("listAvailableStreamDevices", () => {
     expect(byId.has("device-4")).toBe(false);
     expect(byId.get("device-2")?.hasRetroReadings).toBe(true);
     expect(byId.get("device-3")?.hasRetroReadings).toBe(false);
+  });
+
+  // M4-B: RAPT-устройство свободно (без активного сеанса) должно предлагаться
+  // «Ареометр уже в сусле?»/«Подключить ареометр» наравне со стрим-устройством.
+  it("отдаёт свободное rapt-cloud устройство наравне со стрим-устройством", async () => {
+    seedDevice({ id: "device-1", providerId: "rapt-cloud", hardwareId: "rapt-abc123", hardwareKind: "rapt-pill", name: "RAPT Pill" });
+
+    const available = await listAvailableStreamDevices(USER);
+
+    expect(available).toHaveLength(1);
+    expect(available[0]?.id).toBe("device-1");
+    expect(available[0]?.hardwareKind).toBe("rapt-pill");
   });
 });

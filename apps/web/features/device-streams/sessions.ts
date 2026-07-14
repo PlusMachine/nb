@@ -1,7 +1,6 @@
 import { assertRateLimit } from "@nb/auth";
 import { and, asc, brewDevices, count, db, eq, fermentReadings, fermentSessions, gte, inArray, isNull } from "@nb/db";
 
-import { STREAM_PROVIDER_ID } from "@/features/brew-controller/contracts";
 import { getBrewBatchById } from "@/features/brew-batches/service";
 
 import {
@@ -9,6 +8,7 @@ import {
   FERMENT_SESSION_CREATE_RATE_LIMIT,
   FERMENT_SESSION_CREATE_RATE_WINDOW_SECONDS,
   RETRO_ATTACH_WINDOW_MS,
+  STREAM_LIKE_PROVIDER_IDS,
   type AvailableStreamDeviceDto,
   type CreateFermentSessionInput,
   type FermentSessionDto,
@@ -23,7 +23,13 @@ import {
 //  Сеансы: устройство ↔ партия. Владение файлом (жёсткое разделение с
 //  параллельным исполнителем): НЕ трогает service.ts/ingest.ts/components/*/
 //  series*.ts — только читает brew-batches/service.ts (getBrewBatchById, чужой
-//  read-only импорт) и devices-контракты (STREAM_PROVIDER_ID).
+//  read-only импорт) и devices-контракты (STREAM_LIKE_PROVIDER_IDS).
+//
+//  M4-B точечный фикс (разрешено владельцем задачи): ownership фильтровала
+//  строго providerId==='stream' — RAPT-устройства (providerId='rapt-cloud',
+//  M4) не проходили owned-проверку и не могли привязаться к партии. Теперь
+//  фильтр — вхождение в STREAM_LIKE_PROVIDER_IDS (оба provider'а одинаково
+//  «стрим-подобны» для сеансов).
 //
 //  Стиль запросов зеркалит ingest.ts (плоский query-builder db.select/insert/
 //  update, без relational db.query.*) — обе точки входа в @nb/db в этой фиче
@@ -34,12 +40,18 @@ import {
 type BrewDeviceRow = typeof brewDevices.$inferSelect;
 type FermentSessionRow = typeof fermentSessions.$inferSelect;
 
-/** Строка устройства: существует, принадлежит userId, это стрим-устройство (зеркалит service.ts). */
+/** Строка устройства: существует, принадлежит userId, это стрим-подобное устройство (stream|rapt-cloud, зеркалит service.ts). */
 const getOwnedStreamDeviceRow = async (userId: string, deviceId: string): Promise<BrewDeviceRow> => {
   const [device] = await db
     .select()
     .from(brewDevices)
-    .where(and(eq(brewDevices.id, deviceId), eq(brewDevices.userId, userId), eq(brewDevices.providerId, STREAM_PROVIDER_ID)));
+    .where(
+      and(
+        eq(brewDevices.id, deviceId),
+        eq(brewDevices.userId, userId),
+        inArray(brewDevices.providerId, [...STREAM_LIKE_PROVIDER_IDS])
+      )
+    );
   if (!device) {
     throw new Error("NOT_FOUND");
   }
@@ -328,7 +340,7 @@ export const listAvailableStreamDevices = async (userId: string): Promise<Availa
   const devices = await db
     .select()
     .from(brewDevices)
-    .where(and(eq(brewDevices.userId, userId), eq(brewDevices.providerId, STREAM_PROVIDER_ID)));
+    .where(and(eq(brewDevices.userId, userId), inArray(brewDevices.providerId, [...STREAM_LIKE_PROVIDER_IDS])));
   if (devices.length === 0) {
     return [];
   }

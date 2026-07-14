@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 
 import { assertRateLimit, createRandomToken, hashToken } from "@nb/auth";
-import { and, brewDevices, count, db, desc, eq, fermentReadings, fermentSessions } from "@nb/db";
+import { and, brewDevices, count, db, desc, eq, fermentReadings, fermentSessions, inArray } from "@nb/db";
 
 import { STREAM_PROVIDER_ID } from "@/features/brew-controller/contracts";
 import { decryptDeviceToken, encryptDeviceToken } from "@/lib/device-token-crypto";
@@ -14,6 +14,7 @@ import {
   setStreamDeviceKindSchema,
   STREAM_DEVICE_CREATE_RATE_LIMIT,
   STREAM_DEVICE_CREATE_RATE_WINDOW_SECONDS,
+  STREAM_LIKE_PROVIDER_IDS,
   type ConnectStreamDeviceInput,
   type ConnectStreamDeviceResult,
   type StreamDeviceDataCounts,
@@ -32,8 +33,13 @@ import { buildIngestUrl, extractIntervalSeconds } from "./stream-device-core";
 //  токены — createRandomToken/hashToken (sha256, сверка) + encryptDeviceToken
 //  (AES-256-GCM, обратимо — повторный показ URL устройству), квоты — assertRateLimit
 //  + count по существующему атомарному барьеру (см. brew-batches/service.ts
-//  assertBrewBatchCreationAllowed). Ownership — ВСЕГДА по (userId, providerId=stream):
-//  чужой providerId (BrewForge-устройство под чужим id) не должен быть виден отсюда,
+//  assertBrewBatchCreationAllowed). Ownership (чтение/переименование/смена вида/
+//  удаление/статус) — по (userId, providerId ∈ STREAM_LIKE_PROVIDER_IDS = 'stream'
+//  | 'rapt-cloud', M4-B): RAPT-устройства ведут себя как стрим-устройства везде,
+//  КРОМЕ создания — их создаёт только ingest-rapt.ts (автообнаружение по вебхуку),
+//  поэтому createStreamDevice/квота ниже намеренно остаются на STREAM_PROVIDER_ID
+//  (это генерик-визард «Поплавок/датчик», RAPT туда руками не заводится, §5 F1-RAPT).
+//  Чужой providerId (BrewForge-устройство под чужим id) не должен быть виден отсюда,
 //  поэтому getOwnedDeviceRow фильтрует по обоим.
 //
 //  Ingest (парсинг пакетов, запись в ferment_readings) — features/device-streams/
@@ -41,13 +47,13 @@ import { buildIngestUrl, extractIntervalSeconds } from "./stream-device-core";
 //  дублируем его логику; этот файл — только устройства/сеансы/чтение статуса.
 // =============================================================================
 
-/** Ownership-строка brew_devices: устройство существует, принадлежит userId и это стрим-устройство. */
+/** Ownership-строка brew_devices: устройство существует, принадлежит userId и это стрим-подобное устройство (stream|rapt-cloud). */
 const getOwnedDeviceRow = async (userId: string, deviceId: string): Promise<typeof brewDevices.$inferSelect> => {
   const row = await db.query.brewDevices.findFirst({
     where: and(
       eq(brewDevices.id, deviceId),
       eq(brewDevices.userId, userId),
-      eq(brewDevices.providerId, STREAM_PROVIDER_ID)
+      inArray(brewDevices.providerId, [...STREAM_LIKE_PROVIDER_IDS])
     )
   });
   if (!row) {
@@ -177,7 +183,7 @@ export const rotateStreamToken = async (userId: string, deviceId: string): Promi
       and(
         eq(brewDevices.id, deviceId),
         eq(brewDevices.userId, userId),
-        eq(brewDevices.providerId, STREAM_PROVIDER_ID)
+        inArray(brewDevices.providerId, [...STREAM_LIKE_PROVIDER_IDS])
       )
     )
     .returning({ id: brewDevices.id });
@@ -267,7 +273,7 @@ export const deleteStreamDevice = async (userId: string, deviceId: string): Prom
       and(
         eq(brewDevices.id, deviceId),
         eq(brewDevices.userId, userId),
-        eq(brewDevices.providerId, STREAM_PROVIDER_ID)
+        inArray(brewDevices.providerId, [...STREAM_LIKE_PROVIDER_IDS])
       )
     );
 
@@ -285,7 +291,7 @@ export const renameStreamDevice = async (userId: string, deviceId: string, name:
       and(
         eq(brewDevices.id, deviceId),
         eq(brewDevices.userId, userId),
-        eq(brewDevices.providerId, STREAM_PROVIDER_ID)
+        inArray(brewDevices.providerId, [...STREAM_LIKE_PROVIDER_IDS])
       )
     )
     .returning();
@@ -310,7 +316,7 @@ export const setStreamDeviceKind = async (
       and(
         eq(brewDevices.id, deviceId),
         eq(brewDevices.userId, userId),
-        eq(brewDevices.providerId, STREAM_PROVIDER_ID)
+        inArray(brewDevices.providerId, [...STREAM_LIKE_PROVIDER_IDS])
       )
     )
     .returning();
