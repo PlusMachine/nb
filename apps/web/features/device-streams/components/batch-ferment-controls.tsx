@@ -21,6 +21,7 @@ import { pluralize } from "@/lib/pluralize";
 
 import { ConnectDeviceDialog } from "./connect-device-dialog";
 import { SessionBoundsControl } from "./session-bounds-control";
+import { SessionTempCorridorControl } from "./session-temp-corridor-control";
 
 export type ActiveFermentSessionView = {
   id: string;
@@ -28,6 +29,10 @@ export type ActiveFermentSessionView = {
   deviceHardwareKind: StreamHardwareKind | null;
   startedAt: number;
   readingsCount: number;
+  /** §5 F6 (M5-A) — коридор алертов и тумблер «Уведомления». */
+  tempMinC: number | null;
+  tempMaxC: number | null;
+  alertsMuted: boolean;
 };
 
 export function ActiveSessionRow({ session }: { session: ActiveFermentSessionView }) {
@@ -64,7 +69,13 @@ export function ActiveSessionRow({ session }: { session: ActiveFermentSessionVie
           {pluralize(session.readingsCount, ["точка", "точки", "точек"])}
         </span>
       </span>
-      <span className="flex items-center gap-1">
+      <span className="flex flex-wrap items-center gap-1">
+        <SessionTempCorridorControl
+          sessionId={session.id}
+          tempMinC={session.tempMinC}
+          tempMaxC={session.tempMaxC}
+          alertsMuted={session.alertsMuted}
+        />
         <SessionBoundsControl sessionId={session.id} startedAt={session.startedAt} endedAt={null} />
         <Button type="button" variant="outline" size="sm" onClick={() => void finish()} disabled={pending}>
           {pending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}

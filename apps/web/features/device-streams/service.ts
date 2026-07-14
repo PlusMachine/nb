@@ -84,17 +84,16 @@ const generateIngestToken = (): { rawToken: string; tokenHash: string; tokenEncr
 const generateStreamHardwareId = (): string => `st-${crypto.randomBytes(6).toString("hex")}`;
 
 /**
- * Создать стрим-устройство (F1, «Поплавок/датчик»). Квота (§8.5): rate limit на
- * скрипт-флуд + count(providerId=stream) против MAX_STREAM_DEVICES_PER_USER —
- * бросает STREAM_DEVICE_QUOTA_REACHED (экшен маппит в сообщение). Токен возвращается
- * в открытом виде ОДИН раз через ingestUrl; в БД — только tokenHash/tokenEncrypted.
+ * hardwareId демо-ареометра: тот же формат, что generateStreamHardwareId, но с
+ * префиксом `st-demo-` — метка, по которой apps/bridge/src/demo-stream-feeder.ts
+ * находит демо-устройства (LIKE 'st-demo-%') и кормит их синтетической кривой
+ * (§5 F1 «Демо-режим», §11 M5). Не влияет ни на владение, ни на квоту/rate-limit —
+ * демо-устройство во всём остальном обычное стрим-устройство.
  */
-export const createStreamDevice = async (
-  userId: string,
-  input: ConnectStreamDeviceInput
-): Promise<ConnectStreamDeviceResult> => {
-  const parsed = connectStreamDeviceSchema.parse(input);
+const generateDemoStreamHardwareId = (): string => `st-demo-${crypto.randomBytes(6).toString("hex")}`;
 
+/** Общая квота/rate-limit создания стрим-устройства (§8.5) — единый счётчик providerId=stream и для ручного подключения, и для демо-ареометра. */
+const assertStreamDeviceCreateAllowed = async (userId: string): Promise<void> => {
   await assertRateLimit(userId, "stream_device_create", STREAM_DEVICE_CREATE_RATE_LIMIT, STREAM_DEVICE_CREATE_RATE_WINDOW_SECONDS);
 
   const [row] = await db
@@ -104,7 +103,15 @@ export const createStreamDevice = async (
   if ((row?.value ?? 0) >= MAX_STREAM_DEVICES_PER_USER) {
     throw new Error("STREAM_DEVICE_QUOTA_REACHED");
   }
+};
 
+/** INSERT строки стрим-устройства с уже сгенерированным hardwareId — общий хвост createStreamDevice/createDemoStreamDevice. */
+const insertStreamDeviceRow = async (
+  userId: string,
+  name: string,
+  kind: StreamHardwareKind,
+  hardwareId: string
+): Promise<ConnectStreamDeviceResult> => {
   const { rawToken, tokenHash, tokenEncrypted } = generateIngestToken();
 
   const [device] = await db
@@ -112,9 +119,9 @@ export const createStreamDevice = async (
     .values({
       userId,
       providerId: STREAM_PROVIDER_ID,
-      name: parsed.name,
-      hardwareId: generateStreamHardwareId(),
-      hardwareKind: parsed.kind,
+      name,
+      hardwareId,
+      hardwareKind: kind,
       tokenHash,
       tokenEncrypted,
       capabilities: ["fermentation_logging"],
@@ -128,6 +135,35 @@ export const createStreamDevice = async (
 
   const { APP_URL } = getServerEnv();
   return { device: mapStreamDeviceRow(device), ingestUrl: buildIngestUrl(APP_URL, rawToken) };
+};
+
+/**
+ * Создать стрим-устройство (F1, «Поплавок/датчик»). Квота (§8.5): rate limit на
+ * скрипт-флуд + count(providerId=stream) против MAX_STREAM_DEVICES_PER_USER —
+ * бросает STREAM_DEVICE_QUOTA_REACHED (экшен маппит в сообщение). Токен возвращается
+ * в открытом виде ОДИН раз через ingestUrl; в БД — только tokenHash/tokenEncrypted.
+ */
+export const createStreamDevice = async (
+  userId: string,
+  input: ConnectStreamDeviceInput
+): Promise<ConnectStreamDeviceResult> => {
+  const parsed = connectStreamDeviceSchema.parse(input);
+  await assertStreamDeviceCreateAllowed(userId);
+  return insertStreamDeviceRow(userId, parsed.name, parsed.kind, generateStreamHardwareId());
+};
+
+/**
+ * Создать демо-ареометр (F1 «Демо-режим», §5, §11 M5): обычное стрим-устройство
+ * вида iSpindel («Демо-ареометр») — только имя/вид фиксированы, а hardwareId
+ * несёт префикс `st-demo-`. Ingest-URL всё равно выпускается (устройство
+ * неотличимо от обычного «Поплавок/датчик» для владения/сеансов/коррекции/
+ * удаления), но реально устройство кормится сервером (apps/bridge/src/
+ * demo-stream-feeder.ts), а не по этому URL. Квота/rate-limit — общие с ручным
+ * подключением (assertStreamDeviceCreateAllowed).
+ */
+export const createDemoStreamDevice = async (userId: string): Promise<ConnectStreamDeviceResult> => {
+  await assertStreamDeviceCreateAllowed(userId);
+  return insertStreamDeviceRow(userId, "Демо-ареометр", "ispindel", generateDemoStreamHardwareId());
 };
 
 export const listUserStreamDevices = async (userId: string): Promise<StreamDeviceDto[]> => {

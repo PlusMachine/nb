@@ -21,9 +21,14 @@ import {
   type FermentSessionDto,
   type ManualFermentSessionEndReason,
   type RetroAttachPreview,
-  type StreamHardwareKind
+  type SessionAlertsMutedResult,
+  type SessionTempCorridorResult,
+  type StreamHardwareKind,
+  type UpdateSessionTempCorridorInput
 } from "./contracts";
+import { track } from "./analytics";
 import {
+  createDemoStreamDevice,
   createStreamDevice,
   deleteStreamDevice,
   getStreamDeviceDataCounts,
@@ -37,7 +42,9 @@ import {
   endFermentSession,
   listAvailableStreamDevices,
   listSessionsForBatch,
-  previewRetroAttach
+  previewRetroAttach,
+  setSessionAlertsMuted,
+  updateSessionTempCorridor
 } from "./sessions";
 import {
   applySessionCalibration,
@@ -91,6 +98,23 @@ export async function createStreamDeviceAction(
   const user = await requireUser();
   try {
     const result = await createStreamDevice(user.id, input);
+    track("device_connected", { kind: input.kind, provider: "stream" });
+    revalidatePath("/app/devices");
+    revalidatePath("/app");
+    return { ok: true, deviceId: result.device.id, ingestUrl: result.ingestUrl };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+/** «Демо-ареометр» (F1 «Демо-режим», §5): создать демо-стрим-устройство → редирект на его страницу (клиент), как и обычное подключение. Кормит apps/bridge/src/demo-stream-feeder.ts. */
+export async function createDemoStreamDeviceAction(): Promise<
+  { ok: true; deviceId: string; ingestUrl: string } | ActionError
+> {
+  const user = await requireUser();
+  try {
+    const result = await createDemoStreamDevice(user.id);
+    track("device_connected", { kind: "ispindel", provider: "stream", demo: true });
     revalidatePath("/app/devices");
     revalidatePath("/app");
     return { ok: true, deviceId: result.device.id, ingestUrl: result.ingestUrl };
@@ -183,6 +207,9 @@ const SESSION_ERROR_MESSAGES: Record<string, string> = {
   NOT_FOUND: "Устройство или партия не найдены.",
   SESSION_INVALID_BATCH_STATUS: "Привязать ареометр можно только к партии в статусе «Варка» или «Брожение».",
   SESSION_DEVICE_BUSY: "У этого устройства уже есть активный сеанс. Сначала завершите его.",
+  SESSION_NOT_FOUND: "Сеанс не найден.",
+  SESSION_TEMP_CORRIDOR_INCOMPLETE: "Заполните обе границы коридора (или обе очистите).",
+  SESSION_TEMP_CORRIDOR_INVALID_RANGE: "Нижняя граница коридора должна быть меньше верхней.",
   RATE_LIMITED: ERROR_MESSAGES.RATE_LIMITED
 };
 
@@ -198,6 +225,7 @@ export async function createFermentSessionAction(
   const user = await requireUser();
   try {
     const session = await createFermentSession(user.id, input);
+    track("session_started", { retro: Boolean(input.retroAttach) });
     revalidatePath(`/app/devices/${input.deviceId}`);
     revalidatePath(`/app/brew-batches/${input.brewBatchId}`);
     revalidatePath("/app/devices");
@@ -314,6 +342,43 @@ export async function listActiveSessionsForBatchAction(
   }
 }
 
+/**
+ * «Изменить коридор» (§5 F6) — оба числа (min<max) либо оба null (снять коридор).
+ * revalidatePath — напрямую (не revalidateSessionPaths из F4-секции ниже: та же пара
+ * путей, но эта функция ещё не объявлена в порядке файла на момент объявления этой —
+ * порядок вызова на рантайме не важен, порядок объявления в файле важен для читаемости).
+ */
+export async function updateSessionTempCorridorAction(
+  sessionId: string,
+  input: UpdateSessionTempCorridorInput
+): Promise<{ ok: true; result: SessionTempCorridorResult } | ActionError> {
+  const user = await requireUser();
+  try {
+    const result = await updateSessionTempCorridor(user.id, sessionId, input);
+    revalidatePath(`/app/devices/${result.deviceId}`);
+    revalidatePath(`/app/brew-batches/${result.brewBatchId}`);
+    return { ok: true, result };
+  } catch (error) {
+    return toSessionActionError(error);
+  }
+}
+
+/** Тумблер «Уведомления» (§5 F6) на активном сеансе. */
+export async function setSessionAlertsMutedAction(
+  sessionId: string,
+  muted: boolean
+): Promise<{ ok: true; result: SessionAlertsMutedResult } | ActionError> {
+  const user = await requireUser();
+  try {
+    const result = await setSessionAlertsMuted(user.id, sessionId, muted);
+    revalidatePath(`/app/devices/${result.deviceId}`);
+    revalidatePath(`/app/brew-batches/${result.brewBatchId}`);
+    return { ok: true, result };
+  } catch (error) {
+    return toSessionActionError(error);
+  }
+}
+
 // =============================================================================
 //  F4 — коррекция данных (corrections.ts, «сердце ТЗ»). Отдельная карта ошибок:
 //  SESSION_NOT_FOUND здесь однозначно про сеанс (в отличие от NOT_FOUND у
@@ -349,6 +414,7 @@ export async function applySessionCalibrationAction(
   const user = await requireUser();
   try {
     const result = await applySessionCalibration(user.id, input);
+    track("calibration_applied", { sessionId: result.sessionId });
     revalidateSessionPaths(result.deviceId, result.brewBatchId);
     return { ok: true, result };
   } catch (error) {

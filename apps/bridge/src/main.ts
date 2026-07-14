@@ -16,6 +16,8 @@ import { startMqtt } from "./mqtt.js";
 import { startWsServer } from "./ws.js";
 import { closeDb } from "./db.js";
 import { runFermentWatchdog } from "./watchdog.js";
+import { runStreamSilenceScan } from "./stream-silence.js";
+import { runDemoStreamFeeder } from "./demo-stream-feeder.js";
 
 const MQTT_URL = process.env.MQTT_URL ?? "mqtt://localhost:1883";
 const WS_PORT = Number.parseInt(process.env.BRIDGE_WS_PORT ?? "8090", 10) || 8090;
@@ -55,6 +57,30 @@ function main(): void {
   }, 5 * 60_000);
   watchdog.unref();
 
+  // Скан «молчит» сторонних устройств ферментации (M5-B, docs/specs/
+  // third-party-fermentation-devices.md §5 F6/F2): раз в 10 мин — активные сеансы
+  // iSpindel/RAPT и т.п., чьё устройство молчит дольше порога, получают one-shot
+  // пуш; молчащие дольше 7 суток сеансы автозавершаются. БД сканирует напрямую
+  // (в отличие от ferment-watchdog выше) — стрим-устройства шлют раз в 5-60 мин,
+  // а не непрерывным MQTT-потоком, поэтому in-memory трекинг кадров недоступен.
+  const silenceScan = setInterval(() => {
+    runStreamSilenceScan().catch((err: unknown) => {
+      console.error("[bridge] сбой скана «молчит» стрим-устройств:", err instanceof Error ? err.message : String(err));
+    });
+  }, 10 * 60_000);
+  silenceScan.unref();
+
+  // Кормилка демо-ареометров (M5-C, docs/specs/third-party-fermentation-devices.md
+  // §5 F1 «Демо-режим»): раз в 5 мин — устройства «Демо-ареометр» (hardwareId
+  // st-demo-*) получают следующую точку синтетической кривой брожения, без
+  // реального железа. Чистая функция от возраста устройства — см. demo-stream-feeder.ts.
+  const demoStreamFeed = setInterval(() => {
+    runDemoStreamFeeder().catch((err: unknown) => {
+      console.error("[bridge] сбой кормилки демо-ареометров:", err instanceof Error ? err.message : String(err));
+    });
+  }, 5 * 60_000);
+  demoStreamFeed.unref();
+
   // Graceful shutdown.
   let shuttingDown = false;
   const shutdown = (signal: string): void => {
@@ -63,6 +89,8 @@ function main(): void {
     console.log(`[bridge] получен ${signal}, завершение…`);
     clearInterval(health);
     clearInterval(watchdog);
+    clearInterval(silenceScan);
+    clearInterval(demoStreamFeed);
     void (async () => {
       try {
         await ws.close();

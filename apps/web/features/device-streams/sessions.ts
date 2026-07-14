@@ -1,5 +1,5 @@
 import { assertRateLimit } from "@nb/auth";
-import { and, asc, brewDevices, count, db, eq, fermentReadings, fermentSessions, gte, inArray, isNull } from "@nb/db";
+import { and, asc, brewDevices, count, db, eq, fermentReadings, fermentSessions, gte, inArray, isNull, recipes } from "@nb/db";
 
 import { getBrewBatchById } from "@/features/brew-batches/service";
 
@@ -9,13 +9,17 @@ import {
   FERMENT_SESSION_CREATE_RATE_WINDOW_SECONDS,
   RETRO_ATTACH_WINDOW_MS,
   STREAM_LIKE_PROVIDER_IDS,
+  updateSessionTempCorridorSchema,
   type AvailableStreamDeviceDto,
   type CreateFermentSessionInput,
   type FermentSessionDto,
   type FermentSessionEndReason,
   type ManualFermentSessionEndReason,
   type RetroAttachPreview,
-  type StreamHardwareKind
+  type SessionAlertsMutedResult,
+  type SessionTempCorridorResult,
+  type StreamHardwareKind,
+  type UpdateSessionTempCorridorInput
 } from "./contracts";
 
 // =============================================================================
@@ -65,6 +69,57 @@ const getOwnedBrewBatch = async (userId: string, brewBatchId: string) => {
     throw new Error("NOT_FOUND");
   }
   return batch;
+};
+
+// =============================================================================
+//  Предзаполнение температурного коридора (§5 F6) при создании сеанса: из
+//  ЖИВОГО рецепта партии (recipes.processMeta.fermentationProfile.primaryTemperatureC),
+//  а не из recipeSnapshot партии (в отличие от targetFg в series.ts/alerts.ts) —
+//  спека §5 F6 явно называет источником профиль рецепта, снапшот тут ни при чём
+//  (коридор — не факт варки, а совет по умолчанию, который логично брать из
+//  актуального рецепта, если он ещё существует). Локальные чистые хелперы —
+//  тот же приём, что brew-day.ts/ferment-profile.ts (колокированный ридер JSON,
+//  без общего any-парсера), не импортируем ferment-profile.ts ради одного поля.
+// =============================================================================
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+const readPrimaryTemperatureC = (processMeta: unknown): number | null => {
+  if (!isRecord(processMeta)) return null;
+  const profile = processMeta.fermentationProfile;
+  if (!isRecord(profile)) return null;
+  const value = profile.primaryTemperatureC;
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+};
+
+/** Округление до 0.5 °C (§5 F6: «округли до 0.5»). */
+const roundToHalf = (value: number): number => Math.round(value * 2) / 2;
+
+/**
+ * Коридор алертов нового сеанса (§5 F6): явный input.tempMinC/tempMaxC
+ * приоритетнее автопредзаполнения; иначе — из профиля брожения ЖИВОГО рецепта
+ * партии (primary±2°C, если рецепт/профиль ещё существуют), иначе — коридор не
+ * задан (алерт temp_out выключен, не ошибка).
+ */
+const resolveTempCorridor = async (
+  parsed: CreateFermentSessionInput,
+  recipeId: string | null
+): Promise<{ tempMinC: number | null; tempMaxC: number | null }> => {
+  if (parsed.tempMinC !== undefined || parsed.tempMaxC !== undefined) {
+    return { tempMinC: parsed.tempMinC ?? null, tempMaxC: parsed.tempMaxC ?? null };
+  }
+  if (!recipeId) {
+    return { tempMinC: null, tempMaxC: null };
+  }
+
+  const [recipeRow] = await db.select({ processMeta: recipes.processMeta }).from(recipes).where(eq(recipes.id, recipeId));
+  const primaryTemperatureC = readPrimaryTemperatureC(recipeRow?.processMeta ?? null);
+  if (primaryTemperatureC === null) {
+    return { tempMinC: null, tempMaxC: null };
+  }
+
+  return { tempMinC: roundToHalf(primaryTemperatureC - 2), tempMaxC: roundToHalf(primaryTemperatureC + 2) };
 };
 
 /** Активный (ещё не завершённый) сеанс устройства — денормализация/busy-check. */
@@ -193,6 +248,8 @@ export const createFermentSession = async (userId: string, input: CreateFermentS
     throw new Error("SESSION_DEVICE_BUSY");
   }
 
+  const tempCorridor = await resolveTempCorridor(parsed, batch.recipeId);
+
   const now = new Date();
   let startedAt = parsed.startedAt ?? now;
   let retroTimestamps: Date[] = [];
@@ -209,7 +266,14 @@ export const createFermentSession = async (userId: string, input: CreateFermentS
   try {
     [inserted] = await db
       .insert(fermentSessions)
-      .values({ userId, deviceId: device.id, brewBatchId: batch.id, startedAt })
+      .values({
+        userId,
+        deviceId: device.id,
+        brewBatchId: batch.id,
+        startedAt,
+        tempMinC: tempCorridor.tempMinC,
+        tempMaxC: tempCorridor.tempMaxC
+      })
       .returning();
   } catch (error) {
     if (isActiveSessionConflict(error)) {
@@ -379,4 +443,76 @@ export const listAvailableStreamDevices = async (userId: string): Promise<Availa
     lastSeenAt: device.lastSeenAt,
     hasRetroReadings: retroDeviceIds.has(device.id)
   }));
+};
+
+// =============================================================================
+//  §5 F6 — коридор алертов и тумблер «Уведомления» на активном сеансе. Владение
+//  сеансом — тот же принцип, что getOwnedStreamDeviceRow/getOwnedBrewBatch выше
+//  (существует и принадлежит userId); отдельный локальный хелпер, а не импорт
+//  getOwnedSessionRow из corrections.ts (чужой файл, не трогаем и не тянем).
+// =============================================================================
+
+const getOwnedSessionRow = async (userId: string, sessionId: string): Promise<FermentSessionRow> => {
+  const [row] = await db
+    .select()
+    .from(fermentSessions)
+    .where(and(eq(fermentSessions.id, sessionId), eq(fermentSessions.userId, userId)));
+  if (!row) {
+    throw new Error("SESSION_NOT_FOUND");
+  }
+  return row;
+};
+
+/**
+ * «Изменить коридор» (§5 F6): min/max либо оба числа (min<max), либо оба null
+ * (снять коридор — алерт temp_out выключается, не ошибка). Один из двух без
+ * другого (одно число, другое null) невалиден — коридору нужна пара границ.
+ */
+export const updateSessionTempCorridor = async (
+  userId: string,
+  sessionId: string,
+  input: UpdateSessionTempCorridorInput
+): Promise<SessionTempCorridorResult> => {
+  const parsed = updateSessionTempCorridorSchema.parse(input);
+  const session = await getOwnedSessionRow(userId, sessionId);
+
+  if ((parsed.tempMinC === null) !== (parsed.tempMaxC === null)) {
+    throw new Error("SESSION_TEMP_CORRIDOR_INCOMPLETE");
+  }
+  if (parsed.tempMinC !== null && parsed.tempMaxC !== null && parsed.tempMinC >= parsed.tempMaxC) {
+    throw new Error("SESSION_TEMP_CORRIDOR_INVALID_RANGE");
+  }
+
+  const [updated] = await db
+    .update(fermentSessions)
+    .set({ tempMinC: parsed.tempMinC, tempMaxC: parsed.tempMaxC, updatedAt: new Date() })
+    .where(and(eq(fermentSessions.id, sessionId), eq(fermentSessions.userId, userId)))
+    .returning();
+  if (!updated) {
+    throw new Error("SESSION_NOT_FOUND");
+  }
+
+  return {
+    sessionId: session.id,
+    deviceId: session.deviceId,
+    brewBatchId: session.brewBatchId,
+    tempMinC: updated.tempMinC,
+    tempMaxC: updated.tempMaxC
+  };
+};
+
+/** Тумблер «Уведомления» (§5 F6) — мьютит/размьючивает ВСЕ алерты сеанса разом (не по типу — MVP). */
+export const setSessionAlertsMuted = async (
+  userId: string,
+  sessionId: string,
+  muted: boolean
+): Promise<SessionAlertsMutedResult> => {
+  const session = await getOwnedSessionRow(userId, sessionId);
+
+  await db
+    .update(fermentSessions)
+    .set({ alertsMuted: muted, updatedAt: new Date() })
+    .where(and(eq(fermentSessions.id, sessionId), eq(fermentSessions.userId, userId)));
+
+  return { sessionId: session.id, deviceId: session.deviceId, brewBatchId: session.brewBatchId, alertsMuted: muted };
 };

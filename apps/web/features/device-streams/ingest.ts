@@ -11,6 +11,8 @@ import {
 } from "./contracts";
 import { parseStreamPacket } from "./parse-core";
 import { normalizeStreamPacket } from "./normalize-core";
+import { processIngestAlerts } from "./alerts";
+import { track } from "./analytics";
 
 // =============================================================================
 //  features/device-streams — ingest.ts
@@ -134,6 +136,10 @@ export const ingestStreamPacket = async (input: IngestStreamPacketInput): Promis
     await touchDeviceOnline(device.id, receivedAt);
     return { kind: "throttled" };
   }
+  if (!latestTs) {
+    // Первая точка устройства (до этого показаний не было вовсе) — §11 M5 PostHog first_packet.
+    track("first_packet", { provider: "stream" });
+  }
 
   const sessionId = await findActiveSessionId(device.id);
 
@@ -157,6 +163,13 @@ export const ingestStreamPacket = async (input: IngestStreamPacketInput): Promis
     .onConflictDoNothing({ target: [fermentReadings.deviceId, fermentReadings.ts] });
 
   await touchDeviceOnline(device.id, receivedAt);
+
+  // F6 (M5-A): алерты считаются на ingest, ПОСЛЕ записи точки, только при активном
+  // сеансе — processIngestAlerts сама no-op'ает на sessionId=null и глотает свои
+  // ошибки (console.error), поэтому падение алертов никогда не портит ingest-ответ.
+  // await, а не fire-and-forget: в serverless-роуте фоновый промис может не дожить
+  // до завершения функции после отправки ответа — см. отчёт по M5-A.
+  await processIngestAlerts({ deviceId: device.id, sessionId, receivedAt });
 
   return { kind: "stored" };
 };

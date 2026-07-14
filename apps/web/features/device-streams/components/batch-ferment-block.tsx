@@ -25,7 +25,7 @@ import { pluralize } from "@/lib/pluralize";
 
 import { previewGravityFromCurve } from "../corrections";
 import { readBatchFermentSeries, type BatchFermentSummary } from "../series";
-import { listAvailableStreamDevices } from "../sessions";
+import { listAvailableStreamDevices, listSessionsForBatch } from "../sessions";
 import type { FermentVerdict } from "../verdict-core";
 import { ActiveSessionRow, AttachDeviceControl } from "./batch-ferment-controls";
 import { FermentRangePanel } from "./ferment-range-panel";
@@ -150,6 +150,19 @@ export async function BatchFermentBlock({
 
   const activeSessions = variant === "active" ? sessions.filter((s) => s.session.endedAt === null) : [];
 
+  // §5 F6 (M5-A): коридор алертов/alertsMuted не входят в FermentSessionSeries.session
+  // (series.ts — чужой файл, читаем его как есть) — довыбираем полные DTO сеансов
+  // партии (sessions.ts, свой файл) и мержим по id только для активных строк.
+  const alertSettingsBySessionId =
+    variant === "active" && activeSessions.length > 0
+      ? new Map(
+          (await listSessionsForBatch(userId, brewBatchId)).map((dto) => [
+            dto.id,
+            { tempMinC: dto.tempMinC, tempMaxC: dto.tempMaxC, alertsMuted: dto.alertsMuted }
+          ])
+        )
+      : new Map<string, { tempMinC: number | null; tempMaxC: number | null; alertsMuted: boolean }>();
+
   const availableDevices =
     variant === "active" && (batchStatus === "fermenting" || batchStatus === "brewing")
       ? await listAvailableStreamDevices(userId)
@@ -208,20 +221,26 @@ export async function BatchFermentBlock({
 
       {variant === "active" && (activeSessions.length > 0 || availableDevices.length > 0) ? (
         <div className="space-y-2 border-t border-border pt-3">
-          {activeSessions.map((s) => (
-            <ActiveSessionRow
-              key={s.session.id}
-              session={{
-                id: s.session.id,
-                deviceName: s.session.deviceName,
-                deviceHardwareKind: s.session.hardwareKind,
-                startedAt: s.session.startedAt.getTime(),
-                // includeExcluded:true (см. выше) — считаем видимые точки, не все подряд,
-                // «N точек» в строке сеанса не должно вдруг вырасти на число исключённых.
-                readingsCount: s.points.filter((p) => !p.excluded).length
-              }}
-            />
-          ))}
+          {activeSessions.map((s) => {
+            const alertSettings = alertSettingsBySessionId.get(s.session.id);
+            return (
+              <ActiveSessionRow
+                key={s.session.id}
+                session={{
+                  id: s.session.id,
+                  deviceName: s.session.deviceName,
+                  deviceHardwareKind: s.session.hardwareKind,
+                  startedAt: s.session.startedAt.getTime(),
+                  // includeExcluded:true (см. выше) — считаем видимые точки, не все подряд,
+                  // «N точек» в строке сеанса не должно вдруг вырасти на число исключённых.
+                  readingsCount: s.points.filter((p) => !p.excluded).length,
+                  tempMinC: alertSettings?.tempMinC ?? null,
+                  tempMaxC: alertSettings?.tempMaxC ?? null,
+                  alertsMuted: alertSettings?.alertsMuted ?? false
+                }}
+              />
+            );
+          })}
           <AttachDeviceControl brewBatchId={brewBatchId} devices={availableDevices} />
         </div>
       ) : null}

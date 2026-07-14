@@ -14,6 +14,8 @@ import {
 import { findRaptIntegrationByToken } from "./integrations";
 import { normalizeStreamPacket } from "./normalize-core";
 import type { ParsedStreamPacket } from "./parse-core";
+import { processIngestAlerts } from "./alerts";
+import { track } from "./analytics";
 
 // =============================================================================
 //  features/device-streams — ingest-rapt.ts
@@ -287,6 +289,12 @@ export const ingestRaptWebhook = async (input: IngestRaptWebhookInput): Promise<
     return { kind: "throttled" };
   }
   const { deviceId, created } = deviceResult;
+  if (created) {
+    // Автообнаружение по первому пакету вебхука — это одновременно и device_connected,
+    // и first_packet (устройство только что появилось) — §11 M5 PostHog-события.
+    track("device_connected", { kind: mapDeviceTypeToHardwareKind(parsed.deviceType), provider: RAPT_PROVIDER_ID });
+    track("first_packet", { provider: RAPT_PROVIDER_ID });
+  }
 
   const normalized = normalizeStreamPacket(toNormalizeInput(parsed));
   const ts = resolveReadingTs(parsed.sourceTs, receivedAt);
@@ -317,6 +325,10 @@ export const ingestRaptWebhook = async (input: IngestRaptWebhookInput): Promise<
     .onConflictDoNothing({ target: [fermentReadings.deviceId, fermentReadings.ts] });
 
   await touchDeviceOnline(deviceId, receivedAt);
+
+  // F6 (M5-A): те же алерты на ingest, что и generic-стрим (ingest.ts) — см. комментарий
+  // там про await vs fire-and-forget.
+  await processIngestAlerts({ deviceId, sessionId, receivedAt });
 
   return { kind: "stored", created };
 };

@@ -1,0 +1,1 @@
+ALTER TABLE "ferment_sessions" ADD COLUMN "alert_state" jsonb DEFAULT '{}'::jsonb NOT NULL;

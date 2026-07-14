@@ -172,3 +172,44 @@ export function cloudDeadmanNotification(ctx: NotificationContext): PushPayload 
     url: `/app/devices/${ctx.deviceId}`,
   };
 }
+
+/**
+ * Уведомление «Поплавок молчит» (M5-B, docs/specs/third-party-fermentation-devices.md
+ * §5 F6): нет пакетов дольше порога (max(2 ч, 6× заявленный интервал устройства) —
+ * apps/bridge/src/stream-silence.ts silenceThresholdMs). One-shot до восстановления
+ * связи — дедуп in-memory на стороне моста (тот же паттерн, что fermentWatchdogNotification).
+ * Диплинк — страница партии (не устройства): «молчит» осмысленно именно в разрезе
+ * конкретного брожения.
+ */
+export function streamSilenceNotification(
+  ctx: NotificationContext,
+  silentHours: number,
+  batchName: string,
+  brewBatchId: string,
+): PushPayload {
+  return {
+    title: `Ареометр молчит: ${ctx.deviceName}`,
+    body: `Нет данных ${silentHours} ч. Партия «${batchName}»`,
+    tag: `${ctx.deviceId}:stream-silence`,
+    url: `/app/brew-batches/${brewBatchId}`,
+  };
+}
+
+/**
+ * Уведомление автозавершения сеанса по молчанию (M5-B, §5 F2): молчание дольше
+ * 7 суток — сеанс завершается автоматически (end_reason='auto_silence'), устройство
+ * освобождается для привязки к новой партии. Уважает alerts_muted сеанса (шлётся,
+ * только если алерты не заглушены) — само автозавершение от mute не зависит.
+ */
+export function streamSilenceAutoEndedNotification(
+  ctx: NotificationContext,
+  batchName: string,
+  brewBatchId: string,
+): PushPayload {
+  return {
+    title: ctx.deviceName,
+    body: `Сеанс завершён автоматически: нет данных 7 дней. Партия «${batchName}»`,
+    tag: `${ctx.deviceId}:stream-silence-ended`,
+    url: `/app/brew-batches/${brewBatchId}`,
+  };
+}

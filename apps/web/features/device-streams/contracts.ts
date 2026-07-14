@@ -163,6 +163,12 @@ export type FermentSessionEndReason = (typeof fermentSessionEndReasons)[number];
 /** Поводы, которые сервис принимает от UI/actions в M2 (без bridge-скана). */
 export type ManualFermentSessionEndReason = Extract<FermentSessionEndReason, "manual" | "batch_completed">;
 
+/** Допустимый диапазон температурного коридора алертов (§5 F6) — те же границы, что у fermentationProfile.primaryTemperatureC (features/recipes/contracts.ts). */
+export const TEMP_CORRIDOR_MIN_C = -10;
+export const TEMP_CORRIDOR_MAX_C = 50;
+
+const temperatureCorridorValueSchema = z.number().min(TEMP_CORRIDOR_MIN_C).max(TEMP_CORRIDOR_MAX_C);
+
 /** Вход createFermentSession (F2, все три точки входа §5). */
 export const createFermentSessionSchema = z.object({
   deviceId: z.string().min(1),
@@ -170,7 +176,16 @@ export const createFermentSessionSchema = z.object({
   /** «Забрать данные с …» — доприсвоить непривязанные показания устройства (см. §5 «Ретро-привязка»). */
   retroAttach: z.boolean().optional(),
   /** Ручной старт сеанса; игнорируется, если retroAttach нашёл более раннюю точку. */
-  startedAt: z.date().optional()
+  startedAt: z.date().optional(),
+  /**
+   * Явный температурный коридор (§5 F6) — приоритетнее автопредзаполнения из
+   * профиля брожения рецепта (createFermentSession сам решает предзаполнение,
+   * если эти поля не переданы). Оба поля вместе или ни одного — валидируется
+   * реализацией (createFermentSession), не схемой (partial override одного поля
+   * без другого не имеет смысла для коридора).
+   */
+  tempMinC: temperatureCorridorValueSchema.optional(),
+  tempMaxC: temperatureCorridorValueSchema.optional()
 });
 export type CreateFermentSessionInput = z.infer<typeof createFermentSessionSchema>;
 
@@ -218,6 +233,35 @@ export const RETRO_ATTACH_WINDOW_MS = RETRO_ATTACH_WINDOW_DAYS * 24 * 60 * 60 * 
 /** Rate limit создания сеанса (анти-скрипт-флуд, по образцу stream_device_create). */
 export const FERMENT_SESSION_CREATE_RATE_LIMIT = 30;
 export const FERMENT_SESSION_CREATE_RATE_WINDOW_SECONDS = 3600;
+
+/**
+ * Вход updateSessionTempCorridor (§5 F6): min/max ЯВНО передаются как `null`,
+ * чтобы снять коридор («не задан» — алерт temp_out выключен), либо оба числа
+ * (min<max — проверяется в сервисе, не в схеме, т.к. сравнение двух полей).
+ * Разное значение "не менять" здесь не нужно (в отличие от updateSessionBoundsSchema) —
+ * маленький Dialog с двумя NumericInput всегда отправляет оба поля разом.
+ */
+export const updateSessionTempCorridorSchema = z.object({
+  tempMinC: temperatureCorridorValueSchema.nullable(),
+  tempMaxC: temperatureCorridorValueSchema.nullable()
+});
+export type UpdateSessionTempCorridorInput = z.infer<typeof updateSessionTempCorridorSchema>;
+
+/** Итог updateSessionTempCorridor/setSessionAlertsMuted — довольно для точечного revalidatePath (по образцу SessionCalibrationResult). */
+export type SessionTempCorridorResult = {
+  sessionId: string;
+  deviceId: string;
+  brewBatchId: string;
+  tempMinC: number | null;
+  tempMaxC: number | null;
+};
+
+export type SessionAlertsMutedResult = {
+  sessionId: string;
+  deviceId: string;
+  brewBatchId: string;
+  alertsMuted: boolean;
+};
 
 // =============================================================================
 //  F4 — коррекция данных (§5 F4, §3 П2/П3). Спека — сердце ТЗ: офсет-калибровка,

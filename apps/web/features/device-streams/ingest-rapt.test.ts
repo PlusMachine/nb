@@ -154,13 +154,18 @@ vi.mock("@nb/db", () => {
 
 const mocks = vi.hoisted(() => ({
   findRaptIntegrationByToken: vi.fn(),
-  assertRateLimit: vi.fn(async () => {})
+  assertRateLimit: vi.fn(async () => {}),
+  // F6/M5-A: processIngestAlerts — свой файл/свой тест (alerts.test.ts); здесь
+  // мокаем, т.к. этот файл @nb/db-мок не покрывает набор таблиц/колонок, нужных
+  // alerts.ts (brewBatches и т.п.) — проверяем только факт и аргументы вызова.
+  processIngestAlerts: vi.fn(async () => {})
 }));
 
 vi.mock("@/features/device-streams/integrations", () => ({
   findRaptIntegrationByToken: mocks.findRaptIntegrationByToken
 }));
 vi.mock("@nb/auth", () => ({ assertRateLimit: mocks.assertRateLimit }));
+vi.mock("./alerts", () => ({ processIngestAlerts: mocks.processIngestAlerts }));
 
 import { ingestRaptWebhook } from "./ingest-rapt";
 
@@ -188,6 +193,8 @@ beforeEach(() => {
   mocks.findRaptIntegrationByToken.mockResolvedValue({ id: INTEGRATION_ID, userId: USER_ID });
   mocks.assertRateLimit.mockReset();
   mocks.assertRateLimit.mockResolvedValue(undefined);
+  mocks.processIngestAlerts.mockReset();
+  mocks.processIngestAlerts.mockResolvedValue(undefined);
 });
 
 describe("ingestRaptWebhook — аутентификация", () => {
@@ -446,5 +453,30 @@ describe("ingestRaptWebhook — денормализация сеанса", () =
     });
 
     expect(store.readings[1]?.sessionId).toBe("session-1");
+  });
+});
+
+describe("ingestRaptWebhook — вызов processIngestAlerts (F6/M5-A)", () => {
+  it("вызывается ПОСЛЕ успешной записи, с sessionId активного сеанса", async () => {
+    const first = await ingestRaptWebhook({ rawToken: TOKEN, body: raptPayload(), clientIp: null });
+    expect(first).toMatchObject({ kind: "stored" });
+    const deviceId = store.devices[0]!.id as string;
+    store.sessions.push({ id: "session-1", deviceId, endedAt: null });
+    const receivedAt = new Date("2026-07-14T12:10:00Z");
+
+    await ingestRaptWebhook({
+      rawToken: TOKEN,
+      body: raptPayload({ ts: "2026-07-14T12:10:00.000Z" }),
+      clientIp: null,
+      receivedAt
+    });
+
+    expect(mocks.processIngestAlerts).toHaveBeenCalledWith({ deviceId, sessionId: "session-1", receivedAt });
+  });
+
+  it("вызывается с sessionId=null, когда активного сеанса нет", async () => {
+    await ingestRaptWebhook({ rawToken: TOKEN, body: raptPayload(), clientIp: null });
+
+    expect(mocks.processIngestAlerts).toHaveBeenCalledWith(expect.objectContaining({ sessionId: null }));
   });
 });

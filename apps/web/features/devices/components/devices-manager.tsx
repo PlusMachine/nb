@@ -25,7 +25,7 @@ import type { DeviceTile as DeviceTileData, PairingDeliveryStatus } from "@/feat
 import { ConnectStreamDeviceForm } from "@/features/device-streams/components/connect-stream-device-form";
 import { RaptConnectScreen } from "@/features/device-streams/components/rapt-connect-screen";
 import { RaptIntegrationCard } from "@/features/device-streams/components/rapt-integration-card";
-import { getRaptIntegrationAction } from "@/features/device-streams/actions";
+import { createDemoStreamDeviceAction, getRaptIntegrationAction } from "@/features/device-streams/actions";
 import type { RaptIntegrationDto } from "@/features/device-streams/contracts";
 
 // Период health-опроса грида (last-known, не живой стрим) и тик «N назад».
@@ -50,6 +50,11 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
   const [nowMs, setNowMs] = useState<number>(() => Date.now());
   const [creatingDemo, setCreatingDemo] = useState(false);
   const [demoError, setDemoError] = useState<string | null>(null);
+  // Демо-ареометр (F1 «Демо-режим», §5, §11 M5): отдельная кнопка рядом с
+  // демо-пивоварней — обычное стрим-устройство, которое кормит apps/bridge/src/
+  // demo-stream-feeder.ts (сервер, без реального железа).
+  const [creatingDemoStream, setCreatingDemoStream] = useState(false);
+  const [demoStreamError, setDemoStreamError] = useState<string | null>(null);
 
   // Визард подключения (свёрнут по умолчанию — грид плиток герой L1). Шаг 1 —
   // выбор типа устройства (BrewForge / цифровой ареометр / RAPT Cloud); ?pair=1
@@ -216,6 +221,33 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
     }
   }, [refresh]);
 
+  // Демо-ареометр: создаёт обычное стрим-устройство (createDemoStreamDeviceAction) и
+  // сразу уводит на его страницу — там та же живая зона «Ждём первый пакет…», что и
+  // у ручного подключения, только кормит её сервер (apps/bridge/src/demo-stream-feeder.ts),
+  // а не реальное железо. ingestUrl прячем в sessionStorage тем же приёмом, что
+  // connect-stream-device-form.tsx (токен не должен попадать в историю/логи).
+  const createDemoStream = useCallback(async () => {
+    setCreatingDemoStream(true);
+    setDemoStreamError(null);
+    try {
+      const result = await createDemoStreamDeviceAction();
+      if (!result.ok) {
+        setDemoStreamError(result.message);
+        return;
+      }
+      try {
+        window.sessionStorage.setItem(`nb:stream-ingest-url:${result.deviceId}`, result.ingestUrl);
+      } catch {
+        // sessionStorage недоступен — страница устройства предложит «Перевыпустить URL»
+      }
+      router.push(`/app/devices/${result.deviceId}`);
+    } catch (error) {
+      setDemoStreamError((error as Error).message || "Ошибка сети");
+    } finally {
+      setCreatingDemoStream(false);
+    }
+  }, [router]);
+
   const copyToken = useCallback(async () => {
     if (!issuedToken) return;
     try {
@@ -246,6 +278,12 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
               {demoError ? <p role="alert" className="text-xs text-destructive">{demoError}</p> : null}
             </div>
           ) : null}
+          <div className="flex flex-col items-end gap-1">
+            <Button variant="outline" onClick={() => void createDemoStream()} disabled={creatingDemoStream}>
+              {creatingDemoStream ? "Создаём…" : "Демо-ареометр"}
+            </Button>
+            {demoStreamError ? <p role="alert" className="text-xs text-destructive">{demoStreamError}</p> : null}
+          </div>
           <Button
             variant="outline"
             onClick={() => setConnectMode(connectMode === "none" ? "select" : "none")}

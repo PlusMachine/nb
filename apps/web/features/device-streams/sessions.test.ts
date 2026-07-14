@@ -27,7 +27,10 @@ const { store } = vi.hoisted(() => ({
   store: {
     devices: [] as Record<string, unknown>[],
     sessions: [] as Record<string, unknown>[],
-    readings: [] as Record<string, unknown>[]
+    readings: [] as Record<string, unknown>[],
+    // §5 F6 (M5-A): предзаполнение коридора читает recipes.processMeta напрямую
+    // (не recipeSnapshot партии) — своя мини-таблица для этого запроса.
+    recipes: [] as Record<string, unknown>[]
   }
 }));
 
@@ -89,6 +92,7 @@ vi.mock("@nb/db", () => {
     "payload",
     "createdAt"
   ]);
+  const recipesTable = makeTable("recipes", () => store.recipes, ["id", "processMeta"]);
 
   // Мини-реализация select().from().where().orderBy(asc(col)) — сортировка нужна
   // только для findRetroCandidateTimestamps (по возрастанию ts); фильтрует ЖИВОЕ
@@ -204,6 +208,7 @@ vi.mock("@nb/db", () => {
     brewDevices: devicesTable,
     fermentSessions: sessionsTable,
     fermentReadings: readingsTable,
+    recipes: recipesTable,
     eq: (col: string, value: unknown): Cond => ({ kind: "eq", col, value }),
     and: (...conds: Cond[]): Cond => ({ kind: "and", conds }),
     isNull: (col: string): Cond => ({ kind: "isNull", col }),
@@ -262,8 +267,15 @@ const brewBatch = (overrides: Record<string, unknown> = {}) => ({
   id: "batch-1",
   userId: USER,
   status: "fermenting",
+  recipeId: null as string | null,
   ...overrides
 });
+
+const seedRecipe = (overrides: Record<string, unknown> = {}) => {
+  const recipe = { id: "recipe-1", processMeta: null as Record<string, unknown> | null, ...overrides };
+  store.recipes.push(recipe);
+  return recipe;
+};
 
 const seedReading = (overrides: Record<string, unknown> = {}) => {
   const reading: Record<string, unknown> = {
@@ -311,6 +323,7 @@ beforeEach(() => {
   store.devices = [];
   store.sessions = [];
   store.readings = [];
+  store.recipes = [];
   mocks.assertRateLimit.mockReset();
   mocks.assertRateLimit.mockResolvedValue(undefined);
   mocks.getBrewBatchById.mockReset();
@@ -356,6 +369,67 @@ describe("createFermentSession — happy path", () => {
     const session = await createFermentSession(USER, { deviceId: "device-1", brewBatchId: "batch-1", startedAt: customStart });
 
     expect(session.startedAt.getTime()).toBe(customStart.getTime());
+  });
+});
+
+// §5 F6 (M5-A): предзаполнение температурного коридора при создании сеанса.
+describe("createFermentSession — предзаполнение температурного коридора (§5 F6)", () => {
+  it("профиль рецепта есть → коридор = primary±2°C, округлено до 0.5", async () => {
+    seedDevice();
+    seedRecipe({ id: "recipe-1", processMeta: { fermentationProfile: { primaryTemperatureC: 19.3 } } });
+    mocks.getBrewBatchById.mockResolvedValue(brewBatch({ recipeId: "recipe-1" }));
+
+    const session = await createFermentSession(USER, { deviceId: "device-1", brewBatchId: "batch-1" });
+
+    expect(session.tempMinC).toBe(17.5);
+    expect(session.tempMaxC).toBe(21.5);
+  });
+
+  it("у партии нет рецепта (recipeId=null) → коридор не задан", async () => {
+    seedDevice();
+    mocks.getBrewBatchById.mockResolvedValue(brewBatch({ recipeId: null }));
+
+    const session = await createFermentSession(USER, { deviceId: "device-1", brewBatchId: "batch-1" });
+
+    expect(session.tempMinC).toBeNull();
+    expect(session.tempMaxC).toBeNull();
+  });
+
+  it("рецепт есть, но без профиля брожения (primaryTemperatureC не задан) → коридор не задан", async () => {
+    seedDevice();
+    seedRecipe({ id: "recipe-1", processMeta: { fermentationProfile: {} } });
+    mocks.getBrewBatchById.mockResolvedValue(brewBatch({ recipeId: "recipe-1" }));
+
+    const session = await createFermentSession(USER, { deviceId: "device-1", brewBatchId: "batch-1" });
+
+    expect(session.tempMinC).toBeNull();
+    expect(session.tempMaxC).toBeNull();
+  });
+
+  it("рецепт вообще исчез (recipeId указывает на несуществующую строку) → коридор не задан, не бросает", async () => {
+    seedDevice();
+    mocks.getBrewBatchById.mockResolvedValue(brewBatch({ recipeId: "recipe-missing" }));
+
+    const session = await createFermentSession(USER, { deviceId: "device-1", brewBatchId: "batch-1" });
+
+    expect(session.tempMinC).toBeNull();
+    expect(session.tempMaxC).toBeNull();
+  });
+
+  it("явный input.tempMinC/tempMaxC приоритетнее профиля рецепта", async () => {
+    seedDevice();
+    seedRecipe({ id: "recipe-1", processMeta: { fermentationProfile: { primaryTemperatureC: 19.3 } } });
+    mocks.getBrewBatchById.mockResolvedValue(brewBatch({ recipeId: "recipe-1" }));
+
+    const session = await createFermentSession(USER, {
+      deviceId: "device-1",
+      brewBatchId: "batch-1",
+      tempMinC: 10,
+      tempMaxC: 15
+    });
+
+    expect(session.tempMinC).toBe(10);
+    expect(session.tempMaxC).toBe(15);
   });
 });
 

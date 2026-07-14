@@ -1081,6 +1081,10 @@ export const fermentSessions = pgTable("ferment_sessions", {
   tempMinC: real("temp_min_c"),
   tempMaxC: real("temp_max_c"),
   alertsMuted: boolean("alerts_muted").default(false).notNull(),
+  // Дедуп веб-пуш уведомлений (§5 F6, M5-A): ISO-момент последней отправки на
+  // ключ-тип алерта (not_started|possibly_stuck|likely_done|temp_out|battery_low).
+  // Пустой объект у нового сеанса естественно покрывает «впервые за сеанс».
+  alertState: jsonb("alert_state").$type<Record<string, string>>().default({}).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
 }, (table) => ({

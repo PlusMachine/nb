@@ -144,11 +144,17 @@ vi.mock("@nb/db", () => {
 
 const mocks = vi.hoisted(() => ({
   findDeviceByToken: vi.fn(),
-  assertRateLimit: vi.fn(async () => {})
+  assertRateLimit: vi.fn(async () => {}),
+  // F6/M5-A: processIngestAlerts живёт в alerts.ts (свой колокированный тест,
+  // alerts.test.ts) — здесь только проверяем, что ingest.ts зовёт её с верными
+  // аргументами ПОСЛЕ записи точки; полную логику алертов не дублируем (её
+  // мок @nb/db здесь не покрывает — не тот набор таблиц/колонок).
+  processIngestAlerts: vi.fn(async () => {})
 }));
 
 vi.mock("@/features/devices/service", () => ({ findDeviceByToken: mocks.findDeviceByToken }));
 vi.mock("@nb/auth", () => ({ assertRateLimit: mocks.assertRateLimit }));
+vi.mock("./alerts", () => ({ processIngestAlerts: mocks.processIngestAlerts }));
 
 import { ingestStreamPacket } from "./ingest";
 
@@ -208,6 +214,8 @@ beforeEach(() => {
   mocks.findDeviceByToken.mockReset();
   mocks.assertRateLimit.mockReset();
   mocks.assertRateLimit.mockResolvedValue(undefined);
+  mocks.processIngestAlerts.mockReset();
+  mocks.processIngestAlerts.mockResolvedValue(undefined);
 });
 
 describe("ingestStreamPacket — аутентификация", () => {
@@ -402,5 +410,39 @@ describe("ingestStreamPacket — денормализация сеанса", () 
     await ingestStreamPacket({ rawToken: TOKEN, body: ISPINDEL_PACKET, clientIp: null });
 
     expect(store.readings[0]?.sessionId).toBeNull();
+  });
+});
+
+describe("ingestStreamPacket — вызов processIngestAlerts (F6/M5-A)", () => {
+  it("вызывается ПОСЛЕ успешной записи, с sessionId активного сеанса", async () => {
+    mocks.findDeviceByToken.mockResolvedValue(streamDevice());
+    seedDevice();
+    store.sessions.push({ id: "session-1", deviceId: DEVICE_ID, endedAt: null });
+    const receivedAt = new Date("2026-07-14T12:00:00Z");
+
+    const result = await ingestStreamPacket({ rawToken: TOKEN, body: ISPINDEL_PACKET, clientIp: null, receivedAt });
+
+    expect(result).toEqual({ kind: "stored" });
+    expect(mocks.processIngestAlerts).toHaveBeenCalledWith({ deviceId: DEVICE_ID, sessionId: "session-1", receivedAt });
+  });
+
+  it("вызывается с sessionId=null, когда активного сеанса нет", async () => {
+    mocks.findDeviceByToken.mockResolvedValue(streamDevice());
+    seedDevice();
+
+    await ingestStreamPacket({ rawToken: TOKEN, body: ISPINDEL_PACKET, clientIp: null });
+
+    expect(mocks.processIngestAlerts).toHaveBeenCalledWith(
+      expect.objectContaining({ deviceId: DEVICE_ID, sessionId: null })
+    );
+  });
+
+  it("НЕ вызывается на throttled/bad_format (алертить нечего — строка не записана)", async () => {
+    mocks.findDeviceByToken.mockResolvedValue(streamDevice());
+    seedDevice();
+
+    await ingestStreamPacket({ rawToken: TOKEN, body: { foo: "bar" }, clientIp: null });
+
+    expect(mocks.processIngestAlerts).not.toHaveBeenCalled();
   });
 });
