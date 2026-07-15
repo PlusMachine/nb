@@ -1,6 +1,7 @@
 import { resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
 import { resolveIngredientCategory } from "@/features/ingredients/taxonomy";
-import { formatInventoryQuantityForDisplay } from "@/features/inventory/display";
+import { formatInventoryQuantityForDisplay, formatPackCountHintSuffix } from "@/features/inventory/display";
+import { resolveInventoryPackEquivalent } from "@/features/inventory/pack";
 import type { RecipeIngredientDto } from "@/features/recipes/contracts";
 
 // Общие read-хелперы позиции рецепта: имя/количество/тайминг из stepMeta.
@@ -14,19 +15,37 @@ export const resolveRecipeIngredientNames = (ingredient: RecipeIngredientDto) =>
     displayNameEn: ingredient.ingredientDisplayNameEn
   });
 
-export const formatRecipeIngredientAmount = (ingredient: RecipeIngredientDto): string =>
-  formatInventoryQuantityForDisplay({
+export const formatRecipeIngredientAmount = (ingredient: RecipeIngredientDto): string => {
+  const category = ingredient.ingredientCategory ?? resolveIngredientCategory({ type: ingredient.type });
+  // technicalData сюда НЕ идёт (см. ниже) — formatInventoryQuantityForDisplay для
+  // дрожжей всегда предпочитает "pack" как display-unit, а после Ф9-конверсии
+  // (features/recipes/scale.ts) строка может быть уже в граммах/мл — пересчёт
+  // назад в дробную пачку вернул бы тот же баг «0.73 пачки».
+  const base = formatInventoryQuantityForDisplay({
     enteredQuantity: ingredient.amountEnteredQuantity,
     enteredUnit: ingredient.amountEnteredUnit,
     normalizedQuantity: ingredient.amountNormalizedQuantity,
     normalizedUnit: ingredient.amountNormalizedUnit,
     type: ingredient.type,
-    category: ingredient.ingredientCategory ?? resolveIngredientCategory({ type: ingredient.type }),
+    category,
     subtype: ingredient.ingredientSubtype ?? null,
     defaultDisplayUnit: ingredient.ingredientDefaultDisplayUnit ?? ingredient.ingredientDefaultDisplayUnitSnapshot,
     allowedUnits: ingredient.ingredientAllowedUnits ?? null,
     measurementDimension: ingredient.ingredientMeasurementDimension ?? ingredient.ingredientMeasurementDimensionSnapshot ?? null
   });
+
+  // Строка дрожжей уже в весе/объёме (после Ф9-конверсии пачки в граммы) — рядом
+  // подсказка «(N пачек)» как ориентир "сколько взять", если граммовка известна.
+  if (category === "yeast" && (ingredient.amountEnteredUnit === "g" || ingredient.amountEnteredUnit === "ml")) {
+    const packEquivalent = resolveInventoryPackEquivalent(ingredient.ingredientTechnicalData ?? null);
+    const hint = formatPackCountHintSuffix(ingredient.amountEnteredQuantity, ingredient.amountEnteredUnit, packEquivalent);
+    if (hint) {
+      return `${base} (${hint})`;
+    }
+  }
+
+  return base;
+};
 
 export const recipeIngredientCategoryOf = (ingredient: RecipeIngredientDto) =>
   ingredient.ingredientCategory ?? resolveIngredientCategory({ type: ingredient.type });

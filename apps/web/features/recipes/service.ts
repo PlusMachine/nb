@@ -2096,8 +2096,17 @@ const applyCloneTargetVolume = (
     batchSizeEnteredQuantity: scaled.batchSizeEnteredQuantity,
     ingredients: recipe.ingredients.map((ingredient) => {
       const scaledIngredient = scaledByKey.get(ingredient.persistentKey);
+      // Мёржим количество ВМЕСТЕ с единицами: с Ф9 масштабирование может сменить
+      // единицу строки (пачка с известной граммовкой → граммы) — брать одно
+      // amountEnteredQuantity значило бы сохранить «8.1 pack» вместо «8.1 г».
       return scaledIngredient
-        ? { ...ingredient, amountEnteredQuantity: scaledIngredient.amountEnteredQuantity }
+        ? {
+            ...ingredient,
+            amountEnteredQuantity: scaledIngredient.amountEnteredQuantity,
+            amountEnteredUnit: scaledIngredient.amountEnteredUnit,
+            amountNormalizedQuantity: scaledIngredient.amountNormalizedQuantity,
+            amountNormalizedUnit: scaledIngredient.amountNormalizedUnit
+          }
         : ingredient;
     })
   };

@@ -10,7 +10,7 @@ import {
   resolveHumanFacingInventoryUnitProfile,
   type InventoryUnit
 } from "./units";
-import { resolveInventoryPackEquivalent } from "./pack";
+import { resolveInventoryPackEquivalent, type InventoryPackEquivalent } from "./pack";
 
 type InventoryDisplayInput = {
   enteredQuantity: number;
@@ -158,6 +158,50 @@ export const formatInventoryQuantityForDisplay = (input: InventoryDisplayInput) 
 
   return `${base} (${formatInventoryQuantityInputValue(input.normalizedQuantity, input.normalizedUnit)} ${formatInventoryUnitLabel(input.normalizedUnit, input.normalizedQuantity)})`;
 };
+
+// Эпсилон-защита ceil от плавающего шума — тот же паттерн, что и в
+// features/recipes/scale.ts (Ф9): «почти целая» пачка не должна округляться вверх.
+const PACK_HINT_CEIL_EPSILON = 1e-9;
+
+/**
+ * Ф9 «граммы как факт»: обратное направление к строке склада «1 пачка (11 г)»
+ * (см. formatInventoryQuantityForDisplay выше — она НЕ меняется, там пачка —
+ * физический факт). Здесь факт — уже посчитанный вес/объём (после пересчёта
+ * рецепта под объём, features/recipes/scale.ts), а число пачек в скобках —
+ * ориентир "сколько взять": N = ceil(количество / граммовка пачки). Пусто, если
+ * packEquivalent не резолвится или его единица не совпадает с unit количества.
+ */
+export const formatPackCountHintSuffix = (
+  quantity: number,
+  unit: InventoryUnit,
+  packEquivalent?: InventoryPackEquivalent | null
+): string | null => {
+  if (!packEquivalent || packEquivalent.normalizedUnit !== unit || !(packEquivalent.normalizedQuantity > 0)) {
+    return null;
+  }
+  const packs = Math.max(1, Math.ceil(quantity / packEquivalent.normalizedQuantity - PACK_HINT_CEIL_EPSILON));
+  return `${packs} ${formatInventoryUnitLabel("pack", packs)}`;
+};
+
+/** «X г (N пачек)» целиком — formatPackCountHintSuffix + голое количество, когда подсказки нет. */
+export const formatQuantityWithPackCountHint = (
+  quantity: number,
+  unit: InventoryUnit,
+  packEquivalent?: InventoryPackEquivalent | null
+): string => {
+  const base = `${formatInventoryQuantityInputValue(quantity, unit)} ${formatInventoryUnitLabel(unit, quantity)}`;
+  const hint = formatPackCountHintSuffix(quantity, unit, packEquivalent);
+  return hint ? `${base} (${hint})` : base;
+};
+
+/** Тонкая обёртка над formatQuantityWithPackCountHint для мест, где под рукой
+ * technicalData ингредиента, а не уже готовый packEquivalent — resolveInventoryPackEquivalent
+ * (features/inventory/pack.ts) остаётся единственным мостом pack↔г/мл в проекте. */
+export const formatQuantityWithPackHintFromTechnicalData = (
+  quantity: number,
+  unit: InventoryUnit,
+  technicalData?: IngredientTechnicalData | null
+): string => formatQuantityWithPackCountHint(quantity, unit, resolveInventoryPackEquivalent(technicalData ?? null));
 
 export const buildInventoryCostDisplay = (
   input: InventoryCostDisplayInput,

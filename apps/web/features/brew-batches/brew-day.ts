@@ -14,6 +14,8 @@ import {
   type BrewMeasurementSummary,
   type BrewPlanSnapshot
 } from "./contracts";
+import { formatPackCountHintSuffix } from "../inventory/display";
+import type { InventoryPackEquivalent } from "../inventory/pack";
 import { formatInventoryUnitLabel, parseInventoryUnit } from "../inventory/units";
 import { pluralize } from "@/lib/pluralize";
 
@@ -69,6 +71,24 @@ const fmtDays = (days: number | null): string | null => (
   days == null || days <= 0 ? null : `${Math.round(days)} дн.`
 );
 
+// Ф9 «граммы как факт»: packEquivalent, замороженный в снапшоте (см.
+// buildTimedAddition, features/brew-batches/brew-plan.ts) — считывает граммовку
+// пачки дрожжей, если она была известна на момент старта варки. Старые снапшоты
+// без этого поля возвращают null — гид рендерит количество как раньше.
+const readPackEquivalent = (amount: Record<string, unknown>): InventoryPackEquivalent | null => {
+  const raw = amount.packEquivalent;
+  if (!isRecord(raw)) {
+    return null;
+  }
+  const normalizedQuantity = readNumber(raw, "normalizedQuantity");
+  const normalizedUnitRaw = readString(raw, "normalizedUnit");
+  const normalizedUnit = normalizedUnitRaw ? parseInventoryUnit(normalizedUnitRaw) : null;
+  if (normalizedQuantity == null || !normalizedUnit) {
+    return null;
+  }
+  return { normalizedUnit, normalizedQuantity };
+};
+
 const fmtAmount = (record: Record<string, unknown>): string | null => {
   const amount = record.amount;
   if (!isRecord(amount)) {
@@ -88,7 +108,9 @@ const fmtAmount = (record: Record<string, unknown>): string | null => {
   // формат) — fallback на сырую строку, не падаем.
   const parsedUnit = parseInventoryUnit(unit);
   const unitLabel = parsedUnit ? formatInventoryUnitLabel(parsedUnit, Number(value)) : unit;
-  return `${value} ${unitLabel}`;
+  const base = `${value} ${unitLabel}`;
+  const packHint = parsedUnit ? formatPackCountHintSuffix(value, parsedUnit, readPackEquivalent(amount)) : null;
+  return packHint ? `${base} (${packHint})` : base;
 };
 
 const joinDetail = (...parts: Array<string | null>): string | null => {

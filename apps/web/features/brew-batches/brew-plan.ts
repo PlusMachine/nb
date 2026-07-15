@@ -1,4 +1,5 @@
 import { calculateEquipmentVolumePlan } from "../equipment-profiles/volume-plan";
+import { resolveInventoryPackEquivalent } from "../inventory/pack";
 import { buildRecipeWaterPlanResult, type RecipeWaterPlanFermentableInput } from "../recipes/water-plan";
 import { toBatchVolumeLiters } from "../recipes/units";
 import type { RecipeDetailDto } from "../recipes/contracts";
@@ -165,7 +166,12 @@ const buildTimedAddition = (ingredient: RecipeDetailDto["ingredients"][number]) 
   timeOffsetMinutes: ingredient.timeOffset,
   amount: {
     quantity: ingredient.amountEnteredQuantity,
-    unit: ingredient.amountEnteredUnit
+    unit: ingredient.amountEnteredUnit,
+    // Ф9 «граммы как факт»: если строка — дрожжи с известной граммовкой пачки
+    // (resolveInventoryPackEquivalent, тот же мост pack↔г/мл, что и склад), гид
+    // варочного дня (brew-day.ts, fmtAmount) может показать «X г (N пачек)».
+    // Замороженный снапшот — старые записи без этого поля рендерятся как раньше.
+    packEquivalent: resolveInventoryPackEquivalent(ingredient.ingredientTechnicalData ?? null)
   },
   stepMeta: ingredient.stepMeta ?? null
 });

@@ -739,6 +739,25 @@ describe("жизненный цикл рецептов", () => {
     expect(clone.ibu).not.toBe(authoritative.ibu);
   });
 
+  // ── Клон-с-объёмом мёржит масштабированную строку целиком (Ф9) ─────────────
+  it("clone-at-volume конвертирует дрожжи «в пачках» в граммы вместе с единицей, а не только числом", async () => {
+    const source = await createRecipe("u-other", buildPublicPayload({
+      title: "Лагер с пачкой дрожжей",
+      ingredients: [maltLine(), hopLine(), { ...yeastLine(), amountEnteredQuantity: 1, amountEnteredUnit: "pack" }]
+    }));
+
+    // 20 → 40 л (factor 2): 1 пачка US-05 (package_size 11 г) → 22 г. До фикса
+    // applyCloneTargetVolume брал из масштабированной строки только количество —
+    // клон сохранялся как бессмысленные «22 pack».
+    const clone = await cloneRecipeFromPublic("u-me", source.id, { targetBatchVolumeLitres: 40 });
+    const yeast = clone.ingredients.find((ingredient) => ingredient.type === "yeast");
+
+    expect(yeast?.amountEnteredUnit).toBe("g");
+    expect(yeast?.amountEnteredQuantity).toBeCloseTo(22, 5);
+    expect(yeast?.amountNormalizedUnit).toBe("g");
+    expect(yeast?.amountNormalizedQuantity).toBeCloseTo(22, 5);
+  });
+
   it("cloneRecipe своего рецепта тоже наследует сохранённые показатели без пересчёта", async () => {
     const original = await createRecipe("u1", buildPublicPayload({ title: "Мой лагер" }));
     const authoritative = { og: 1.077, fg: 1.015, abv: 8.1, ibu: 33, color: 12 };

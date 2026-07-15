@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 
 import { defaultRecipeProcessMeta, type RecipeDetailDto } from "../features/recipes/contracts";
-import { scaleRecipeToVolume } from "../features/recipes/scale";
+import type { IngredientTechnicalData } from "../features/ingredients/contracts";
+import { scaleRecipeDetailForBrew, scaleRecipeToVolume } from "../features/recipes/scale";
+
+const dryYeastTechnicalData: IngredientTechnicalData = { type: "yeast", form: "dry" };
+const liquidYeastTechnicalData: IngredientTechnicalData = { type: "yeast", form: "liquid" };
 
 const buildRecipe = (overrides: Partial<RecipeDetailDto> = {}): RecipeDetailDto => ({
   id: "r-1",
@@ -165,15 +169,148 @@ describe("scaleRecipeToVolume", () => {
     expect(view.batchSizeEnteredQuantity).toBe(25); // 30 л → 2 знака
   });
 
-  it("scaling down a single pack keeps a fraction (never rounds to 0)", () => {
-    const base = buildRecipe({ batchSizeEnteredQuantity: 30, batchSizeNormalizedQuantity: 30000 });
-    const withPack = buildRecipe({
-      batchSizeEnteredQuantity: 30,
-      batchSizeNormalizedQuantity: 30000,
-      ingredients: [{ ...base.ingredients[1]!, amountEnteredQuantity: 1, amountEnteredUnit: "pack", amountNormalizedQuantity: 11 }]
+  // Ф9 «граммы как факт» (решение владельца): дробной пачки не существует физически
+  // («0.73 пачки» дрожжей нельзя отмерить). Пачка с известной граммовкой при
+  // масштабировании конвертируется в вес; без граммовки (жидкие дрожжи, кастом) и
+  // "item" (шт.) — округляется вверх до целой, минимум 1.
+  describe("Ф9: пачки/штуки при масштабировании — «граммы как факт»", () => {
+    const packYeast = (
+      overrides: Partial<RecipeDetailDto["ingredients"][number]> = {}
+    ): RecipeDetailDto["ingredients"][number] => ({
+      id: "ri-yeast",
+      recipeId: "r-1",
+      persistentKey: "00000000-0000-4000-8000-000000000003",
+      displayOrder: 2,
+      ingredientCatalogItemId: "cat-3",
+      userCustomIngredientId: null,
+      type: "yeast" as const,
+      ingredientCategory: "yeast" as const,
+      ingredientDisplayName: "US-05",
+      amountEnteredQuantity: 1,
+      amountEnteredUnit: "pack" as const,
+      amountNormalizedQuantity: 1,
+      amountNormalizedUnit: "pack" as const,
+      stage: "fermentation" as const,
+      timeOffset: null,
+      stepMeta: null,
+      createdAt: new Date("2026-01-01T00:00:00.000Z"),
+      updatedAt: new Date("2026-01-01T00:00:00.000Z"),
+      ...overrides
     });
-    const view = scaleRecipeToVolume(withPack, 9); // factor 0.3
-    // При точности штучных 0 округлилось бы до 0 (пропажа ингредиента) — держим 2 знака.
-    expect(view.ingredients[0]!.amountEnteredQuantity).toBe(0.3);
+
+    it("сухие дрожжи (граммовка 11 г известна) 30→22 л: 1 пачка → граммы, НЕ 0.73 пачки", () => {
+      const recipe = buildRecipe({
+        batchSizeEnteredQuantity: 30,
+        batchSizeNormalizedQuantity: 30000,
+        ingredients: [packYeast({ ingredientTechnicalData: dryYeastTechnicalData })]
+      });
+
+      const view = scaleRecipeToVolume(recipe, 22); // factor 22/30 = 0.7333…
+      const [yeast] = view.ingredients;
+
+      expect(yeast!.amountEnteredUnit).toBe("g");
+      // 1 × 11 г × 0.7333… = 8.0667 г → округление до практичной точности "г" (1 знак).
+      expect(yeast!.amountEnteredQuantity).toBeCloseTo(8.1, 1);
+      expect(yeast!.amountNormalizedUnit).toBe("g");
+      expect(yeast!.amountNormalizedQuantity).toBeCloseTo(8.067, 2);
+    });
+
+    it("сухие дрожжи 22→44 л (×2): граммы удваиваются, единица остаётся весовой", () => {
+      const recipe = buildRecipe({
+        batchSizeEnteredQuantity: 22,
+        batchSizeNormalizedQuantity: 22000,
+        ingredients: [packYeast({ ingredientTechnicalData: dryYeastTechnicalData })]
+      });
+
+      const view = scaleRecipeToVolume(recipe, 44);
+      const [yeast] = view.ingredients;
+
+      expect(view.factor).toBe(2);
+      expect(yeast!.amountEnteredUnit).toBe("g");
+      expect(yeast!.amountEnteredQuantity).toBe(22); // 11 г × 2
+    });
+
+    it("жидкие дрожжи без известной граммовки 30→22 л: остаются «1 пачка» (округление вверх)", () => {
+      const recipe = buildRecipe({
+        batchSizeEnteredQuantity: 30,
+        batchSizeNormalizedQuantity: 30000,
+        ingredients: [packYeast({ ingredientTechnicalData: liquidYeastTechnicalData })]
+      });
+
+      const view = scaleRecipeToVolume(recipe, 22); // factor 0.7333… — вниз
+      const [yeast] = view.ingredients;
+
+      expect(yeast!.amountEnteredUnit).toBe("pack");
+      expect(yeast!.amountEnteredQuantity).toBe(1); // не 0.73, не 0
+    });
+
+    it("кастомный ингредиент без техданных (technicalData отсутствует) — тоже целая пачка", () => {
+      const recipe = buildRecipe({
+        batchSizeEnteredQuantity: 30,
+        batchSizeNormalizedQuantity: 30000,
+        ingredients: [packYeast()]
+      });
+
+      const view = scaleRecipeToVolume(recipe, 9); // factor 0.3
+      expect(view.ingredients[0]!.amountEnteredUnit).toBe("pack");
+      expect(view.ingredients[0]!.amountEnteredQuantity).toBe(1);
+    });
+
+    it("item (шт., напр. таблетки) — всегда целое число, минимум 1", () => {
+      const recipe = buildRecipe({
+        batchSizeEnteredQuantity: 30,
+        batchSizeNormalizedQuantity: 30000,
+        ingredients: [packYeast({
+          type: "consumable",
+          ingredientCategory: "consumable",
+          amountEnteredUnit: "item",
+          amountNormalizedUnit: "item"
+        })]
+      });
+
+      const view = scaleRecipeToVolume(recipe, 22); // factor 0.7333…, 1 × 0.7333 = 0.73 без округления
+      expect(view.ingredients[0]!.amountEnteredUnit).toBe("item");
+      expect(view.ingredients[0]!.amountEnteredQuantity).toBe(1);
+    });
+
+    it("масштаб не применяется (factor 1) — строка не трогается: «1 пачка», не «11 г»", () => {
+      const recipe = buildRecipe({
+        batchSizeEnteredQuantity: 30,
+        batchSizeNormalizedQuantity: 30000,
+        ingredients: [packYeast({ ingredientTechnicalData: dryYeastTechnicalData })]
+      });
+
+      const view = scaleRecipeToVolume(recipe, 30);
+      expect(view.factor).toBe(1);
+      expect(view.ingredients[0]!.amountEnteredUnit).toBe("pack");
+      expect(view.ingredients[0]!.amountEnteredQuantity).toBe(1);
+    });
+
+    it("характеризационный: scaleRecipeDetailForBrew конвертирует пачку дрожжей при варке в другом объёме", () => {
+      const recipe = buildRecipe({
+        batchSizeEnteredQuantity: 30,
+        batchSizeNormalizedQuantity: 30000,
+        ingredients: [packYeast({ ingredientTechnicalData: dryYeastTechnicalData })]
+      });
+
+      const scaled = scaleRecipeDetailForBrew(recipe, { targetLitres: 22 });
+      const [yeast] = scaled.ingredients;
+
+      expect(yeast!.amountEnteredUnit).toBe("g");
+      expect(yeast!.amountEnteredQuantity).toBeCloseTo(8.1, 1);
+      expect(yeast!.amountNormalizedUnit).toBe("g");
+    });
+
+    it("характеризационный: scaleRecipeDetailForBrew без targetLitres (варка на своём объёме) не трогает пачку", () => {
+      const recipe = buildRecipe({
+        batchSizeEnteredQuantity: 30,
+        batchSizeNormalizedQuantity: 30000,
+        ingredients: [packYeast({ ingredientTechnicalData: dryYeastTechnicalData })]
+      });
+
+      const scaled = scaleRecipeDetailForBrew(recipe, {});
+      expect(scaled.ingredients[0]!.amountEnteredUnit).toBe("pack");
+      expect(scaled.ingredients[0]!.amountEnteredQuantity).toBe(1);
+    });
   });
 });

@@ -9,7 +9,8 @@ import type { RecipeDetailDto } from "@/features/recipes/contracts";
 import { scaleRecipeToVolume, type ScaledRecipeIngredient } from "@/features/recipes/scale";
 import { resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
 import { resolveIngredientCategory } from "@/features/ingredients/taxonomy";
-import { formatInventoryQuantityForDisplay } from "@/features/inventory/display";
+import { formatInventoryQuantityForDisplay, formatPackCountHintSuffix } from "@/features/inventory/display";
+import { resolveInventoryPackEquivalent } from "@/features/inventory/pack";
 
 const litresFormatter = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 2 });
 const factorFormatter = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 2 });
@@ -48,18 +49,35 @@ const ingredientCategory = (ingredient: ScaledRecipeIngredient): SectionCategory
 
 // Единицы считаем тем же форматтером, что и основная секция рецепта, — чтобы окно
 // пересчёта показывало ровно те же величины (мл/г/пачки), а не сырой код единицы.
-const formatScaledAmount = (ingredient: ScaledRecipeIngredient) => formatInventoryQuantityForDisplay({
-  enteredQuantity: ingredient.amountEnteredQuantity,
-  enteredUnit: ingredient.amountEnteredUnit,
-  normalizedQuantity: ingredient.amountNormalizedQuantity,
-  normalizedUnit: ingredient.amountNormalizedUnit,
-  type: ingredient.type,
-  category: ingredient.ingredientCategory ?? resolveIngredientCategory({ type: ingredient.type }),
-  subtype: ingredient.ingredientSubtype ?? null,
-  defaultDisplayUnit: ingredient.defaultDisplayUnit,
-  allowedUnits: ingredient.allowedUnits,
-  measurementDimension: ingredient.measurementDimension
-});
+// technicalData в formatInventoryQuantityForDisplay НЕ передаём: для дрожжей она
+// всегда предпочитает "pack" как display-unit, а после Ф9-конверсии (scale.ts)
+// строка уже может быть в граммах/мл — пересчёт назад в дробную пачку вернул бы
+// тот же баг «0.73 пачки». Подсказку «(N пачек)» добавляем отдельно, ниже.
+const formatScaledAmount = (ingredient: ScaledRecipeIngredient) => {
+  const category = ingredient.ingredientCategory ?? resolveIngredientCategory({ type: ingredient.type });
+  const base = formatInventoryQuantityForDisplay({
+    enteredQuantity: ingredient.amountEnteredQuantity,
+    enteredUnit: ingredient.amountEnteredUnit,
+    normalizedQuantity: ingredient.amountNormalizedQuantity,
+    normalizedUnit: ingredient.amountNormalizedUnit,
+    type: ingredient.type,
+    category,
+    subtype: ingredient.ingredientSubtype ?? null,
+    defaultDisplayUnit: ingredient.defaultDisplayUnit,
+    allowedUnits: ingredient.allowedUnits,
+    measurementDimension: ingredient.measurementDimension
+  });
+
+  if (category === "yeast" && (ingredient.amountEnteredUnit === "g" || ingredient.amountEnteredUnit === "ml")) {
+    const packEquivalent = resolveInventoryPackEquivalent(ingredient.technicalData);
+    const hint = formatPackCountHintSuffix(ingredient.amountEnteredQuantity, ingredient.amountEnteredUnit, packEquivalent);
+    if (hint) {
+      return `${base} (${hint})`;
+    }
+  }
+
+  return base;
+};
 
 /**
  * Модалка эфемерного пересчёта рецепта под объём пользователя. Меняет ТОЛЬКО

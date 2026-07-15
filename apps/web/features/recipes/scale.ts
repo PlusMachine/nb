@@ -3,6 +3,7 @@ import { roundTo } from "@nb/brewing-core";
 import { DEFAULT_BREWHOUSE_EFFICIENCY_PCT } from "../equipment-profiles/contracts";
 import type { IngredientTechnicalData } from "../ingredients/contracts";
 import { fermentableAppliesMashEfficiency } from "../ingredients/technical-fields";
+import { resolveInventoryPackEquivalent } from "../inventory/pack";
 import { getInventoryUnitQuantityPrecision } from "../inventory/units";
 import type { RecipeDetailDto } from "./contracts";
 import { toBatchVolumeLiters } from "./units";
@@ -23,13 +24,80 @@ type RecipeIngredient = RecipeDetailDto["ingredients"][number];
 type RecipeIngredientStage = RecipeIngredient["stage"];
 type InventoryUnit = RecipeDetailDto["batchSizeEnteredUnit"];
 
-// Округление ВВОДИМЫХ (entered) количеств до практичной точности единицы —
-// иначе после умножения на factor в редактируемых полях и в клоне оседают
-// значения вида «15.833 g». Штучные (pack/item) имеют точность 0, но при
-// масштабе вниз это обнулило бы дробную пачку (1 × 0.3 → 0), поэтому держим ≥2.
-const enteredScalePrecision = (unit: InventoryUnit): number => {
-  const precision = getInventoryUnitQuantityPrecision(unit);
-  return precision === 0 ? 2 : precision;
+// Эпсилон-защита ceil от плавающего шума (0.99999999999 не должно давать 2
+// пачки вместо 1) — тот же паттерн, что и ceilTo3 в features/recipes/match-service.ts.
+const CEIL_EPSILON = 1e-9;
+const ceilWithEpsilon = (value: number): number => Math.ceil(value - CEIL_EPSILON);
+
+export type ScaledAmount = {
+  amountEnteredQuantity: number;
+  amountEnteredUnit: InventoryUnit;
+  amountNormalizedQuantity: number;
+  amountNormalizedUnit: InventoryUnit;
+};
+
+/**
+ * Масштабирует ОДНУ строку количества рецепта под фактор объёма/эффективности —
+ * общий узел обоих движков (scaleRecipeToVolume и scaleRecipeDetailForBrew).
+ *
+ * Ф9 «граммы как факт» (решение владельца): дробной пачки не существует физически
+ * («0.73 пачки» дрожжей нельзя отмерить), поэтому единица количества при
+ * масштабировании может смениться:
+ *  - "pack" с известной граммовкой (resolveInventoryPackEquivalent — тот же мост
+ *    pack↔г/мл, что и склад, дефолт 11 г для сухих дрожжей) → конвертируется в вес/
+ *    объём: количество = пачки × граммовка × factor, единица = единица эквивалента,
+ *    округление по практичной точности ЭТОЙ единицы;
+ *  - "pack" с НЕизвестной граммовкой (жидкие дрожжи, кастом без form="dry") и
+ *    "item" (шт. — таблетки и т.п., грамм-конверсии не бывает) → неделимая
+ *    единица: округление ВВЕРХ до целой, минимум 1 (никогда не «пропадает» и
+ *    никогда не дробится);
+ *  - factor === 1 (масштаб не применяется) — строка не трогается вовсе, чтобы
+ *    «посмотреть свой же рецепт» не отличался от основной страницы рецепта
+ *    (там дрожжи в пачках показываются как «1 пачка (11 г)», а не наоборот).
+ *  - вес/объём — поведение прежнее: roundTo по практичной точности единицы.
+ */
+export const scaleIngredientAmount = (
+  entered: { quantity: number; unit: InventoryUnit },
+  normalized: { quantity: number; unit: InventoryUnit },
+  technicalData: IngredientTechnicalData | null | undefined,
+  factor: number
+): ScaledAmount => {
+  if (entered.unit === "pack" || entered.unit === "item") {
+    if (factor === 1) {
+      return {
+        amountEnteredQuantity: entered.quantity,
+        amountEnteredUnit: entered.unit,
+        amountNormalizedQuantity: normalized.quantity,
+        amountNormalizedUnit: normalized.unit
+      };
+    }
+
+    const packEquivalent = entered.unit === "pack" ? resolveInventoryPackEquivalent(technicalData ?? null) : null;
+    if (packEquivalent) {
+      const contentQuantity = entered.quantity * packEquivalent.normalizedQuantity * factor;
+      return {
+        amountEnteredQuantity: roundTo(contentQuantity, getInventoryUnitQuantityPrecision(packEquivalent.normalizedUnit)),
+        amountEnteredUnit: packEquivalent.normalizedUnit,
+        amountNormalizedQuantity: roundTo(contentQuantity, SCALE_PRECISION),
+        amountNormalizedUnit: packEquivalent.normalizedUnit
+      };
+    }
+
+    const wholeCount = Math.max(1, ceilWithEpsilon(entered.quantity * factor));
+    return {
+      amountEnteredQuantity: wholeCount,
+      amountEnteredUnit: entered.unit,
+      amountNormalizedQuantity: wholeCount,
+      amountNormalizedUnit: normalized.unit
+    };
+  }
+
+  return {
+    amountEnteredQuantity: roundTo(entered.quantity * factor, getInventoryUnitQuantityPrecision(entered.unit)),
+    amountEnteredUnit: entered.unit,
+    amountNormalizedQuantity: roundTo(normalized.quantity * factor, SCALE_PRECISION),
+    amountNormalizedUnit: normalized.unit
+  };
 };
 
 export type ScaledRecipeIngredient = {
@@ -41,6 +109,10 @@ export type ScaledRecipeIngredient = {
   displayName: string | null;
   displayNameRu: RecipeIngredient["ingredientDisplayNameRu"];
   displayNameEn: RecipeIngredient["ingredientDisplayNameEn"];
+  // Нужен на отображении (не только на расчёте): формат «X г (N пачек)» строится
+  // из entered-количества ПОСЛЕ конверсии + технических данных ингредиента —
+  // см. formatQuantityWithPackCountHint в features/inventory/display.ts.
+  technicalData: IngredientTechnicalData | null;
   amountEnteredQuantity: number;
   amountEnteredUnit: InventoryUnit;
   amountNormalizedQuantity: number;
@@ -91,28 +163,34 @@ export const scaleRecipeToVolume = (recipe: RecipeDetailDto, targetLitres: numbe
     baseBatchLitres,
     targetBatchLitres: baseBatchLitres > 0 ? targetBatchLitres : baseBatchLitres,
     scaled: factor !== 1,
-    batchSizeEnteredQuantity: roundTo(recipe.batchSizeEnteredQuantity * factor, enteredScalePrecision(recipe.batchSizeEnteredUnit)),
+    batchSizeEnteredQuantity: roundTo(recipe.batchSizeEnteredQuantity * factor, getInventoryUnitQuantityPrecision(recipe.batchSizeEnteredUnit)),
     batchSizeEnteredUnit: recipe.batchSizeEnteredUnit,
-    ingredients: recipe.ingredients.map((ingredient) => ({
-      id: ingredient.id,
-      persistentKey: ingredient.persistentKey,
-      type: ingredient.type,
-      ingredientCategory: ingredient.ingredientCategory ?? null,
-      ingredientSubtype: ingredient.ingredientSubtype ?? null,
-      displayName: ingredient.ingredientDisplayName ?? ingredient.ingredientDisplayNameSnapshot ?? null,
-      displayNameRu: ingredient.ingredientDisplayNameRu ?? null,
-      displayNameEn: ingredient.ingredientDisplayNameEn ?? null,
-      amountEnteredQuantity: roundTo(ingredient.amountEnteredQuantity * factor, enteredScalePrecision(ingredient.amountEnteredUnit)),
-      amountEnteredUnit: ingredient.amountEnteredUnit,
-      amountNormalizedQuantity: roundTo(ingredient.amountNormalizedQuantity * factor, SCALE_PRECISION),
-      amountNormalizedUnit: ingredient.amountNormalizedUnit,
-      // Профиль единицы берём как в основной секции рецепта, чтобы окно
-      // пересчёта показывало те же единицы, что и страница (мл/г/пачки, не сырой код).
-      defaultDisplayUnit: ingredient.ingredientDefaultDisplayUnit ?? ingredient.ingredientDefaultDisplayUnitSnapshot ?? null,
-      allowedUnits: ingredient.ingredientAllowedUnits ?? null,
-      measurementDimension: ingredient.ingredientMeasurementDimension ?? ingredient.ingredientMeasurementDimensionSnapshot ?? null,
-      stage: ingredient.stage
-    }))
+    ingredients: recipe.ingredients.map((ingredient) => {
+      const scaledAmount = scaleIngredientAmount(
+        { quantity: ingredient.amountEnteredQuantity, unit: ingredient.amountEnteredUnit },
+        { quantity: ingredient.amountNormalizedQuantity, unit: ingredient.amountNormalizedUnit },
+        ingredient.ingredientTechnicalData,
+        factor
+      );
+      return {
+        id: ingredient.id,
+        persistentKey: ingredient.persistentKey,
+        type: ingredient.type,
+        ingredientCategory: ingredient.ingredientCategory ?? null,
+        ingredientSubtype: ingredient.ingredientSubtype ?? null,
+        displayName: ingredient.ingredientDisplayName ?? ingredient.ingredientDisplayNameSnapshot ?? null,
+        displayNameRu: ingredient.ingredientDisplayNameRu ?? null,
+        displayNameEn: ingredient.ingredientDisplayNameEn ?? null,
+        technicalData: ingredient.ingredientTechnicalData ?? null,
+        ...scaledAmount,
+        // Профиль единицы берём как в основной секции рецепта, чтобы окно
+        // пересчёта показывало те же единицы, что и страница (мл/г/пачки, не сырой код).
+        defaultDisplayUnit: ingredient.ingredientDefaultDisplayUnit ?? ingredient.ingredientDefaultDisplayUnitSnapshot ?? null,
+        allowedUnits: ingredient.ingredientAllowedUnits ?? null,
+        measurementDimension: ingredient.ingredientMeasurementDimension ?? ingredient.ingredientMeasurementDimensionSnapshot ?? null,
+        stage: ingredient.stage
+      };
+    })
   };
 };
 
@@ -221,13 +299,18 @@ export const scaleRecipeDetailForBrew = (
       if (lineFactor === 1) {
         return ingredient;
       }
+      const scaledAmount = scaleIngredientAmount(
+        { quantity: ingredient.amountEnteredQuantity, unit: ingredient.amountEnteredUnit },
+        { quantity: ingredient.amountNormalizedQuantity, unit: ingredient.amountNormalizedUnit },
+        ingredient.ingredientTechnicalData,
+        lineFactor
+      );
       return {
         ...ingredient,
-        amountEnteredQuantity: roundTo(
-          ingredient.amountEnteredQuantity * lineFactor,
-          enteredScalePrecision(ingredient.amountEnteredUnit)
-        ),
-        amountNormalizedQuantity: roundTo(ingredient.amountNormalizedQuantity * lineFactor, SCALE_PRECISION)
+        amountEnteredQuantity: scaledAmount.amountEnteredQuantity,
+        amountEnteredUnit: scaledAmount.amountEnteredUnit,
+        amountNormalizedQuantity: scaledAmount.amountNormalizedQuantity,
+        amountNormalizedUnit: scaledAmount.amountNormalizedUnit
       };
     })
   };
