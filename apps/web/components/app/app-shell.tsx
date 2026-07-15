@@ -294,7 +294,7 @@ export function AppShell({ children, user }: AppShellProps) {
           </>
         ) : null}
         <div
-          className={`mx-auto px-4 py-6 pb-[calc(6rem+var(--nb-cookie-banner-h,0px))] sm:px-6 lg:pb-[calc(2.5rem+var(--nb-cookie-banner-h,0px))] ${resolveContentWidthClass(pathname)}`}
+          className={`mx-auto px-4 py-6 pb-[calc(6rem+var(--nb-cookie-banner-h,0px)+var(--nb-fab-h,0px))] sm:px-6 lg:pb-[calc(2.5rem+var(--nb-cookie-banner-h,0px)+var(--nb-fab-h,0px))] ${resolveContentWidthClass(pathname)}`}
         >
           {pendingPathname && pendingPathname !== pathname ? resolvePendingSkeleton(pendingPathname) : children}
         </div>

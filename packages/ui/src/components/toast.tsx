@@ -119,13 +119,18 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           bottom: та же композиция переменных нижнего хрома, что и у плавающей
           кнопки фидбека (cookie-баннер + нижняя нав-панель), плюс липкий бар
           результата калькуляторов (--nb-sticky-bar-h, пишет другой компонент,
-          фолбэк 0px), чтобы тост не наезжал на них.
+          фолбэк 0px), чтобы тост не наезжал на них. Плюс --nb-fab-h (высота
+          самой кнопки «Обратная связь» + её базовый зазор): без него тост
+          вставал вплотную к той же нижней границе, что и кнопка (viewport
+          растёт слева-направо через right-4, ровно поверх неё), и, будучи выше
+          по z-index, визуально закрывал бы кнопку вместо того, чтобы встать
+          над ней. С добавкой тост-вьюпорт стоит НАД кнопкой, а не поверх неё.
           left-4 + right-4 без явного width: ширина считается браузером как
           доступное пространство между ними (на узких экранах ~360px раньше
           обрезался слева из-за w-full max-w-sm без left), max-w-sm сверху
           ограничивает её на широких экранах.
         */}
-        <RadixToast.Viewport className="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px)+var(--nb-sticky-bar-h,0px))] left-4 right-4 z-[120] flex max-w-sm flex-col gap-2 outline-none" />
+        <RadixToast.Viewport className="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px)+var(--nb-sticky-bar-h,0px)+var(--nb-fab-h,0px))] left-4 right-4 z-[120] flex max-w-sm flex-col gap-2 outline-none" />
       </RadixToast.Provider>
     </ToastContext.Provider>
   );

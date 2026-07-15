@@ -29,9 +29,10 @@ export function PublicShell({ user, children }: PublicShellProps) {
     <div className="min-h-dvh [--chrome-top:3.5rem]">
       <SiteHeader />
       {/* pb резервирует место под липкий бар результата калькулятора (--nb-sticky-bar-h,
-          у анонима сидит на bottom:0) и cookie-баннер — иначе низ контента уезжает под них. */}
+          у анонима сидит на bottom:0), cookie-баннер и кнопку «Обратная связь»
+          (--nb-fab-h) — иначе низ контента уезжает под них. */}
       <div
-        className={`mx-auto px-4 pb-[calc(3rem+var(--nb-sticky-bar-h,0px)+var(--nb-cookie-banner-h,0px))] sm:px-6 ${resolveContentWidthClass(pathname)}`}
+        className={`mx-auto px-4 pb-[calc(3rem+var(--nb-sticky-bar-h,0px)+var(--nb-cookie-banner-h,0px)+var(--nb-fab-h,0px))] sm:px-6 ${resolveContentWidthClass(pathname)}`}
       >
         {children}
       </div>
