@@ -459,4 +459,91 @@ describe("recipe interop and brew plan foundation", () => {
     const snapshot = buildBrewPlanSnapshot(sampleRecipe);
     expect(snapshot.waterSchedule).toBeNull();
   });
+
+  it("sums grainBillTotalKg from mash-stage fermentables only, excluding boil-stage sugar and steeped (use=steep) fermentables (Ф10)", () => {
+    const withMixedFermentables: RecipeDetailDto = {
+      ...sampleRecipe,
+      ingredients: [
+        // sampleRecipe.ingredients[0] is "Pale Malt", 4000 g, stage "mash", stepMeta null → counted.
+        ...sampleRecipe.ingredients,
+        {
+          id: "00000000-0000-4000-8000-000000000015",
+          recipeId: sampleRecipe.id,
+          persistentKey: "00000000-0000-4000-8000-000000000115",
+          displayOrder: 4,
+          ingredientCatalogItemId: "sugar-1",
+          userCustomIngredientId: null,
+          type: "fermentable",
+          ingredientCategory: "fermentable",
+          ingredientSubtype: "fermentable",
+          ingredientFamilyId: null,
+          ingredientDisplayName: "Декстроза",
+          ingredientDisplayNameRu: null,
+          ingredientDisplayNameEn: "Dextrose",
+          ingredientDisplayNameSnapshot: "Dextrose",
+          ingredientFamilyDisplayName: null,
+          ingredientSummary: null,
+          ingredientDefaultDisplayUnit: "g",
+          ingredientDefaultDisplayUnitSnapshot: "g",
+          ingredientAllowedUnits: ["g", "kg"],
+          ingredientMeasurementDimension: "weight",
+          ingredientMeasurementDimensionSnapshot: "weight",
+          ingredientTechnicalData: null,
+          amountEnteredQuantity: 500,
+          amountEnteredUnit: "g",
+          amountNormalizedQuantity: 500,
+          amountNormalizedUnit: "g",
+          stage: "boil",
+          timeOffset: 10,
+          stepMeta: null,
+          inventoryIntentMode: "catalog",
+          inventorySelectionMeta: null,
+          externalImportMeta: null,
+          createdAt: new Date("2026-01-01T00:00:00.000Z"),
+          updatedAt: new Date("2026-01-01T00:00:00.000Z")
+        },
+        {
+          id: "00000000-0000-4000-8000-000000000016",
+          recipeId: sampleRecipe.id,
+          persistentKey: "00000000-0000-4000-8000-000000000116",
+          displayOrder: 5,
+          ingredientCatalogItemId: "malt-2",
+          userCustomIngredientId: null,
+          type: "malt",
+          ingredientCategory: "fermentable",
+          ingredientSubtype: "malt",
+          ingredientFamilyId: null,
+          ingredientDisplayName: "Спец. солод (настой)",
+          ingredientDisplayNameRu: null,
+          ingredientDisplayNameEn: "Special malt (steep)",
+          ingredientDisplayNameSnapshot: "Special malt (steep)",
+          ingredientFamilyDisplayName: null,
+          ingredientSummary: null,
+          ingredientDefaultDisplayUnit: "g",
+          ingredientDefaultDisplayUnitSnapshot: "g",
+          ingredientAllowedUnits: ["g", "kg"],
+          ingredientMeasurementDimension: "weight",
+          ingredientMeasurementDimensionSnapshot: "weight",
+          ingredientTechnicalData: { type: "malt", extractPctDryBasis: 70, colorEbcMin: 100, colorEbcMax: 100, colorLovibond: 50 },
+          amountEnteredQuantity: 300,
+          amountEnteredUnit: "g",
+          amountNormalizedQuantity: 300,
+          amountNormalizedUnit: "g",
+          stage: "mash",
+          timeOffset: null,
+          stepMeta: { use: "steep" },
+          inventoryIntentMode: "catalog",
+          inventorySelectionMeta: null,
+          externalImportMeta: null,
+          createdAt: new Date("2026-01-01T00:00:00.000Z"),
+          updatedAt: new Date("2026-01-01T00:00:00.000Z")
+        }
+      ]
+    };
+
+    const snapshot = buildBrewPlanSnapshot(withMixedFermentables);
+    // Только Pale Malt (4 кг, mash, use не задан): кипятильная декстроза и
+    // настойный солод (use=steep) в засыпь не входят — у обоих свой шаг "Внести: …".
+    expect(snapshot.grainBillTotalKg).toBe(4);
+  });
 });

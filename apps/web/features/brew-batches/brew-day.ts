@@ -142,6 +142,22 @@ const additionName = (record: Record<string, unknown>): string => (
   readString(record, "name") ?? "Ингредиент"
 );
 
+// Солод на затирании со stepMeta.use отсутствующим или === "mash" уже учтён в
+// сумме grainBillTotalKg и в шаге "Засыпьте солод" (mash:dough-in выше) —
+// отдельная строка "Внести: …" для него была бы дублем засыпи. Настойный солод
+// (use === "steep") в эту сумму не входит (см. симметричный предикат
+// isMashDoughInFermentable в brew-plan.ts — формы данных там другие, RecipeDetailDto
+// вместо raw-снапшота, поэтому предикат не общий) и остаётся отдельным шагом;
+// не-ферментируемые добавки на затирании (соли, ферменты и т.п.) тоже остаются.
+const isMashDoughInDuplicate = (record: Record<string, unknown>): boolean => {
+  if (readString(record, "category") !== "fermentable") {
+    return false;
+  }
+  const stepMeta = isRecord(record.stepMeta) ? record.stepMeta : null;
+  const use = stepMeta ? readString(stepMeta, "use") : null;
+  return use == null || use === "mash";
+};
+
 // Грубая поправка температуры воды для затирания: вода остывает при засыпи
 // солода, поэтому греть нужно чуть выше целевой температуры первой паузы. Точный
 // расчёт зависит от гидромодуля и материала оборудования — для гида-ориентира
@@ -272,9 +288,10 @@ export const buildBrewDaySteps = (snapshot: BrewPlanSnapshot): BrewDayStageGroup
     });
   });
 
-  // Засыпи стадии mash (из timedAdditions со stage === "mash").
+  // Засыпи стадии mash (из timedAdditions со stage === "mash"), кроме солода-дубля
+  // "Засыпьте солод" (см. isMashDoughInDuplicate).
   snapshot.boilPlan.timedAdditions.forEach((raw, index) => {
-    if (!isRecord(raw) || readString(raw, "stage") !== "mash") {
+    if (!isRecord(raw) || readString(raw, "stage") !== "mash" || isMashDoughInDuplicate(raw)) {
       return;
     }
     mash.push({

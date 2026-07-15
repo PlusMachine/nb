@@ -58,6 +58,21 @@ const buildFermentablesForWaterPlan = (
 // Аккуратное число для граммов/миллилитров добавки воды: без хвостовых нулей.
 const roundDose = (value: number): number => Number(value.toFixed(1));
 
+// Солод, который входит в общую засыпь (шаг гида "Засыпьте солод", см.
+// mash:dough-in в brew-day.ts): категория fermentable, стадия mash, и
+// stepMeta.use отсутствует или === "mash". Настойный солод (use === "steep") в
+// эту сумму не входит — за него в гиде отвечает свой шаг "Внести: …". Симметричный
+// предикат isMashDoughInDuplicate в brew-day.ts делает то же самое над
+// raw-снапшотом (там нет типизированного RecipeDetailDto, поэтому предикат не общий).
+const isMashDoughInFermentable = (ingredient: RecipeDetailDto["ingredients"][number]): boolean => {
+  if (ingredient.ingredientCategory !== "fermentable" || ingredient.stage !== "mash") {
+    return false;
+  }
+  const stepMeta = ingredient.stepMeta;
+  const use = isRecord(stepMeta) && typeof stepMeta.use === "string" ? stepMeta.use : null;
+  return use == null || use === "mash";
+};
+
 /**
  * Прекомпьют водного движка для гида варочного дня: соли/кислоты затора и
  * промывки + целевой pH. Считается один раз на старте варки (не на каждый
@@ -187,10 +202,11 @@ export const buildBrewPlanSnapshot = (
     .filter((ingredient) => ingredient.stage === "packaging")
     .map(buildTimedAddition);
 
-  // Суммарная засыпь солода (для шага гида «Засыпьте солод») — только строки в
+  // Суммарная засыпь солода (для шага гида «Засыпьте солод») — только mash-солод
+  // без настойного use="steep" (isMashDoughInFermentable, Ф10) и только строки в
   // граммах, чтобы не путать единицы измерения; прочие пропускаем.
   const grainBillTotalGrams = recipe.ingredients
-    .filter((ingredient) => ingredient.ingredientCategory === "fermentable" && ingredient.amountNormalizedUnit === "g")
+    .filter((ingredient) => isMashDoughInFermentable(ingredient) && ingredient.amountNormalizedUnit === "g")
     .reduce((sum, ingredient) => sum + ingredient.amountNormalizedQuantity, 0);
   const grainBillTotalKg = grainBillTotalGrams > 0
     ? Number((grainBillTotalGrams / 1000).toFixed(2))

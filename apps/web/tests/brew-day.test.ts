@@ -291,6 +291,70 @@ describe("buildBrewDaySteps", () => {
     expect(mash.steps.some((step) => step.id === "mash:add:g1" && step.kind === "addition")).toBe(true);
   });
 
+  describe("mash-stage fermentables don't duplicate the dough-in weight (Ф10)", () => {
+    it("omits mash:add:* for a single mash-stage malt (already summed into dough-in), keeping the dough-in weight", () => {
+      const groups = buildBrewDaySteps(makeSnapshot({
+        grainBillTotalKg: 5,
+        boilPlan: {
+          boilTimeMinutes: 60,
+          timedAdditions: [
+            { linePersistentKey: "malt1", name: "Pale Ale Malt", category: "fermentable", stage: "mash", timeOffsetMinutes: null, amount: { quantity: 5000, unit: "g" }, stepMeta: null }
+          ]
+        }
+      }));
+      const mash = groups.find((group) => group.stage === "mash")!;
+      expect(mash.steps.some((step) => step.id === "mash:add:malt1")).toBe(false);
+      expect(mash.steps.find((step) => step.id === "mash:dough-in")?.detail).toBe("5 кг");
+    });
+
+    it("omits mash:add:* for every fermentable in a 3-malt grain bill, leaving exactly one dough-in step", () => {
+      const groups = buildBrewDaySteps(makeSnapshot({
+        grainBillTotalKg: 5.5,
+        boilPlan: {
+          boilTimeMinutes: 60,
+          timedAdditions: [
+            { linePersistentKey: "malt1", name: "Pale Ale Malt", category: "fermentable", stage: "mash", timeOffsetMinutes: null, amount: { quantity: 4000, unit: "g" }, stepMeta: null },
+            { linePersistentKey: "malt2", name: "Munich Malt", category: "fermentable", stage: "mash", timeOffsetMinutes: null, amount: { quantity: 1000, unit: "g" }, stepMeta: { use: "mash" } },
+            { linePersistentKey: "malt3", name: "Crystal 60", category: "fermentable", stage: "mash", timeOffsetMinutes: null, amount: { quantity: 500, unit: "g" }, stepMeta: null }
+          ]
+        }
+      }));
+      const mash = groups.find((group) => group.stage === "mash")!;
+      expect(mash.steps.some((step) => step.id.startsWith("mash:add:"))).toBe(false);
+      expect(mash.steps.filter((step) => step.id === "mash:dough-in")).toHaveLength(1);
+    });
+
+    it("keeps mash:add:* for a steeped fermentable (stepMeta.use === \"steep\") — it's not folded into dough-in", () => {
+      const groups = buildBrewDaySteps(makeSnapshot({
+        boilPlan: {
+          boilTimeMinutes: 60,
+          timedAdditions: [
+            { linePersistentKey: "steep1", name: "Спец. солод (настой)", category: "fermentable", stage: "mash", timeOffsetMinutes: null, amount: { quantity: 300, unit: "g" }, stepMeta: { use: "steep" } }
+          ]
+        }
+      }));
+      const mash = groups.find((group) => group.stage === "mash")!;
+      const step = mash.steps.find((s) => s.id === "mash:add:steep1");
+      expect(step).toMatchObject({ kind: "addition", title: "Внести: Спец. солод (настой)" });
+      expect(step?.detail).toContain("300 г");
+    });
+
+    it("keeps boil:add:* for a boil-stage fermentable (e.g. priming/boil sugar) — dedup is scoped to stage \"mash\"", () => {
+      const groups = buildBrewDaySteps(makeSnapshot({
+        boilPlan: {
+          boilTimeMinutes: 60,
+          timedAdditions: [
+            { linePersistentKey: "dex1", name: "Декстроза", category: "fermentable", stage: "boil", timeOffsetMinutes: 10, amount: { quantity: 200, unit: "g" }, stepMeta: null }
+          ]
+        }
+      }));
+      const boil = groups.find((group) => group.stage === "boil")!;
+      const step = boil.steps.find((s) => s.id === "boil:add:dex1");
+      expect(step).toMatchObject({ kind: "addition", title: "Внести: Декстроза" });
+      expect(step?.detail).toContain("200 г");
+    });
+  });
+
   it("skips empty groups and a zero-length boil timer", () => {
     const snapshot = makeSnapshot({
       mashSteps: [],

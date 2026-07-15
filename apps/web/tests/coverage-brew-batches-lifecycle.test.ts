@@ -852,7 +852,8 @@ describe("createBrewBatchFromRecipe — объём варки и оборудо�
     const batch = await createBrewBatchFromRecipe(USER_ID, RECIPE_30L);
 
     expect(batch.brewPlanSnapshot.recipe.batchSizeL).toBe(30);
-    expect(batch.brewPlanSnapshot.grainBillTotalKg).toBe(7);
+    // Засыпь — только затирочный солод (6 кг); кипятильная декстроза в заторник не идёт (Ф10).
+    expect(batch.brewPlanSnapshot.grainBillTotalKg).toBe(6);
     expect(snapshotAmount(batch, "m1")).toBe(6);
   });
 
@@ -860,8 +861,8 @@ describe("createBrewBatchFromRecipe — объём варки и оборудо�
     const batch = await createBrewBatchFromRecipe(USER_ID, RECIPE_30L, { targetBatchVolumeL: 20 });
 
     expect(batch.brewPlanSnapshot.recipe.batchSizeL).toBe(20);
-    // Засыпь для шага «Засыпьте солод»: (6 + 1) кг → 4.67 кг.
-    expect(batch.brewPlanSnapshot.grainBillTotalKg).toBeCloseTo(4.67, 2);
+    // Засыпь для шага «Засыпьте солод»: 6 кг затирочного солода → 4 кг (декстроза boil-стадии не входит, Ф10).
+    expect(batch.brewPlanSnapshot.grainBillTotalKg).toBeCloseTo(4, 2);
     // Хмель в шагах кипячения: 30 г → 20 г.
     const hopAddition = batch.brewPlanSnapshot.boilPlan.timedAdditions.find((a: any) => a.name === "Magnum");
     expect(hopAddition?.amount).toMatchObject({ quantity: 20, unit: "g" });
