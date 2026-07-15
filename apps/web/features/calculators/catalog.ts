@@ -65,7 +65,7 @@ export const calculatorSections: CalculatorSection[] = [
 ];
 
 // Калькуляторы, прошедшие ревизию терминологии/UX и провалидированные вручную.
-// Пометка статуса показывается ТОЛЬКО в dev (см. calculators-index и calculator-page-client),
+// Пометка статуса рендерится в CalculatorCard и CalculatorHeading (calculator-static-sections),
 // чтобы не забыть постепенно проверить остальные. Пополняй по мере валидации.
 export const verifiedCalculatorSlugs: CalculatorSlug[] = [
   "abv-attenuation",

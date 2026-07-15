@@ -107,6 +107,8 @@ export function BrewJournal({
   const fmtGravity = (value: number | null) => formatGravity(value, preferredGravityUnit);
   const placeholderSg = resolveBrewGravityPlaceholderSg(measurementKind, target);
   const gravityPlaceholder = placeholderSg == null ? undefined : fmtGravityPlaceholder(placeholderSg, preferredGravityUnit);
+  const takenAtDate = takenAt ? new Date(takenAt) : null;
+  const takenAtPreview = takenAtDate && !Number.isNaN(takenAtDate.getTime()) ? fmtDate(takenAtDate) : null;
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -265,6 +267,7 @@ export function BrewJournal({
             Добавить
           </Button>
         </div>
+        {takenAtPreview ? <p className="text-xs text-muted-foreground">{takenAtPreview}</p> : null}
         <label className="flex w-fit items-center gap-2 text-xs text-muted-foreground">
           <input
             type="checkbox"

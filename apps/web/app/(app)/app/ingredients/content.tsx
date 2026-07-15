@@ -228,15 +228,15 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
               {/* На мобиле секция «Можно сварить» уходит в самый низ — даём якорь
                   прямо в шапке. На десктопе она в правом rail, якорь не нужен. */}
               {brewableRecipes.length > 0 ? (
-                <>
+                <span className="lg:hidden">
                   {" · "}
                   <a
                     href="#brewable"
-                    className="underline decoration-dotted underline-offset-2 transition-colors hover:text-foreground lg:hidden"
+                    className="underline decoration-dotted underline-offset-2 transition-colors hover:text-foreground"
                   >
                     рецепты под склад: {brewableRecipes.length}
                   </a>
-                </>
+                </span>
               ) : null}
             </p>
           ) : null}

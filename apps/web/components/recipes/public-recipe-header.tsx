@@ -6,6 +6,7 @@ import { getBeerStyleById, getBjcpArticleHrefByStyleId, getBjcpStyleDisplayName 
 import { recipePublicationStateLabels, type RecipeDetailDto } from "@/features/recipes/contracts";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
 import { formatUpdatedLabel } from "@/features/recipes/format";
+import { inventoryUnitLabels } from "@/features/inventory/units";
 import { pluralize } from "@/lib/pluralize";
 import { BeerGlassIcon } from "./beer-glass-icon";
 import { BrewRecipeButton } from "./brew-recipe-button";
@@ -67,7 +68,7 @@ export function PublicRecipeHeader({ recipe }: { recipe: RecipeDetailDto }) {
             </span>
           ) : null}
           <span className="rounded-lg bg-muted px-2.5 py-1 text-xs font-medium tabular-nums text-muted-foreground ring-1 ring-ring">
-            {recipe.batchSizeEnteredQuantity} {recipe.batchSizeEnteredUnit}
+            {recipe.batchSizeEnteredQuantity} {inventoryUnitLabels[recipe.batchSizeEnteredUnit] ?? recipe.batchSizeEnteredUnit}
           </span>
           <span className="rounded-lg bg-muted px-2.5 py-1 text-xs font-medium tabular-nums text-muted-foreground ring-1 ring-ring">
             {recipe.boilTimeMinutes} мин кипячения

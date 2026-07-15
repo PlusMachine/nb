@@ -148,6 +148,17 @@ export type BrewBatchListItem = {
   updatedAt: Date;
 };
 
+// Отображаемое название партии: «<имя> · партия №N». Хранимое name остаётся
+// чистым (генерация — см. createBrewBatchFromRecipe), номер живёт отдельной
+// колонкой brew_number — собираем их вместе тут, а не в каждом месте рендера.
+export const formatBrewBatchDisplayTitle = (name: string, brewNumber: number): string =>
+  `${name} · партия №${brewNumber}`;
+
+// Подпись с названием рецепта дублирует заголовок партии, когда они совпадают
+// (типично для автоимённых партий: автоимя = название рецепта). Сравнение
+// нормализует trim+регистр, чтобы не плодить дубли из-за пробелов/капса.
+export const isSameTitle = (a: string, b: string): boolean => a.trim().toLowerCase() === b.trim().toLowerCase();
+
 export const brewBatchStatusLabels: Record<BrewBatchStatus, string> = {
   planned: "Запланирована",
   brewing: "Варится",

@@ -7,6 +7,8 @@ import { listBrewBatchesForUser } from "@/features/brew-batches/service";
 import {
   brewBatchStatusBadgeClass,
   brewBatchStatusLabels,
+  formatBrewBatchDisplayTitle,
+  isSameTitle,
   type BrewBatchListItem,
   type BrewBatchStatus
 } from "@/features/brew-batches/contracts";
@@ -20,10 +22,6 @@ export const metadata = {
 const statusOrder: BrewBatchStatus[] = ["brewing", "fermenting", "planned", "completed", "cancelled"];
 
 const dateFormat = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "short", year: "numeric" });
-
-// F14: подпись с названием рецепта дублирует заголовок партии, когда они совпадают
-// (типично для автоимённых партий — F5: автоимя = название рецепта, без номера).
-const isSameTitle = (a: string, b: string): boolean => a.trim().toLowerCase() === b.trim().toLowerCase();
 
 const relevantDate = (batch: BrewBatchListItem): { label: string; value: Date } => {
   if (batch.status === "completed" && batch.completedAt) {
@@ -79,7 +77,7 @@ export default async function BrewBatchesPage() {
                 >
                   <div className="min-w-0">
                     <p className="truncate font-medium text-foreground">
-                      {batch.name} <span className="text-sm font-normal text-muted-foreground">№{batch.brewNumber}</span>
+                      {formatBrewBatchDisplayTitle(batch.name, batch.brewNumber)}
                     </p>
                     {isSameTitle(batch.name, batch.recipeTitle) ? null : (
                       <p className="truncate text-sm text-muted-foreground">{batch.recipeTitle}</p>

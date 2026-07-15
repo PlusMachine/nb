@@ -24,7 +24,9 @@ const nextConfig: NextConfig = {
     // Каталог переехал из рабочей зоны в публичную: /app/catalog -> /catalog.
     return [
       { source: "/app/catalog", destination: "/catalog", permanent: true },
-      { source: "/app/catalog/:path*", destination: "/catalog/:path*", permanent: true }
+      { source: "/app/catalog/:path*", destination: "/catalog/:path*", permanent: true },
+      { source: "/styles", destination: "/bjcp", permanent: true },
+      { source: "/styles/:path*", destination: "/bjcp/:path*", permanent: true }
     ];
   },
   webpack: (config) => {

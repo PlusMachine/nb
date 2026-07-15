@@ -9,6 +9,7 @@ import { Button, buttonVariants, DropdownMenu, type DropdownMenuItem } from "@nb
 export function RecipeActionsMenu({
   pending,
   labelsHref,
+  brewDisabled,
   onOpenImportExport,
   onOpenBrew,
   onDelete
@@ -16,6 +17,8 @@ export function RecipeActionsMenu({
   pending: boolean;
   /** Ссылка на генератор наклеек; null — рецепт ещё не сохранён. */
   labelsHref?: string | null;
+  /** Пустой несохранённый черновик: варить нечего. */
+  brewDisabled?: boolean;
   onOpenImportExport: () => void;
   onOpenBrew: () => void;
   /** Удаление рецепта; undefined — рецепта в БД ещё нет, удалять нечего. */
@@ -55,9 +58,9 @@ export function RecipeActionsMenu({
         type="button"
         size="md"
         onClick={onOpenBrew}
-        disabled={pending}
+        disabled={pending || brewDisabled}
         aria-label="Сварить"
-        title="Сварить"
+        title={brewDisabled ? "Сначала добавьте хотя бы один ингредиент или назовите рецепт" : "Сварить"}
       >
         <Timer className="h-4 w-4" />
         <span className="hidden sm:inline">Сварить</span>

@@ -1,6 +1,7 @@
 import React from "react";
 
 import type { RecipeDetailDto } from "@/features/recipes/contracts";
+import { inventoryUnitLabels } from "@/features/inventory/units";
 import { defaultPreferredGravityUnit, type PreferredGravityUnit } from "@/features/system/gravity-units";
 
 import { RecipeStatsSummary } from "./recipe-stats-summary";
@@ -15,7 +16,7 @@ export function RecipeStatsPreview({
   return (
     <section className="space-y-2 rounded-2xl border border-border bg-card p-5 shadow-sm" data-testid="recipe-stats-preview">
       <h2 className="text-base font-semibold text-foreground">Предпросмотр статистики</h2>
-      <p className="text-sm text-muted-foreground">Объём партии: {recipe ? `${recipe.batchSizeEnteredQuantity} ${recipe.batchSizeEnteredUnit}` : "—"}</p>
+      <p className="text-sm text-muted-foreground">Объём партии: {recipe ? `${recipe.batchSizeEnteredQuantity} ${inventoryUnitLabels[recipe.batchSizeEnteredUnit] ?? recipe.batchSizeEnteredUnit}` : "—"}</p>
       <RecipeStatsSummary
         recipe={recipe ?? {
           og: null,

@@ -39,7 +39,7 @@ const buildBjcpArticleBreadcrumbJsonLd = (article: ContentArticle, params: { bas
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "BJCP 2021", item: `${base}/bjcp` },
+      { "@type": "ListItem", position: 1, name: "Стили пива", item: `${base}/bjcp` },
       { "@type": "ListItem", position: 2, name: `кат. ${article.category.nameRu}`, item: `${base}/bjcp` }
     ]
   };
@@ -489,7 +489,7 @@ export function BjcpArticlePage({
         <ol className="flex flex-wrap items-center gap-2">
           <li>
             <Link href="/bjcp" className="transition hover:text-foreground">
-              BJCP 2021
+              Стили пива
             </Link>
           </li>
           <li aria-hidden="true">/</li>

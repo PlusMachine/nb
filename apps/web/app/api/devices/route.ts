@@ -1,12 +1,15 @@
 import { NextResponse } from "next/server";
 
-import { requireUser } from "@/lib/auth";
+import { getSessionUser } from "@/lib/auth";
 import { listUserDevices } from "@/features/devices/service";
 import { mapDeviceError } from "@/features/devices/errors";
 
 // GET /api/devices — список устройств текущего пользователя (ownership-checked).
 export async function GET() {
-  const user = await requireUser();
+  const user = await getSessionUser();
+  if (!user) {
+    return NextResponse.json({ error: "AUTH" }, { status: 401 });
+  }
 
   try {
     const devices = await listUserDevices(user.id);

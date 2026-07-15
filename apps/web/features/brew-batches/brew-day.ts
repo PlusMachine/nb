@@ -808,7 +808,7 @@ export type BrewFinishConfirm = {
  * одним кликом без вопроса. Тон danger — только когда завершают раньше плана:
  * это не обычный путь, но и не деструктив, поэтому текст честный, а не пугающий.
  * plannedDays нет (старые партии, план без длительности) — деградируем до «День N»,
- * без «из M».
+ * без «из M». Брожение дольше плана — тоже не деструктив, тон остаётся primary.
  */
 export const buildFinishBrewConfirm = ({
   fermentDayN,
@@ -822,10 +822,13 @@ export const buildFinishBrewConfirm = ({
   const daysLeft = fermentDayN != null && plannedDays != null && fermentDayN < plannedDays
     ? plannedDays - fermentDayN
     : null;
+  const isOver = fermentDayN != null && plannedDays != null && fermentDayN > plannedDays;
   const early = daysLeft != null;
   const parts: string[] = [];
 
-  if (fermentDayN != null) {
+  if (isOver) {
+    parts.push(`Брожение идёт день ${fermentDayN} — дольше плана (${plannedDays} ${pluralize(plannedDays as number, ["день", "дня", "дней"])}).`);
+  } else if (fermentDayN != null) {
     const day = plannedDays != null ? `день ${fermentDayN} из ${plannedDays}` : `день ${fermentDayN}`;
     parts.push(daysLeft != null
       ? `Брожение идёт: ${day}, по плану ещё ${daysLeft} ${pluralize(daysLeft, ["день", "дня", "дней"])}.`

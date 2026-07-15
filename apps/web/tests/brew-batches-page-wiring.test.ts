@@ -270,7 +270,7 @@ describe("Страница партии — акт «Итог» (A4)", () => {
     expect(html).toContain("Склад");
     expect(html).toContain("Пильзнер");
     expect(html).toContain("История движений");
-    expect(html).toContain("Партия №1");
+    expect(html).toContain("партия №1");
   });
 
   it("держит рядом два поля: «Заметки о варке» и «Дегустация»", async () => {

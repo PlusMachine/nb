@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 
 import { requireUser } from "@/lib/auth";
+import { pluralize } from "@/lib/pluralize";
 import { getBrewBatchDetail, getDeviceTelemetryHistory } from "@/features/brew-batches/service";
 import { getBrewBatchInventoryView } from "@/features/brew-batches/inventory";
 import {
@@ -19,6 +20,8 @@ import {
   brewBatchStatusLabels,
   FERMENT_HISTORY_LIMIT,
   FERMENT_HISTORY_WINDOW_DAYS,
+  formatBrewBatchDisplayTitle,
+  isSameTitle,
   type BrewRecipeSnapshot
 } from "@/features/brew-batches/contracts";
 import { getDeviceById } from "@/features/devices/service";
@@ -165,7 +168,9 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
   const fermentDayN = Math.max(1, Math.floor((Date.now() - new Date(fermentStart).getTime()) / DAY_MS) + 1);
   const plannedFermentDays = primaryDurationDays != null ? Math.round(primaryDurationDays) : null;
   const dayLabel = plannedFermentDays != null
-    ? `День ${fermentDayN} из ${plannedFermentDays}`
+    ? fermentDayN > plannedFermentDays
+      ? `День ${fermentDayN} · план ${plannedFermentDays} ${pluralize(plannedFermentDays, ["день", "дня", "дней"])}`
+      : `День ${fermentDayN} из ${plannedFermentDays}`
     : `День ${fermentDayN}`;
   const targetTempLabel = primaryTemperatureC != null ? `${primaryTemperatureC} °C` : null;
   const nudge = act === "fermentation"
@@ -206,6 +211,10 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
   const started = fmtDate(batch.startedAt);
   const completed = fmtDate(batch.completedAt);
   const planned = fmtDate(batch.plannedFor);
+  const dateLabel = completed ? `завершена ${completed}` : started ? `начата ${started}` : planned ? `запланирована на ${planned}` : null;
+  // Название рецепта в подзаголовке дублирует заголовок партии, когда они
+  // совпадают (автоимённые партии — F5: автоимя = название рецепта).
+  const showRecipeTitleLine = !isSameTitle(batch.brewPlanSnapshot.recipe.title, batch.name);
 
   // Атрибуция источника: варка из чужого рецепта без клона — честно указываем автора.
   const recipeSnapshot = batch.recipeSnapshot as Partial<BrewRecipeSnapshot> | null;
@@ -239,6 +248,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
   // formatGravity с суффиксом давал на печати «FG 2.5 °P °P».
   const labelParams = new URLSearchParams({ bottlingDate: bottlingDateIso });
   labelParams.set("batch", String(batch.brewNumber));
+  labelParams.set("batchId", batch.id);
   const actualOgText = formatGravityNumber(summary.og, labelGravityUnit);
   if (actualOgText) labelParams.set("og", actualOgText);
   const actualFgText = formatGravityNumber(summary.fg, labelGravityUnit);
@@ -282,17 +292,26 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
           <div className="flex flex-wrap items-center gap-3">
             {/* truncate — длинное название партии не должно раздвигать шапку и
                 отталкивать меню (⋯) за пределы узкого экрана. */}
-            <h1 className="min-w-0 flex-1 truncate text-2xl font-semibold text-foreground">{batch.name}</h1>
+            <h1 className="min-w-0 flex-1 truncate text-2xl font-semibold text-foreground">
+              {formatBrewBatchDisplayTitle(batch.name, batch.brewNumber)}
+            </h1>
             <span className={`shrink-0 inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${brewBatchStatusBadgeClass[batch.status]}`}>
               {brewBatchStatusLabels[batch.status]}
             </span>
           </div>
-          <p className="text-sm text-muted-foreground">
-            {batch.brewPlanSnapshot.recipe.title}
-            {isForeignRecipe && sourceAuthorName ? <span className="text-muted-foreground"> · автор {sourceAuthorName}</span> : null}
-            {` · Партия №${batch.brewNumber}`}
-            {completed ? ` · завершена ${completed}` : started ? ` · начата ${started}` : planned ? ` · запланирована на ${planned}` : ""}
-          </p>
+          {(() => {
+            // Атрибуция чужого авторства (см. isForeignRecipe выше) обязана
+            // показываться независимо от showRecipeTitleLine — иначе для
+            // автоимённых партий (title === batch.name) она пропадает молча.
+            const subtitleParts = [
+              showRecipeTitleLine ? batch.brewPlanSnapshot.recipe.title : null,
+              isForeignRecipe && sourceAuthorName ? `автор ${sourceAuthorName}` : null,
+              dateLabel,
+            ].filter((part): part is string => Boolean(part));
+            return subtitleParts.length > 0 ? (
+              <p className="text-sm text-muted-foreground">{subtitleParts.join(" · ")}</p>
+            ) : null;
+          })()}
         </div>
         <BatchMenu brewBatchId={batch.id} status={batch.status} labelsHref={labelsHref} />
       </header>

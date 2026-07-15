@@ -615,7 +615,7 @@ describe("recipe editor components", () => {
 
     expect(html).toContain("Предпросмотр статистики");
     expect(html).toContain("НП");
-    expect(html).toContain("20 l");
+    expect(html).toContain("20 л");
   });
 
   it("editor error state renders", () => {
@@ -1080,6 +1080,26 @@ describe("recipe editor components", () => {
       currentBatchVolumeL: null,
       ingredientCount: 3
     })).toBe(false);
+  });
+
+  // П13/B2: пустой черновик не должен дать «Сварить» форсить создание пустой
+  // записи в БД. Импорт/экспорт кнопкой не гейтим — импорт BeerXML в пустой
+  // новый рецепт остаётся валидным сценарием.
+  it("«Сварить» задизейблена для пустого несохранённого черновика и активна для сохранённого", () => {
+    const emptyDraftHtml = renderDesignerMarkup({ mode: "create", preferredGravityUnit: "plato" });
+    const brewButtonMatch = emptyDraftHtml.match(/<button[^>]*aria-label="Сварить"[^>]*>/);
+
+    expect(brewButtonMatch?.[0]).toContain("disabled=\"\"");
+    expect(emptyDraftHtml).toContain("Импорт / экспорт");
+    expect(emptyDraftHtml.match(/<button[^>]*aria-label="Импорт \/ экспорт"[^>]*>/)?.[0]).not.toContain("disabled=\"\"");
+
+    const savedRecipeHtml = renderDesignerMarkup({
+      mode: "edit",
+      initialRecipe: buildRecipeDetail(),
+      preferredGravityUnit: "plato"
+    });
+
+    expect(savedRecipeHtml.match(/<button[^>]*aria-label="Сварить"[^>]*>/)?.[0]).not.toContain("disabled=\"\"");
   });
 
   it("create and edit pages are importable", () => {

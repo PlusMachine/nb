@@ -948,6 +948,14 @@ export function RecipeDesigner({
   };
 
   const handleExportBeerXml = async (): Promise<ImportExportActionResult> => {
+    // Подстраховка инварианта: пустой черновик не должен force-персиститься в БД
+    // ради экспорта. Штатно сюда не доходит — ImportExportModal.handleExport
+    // гейтит !activeRecipeId раньше (import-export-modal.tsx), но инвариант
+    // держим и здесь на случай других вызывающих.
+    if (!activeRecipeId && !isDraftWorthPersisting) {
+      return { ok: false, message: "Сначала добавьте хотя бы один ингредиент или назовите рецепт." };
+    }
+
     const saveBeforeExportResult = await persistRecipe({ surfaceInlineResult: true, force: true });
     if (saveBeforeExportResult && !saveBeforeExportResult.ok) {
       return {
@@ -1086,6 +1094,15 @@ export function RecipeDesigner({
   // двух режимов («Сварить самому» / «Сварить на автоматике»). recipe-designer
   // отвечает только за то, что рецепт уже сохранён (recipeId существует).
   const handleOpenBrewPicker = async () => {
+    // Пустой черновик (B2/#13): варить нечего, форсить создание записи в БД
+    // ради пустой болванки не нужно — кнопка и так задизейблена (см. ниже), это
+    // подстраховка на случай прямого вызова.
+    if (!activeRecipeId && !isDraftWorthPersisting) {
+      setSaveResult({ ok: false, message: "Сначала добавьте хотя бы один ингредиент или назовите рецепт." });
+      setSaveResultSignature(currentSignature);
+      return;
+    }
+
     const saveBeforeBrewResult = await persistRecipe({ surfaceInlineResult: true, force: true });
     if (saveBeforeBrewResult && !saveBeforeBrewResult.ok) {
       return;
@@ -1286,6 +1303,10 @@ export function RecipeDesigner({
           <RecipeActionsMenu
             pending={pendingSave}
             labelsHref={activeRecipeId ? `/app/recipes/${activeRecipeId}/labels` : null}
+            // Пустой черновик (B2/#13): варить нечего — форсить создание записи в
+            // БД ради пустой болванки незачем. Импорт/экспорт не гейтим тем же
+            // условием: импорт BeerXML в пустой новый рецепт — валидный сценарий.
+            brewDisabled={!activeRecipeId && !isDraftWorthPersisting}
             onOpenImportExport={() => setImportExportOpen(true)}
             onOpenBrew={() => void handleOpenBrewPicker()}
             // Пока рецепт не создан в БД — удалять нечего. На pendingSave НЕ гейтим:

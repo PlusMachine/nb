@@ -8,9 +8,6 @@ import { isCalculatorVerified, type CalculatorCatalogItem } from "@/features/cal
 // этот индексируемый контент попадал в статический HTML независимо от того,
 // гидрировался ли клиентский useSearchParams (docs/seo-playbook.md, §7).
 
-// Пометка статуса валидации у заголовка — только в dev.
-const devMode = process.env.NODE_ENV !== "production";
-
 export function CalculatorHeading({ item }: { item: CalculatorCatalogItem }) {
   return (
     <section className="relative rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
@@ -20,15 +17,9 @@ export function CalculatorHeading({ item }: { item: CalculatorCatalogItem }) {
         className="absolute right-4 top-4"
       />
       <div className="max-w-3xl space-y-2 pr-10">
-        {devMode ? (
-          <span
-            className={`inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-              isCalculatorVerified(item.slug)
-                ? "bg-success-subtle text-success-subtle-foreground"
-                : "bg-warning-subtle text-warning-subtle-foreground"
-            }`}
-          >
-            {isCalculatorVerified(item.slug) ? "✓ проверен (dev)" : "не проверен (dev)"}
+        {isCalculatorVerified(item.slug) ? (
+          <span className="inline-flex w-fit items-center gap-1 rounded-full bg-success-subtle px-2 py-0.5 text-[10px] font-semibold text-success-subtle-foreground">
+            ✓ проверен
           </span>
         ) : null}
         <h1 className="text-2xl font-semibold leading-tight text-foreground sm:text-3xl">{item.title}</h1>

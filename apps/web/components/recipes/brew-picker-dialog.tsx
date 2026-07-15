@@ -98,9 +98,8 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
     setAuthRequired(false);
     try {
       const res = await fetch("/api/devices", { cache: "no-store" });
-      // Аноним: requireUser() отвечает не 401, а редиректом (307) на /login, и fetch
-      // его СЛЕДУЕТ → res.ok=200 с HTML логина. Ловим оба варианта: и следованный
-      // редирект на /login, и 401/403 (на случай, если роут поменяют на JSON-ответ).
+      // Аноним: роут отвечает 401 (getSessionUser, без redirect). Ловим и
+      // редирект на /login на всякий случай — на случай регресса в роуте.
       const redirectedToLogin = res.redirected && new URL(res.url).pathname.startsWith("/login");
       if (res.status === 401 || res.status === 403 || redirectedToLogin) {
         setAuthRequired(true);
@@ -166,8 +165,15 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
   // Ждём и устройства, и объёмы: иначе блок выбора объёма доезжает после отрисовки
   // экрана и кнопка «Создать варку» мигает из активной в неактивную.
   useEffect(() => {
-    if (screen !== "gate" || devicesLoading || volumeOptionsLoading) return;
-    setScreen(authRequired ? "login" : "mode");
+    if (screen !== "gate") return;
+    // Аноним не должен ждать параллельный запрос объёмов — как только известно
+    // про authRequired, сразу ведём на экран логина.
+    if (!devicesLoading && authRequired) {
+      setScreen("login");
+      return;
+    }
+    if (devicesLoading || volumeOptionsLoading) return;
+    setScreen("mode");
   }, [screen, devicesLoading, volumeOptionsLoading, authRequired]);
 
   const hasDeviceChoice = Boolean(devicesError) || devices.some(isBrewCapableDevice);

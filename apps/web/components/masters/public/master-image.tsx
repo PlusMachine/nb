@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import { Hammer } from "lucide-react";
 
@@ -39,9 +42,11 @@ export function MasterImage({
   className?: string;
   sizes: string;
 }) {
+  const [failed, setFailed] = useState(false);
+
   return (
     <div className={`relative overflow-hidden ${className}`}>
-      {imageRef ? (
+      {imageRef && !failed ? (
         <Image
           src={buildMasterImageVariantUrl(imageRef.imageId, variant)}
           alt={alt}
@@ -51,6 +56,7 @@ export function MasterImage({
           className="object-cover"
           placeholder={imageRef.blurDataUrl ? "blur" : "empty"}
           blurDataURL={imageRef.blurDataUrl ?? undefined}
+          onError={() => setFailed(true)}
         />
       ) : (
         <MasterImageFallback />

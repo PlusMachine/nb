@@ -9,9 +9,6 @@ import {
 
 import { CalculatorFavoriteToggle } from "./calculator-favorite-toggle";
 
-// Пометка статуса валидации — только в dev, чтобы отслеживать непроверенные калькуляторы.
-const devMode = process.env.NODE_ENV !== "production";
-
 const calculatorCardBackgrounds: Partial<Record<CalculatorSlug, string>> = {
   "abv-attenuation": "/images/calculators/2-Photoroom.png",
   "refractometer-correction": "/images/calculators/3-Photoroom.png",
@@ -62,15 +59,9 @@ export function CalculatorCard({ calculator }: { calculator: CalculatorCardItem 
             {calculator.description}
           </p>
         </div>
-        {devMode ? (
-          <span
-            className={`inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-              isCalculatorVerified(calculator.slug)
-                ? "bg-success-subtle text-success-subtle-foreground"
-                : "bg-warning-subtle text-warning-subtle-foreground"
-            }`}
-          >
-            {isCalculatorVerified(calculator.slug) ? "✓ проверен" : "не проверен"}
+        {isCalculatorVerified(calculator.slug) ? (
+          <span className="inline-flex w-fit items-center gap-1 rounded-full bg-success-subtle px-2 py-0.5 text-[10px] font-semibold text-success-subtle-foreground">
+            ✓ проверен
           </span>
         ) : null}
       </article>

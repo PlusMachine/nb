@@ -22,6 +22,8 @@ import { countBrewBatchesForUser, listActiveBrewBatchesForUser } from "@/feature
 import {
   brewBatchStatusBadgeClass,
   brewBatchStatusLabels,
+  formatBrewBatchDisplayTitle,
+  isSameTitle,
   type ActiveBrewProgressItem
 } from "@/features/brew-batches/contracts";
 import { isNewUserDashboard } from "@/features/dashboard/onboarding";
@@ -227,8 +229,12 @@ function AttentionBrewCard({ card }: { card: DashboardBrewCard }) {
         {batch.hasDevice ? <Cpu className="h-4 w-4 text-muted-foreground" aria-label="С устройством" /> : null}
       </div>
       <div className="min-w-0">
-        <p className="truncate font-semibold text-foreground group-hover:text-foreground">{batch.name}</p>
-        <p className="truncate text-sm text-muted-foreground">{batch.recipeTitle}</p>
+        <p className="truncate font-semibold text-foreground group-hover:text-foreground">
+          {formatBrewBatchDisplayTitle(batch.name, batch.brewNumber)}
+        </p>
+        {isSameTitle(batch.recipeTitle, batch.name) ? null : (
+          <p className="truncate text-sm text-muted-foreground">{batch.recipeTitle}</p>
+        )}
       </div>
       {fermentationDay != null ? (
         <p className="text-xs tabular-nums text-muted-foreground">
@@ -268,8 +274,12 @@ function PlannedBrewsCard({ planned, showAllLink }: { planned: ActiveBrewProgres
                 className="flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-accent"
               >
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-foreground">{batch.name}</p>
-                  <p className="truncate text-xs text-muted-foreground">{batch.recipeTitle}</p>
+                  <p className="truncate text-sm font-medium text-foreground">
+                    {formatBrewBatchDisplayTitle(batch.name, batch.brewNumber)}
+                  </p>
+                  {isSameTitle(batch.recipeTitle, batch.name) ? null : (
+                    <p className="truncate text-xs text-muted-foreground">{batch.recipeTitle}</p>
+                  )}
                 </div>
                 <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
                   {batch.plannedFor ? plannedDateFormat.format(batch.plannedFor) : "готова к старту"}
