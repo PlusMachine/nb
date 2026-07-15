@@ -68,8 +68,9 @@ export default async function PublicRecipeRoute({ params }: { params: Promise<{ 
     const breadcrumbJsonLd = buildRecipeBreadcrumbJsonLd(recipe, { baseUrl: APP_URL });
     const similarRecipes = await loadSimilarRecipes(style?.bjcpId ?? null, recipe.slug);
 
-    // Документ НЕ читает сессию/cookie → остаётся кэшируемым (ISR/static) для анонимов.
-    // Персональная оценка тянется клиентом (recipe-rating-form) после гидрации.
+    // Документ НЕ читает searchParams/сессию/cookie → остаётся кэшируемым (ISR/static)
+    // для анонимов. Персональная оценка тянется клиентом (recipe-rating-form) после
+    // гидрации; автооткрытие «Сварить» по ?brew=1 — тоже клиентом (brew-recipe-button.tsx).
     return (
       <>
         <PublicRecipePage recipe={recipe} similarRecipes={similarRecipes} />

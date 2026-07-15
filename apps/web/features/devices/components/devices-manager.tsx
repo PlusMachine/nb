@@ -13,6 +13,7 @@
 // =============================================================================
 import { useCallback, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { X } from "lucide-react";
 
 import { Button, Card, Input } from "@nb/ui";
 import type { PreferredGravityUnit } from "@nb/auth";
@@ -22,6 +23,8 @@ import { DeviceTile } from "@/features/devices/components/device-tile";
 import { NotificationOptIn } from "@/features/notifications/components/notification-opt-in";
 import { devicePairingErrorText, pairingDeliveryReasonText } from "@/features/devices/pairing-error-text";
 import type { DeviceTile as DeviceTileData, PairingDeliveryStatus } from "@/features/devices/contracts";
+import { hasBrewCapableOnlineTile } from "@/features/devices/return-recipe-core";
+import type { DeviceReturnRecipe } from "@/features/devices/return-recipe";
 import { ConnectStreamDeviceForm } from "@/features/device-streams/components/connect-stream-device-form";
 import { RaptConnectScreen } from "@/features/device-streams/components/rapt-connect-screen";
 import { RaptIntegrationCard } from "@/features/device-streams/components/rapt-integration-card";
@@ -37,17 +40,24 @@ type Props = {
   /** Демо-пивоварня (loopback device-sim в dev / стаб в prod) доступна. */
   demoAvailable: boolean;
   preferredGravityUnit: PreferredGravityUnit;
+  /** Контекст «вернуться к варке» (Ф7) — пришли из BrewPickerDialog → «Подключить
+   *  BrewForge» с ?returnRecipe=; null — обычный визит страницы устройств. */
+  returnRecipe: DeviceReturnRecipe | null;
 };
 
 /** Шаг визарда подключения (F1/F1-RAPT), выражен в URL — шарабельно, переживает reload. */
 type ConnectMode = "none" | "select" | "brewforge" | "stream" | "rapt";
 
-export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUnit }: Props) {
+export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUnit, returnRecipe }: Props) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [tiles, setTiles] = useState<DeviceTileData[]>(initialTiles);
   const [nowMs, setNowMs] = useState<number>(() => Date.now());
+  // Ф7: баннер «Продолжить варку» скрывается локально сразу по клику (без ожидания
+  // серверного round-trip) — dismissReturnRecipe параллельно чистит ?returnRecipe=
+  // из URL, иначе баннер воскресает при следующем заходе на страницу с тем же URL.
+  const [returnRecipeDismissed, setReturnRecipeDismissed] = useState(false);
   const [creatingDemo, setCreatingDemo] = useState(false);
   const [demoError, setDemoError] = useState<string | null>(null);
   // Демо-ареометр (F1 «Демо-режим», §5, §11 M5): отдельная кнопка рядом с
@@ -82,6 +92,20 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
     [pathname, router, searchParams],
   );
   const showPair = connectMode === "brewforge";
+
+  // Ф7: «Позже»/крестик у баннера «Продолжить варку» — то же router.replace, что
+  // setConnectMode выше: стираем ?returnRecipe= из URL, иначе баннер воскресает на
+  // следующем визите этой же ссылки (returnRecipe приходит пропом с сервера, не из
+  // клиентского searchParams).
+  const dismissReturnRecipe = useCallback(() => {
+    setReturnRecipeDismissed(true);
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("returnRecipe");
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  }, [pathname, router, searchParams]);
+  const visibleReturnRecipe = returnRecipeDismissed ? null : returnRecipe;
+  const canContinueBrew = hasBrewCapableOnlineTile(tiles);
   const [claimCode, setClaimCode] = useState("");
   const [name, setName] = useState("");
   const [localUrl, setLocalUrl] = useState("");
@@ -292,6 +316,44 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
           </Button>
         </div>
       </header>
+
+      {/* Ф7: контекст «Сварить → Подключить BrewForge → Продолжить варку». */}
+      {visibleReturnRecipe ? (
+        canContinueBrew ? (
+          <div role="status" className="rounded-xl border-2 border-success/30 bg-success-subtle p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm font-semibold text-success-subtle-foreground">Устройство подключено</p>
+              <div className="flex items-center gap-1">
+                <Button variant="primary" onClick={() => router.push(visibleReturnRecipe.href)}>
+                  {`Продолжить варку «${visibleReturnRecipe.title}»`}
+                </Button>
+                <button
+                  type="button"
+                  onClick={dismissReturnRecipe}
+                  className="rounded-md p-1.5 text-success-subtle-foreground/70 transition-colors hover:text-success-subtle-foreground"
+                  aria-label="Скрыть"
+                  title="Позже"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
+            <span>{`Подключите устройство или создайте демо-пивоварню, чтобы продолжить варку «${visibleReturnRecipe.title}»`}</span>
+            <button
+              type="button"
+              onClick={dismissReturnRecipe}
+              className="rounded-md p-1.5 text-muted-foreground transition-colors hover:text-foreground"
+              aria-label="Скрыть"
+              title="Позже"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        )
+      ) : null}
 
       {/* Web-push: пуш о засыпи/промывке/авариях вне дома (Phase 6). */}
       <NotificationOptIn />

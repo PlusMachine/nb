@@ -18,7 +18,7 @@ import {
   X
 } from "lucide-react";
 import React, { startTransition, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import {
   createRecipeCustomIngredientAction,
@@ -85,6 +85,8 @@ import {
   cloneRecipeWaterPlanMeta,
   buildEquipmentProfileSnapshotFromDto,
   resolveInitialEquipmentState,
+  resolveAutoSelectedEquipmentProfileId,
+  nextEquipmentProfileFocusPoll,
   formatEquipmentProfileRecipeValue,
   DEFAULT_BOIL_TIME_MINUTES,
   DEFAULT_EFFICIENCY,
@@ -145,6 +147,10 @@ type Props = {
 
 export type { RecipeSaveStatus };
 
+// Ф5 (P1+P1+P2 ревью волны 4): окно дедупа focus/visibilitychange на возврат в таб
+// после клика «+ Создать профиль…» — оба события стреляют на одном и том же возврате.
+const EQUIPMENT_PROFILE_FOCUS_DEDUPE_MS = 1000;
+
 export function RecipeDesigner({
   mode,
   initialRecipe,
@@ -160,6 +166,8 @@ export function RecipeDesigner({
   preferredGravityUnit
 }: Props) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const initialDefaultEquipmentProfile = initialRecipe
     ? null
     : equipmentProfiles.find((profile) => profile.isDefault) ?? equipmentProfiles[0] ?? null;
@@ -547,7 +555,7 @@ export function RecipeDesigner({
     }
   };
 
-  const handleSelectEquipmentProfile = React.useCallback((profileId: string | null) => {
+  const applyEquipmentProfileSelection = React.useCallback((profileId: string | null) => {
     if (!profileId) {
       setEquipmentProfileId(null);
       setEquipmentProfileSnapshot(null);
@@ -569,6 +577,96 @@ export function RecipeDesigner({
     }));
     setEfficiency(formatEquipmentProfileRecipeValue(profile.brewhouseEfficiencyPct));
   }, [equipmentProfiles]);
+
+  // Ф11: «+ Создать профиль…» открывает /app/equipment?mode=create в НОВОЙ вкладке
+  // (SPA-переход в этой же молча стёр бы последние правки — автосейв дебаунсит 1.5 с).
+  // Флаг в ref включает опрос возврата фокуса только после реального клика — иначе
+  // пришлось бы дёргать router.refresh() на каждый фокус вкладки всю сессию редактора.
+  const equipmentProfileCreateRequestedRef = useRef(false);
+  const equipmentProfileIdsSnapshotRef = useRef<string[] | null>(null);
+  // Ф5 (P1+P1+P2 ревью волны 4): счётчик опросов на клик (лимит — не держать
+  // router.refresh() до конца сессии, если профиль так и не создали) и
+  // guard-таймстамп дедупа focus/visibilitychange (оба стреляют на одном
+  // возврате в таб — без guard'а это двойной refresh и двойной декремент).
+  const equipmentProfileFocusPollCountRef = useRef(0);
+  const equipmentProfileLastFocusEventAtRef = useRef(0);
+
+  // Ручной выбор в селекте (не автовыбор ниже) — источник истины для пользователя:
+  // безусловно снимает ожидание нового профиля, иначе более поздний автовыбор или
+  // истечение лимита опросов могли бы молча перетереть то, что выбрали руками.
+  const handleSelectEquipmentProfile = React.useCallback((profileId: string | null) => {
+    applyEquipmentProfileSelection(profileId);
+    equipmentProfileCreateRequestedRef.current = false;
+    equipmentProfileIdsSnapshotRef.current = null;
+    equipmentProfileFocusPollCountRef.current = 0;
+  }, [applyEquipmentProfileSelection]);
+
+  const handleCreateEquipmentProfile = React.useCallback(() => {
+    equipmentProfileCreateRequestedRef.current = true;
+    equipmentProfileIdsSnapshotRef.current = equipmentProfiles.map((profile) => profile.id);
+    equipmentProfileFocusPollCountRef.current = 0;
+    equipmentProfileLastFocusEventAtRef.current = 0;
+    window.open("/app/equipment?mode=create", "_blank");
+  }, [equipmentProfiles]);
+
+  useEffect(() => {
+    const handleFocusReturn = () => {
+      if (!equipmentProfileCreateRequestedRef.current) return;
+
+      const now = Date.now();
+      if (now - equipmentProfileLastFocusEventAtRef.current < EQUIPMENT_PROFILE_FOCUS_DEDUPE_MS) {
+        // Второе событие того же возврата фокуса (focus + visibilitychange) — пропускаем.
+        return;
+      }
+      equipmentProfileLastFocusEventAtRef.current = now;
+
+      const { pollCount, shouldRefresh } = nextEquipmentProfileFocusPoll(equipmentProfileFocusPollCountRef.current);
+      equipmentProfileFocusPollCountRef.current = pollCount;
+
+      if (!shouldRefresh) {
+        // Лимит опросов исчерпан — профиль, видимо, не создали. Флаг снимается сам,
+        // иначе следующий случайный новый профиль (через час, в другом табе) подхватился бы автоматически.
+        equipmentProfileCreateRequestedRef.current = false;
+        equipmentProfileIdsSnapshotRef.current = null;
+        return;
+      }
+
+      router.refresh();
+    };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        handleFocusReturn();
+      }
+    };
+    window.addEventListener("focus", handleFocusReturn);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      window.removeEventListener("focus", handleFocusReturn);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [router]);
+
+  // equipmentProfiles реактивен к router.refresh() (проп с сервера, без local-копии,
+  // см. RecipeEditorPage → RecipeForm → RecipeDesigner) — как только список отрастил
+  // ровно один новый профиль, выбираем его и выключаем опрос фокуса до следующего клика.
+  // resolveAutoSelectedEquipmentProfileId сам возвращает null, если флаг ожидания уже
+  // снят (ручным выбором или истечением лимита опросов) — тогда автовыбор не трогает
+  // текущий выбор пользователя, даже если новый профиль всё-таки появился.
+  useEffect(() => {
+    const newProfileId = resolveAutoSelectedEquipmentProfileId(
+      equipmentProfileCreateRequestedRef.current,
+      equipmentProfileIdsSnapshotRef.current,
+      equipmentProfiles
+    );
+    if (!newProfileId) {
+      return;
+    }
+
+    equipmentProfileCreateRequestedRef.current = false;
+    equipmentProfileIdsSnapshotRef.current = null;
+    equipmentProfileFocusPollCountRef.current = 0;
+    applyEquipmentProfileSelection(newProfileId);
+  }, [equipmentProfiles, applyEquipmentProfileSelection]);
 
   // Пустой рецепт нечего масштабировать: пока ингредиентов нет, база едет за объёмом,
   // чтобы позже не предлагать пересчёт под объём, под который количества и вводились.
@@ -1130,6 +1228,29 @@ export function RecipeDesigner({
     setBrewPickerOpen(true);
   };
 
+  // Ф7: возврат из «Сварить → Подключить BrewForge → Продолжить варку» — баннер на
+  // /app/devices ведёт сюда с ?brew=1. Рецепт уже загружен (activeRecipeId есть с
+  // маунта в режиме edit) — открываем «Сварить» ровно один раз (handleOpenBrewPicker
+  // форс-сейвит черновик, это ок) и стираем параметр, иначе повторный визит на этот
+  // же URL/возврат назад переоткрывает диалог.
+  const brewAutoOpenHandledRef = useRef(false);
+  useEffect(() => {
+    if (brewAutoOpenHandledRef.current) return;
+    if (searchParams.get("brew") !== "1") return;
+    if (!activeRecipeId) return;
+
+    brewAutoOpenHandledRef.current = true;
+    void handleOpenBrewPicker();
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("brew");
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+    // handleOpenBrewPicker замыкает состояние текущего рендера — включать его в deps
+    // означало бы новый эффект на каждый чих, а ref уже гарантирует ровно один вызов.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeRecipeId, pathname, router, searchParams]);
+
   const handleRecipeCreatedFromImages = React.useCallback((recipe: RecipeDetailDto) => {
     const normalizedState = normalizeEditorPublicationState(recipe.publicationState);
 
@@ -1464,6 +1585,7 @@ export function RecipeDesigner({
           equipmentProfiles={equipmentProfiles}
           selectedEquipmentProfileId={equipmentProfileId}
           onSelectEquipmentProfile={handleSelectEquipmentProfile}
+          onCreateEquipmentProfile={handleCreateEquipmentProfile}
           isInheritedEquipmentSnapshot={isInheritedEquipmentSnapshot}
           canRescaleToVolume={canRescaleToVolume}
           onRescaleToVolume={handleRescaleToVolume}

@@ -7,7 +7,11 @@ import { ToastProvider } from "@nb/ui";
 import {
   RecipeDesigner,
   buildStatsDivergence,
-  resolveInitialEquipmentState
+  resolveInitialEquipmentState,
+  resolveNewlyCreatedEquipmentProfileId,
+  resolveAutoSelectedEquipmentProfileId,
+  nextEquipmentProfileFocusPoll,
+  MAX_EQUIPMENT_PROFILE_FOCUS_POLLS
 } from "../components/recipes/recipe-designer";
 import type { EquipmentProfileDto, EquipmentProfileSnapshot } from "../features/equipment-profiles/contracts";
 import { defaultRecipeProcessMeta, type RecipeDetailDto } from "../features/recipes/contracts";
@@ -189,6 +193,105 @@ describe("resolveInitialEquipmentState", () => {
     const state = resolveInitialEquipmentState(undefined, [buildEquipmentProfile()]);
 
     expect(state).toEqual({ profileId: null, snapshot: null, isInheritedSnapshot: false });
+  });
+});
+
+// Ф11 (сквозной UX-проход 2026-07-15): «+ Создать профиль…» открывает форму в
+// новой вкладке; при возврате фокуса equipmentProfiles обновляется через
+// router.refresh() — resolveNewlyCreatedEquipmentProfileId решает, появился ли
+// РОВНО один новый профиль (и тогда его стоит выбрать автоматически).
+describe("resolveNewlyCreatedEquipmentProfileId", () => {
+  it("список не изменился — null", () => {
+    const profiles = [buildEquipmentProfile({ id: "profile-1" })];
+
+    expect(resolveNewlyCreatedEquipmentProfileId(["profile-1"], profiles)).toBeNull();
+  });
+
+  it("появился ровно один новый профиль — его id", () => {
+    const profiles = [
+      buildEquipmentProfile({ id: "profile-1" }),
+      buildEquipmentProfile({ id: "profile-2", name: "Только что созданный" })
+    ];
+
+    expect(resolveNewlyCreatedEquipmentProfileId(["profile-1"], profiles)).toBe("profile-2");
+  });
+
+  it("появилось два новых профиля — не гадаем, null", () => {
+    const profiles = [
+      buildEquipmentProfile({ id: "profile-1" }),
+      buildEquipmentProfile({ id: "profile-2" }),
+      buildEquipmentProfile({ id: "profile-3" })
+    ];
+
+    expect(resolveNewlyCreatedEquipmentProfileId(["profile-1"], profiles)).toBeNull();
+  });
+
+  it("список был пуст, новый профиль первый и единственный — его id", () => {
+    const profiles = [buildEquipmentProfile({ id: "profile-1" })];
+
+    expect(resolveNewlyCreatedEquipmentProfileId([], profiles)).toBe("profile-1");
+  });
+
+  it("профиль удалили, новых нет — null", () => {
+    expect(resolveNewlyCreatedEquipmentProfileId(["profile-1", "profile-2"], [buildEquipmentProfile({ id: "profile-1" })])).toBeNull();
+  });
+});
+
+// Ф5 (мультиагентное ревью волны 4): решение «применять ли автовыбор» вынесено в
+// resolveAutoSelectedEquipmentProfileId — покрываем отдельно от React-эффектов.
+describe("resolveAutoSelectedEquipmentProfileId", () => {
+  it("флаг ожидания не выставлен (или снят ручным выбором) — null, даже если появился ровно один новый профиль", () => {
+    const profiles = [
+      buildEquipmentProfile({ id: "profile-1" }),
+      buildEquipmentProfile({ id: "profile-2", name: "Только что созданный" })
+    ];
+
+    expect(resolveAutoSelectedEquipmentProfileId(false, ["profile-1"], profiles)).toBeNull();
+  });
+
+  it("снапшот id ещё не снят (null) — null, даже если флаг ожидания выставлен", () => {
+    const profiles = [buildEquipmentProfile({ id: "profile-1" }), buildEquipmentProfile({ id: "profile-2" })];
+
+    expect(resolveAutoSelectedEquipmentProfileId(true, null, profiles)).toBeNull();
+  });
+
+  it("флаг ожидания выставлен и появился ровно один новый профиль — его id", () => {
+    const profiles = [
+      buildEquipmentProfile({ id: "profile-1" }),
+      buildEquipmentProfile({ id: "profile-2", name: "Только что созданный" })
+    ];
+
+    expect(resolveAutoSelectedEquipmentProfileId(true, ["profile-1"], profiles)).toBe("profile-2");
+  });
+
+  it("флаг ожидания выставлен, но новых профилей два — не гадаем, null", () => {
+    const profiles = [
+      buildEquipmentProfile({ id: "profile-1" }),
+      buildEquipmentProfile({ id: "profile-2" }),
+      buildEquipmentProfile({ id: "profile-3" })
+    ];
+
+    expect(resolveAutoSelectedEquipmentProfileId(true, ["profile-1"], profiles)).toBeNull();
+  });
+});
+
+// Ф5: лимит опросов на клик «+ Создать профиль…» — до 5 возвратов фокуса зовут
+// router.refresh(), 6-й снимает флаг ожидания сам (профиль, видимо, не создали).
+describe("nextEquipmentProfileFocusPoll", () => {
+  it("опросы 1..5 — обновляют счётчик и просят refresh", () => {
+    let pollCount = 0;
+    for (let i = 1; i <= MAX_EQUIPMENT_PROFILE_FOCUS_POLLS; i += 1) {
+      const result = nextEquipmentProfileFocusPoll(pollCount);
+      expect(result.pollCount).toBe(i);
+      expect(result.shouldRefresh).toBe(true);
+      pollCount = result.pollCount;
+    }
+  });
+
+  it("6-й опрос — счётчик растёт, но refresh больше не просит (флаг снимается сам)", () => {
+    const result = nextEquipmentProfileFocusPoll(MAX_EQUIPMENT_PROFILE_FOCUS_POLLS);
+    expect(result.pollCount).toBe(MAX_EQUIPMENT_PROFILE_FOCUS_POLLS + 1);
+    expect(result.shouldRefresh).toBe(false);
   });
 });
 

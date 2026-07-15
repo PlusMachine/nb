@@ -378,10 +378,12 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
           ) : (
             // Прибор не подключён: вместо device-ветки — вход в подключение BrewForge.
             // Полная навигация (уходим в рабочую зону; из публичной витрины —
-            // /app/devices сам отправит на логин при необходимости).
+            // /app/devices сам отправит на логин при необходимости). returnRecipe
+            // тащит контекст варки через устройства — «Устройства» покажут баннер
+            // «Продолжить варку …» после подключения (Ф7).
             <button
               type="button"
-              onClick={() => window.location.assign("/app/devices")}
+              onClick={() => window.location.assign(`/app/devices?returnRecipe=${encodeURIComponent(recipeId)}`)}
               className="flex w-full items-start gap-3 rounded-lg border border-border bg-card px-4 py-3 text-left transition hover:border-border hover:bg-accent"
             >
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-50 text-orange-600 dark:bg-orange-500/15 dark:text-orange-400">

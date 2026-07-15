@@ -20,6 +20,9 @@ import { FgSettingsPopover } from "./fg-settings-popover";
 const numericFieldWidthClass = "w-[92px]";
 const numericInputClass = "h-9 w-full rounded-lg border border-border bg-card px-2.5 pr-7 text-base tabular-nums text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm";
 
+// Ф11: «+ Создать профиль…» — сентинел-значение опции селекта, а не profileId.
+const CREATE_EQUIPMENT_PROFILE_OPTION_VALUE = "__create__";
+
 export function RecipeBatchParametersBlock({
   batchSize,
   setBatchSize,
@@ -37,6 +40,7 @@ export function RecipeBatchParametersBlock({
   equipmentProfiles,
   selectedEquipmentProfileId,
   onSelectEquipmentProfile,
+  onCreateEquipmentProfile,
   isInheritedEquipmentSnapshot,
   canRescaleToVolume,
   onRescaleToVolume,
@@ -59,6 +63,8 @@ export function RecipeBatchParametersBlock({
   equipmentProfiles: EquipmentProfileDto[];
   selectedEquipmentProfileId: string | null;
   onSelectEquipmentProfile: (profileId: string | null) => void;
+  /** «+ Создать профиль…» — открывает форму создания в новой вкладке (Ф11). */
+  onCreateEquipmentProfile: () => void;
   /** Снапшот унаследован от рецепта (чужой/недоступный профиль) — селект не должен врать «Без профиля». */
   isInheritedEquipmentSnapshot: boolean;
   /** Показать инлайн-действие «Пересчитать под объём» (объём изменился с последнего сохранения). */
@@ -241,7 +247,16 @@ export function RecipeBatchParametersBlock({
               Оборудование
               <select
                 value={equipmentProfileSelectValue}
-                onChange={(event) => onSelectEquipmentProfile(event.target.value || null)}
+                onChange={(event) => {
+                  if (event.target.value === CREATE_EQUIPMENT_PROFILE_OPTION_VALUE) {
+                    // Нативный select иначе залипнет на «+ Создать профиль…» — откатываем
+                    // немедленно, до следующего React-рендера (состояние выбора не менялось).
+                    event.target.value = equipmentProfileSelectValue;
+                    onCreateEquipmentProfile();
+                    return;
+                  }
+                  onSelectEquipmentProfile(event.target.value || null);
+                }}
                 className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-base normal-case tracking-normal text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
               >
                 <option value={equipmentProfileSelectValue} hidden>{selectedEquipmentProfileLabel}</option>
@@ -251,6 +266,7 @@ export function RecipeBatchParametersBlock({
                     {profile.name}{profile.isDefault ? " · Основной" : ""} — {formatEquipmentProfileLitersValue(profile.targetBatchVolumeL)} · {formatEquipmentProfilePercentValue(profile.brewhouseEfficiencyPct)}
                   </option>
                 ))}
+                <option value={CREATE_EQUIPMENT_PROFILE_OPTION_VALUE}>+ Создать профиль…</option>
               </select>
             </label>
           </div>

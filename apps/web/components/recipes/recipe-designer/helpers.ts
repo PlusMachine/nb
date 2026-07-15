@@ -585,6 +585,62 @@ export const resolveInitialEquipmentState = (
   return { profileId: null, snapshot: null, isInheritedSnapshot: false };
 };
 
+/**
+ * Ф11: «+ Создать профиль…» открывает /app/equipment?mode=create в новой вкладке
+ * (не диалог/SPA-переход — автосейв дебаунсит 1.5 с, переход тут же молча теряет
+ * последние правки). При возврате фокуса equipmentProfiles обновляется через
+ * router.refresh(); если список отрастил РОВНО один новый профиль — это и есть
+ * только что созданный, его стоит выбрать автоматически. Два и больше новых (два
+ * refresh подряд после двух созданий) — не гадаем, чей id новее, оставляем выбор
+ * пользователю.
+ */
+export const resolveNewlyCreatedEquipmentProfileId = (
+  previousProfileIds: readonly string[],
+  nextProfiles: readonly EquipmentProfileDto[]
+): string | null => {
+  const previousIds = new Set(previousProfileIds);
+  const newProfiles = nextProfiles.filter((profile) => !previousIds.has(profile.id));
+  return newProfiles.length === 1 ? newProfiles[0].id : null;
+};
+
+/**
+ * Ф5 (мультиагентное ревью волны 4, notes/ux-walkthrough-2026-07-15.md): решение
+ * «применять ли автовыбор нового профиля оборудования» — вынесено в чистую
+ * функцию, чтобы не гонять реальные фокус-события ради проверки лайфцикла.
+ *
+ * `pendingCreate` снимается ЛЮБЫМ ручным выбором в селекте (см. recipe-designer.tsx,
+ * handleSelectEquipmentProfile) — если пользователь успел выбрать профиль сам между
+ * кликом «+ Создать профиль…» и возвратом фокуса, автовыбор не должен его перетирать
+ * даже если ровно один новый профиль всё-таки появился.
+ */
+export const resolveAutoSelectedEquipmentProfileId = (
+  pendingCreate: boolean,
+  previousProfileIds: readonly string[] | null,
+  nextProfiles: readonly EquipmentProfileDto[]
+): string | null => {
+  if (!pendingCreate || !previousProfileIds) {
+    return null;
+  }
+
+  return resolveNewlyCreatedEquipmentProfileId(previousProfileIds, nextProfiles);
+};
+
+/** Максимум возвратов фокуса, которые опрашивают появление нового профиля на один клик. */
+export const MAX_EQUIPMENT_PROFILE_FOCUS_POLLS = 5;
+
+/**
+ * Следующее состояние опроса возврата фокуса после клика «+ Создать профиль…».
+ * `pollCount` — сколько опросов уже случилось ДО этого события. Чистая функция:
+ * лимит опросов и решение «звать ли router.refresh() или снять флаг ожидания
+ * самому» тестируются без реальных фокус-событий/таймеров.
+ */
+export const nextEquipmentProfileFocusPoll = (
+  pollCount: number
+): { pollCount: number; shouldRefresh: boolean } => {
+  const nextCount = pollCount + 1;
+  return { pollCount: nextCount, shouldRefresh: nextCount <= MAX_EQUIPMENT_PROFILE_FOCUS_POLLS };
+};
+
 export const formatEquipmentProfileRecipeValue = (value: number) => {
   const rounded = Number(value.toFixed(2));
   return Number.isInteger(rounded) ? String(Math.trunc(rounded)) : String(rounded);

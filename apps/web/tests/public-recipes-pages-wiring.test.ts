@@ -111,6 +111,22 @@ describe("public recipe pages wiring", () => {
     expect(view).toBeTruthy();
   }, 60000);
 
+  // Ф1 (P0, мультиагентное ревью волны 4): searchParams делал ВЕСЬ роут динамическим
+  // для каждого запроса — страница больше не читает searchParams вообще (единственный
+  // параметр — params). Автооткрытие «Сварить» по ?brew=1 теперь целиком на клиенте
+  // (brew-recipe-button.tsx, читает window.location после гидрации), проп autoOpenBrew
+  // по цепочке page → PublicRecipePage → PublicRecipeHeader → BrewRecipeButton убран.
+  it("Ф1: роут рендерит без searchParams, PublicRecipePage не получает autoOpenBrew", async () => {
+    const { default: PublicRecipeRoute } = await import("../app/(public)/recipes/[slug]/page");
+
+    const view = (await PublicRecipeRoute({ params: Promise.resolve({ slug: "public-ipa" }) })) as React.ReactElement<{
+      children: [React.ReactElement<Record<string, unknown>>, unknown, unknown];
+    }>;
+    const [publicRecipePageEl] = view.props.children;
+
+    expect(publicRecipePageEl.props).not.toHaveProperty("autoOpenBrew");
+  });
+
   it("returns notFound behavior for inaccessible slug recipe", async () => {
     mocks.getPublicRecipeBySlug.mockImplementationOnce(async () => {
       throw new Error("FORBIDDEN");
