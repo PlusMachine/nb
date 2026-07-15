@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { ArrowLeft, Download, Maximize2, RotateCcw } from "lucide-react";
+import { ArrowLeft, Download, Maximize2, Printer, RotateCcw } from "lucide-react";
 
 import { Button, buttonVariants, Dialog, DialogFooter, useToast } from "@nb/ui";
 
@@ -13,16 +13,21 @@ import {
   isLargePreset,
   LABEL_DPI_SHEET,
   LABEL_DPI_THERMAL,
+  LABEL_DPI_VALUES,
   LABEL_FIELD_LIMITS,
   LABEL_PRESETS,
   LABEL_PRESET_IDS,
   LABEL_TEMPLATE_IDS,
+  type LabelDpi,
   type LabelPresetId,
   type LabelSlots,
   type LabelTemplateId
 } from "@/features/labels/contracts";
+import { printLabel } from "@/features/labels/print";
 import {
+  appendBatchIdParam,
   parseLabelStudioQuery,
+  readBatchIdParam,
   serializeLabelStudioState,
   type LabelStudioFields,
   type LabelStudioState
@@ -179,6 +184,11 @@ export function LabelStudio(props: LabelStudioProps) {
   const searchParams = useSearchParams();
   const rawQuery = useMemo(() => Object.fromEntries(searchParams.entries()), [searchParams]);
 
+  // Контекст «открыли со страницы партии» — не поле наклейки и не часть
+  // LabelStudioState (см. label-studio-url.ts), поэтому фиксируем один раз при
+  // монтировании и дальше сами дописываем его в каждую перезапись URL.
+  const [batchIdParam] = useState<string | null>(() => readBatchIdParam(rawQuery));
+
   // Ловушка «qr=1 из чужой ссылки»: доступность QR на момент чтения ссылки
   // считаем ДО парсинга — по тем же сырым параметрам (preset/recipeSlug), не
   // дожидаясь стейта. Пресет S не печатает QR ни при каком overrides.qr.
@@ -195,13 +205,10 @@ export function LabelStudio(props: LabelStudioProps) {
     initialQuery.layout === "a4" ? initialQuery.preset ?? "M" : "M"
   );
   const [template, setTemplate] = useState<LabelTemplateId>(() => initialQuery.template ?? "typographic");
-  // Растр печатается в сетку конкретной печатающей головы (см. LABEL_DPI_VALUES),
-  // но выбирать dpi пользователь не должен: он выбирает, КУДА печатает. A4-лист
-  // идёт на обычный принтер (300), одиночная наклейка — на термопринтер, а у тех
-  // почти всегда 203. Редкие 300-dpi термоголовы включают это галочкой.
-  const [thermal300, setThermal300] = useState<boolean>(
-    () => initialQuery.layout !== "a4" && initialQuery.dpi === LABEL_DPI_SHEET
-  );
+  // Голова термопринтера: растр рассчитывается в её сетку (см. LABEL_DPI_VALUES),
+  // и разойтись с железом здесь нельзя — драйвер пересчитает картинку с некратным
+  // множителем и дизеринг пойдёт муаром. У A4-листа выбора нет: обычный принтер — 300.
+  const [thermalDpi, setThermalDpi] = useState<LabelDpi>(() => initialQuery.dpi ?? LABEL_DPI_THERMAL);
   const [gravityUnit, setGravityUnit] = useState<(typeof LABEL_GRAVITY_UNITS)[number]>(() =>
     resolveLabelGravityUnit(initialQuery.gravityUnit ?? props.gravityUnit)
   );
@@ -213,6 +220,7 @@ export function LabelStudio(props: LabelStudioProps) {
   const [withIbuScale, setWithIbuScale] = useState<boolean>(() => initialQuery.withIbuScale ?? true);
   const [recipeSlugInput, setRecipeSlugInput] = useState<string>(() => initialQuery.recipeSlug ?? "");
   const [printView, setPrintView] = useState<boolean>(false);
+  const [printPending, setPrintPending] = useState<boolean>(false);
   const [zoomed, setZoomed] = useState<boolean>(false);
   // Заполнение полей из рецепта (ручной режим): загрузка → возможный вопрос о
   // перезаписи → слияние. Загруженные данные ждут в fillOffer, пока человек не
@@ -224,7 +232,7 @@ export function LabelStudio(props: LabelStudioProps) {
 
   const isSheet = format === "A4";
   const preset = isSheet ? sheetPreset : format;
-  const dpi = isSheet ? LABEL_DPI_SHEET : thermal300 ? LABEL_DPI_SHEET : LABEL_DPI_THERMAL;
+  const dpi = isSheet ? LABEL_DPI_SHEET : thermalDpi;
   // Описание, шкала горечи и эмблема печатаются только на большой наклейке —
   // в обеих ориентациях (75×120 и 120×75), это один и тот же набор блоков.
   const isLarge = isLargePreset(preset);
@@ -450,6 +458,32 @@ export function LabelStudio(props: LabelStudioProps) {
     return `${props.endpoint}?${params.toString()}`;
   };
 
+  // На печать уходит не то, что видно в превью (оно сглажено и в 2×), а
+  // настоящий 1-бит растр — тот же, что лежит в скачанном PNG. Лист A4 печатный
+  // документ собирает сам, тиражируя ОДНУ наклейку по сетке (features/labels/print.ts),
+  // поэтому у рендера и в этом случае просим одиночную наклейку.
+  const handlePrint = async () => {
+    if (printPending) {
+      return;
+    }
+    setPrintPending(true);
+    try {
+      const params = new URLSearchParams(query);
+      params.delete("sheet");
+      params.set("format", "png");
+      params.set("preview", "0");
+      const response = await fetch(`${props.endpoint}?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error("label print render failed");
+      }
+      await printLabel({ image: await response.blob(), preset, sheet: isSheet });
+    } catch {
+      showToast({ title: "Не удалось отправить на печать", tone: "danger" });
+    } finally {
+      setPrintPending(false);
+    }
+  };
+
   // Состояние студии → URL страницы (не рендера!). Дебаунс 300мс + немедленный
   // flush на blur полей — иначе воспроизводится гонка: отложенный
   // replaceState срабатывает после старта мягкой навигации (клик по ссылке
@@ -477,8 +511,8 @@ export function LabelStudio(props: LabelStudioProps) {
       preset,
       layout: isSheet ? "a4" : "single",
       // В ссылке живёт не итоговое разрешение рендера (у A4 оно всегда 300, и
-      // тащить его в URL незачем), а выбор пользователя: термоголова 300 dpi.
-      dpi: thermal300 ? LABEL_DPI_SHEET : LABEL_DPI_THERMAL,
+      // тащить его в URL незачем), а выбор пользователя: голова его термопринтера.
+      dpi: thermalDpi,
       gravityUnit,
       bottlingDate,
       fields,
@@ -491,7 +525,7 @@ export function LabelStudio(props: LabelStudioProps) {
       template,
       preset,
       isSheet,
-      thermal300,
+      thermalDpi,
       gravityUnit,
       bottlingDate,
       fields,
@@ -512,7 +546,8 @@ export function LabelStudio(props: LabelStudioProps) {
       if (typeof window === "undefined") {
         return;
       }
-      const qs = serializeLabelStudioState(state, studioDefaults).toString();
+      const params = appendBatchIdParam(serializeLabelStudioState(state, studioDefaults), batchIdParam);
+      const qs = params.toString();
       const nextHref = qs ? `${pathname}?${qs}` : pathname;
       const currentHref = `${window.location.pathname}${window.location.search}`;
       if (currentHref === nextHref) {
@@ -520,7 +555,7 @@ export function LabelStudio(props: LabelStudioProps) {
       }
       window.history.replaceState(null, "", nextHref);
     },
-    [pathname, studioDefaults]
+    [pathname, studioDefaults, batchIdParam]
   );
 
   const syncTimerRef = useRef<number | null>(null);
@@ -766,40 +801,54 @@ export function LabelStudio(props: LabelStudioProps) {
           ) : null}
           {isSheet ? (
             <p className="text-sm text-muted-foreground">
-              PDF-лист A4: {sheetCount} шт. {LABEL_PRESETS[preset].sizeLabel} с метками реза.
+              Лист A4: {sheetCount} шт. {LABEL_PRESETS[preset].sizeLabel} с метками реза.
             </p>
-          ) : null}
-          <div className="flex gap-2">
+          ) : (
+            // Вопрос не про качество, а про железо: растр рассчитывается в сетку
+            // печатающей головы, и выбрать «покрасивее» нельзя — 300-dpi картинку
+            // 203-я голова пересчитает с некратным множителем, дизеринг пойдёт
+            // муаром. Отсюда и подпись про принтер, а не про разрешение.
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs font-medium text-muted-foreground">Термопринтер</span>
+              <div className="flex gap-1">
+                {LABEL_DPI_VALUES.map((value) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setThermalDpi(value)}
+                    className={`rounded-md border px-2 py-1 text-xs transition-colors ${
+                      thermalDpi === value
+                        ? "border-primary bg-primary/5 text-foreground"
+                        : "border-border text-muted-foreground hover:border-foreground/30"
+                    }`}
+                  >
+                    {value} dpi
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          {/* Печать — основное действие: файл нужен только тем, кто печатает не из
+              браузера (софт термопринтера, типография), и это уже частный случай. */}
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" variant="primary" onClick={() => void handlePrint()} disabled={printPending}>
+              <Printer className="h-4 w-4" aria-hidden />
+              {printPending ? "Готовим…" : "Распечатать"}
+            </Button>
             {!isSheet ? (
               <a href={downloadHref("png")} className={buttonVariants({ variant: "outline", size: "md" })}>
                 <Download className="h-4 w-4" aria-hidden />
                 Скачать PNG
               </a>
             ) : null}
-            <a href={downloadHref("pdf")} className={buttonVariants({ size: "md" })}>
+            <a href={downloadHref("pdf")} className={buttonVariants({ variant: "outline", size: "md" })}>
               <Download className="h-4 w-4" aria-hidden />
               Скачать PDF
             </a>
           </div>
-          {/* Разрешение — следствие того, куда печатают, а не отдельный выбор:
-              лист A4 идёт на обычный принтер (300 dpi), наклейку печатает
-              термопринтер (у домашних моделей голова 203 dpi). Исключение —
-              редкие 300-dpi термоголовы: им нужен свой растр, но ради них
-              незачем спрашивать про dpi всех остальных. */}
-          {!isSheet ? (
-            <label className="flex items-center gap-2 text-xs text-muted-foreground">
-              <input
-                type="checkbox"
-                checked={thermal300}
-                onChange={(event) => setThermal300(event.target.checked)}
-                className="h-3.5 w-3.5 rounded border-border"
-              />
-              У меня термопринтер 300 dpi
-            </label>
-          ) : null}
           <CopyLinkButton
             buildHref={() => {
-              const qs = serializeLabelStudioState(studioState, studioDefaults).toString();
+              const qs = appendBatchIdParam(serializeLabelStudioState(studioState, studioDefaults), batchIdParam).toString();
               return `${window.location.origin}${pathname}${qs ? `?${qs}` : ""}`;
             }}
             label="Скопировать ссылку"

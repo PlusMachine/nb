@@ -154,6 +154,27 @@ export const serializeLabelStudioState = (
 };
 
 /**
+ * `batchId` — контекст «открыли наклейки со страницы партии» (см.
+ * brew-batches/[id]/page.tsx). Не поле наклейки (полей наклейки, в отличие от
+ * этого параметра, ровно LABEL_STUDIO_FIELD_KEYS) и не часть LabelStudioState:
+ * это passthrough-параметр, который studio обязана пронести через собственные
+ * перезаписи URL (replaceState на каждую правку), иначе после первой же правки
+ * поля ссылка «К партии» превращается в «К рецепту».
+ */
+export const readBatchIdParam = (query: Record<string, string | undefined>): string | null => {
+  const value = query.batchId;
+  return value && value.trim().length > 0 ? value.trim() : null;
+};
+
+/** Дописывает `batchId` поверх уже собранного query студии — не трогает остальные ключи. */
+export const appendBatchIdParam = (params: URLSearchParams, batchId: string | null): URLSearchParams => {
+  if (batchId) {
+    params.set("batchId", batchId);
+  }
+  return params;
+};
+
+/**
  * Разбирает query СТРАНИЦЫ студии обратно в частичное состояние. `ctx.qrAvailable`
  * — можно ли включить QR В ЭТОМ КОНКРЕТНОМ КОНТЕКСТЕ прямо сейчас (рецепт
  * опубликован/выбран пресет, где QR печатается, — вызывающая сторона решает

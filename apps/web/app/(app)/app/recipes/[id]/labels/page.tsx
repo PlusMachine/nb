@@ -9,14 +9,25 @@ import { requireUser } from "@/lib/auth";
 // «Наклейки» — генератор наклеек на бутылки из данных рецепта: поля
 // подставляются автоматически, но каждое можно поправить. Только владельцу.
 
-export default async function RecipeLabelsPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function RecipeLabelsPage({
+  params,
+  searchParams
+}: {
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<{ batchId?: string }>;
+}) {
   const user = await requireUser();
   const { id } = await params;
+  const { batchId } = (await searchParams) ?? {};
 
   try {
     const gravityUnit = resolvePreferredGravityUnit(user.preferredGravityUnit);
     const { recipe, slots } = await getOwnedRecipeLabelContext(user.id, id, { gravityUnit });
-    const editHref = `/app/recipes/${recipe.id}/edit`;
+    // Со страницы партии наклейки открывают ради КОНКРЕТНОЙ варки — «Назад»
+    // должен вести туда же, а не в редактор рецепта (рецепт мог уйти вперёд).
+    const backLink = batchId
+      ? { href: `/app/brew-batches/${batchId}`, label: "К партии" }
+      : { href: `/app/recipes/${recipe.id}/edit`, label: "К рецепту" };
     return (
       <Suspense fallback={null}>
         <LabelStudio
@@ -24,7 +35,7 @@ export default async function RecipeLabelsPage({ params }: { params: Promise<{ i
           heading={`Наклейки — ${recipe.title}`}
           defaultSlots={slots}
           gravityUnit={gravityUnit}
-          backLink={{ href: editHref, label: "К рецепту" }}
+          backLink={backLink}
           resetLabel="Вернуть данные рецепта"
         />
       </Suspense>

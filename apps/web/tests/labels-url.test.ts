@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  appendBatchIdParam,
   LABEL_STUDIO_FIELD_KEYS,
   parseLabelStudioQuery,
+  readBatchIdParam,
   serializeLabelStudioState,
   type LabelStudioFields,
   type LabelStudioState
@@ -128,6 +130,29 @@ describe("label studio URL round-trip", () => {
   it("qr=1 при доступном QR (qrAvailable=true) включает QR", () => {
     const restored = parseLabelStudioQuery({ qr: "1" }, { qrAvailable: true });
     expect(restored.withQr).toBe(true);
+  });
+
+  it("batchId — контекст партии, не поле наклейки: переживает пересериализацию state", () => {
+    // studio перезаписывает URL на каждую правку через serializeLabelStudioState,
+    // который ничего не знает про batchId (это passthrough из label-studio.tsx,
+    // не часть LabelStudioState) — appendBatchIdParam должен дописать его поверх
+    // ЛЮБОГО состояния, иначе после первой же правки поля ссылка «К партии»
+    // тихо превращается в «К рецепту».
+    const state: LabelStudioState = { ...baseDefaults, fields: { ...emptyFields, title: "IPA Экватор" } };
+    const params = appendBatchIdParam(serializeLabelStudioState(state, baseDefaults), readBatchIdParam({ batchId: "b-42" }));
+
+    expect(params.get("batchId")).toBe("b-42");
+    expect(params.get("title")).toBe("IPA Экватор");
+    expect((LABEL_STUDIO_FIELD_KEYS as readonly string[]).includes("batchId")).toBe(false);
+  });
+
+  it("readBatchIdParam игнорирует отсутствующий/пустой параметр", () => {
+    expect(readBatchIdParam({})).toBeNull();
+    expect(readBatchIdParam({ batchId: "" })).toBeNull();
+    expect(readBatchIdParam({ batchId: "  " })).toBeNull();
+
+    const params = appendBatchIdParam(serializeLabelStudioState(baseDefaults, baseDefaults), null);
+    expect(params.has("batchId")).toBe(false);
   });
 
   it("мусорные/неизвестные значения template/preset/dpi/layout игнорируются", () => {

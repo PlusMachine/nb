@@ -28,8 +28,9 @@ export const metadata: Metadata = {
   }
 };
 
-export default async function LabelsPage() {
+export default async function LabelsPage({ searchParams }: { searchParams?: Promise<{ batchId?: string }> }) {
   const user = await getSessionUser();
+  const { batchId } = (await searchParams) ?? {};
   const myRecipes = user
     ? (await listRecipesForAuthor(user.id, { publicationState: "published" }))
         // Скрытый модератором рецепт из выбора убираем: QR вёл бы на закрытую страницу.
@@ -49,7 +50,7 @@ export default async function LabelsPage() {
         qrUnavailableReason="custom"
         myRecipes={myRecipes}
         loginHref={user ? undefined : "/login"}
-        backLink={{ href: "/calculators", label: "К инструментам" }}
+        backLink={batchId ? { href: `/app/brew-batches/${batchId}`, label: "К партии" } : { href: "/calculators", label: "К инструментам" }}
         resetLabel="Очистить поля"
       />
     </Suspense>
