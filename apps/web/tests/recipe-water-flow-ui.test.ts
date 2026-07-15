@@ -23,6 +23,7 @@ import {
   setRecipeWaterManualSourceProfile,
   setRecipeWaterAutoBakingSodaEnabled,
   setRecipeWaterSaltCalculationMode,
+  setRecipeWaterSourceDilutionPct,
   setRecipeWaterTargetMashPh,
   setRecipeWaterVolumeMode,
   WaterSetupWizard,
@@ -843,5 +844,51 @@ describe("recipe water flow UI", () => {
     expect(searchWaterTargetProfiles("porter").map((item) => item.slug)).toContain(
       "london-porter-bf",
     );
+  });
+
+  it("writes an RO dilution percentage into a tap/RO blendRatio and clears it back to null (Ф8 UI)", () => {
+    const configured = ensureRecipeWaterPlanConfigured(
+      createRecipeWaterPlanResetMeta(),
+    );
+
+    const diluted = setRecipeWaterSourceDilutionPct(configured, 30);
+    expect(diluted.setupEnabled).toBe(true);
+    expect(diluted.blendRatio).toEqual({ tap: 0.7, ro: 0.3, distilled: 0 });
+
+    const clearedByZero = setRecipeWaterSourceDilutionPct(diluted, 0);
+    expect(clearedByZero.blendRatio).toBeNull();
+
+    const clearedByNull = setRecipeWaterSourceDilutionPct(diluted, null);
+    expect(clearedByNull.blendRatio).toBeNull();
+  });
+
+  it("saves the source water pH through the manual profile setter (needed for a fair Ct instead of the pH 7 default)", () => {
+    const configured = ensureRecipeWaterPlanConfigured(
+      createRecipeWaterPlanResetMeta(),
+    );
+
+    const withSourcePh = setRecipeWaterManualSourceProfile(configured, {
+      ...(configured.sourceProfile ?? {
+        ca: 0,
+        mg: 0,
+        na: 0,
+        cl: 0,
+        so4: 0,
+        hco3: 0,
+        ph: null,
+      }),
+      ph: 7.6,
+    });
+
+    expect(withSourcePh.sourceProfile?.ph).toBe(7.6);
+
+    const html = renderWaterBlock(withSourcePh);
+    expect(html).toContain('value="7.6"');
+
+    const cleared = setRecipeWaterManualSourceProfile(withSourcePh, {
+      ...withSourcePh.sourceProfile!,
+      ph: null,
+    });
+    expect(cleared.sourceProfile?.ph).toBeNull();
   });
 });

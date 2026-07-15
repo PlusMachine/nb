@@ -703,15 +703,20 @@ export const calculateWaterPh = (input: {
 }) => {
   const totalWaterL = input.mashWaterVolumeL + (input.spargeWaterVolumeL ?? 0);
   const finalProfile = applySaltAdditions(input.sourceWaterProfile, Math.max(1, totalWaterL), input.salts);
-  const beerSrm = input.colorCategory === "dark" ? 28 : input.colorCategory === "amber" ? 12 : 5;
+  // colorCategory — грубая ручка калькулятора вместо полной раскладки засыпи по классам:
+  // pale — вся засыпь база; amber/dark добавляют долю crystal (цвет ~80 EBC — «средняя карамель»);
+  // dark добавляет ещё и roasted, отражая тёмное пиво на жжёных солодах.
+  const pctCrystalCaramel = input.colorCategory === "amber" || input.colorCategory === "dark" ? 10 : 0;
+  const pctRoasted = input.colorCategory === "dark" ? 8 : 0;
+  const crystalColorEbcAvg = pctCrystalCaramel > 0 ? 80 : null;
   const mashPh = estimateMashPh({
     sourceProfile: input.sourceWaterProfile,
     finalProfile,
     mashWaterLiters: input.mashWaterVolumeL,
     grainKg: input.totalGrainKg ?? 5,
-    beerSrm,
-    pctRoasted: input.colorCategory === "dark" ? 8 : 0,
-    pctCrystalCaramel: input.colorCategory === "amber" ? 8 : 2,
+    pctRoasted,
+    pctCrystalCaramel,
+    crystalColorEbcAvg,
     pctAcidulated: input.acidulatedMaltPercent ?? 0
   });
   const targetMashPh20C = 5.35;
@@ -722,6 +727,7 @@ export const calculateWaterPh = (input: {
       mashWaterLiters: input.mashWaterVolumeL,
       grainKg: input.totalGrainKg ?? 5,
       alkalinityAsCaCO3: alkalinityAsCaCO3FromHco3(finalProfile.hco3),
+      sourceWaterPh: input.sourceWaterProfile.ph ?? null,
       acid: input.acid
     })
     : null;

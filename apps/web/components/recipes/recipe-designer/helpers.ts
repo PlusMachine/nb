@@ -515,7 +515,6 @@ export const cloneRecipeWaterPlanMeta = (value?: RecipeWaterPlanMeta | null): Re
   spargeAcidificationEnabled: value?.spargeAcidificationEnabled ?? false,
   spargeSourcePh: value?.spargeSourcePh ?? null,
   targetSpargePh: value?.targetSpargePh ?? null,
-  targetSpargeAlkalinity: value?.targetSpargeAlkalinity ?? null,
   selectedAcid: value?.selectedAcid ?? "lactic_acid",
   acidConcentrationPct: value?.acidConcentrationPct ?? null,
   calibrationOffset: value?.calibrationOffset ?? null
@@ -1460,13 +1459,35 @@ export const getIngredientWeightKg = (ingredient: DesignerIngredient): number =>
   return convertWeight({ value: quantity, unit: ingredient.amountEnteredUnit as "g" | "kg" | "oz" | "lb" }, "kg").value;
 };
 
+// Класс/цвет солода для модели pH затора (Ф6/Ф7) несут только "малтовые" технические
+// данные (MaltTechnicalData) — у ферментируемых-не-солодов эти поля не заполняются,
+// классификатор в этом случае падает на ключевые слова имени.
+const resolveMaltFieldsForWaterPlan = (
+  technicalData: DesignerIngredient["technicalData"]
+): Pick<RecipeWaterPlanFermentableInput, "maltType" | "colorEbcMin" | "colorEbcMax"> => {
+  if (!technicalData || technicalData.type !== "malt") {
+    return { maltType: null, colorEbcMin: null, colorEbcMax: null };
+  }
+
+  const malt = technicalData as Extract<
+    NonNullable<typeof technicalData>,
+    { type: "malt" }
+  >;
+  return {
+    maltType: malt.maltType ?? null,
+    colorEbcMin: malt.colorEbcMin ?? null,
+    colorEbcMax: malt.colorEbcMax ?? null
+  };
+};
+
 export const getFermentablesForWaterPlan = (ingredients: DesignerIngredient[]): RecipeWaterPlanFermentableInput[] => (
   ingredients
     .filter((ingredient) => ingredient.category === "fermentable")
     .map((ingredient) => ({
       name: ingredient.selectedName,
       subtype: ingredient.subtype,
-      weightKg: getIngredientWeightKg(ingredient)
+      weightKg: getIngredientWeightKg(ingredient),
+      ...resolveMaltFieldsForWaterPlan(ingredient.technicalData)
     }))
     .filter((ingredient) => ingredient.weightKg > 0)
 );

@@ -40,6 +40,27 @@ const isFermentableCategory = (ingredient: RecipeIngredientDto): boolean => (
   ingredient.ingredientCategory === "fermentable" || ingredient.type === "malt" || ingredient.type === "fermentable"
 );
 
+// Класс/цвет солода для модели pH затора (Ф6/Ф7) несут только "малтовые" технические
+// данные (MaltTechnicalData) — у ферментируемых-не-солодов эти поля не заполняются,
+// классификатор в этом случае падает на ключевые слова имени.
+const resolveMaltFieldsForWaterPlan = (
+  technicalData: RecipeIngredientDto["ingredientTechnicalData"]
+): Pick<RecipeWaterPlanFermentableInput, "maltType" | "colorEbcMin" | "colorEbcMax"> => {
+  if (!technicalData || technicalData.type !== "malt") {
+    return { maltType: null, colorEbcMin: null, colorEbcMax: null };
+  }
+
+  const malt = technicalData as Extract<
+    NonNullable<typeof technicalData>,
+    { type: "malt" }
+  >;
+  return {
+    maltType: malt.maltType ?? null,
+    colorEbcMin: malt.colorEbcMin ?? null,
+    colorEbcMax: malt.colorEbcMax ?? null
+  };
+};
+
 const buildFermentablesForWaterPlan = (
   ingredients: RecipeIngredientDto[]
 ): RecipeWaterPlanFermentableInput[] => {
@@ -62,7 +83,8 @@ const buildFermentablesForWaterPlan = (
             ?? ingredient.ingredientDisplayNameSnapshot
             ?? null,
         subtype: ingredient.ingredientSubtype ?? null,
-        weightKg
+        weightKg,
+        ...resolveMaltFieldsForWaterPlan(ingredient.ingredientTechnicalData)
       };
     });
 };

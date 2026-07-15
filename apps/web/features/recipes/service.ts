@@ -48,6 +48,9 @@ import {
   recipeCalculationMetaSchema,
   recipeProcessMetaSchema,
   recipeWaterPlanMetaSchema,
+  sanitizeUserWaterProfiles,
+  WATER_PROFILES_SAVE_RATE_LIMIT,
+  WATER_PROFILES_SAVE_RATE_WINDOW_SECONDS,
   type RecipeCalculationMeta,
   type RecipeCloneSourceDto,
   type RecipeDetailDto,
@@ -71,6 +74,7 @@ import {
   type RecipeRatingDto,
   type RecipeRatingSummary,
   type RecipeSaveSummary,
+  type UserWaterProfiles,
   updateRecipePayloadSchema
 } from "./contracts";
 import {
@@ -495,6 +499,48 @@ const getUserRecipeCalculationMeta = async (authorId: string): Promise<RecipeCal
       : "tinseth_whirlpool_v2",
     bitternessSettings: settings?.bitternessSettings ?? {}
   });
+};
+
+/**
+ * Ф11 (notes/water-wizard-fixes.md): сохранённые профили воды пользователя —
+ * та же таблица/колонка, что и bitternessSettings выше (userBrewingSettings.
+ * waterSettings, jsonb). Раньше жили только в localStorage браузера.
+ */
+export const getUserWaterProfiles = async (userId: string): Promise<UserWaterProfiles> => {
+  const settings = await db.query.userBrewingSettings.findFirst({
+    where: eq(userBrewingSettings.userId, userId)
+  });
+
+  return sanitizeUserWaterProfiles(settings?.waterSettings ?? {});
+};
+
+/**
+ * Санитизирует и записывает профили воды пользователя одним jsonb-документом
+ * (обе колонки savedSourceProfiles/savedTargetProfiles разом — визард всегда
+ * шлёт актуальный снимок обоих списков, гонки между вкладками не решаем).
+ */
+export const saveUserWaterProfiles = async (
+  userId: string,
+  input: unknown
+): Promise<UserWaterProfiles> => {
+  await assertRateLimit(
+    `user:${userId}`,
+    "water_profiles_save",
+    WATER_PROFILES_SAVE_RATE_LIMIT,
+    WATER_PROFILES_SAVE_RATE_WINDOW_SECONDS
+  );
+
+  const sanitized = sanitizeUserWaterProfiles(input);
+
+  await db
+    .insert(userBrewingSettings)
+    .values({ userId, waterSettings: sanitized })
+    .onConflictDoUpdate({
+      target: userBrewingSettings.userId,
+      set: { waterSettings: sanitized, updatedAt: new Date() }
+    });
+
+  return sanitized;
 };
 
 const hasOwn = (value: Record<string, unknown>, key: string) => Object.prototype.hasOwnProperty.call(value, key);

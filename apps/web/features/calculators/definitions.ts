@@ -281,7 +281,8 @@ export const coreWarningCopy: Record<string, { text: string; tone: "info" | "war
   no_grain_potential: { text: "Экстрактивность засыпи не задана (PPG = 0 у «Другое») — эффективность посчитать не из чего.", tone: "warning" },
   measured_og_below_extras: { text: "Замеренная плотность ниже вклада одних только экстрактов и сахара — проверьте замер или состав засыпи.", tone: "warning" },
   no_measured_points: { text: "Замеренная OG не выше 1.000 — эффективность посчитать не из чего.", tone: "warning" },
-  mash_water_required: { text: "Укажите объём заторной воды больше нуля — без него температуру не посчитать.", tone: "warning" }
+  mash_water_required: { text: "Укажите объём заторной воды больше нуля — без него температуру не посчитать.", tone: "warning" },
+  salt_addition_capped: { text: "Подбор солей упёрся в лимит на одну соль — профиль достигнут не полностью.", tone: "warning" }
 };
 
 export const translateCoreWarnings = (codes: string[]): CalculatorResultWarning[] => (
@@ -1620,6 +1621,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       let salts: SaltAddition[];
       let targetWaterProfile: ReturnType<typeof buildProfile>;
       let solverScore: number | null = null;
+      let solverWarnings: string[] = [];
 
       if (mode === "target") {
         const preset = waterTargetProfileById(s(state.targetProfilePreset, WATER_TARGET_PROFILE_PRESETS[0].id));
@@ -1632,6 +1634,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         });
         salts = solved.additions;
         solverScore = solved.score;
+        solverWarnings = solved.warnings;
       } else {
         targetWaterProfile = buildProfile(state, "target");
         salts = buildSalts(state);
@@ -1688,7 +1691,10 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         });
       }
 
-      const warnings: Array<string | CalculatorResultWarning> = translateCoreWarnings(result.warnings);
+      const warnings: Array<string | CalculatorResultWarning> = translateCoreWarnings([
+        ...result.warnings,
+        ...solverWarnings
+      ]);
       if (mode === "target" && solverScore != null && solverScore > WATER_SOLVER_SCORE_WARNING_THRESHOLD) {
         warnings.push({
           text: "Подобрать соли под этот профиль из вашей воды не получилось — слишком большая разница по некоторым ионам. Попробуйте другой профиль или скорректируйте исходную воду.",

@@ -54,8 +54,8 @@ export const recipeWaterEngineLabels: Record<WaterEngineMode, string> = {
 };
 
 export const recipeMashPhModelLabels: Record<MashPhModel, string> = {
-  kolbach_ra_quick: "Kolbach RA quick",
-  hybrid_mash_ph_v1: "Hybrid mash pH v1"
+  kolbach_ra_quick: "Быстрая по RA (Кольбах)",
+  hybrid_mash_ph_v1: "По составу засыпи (Riffe)"
 };
 
 export const recipePublicationStateLabels: Record<RecipePublicationState, string> = {
@@ -240,7 +240,6 @@ export const recipeWaterPlanMetaSchema = z.object({
   spargeAcidificationEnabled: z.coerce.boolean().default(false),
   spargeSourcePh: numberField().min(0, "pH промывочной воды не может быть ниже 0.").max(14, "pH промывочной воды не может быть выше 14.").optional().nullable(),
   targetSpargePh: numberField().min(4, "Целевой pH промывочной воды не может быть ниже 4.").max(7, "Целевой pH промывочной воды не может быть выше 7.").optional().nullable(),
-  targetSpargeAlkalinity: numberField().min(0, "Щелочность промывочной воды не может быть меньше 0.").optional().nullable(),
   selectedAcid: z.enum(["lactic_acid", "phosphoric_acid"]).optional().nullable(),
   acidConcentrationPct: numberField().positive("Концентрация кислоты должна быть больше 0%.").max(100, "Концентрация кислоты не может быть больше 100%.").optional().nullable(),
   calibrationOffset: numberField().min(-2, "Калибровочная поправка не может быть меньше -2 pH.").max(2, "Калибровочная поправка не может быть больше 2 pH.").optional().nullable()
@@ -272,6 +271,72 @@ export const recipeWaterPlanMetaSchema = z.object({
 });
 
 export type RecipeWaterPlanMeta = z.infer<typeof recipeWaterPlanMetaSchema>;
+
+/**
+ * Ф11 (notes/water-wizard-fixes.md): «сохранённые профили воды — в аккаунт».
+ * Формат записи — тот же, что раньше жил только в localStorage мастера воды
+ * (см. SavedSourceWaterProfile в components/recipes/water-setup-wizard.tsx):
+ * {id, name, profile, createdAt, updatedAt}. Хранится в
+ * userBrewingSettings.waterSettings (jsonb) как { savedSourceProfiles, savedTargetProfiles }.
+ */
+export const savedWaterProfileSchema = z.object({
+  id: z.string().trim().min(1).max(120),
+  name: z.string().trim().min(1).max(120),
+  profile: waterProfileSchema,
+  createdAt: z.string().trim().optional(),
+  updatedAt: z.string().trim().optional()
+});
+
+export type SavedWaterProfile = z.infer<typeof savedWaterProfileSchema>;
+
+export type UserWaterProfiles = {
+  savedSourceProfiles: SavedWaterProfile[];
+  savedTargetProfiles: SavedWaterProfile[];
+};
+
+export const WATER_PROFILES_MAX_PER_LIST = 30;
+
+const sanitizeSavedWaterProfileList = (value: unknown): SavedWaterProfile[] => {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  const seen = new Set<string>();
+  const profiles: SavedWaterProfile[] = [];
+
+  for (const item of value) {
+    const parsed = savedWaterProfileSchema.safeParse(item);
+    if (!parsed.success || seen.has(parsed.data.id)) {
+      continue;
+    }
+
+    seen.add(parsed.data.id);
+    profiles.push({
+      ...parsed.data,
+      createdAt: parsed.data.createdAt || new Date(0).toISOString(),
+      updatedAt: parsed.data.updatedAt || new Date(0).toISOString()
+    });
+  }
+
+  return profiles.slice(0, WATER_PROFILES_MAX_PER_LIST);
+};
+
+/**
+ * Санитизация того же формата, что и клиентский localStorage-фолбэк
+ * (sanitizeSavedSourceWaterProfiles в water-setup-wizard.tsx): невалидные
+ * записи молча отбрасываются (не роняют весь список), дедуп по id (первое
+ * вхождение побеждает), кап WATER_PROFILES_MAX_PER_LIST на список.
+ */
+export const sanitizeUserWaterProfiles = (value: unknown): UserWaterProfiles => {
+  const record = value && typeof value === "object" && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {};
+
+  return {
+    savedSourceProfiles: sanitizeSavedWaterProfileList(record.savedSourceProfiles),
+    savedTargetProfiles: sanitizeSavedWaterProfileList(record.savedTargetProfiles)
+  };
+};
 
 export const recipeInventorySelectionMetaSchema = z.object({
   inventoryItemId: z.string().uuid().optional().nullable(),
@@ -576,6 +641,13 @@ export const MIN_SAVED_RECIPES_FOR_SORT = 5;
 export const RECIPE_MAX_COUNT_PER_USER = 500;
 export const RECIPE_CREATE_RATE_LIMIT = 30;
 export const RECIPE_CREATE_RATE_WINDOW_SECONDS = 60 * 60;
+
+/**
+ * Ф11: лимит на сохранение профилей воды в аккаунт. Щедрый — обычный пивовар
+ * сохраняет пару профилей за сессию; ловит только массовое засорение.
+ */
+export const WATER_PROFILES_SAVE_RATE_LIMIT = 30;
+export const WATER_PROFILES_SAVE_RATE_WINDOW_SECONDS = 60 * 10;
 
 /**
  * Потолок размера входа импорта (BeerXML/Brewfather) ДО парсинга — чтобы никто не

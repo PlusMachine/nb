@@ -5,6 +5,8 @@ import React from "react";
 import { Button, Dialog, DialogCloseButton, DialogHeader } from "@nb/ui";
 
 import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
+import { NumericInput } from "@/components/shared/numeric-input";
+import { parseDecimalInput } from "@/features/forms/numeric-validation";
 
 const useIsWaterWizardMobile = () => {
   const [isMobile, setIsMobile] = React.useState(false);
@@ -240,6 +242,68 @@ const persistSavedTargetWaterProfiles = (
   }
 };
 
+// Ф11 (notes/water-wizard-fixes.md): «сохранённые профили воды — в аккаунт».
+// localStorage остаётся офлайн-фолбэком (см. read/persist* выше); сервер —
+// источник истины при доступности. Флаг ниже защищает от повторной заливки
+// localStorage-профилей в аккаунт при каждом монтировании визарда.
+const savedWaterProfilesMigratedStorageKey = "nb:recipe-water:migrated";
+const waterProfilesApiPath = "/api/recipes/water-profiles";
+
+type ServerSavedWaterProfiles = {
+  savedSourceProfiles: SavedSourceWaterProfile[];
+  savedTargetProfiles: SavedTargetWaterProfile[];
+};
+
+const fetchServerSavedWaterProfiles =
+  async (): Promise<ServerSavedWaterProfiles | null> => {
+    try {
+      const response = await fetch(waterProfilesApiPath, { method: "GET" });
+      if (!response.ok) {
+        return null;
+      }
+
+      const data: unknown = await response.json();
+      const record =
+        data && typeof data === "object" ? (data as Record<string, unknown>) : {};
+
+      return {
+        savedSourceProfiles: sanitizeSavedSourceWaterProfiles(
+          record.savedSourceProfiles,
+        ),
+        savedTargetProfiles: sanitizeSavedSourceWaterProfiles(
+          record.savedTargetProfiles,
+        ),
+      };
+    } catch {
+      // API недоступен (офлайн, 500 и т.п.) — вызывающий код остаётся на
+      // localStorage-фолбэке.
+      return null;
+    }
+  };
+
+// Возвращает успех записи: вызывающий код мигрирующего эффекта должен знать,
+// удалось ли донести localStorage-профили до сервера, прежде чем выставлять
+// флаг «мигрировано» — иначе неудачная миграция помечается успешной и больше
+// никогда не повторяется, а следующий маунт затем затирает localStorage
+// пустым ответом сервера (см. эффект ниже).
+const putServerSavedWaterProfiles = async (
+  savedSourceProfiles: SavedSourceWaterProfile[],
+  savedTargetProfiles: SavedTargetWaterProfile[],
+): Promise<boolean> => {
+  try {
+    const response = await fetch(waterProfilesApiPath, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ savedSourceProfiles, savedTargetProfiles }),
+    });
+    return response.ok;
+  } catch {
+    // Saved profiles are a convenience layer; editing the recipe still works
+    // off the localStorage fallback if the server write fails.
+    return false;
+  }
+};
+
 export const getNextSavedSourceWaterProfileName = (
   profiles: SavedSourceWaterProfile[],
 ) => `Сохраненный профиль ${profiles.length + 1}`;
@@ -274,6 +338,8 @@ const waterAdditionTargetLabels: Record<
 const waterWarningLabels: Record<string, string> = {
   water_split_below_batch_volume:
     "Сумма заторной и промывочной воды меньше объема партии.",
+  mash_water_volume_zero:
+    "Заторная вода 0 л — задайте объём затора или добавьте засыпь.",
   source_profile_missing_or_zero:
     "Выберите исходную воду или введите профиль вручную.",
   target_profile_missing_or_zero: "Выберите целевой профиль воды.",
@@ -286,6 +352,11 @@ const waterWarningLabels: Record<string, string> = {
   chloride_above_practical_range: "Cl выше практического диапазона.",
   sulfate_above_practical_range: "SO4 выше практического диапазона.",
   bicarbonate_above_practical_range: "HCO3 выше практического диапазона.",
+  lactic_acid_taste_threshold:
+    "Молочной кислоты столько, что лактат будет заметен во вкусе (порог ~400 ppm). Используйте фосфорную кислоту или разбавьте воду осмосом.",
+  sparge_acid_capped_at_max_ml: "Доза кислоты в промывку упёрлась в лимит.",
+  salt_addition_capped:
+    "Подбор солей упёрся в лимит на одну соль — профиль достигнут не полностью.",
 };
 
 const formatKg = (value: number) => `${value.toFixed(1).replace(".", ",")} кг`;
@@ -326,6 +397,29 @@ const buildEquipmentWarningLabel = (
   }
 };
 
+/**
+ * Предупреждения, зависящие от расчёта плана воды (а не от лимитов оборудования) —
+ * подсказка про дилюцию осмосом (Ф8/Ф9), два кода на два разных триггера: называют
+ * конкретный процент, а не абстрактное «разбавьте воду».
+ */
+const buildWaterPlanResultWarningLabel = (
+  warning: string,
+  waterPlanResult: RecipeWaterPlanResult,
+): string | null => {
+  switch (warning) {
+    case "dilution_suggested_target":
+      return waterPlanResult.dilutionSuggestedPct != null
+        ? `Цель по HCO3 недостижима солями — разбавьте воду осмосом примерно на ${waterPlanResult.dilutionSuggestedPct}%.`
+        : null;
+    case "dilution_suggested_acid":
+      return waterPlanResult.dilutionSuggestedPct != null
+        ? `Кислоты нужно слишком много — разбавьте воду осмосом примерно на ${waterPlanResult.dilutionSuggestedPct}% или перейдите на фосфорную.`
+        : null;
+    default:
+      return null;
+  }
+};
+
 const lowPriorityWarnings = new Set([
   "mash_ph_ballpark_estimate",
   "mash_acid_model_practical_approximation",
@@ -357,9 +451,13 @@ const selectableSourceWaterProfiles: RecipeWaterProfilePreset[] = [
   return preset ? [preset] : [];
 });
 
-const toOptionalNumber = (value: string) => {
-  const trimmed = value.trim();
-  return trimmed ? Number(trimmed) : null;
+// Обёртка над parseDecimalInput (запятая → точка на лету, не только на blur):
+// NumericInput разрешает набирать запятую посимвольно, а голый Number("5,5")
+// даёт NaN до нормализации на blur — без этого NaN на мгновение улетал бы в
+// waterPlanMeta при наборе дробной части.
+const toOptionalNumber = (value: string): number | null => {
+  const parsed = parseDecimalInput(value);
+  return parsed != null && Number.isFinite(parsed) ? parsed : null;
 };
 
 const cloneProfile = (profile: WaterProfileMeta): WaterProfileMeta => ({
@@ -432,7 +530,6 @@ export const createRecipeWaterPlanResetMeta = (): RecipeWaterPlanMeta => ({
   spargeAcidificationEnabled: false,
   spargeSourcePh: null,
   targetSpargePh: 5.7,
-  targetSpargeAlkalinity: null,
   selectedAcid: "lactic_acid",
   acidConcentrationPct: null,
   calibrationOffset: null,
@@ -530,6 +627,28 @@ export const setRecipeWaterManualSourceProfile = (
   sourceProfileName: null,
   sourceProfile: cloneProfile(profile),
 });
+
+/**
+ * Ф8 UI: доля осмоса (0..90%) → бинарный blendRatio {tap, ro, distilled: 0} —
+ * дистиллят как отдельная доля здесь не вводится, только через ручной blendRatio.
+ * pct <= 0 или не задан — трактуем как чистую водопроводную воду (blendRatio: null),
+ * см. resolveWaterBlendShares в water-plan.ts.
+ */
+export const setRecipeWaterSourceDilutionPct = (
+  waterPlanMeta: RecipeWaterPlanMeta,
+  pct: number | null,
+): RecipeWaterPlanMeta => ({
+  ...waterPlanMeta,
+  setupEnabled: true,
+  blendRatio:
+    pct != null && pct > 0
+      ? { tap: 1 - pct / 100, ro: pct / 100, distilled: 0 }
+      : null,
+});
+
+const resolveWaterSourceDilutionPct = (
+  blendRatio: RecipeWaterPlanMeta["blendRatio"],
+): number => (blendRatio ? Math.round(Math.max(0, blendRatio.ro ?? 0) * 100) : 0);
 
 export const applyRecipeWaterTargetPreset = (
   waterPlanMeta: RecipeWaterPlanMeta,
@@ -1384,14 +1503,20 @@ function ProfileIonEditor({
   targetProfile = null,
   onChange,
   compact = false,
+  withPh = false,
 }: {
   profile: WaterProfileMeta;
   targetProfile?: WaterProfileMeta | null;
   onChange: (profile: WaterProfileMeta) => void;
   compact?: boolean;
+  /** Поле pH источника — честный Ct для кислоты затора и дефолт для «Исходный pH»
+   *  промывки вместо жёсткого дефолта 7 (см. Ф-пункт 4, notes/water-wizard-fixes.md). */
+  withPh?: boolean;
 }) {
+  const columnsClassName = withPh ? "md:grid-cols-7" : "md:grid-cols-6";
+
   return (
-    <div className={compact ? "grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-6" : "grid grid-cols-2 gap-2 rounded-xl bg-muted p-3 sm:grid-cols-3 md:grid-cols-6"}>
+    <div className={compact ? `grid grid-cols-2 gap-2 sm:grid-cols-3 ${columnsClassName}` : `grid grid-cols-2 gap-2 rounded-xl bg-muted p-3 sm:grid-cols-3 ${columnsClassName}`}>
       {ionKeys.map((key) => {
         const value = profile[key];
         const target = targetProfile?.[key];
@@ -1418,17 +1543,13 @@ function ProfileIonEditor({
                 </span>
               ) : null}
             </span>
-            <input
-              type="number"
+            <NumericInput
               min={0}
-              inputMode="decimal"
-              value={value}
+              value={String(value)}
               onChange={(event) =>
                 onChange({
                   ...profile,
-                  [key]: event.target.value.trim()
-                    ? Number(event.target.value)
-                    : 0,
+                  [key]: toOptionalNumber(event.target.value) ?? 0,
                 })
               }
               className={`${compact ? "h-11" : "h-11"} mt-1 w-full rounded-lg border border-border bg-card px-2 text-base text-foreground`}
@@ -1436,6 +1557,24 @@ function ProfileIonEditor({
           </label>
         );
       })}
+      {withPh ? (
+        <label className="text-[11px] font-medium uppercase text-muted-foreground">
+          <span>pH</span>
+          <NumericInput
+            min={4}
+            max={10}
+            step={0.01}
+            value={profile.ph != null ? String(profile.ph) : ""}
+            onChange={(event) =>
+              onChange({
+                ...profile,
+                ph: toOptionalNumber(event.target.value),
+              })
+            }
+            className="mt-1 h-11 w-full rounded-lg border border-border bg-card px-2 text-base text-foreground"
+          />
+        </label>
+      ) : null}
     </div>
   );
 }
@@ -1463,12 +1602,11 @@ function MashPhCorrectionCard({
       {enabled ? (
         <label className="mt-3 block text-xs font-medium text-muted-foreground">
           Целевой pH затора
-          <input
-            type="number"
+          <NumericInput
             min={4}
             max={7}
             step={0.01}
-            value={value ?? 5.35}
+            value={value != null ? String(value) : "5.35"}
             onChange={(event) =>
               onChange(toOptionalNumber(event.target.value) ?? 5.35)
             }
@@ -1510,24 +1648,22 @@ function SpargeAcidificationCard({
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <label className="text-xs font-medium text-muted-foreground">
             Исходный pH
-            <input
-              type="number"
+            <NumericInput
               min={0}
               max={14}
               step={0.01}
-              value={sourcePh}
+              value={String(sourcePh)}
               onChange={(event) => onSourcePhChange(toOptionalNumber(event.target.value))}
               className="mt-1 h-11 w-full rounded-lg border border-border bg-card px-2 text-base text-foreground"
             />
           </label>
           <label className="text-xs font-medium text-muted-foreground">
             Целевой pH промывки
-            <input
-              type="number"
+            <NumericInput
               min={4}
               max={7}
               step={0.01}
-              value={targetPh}
+              value={String(targetPh)}
               onChange={(event) =>
                 onTargetPhChange(toOptionalNumber(event.target.value) ?? 5.7)
               }
@@ -1804,9 +1940,89 @@ export function WaterSetupWizard({
   const hasCalculatedAdditions = calculatedAdditionRows.length > 0;
   const hasAppliedWaterPlan = waterPlanMeta.engine === "advanced_manual";
 
+  // Ф9 (notes/water-wizard-fixes.md): «pH затора» / RA / SO4:Cl из расчёта — раньше
+  // predictedMashPhAfterAcid20C был виден только на публичной странице рецепта.
+  const proposalMashPhEstimateValue =
+    proposalWaterPlanResult.mashPhEstimate?.predictedMashPh20C ?? null;
+  const proposalMashAcidMl = proposalWaterPlanResult.mashAcidAddition?.mashAcidMl ?? 0;
+  const mashPhTileText =
+    proposalMashPhEstimateValue == null
+      ? null
+      : proposalMashAcidMl > 0 &&
+          proposalWaterPlanResult.predictedMashPhAfterAcid20C != null
+        ? `${proposalMashPhEstimateValue.toFixed(2)} → ${proposalWaterPlanResult.predictedMashPhAfterAcid20C.toFixed(2)}`
+        : (
+            proposalWaterPlanResult.predictedMashPhAfterAcid20C ??
+            proposalMashPhEstimateValue
+          ).toFixed(2);
+  const sulfateChlorideRatioValue = proposalWaterPlanResult.sulfateChlorideRatio;
+  const sulfateChlorideCharacter =
+    sulfateChlorideRatioValue == null
+      ? null
+      : sulfateChlorideRatioValue < 0.8
+        ? "солодовый"
+        : sulfateChlorideRatioValue <= 1.5
+          ? "баланс"
+          : "хмелевой";
+  const sulfateChlorideTileText =
+    sulfateChlorideRatioValue != null && sulfateChlorideCharacter != null
+      ? `${sulfateChlorideRatioValue.toFixed(2)} · ${sulfateChlorideCharacter}`
+      : "—";
+
   React.useEffect(() => {
-    setSavedSourceProfiles(readStoredSavedSourceWaterProfiles());
-    setSavedTargetProfiles(readStoredSavedTargetWaterProfiles());
+    let cancelled = false;
+    const localSourceProfiles = readStoredSavedSourceWaterProfiles();
+    const localTargetProfiles = readStoredSavedTargetWaterProfiles();
+    setSavedSourceProfiles(localSourceProfiles);
+    setSavedTargetProfiles(localTargetProfiles);
+
+    void (async () => {
+      const server = await fetchServerSavedWaterProfiles();
+      if (cancelled || !server) {
+        return;
+      }
+
+      const hasServerProfiles =
+        server.savedSourceProfiles.length > 0 ||
+        server.savedTargetProfiles.length > 0;
+      const hasLocalProfiles =
+        localSourceProfiles.length > 0 || localTargetProfiles.length > 0;
+      const alreadyMigrated =
+        typeof window !== "undefined" &&
+        window.localStorage.getItem(savedWaterProfilesMigratedStorageKey) ===
+          "1";
+
+      if (!hasServerProfiles && hasLocalProfiles && !alreadyMigrated) {
+        // Одноразовая миграция: локальные профили ещё не были в аккаунте.
+        // Флаг ставим только при успешной записи — иначе при следующем
+        // маунте так и не мигрированные данные примут за «уже в аккаунте»,
+        // и localStorage перезатрётся пустым ответом сервера ниже.
+        const migrated = await putServerSavedWaterProfiles(
+          localSourceProfiles,
+          localTargetProfiles,
+        );
+        if (migrated && typeof window !== "undefined") {
+          window.localStorage.setItem(
+            savedWaterProfilesMigratedStorageKey,
+            "1",
+          );
+        }
+        return;
+      }
+
+      if (cancelled) {
+        return;
+      }
+
+      setSavedSourceProfiles(server.savedSourceProfiles);
+      setSavedTargetProfiles(server.savedTargetProfiles);
+      persistSavedSourceWaterProfiles(server.savedSourceProfiles);
+      persistSavedTargetWaterProfiles(server.savedTargetProfiles);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   React.useEffect(() => {
@@ -1850,6 +2066,7 @@ export function WaterSetupWizard({
   ) => {
     setSavedSourceProfiles(profiles);
     persistSavedSourceWaterProfiles(profiles);
+    void putServerSavedWaterProfiles(profiles, savedTargetProfiles);
   };
 
   const updateSavedTargetProfiles = (
@@ -1857,6 +2074,7 @@ export function WaterSetupWizard({
   ) => {
     setSavedTargetProfiles(profiles);
     persistSavedTargetWaterProfiles(profiles);
+    void putServerSavedWaterProfiles(savedSourceProfiles, profiles);
   };
 
   const handleSaveManualSourceProfile = () => {
@@ -1994,6 +2212,7 @@ export function WaterSetupWizard({
             >
               {waterWarningLabels[warning]
                 ?? buildEquipmentWarningLabel(warning, waterPlanResult.equipmentLimits)
+                ?? buildWaterPlanResultWarningLabel(warning, waterPlanResult)
                 ?? warning}
             </div>
           ))}
@@ -2098,11 +2317,40 @@ export function WaterSetupWizard({
             </button>
           </div>
 
+          <label className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground">
+            Разбавление осмосом
+            <span className="relative">
+              <NumericInput
+                integer
+                min={0}
+                max={90}
+                step={5}
+                value={String(
+                  resolveWaterSourceDilutionPct(effectiveWaterPlanMeta.blendRatio),
+                )}
+                onChange={(event) => {
+                  const pct = toOptionalNumber(event.target.value);
+                  onChange(
+                    setRecipeWaterSourceDilutionPct(
+                      effectiveWaterPlanMeta,
+                      pct != null ? Math.min(90, Math.max(0, pct)) : null,
+                    ),
+                  );
+                }}
+                className="h-9 w-20 rounded-lg border border-border bg-muted px-2 pr-6 text-right text-base text-foreground"
+              />
+              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                %
+              </span>
+            </span>
+          </label>
+
           <div className="space-y-2 rounded-xl bg-muted p-3">
             <ProfileIonEditor
               profile={source}
               targetProfile={effectiveWaterPlanMeta.targetProfile ?? null}
               compact
+              withPh
               onChange={(profile) => {
                 setSourceProfileSaveMessage(null);
                 onChange(
@@ -2436,12 +2684,15 @@ export function WaterSetupWizard({
               </h3>
               <label className="block text-xs font-medium text-muted-foreground">
                 Водопоглощение дробиной, л/кг
-                <input
-                  type="number"
+                <NumericInput
                   min={0}
                   max={5}
                   step={0.05}
-                  value={effectiveWaterPlanMeta.grainAbsorptionLPerKg ?? ""}
+                  value={
+                    effectiveWaterPlanMeta.grainAbsorptionLPerKg != null
+                      ? String(effectiveWaterPlanMeta.grainAbsorptionLPerKg)
+                      : ""
+                  }
                   placeholder={grainAbsorptionLPerKg.toFixed(2)}
                   onChange={(event) =>
                     updateGrainAbsorption(event.target.value)
@@ -2517,11 +2768,14 @@ export function WaterSetupWizard({
                 <div className="grid gap-3 sm:grid-cols-2">
                   <label className="text-xs font-medium text-muted-foreground">
                     Заторная вода, л
-                    <input
-                      type="number"
+                    <NumericInput
                       min={0}
                       step={0.1}
-                      value={waterPlanMeta.mashWaterVolumeL ?? ""}
+                      value={
+                        waterPlanMeta.mashWaterVolumeL != null
+                          ? String(waterPlanMeta.mashWaterVolumeL)
+                          : ""
+                      }
                       onChange={(event) =>
                         updateSplitVolume(
                           "mashWaterVolumeL",
@@ -2533,11 +2787,14 @@ export function WaterSetupWizard({
                   </label>
                   <label className="text-xs font-medium text-muted-foreground">
                     Промывочная вода, л
-                    <input
-                      type="number"
+                    <NumericInput
                       min={0}
                       step={0.1}
-                      value={waterPlanMeta.spargeWaterVolumeL ?? ""}
+                      value={
+                        waterPlanMeta.spargeWaterVolumeL != null
+                          ? String(waterPlanMeta.spargeWaterVolumeL)
+                          : ""
+                      }
                       onChange={(event) =>
                         updateSplitVolume(
                           "spargeWaterVolumeL",
@@ -2619,6 +2876,35 @@ export function WaterSetupWizard({
                     ? "Заменить добавки"
                     : "Применить расчет"}
                 </Button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                {mashPhEnabled && mashPhTileText != null ? (
+                  <div className="rounded-lg bg-card p-2 ring-1 ring-sky-100 dark:ring-sky-500/20">
+                    <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                      pH затора
+                    </div>
+                    <div className="mt-0.5 font-semibold tabular-nums text-foreground">
+                      {mashPhTileText}
+                    </div>
+                  </div>
+                ) : null}
+                <div className="rounded-lg bg-card p-2 ring-1 ring-sky-100 dark:ring-sky-500/20">
+                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                    RA
+                  </div>
+                  <div className="mt-0.5 font-semibold tabular-nums text-foreground">
+                    {Math.round(proposalWaterPlanResult.residualAlkalinityAsCaCO3)} ppm CaCO3
+                  </div>
+                </div>
+                <div className="rounded-lg bg-card p-2 ring-1 ring-sky-100 dark:ring-sky-500/20">
+                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                    SO4:Cl
+                  </div>
+                  <div className="mt-0.5 font-semibold tabular-nums text-foreground">
+                    {sulfateChlorideTileText}
+                  </div>
+                </div>
               </div>
 
               {hasCalculatedAdditions ? (
@@ -2741,12 +3027,15 @@ export function WaterSetupWizard({
                 {mashPhEnabled ? (
                   <label className="text-xs font-medium text-muted-foreground">
                     Калибровка pH
-                    <input
-                      type="number"
+                    <NumericInput
                       min={-2}
                       max={2}
                       step={0.01}
-                      value={waterPlanMeta.calibrationOffset ?? ""}
+                      value={
+                        waterPlanMeta.calibrationOffset != null
+                          ? String(waterPlanMeta.calibrationOffset)
+                          : ""
+                      }
                       onChange={(event) =>
                         onChange({
                           ...waterPlanMeta,
@@ -2765,12 +3054,15 @@ export function WaterSetupWizard({
                   <>
                     <label className="text-xs font-medium text-muted-foreground">
                       Концентрация кислоты, %
-                      <input
-                        type="number"
+                      <NumericInput
                         min={1}
                         max={100}
                         step={0.1}
-                        value={waterPlanMeta.acidConcentrationPct ?? ""}
+                        value={
+                          waterPlanMeta.acidConcentrationPct != null
+                            ? String(waterPlanMeta.acidConcentrationPct)
+                            : ""
+                        }
                         onChange={(event) =>
                           onChange({
                             ...waterPlanMeta,
