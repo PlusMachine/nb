@@ -344,6 +344,13 @@ vi.mock("@nb/db", () => {
   };
 });
 
+// inventory-service.ts тянет listInventoryForUser (Ф2: buildBrewBatchConsumeLinePlanEntries)
+// — та цепочка в проде доходит до features/system/currency-rates.ts ("server-only",
+// падает вне Next.js рантайма). Этот файл замены не тестирует (см.
+// coverage-brew-batch-consume-substitution.test.ts) — здесь достаточно заглушки,
+// чтобы модуль резолвился.
+vi.mock("../features/inventory/service", () => ({ listInventoryForUser: vi.fn(async () => []) }));
+
 import {
   autoAllocateRecipeInventoryFromStock,
   consumeRecipeInventoryAllocations,

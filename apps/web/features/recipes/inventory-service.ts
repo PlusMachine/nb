@@ -22,7 +22,17 @@ import {
 import { resolveBatchScaleFactor, safeRecipeBatchVolumeL } from "./batch-scale";
 import { resolveLineScaleFactor } from "./scale";
 import { isRecipePubliclyVisible } from "./visibility";
+// Только ТИПЫ из match-service.ts/inventory/service.ts: значимые экспорты этих
+// модулей тянут за собой listSystemCurrencyRates -> "server-only" (реальный
+// пакет резолвится только внутри Next.js/webpack — вне него, включая vitest,
+// падает). inventory-service.ts подключают самые ходовые страницы рецептов, а
+// не только предпросмотр списания, поэтому статический value-импорт здесь
+// сделал бы тяжёлым КАЖДОГО потребителя. Сам импорт — лениво, внутри
+// buildBrewBatchConsumeLinePlanEntries (тот же приём, что и в
+// app/(public)/recipes/match-list-actions.ts).
+import type { SubstituteInventoryCandidate } from "./match-service";
 import { extractIngredientTechnicalData } from "../ingredients/technical-fields";
+import type { IngredientMatchProfile } from "../ingredients/match-group";
 import {
   convertInventoryNormalizedToUnit,
   convertQuantityToInventoryNormalizedUnit,
@@ -30,6 +40,7 @@ import {
   type InventoryPackEquivalent
 } from "../inventory/pack";
 import { parseInventoryUnit, type InventoryUnit } from "../inventory/units";
+import type { InventoryListItemDto } from "../inventory/contracts";
 
 type RecipeLineRow = typeof recipeIngredients.$inferSelect;
 type InventoryItemRow = typeof userIngredients.$inferSelect;
@@ -75,6 +86,15 @@ type ScopedOptions = {
   efficiencyFactor?: number | null;
   /** Транзакция вызывающего, если списание идёт под его блокировками. */
   client?: InventoryDbClient;
+  /**
+   * Утверждённые замены (Ф2, opt-in в предпросмотре списания): recipeIngredientId →
+   * inventoryItemId. ОБЯЗАНЫ быть пересчитаны и провалидированы вызывающим ДО
+   * передачи сюда (см. features/brew-batches/inventory.ts: consumeBrewBatchInventory
+   * сверяет их с buildBrewBatchConsumeLinePlanEntries) — здесь только доверенное
+   * значение. Замена overrides exact-подбор для своей строки: строка с записью в
+   * этой мапе не проходит через resolveOwnedInventoryItemForRecipeLine вовсе.
+   */
+  substitutionOverrides?: Map<string, string>;
 };
 
 const CONSUME_EPSILON = 0.000001;
@@ -284,8 +304,13 @@ const inventorySourceMatchesRecipeLine = (
  * features/recipes/match-service.ts): пачка ≈ 11 г, объём всё равно наращивается
  * стартером. Отсюда правило списания: нехватка дрожжей не роняет варку — списываем
  * остаток (кламп) и помечаем аллокацию clamped.
+ *
+ * Экспортирован для предпросмотра списания (Ф2, features/brew-batches/inventory.ts):
+ * плану нужен ТОТ ЖЕ предикат в поле exactClamps строки, иначе диалог мог бы
+ * пообещать «спишем остаток» для категории, которую consumeRecipeInventoryAllocations
+ * на самом деле роняет целиком по INSUFFICIENT_STOCK (и наоборот).
  */
-const isPresenceBasedRecipeLine = (line: RecipeLineRow | null) => (
+export const isPresenceBasedRecipeLine = (line: RecipeLineRow | null) => (
   line?.ingredientCategory === "yeast" || line?.type === "yeast"
 );
 
@@ -346,7 +371,13 @@ export const loadInventoryItemPackEquivalent = async (
  * матч (matchLineAgainstInventory), иначе «нужно» и «списали» разъезжались бы в
  * последнем знаке.
  */
-const resolveRequiredQuantityInInventoryItemUnit = async (
+/**
+ * Сколько нужно списать со СКЛАДСКОЙ позиции под строку рецепта — в единице
+ * этой позиции. Экспортируется для предпросмотра списания (Ф2): требование
+ * exact-кандидата в его собственной единице считается тем же путём, что и
+ * реальное списание, иначе "isShort" в превью разошлась бы с INSUFFICIENT_STOCK.
+ */
+export const resolveRequiredQuantityInInventoryItemUnit = async (
   line: RecipeLineRow,
   inventoryItem: InventoryItemRow,
   factor: number,
@@ -387,14 +418,20 @@ const inventoryItemCanCoverRecipeLine = async (
 /**
  * Требуемое количество под строку рецепта в единице складской позиции — с
  * проверками источника и конвертируемости (для явного выбора позиции).
+ *
+ * isSubstitution=true (Ф2) — позиция сознательно НЕ того же продукта (другой
+ * exactKey, тот же groupKey): проверку источника пропускаем, потому что она
+ * здесь заведомо false. Замена приходит уже провалидированной вызывающим
+ * (см. ScopedOptions.substitutionOverrides) — здесь только конвертация единиц.
  */
 const resolveRecipeLineAllocationQuantity = async (
   line: RecipeLineRow,
   inventoryItem: InventoryItemRow,
   factor: number,
-  client: InventoryDbClient
+  client: InventoryDbClient,
+  isSubstitution = false
 ): Promise<number> => {
-  if (!inventorySourceMatchesRecipeLine(line, inventoryItem)) {
+  if (!isSubstitution && !inventorySourceMatchesRecipeLine(line, inventoryItem)) {
     throw new Error("INCOMPATIBLE_INVENTORY_SOURCE");
   }
 
@@ -406,7 +443,20 @@ const resolveRecipeLineAllocationQuantity = async (
   return requiredQuantity;
 };
 
-const findOwnedInventoryItemByRecipeLineSource = async (
+/**
+ * Точная позиция склада под строку рецепта — тот же exactKey (каталог/кастом),
+ * совместимая единица, наибольший остаток. Это подбор БЕЗ учёта закреплённого за
+ * строкой лота (line.inventorySelectionMeta) — сырой «найди лучший лот по
+ * exactKey». Реальный сквозной подборщик, которым обязаны пользоваться и
+ * авто-списание (autoAllocateRecipeInventoryFromStock), и предпросмотр
+ * (buildBrewBatchConsumeLinePlanEntries, Ф2) — resolveOwnedInventoryItemForRecipeLine
+ * ниже: она СНАЧАЛА проверяет закреплённый лот и только при его отсутствии/
+ * непригодности падает сюда. Звать findOwnedInventoryItemByRecipeLineSource
+ * напрямую в путях, которые обязаны уважать закреплённый лот, — баг (превью
+ * показывало бы «хватает» по большому лоту, а списание упиралось бы в закреплённый
+ * маленький).
+ */
+export const findOwnedInventoryItemByRecipeLineSource = async (
   userId: string,
   line: RecipeLineRow,
   factor: number,
@@ -447,7 +497,17 @@ const findOwnedInventoryItemByRecipeLineSource = async (
     ))[0] ?? null;
 };
 
-const resolveOwnedInventoryItemForRecipeLine = async (
+/**
+ * Сквозной подбор позиции склада под строку рецепта: СНАЧАЛА уважает лот,
+ * закреплённый за строкой (line.inventorySelectionMeta.inventoryItemId — выбор
+ * автора в редакторе/пикере), и только если он отсутствует, чужой или больше не
+ * годится строке — падает на findOwnedInventoryItemByRecipeLineSource (лучший
+ * лот по exactKey). И авто-списание (autoAllocateRecipeInventoryFromStock), и
+ * предпросмотр (buildBrewBatchConsumeLinePlanEntries, Ф2) обязаны идти именно
+ * через эту функцию — иначе превью обещало бы один лот, а списание уходило в
+ * другой (закреплённый).
+ */
+export const resolveOwnedInventoryItemForRecipeLine = async (
   userId: string,
   line: RecipeLineRow,
   inventoryItemId: string | null,
@@ -638,12 +698,15 @@ const allocateRecipeLineFromInventoryItem = async (input: {
   brewBatchId: string | null;
   factor: number;
   client: InventoryDbClient;
+  /** true — позиция утверждена как ЗАМЕНА (Ф2), а не точный exactKey строки. */
+  substitution?: boolean;
 }) => {
   const requiredQuantity = await resolveRecipeLineAllocationQuantity(
     input.line,
     input.inventoryItem,
     input.factor,
-    input.client
+    input.client,
+    input.substitution ?? false
   );
   // Аллокация ВСЕГДА живёт в единице складской позиции (как она лежит в БД):
   // на этом держатся списание, возврат партии и резервы — они сравнивают единицу
@@ -679,7 +742,7 @@ const allocateRecipeLineFromInventoryItem = async (input: {
       allocatedQuantityNormalized: requiredQuantity,
       allocatedNormalizedUnit: input.inventoryItem.normalizedUnit,
       allocationMeta: {
-        source: "recipe_selection",
+        source: input.substitution ? "recipe_substitution" : "recipe_selection",
         ingredientDisplayName: input.line.ingredientDisplayNameSnapshot ?? null,
         // След конверсии «пачка рецепта → граммы склада» — для аудита расхождений.
         ...(converted
@@ -690,7 +753,12 @@ const allocateRecipeLineFromInventoryItem = async (input: {
           : {}),
         // След пересчёта под объём партии — там же, где след конверсии единиц:
         // по мете аллокации всегда видно, из чего сложилось списанное число.
-        ...(scaled ? { batchScaleFactor: roundTo(input.factor, 4) } : {})
+        ...(scaled ? { batchScaleFactor: roundTo(input.factor, 4) } : {}),
+        // Замена (Ф2): имя ИСХОДНОЙ строки рецепта — buildView (features/brew-batches/
+        // inventory.ts) читает это поле, чтобы показать «списано вместо X».
+        ...(input.substitution
+          ? { substitution: true, substitutedForDisplayName: input.line.ingredientDisplayNameSnapshot ?? null }
+          : {})
       }
     });
   });
@@ -776,6 +844,29 @@ export const autoAllocateRecipeInventoryFromStock = async (
     if (allocatedLineIds.has(line.id)) {
       continue;
     }
+
+    // Ф2: замена, утверждённая (и провалидированная) вызывающим, overrides
+    // exact-подбор для своей строки целиком — resolveOwnedInventoryItemForRecipeLine
+    // для неё не вызываем вовсе, и selection-meta не трогаем (это не выбор автора).
+    const substituteInventoryItemId = options.substitutionOverrides?.get(line.id);
+    if (substituteInventoryItemId) {
+      const substituteItem = await ensureOwnedInventoryItem(userId, substituteInventoryItemId, client);
+      if (substituteItem.archivedAt) {
+        throw new Error("INVALID_SUBSTITUTION");
+      }
+      await allocateRecipeLineFromInventoryItem({
+        userId,
+        recipeId,
+        line,
+        inventoryItem: substituteItem,
+        brewBatchId,
+        factor: scaleLine(line),
+        client,
+        substitution: true
+      });
+      continue;
+    }
+
     // Уважаем лот, выбранный автором в пикере (inventorySelectionMeta): без этого
     // варка брала лот с наибольшим остатком, игнорируя явный выбор.
     const inventoryItem = await resolveOwnedInventoryItemForRecipeLine(
@@ -1068,11 +1159,130 @@ export const consumeRecipeInventoryAllocations = async (
         quantityAfterNormalized: quantityAfter,
         transactionMeta: {
           allocationId: allocation.id,
-          recipeIngredientPersistentKey: allocation.recipeIngredientPersistentKey
+          recipeIngredientPersistentKey: allocation.recipeIngredientPersistentKey,
+          // Ф2: след замены — на аудит транзакции, дублирует allocationMeta (см.
+          // allocateRecipeLineFromInventoryItem), откуда его реально читает buildView.
+          ...(asAllocationMeta(allocation.allocationMeta).substitution === true
+            ? {
+              substitution: true,
+              substitutedForDisplayName: asAllocationMeta(allocation.allocationMeta).substitutedForDisplayName ?? null
+            }
+            : {})
         }
       });
     }
   });
 
   return listRecipeStockCoverage(userId, recipeId, options);
+};
+
+// --- Ф2: план списания с заменами по match-group (предпросмотр) -----------
+// Общее тело для предпросмотра (features/brew-batches/inventory.ts:
+// previewBrewBatchConsumption) и для server-side валидации утверждённых замен
+// на consume (consumeBrewBatchInventory сверяет присланные substitutions с этим
+// же планом) — тот же сквозной exact-подбор (resolveOwnedInventoryItemForRecipeLine,
+// уважает закреплённый лот из inventorySelectionMeta) и тот же список кандидатов
+// на замену (match-service.findSubstituteCandidatesForLine), что и у самого
+// списания (autoAllocateRecipeInventoryFromStock). Не копипастить: превью и
+// consume обязаны видеть одну и ту же картину склада.
+
+export type BrewBatchConsumeLinePlanEntry = {
+  line: RecipeLineRow;
+  lineProfile: IngredientMatchProfile;
+  factor: number;
+  /** Потребность строки под объём/эффективность партии, в её собственной нормализованной единице. */
+  requiredQuantityNormalized: number;
+  /** Точная позиция склада (тот же exactKey) — null, если владелец ничего такого не держит. */
+  exactItem: InventoryItemRow | null;
+  /** Требование строки в единице exactItem (для сравнения "хватает ли") — null, если exactItem нет. */
+  exactRequiredInItemUnit: number | null;
+  /** Кандидаты на замену (family_compatible, другой exactKey, остаток > 0) — у дрожжей всегда []. */
+  substitutes: SubstituteInventoryCandidate[];
+  /** EBC/альфа строки рецепта (для сравнения с candidate.comparisonValue) — null без техданных. */
+  lineComparisonValue: number | null;
+};
+
+export const buildBrewBatchConsumeLinePlanEntries = async (
+  userId: string,
+  recipeId: string,
+  options: ScopedOptions = {}
+): Promise<{
+  entries: BrewBatchConsumeLinePlanEntry[];
+  inventoryItemsById: Map<string, InventoryListItemDto>;
+}> => {
+  const client = options.client ?? db;
+  const recipe = await ensureBrewableRecipe(userId, recipeId, client);
+  const volumeFactor = resolveRecipeScaleFactor(recipe, options.targetBatchVolumeL);
+  const lines = await client.query.recipeIngredients.findMany({
+    where: eq(recipeIngredients.recipeId, recipeId)
+  });
+  const scaleLine = await buildLineScaleResolver(lines, volumeFactor, options.efficiencyFactor, client);
+
+  const catalogIds = [...new Set(
+    lines.map((line) => line.ingredientCatalogItemId).filter((id): id is string => Boolean(id))
+  )];
+  const catalogRows = catalogIds.length
+    ? await client.query.ingredients.findMany({ where: inArray(ingredients.id, catalogIds) })
+    : [];
+  const catalogById = new Map(catalogRows.map((row) => [row.id, row]));
+
+  // Ленивый импорт: match-service.ts и inventory/service.ts тянут за собой
+  // listSystemCurrencyRates ("server-only") — см. комментарий у импортов вверху
+  // файла. Загружаем только здесь, в момент реального построения плана.
+  const [
+    { buildInventoryEntries, findSubstituteCandidatesForLine, indexInventoryEntries, profileFromRecipeIngredientRow, resolveIngredientMatchComparisonValue },
+    { listInventoryForUser }
+  ] = await Promise.all([
+    import("./match-service"),
+    import("../inventory/service")
+  ]);
+
+  // Замены сравниваются по РЕАЛЬНОМУ остатку и техданным склада (та же enriched-
+  // выдача, что у матча "склад ↔ рецепт", см. features/recipes/match-service.ts) —
+  // сырых userIngredients здесь недостаточно: нужны EBC/альфа для сортировки и
+  // человеческая единица отображения (источник/бренд, категория, technicalData).
+  const inventoryItems = await listInventoryForUser(userId);
+  const index = indexInventoryEntries(buildInventoryEntries(inventoryItems));
+  const inventoryItemsById = new Map(inventoryItems.map((item) => [item.id, item]));
+
+  const entries: BrewBatchConsumeLinePlanEntry[] = [];
+  for (const line of lines) {
+    const factor = scaleLine(line);
+    const lineProfile = profileFromRecipeIngredientRow(line, catalogById.get(line.ingredientCatalogItemId ?? ""));
+    const lineUnit = parseInventoryUnit(line.amountNormalizedUnit);
+    const requiredQuantityNormalized = roundTo(line.amountNormalizedQuantity * factor, 3);
+
+    // Тот же сквозной подборщик, что у реального списания
+    // (autoAllocateRecipeInventoryFromStock): уважает лот, закреплённый в
+    // line.inventorySelectionMeta, и только при его отсутствии/непригодности
+    // берёт лучший лот по exactKey. Звать здесь findOwnedInventoryItemByRecipeLineSource
+    // напрямую — баг: превью показало бы «хватает» по большому лоту, пока
+    // списание упирается в закреплённый маленький.
+    const exactItem = await resolveOwnedInventoryItemForRecipeLine(
+      userId,
+      line,
+      readInventoryItemIdFromMeta(line.inventorySelectionMeta),
+      factor,
+      client
+    );
+    const exactRequiredInItemUnit = exactItem
+      ? await resolveRequiredQuantityInInventoryItemUnit(line, exactItem, factor, client)
+      : null;
+
+    const substitutes = findSubstituteCandidatesForLine(lineProfile, lineUnit, index);
+    const lineComparisonValue = resolveIngredientMatchComparisonValue(lineProfile.category, lineProfile.technicalData);
+
+    entries.push({
+      line,
+      lineProfile,
+      factor,
+      requiredQuantityNormalized,
+      exactItem,
+      exactRequiredInItemUnit,
+      substitutes,
+      lineComparisonValue
+    });
+  }
+
+  return { entries, inventoryItemsById };
 };

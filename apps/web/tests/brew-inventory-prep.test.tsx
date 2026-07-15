@@ -6,7 +6,8 @@ import { describe, expect, it, vi } from "vitest";
 // клиентского компонента не тянул за собой server actions (db-слой).
 vi.mock("@/app/(app)/app/brew-batches/[id]/actions", () => ({
   consumeBrewBatchInventoryAction: vi.fn(async () => ({ ok: true, message: "ok" })),
-  restoreBrewBatchInventoryAction: vi.fn(async () => ({ ok: true, message: "ok" }))
+  restoreBrewBatchInventoryAction: vi.fn(async () => ({ ok: true, message: "ok" })),
+  previewBrewBatchInventoryAction: vi.fn(async () => ({ ok: true, message: "", plan: undefined }))
 }));
 
 import { BrewInventory } from "../features/brew-batches/components/brew-inventory";
@@ -246,5 +247,74 @@ describe("BrewInventory — списали меньше, чем нужно (кл
 
     expect(html).toContain("−4 кг");
     expect(html).not.toMatch(/−4 кг[\s\S]{0,40}из/);
+  });
+});
+
+// Ф2: «Списать со склада» больше не списывает сразу — открывает диалог-предпросмотр
+// (ConsumeInventoryDialog, @nb/ui Dialog). Пока диалог закрыт (дефолт), Radix Dialog
+// не рендерит содержимое вовсе (проверено эмпирически renderToStaticMarkup) —
+// значит кнопка по-прежнему видна, а сам предпросмотр в разметке отсутствует.
+describe("BrewInventory — Ф2: кнопка открывает предпросмотр, не списывает напрямую", () => {
+  const freshView: BrewBatchInventoryView = {
+    brewBatchId: "bb-4",
+    recipeId: "r-1",
+    hasConsumed: false,
+    canRestore: false,
+    batchAlreadyConsumed: false,
+    consumed: [],
+    log: []
+  };
+
+  it("кнопка «Списать со склада» видна, содержимое диалога-предпросмотра в разметку не попадает (диалог закрыт по умолчанию)", () => {
+    const html = renderToStaticMarkup(<BrewInventory brewBatchId="bb-4" view={freshView} status="planned" />);
+
+    expect(html).toContain("Списать со склада");
+    // Заголовок диалога предпросмотра не должен просочиться, пока он закрыт.
+    expect(html).not.toContain("Считаем");
+  });
+});
+
+// Ф2: строка-замена в виде «что списано» честно называет исходный продукт рецепта,
+// вместо которого списана эта позиция (substitutedFor из серверного контракта).
+describe("BrewInventory — Ф2: пометка «вместо ...» у списанной замены", () => {
+  const substitutedView: BrewBatchInventoryView = {
+    brewBatchId: "bb-5",
+    recipeId: "r-1",
+    hasConsumed: true,
+    canRestore: true,
+    batchAlreadyConsumed: true,
+    consumed: [
+      {
+        inventoryItemId: "ii-1",
+        ingredientDisplayName: "Курский пилс",
+        quantityNormalized: 5000,
+        normalizedUnit: "g",
+        requiredQuantityNormalized: null,
+        substitutedFor: "Beerex пилснер"
+      }
+    ],
+    log: []
+  };
+
+  it("показывает и списанную позицию, и исходную строку рецепта, которую она закрыла", () => {
+    const html = renderToStaticMarkup(<BrewInventory brewBatchId="bb-5" view={substitutedView} status="brewing" />);
+
+    expect(html).toContain("Курский пилс");
+    expect(html).toContain("вместо «Beerex пилснер»");
+  });
+
+  it("не показывает пометку, если substitutedFor не пришёл (списано с точной позиции)", () => {
+    const html = renderToStaticMarkup(
+      <BrewInventory
+        brewBatchId="bb-5"
+        view={{
+          ...substitutedView,
+          consumed: [{ ...substitutedView.consumed[0], substitutedFor: null }]
+        }}
+        status="brewing"
+      />
+    );
+
+    expect(html).not.toContain("вместо «");
   });
 });

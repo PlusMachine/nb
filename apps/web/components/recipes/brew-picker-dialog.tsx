@@ -229,6 +229,8 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
         // Фидбэк списания довозим query-параметрами — страница партии покажет
         // тост (см. brew-stock-notice.tsx). Параметры добавляем, только если
         // списание вообще запрашивалось (иначе про склад на странице ни слова).
+        // consumeSubs — компактный флаг (не свободный текст в URL): «на складе
+        // есть замены, которые exact-only подбор не подставил сам».
         const params = new URLSearchParams();
         if (result.consume) {
           if (result.consume.ok) {
@@ -236,6 +238,9 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
             params.set("items", String(result.consume.itemCount));
           } else {
             params.set("stock", result.consume.code);
+          }
+          if (result.consume.hasSubstitutes) {
+            params.set("consumeSubs", "1");
           }
         }
         const query = params.toString();

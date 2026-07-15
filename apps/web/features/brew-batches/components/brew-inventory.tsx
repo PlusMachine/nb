@@ -5,16 +5,14 @@ import Link from "next/link";
 import { ChevronRight, Loader2, PackageMinus, Undo2 } from "lucide-react";
 
 import { Button } from "@nb/ui";
-import {
-  consumeBrewBatchInventoryAction,
-  restoreBrewBatchInventoryAction
-} from "@/app/(app)/app/brew-batches/[id]/actions";
+import { restoreBrewBatchInventoryAction } from "@/app/(app)/app/brew-batches/[id]/actions";
 import {
   type BrewBatchInventoryLogEntry,
   type BrewBatchInventoryView,
   type BrewBatchStatus
 } from "@/features/brew-batches/contracts";
 import { pluralize } from "@/lib/pluralize";
+import { ConsumeInventoryDialog, type ConsumeDialogResult } from "./consume-preview-dialog";
 
 // Человекочитаемое количество из нормализованного (g→kg, ml→l при больших значениях).
 // Точность — как её пишет пивовар, а не как хранит БД: варка в объёме, отличном от
@@ -59,6 +57,7 @@ export function BrewInventory({
 }) {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
+  const [consumeDialogOpen, setConsumeDialogOpen] = useState(false);
   const inFlight = useRef(false);
 
   // Списание — свойство ЭТОЙ партии: варка того же рецепта во второй раз (пока
@@ -116,8 +115,17 @@ export function BrewInventory({
         <ul className="divide-y divide-border">
           {view.consumed.map((line) => (
             <li key={line.inventoryItemId} className="flex items-center justify-between gap-3 py-2">
-              <span className="min-w-0 flex-1 truncate text-sm text-foreground">
-                {line.ingredientDisplayName ?? "Ингредиент"}
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm text-foreground">
+                  {line.ingredientDisplayName ?? "Ингредиент"}
+                </span>
+                {/* Позиция списана как замена другой строки рецепта (Ф2, opt-in
+                    в предпросмотре) — не свой продукт, честно показываем, вместо чего. */}
+                {line.substitutedFor ? (
+                  <span className="block truncate text-xs text-muted-foreground">
+                    вместо «{line.substitutedFor}»
+                  </span>
+                ) : null}
               </span>
               {/* Списали меньше, чем нужно (дрожжей на складе не хватило — списание
                   ужалось до остатка): показываем и то, и другое, иначе «Списано»
@@ -157,15 +165,18 @@ export function BrewInventory({
 
       <div className="flex flex-wrap gap-2">
         {canConsume ? (
-          <Button
-            type="button"
-            size="sm"
-            onClick={() => run(() => consumeBrewBatchInventoryAction(brewBatchId))}
-            disabled={busy}
-          >
-            {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <PackageMinus className="h-4 w-4" aria-hidden />}
-            Списать со склада
-          </Button>
+          <>
+            <Button type="button" size="sm" onClick={() => setConsumeDialogOpen(true)} disabled={busy}>
+              <PackageMinus className="h-4 w-4" aria-hidden />
+              Списать со склада
+            </Button>
+            <ConsumeInventoryDialog
+              open={consumeDialogOpen}
+              brewBatchId={brewBatchId}
+              onOpenChange={setConsumeDialogOpen}
+              onConsumed={(result: ConsumeDialogResult) => setMessage({ ok: result.ok, text: result.message })}
+            />
+          </>
         ) : null}
 
         {view.canRestore ? (

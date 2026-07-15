@@ -13,16 +13,26 @@ import { roundTo } from "@nb/brewing-core";
 
 import {
   autoAllocateRecipeInventoryFromStock,
+  buildBrewBatchConsumeLinePlanEntries,
   consumeRecipeInventoryAllocations,
   convertNormalizedQuantityToEnteredUnit,
   hasConsumedAllocationsForBatch,
+  isPresenceBasedRecipeLine,
   loadInventoryItemPackEquivalent,
   type InventoryDbClient
 } from "../recipes/inventory-service";
 import { readBrewPlanBatchVolumeL, readBrewPlanEfficiencyFactor } from "../recipes/batch-scale";
+import { formatInventoryQuantityForDisplay } from "../inventory/display";
+import { parseInventoryUnit } from "../inventory/units";
+import type { IngredientCategory, IngredientTechnicalData, IngredientType } from "../ingredients/contracts";
 import { getBrewBatchById } from "./service";
 import type {
+  BrewBatchConsumePlan,
+  BrewBatchConsumePlanCandidate,
+  BrewBatchConsumePlanLine,
+  BrewBatchConsumeSubstitution,
   BrewBatchInventoryConsumedLine,
+  BrewBatchInventoryConsumeResult,
   BrewBatchInventoryLogEntry,
   BrewBatchInventoryView
 } from "./contracts";
@@ -122,7 +132,13 @@ const loadBatchConsumedAllocations = async (
 type ConsumedAllocationRow = Awaited<ReturnType<typeof loadBatchConsumedAllocations>>[number];
 
 /** Требование рецепта по позиции склада — то, что аллокация просила ДО клампа. */
-type ItemRequirement = { requiredNormalized: number; unit: string; clamped: boolean };
+type ItemRequirement = {
+  requiredNormalized: number;
+  unit: string;
+  clamped: boolean;
+  /** Ф2: имя ИСХОДНОЙ строки рецепта, если позиция списана как ЗАМЕНА. */
+  substitutedForDisplayName: string | null;
+};
 
 // Дрожжей на складе меньше, чем требует рецепт → списание ужимается до остатка
 // (см. isPresenceBasedRecipeLine в recipes/inventory-service.ts) и метит аллокацию
@@ -138,6 +154,9 @@ const buildRequirementsByItem = (allocations: ConsumedAllocationRow[]): Map<stri
       : {};
     const requested = meta.requestedQuantityNormalized;
     const clamped = meta.clamped === true;
+    const substitutedForDisplayName = typeof meta.substitutedForDisplayName === "string"
+      ? meta.substitutedForDisplayName
+      : null;
     const required = typeof requested === "number" && Number.isFinite(requested) && requested > 0
       ? requested
       : allocation.allocatedQuantityNormalized;
@@ -151,7 +170,8 @@ const buildRequirementsByItem = (allocations: ConsumedAllocationRow[]): Map<stri
       requirements.set(allocation.inventoryItemId, {
         requiredNormalized: required,
         unit: allocation.allocatedNormalizedUnit,
-        clamped
+        clamped,
+        substitutedForDisplayName
       });
       continue;
     }
@@ -164,6 +184,7 @@ const buildRequirementsByItem = (allocations: ConsumedAllocationRow[]): Map<stri
 
     current.requiredNormalized = roundTo(current.requiredNormalized + required, 3);
     current.clamped = current.clamped || clamped;
+    current.substitutedForDisplayName = current.substitutedForDisplayName ?? substitutedForDisplayName;
   }
 
   return requirements;
@@ -215,7 +236,8 @@ const buildView = async (
         ingredientDisplayName: names.get(inventoryItemId) ?? null,
         quantityNormalized,
         normalizedUnit: entry.unit,
-        requiredQuantityNormalized
+        requiredQuantityNormalized,
+        substitutedFor: requirement?.substitutedForDisplayName ?? null
       });
     }
   }
@@ -254,6 +276,192 @@ export const getBrewBatchInventoryView = async (
   return buildView(userId, brewBatchId, batch.recipeId);
 };
 
+// --- Ф2: предпросмотр списания с заменами по match-group ---------------------
+
+// Человекочитаемое количество ("5 кг", "2 пачки") — существующим хелпером
+// форматирования единиц (features/inventory/display.ts), не изобретаем своё.
+const formatPlanQuantityLabel = (
+  quantityNormalized: number,
+  normalizedUnit: string,
+  category: IngredientCategory | null,
+  type: IngredientType | null,
+  technicalData: IngredientTechnicalData | null
+): string => {
+  const unit = parseInventoryUnit(normalizedUnit) ?? "g";
+  return formatInventoryQuantityForDisplay({
+    enteredQuantity: quantityNormalized,
+    enteredUnit: unit,
+    normalizedQuantity: quantityNormalized,
+    normalizedUnit: unit,
+    category: category ?? undefined,
+    type: type ?? undefined,
+    technicalData
+  });
+};
+
+const roundToOneDecimal = (value: number): number => Math.round(value * 10) / 10;
+
+// "EBC 4.1 ↔ 5.3" (солод) / "α 12.5 ↔ 12.7%" (хмель) — null, когда сравнивать
+// нечего (нет техданных хотя бы у одной из сторон) или категория не поддерживает
+// сравнение (дрожжи сюда не попадают вовсе — у них замен нет).
+const formatComparisonLabel = (
+  category: IngredientCategory | null,
+  lineValue: number | null,
+  candidateValue: number | null
+): string | null => {
+  if (lineValue == null || candidateValue == null) {
+    return null;
+  }
+  if (category === "fermentable") {
+    return `EBC ${roundToOneDecimal(candidateValue)} ↔ ${roundToOneDecimal(lineValue)}`;
+  }
+  if (category === "hop") {
+    return `α ${roundToOneDecimal(candidateValue)}% ↔ ${roundToOneDecimal(lineValue)}%`;
+  }
+  return null;
+};
+
+// Деталка каталога при наличии привязки строки (тот же формат URL, что и
+// остальная витрина каталога, см. features/shopping/service.ts), иначе — поиск
+// по имени. Показывается только для kind="missing" (см. previewBrewBatchConsumption).
+const buildCatalogSearchHref = (
+  catalogItemId: string | null,
+  customId: string | null,
+  displayName: string
+): string => {
+  if (catalogItemId) {
+    return `/catalog/system/${catalogItemId}`;
+  }
+  if (customId) {
+    return `/catalog/custom/${customId}`;
+  }
+  return `/catalog?q=${encodeURIComponent(displayName)}`;
+};
+
+/**
+ * Предпросмотр списания (владелец утвердил механику: показывается ПЕРЕД каждым
+ * списанием). Строки классифицируются:
+ * - "exact" / "exact_short" — на складе есть та же самая позиция (exactKey),
+ *   короче требуемого или нет;
+ * - "substitute_available" — точной позиции нет, но есть кандидат той же группы
+ *   (groupKey, family_compatible) — типичный случай "курский пилс ~ Beerex";
+ * - "missing" — ни того, ни другого (дрожжи сюда попадают при отсутствии
+ *   штамма: замен у них не бывает вовсе).
+ *
+ * Тот же масштаб партии и тот же exact-подбор, что и у самого списания
+ * (buildBrewBatchConsumeLinePlanEntries общий с consumeBrewBatchInventory) —
+ * иначе предпросмотр обещал бы одно, а списание делало бы другое.
+ */
+export const previewBrewBatchConsumption = async (
+  userId: string,
+  brewBatchId: string
+): Promise<BrewBatchConsumePlan | null> => {
+  const batch = await getBrewBatchById(userId, brewBatchId);
+  if (!batch) {
+    return null;
+  }
+
+  const alreadyConsumed = await hasConsumedAllocationsForBatch(userId, brewBatchId);
+  const recipeId = batch.recipeId;
+  if (!recipeId) {
+    // Источник рецепта недоступен (варка без клона, рецепт удалён/скрыт) —
+    // авто-списание невозможно в принципе, строить план нечего.
+    return { brewBatchId, alreadyConsumed, lines: [], exactCount: 0, substituteOnlyCount: 0, missingCount: 0 };
+  }
+
+  const targetBatchVolumeL = readBrewPlanBatchVolumeL(batch.brewPlanSnapshot);
+  const efficiencyFactor = readBrewPlanEfficiencyFactor(batch.brewPlanSnapshot);
+
+  const { entries, inventoryItemsById } = await buildBrewBatchConsumeLinePlanEntries(userId, recipeId, {
+    targetBatchVolumeL,
+    efficiencyFactor
+  });
+
+  const lines: BrewBatchConsumePlanLine[] = entries.map((entry) => {
+    const displayName = entry.line.ingredientDisplayNameSnapshot ?? "—";
+    const category = entry.lineProfile.category ?? null;
+    const type = entry.lineProfile.type ?? null;
+    const lineTechnicalData = entry.lineProfile.technicalData ?? null;
+
+    const requiredLabel = formatPlanQuantityLabel(
+      entry.requiredQuantityNormalized,
+      entry.line.amountNormalizedUnit,
+      category,
+      type,
+      lineTechnicalData
+    );
+
+    const exact: BrewBatchConsumePlanCandidate | null = entry.exactItem
+      ? {
+        inventoryItemId: entry.exactItem.id,
+        name: entry.exactItem.ingredientDisplayNameSnapshot ?? displayName,
+        availableQuantity: entry.exactItem.normalizedQuantity,
+        availableLabel: formatPlanQuantityLabel(
+          entry.exactItem.normalizedQuantity,
+          entry.exactItem.normalizedUnit,
+          category,
+          type,
+          lineTechnicalData
+        ),
+        isShort: entry.exactRequiredInItemUnit != null
+          && entry.exactItem.normalizedQuantity + CONSUME_EPSILON < entry.exactRequiredInItemUnit,
+        comparison: null
+      }
+      : null;
+
+    const substitutes: BrewBatchConsumePlanCandidate[] = entry.substitutes.map((candidate) => {
+      const item = inventoryItemsById.get(candidate.itemId);
+      return {
+        inventoryItemId: candidate.itemId,
+        name: item?.ingredientDisplayNameSnapshot ?? item?.source.displayName ?? displayName,
+        availableQuantity: candidate.available,
+        availableLabel: formatPlanQuantityLabel(
+          candidate.available,
+          candidate.normalizedUnit ?? entry.line.amountNormalizedUnit,
+          category,
+          type,
+          candidate.technicalData ?? null
+        ),
+        isShort: candidate.available + CONSUME_EPSILON < entry.requiredQuantityNormalized,
+        comparison: formatComparisonLabel(category, entry.lineComparisonValue, candidate.comparisonValue)
+      };
+    });
+
+    const kind: BrewBatchConsumePlanLine["kind"] = exact
+      ? (exact.isShort ? "exact_short" : "exact")
+      : (substitutes.length > 0 ? "substitute_available" : "missing");
+
+    return {
+      recipeIngredientId: entry.line.id,
+      displayName,
+      category,
+      requiredLabel,
+      requiredQuantityNormalized: entry.requiredQuantityNormalized,
+      kind,
+      // Тот же предикат, что и у самого списания (consumeRecipeInventoryAllocations):
+      // короткий exact дрожжей клампится (спишем остаток), у прочих категорий —
+      // роняет ВСЮ транзакцию INSUFFICIENT_STOCK. Диалог обязан честно различать
+      // эти два случая (см. ConsumeLineRow), иначе "спишем остаток" врало бы для
+      // категорий, которые сервер на деле блокирует целиком.
+      exactClamps: isPresenceBasedRecipeLine(entry.line),
+      exact,
+      substitutes,
+      catalogSearchHref: kind === "missing"
+        ? buildCatalogSearchHref(entry.line.ingredientCatalogItemId, entry.line.userCustomIngredientId, displayName)
+        : null
+    };
+  });
+
+  return {
+    brewBatchId,
+    alreadyConsumed,
+    lines,
+    exactCount: lines.filter((line) => line.kind === "exact" || line.kind === "exact_short").length,
+    substituteOnlyCount: lines.filter((line) => line.kind === "substitute_available").length,
+    missingCount: lines.filter((line) => line.kind === "missing").length
+  };
+};
+
 /**
  * Списать ингредиенты рецепта со склада на эту партию: авто-подбор склада под
  * строки + consume активных аллокаций этой партии. Защита:
@@ -271,11 +479,19 @@ export const getBrewBatchInventoryView = async (
  * масштабировал строки под дефолтный профиль оборудования, а списание брало
  * количества рецепта как есть: «Хватает всего» на странице соседствовало с
  * INSUFFICIENT_STOCK по кнопке.
+ *
+ * opts.substitutions (Ф2) — утверждённые ПОЛЬЗОВАТЕЛЕМ в предпросмотре замены
+ * (opt-in, галочка снята по умолчанию): позиция другой группы-заменителя вместо
+ * точного exactKey строки. Каждая пересчитывается и валидируется здесь заново
+ * (см. buildBrewBatchConsumeLinePlanEntries) — подделанный запрос с чужой
+ * позицией/не тем groupKey роняет ВСЮ операцию (INVALID_SUBSTITUTION), а не
+ * тихо игнорирует замену.
  */
 export const consumeBrewBatchInventory = async (
   userId: string,
-  brewBatchId: string
-): Promise<BrewBatchInventoryView> => {
+  brewBatchId: string,
+  opts: { substitutions?: BrewBatchConsumeSubstitution[] } = {}
+): Promise<BrewBatchInventoryConsumeResult> => {
   const batch = await getBrewBatchById(userId, brewBatchId);
   if (!batch) {
     throw new Error("NOT_FOUND");
@@ -298,6 +514,47 @@ export const consumeBrewBatchInventory = async (
   // своей: гид сказал бы «засыпьте 3.85 кг», а со склада ушло бы 3.33 кг.
   const efficiencyFactor = readBrewPlanEfficiencyFactor(batch.brewPlanSnapshot);
 
+  // План считается ДО транзакции: он же — источник валидации замен (ownership +
+  // groupKey уже встроены в buildBrewBatchConsumeLinePlanEntries, см. там) и счётчика
+  // "ещё остались строки, которые можно закрыть заменой" (substituteAvailableCount).
+  // Гонка с самим списанием не страшна: реальную нехватку всё равно ловит
+  // INSUFFICIENT_STOCK внутри транзакции — здесь только легитимность выбора.
+  const { entries } = await buildBrewBatchConsumeLinePlanEntries(userId, recipeId, {
+    targetBatchVolumeL,
+    efficiencyFactor
+  });
+  const entryByLineId = new Map(entries.map((entry) => [entry.line.id, entry]));
+
+  const requestedSubstitutions = opts.substitutions ?? [];
+  let substitutionOverrides: Map<string, string> | undefined;
+  if (requestedSubstitutions.length > 0) {
+    const overrides = new Map<string, string>();
+    for (const substitution of requestedSubstitutions) {
+      const entry = entryByLineId.get(substitution.recipeIngredientId);
+      const isValidCandidate = entry?.substitutes.some(
+        (candidate) => candidate.itemId === substitution.inventoryItemId
+      ) ?? false;
+      if (!isValidCandidate) {
+        throw new Error("INVALID_SUBSTITUTION");
+      }
+      overrides.set(substitution.recipeIngredientId, substitution.inventoryItemId);
+    }
+    substitutionOverrides = overrides;
+  }
+
+  // Строки, оставшиеся БЕЗ утверждённой замены и без достаточного точного
+  // совпадения, но у которых есть кандидаты на замену — подсказка для сообщения
+  // после списания ("часть позиций можно закрыть заменами").
+  const substituteAvailableCount = entries.filter((entry) => {
+    if (substitutionOverrides?.has(entry.line.id)) {
+      return false;
+    }
+    const exactSufficient = entry.exactItem != null
+      && entry.exactRequiredInItemUnit != null
+      && entry.exactItem.normalizedQuantity + CONSUME_EPSILON >= entry.exactRequiredInItemUnit;
+    return !exactSufficient && entry.substitutes.length > 0;
+  }).length;
+
   await db.transaction(async (tx) => {
     const locked = await lockBrewBatchRow(tx, userId, brewBatchId);
     // Статус перечитываем ПОД блокировкой: прочитанный до транзакции он мог
@@ -316,6 +573,7 @@ export const consumeBrewBatchInventory = async (
       brewBatchId,
       targetBatchVolumeL,
       efficiencyFactor,
+      substitutionOverrides,
       client: tx
     });
     await consumeRecipeInventoryAllocations(userId, recipeId, {
@@ -326,7 +584,8 @@ export const consumeBrewBatchInventory = async (
     });
   });
 
-  return buildView(userId, brewBatchId, recipeId);
+  const view = await buildView(userId, brewBatchId, recipeId);
+  return { ...view, substituteAvailableCount };
 };
 
 /**

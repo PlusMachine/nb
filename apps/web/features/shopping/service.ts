@@ -5,7 +5,7 @@ import { computeRecipeMatchesForBrewBatches, computeRecipeMatchesForUser } from 
 import { listOwnRecipeRefs, listSavedRecipes, type OwnRecipeRefsResult } from "../recipes/service";
 import { resolveShoppingOpportunityTier } from "../recipes/brewability-badge";
 import type { RecipeMatchDto, RecipeMatchLineDto, PublicRecipeListItem } from "../recipes/contracts";
-import { buildIngredientCatalogActionHref } from "../ingredients/catalog-links";
+import { buildIngredientCatalogActionHref, buildIngredientNameActionHref } from "../ingredients/catalog-links";
 import type { IngredientCategory } from "../ingredients/contracts";
 import { formatInventoryQuantityInputValue } from "../inventory/display";
 import { inventoryCategoryLabels, inventoryCategoryOrder } from "../inventory/page-model";
@@ -32,11 +32,19 @@ const formatQuantityLabel = (quantityToBuy: number, unit: InventoryUnit) =>
 // расходилось между ними. quantity/unit — nullable (FIX-1): у строки §3.3 без
 // suggestedAddQuantity/Unit амаунта нет, addToStockHref в этом случае просто
 // собирается без addQty/addUnit (buildIngredientCatalogActionHref это умеет).
+//
+// П3: у строки без каталожной/кастомной привязки (живёт только именем из
+// снапшота — типично для импортированных рецептов) раньше оба href были null
+// и UI показывал тупик без действий. Фолбэк: catalogHref ведёт в поиск по
+// каталогу (`/catalog?q=`), addToStockHref — деeplink «Добавить свой» с
+// предзаполненным именем/количеством/категорией (buildIngredientNameActionHref).
 const resolveIngredientHrefs = (
   catalogId: string | null,
   customId: string | null,
   quantity: number | null,
-  unit: InventoryUnit | null
+  unit: InventoryUnit | null,
+  displayName: string,
+  category: IngredientCategory | null
 ): { catalogHref: string | null; addToStockHref: string | null } => {
   const amount = quantity != null && unit != null ? { quantity, unit } : null;
   if (catalogId) {
@@ -51,7 +59,10 @@ const resolveIngredientHrefs = (
       addToStockHref: buildIngredientCatalogActionHref("/app/ingredients", "custom", customId, amount)
     };
   }
-  return { catalogHref: null, addToStockHref: null };
+  return {
+    catalogHref: `/catalog?q=${encodeURIComponent(displayName)}`,
+    addToStockHref: buildIngredientNameActionHref("/app/ingredients", displayName, amount, category)
+  };
 };
 
 // Ключ дедупликации строки §3.2: по каталожной/кастомной привязке, иначе по
@@ -286,7 +297,14 @@ export const buildShoppingListForUser = async (
   // создании строки (на нехватке только первой варки) и не пересобирался при
   // досуммировании второй — количество в ссылке расходилось с quantityLabel.
   const finalLines: ShoppingListLineDto[] = [...aggregated.entries()].map(([key, agg]) => {
-    const { catalogHref, addToStockHref } = resolveIngredientHrefs(agg.catalogId, agg.customId, agg.quantityToBuy, agg.unit);
+    const { catalogHref, addToStockHref } = resolveIngredientHrefs(
+      agg.catalogId,
+      agg.customId,
+      agg.quantityToBuy,
+      agg.unit,
+      agg.ingredientDisplayName,
+      agg.category
+    );
     return {
       key,
       ingredientDisplayName: agg.ingredientDisplayName,
@@ -362,14 +380,17 @@ export const buildShoppingListForUser = async (
         .map((line) => {
           const quantityToBuy = line.suggestedAddQuantity != null ? roundTo(line.suggestedAddQuantity, 3) : null;
           const unit = line.suggestedAddUnit ?? null;
+          const lineDisplayName = line.ingredientDisplayName?.trim() || "Ингредиент";
           const { catalogHref, addToStockHref } = resolveIngredientHrefs(
             line.ingredientCatalogItemId,
             line.userCustomIngredientId,
             quantityToBuy,
-            unit
+            unit,
+            lineDisplayName,
+            line.category
           );
           return {
-            ingredientDisplayName: line.ingredientDisplayName?.trim() || "Ингредиент",
+            ingredientDisplayName: lineDisplayName,
             quantityToBuy,
             unit,
             quantityLabel: quantityToBuy != null && unit != null ? formatQuantityLabel(quantityToBuy, unit) : null,

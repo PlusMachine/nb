@@ -90,12 +90,18 @@ export const getBrewVolumeOptionsAction = async (recipeId: string): Promise<Brew
   }
 };
 
-/** Итог опционального списания склада — доезжает до диалога честно, без глотания ошибок. */
+/** Итог опционального списания склада — доезжает до диалога честно, без глотания ошибок.
+ *  hasSubstitutes (Ф2) — на складе есть кандидаты на замену, которые «Сварить
+ *  самому» не подставляет сам (exact-only): точный подбор не хватает/не находит
+ *  позицию, но по match-group есть чем закрыть. Флаг, а не свободный текст — сам
+ *  текст подсказки живёт в brew-stock-notice.tsx (стройка URL не носит свободный
+ *  текст, см. brew-picker-dialog.tsx). */
 export type StartBrewConsumeResult =
-  | { ok: true; itemCount: number }
+  | { ok: true; itemCount: number; hasSubstitutes?: boolean }
   | {
     ok: false;
     code: "already_consumed" | "insufficient_stock" | "recipe_unavailable" | "nothing_to_consume" | "error";
+    hasSubstitutes?: boolean;
   };
 
 export type StartBrewFromRecipeResult =
@@ -156,9 +162,16 @@ export const startBrewFromRecipeAction = async (input: {
         // Списание отработало без ошибки, но склад не тронуло: ни одна строка
         // рецепта не сопоставилась со складской позицией. Пользователь просил
         // списать — молчать об этом («Списано: 0 поз.» бодрым тоном) нельзя.
+        //
+        // «Сварить самому» списывает exact-only (без диалога-предпросмотра с
+        // заменами, Ф2) — если у оставшихся строк ЕСТЬ кандидаты на замену той же
+        // группы, честно подсказываем: точный подбор их не видит. Списание
+        // одноразовое (hasConsumedAllocationsForBatch) — применить замену можно
+        // только через «Вернуть на склад» и повторное списание в «Списать со
+        // склада» на странице партии, а не «на этой же странице кнопкой».
         consume = view.consumed.length > 0
-          ? { ok: true, itemCount: view.consumed.length }
-          : { ok: false, code: "nothing_to_consume" };
+          ? { ok: true, itemCount: view.consumed.length, hasSubstitutes: view.substituteAvailableCount > 0 }
+          : { ok: false, code: "nothing_to_consume", hasSubstitutes: view.substituteAvailableCount > 0 };
       } catch (error) {
         const message = error instanceof Error ? error.message : "";
         consume = consumeErrorCodeByMessage[message] ?? { ok: false, code: "error" };

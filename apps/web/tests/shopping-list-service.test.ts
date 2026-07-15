@@ -146,6 +146,36 @@ describe("buildShoppingListForUser — §3.2 агрегация и фикс ба
     ]);
   });
 
+  // П3: строка-нехватка без каталожной/кастомной привязки (живёт только именем
+  // из снапшота — типично для импортированных рецептов) раньше давала оба href
+  // null → тупик без действий. Теперь есть фолбэк на поиск по каталогу и
+  // deeplink «Добавить свой».
+  it("П3: a gap line without a catalog/custom link gets a catalog-search href and a name deeplink instead of null/null", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([
+      plannedBatch({ id: "bb-1", recipeId: "r-1" })
+    ]);
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [
+        missingLine({
+          ingredientDisplayName: "Кориандр молотый",
+          category: "consumable",
+          ingredientCatalogItemId: null,
+          userCustomIngredientId: null,
+          suggestedAddQuantity: 10,
+          suggestedAddUnit: "g"
+        })
+      ])
+    });
+
+    const dto = await buildShoppingListForUser("u-1");
+
+    const line = dto.groups.flatMap((group) => group.items)[0];
+    expect(line.catalogHref).toBe("/catalog?q=%D0%9A%D0%BE%D1%80%D0%B8%D0%B0%D0%BD%D0%B4%D1%80%20%D0%BC%D0%BE%D0%BB%D0%BE%D1%82%D1%8B%D0%B9");
+    expect(line.addToStockHref).toBe(
+      "/app/ingredients?addName=%D0%9A%D0%BE%D1%80%D0%B8%D0%B0%D0%BD%D0%B4%D1%80%20%D0%BC%D0%BE%D0%BB%D0%BE%D1%82%D1%8B%D0%B9&addQty=10&addUnit=g&addCategory=consumable"
+    );
+  });
+
   it("batches the inventory match into a single call for both brews (§1.5)", async () => {
     (listBrewBatchesForUser as Mock).mockResolvedValue([
       plannedBatch({ id: "bb-1", recipeId: "r-1" }),
@@ -431,6 +461,72 @@ describe("buildShoppingListForUser — §3.3 «Почти можно свари�
     expect(line.unit).toBeNull();
     expect(line.quantityLabel).toBeNull();
     expect(line.addToStockHref).toBe("/app/ingredients?addSource=catalog&addId=cat-noamt");
+  });
+
+  it("П3: an opportunity gap line without any link falls back to catalog search + name deeplink", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([]);
+    (listSavedRecipes as Mock).mockResolvedValue([savedRef("r-name", "name-slug", "Импортированный рецепт")]);
+    (computeRecipeMatchesForUser as Mock).mockResolvedValue({
+      "r-name": matchDto("r-name", [
+        ...Array.from({ length: 8 }, (_, i) => coveredLine({ recipeIngredientId: `cov-${i}` })),
+        missingLine({
+          recipeIngredientId: "miss-name",
+          ingredientDisplayName: "Ирландский мох",
+          category: "consumable",
+          ingredientCatalogItemId: null,
+          userCustomIngredientId: null,
+          suggestedAddQuantity: null,
+          suggestedAddUnit: null
+        })
+      ])
+    });
+
+    const dto = await buildShoppingListForUser("u-1", { includeOpportunities: true });
+
+    expect(dto.opportunities).toHaveLength(1);
+    const line = dto.opportunities[0].lines[0];
+    expect(line.catalogHref).toBe("/catalog?q=%D0%98%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D1%81%D0%BA%D0%B8%D0%B9%20%D0%BC%D0%BE%D1%85");
+    expect(line.addToStockHref).toBe(
+      "/app/ingredients?addName=%D0%98%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D1%81%D0%BA%D0%B8%D0%B9%20%D0%BC%D0%BE%D1%85&addCategory=consumable"
+    );
+  });
+
+  // Ф6: match-DTO чужого сохранённого рецепта с кастомной строкой ПРИХОДИТ сюда
+  // уже с userCustomIngredientId=null (гейт владения — features/recipes/match-service.ts),
+  // так как реальный customId принадлежит автору рецепта, не смотрящему. §3.3
+  // обязана собрать те же name-only ссылки, что и П3 (без customId в hrefs).
+  it("Ф6: a foreign saved recipe's custom-ingredient gap arrives customId-nulled and gets name-only hrefs", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([]);
+    (listSavedRecipes as Mock).mockResolvedValue([savedRef("r-foreign-custom", "foreign-custom-slug", "Чужой рецепт с кастомным ингредиентом")]);
+    (computeRecipeMatchesForUser as Mock).mockResolvedValue({
+      "r-foreign-custom": matchDto("r-foreign-custom", [
+        ...Array.from({ length: 8 }, (_, i) => coveredLine({ recipeIngredientId: `cov-${i}` })),
+        missingLine({
+          recipeIngredientId: "miss-foreign-custom",
+          ingredientDisplayName: "Особый солод автора",
+          category: "fermentable",
+          ingredientCatalogItemId: null,
+          // Гейт владения уже отработал ВЫШЕ по стеку (match-service): чужой FK
+          // сюда никогда не долетает — здесь он null, как и при полном отсутствии
+          // привязки.
+          userCustomIngredientId: null,
+          suggestedAddQuantity: 500,
+          suggestedAddUnit: "g"
+        })
+      ])
+    });
+
+    const dto = await buildShoppingListForUser("u-1", { includeOpportunities: true });
+
+    expect(dto.opportunities).toHaveLength(1);
+    const line = dto.opportunities[0].lines[0];
+    // Ни каталожная, ни кастомная ссылка — только name-only фолбэк (поиск по
+    // каталогу + deeplink «Добавить свой» с именем/количеством/категорией).
+    expect(line.catalogHref).toBe("/catalog?q=%D0%9E%D1%81%D0%BE%D0%B1%D1%8B%D0%B9%20%D1%81%D0%BE%D0%BB%D0%BE%D0%B4%20%D0%B0%D0%B2%D1%82%D0%BE%D1%80%D0%B0");
+    expect(line.addToStockHref).toBe(
+      "/app/ingredients?addName=%D0%9E%D1%81%D0%BE%D0%B1%D1%8B%D0%B9%20%D1%81%D0%BE%D0%BB%D0%BE%D0%B4%20%D0%B0%D0%B2%D1%82%D0%BE%D1%80%D0%B0&addQty=500&addUnit=g&addCategory=fermentable"
+    );
+    expect(line.catalogHref).not.toContain("/catalog/custom/");
   });
 
   it("FIX-4(а): excludes ALL versions of a family when any version sits behind a planned brew", async () => {

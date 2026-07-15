@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import { Check, ChevronDown, Loader2, Plus, X } from "lucide-react";
 
 import { addRecipeIngredientToInventory, loadRecipeMatch, type RecipeMatchViewerState } from "@/app/(public)/recipes/[slug]/match-actions";
 import type { RecipeMatchDto, RecipeMatchLineDto, RecipeMatchLineStatus, RecipeMatchLabel } from "@/features/recipes/contracts";
+import { buildIngredientNameActionHref } from "@/features/ingredients/catalog-links";
 import { inventoryUnitShortLabels } from "@/features/inventory/units";
 import { redirectToLoginWithNext } from "@/lib/auth-links";
 
@@ -37,14 +39,23 @@ export function RecipeMatchPanelView({ match, onChanged }: { match: RecipeMatchD
   }
 
   const label = labelMeta[match.label];
-  // Недостающие/частичные строки с каталожной привязкой и понятным количеством —
-  // их можно докинуть на склад прямо отсюда.
+  // Недостающие/частичные строки с каталожной или кастомной привязкой и понятным
+  // количеством — их можно докинуть на склад прямо отсюда.
   const gaps = match.lines.filter(
     (line) =>
       (line.status === "missing" || line.status === "partial")
-      && line.ingredientCatalogItemId
+      && (line.ingredientCatalogItemId || line.userCustomIngredientId)
       && line.suggestedAddQuantity != null
       && line.suggestedAddUnit
+  );
+  // П3: строки-нехватки без привязки вовсе (живут только именем из снапшота —
+  // типично для импортированных рецептов) раньше были тупиком без действий.
+  // Вместо инлайн-формы — две ссылки: найти в каталоге / завести свой ингредиент.
+  const nameOnlyGaps = match.lines.filter(
+    (line) =>
+      (line.status === "missing" || line.status === "partial")
+      && !line.ingredientCatalogItemId
+      && !line.userCustomIngredientId
   );
 
   return (
@@ -64,12 +75,15 @@ export function RecipeMatchPanelView({ match, onChanged }: { match: RecipeMatchD
         </div>
       </div>
 
-      {gaps.length > 0 ? (
+      {gaps.length > 0 || nameOnlyGaps.length > 0 ? (
         <div className="space-y-1.5 border-t border-border pt-3">
           <h3 className="text-xs font-medium text-muted-foreground">Не хватает на складе</h3>
           <ul className="space-y-1.5">
             {gaps.map((line) => (
               <MatchGapRow key={line.recipeIngredientId} line={line} onAdded={onChanged} />
+            ))}
+            {nameOnlyGaps.map((line) => (
+              <MatchGapNameRow key={line.recipeIngredientId} line={line} />
             ))}
           </ul>
         </div>
@@ -131,6 +145,7 @@ function MatchGapRow({ line, onAdded }: { line: RecipeMatchLineDto; onAdded: () 
     setError(null);
     const result = await addRecipeIngredientToInventory({
       ingredientCatalogItemId: line.ingredientCatalogItemId,
+      userCustomIngredientId: line.userCustomIngredientId,
       enteredQuantity: value,
       enteredUnit: unit
     });
@@ -202,6 +217,45 @@ function MatchGapRow({ line, onAdded }: { line: RecipeMatchLineDto; onAdded: () 
         </div>
       ) : null}
       {error ? <p id={errorId} role="alert" className="mt-1 text-xs text-destructive">{error}</p> : null}
+    </li>
+  );
+}
+
+/**
+ * Строка недостающего ингредиента без каталожной/кастомной привязки (живёт
+ * только именем из снапшота — П3): вместо инлайн-формы «На склад» (нечего
+ * докидывать — позиции ещё не существует) — две ссылки на выход из тупика:
+ * найти существующий каталожный аналог или сразу завести свой ингредиент
+ * (deeplink с предзаполненным именем/количеством открывает форму «Добавить свой»).
+ */
+function MatchGapNameRow({ line }: { line: RecipeMatchLineDto }) {
+  const name = line.ingredientDisplayName ?? "Ингредиент";
+  const catalogHref = `/catalog?q=${encodeURIComponent(name)}`;
+  const amount = line.suggestedAddQuantity != null && line.suggestedAddUnit
+    ? { quantity: line.suggestedAddQuantity, unit: line.suggestedAddUnit }
+    : null;
+  const addHref = buildIngredientNameActionHref("/app/ingredients", name, amount, line.category);
+
+  return (
+    <li className="rounded-lg bg-muted px-3 py-2">
+      <div className="flex items-center justify-between gap-3">
+        <span className="min-w-0 truncate text-sm text-foreground">{name}</span>
+        <span className="flex shrink-0 items-center gap-1.5">
+          <Link
+            href={catalogHref}
+            className="inline-flex items-center rounded-full bg-card px-2.5 py-1 text-xs font-medium text-foreground ring-1 ring-border transition hover:bg-accent"
+          >
+            Найти в каталоге
+          </Link>
+          <Link
+            href={addHref}
+            className="inline-flex items-center gap-1 rounded-full bg-card px-2.5 py-1 text-xs font-medium text-foreground ring-1 ring-border transition hover:bg-accent"
+          >
+            <Plus className="h-3.5 w-3.5" aria-hidden />
+            Добавить свой
+          </Link>
+        </span>
+      </div>
     </li>
   );
 }

@@ -36,6 +36,9 @@ type Props = {
   initialCategory?: IngredientCategory | null;
   initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
   initialGroup?: string | null;
+  // Строка-нехватка без каталожной/кастомной привязки (П3): открыть модалку
+  // сразу в режиме «Добавить свой» с предзаполненным именем.
+  initialDisplayName?: string | null;
   /** Дефицит из «Чего не хватает» (UX-находка #20): предзаполнить количество/единицу. */
   initialQuantity?: string | null;
   initialUnit?: string | null;
@@ -255,6 +258,9 @@ type BodyProps = {
   initialCategory?: IngredientCategory | null;
   initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
   initialGroup?: string | null;
+  // Строка-нехватка без каталожной/кастомной привязки (П3): открыть модалку
+  // сразу в режиме «Добавить свой» с предзаполненным именем.
+  initialDisplayName?: string | null;
   initialQuantity?: string | null;
   initialUnit?: string | null;
   initialQuickStartDataByContext?: IngredientPickerQuickStartResultByContext | null;
@@ -275,6 +281,7 @@ export function AddIngredientModalBody({
   initialCategory = null,
   initialSubtype = null,
   initialGroup = null,
+  initialDisplayName = null,
   initialQuantity = null,
   initialUnit = null,
   initialQuickStartDataByContext = null,
@@ -324,7 +331,10 @@ export function AddIngredientModalBody({
     initialGroup,
     rememberedCategoryValue: readStoredAddIngredientCategoryValue()
   }).group);
-  const [mode, setMode] = useState<Mode>("catalog");
+  // Строка-нехватка без каталожной/кастомной привязки (П3): предзаполненное
+  // имя и нет existing-ингредиента для выбора — стартуем сразу в «Добавить свой»,
+  // не заставляя пользователя переключать вкладку самому.
+  const [mode, setMode] = useState<Mode>(() => (initialDisplayName ? "custom" : "catalog"));
   const [result, setResult] = useState<AddIngredientResult | null>(null);
   const [pending, setPending] = useState(false);
   const [selectedIngredient, setSelectedIngredient] = useState<IngredientSuggestionItem | null>(initialSelection);
@@ -504,6 +514,9 @@ export function AddIngredientModalBody({
           <CustomIngredientPanel
             category={customCategory}
             initialSubtype={customSubtype}
+            initialDisplayName={initialDisplayName}
+            initialQuantity={initialQuantity}
+            initialUnit={initialUnit}
             preferredCurrency={preferredCurrency}
             pending={pending}
             fieldErrors={result?.fieldErrors}
@@ -537,6 +550,7 @@ export function AddIngredientModal({
   initialCategory,
   initialSubtype,
   initialGroup,
+  initialDisplayName,
   initialQuantity,
   initialUnit,
   initialQuickStartDataByContext
@@ -572,6 +586,7 @@ export function AddIngredientModal({
             initialCategory={initialCategory}
             initialSubtype={initialSubtype}
             initialGroup={initialGroup}
+            initialDisplayName={initialDisplayName}
             initialQuantity={initialQuantity}
             initialUnit={initialUnit}
             initialQuickStartDataByContext={initialQuickStartDataByContext}

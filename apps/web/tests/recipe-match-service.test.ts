@@ -7,13 +7,17 @@ vi.mock("@nb/db", () => ({
       ingredients: { findMany: vi.fn() },
       // Объём партии (brew_plan_snapshot.recipe.batchSizeL) — источник масштаба для
       // матча В КОНТЕКСТЕ ПАРТИИ, см. features/recipes/batch-scale.ts.
-      brewBatches: { findMany: vi.fn() }
+      brewBatches: { findMany: vi.fn() },
+      // Ф6: батч-проверка владения кастомным ингредиентом (resolveOwnedCustomIngredientIds) —
+      // where в этом моке игнорируется, тесты задают результат напрямую через mockResolvedValue.
+      userCustomIngredients: { findMany: vi.fn() }
     }
   },
   ingredients: {},
   recipeIngredients: {},
   recipes: {},
   brewBatches: {},
+  userCustomIngredients: {},
   and: vi.fn(),
   eq: vi.fn(),
   inArray: vi.fn()
@@ -52,6 +56,7 @@ import {
   computeRecipeMatch,
   computeRecipeMatchesForBrewBatches,
   computeRecipeMatchesForUser,
+  findSubstituteCandidatesForLine,
   indexInventoryEntries,
   matchLineAgainstInventory,
   summarizeMatch,
@@ -97,7 +102,8 @@ const entry = (
   itemId,
   key: resolveIngredientMatchKey(profile),
   available,
-  normalizedUnit
+  normalizedUnit,
+  technicalData: profile.technicalData ?? null
 });
 
 const line = (
@@ -263,6 +269,88 @@ describe("matchLineAgainstInventory — add-to-inventory suggestion", () => {
   });
 });
 
+// Ф2: подбор ЗАМЕН на списании (features/brew-batches/inventory.ts, предпросмотр).
+describe("findSubstituteCandidatesForLine — Ф2 замены на списании", () => {
+  const hopProfile = (catalogItemId: string, alphaAcidPctTypical: number, name = "Cascade"): IngredientMatchProfile => ({
+    category: "hop",
+    type: "hop",
+    name,
+    nameEn: name,
+    technicalData: { type: "hop", alphaAcidPctTypical },
+    catalogItemId,
+    dimension: "weight"
+  });
+
+  it("finds a different-brand product of the same fermentable group", () => {
+    const index = indexInventoryEntries([
+      entry("bag-soufflet", pilsnerProfile("soufflet--pilsner"), 5000, "g")
+    ]);
+
+    const candidates = findSubstituteCandidatesForLine(pilsnerProfile("kursk--pilsner"), "g", index);
+
+    expect(candidates).toHaveLength(1);
+    expect(candidates[0]!.itemId).toBe("bag-soufflet");
+  });
+
+  it("returns no substitutes for yeast (exact_only, presence-based)", () => {
+    const index = indexInventoryEntries([
+      entry("y-1", yeastProfile("lallemand--us-05-clone"), 5, "pack")
+    ]);
+
+    const candidates = findSubstituteCandidatesForLine(yeastProfile("fermentis--us-05"), "pack", index);
+
+    expect(candidates).toEqual([]);
+  });
+
+  it("excludes an incompatible dimension (count on shelf, weight required)", () => {
+    const index = indexInventoryEntries([
+      entry("c-1", { ...pilsnerProfile("soufflet--pilsner"), dimension: "count" }, 5, "pack")
+    ]);
+
+    const candidates = findSubstituteCandidatesForLine(pilsnerProfile("kursk--pilsner"), "g", index);
+
+    expect(candidates).toEqual([]);
+  });
+
+  it("does not offer the exact same product as its own substitute", () => {
+    const index = indexInventoryEntries([
+      entry("bag-kursk", pilsnerProfile("kursk--pilsner"), 5000, "g")
+    ]);
+
+    const candidates = findSubstituteCandidatesForLine(pilsnerProfile("kursk--pilsner"), "g", index);
+
+    expect(candidates).toEqual([]);
+  });
+
+  it("sorts candidates by closeness of the numeric characteristic (EBC), then by larger remaining stock", () => {
+    const line12Ebc = { ...pilsnerProfile("kursk--pilsner"), technicalData: { type: "malt" as const, maltType: "base", colorEbcMin: 3, colorEbcMax: 3 } };
+    const index = indexInventoryEntries([
+      entry("far", { ...pilsnerProfile("brand-far--pilsner"), technicalData: { type: "malt", maltType: "base", colorEbcMin: 20, colorEbcMax: 20 } }, 9000, "g"),
+      entry("close-small", { ...pilsnerProfile("brand-close--pilsner"), technicalData: { type: "malt", maltType: "base", colorEbcMin: 4, colorEbcMax: 4 } }, 1000, "g"),
+      entry("close-big", { ...pilsnerProfile("brand-close2--pilsner"), technicalData: { type: "malt", maltType: "base", colorEbcMin: 4, colorEbcMax: 4 } }, 5000, "g"),
+      entry("no-data", { ...pilsnerProfile("brand-nodata--pilsner"), technicalData: null }, 3000, "g")
+    ]);
+
+    const candidates = findSubstituteCandidatesForLine(line12Ebc, "g", index);
+
+    // ближе по EBC (одинаковая дистанция у close-small/close-big) — больший остаток
+    // раньше; без данных — в конец, дальше по EBC "far" — перед ним.
+    expect(candidates.map((candidate) => candidate.itemId)).toEqual(["close-big", "close-small", "far", "no-data"]);
+  });
+
+  it("sorts hop candidates by closeness of alpha acid", () => {
+    const lineHop = hopProfile("cascade--kursk", 6);
+    const index = indexInventoryEntries([
+      entry("high-alpha", hopProfile("cascade--brand-a", 12), 500, "g"),
+      entry("close-alpha", hopProfile("cascade--brand-b", 6.5), 500, "g")
+    ]);
+
+    const candidates = findSubstituteCandidatesForLine(lineHop, "g", index);
+
+    expect(candidates.map((candidate) => candidate.itemId)).toEqual(["close-alpha", "high-alpha"]);
+  });
+});
+
 describe("summarizeMatch — weighted percentage", () => {
   it("weights a missing base malt / yeast more than a covered pinch of salt", () => {
     const fermentableCovered = matchLineAgainstInventory(
@@ -354,6 +442,97 @@ describe("computeRecipeMatch — wiring", () => {
     expect(result.lines[0].requiredQuantityNormalized).toBe(10000);
     expect(result.lines[0].status).toBe("substitute");
     expect(result.matchPercent).toBe(100);
+  });
+});
+
+// Ф6 (P0): userCustomIngredientId в строке рецепта — сырой FK кастомного
+// ингредиента АВТОРА рецепта, а не обязательно смотрящего (computeRecipeMatch
+// вызывается и для просмотра ЧУЖОГО рецепта). Утечка чужого id ломает инлайн-
+// форму «На склад» (шлёт чужой FK в addRecipeIngredientToInventory) — гейт
+// владения обязан подменять его на null ДО того, как DTO уйдёт наружу.
+describe("computeRecipeMatch — Ф6: гейт владения кастомным ингредиентом строки", () => {
+  const recipeWithCustomLine = () => ({
+    id: "recipe-1",
+    batchSizeNormalizedQuantity: 20000,
+    batchSizeNormalizedUnit: "ml",
+    ingredients: [
+      {
+        id: "ri-1",
+        persistentKey: "ri-1-pk",
+        displayOrder: 0,
+        ingredientDisplayName: "Особый солод автора",
+        ingredientDisplayNameSnapshot: "Особый солод автора",
+        ingredientDisplayNameEn: null,
+        ingredientCategory: "fermentable",
+        ingredientSubtype: "malt",
+        type: "malt",
+        ingredientTechnicalData: { type: "malt", maltType: "base", colorEbcMin: 2, colorEbcMax: 4 },
+        ingredientCatalogItemId: null,
+        userCustomIngredientId: "author-custom-1",
+        amountNormalizedQuantity: 5000,
+        amountNormalizedUnit: "g"
+      }
+    ]
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (listInventoryForUser as Mock).mockResolvedValue([]);
+    (listEquipmentProfiles as Mock).mockResolvedValue([]);
+  });
+
+  it("зритель НЕ владеет кастомным ингредиентом автора → userCustomIngredientId в DTO становится null (name-only путь)", async () => {
+    (getRecipeById as Mock).mockResolvedValue(recipeWithCustomLine());
+    // Батч-проверка владения: этот customId зрителю не принадлежит.
+    (db.query.userCustomIngredients.findMany as Mock).mockResolvedValue([]);
+
+    const result = await computeRecipeMatch({ userId: "viewer-1", recipeId: "recipe-1" });
+
+    expect(result.lines).toHaveLength(1);
+    expect(result.lines[0].userCustomIngredientId).toBeNull();
+    expect(result.lines[0].ingredientCatalogItemId).toBeNull();
+    // Батч-проверка ушла ровно за customId строки и ровно за смотрящим.
+    expect(db.query.userCustomIngredients.findMany).toHaveBeenCalledTimes(1);
+  });
+
+  it("автор рецепта смотрит свой же рецепт → владение подтверждено, id сохраняется", async () => {
+    (getRecipeById as Mock).mockResolvedValue(recipeWithCustomLine());
+    // Батч-проверка владения: customId принадлежит смотрящему (он же автор).
+    (db.query.userCustomIngredients.findMany as Mock).mockResolvedValue([{ id: "author-custom-1" }]);
+
+    const result = await computeRecipeMatch({ userId: "author-1", recipeId: "recipe-1" });
+
+    expect(result.lines[0].userCustomIngredientId).toBe("author-custom-1");
+  });
+
+  it("в рецепте нет кастомных строк → батч-проверка владения не запрашивается вовсе", async () => {
+    (getRecipeById as Mock).mockResolvedValue({
+      id: "recipe-1",
+      batchSizeNormalizedQuantity: 20000,
+      batchSizeNormalizedUnit: "ml",
+      ingredients: [
+        {
+          id: "ri-1",
+          persistentKey: "ri-1-pk",
+          displayOrder: 0,
+          ingredientDisplayName: "Pilsner",
+          ingredientDisplayNameSnapshot: "Pilsner",
+          ingredientCategory: "fermentable",
+          ingredientSubtype: "malt",
+          type: "malt",
+          ingredientTechnicalData: { type: "malt", maltType: "base", colorEbcMin: 2, colorEbcMax: 4 },
+          ingredientCatalogItemId: "kursk--pilsner",
+          userCustomIngredientId: null,
+          amountNormalizedQuantity: 5000,
+          amountNormalizedUnit: "g"
+        }
+      ]
+    });
+
+    const result = await computeRecipeMatch({ userId: "viewer-1", recipeId: "recipe-1" });
+
+    expect(result.lines[0].userCustomIngredientId).toBeNull();
+    expect(db.query.userCustomIngredients.findMany).not.toHaveBeenCalled();
   });
 });
 
@@ -528,6 +707,37 @@ describe("computeRecipeMatchesForUser — batch", () => {
     // Сломанный рецепт пропущен, но не утащил за собой матч r-1.
     expect(Object.keys(result)).toEqual(["r-1"]);
     expect(result["r-1"].missingCount).toBe(0);
+  });
+
+  // Ф6: этот путь обслуживает и §3.3 списка покупок (чужие избранные рецепты) —
+  // customId строки принадлежит автору рецепта, не смотрящему батч.
+  it("Ф6: чужой рецепт с кастомной строкой в батче → userCustomIngredientId нулится по гейту владения", async () => {
+    (listInventoryForUser as Mock).mockResolvedValue([]);
+    (listEquipmentProfiles as Mock).mockResolvedValue([]);
+    (db.query.ingredients.findMany as Mock).mockResolvedValue([]);
+    (db.query.recipes.findMany as Mock).mockResolvedValue([
+      recipeRow("r-foreign", [
+        ingredientRow({
+          id: "rf-custom",
+          persistentKey: "rf-custom-pk",
+          ingredientCatalogItemId: null,
+          userCustomIngredientId: "author-custom-9"
+        })
+      ])
+    ]);
+    // Смотрящий не владеет этим кастомным ингредиентом.
+    (db.query.userCustomIngredients.findMany as Mock).mockResolvedValue([]);
+
+    const result = await computeRecipeMatchesForUser({
+      userId: "viewer-1",
+      recipeIds: ["r-foreign"],
+      // Пустой склад иначе даёт короткий выход в {} до похода за рецептами —
+      // см. комментарий у includeEmptyInventory; тест целится строго в гейт.
+      includeEmptyInventory: true
+    });
+
+    expect(result["r-foreign"].lines[0].userCustomIngredientId).toBeNull();
+    expect(result["r-foreign"].lines[0].ingredientCatalogItemId).toBeNull();
   });
 });
 

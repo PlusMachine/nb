@@ -16,12 +16,15 @@ import {
 } from "@/features/brew-batches/service";
 import {
   consumeBrewBatchInventory,
+  previewBrewBatchConsumption,
   restoreBrewBatchInventory
 } from "@/features/brew-batches/inventory";
 import {
   addBrewMeasurementSchema,
   brewBatchStatuses,
   brewDayStepStatePatchSchema,
+  type BrewBatchConsumePlan,
+  type BrewBatchConsumeSubstitution,
   type BrewBatchInventoryView,
   type BrewBatchStatus,
   type BrewDayProgress
@@ -31,7 +34,12 @@ import { bindBatchFermenterSchema } from "@/features/devices/contracts";
 
 export type BrewActionResult = { ok: boolean; message: string };
 export type BrewDayProgressResult = BrewActionResult & { progress?: BrewDayProgress };
-export type BrewInventoryResult = BrewActionResult & { view?: BrewBatchInventoryView };
+export type BrewInventoryResult = BrewActionResult & {
+  view?: BrewBatchInventoryView;
+  /** Строки, оставшиеся без точного совпадения, но с кандидатами на замену (Ф2). */
+  substituteAvailableCount?: number;
+};
+export type BrewInventoryPlanResult = BrewActionResult & { plan?: BrewBatchConsumePlan };
 
 const revalidateBatch = (brewBatchId: string) => {
   revalidatePath(`/app/brew-batches/${brewBatchId}`);
@@ -234,25 +242,60 @@ export const setBrewDayStepStateAction = async (
 
 // --- Списание склада на варку ------------------------------------------------
 
-export const consumeBrewBatchInventoryAction = async (
+/** Предпросмотр списания (Ф2) — показывается ПЕРЕД каждым списанием: точное
+ *  совпадение по позициям склада против кандидатов на замену той же группы. */
+export const previewBrewBatchInventoryAction = async (
   brewBatchId: string
+): Promise<BrewInventoryPlanResult> => {
+  try {
+    const user = await requireUser();
+    const plan = await previewBrewBatchConsumption(user.id, brewBatchId);
+    if (!plan) {
+      return { ok: false, message: "Варка не найдена." };
+    }
+    return { ok: true, message: "", plan };
+  } catch {
+    return { ok: false, message: "Не удалось построить предпросмотр списания." };
+  }
+};
+
+export const consumeBrewBatchInventoryAction = async (
+  brewBatchId: string,
+  substitutions?: BrewBatchConsumeSubstitution[]
 ): Promise<BrewInventoryResult> => {
   try {
     const user = await requireUser();
-    const view = await consumeBrewBatchInventory(user.id, brewBatchId);
+    const result = await consumeBrewBatchInventory(user.id, brewBatchId, { substitutions });
     revalidateBatch(brewBatchId);
-    if (!view.hasConsumed) {
-      return { ok: false, message: "На складе нет сопоставленных позиций для списания.", view };
+    if (!result.hasConsumed) {
+      return {
+        ok: false,
+        message: result.substituteAvailableCount > 0
+          ? "Точных совпадений на складе нет, но есть замены — подтвердите списание в предпросмотре."
+          : "На складе нет сопоставленных позиций для списания.",
+        view: result,
+        substituteAvailableCount: result.substituteAvailableCount
+      };
     }
     // Дрожжей на складе меньше, чем требует рецепт: списание не падает, а ужимается
     // до остатка (см. inventory.ts). Молчать об этом нельзя — «Списано» без оговорки
     // читается как «всё по рецепту».
-    const short = view.consumed.filter((line) => line.requiredQuantityNormalized != null);
+    const short = result.consumed.filter((line) => line.requiredQuantityNormalized != null);
     if (short.length > 0) {
       const names = short.map((line) => line.ingredientDisplayName?.trim() || "ингредиент").join(", ");
-      return { ok: true, message: `Ингредиенты списаны. На складе не хватило: ${names} — списали остаток.`, view };
+      return {
+        ok: true,
+        message: `Ингредиенты списаны. На складе не хватило: ${names} — списали остаток.`,
+        view: result,
+        substituteAvailableCount: result.substituteAvailableCount
+      };
     }
-    return { ok: true, message: "Ингредиенты списаны со склада.", view };
+    return {
+      ok: true,
+      message: "Ингредиенты списаны со склада.",
+      view: result,
+      substituteAvailableCount: result.substituteAvailableCount
+    };
   } catch (error) {
     if (error instanceof Error && error.message === "ALREADY_CONSUMED") {
       return { ok: false, message: "По этой партии ингредиенты уже списаны со склада." };
@@ -265,6 +308,9 @@ export const consumeBrewBatchInventoryAction = async (
     }
     if (error instanceof Error && error.message === "INSUFFICIENT_STOCK") {
       return { ok: false, message: "Недостаточно остатков на складе для списания." };
+    }
+    if (error instanceof Error && error.message === "INVALID_SUBSTITUTION") {
+      return { ok: false, message: "Одна из выбранных замен больше недоступна — обновите предпросмотр." };
     }
     if (error instanceof Error && error.message === "NOT_FOUND") {
       return { ok: false, message: "Варка не найдена." };

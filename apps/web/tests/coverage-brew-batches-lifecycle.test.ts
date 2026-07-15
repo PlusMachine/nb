@@ -490,7 +490,10 @@ vi.mock("@/features/recipes/inventory-service", () => ({
   hasConsumedAllocationsForBatch: async (userId: string, brewBatchId: string) =>
     store.recipeInventoryAllocations.some(
       (a: any) => a.userId === userId && a.brewBatchId === brewBatchId && a.status === "consumed"
-    )
+    ),
+  // Ф2 (замены на списании) не в фокусе этого файла — план всегда пуст, поэтому
+  // consumeBrewBatchInventory не находит замен и substituteAvailableCount = 0.
+  buildBrewBatchConsumeLinePlanEntries: async () => ({ entries: [], inventoryItemsById: new Map() })
 }));
 
 import {

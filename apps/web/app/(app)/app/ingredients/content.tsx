@@ -106,6 +106,15 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
   // Дефицит из «Чего не хватает» (UX-находка #20): предзаполнить количество/единицу.
   const addQty = typeof resolvedParams.addQty === "string" ? resolvedParams.addQty : undefined;
   const addUnit = typeof resolvedParams.addUnit === "string" ? resolvedParams.addUnit : undefined;
+  // Строка-нехватка без каталожной/кастомной привязки (П3): живёт только именем
+  // из снапшота, у неё нет addSource/addId — deeplink несёт голое имя (+
+  // опционально категорию), открываем модалку сразу в режиме «Добавить свой».
+  const rawAddName = typeof resolvedParams.addName === "string" ? resolvedParams.addName.trim() : "";
+  const addName = rawAddName.length > 0 ? rawAddName : undefined;
+  const rawAddCategory = typeof resolvedParams.addCategory === "string" ? resolvedParams.addCategory : undefined;
+  const addCategory = rawAddCategory && ingredientCategories.includes(rawAddCategory as IngredientCategory)
+    ? (rawAddCategory as IngredientCategory)
+    : undefined;
 
   const [items, summary, currencyRates, initialSelection, missingCount] = await Promise.all([
     listInventoryForUser(user.id, {
@@ -245,16 +254,17 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
           <AddIngredientTrigger
             preferredCurrency={user.preferredCurrency}
             initialSelection={initialSelection}
-            initialCategory={initialSelection?.category ?? category ?? null}
+            initialCategory={initialSelection?.category ?? addCategory ?? category ?? null}
             initialSubtype={
               initialSelection?.subtype === "malt" || initialSelection?.subtype === "fermentable"
                 ? initialSelection.subtype
                 : (subtype ?? null)
             }
             initialGroup={group ?? null}
-            initialQuantity={initialSelection ? addQty ?? null : null}
-            initialUnit={initialSelection ? addUnit ?? null : null}
-            openOnMount={Boolean(initialSelection)}
+            initialDisplayName={addName ?? null}
+            initialQuantity={(initialSelection || addName) ? addQty ?? null : null}
+            initialUnit={(initialSelection || addName) ? addUnit ?? null : null}
+            openOnMount={Boolean(initialSelection) || Boolean(addName)}
           />
         </div>
       </section>

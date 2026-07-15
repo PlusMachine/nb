@@ -13,6 +13,11 @@ import { CustomIngredientForm, type CustomIngredientSubmitPayload } from "./cust
 type Props = {
   category: IngredientCategory;
   initialSubtype?: IngredientSubtype | null;
+  // Строка-нехватка без каталожной/кастомной привязки (П3): предзаполнение имени
+  // и дефицита (UX-находка #20) в форме создания.
+  initialDisplayName?: string | null;
+  initialQuantity?: string | null;
+  initialUnit?: string | null;
   preferredCurrency: SystemCurrency;
   pending: boolean;
   fieldErrors?: Record<string, string>;
@@ -24,6 +29,9 @@ type Props = {
 export function CustomIngredientPanel({
   category,
   initialSubtype = null,
+  initialDisplayName = null,
+  initialQuantity = null,
+  initialUnit = null,
   preferredCurrency,
   pending,
   fieldErrors,
@@ -35,6 +43,9 @@ export function CustomIngredientPanel({
       <CustomIngredientForm
         category={category}
         initialSubtype={initialSubtype}
+        initialDisplayName={initialDisplayName ?? undefined}
+        initialQuantity={initialQuantity}
+        initialUnit={initialUnit}
         preferredCurrency={preferredCurrency}
         pending={pending}
         fieldErrors={fieldErrors}

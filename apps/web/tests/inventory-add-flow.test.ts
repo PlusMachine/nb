@@ -134,7 +134,8 @@ import { CustomIngredientPanel } from "../components/inventory/custom-ingredient
 import {
   CustomIngredientForm,
   getCustomIngredientSubtypeOptions,
-  isCustomIngredientFormDirty
+  isCustomIngredientFormDirty,
+  resolveCustomIngredientAmountPrefillDecision
 } from "../components/inventory/custom-ingredient-form";
 import { getTodayDateInputValue } from "../components/inventory/date-input";
 import {
@@ -179,6 +180,27 @@ describe("inventory add-flow", () => {
     expect(html).not.toContain('data-testid="add-ingredient-context-summary"');
     expect(html).not.toContain("Количество *");
     expect(html).not.toContain("Ед. изм. *");
+  });
+
+  // П3: строка-нехватка без каталожной/кастомной привязки (живёт только именем
+  // из снапшота) открывает модалку сразу в режиме «Добавить свой» с
+  // предзаполненным именем/количеством — без этого пользователю не из чего
+  // выбирать (позиции ещё не существует).
+  it("П3: initialDisplayName starts the modal directly on the custom tab, prefilled", () => {
+    // initialQuantity/initialUnit подставляются эффектом (как и у CatalogIngredientForm)
+    // и не наблюдаемы в SSR-рендере без монтирования — здесь проверяем то, что
+    // рендерится синхронно: стартовую вкладку и предзаполненное имя.
+    const html = renderToStaticMarkup(React.createElement(AddIngredientModalBody, {
+      onClose: () => undefined,
+      initialCategory: "consumable",
+      initialDisplayName: "Кориандр молотый",
+      initialQuantity: "10",
+      initialUnit: "g"
+    }));
+
+    expect(html).toContain('data-testid="custom-ingredient-create-panel"');
+    expect(html).not.toContain('data-testid="catalog-picker-stage"');
+    expect(html).toContain('value="Кориандр молотый"');
   });
 
   it("keeps custom flow focused on ingredient parameters and required stock fields by default", () => {
@@ -306,6 +328,19 @@ describe("inventory add-flow", () => {
     expect(html).toContain('data-testid="custom-ingredient-create-panel"');
     expect(html).toContain("Параметры ингредиента");
     expect(html).toContain("Количество и единица учета");
+  });
+
+  // П3: панель прокидывает предзаполненное имя из deeplink-а в форму создания.
+  it("forwards initialDisplayName down to the create form", () => {
+    const html = renderToStaticMarkup(React.createElement(CustomIngredientPanel, {
+      category: "consumable",
+      initialDisplayName: "Кориандр молотый",
+      preferredCurrency: "USD",
+      pending: false,
+      onSubmitCreate: async () => undefined
+    }));
+
+    expect(html).toContain('value="Кориандр молотый"');
   });
 
   it("reuses the same ingredient parameter form for recipe custom flow without stock-only sections", () => {
@@ -949,6 +984,53 @@ describe("inventory add-flow", () => {
     expect(isCustomIngredientFormDirty({ ...emptyState, enteredQuantity: "100" })).toBe(true);
     expect(isCustomIngredientFormDirty({ ...emptyState, notes: "заметка", optionalTouched: false })).toBe(false);
     expect(isCustomIngredientFormDirty({ ...emptyState, notes: "заметка", optionalTouched: true })).toBe(true);
+  });
+
+  // Ф7: раньше ref-гард ставил "applied" ДО проверки allowedUnits — при первом
+  // несовпадении (initialUnit не входит в профиль стартовой категории) префилл
+  // молча умирал навсегда, даже когда профиль потом становился подходящим.
+  // Решение вынесено в чистый хелпер (resolveCustomIngredientAmountPrefillDecision),
+  // чтобы не зависеть от DOM/эффектов при проверке.
+  describe("resolveCustomIngredientAmountPrefillDecision — Ф7: гейт применяется по allowedUnits, а не единожды навсегда", () => {
+    const base = {
+      alreadyApplied: false,
+      initialQuantity: "10",
+      initialUnit: "ml",
+      enteredQuantity: "",
+      allowedUnits: ["kg", "g"] as const
+    };
+
+    it("initialUnit не входит в профиль стартовой категории → пропуск БЕЗ пометки applied", () => {
+      expect(resolveCustomIngredientAmountPrefillDecision(base)).toEqual({ kind: "skip" });
+    });
+
+    it("профиль сменился на подходящий (allowedUnits включает initialUnit) → применяем", () => {
+      expect(resolveCustomIngredientAmountPrefillDecision({
+        ...base,
+        allowedUnits: ["ml", "l"]
+      })).toEqual({ kind: "apply", quantity: "10", unit: "ml" });
+    });
+
+    it("пользователь уже ввёл количество вручную → префилл не затирает его, но помечается применённым", () => {
+      expect(resolveCustomIngredientAmountPrefillDecision({
+        ...base,
+        allowedUnits: ["ml", "l"],
+        enteredQuantity: "3"
+      })).toEqual({ kind: "mark_applied_no_change" });
+    });
+
+    it("уже применено (alreadyApplied) → всегда пропуск, даже если профиль сейчас подходит", () => {
+      expect(resolveCustomIngredientAmountPrefillDecision({
+        ...base,
+        allowedUnits: ["ml", "l"],
+        alreadyApplied: true
+      })).toEqual({ kind: "skip" });
+    });
+
+    it("нет initialQuantity/initialUnit → пропуск (нечего применять)", () => {
+      expect(resolveCustomIngredientAmountPrefillDecision({ ...base, initialQuantity: "" })).toEqual({ kind: "skip" });
+      expect(resolveCustomIngredientAmountPrefillDecision({ ...base, initialUnit: null })).toEqual({ kind: "skip" });
+    });
   });
 
   it("starts deep-linked selection in selected state with the picker hidden", () => {

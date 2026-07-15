@@ -4,6 +4,8 @@
 // формата URL, чтобы витрина каталога и детальная страница ингредиента не
 // разошлись.
 
+import type { IngredientCategory } from "./contracts";
+
 export type IngredientCatalogActionPathname = "/app/ingredients" | "/app/recipes/new";
 
 export const buildIngredientCatalogActionHref = (
@@ -20,4 +22,28 @@ export const buildIngredientCatalogActionHref = (
     return `${base}&addQty=${encodeURIComponent(amount.quantity)}&addUnit=${encodeURIComponent(amount.unit)}`;
   }
   return base;
+};
+
+// Строка-нехватка без каталожной/кастомной привязки (П3): живёт только именем
+// из снапшота (типично для импортированных рецептов) — ни ingredientCatalogItemId,
+// ни userCustomIngredientId нет. Схема БД не допускает позицию склада без
+// одной из этих привязок (CHECK user_ingredients_source_linkage_chk), поэтому
+// выход для такой строки — предзаполненная форма «Добавить свой», а не пустая
+// позиция. addName обязателен, amount/category — опциональны и кодируются по
+// тому же принципу, что и в buildIngredientCatalogActionHref (число без
+// единицы не подставляем).
+export const buildIngredientNameActionHref = (
+  pathname: IngredientCatalogActionPathname,
+  displayName: string,
+  amount?: { quantity: number; unit: string } | null,
+  category?: IngredientCategory | null
+) => {
+  let href = `${pathname}?addName=${encodeURIComponent(displayName.trim())}`;
+  if (amount && Number.isFinite(amount.quantity) && amount.quantity > 0 && amount.unit) {
+    href += `&addQty=${encodeURIComponent(amount.quantity)}&addUnit=${encodeURIComponent(amount.unit)}`;
+  }
+  if (category) {
+    href += `&addCategory=${encodeURIComponent(category)}`;
+  }
+  return href;
 };

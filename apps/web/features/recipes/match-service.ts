@@ -1,4 +1,4 @@
-import { and, db, eq, inArray, ingredients, recipeImages, recipeIngredients, recipes } from "@nb/db";
+import { and, db, eq, inArray, ingredients, recipeImages, recipeIngredients, recipes, userCustomIngredients } from "@nb/db";
 import { getBeerStyleById, getBjcpArticleHrefByStyleId, roundTo } from "@nb/brewing-core";
 import { getBjcpStyleHeroImageByBjcpId } from "@nb/content";
 
@@ -8,8 +8,11 @@ import {
   type IngredientMatchProfile
 } from "../ingredients/match-group";
 import type { IngredientCategory } from "../ingredients/taxonomy";
-import type { IngredientType } from "../ingredients/contracts";
-import { extractIngredientTechnicalData } from "../ingredients/technical-fields";
+import type { IngredientType, IngredientTechnicalData } from "../ingredients/contracts";
+import {
+  extractIngredientTechnicalData,
+  resolveIngredientTechnicalDataColorRangeEbc
+} from "../ingredients/technical-fields";
 import type { IngredientSubtype } from "../ingredients/contracts";
 import { resolveInventoryMeasurementForDisplay } from "../inventory/display";
 import {
@@ -105,6 +108,8 @@ export type InventoryMatchEntry = {
   key: IngredientMatchKey;
   available: number;
   normalizedUnit: InventoryUnit | null;
+  /** Техданные позиции (для сравнения кандидатов замены по EBC/альфе, Ф2). */
+  technicalData?: IngredientTechnicalData | null;
 };
 
 // --- профили для резолвера ------------------------------------------------
@@ -142,7 +147,7 @@ const profileFromInventoryItem = (item: InventoryListItemDto): IngredientMatchPr
 // само рождает нехватку и требование докупить (см. inventory/brew-batch-credits).
 // Кредит прибавляется ДО отсечки «>0»: позиция, списанная в ноль, обязана остаться
 // в индексе, иначе строка станет "missing" — хуже, чем нынешний "partial".
-const buildInventoryEntries = (
+export const buildInventoryEntries = (
   items: InventoryListItemDto[],
   credits?: InventoryCreditMap
 ): InventoryMatchEntry[] => (
@@ -158,12 +163,16 @@ const buildInventoryEntries = (
       return { item, available };
     })
     .filter((entry) => entry.available > 0)
-    .map(({ item, available }) => ({
-      itemId: item.id,
-      key: resolveIngredientMatchKey(profileFromInventoryItem(item)),
-      available,
-      normalizedUnit: parseInventoryUnit(item.normalizedUnit)
-    }))
+    .map(({ item, available }) => {
+      const profile = profileFromInventoryItem(item);
+      return {
+        itemId: item.id,
+        key: resolveIngredientMatchKey(profile),
+        available,
+        normalizedUnit: parseInventoryUnit(item.normalizedUnit),
+        technicalData: profile.technicalData ?? null
+      };
+    })
 );
 
 export const indexInventoryEntries = (entries: InventoryMatchEntry[]) => {
@@ -202,6 +211,83 @@ const dimensionMatches = (
   }
 
   return true;
+};
+
+// Числовая характеристика для сравнения кандидатов замены (Ф2): EBC у солода
+// (средняя по диапазону), альфа-кислота у хмеля. Для остального — null (замена
+// у дрожжей вообще не считается, у воды/расходников сортировка по характеристике
+// не нужна — там ключ уже формула/подтип).
+export const resolveIngredientMatchComparisonValue = (
+  category: IngredientCategory | null | undefined,
+  technicalData: IngredientTechnicalData | null | undefined
+): number | null => {
+  if (category === "fermentable") {
+    return resolveIngredientTechnicalDataColorRangeEbc(technicalData ?? null)?.average ?? null;
+  }
+  if (category === "hop" && technicalData?.type === "hop") {
+    // Union несёт ещё и индекс-сигнатурный вариант ({type; [key: string]: unknown}) —
+    // прямое сужение по type даёт {} на числовых полях, поэтому явный Extract.
+    const hop = technicalData as Extract<IngredientTechnicalData, { type: "hop" }>;
+    return hop.alphaAcidPctTypical ?? hop.alphaAcidPctMax ?? hop.alphaAcidPctMin ?? null;
+  }
+  return null;
+};
+
+export type SubstituteInventoryCandidate = InventoryMatchEntry & { comparisonValue: number | null };
+
+/**
+ * Кандидаты на ЗАМЕНУ (Ф2, списание) для строки рецепта: та же группа
+ * (groupKey), политика "family_compatible" (дрожжи и неизвестная категория —
+ * exact_only, замен не получают вовсе), другой конкретный продукт (exactKey),
+ * совместимая размерность и остаток > 0 (buildInventoryEntries это уже
+ * гарантирует). Сортировка: ближе по числовой характеристике (EBC/альфа) —
+ * выше; без характеристики — в конец; при равенстве — больший остаток раньше.
+ *
+ * Переиспользует ядро резолвера (resolveIngredientMatchKey, index.byGroup,
+ * dimensionMatches) — та же логика бакетов, что и у матча "склад ↔ рецепт".
+ */
+export const findSubstituteCandidatesForLine = (
+  lineProfile: IngredientMatchProfile,
+  lineUnit: InventoryUnit | null,
+  index: ReturnType<typeof indexInventoryEntries>
+): SubstituteInventoryCandidate[] => {
+  const lineKey = resolveIngredientMatchKey(lineProfile);
+  if (lineKey.matchPolicy !== "family_compatible" || !lineKey.groupKey) {
+    return [];
+  }
+
+  const lineComparisonValue = resolveIngredientMatchComparisonValue(lineProfile.category, lineProfile.technicalData);
+
+  const candidates = (index.byGroup.get(lineKey.groupKey) ?? [])
+    .filter((candidateEntry) => !lineKey.exactKey || candidateEntry.key.exactKey !== lineKey.exactKey)
+    .filter((candidateEntry) => dimensionMatches(lineKey, lineUnit, candidateEntry))
+    .map((candidateEntry) => ({
+      ...candidateEntry,
+      comparisonValue: resolveIngredientMatchComparisonValue(lineProfile.category, candidateEntry.technicalData)
+    }));
+
+  return candidates.sort((left, right) => {
+    const leftDistance = lineComparisonValue != null && left.comparisonValue != null
+      ? Math.abs(left.comparisonValue - lineComparisonValue)
+      : null;
+    const rightDistance = lineComparisonValue != null && right.comparisonValue != null
+      ? Math.abs(right.comparisonValue - lineComparisonValue)
+      : null;
+
+    if (leftDistance == null && rightDistance == null) {
+      return right.available - left.available;
+    }
+    if (leftDistance == null) {
+      return 1;
+    }
+    if (rightDistance == null) {
+      return -1;
+    }
+    if (leftDistance !== rightDistance) {
+      return leftDistance - rightDistance;
+    }
+    return right.available - left.available;
+  });
 };
 
 // --- ядро матчинга --------------------------------------------------------
@@ -372,6 +458,45 @@ export const matchLineAgainstInventory = (
   };
 };
 
+// Ф6 (P0): userCustomIngredientId в match-DTO — сырой FK кастомного ингредиента
+// АВТОРА строки рецепта, а матч всегда считается ДЛЯ СМОТРЯЩЕГО (input.userId
+// может отличаться от автора рецепта — просмотр чужого публичного рецепта).
+// Отдавать зрителю чужой id нельзя: инлайн-форма «На склад» шлёт его в
+// addRecipeIngredientToInventory → addCustomIngredientToInventory, а эта
+// операция для зрителя невозможна (валидируется владением на сервере) — но
+// сама ссылка/форма при этом не должна даже появляться. Батч-проверка
+// владения: id ∈ встреченным в строках, userId = именно смотрящий.
+const resolveOwnedCustomIngredientIds = async (
+  userId: string,
+  candidateIds: (string | null | undefined)[]
+): Promise<Set<string>> => {
+  const ids = [...new Set(candidateIds.filter((id): id is string => Boolean(id)))];
+  if (ids.length === 0) {
+    return new Set();
+  }
+  const rows = await db.query.userCustomIngredients.findMany({
+    where: and(inArray(userCustomIngredients.id, ids), eq(userCustomIngredients.userId, userId)),
+    columns: { id: true }
+  });
+  return new Set(rows.map((row) => row.id));
+};
+
+// Внутреннюю логику матчинга (exactKey/groupKey, matchLineAgainstInventory) не
+// трогаем — гейт применяется ровно в момент сборки итогового DTO, чужой id
+// точечно заменяется на null (строка автоматически становится name-only и
+// получает П3-ссылки «Найти в каталоге»/«Добавить свой»).
+const withOwnedCustomIngredientId = (
+  line: RecipeMatchLineDto,
+  ownedCustomIngredientIds: Set<string>
+): RecipeMatchLineDto => (
+  line.userCustomIngredientId && !ownedCustomIngredientIds.has(line.userCustomIngredientId)
+    ? { ...line, userCustomIngredientId: null }
+    : line
+);
+
+const collectCustomIngredientIds = (candidates: CandidateRecipeRow[]): (string | null)[] =>
+  candidates.flatMap((recipe) => recipe.ingredients.map((row) => row.userCustomIngredientId));
+
 const resolveMatchLabel = (matchPercent: number): RecipeMatchLabel => {
   if (matchPercent >= 100) return "ready";
   if (matchPercent >= 70) return "almost";
@@ -526,9 +651,17 @@ export const computeRecipeMatch = async (input: {
 
   const index = indexInventoryEntries(buildInventoryEntries(inventoryItems, credits));
 
+  // Ф6: строки рецепта могут нести userCustomIngredientId АВТОРА рецепта (когда
+  // input.userId — не автор, а зритель чужого публичного рецепта) — гейт по
+  // владению применяется ниже, при сборке каждой строки.
+  const ownedCustomIngredientIds = await resolveOwnedCustomIngredientIds(
+    input.userId,
+    recipe.ingredients.map((ingredient) => ingredient.userCustomIngredientId)
+  );
+
   const lines = recipe.ingredients.map((ingredient): RecipeMatchLineDto => {
     const profile = profileFromRecipeIngredientDto(ingredient);
-    return matchLineAgainstInventory(
+    const matched = matchLineAgainstInventory(
       {
         id: ingredient.id,
         persistentKey: ingredient.persistentKey,
@@ -542,6 +675,7 @@ export const computeRecipeMatch = async (input: {
       // Дожим — только засыпи: хмель и дрожжи от эффективности затирания не зависят.
       resolveLineScaleFactor(profile, factor, efficiencyFactor)
     );
+    return withOwnedCustomIngredientId(matched, ownedCustomIngredientIds);
   });
 
   return summarizeMatch(recipe.id, lines, { targetBatchVolumeL, recipeBatchVolumeL });
@@ -553,7 +687,10 @@ type CandidateRecipeRow = typeof recipes.$inferSelect & {
   ingredients: (typeof recipeIngredients.$inferSelect)[];
 };
 
-const profileFromRecipeIngredientRow = (
+// Экспортируется для переиспользования вне матча: список замен на списании
+// (features/recipes/inventory-service.ts) строит профиль строки рецепта тем же
+// способом, что и матч "склад ↔ рецепт" — не дублируя приведение raw-enum'ов.
+export const profileFromRecipeIngredientRow = (
   row: typeof recipeIngredients.$inferSelect,
   catalog: typeof ingredients.$inferSelect | undefined
 ): IngredientMatchProfile => {
@@ -599,11 +736,15 @@ const computeMatchForRecipeRow = (
   recipe: CandidateRecipeRow,
   index: ReturnType<typeof indexInventoryEntries>,
   catalogById: Map<string, typeof ingredients.$inferSelect>,
-  volume: MatchScale
+  volume: MatchScale,
+  // Ф6: батчи здесь матчат рецепты произвольных авторов (чужие избранные/
+  // публичные) для одного смотрящего — customId строки принадлежит владельцу
+  // строки в БД (не обязательно смотрящему), гейт сужает его до владения.
+  ownedCustomIngredientIds: Set<string>
 ): RecipeMatchDto => {
   const lines = recipe.ingredients.map((row) => {
     const profile = profileFromRecipeIngredientRow(row, catalogById.get(row.ingredientCatalogItemId ?? ""));
-    return matchLineAgainstInventory(
+    const matched = matchLineAgainstInventory(
       {
         id: row.id,
         persistentKey: row.persistentKey,
@@ -616,6 +757,7 @@ const computeMatchForRecipeRow = (
       index,
       resolveLineScaleFactor(profile, volume.factor, volume.efficiencyFactor)
     );
+    return withOwnedCustomIngredientId(matched, ownedCustomIngredientIds);
   });
 
   return summarizeMatch(recipe.id, lines, {
@@ -709,6 +851,12 @@ export const findBrewableRecipesForUser = async (input: {
   }) as CandidateRecipeRow[];
 
   const catalogById = await loadCatalogForRecipes(candidates);
+  // Ф6: этот пул — чужие публичные рецепты (склад→рецепты); customId строк
+  // почти всегда не смотрящего, гейт сузит владение до реально совпавших.
+  const ownedCustomIngredientIds = await resolveOwnedCustomIngredientIds(
+    input.userId,
+    collectCustomIngredientIds(candidates)
+  );
 
   const ranked = candidates
     .filter((recipe) => recipe.ingredients.length > 0)
@@ -718,7 +866,7 @@ export const findBrewableRecipesForUser = async (input: {
         defaultBatchVolumeL: defaultEquipment.targetBatchVolumeL,
         defaultEfficiencyPct: defaultEquipment.brewhouseEfficiencyPct
       });
-      return { recipe, summary: computeMatchForRecipeRow(recipe, index, catalogById, volume) };
+      return { recipe, summary: computeMatchForRecipeRow(recipe, index, catalogById, volume, ownedCustomIngredientIds) };
     })
     .filter(({ summary }) => summary.matchPercent >= minMatchPercent)
     .sort((a, b) => b.summary.matchPercent - a.summary.matchPercent || b.summary.coveredLines - a.summary.coveredLines)
@@ -777,6 +925,12 @@ export const findBrewableOwnRecipesForUser = async (input: {
   }
 
   const catalogById = await loadCatalogForRecipes(candidates);
+  // Ф6: рецепты здесь — свои же (authorId = input.userId), поэтому customId уже
+  // принадлежит смотрящему; гейт применяем всё равно — единый путь без исключений.
+  const ownedCustomIngredientIds = await resolveOwnedCustomIngredientIds(
+    input.userId,
+    collectCustomIngredientIds(candidates)
+  );
 
   const ranked = candidates
     .map((recipe) => {
@@ -785,7 +939,7 @@ export const findBrewableOwnRecipesForUser = async (input: {
         defaultBatchVolumeL: defaultEquipment.targetBatchVolumeL,
         defaultEfficiencyPct: defaultEquipment.brewhouseEfficiencyPct
       });
-      return { recipe, summary: computeMatchForRecipeRow(recipe, index, catalogById, volume) };
+      return { recipe, summary: computeMatchForRecipeRow(recipe, index, catalogById, volume, ownedCustomIngredientIds) };
     })
     .filter(({ summary }) => resolveBrewabilityBadge(summary).tier === "ready")
     .sort((a, b) => b.summary.matchPercent - a.summary.matchPercent || b.summary.coveredLines - a.summary.coveredLines)
@@ -829,6 +983,13 @@ export const computeRecipeMatchesForUser = async (input: {
   }) as CandidateRecipeRow[];
 
   const catalogById = await loadCatalogForRecipes(candidates);
+  // Ф6: computeRecipeMatchesForUser батчует и ЧУЖИЕ рецепты (избранные — см.
+  // features/shopping/service.ts §3.3), поэтому customId строки не обязательно
+  // принадлежит input.userId — гейт сужает до реально владеемых.
+  const ownedCustomIngredientIds = await resolveOwnedCustomIngredientIds(
+    input.userId,
+    collectCustomIngredientIds(candidates)
+  );
 
   const result: Record<string, RecipeMatchDto> = {};
   for (const recipe of candidates) {
@@ -845,7 +1006,7 @@ export const computeRecipeMatchesForUser = async (input: {
         defaultBatchVolumeL: defaultEquipment.targetBatchVolumeL,
         defaultEfficiencyPct: defaultEquipment.brewhouseEfficiencyPct
       });
-      result[recipe.id] = computeMatchForRecipeRow(recipe, index, catalogById, volume);
+      result[recipe.id] = computeMatchForRecipeRow(recipe, index, catalogById, volume, ownedCustomIngredientIds);
     } catch (error) {
       console.error("[recipes] computeRecipeMatchesForUser: skipping recipe after match error", {
         recipeId: recipe.id,
@@ -899,6 +1060,12 @@ export const computeRecipeMatchesForBrewBatches = async (input: {
 
   const catalogById = await loadCatalogForRecipes(candidates);
   const recipeById = new Map(candidates.map((recipe) => [recipe.id, recipe]));
+  // Ф6: партия может стоять за чужим рецептом (варка без клона публичного
+  // рецепта) — customId строки тогда принадлежит автору рецепта, не варящему.
+  const ownedCustomIngredientIds = await resolveOwnedCustomIngredientIds(
+    input.userId,
+    collectCustomIngredientIds(candidates)
+  );
 
   // Индекс без кредитов считаем один раз — он обслуживает все партии, которые
   // ещё ничего не списали. Партия с кредитом получает СВОЙ индекс: общий трогать
@@ -924,7 +1091,7 @@ export const computeRecipeMatchesForBrewBatches = async (input: {
         defaultBatchVolumeL: null,
         efficiencyFactor: batchScale?.efficiencyFactor ?? null
       });
-      result[batch.brewBatchId] = computeMatchForRecipeRow(recipe, index, catalogById, volume);
+      result[batch.brewBatchId] = computeMatchForRecipeRow(recipe, index, catalogById, volume, ownedCustomIngredientIds);
     } catch (error) {
       console.error("[recipes] computeRecipeMatchesForBrewBatches: skipping batch after match error", {
         brewBatchId: batch.brewBatchId,

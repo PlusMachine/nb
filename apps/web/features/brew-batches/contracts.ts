@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import type { IngredientCategory } from "../ingredients/contracts";
+
 export const brewBatchStatuses = ["planned", "brewing", "fermenting", "completed", "cancelled"] as const;
 export type BrewBatchStatus = (typeof brewBatchStatuses)[number];
 
@@ -394,6 +396,11 @@ export type BrewBatchInventoryConsumedLine = {
    * что дрожжей ушло меньше, чем требует рецепт.
    */
   requiredQuantityNormalized: number | null;
+  /**
+   * Позиция списана как ЗАМЕНА (Ф2, opt-in в предпросмотре) — имя ИСХОДНОЙ строки
+   * рецепта, которую она закрыла (не свой продукт). null — списано с точной позиции.
+   */
+  substitutedFor?: string | null;
 };
 
 export type BrewBatchInventoryLogEntry = {
@@ -421,4 +428,80 @@ export type BrewBatchInventoryView = {
   batchAlreadyConsumed: boolean;
   consumed: BrewBatchInventoryConsumedLine[];
   log: BrewBatchInventoryLogEntry[];
+};
+
+/** Итог consumeBrewBatchInventory: вид склада партии + сколько строк, оставшихся
+ *  не закрытыми точным совпадением, всё же имеют кандидатов на замену (Ф2) —
+ *  подсказка "подтвердите списание с заменами в предпросмотре". */
+export type BrewBatchInventoryConsumeResult = BrewBatchInventoryView & {
+  substituteAvailableCount: number;
+};
+
+// --- Ф2: предпросмотр списания с заменами по match-group ---------------------
+// Показывается перед КАЖДЫМ списанием (владелец утвердил механику): точное
+// совпадение по exactKey vs кандидаты на замену той же группы (groupKey,
+// matchPolicy "family_compatible") — opt-in, галочка снята по умолчанию.
+// Дрожжи замен не получают (matchPolicy "exact_only" — presence-based).
+
+export type BrewBatchConsumePlanCandidate = {
+  inventoryItemId: string;
+  /** Отображаемое имя позиции склада. */
+  name: string;
+  /** Нормализованное количество остатка (в единице этой позиции). */
+  availableQuantity: number;
+  /** Человекочитаемо, например "5 кг". */
+  availableLabel: string;
+  /** Остатка меньше требуемого строкой. */
+  isShort: boolean;
+  /** "EBC 4.1 ↔ 5.3" (солод) / "α 12.5 ↔ 12.7%" (хмель) — null у exact-кандидата
+   *  и когда сравнивать нечего (нет техданных хотя бы у одной из сторон). */
+  comparison: string | null;
+};
+
+export type BrewBatchConsumePlanLine = {
+  recipeIngredientId: string;
+  /** Имя строки рецепта (снапшот). */
+  displayName: string;
+  category: IngredientCategory | null;
+  /** Потребность строки под объём партии, человекочитаемо — "5 кг". */
+  requiredLabel: string;
+  /** Потребность строки под объём партии в её канонической нормализованной единице
+   *  (той же, что и у exact/substitutes.availableQuantity) — для клиентского гарда
+   *  двойного бронирования одной позиции склада (Ф2, П3). */
+  requiredQuantityNormalized: number;
+  kind: "exact" | "exact_short" | "substitute_available" | "missing";
+  /**
+   * Короткий exact КЛАМПАЕТСЯ (спишется остаток, не роняя транзакцию) или БЛОКИРУЕТ
+   * списание целиком — тот же предикат, что и в consumeRecipeInventoryAllocations
+   * (см. isPresenceBasedRecipeLine): true — presence-based категория (дрожжи),
+   * false — все прочие, у которых нехватка exact роняет ВСЮ транзакцию
+   * INSUFFICIENT_STOCK. Имеет смысл только при kind="exact_short" — на остальных
+   * kind ни на что не влияет.
+   */
+  exactClamps: boolean;
+  /** Точная позиция склада (тот же продукт). comparison здесь всегда null. */
+  exact: BrewBatchConsumePlanCandidate | null;
+  /** Кандидаты на замену — ближе по характеристике выше, затем больший остаток. */
+  substitutes: BrewBatchConsumePlanCandidate[];
+  /** Для kind="missing": деталка каталога при наличии привязки, иначе поиск по имени. */
+  catalogSearchHref: string | null;
+};
+
+export type BrewBatchConsumePlan = {
+  brewBatchId: string;
+  /** Списание уже было — диалог предпросмотра не нужен. */
+  alreadyConsumed: boolean;
+  lines: BrewBatchConsumePlanLine[];
+  /** Строки kind "exact" | "exact_short". */
+  exactCount: number;
+  /** Строки kind "substitute_available". */
+  substituteOnlyCount: number;
+  missingCount: number;
+};
+
+/** Утверждённая пользователем замена (opt-in в предпросмотре) — передаётся
+ *  в consumeBrewBatchInventory и валидируется на сервере заново. */
+export type BrewBatchConsumeSubstitution = {
+  recipeIngredientId: string;
+  inventoryItemId: string;
 };

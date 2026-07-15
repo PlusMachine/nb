@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { IngredientPurchaseLinksField } from "@/components/ingredients/ingredient-purchase-links-field";
 import { InventoryPriceInput } from "@/components/inventory/inventory-price-input";
@@ -66,6 +66,10 @@ type Props = {
   initialSubtype?: IngredientSubtype | null;
   subtypeOptions?: readonly IngredientSubtype[];
   initialDisplayName?: string;
+  // Дефицит из «Чего не хватает» (UX-находка #20 / П3): предзаполнить
+  // количество/единицу один раз при монтировании.
+  initialQuantity?: string | null;
+  initialUnit?: string | null;
   preferredCurrency?: SystemCurrency;
   pending: boolean;
   mode?: "inventory" | "recipe";
@@ -139,6 +143,47 @@ export const isCustomIngredientFormDirty = ({
   return optionalTouched && Boolean(
     priceInputAmount.trim() || purchasedAt.trim() || freshnessDate.trim() || notes.trim() || purchaseLinksCount > 0
   );
+};
+
+// Ф7: решение «применить префилл количества/единицы или нет» — чистая функция,
+// чтобы не зависеть от порядка эффектов/ref в тесте без DOM. Раньше ref-гард
+// (`initialAmountAppliedRef.current = true`) выставлялся ДО проверки
+// allowedUnits — при первом несовпадении (например initialUnit="ml" у стартовой
+// категории "солод") префилл молча умирал НАВСЕГДА, даже когда профиль потом
+// становился подходящим (пользователь сменил категорию/подтип). Теперь "applied"
+// фиксируется только в момент, когда решение реально финально: либо применили
+// значения, либо пользователь уже ввёл количество вручную (тогда его вводить
+// поверх нельзя, но и пытаться применить префилл дальше уже незачем).
+export type CustomIngredientAmountPrefillDecision =
+  | { kind: "skip" }
+  | { kind: "mark_applied_no_change" }
+  | { kind: "apply"; quantity: string; unit: InventoryUnit };
+
+export const resolveCustomIngredientAmountPrefillDecision = (params: {
+  alreadyApplied: boolean;
+  initialQuantity: string | null | undefined;
+  initialUnit: string | null | undefined;
+  enteredQuantity: string;
+  allowedUnits: readonly InventoryUnit[];
+}): CustomIngredientAmountPrefillDecision => {
+  if (params.alreadyApplied) {
+    return { kind: "skip" };
+  }
+
+  const quantity = (params.initialQuantity ?? "").trim();
+  if (!quantity || !params.initialUnit) {
+    return { kind: "skip" };
+  }
+
+  if (params.enteredQuantity.trim()) {
+    return { kind: "mark_applied_no_change" };
+  }
+
+  if (!params.allowedUnits.includes(params.initialUnit as InventoryUnit)) {
+    return { kind: "skip" };
+  }
+
+  return { kind: "apply", quantity, unit: params.initialUnit as InventoryUnit };
 };
 
 const parseOptionalNumber = (value: string) => {
@@ -267,6 +312,8 @@ export function CustomIngredientForm({
   initialSubtype = null,
   subtypeOptions: customSubtypeOptions,
   initialDisplayName = "",
+  initialQuantity = null,
+  initialUnit = null,
   preferredCurrency = "RUB",
   pending,
   mode = "inventory",
@@ -461,6 +508,30 @@ export function CustomIngredientForm({
       setYeastForm("dry");
     }
   }, [category, initialSubtype, subtypeOptionsKey]);
+
+  // Дефицит из «Чего не хватает» (УХ-находка #20 / П3): подставляем количество и
+  // единицу, как только профиль стартовой (или сменённой пользователем) категории
+  // их допускает. Гард по ref не даёт переприменять префилл после того, как
+  // решение уже финально (см. resolveCustomIngredientAmountPrefillDecision) —
+  // пока профиль не подходит, эффект вправе попробовать снова при его смене.
+  const initialAmountAppliedRef = useRef(false);
+  useEffect(() => {
+    const decision = resolveCustomIngredientAmountPrefillDecision({
+      alreadyApplied: initialAmountAppliedRef.current,
+      initialQuantity,
+      initialUnit,
+      enteredQuantity,
+      allowedUnits: unitProfile.allowedUnits
+    });
+
+    if (decision.kind === "skip") return;
+
+    initialAmountAppliedRef.current = true;
+    if (decision.kind === "apply") {
+      setEnteredQuantity(decision.quantity);
+      setEnteredUnit(decision.unit);
+    }
+  }, [initialQuantity, initialUnit, unitProfile, enteredQuantity]);
 
   useEffect(() => {
     onDisplayNameChange?.(displayName);
