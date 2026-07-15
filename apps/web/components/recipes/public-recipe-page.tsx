@@ -14,7 +14,11 @@ import { RecipeFeatureToggle } from "./recipe-feature-toggle";
 import { RecipeMatchPanel } from "./recipe-match-panel";
 import { RecipeScalePanel } from "./recipe-scale-panel";
 import { PublicRecipeWaterSection } from "./public-recipe-water-section";
-import { PublicRecipeMashSection, PublicRecipeFermentationSection } from "./public-recipe-process-section";
+import {
+  PublicRecipeBoilSection,
+  PublicRecipeFermentationSection,
+  PublicRecipeMashSection
+} from "./public-recipe-process-section";
 import { RecipeIngredientsSection } from "./recipe-ingredients-section";
 import { RecipeMetaSection } from "./recipe-meta-section";
 import { RecipeStatsSummaryViewer } from "./recipe-stats-summary-viewer";
@@ -67,17 +71,19 @@ export function PublicRecipePage({
       <PublicRecipeHeader recipe={recipe} />
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
-        {/* Суть рецепта в порядке варки: обложка → описание → цифры → ингредиенты
-            → затирание → вода → брожение. Затор/брожение — read-only, только если
-            в рецепте есть данные (ответ на «хватит ли, чтобы сварить» без клона). */}
+        {/* Цифры — сразу под шапкой (быстрый ответ «что за пиво»), дальше суть
+            рецепта в порядке варки: обложка → описание → ингредиенты → вода →
+            затирание → кипячение → брожение. Затор/брожение — read-only, только
+            если в рецепте есть данные (ответ на «хватит ли, чтобы сварить» без клона). */}
         <div className="min-w-0 space-y-6">
+          <RecipeStatsSummaryViewer recipe={recipe} />
           {recipe.heroImageId ? <RecipePhotoHero imageId={recipe.heroImageId} title={recipe.title} /> : null}
           <RecipeMetaSection recipe={recipe} showPrivateNotes={false} />
-          <RecipeStatsSummaryViewer recipe={recipe} />
           <RecipeIngredientsSection ingredients={recipe.ingredients} />
-          <PublicRecipeMashSection processMeta={recipe.processMeta} />
           <PublicRecipeWaterSection recipe={recipe} />
-          <PublicRecipeFermentationSection processMeta={recipe.processMeta} />
+          <PublicRecipeMashSection processMeta={recipe.processMeta} />
+          <PublicRecipeBoilSection boilTimeMinutes={recipe.boilTimeMinutes} ingredients={recipe.ingredients} />
+          <PublicRecipeFermentationSection processMeta={recipe.processMeta} ingredients={recipe.ingredients} />
         </div>
 
         {/* Инструменты и провенанс — не мешают чтению рецепта, доступны в один клик. */}

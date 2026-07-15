@@ -1,10 +1,16 @@
 import React from "react";
 import { Droplets, FlaskConical, Hop, Package, Wheat } from "lucide-react";
-import { resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
 import { resolveIngredientCategory } from "@/features/ingredients/taxonomy";
-import { formatInventoryQuantityForDisplay } from "@/features/inventory/display";
 import type { RecipeDetailDto } from "@/features/recipes/contracts";
 import { fermentableUseLabels, hopUseTypeLabels } from "@/features/recipes/ingredient-labels";
+import {
+  formatRecipeIngredientAmount,
+  recipeIngredientCategoryOf,
+  recipeIngredientDurationDays,
+  recipeIngredientTimeMinutes,
+  recipeIngredientUseType,
+  resolveRecipeIngredientNames
+} from "@/features/recipes/ingredient-presentation";
 
 import {
   buildRecipeIngredientTechnicalBadges,
@@ -14,7 +20,9 @@ import {
   type RecipeIngredientCardSource
 } from "./recipe-ingredient-card-display";
 
-const stageLabel: Record<RecipeDetailDto["ingredients"][number]["stage"], string> = {
+type RecipeIngredient = RecipeDetailDto["ingredients"][number];
+
+const stageLabel: Record<RecipeIngredient["stage"], string> = {
   mash: "Затирание",
   boil: "Кипячение",
   whirlpool: "Вирпул",
@@ -58,12 +66,14 @@ const sectionAccentBorder: Record<SectionCategory, string> = {
   consumable: "border-l-border"
 };
 
-const buildMetaLine = (ingredient: RecipeDetailDto["ingredients"][number]) => {
+// Мета-строка позиции (этап · назначение · время …). У хмеля этап и время уезжают
+// в правую колонку под количеством (см. hopTimingLabel) — здесь их не дублируем.
+const buildMetaLine = (ingredient: RecipeIngredient, { omitStageAndTiming = false } = {}): string | null => {
   const stepMeta = (ingredient.stepMeta ?? {}) as Record<string, unknown>;
   const currentStageLabel = stageLabel[ingredient.stage];
-  const parts = [currentStageLabel];
+  const parts = omitStageAndTiming ? [] : [currentStageLabel];
 
-  if (typeof stepMeta.useType === "string" && stepMeta.useType !== ingredient.stage) {
+  if (!omitStageAndTiming && typeof stepMeta.useType === "string" && stepMeta.useType !== ingredient.stage) {
     const useTypeLabel = hopUseTypeLabels[stepMeta.useType as keyof typeof hopUseTypeLabels];
     if (useTypeLabel && useTypeLabel !== currentStageLabel) {
       parts.push(useTypeLabel);
@@ -75,15 +85,17 @@ const buildMetaLine = (ingredient: RecipeDetailDto["ingredients"][number]) => {
       parts.push(useLabel);
     }
   }
-  if (typeof stepMeta.timeMinutes === "number") {
-    parts.push(`${stepMeta.timeMinutes} мин`);
-  } else if (ingredient.timeOffset !== null) {
-    parts.push(`${ingredient.timeOffset} мин`);
+  if (!omitStageAndTiming) {
+    if (typeof stepMeta.timeMinutes === "number") {
+      parts.push(`${stepMeta.timeMinutes} мин`);
+    } else if (ingredient.timeOffset !== null) {
+      parts.push(`${ingredient.timeOffset} мин`);
+    }
   }
   if (typeof stepMeta.temperatureC === "number") {
     parts.push(`${stepMeta.temperatureC} °C`);
   }
-  if (typeof stepMeta.durationDays === "number") {
+  if (!omitStageAndTiming && typeof stepMeta.durationDays === "number") {
     parts.push(`${stepMeta.durationDays} дн`);
   }
   if (typeof stepMeta.fermentationTempC === "number") {
@@ -93,10 +105,80 @@ const buildMetaLine = (ingredient: RecipeDetailDto["ingredients"][number]) => {
     parts.push(stepMeta.stageLabel.trim());
   }
 
-  return parts.join(" · ");
+  return parts.length ? parts.join(" · ") : null;
 };
 
-const buildIngredientCardSource = (ingredient: RecipeDetailDto["ingredients"][number]): RecipeIngredientCardSource => {
+// Тайминг хмеля для правой колонки: у кипа главное — минута внесения, у остальных
+// назначений — сам этап. Термины — из hopUseTypeLabels, новых слов не изобретаем.
+const hopTimingLabel = (ingredient: RecipeIngredient): string | null => {
+  const useType = recipeIngredientUseType(ingredient);
+  const timeMinutes = recipeIngredientTimeMinutes(ingredient);
+  const durationDays = recipeIngredientDurationDays(ingredient);
+
+  if (ingredient.stage === "mash") {
+    return stageLabel.mash;
+  }
+  if (useType === "first_wort_hop") {
+    return "Первое сусло";
+  }
+  if (ingredient.stage === "whirlpool" || useType === "whirlpool") {
+    return timeMinutes != null && timeMinutes > 0 ? `Вирпул · ${timeMinutes} мин` : "Вирпул";
+  }
+  if (ingredient.stage === "fermentation" || useType === "dry_hop") {
+    return durationDays != null ? `Сухое охмеление · ${durationDays} дн` : "Сухое охмеление";
+  }
+  if (useType === "dip_hop") {
+    return "Дип-хоп";
+  }
+  if (ingredient.stage === "boil") {
+    return timeMinutes != null ? `${timeMinutes} мин` : stageLabel.boil;
+  }
+  return stageLabel[ingredient.stage] ?? null;
+};
+
+// Порядок хмеля = порядок внесений: затор → FWH → кип (от больших минут к меньшим)
+// → вирпул → сухое охмеление.
+const hopScheduleRank = (ingredient: RecipeIngredient): number => {
+  const useType = recipeIngredientUseType(ingredient);
+  if (ingredient.stage === "mash") return 0;
+  if (useType === "first_wort_hop") return 1;
+  if (ingredient.stage === "whirlpool" || useType === "whirlpool") return 3;
+  if (ingredient.stage === "fermentation" || useType === "dry_hop") return 4;
+  if (ingredient.stage === "boil") return 2;
+  return 5;
+};
+
+const sortGroupItems = (category: SectionCategory, items: RecipeIngredient[]): RecipeIngredient[] => {
+  const indexed = items.map((ingredient, index) => ({ ingredient, index }));
+  if (category === "fermentable") {
+    indexed.sort((a, b) => (
+      (b.ingredient.amountNormalizedQuantity ?? -1) - (a.ingredient.amountNormalizedQuantity ?? -1)
+      || a.index - b.index
+    ));
+  } else if (category === "hop") {
+    indexed.sort((a, b) => (
+      hopScheduleRank(a.ingredient) - hopScheduleRank(b.ingredient)
+      || (recipeIngredientTimeMinutes(b.ingredient) ?? -1) - (recipeIngredientTimeMinutes(a.ingredient) ?? -1)
+      || a.index - b.index
+    ));
+  }
+  return indexed.map(({ ingredient }) => ingredient);
+};
+
+// Доля в засыпи по нормализованной массе; считается только когда у позиции и у
+// всей группы масса в граммах — смешанные единицы долю не образуют.
+const grainSharePct = (ingredient: RecipeIngredient, totalGrams: number): string | null => {
+  if (totalGrams <= 0 || ingredient.amountNormalizedUnit !== "g" || ingredient.amountNormalizedQuantity == null) {
+    return null;
+  }
+  const share = (ingredient.amountNormalizedQuantity / totalGrams) * 100;
+  if (!Number.isFinite(share) || share <= 0) {
+    return null;
+  }
+  return share < 1 ? "<1%" : `${Math.round(share)}%`;
+};
+
+const buildIngredientCardSource = (ingredient: RecipeIngredient): RecipeIngredientCardSource => {
   const category = ingredient.ingredientCategory ?? resolveIngredientCategory({ type: ingredient.type });
 
   return {
@@ -117,7 +199,7 @@ const buildIngredientCardSource = (ingredient: RecipeDetailDto["ingredients"][nu
 export function RecipeIngredientsSection({ ingredients }: { ingredients: RecipeDetailDto["ingredients"] }) {
   const grouped = sectionOrder.map((category) => ({
     category,
-    items: ingredients.filter((ingredient) => (ingredient.ingredientCategory ?? resolveIngredientCategory({ type: ingredient.type })) === category)
+    items: sortGroupItems(category, ingredients.filter((ingredient) => recipeIngredientCategoryOf(ingredient) === category))
   }));
 
   return (
@@ -130,6 +212,13 @@ export function RecipeIngredientsSection({ ingredients }: { ingredients: RecipeD
           const IconComponent = sectionIcons[group.category];
           const iconBg = sectionIconBg[group.category];
           const accent = sectionAccentBorder[group.category];
+          const totalGrainGrams = group.category === "fermentable"
+            ? group.items.reduce((acc, item) => (
+              item.amountNormalizedUnit === "g" && item.amountNormalizedQuantity != null
+                ? acc + item.amountNormalizedQuantity
+                : acc
+            ), 0)
+            : 0;
           return (
             <div key={group.category} className="space-y-2">
               <div className="flex items-center gap-2">
@@ -141,11 +230,7 @@ export function RecipeIngredientsSection({ ingredients }: { ingredients: RecipeD
               </div>
               <ul className="space-y-1.5">
                 {group.items.map((ingredient) => {
-                  const { primaryName, secondaryName } = resolveIngredientDisplayNames({
-                    displayName: ingredient.ingredientDisplayName ?? ingredient.ingredientDisplayNameSnapshot ?? ingredient.type,
-                    displayNameRu: ingredient.ingredientDisplayNameRu,
-                    displayNameEn: ingredient.ingredientDisplayNameEn
-                  });
+                  const { primaryName, secondaryName } = resolveRecipeIngredientNames(ingredient);
                   const cardSource = buildIngredientCardSource(ingredient);
                   const titleHref = ingredient.ingredientCatalogItemId
                     ? `/catalog/system/${ingredient.ingredientCatalogItemId}`
@@ -161,6 +246,13 @@ export function RecipeIngredientsSection({ ingredients }: { ingredients: RecipeD
                     : [];
                   const badges = [...recipeStageBadges, ...technicalBadges];
                   const summaryFallback = badges.length ? null : ingredient.ingredientSummary;
+                  const isHop = group.category === "hop";
+                  const metaLine = buildMetaLine(ingredient, { omitStageAndTiming: isHop });
+                  const amountSubLabel = isHop
+                    ? hopTimingLabel(ingredient)
+                    : group.category === "fermentable"
+                      ? grainSharePct(ingredient, totalGrainGrams)
+                      : null;
 
                   return (
                     <li key={ingredient.id} className={`rounded-lg border-l-[3px] bg-card px-3 py-2.5 ring-1 ring-border ${accent}`}>
@@ -175,20 +267,14 @@ export function RecipeIngredientsSection({ ingredients }: { ingredients: RecipeD
                           />
                           {summaryFallback ? <div className="mt-1 text-xs text-muted-foreground">{summaryFallback}</div> : null}
                           <RecipeIngredientTechnicalBadges badges={badges} className="mt-1.5" />
-                          <div className="mt-0.5 text-xs text-muted-foreground">{buildMetaLine(ingredient)}</div>
+                          {metaLine ? <div className="mt-0.5 text-xs text-muted-foreground">{metaLine}</div> : null}
                         </div>
-                        <div className="shrink-0 text-right text-sm font-medium tabular-nums text-foreground">{formatInventoryQuantityForDisplay({
-                          enteredQuantity: ingredient.amountEnteredQuantity,
-                          enteredUnit: ingredient.amountEnteredUnit,
-                          normalizedQuantity: ingredient.amountNormalizedQuantity,
-                          normalizedUnit: ingredient.amountNormalizedUnit,
-                          type: ingredient.type,
-                          category: ingredient.ingredientCategory ?? resolveIngredientCategory({ type: ingredient.type }),
-                          subtype: ingredient.ingredientSubtype ?? null,
-                          defaultDisplayUnit: ingredient.ingredientDefaultDisplayUnit ?? ingredient.ingredientDefaultDisplayUnitSnapshot,
-                          allowedUnits: ingredient.ingredientAllowedUnits ?? null,
-                          measurementDimension: ingredient.ingredientMeasurementDimension ?? ingredient.ingredientMeasurementDimensionSnapshot ?? null
-                        })}</div>
+                        <div className="shrink-0 text-right">
+                          <div className="text-sm font-medium tabular-nums text-foreground">{formatRecipeIngredientAmount(ingredient)}</div>
+                          {amountSubLabel ? (
+                            <div className="mt-0.5 whitespace-nowrap text-xs font-medium tabular-nums text-muted-foreground">{amountSubLabel}</div>
+                          ) : null}
+                        </div>
                       </div>
                     </li>
                   );

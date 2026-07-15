@@ -188,9 +188,24 @@ describe("recipes read components", () => {
       preferredGravityUnit: "plato"
     }));
 
-    expect(html).toContain("BJCP:");
+    // Стиль в подзаголовке не дублируем (он в шапке страницы) — блок показывает
+    // сами метрики с диапазонами стиля.
+    expect(html).not.toContain("BJCP:");
     expect(html).toContain("Ключевые показатели");
     expect(html).not.toContain("Соответствие стилю");
+  });
+
+  it("называет стиль с кодом BJCP рядом с вердиктом и помечает диапазоны словом «стиль»", () => {
+    const html = renderToStaticMarkup(React.createElement(RecipeStatsSummary, {
+      recipe: {
+        ...recipeDetail,
+        styleId: "21A"
+      },
+      preferredGravityUnit: "plato"
+    }));
+
+    expect(html).toContain("BJCP Американский IPA · 21A");
+    expect(html).toContain("стиль ");
   });
 
   it("renders ingredients and meta sections", () => {
@@ -211,7 +226,8 @@ describe("recipes read components", () => {
     expect(html).toContain("Альфа 12.5%");
     expect(html).toContain("Гранулы");
     expect(html).toContain("0.5 кг");
-    expect(html).toContain("Кипячение");
+    // Тайминг хмеля — в правой колонке под количеством.
+    expect(html).toContain("30 мин");
     expect(html).toContain("Описание");
     expect(html).toContain("Личные заметки");
   });
@@ -233,7 +249,7 @@ describe("recipes read components", () => {
       })
     );
 
-    expect(html).toContain("Кипячение · 60 мин");
+    expect(html).toContain("60 мин");
   });
 
   it("не показывает дубль stage/useType, если они совпадают по смыслу (F7)", () => {
@@ -252,7 +268,8 @@ describe("recipes read components", () => {
 
     expect(html).not.toContain("boil");
     expect(html).not.toContain("Кипячение · Кипячение");
-    expect(html).toContain("Кипячение");
+    // Время внесения из legacy timeOffset — в правой колонке.
+    expect(html).toContain("30 мин");
   });
 
   it("показывает переведённый useType, когда он отличается от stage (F7)", () => {
@@ -323,7 +340,9 @@ describe("recipes read components", () => {
       })
     );
 
-    expect(html).toContain("Вирпул / хопстенд");
+    // useType побеждает stage: внесение помечено как вирпул, а не как кип.
+    expect(html).toContain("Вирпул");
+    expect(html).not.toContain("whirlpool");
   });
 
   it("links an ingredient with a catalog binding to /catalog/system/<id> (перелинковка M8)", () => {
@@ -419,8 +438,9 @@ describe("recipes read components", () => {
       }))
     );
 
-    expect(html).toContain("Американский IPA");
-    expect(html).toMatch(/<a[^>]+href="\/bjcp\/[^"]+"[^>]*>Американский IPA<\/a>/);
+    expect(html).toContain("BJCP Американский IPA");
+    // Ссылка помечена иконкой «внешняя ссылка», поэтому текст не сразу перед </a>.
+    expect(html).toMatch(/<a[^>]+href="\/bjcp\/[^"]+"[^>]*>BJCP Американский IPA.*?<\/a>/);
   });
 
   it("does not link the style name when the recipe has no resolvable style", () => {
