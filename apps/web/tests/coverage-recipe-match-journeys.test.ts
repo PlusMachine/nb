@@ -374,6 +374,7 @@ describe("summarizeMatch — пороги label и подсчёт строк", (
     displayOrder: 0,
     ingredientDisplayName: null,
     category: "fermentable",
+    brand: null,
     status: "covered",
     coveragePercent: 100,
     requiredQuantityNormalized: 0,

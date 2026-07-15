@@ -5,7 +5,7 @@ import { ChevronRight } from "lucide-react";
 
 import type { RecipeMatchDto } from "@/features/recipes/contracts";
 
-import { labelMeta, percentRingColor } from "./recipe-match-panel";
+import { countStockGaps, labelMeta, percentRingColor } from "./recipe-match-panel";
 import { useRecipeMatch } from "./recipe-match-context";
 
 /**
@@ -20,6 +20,7 @@ export function RecipeMatchMobileBadgeView({ match }: { match: RecipeMatchDto })
   }
 
   const accent = labelMeta[match.label].accent;
+  const gapCount = countStockGaps(match.lines);
 
   return (
     <button
@@ -34,7 +35,7 @@ export function RecipeMatchMobileBadgeView({ match }: { match: RecipeMatchDto })
       </span>
       <span className={`min-w-0 flex-1 text-sm font-medium ${accent}`}>
         Есть {match.coveredLines} из {match.totalLines}
-        {match.missingCount > 0 ? ` · не хватает ${match.missingCount}` : ""}
+        {gapCount > 0 ? ` · не хватает ${gapCount}` : ""}
       </span>
       <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
     </button>

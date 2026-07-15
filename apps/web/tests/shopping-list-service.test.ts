@@ -37,6 +37,7 @@ const missingLine = (overrides: Partial<RecipeMatchLineDto> = {}): RecipeMatchLi
   displayOrder: 0,
   ingredientDisplayName: "Citra",
   category: "hop",
+  brand: null,
   status: "missing",
   coveragePercent: 0,
   requiredQuantityNormalized: 50,
@@ -58,6 +59,7 @@ const coveredLine = (overrides: Partial<RecipeMatchLineDto> = {}): RecipeMatchLi
   displayOrder: 1,
   ingredientDisplayName: "Pilsner",
   category: "fermentable",
+  brand: null,
   status: "covered",
   coveragePercent: 100,
   requiredQuantityNormalized: 5000,
@@ -87,6 +89,7 @@ const matchDto = (recipeId: string, lines: RecipeMatchLineDto[], overrides: Part
   targetBatchVolumeL: 20,
   recipeBatchVolumeL: 20,
   scaledToInventory: false,
+  hasEquipmentProfile: null,
   ...overrides
 });
 

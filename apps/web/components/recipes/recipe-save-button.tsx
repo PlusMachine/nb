@@ -9,6 +9,7 @@ import { loadRecipeSaveViewerState, toggleRecipeSaveAction } from "@/app/(public
 import { loadRecipeMatch } from "@/app/(public)/recipes/[slug]/match-actions";
 import { redirectToLoginWithNext } from "@/lib/auth-links";
 
+import { countStockGaps } from "./recipe-match-panel";
 import { useRecipeMatch } from "./recipe-match-context";
 import { useRecipeSaves } from "./recipe-saves-provider";
 
@@ -16,9 +17,15 @@ import { useRecipeSaves } from "./recipe-saves-provider";
  * П2: после добавления в закладки на детальной странице (`variant="button"`)
  * ведём туда, где реально можно что-то сделать — если в рецепте есть нехватки,
  * это список покупок, а не сама секция закладок.
+ *
+ * Ф25: «нехватка» здесь — та же семантика, что и в панели матча (missing ИЛИ
+ * partial через countStockGaps), а не серверный match.missingCount (только
+ * missing) — иначе для рецепта с одними partial-строками панель говорит «не
+ * хватает N», а тост «В закладки» вёл бы просто в закладки без ссылки на
+ * покупки.
  */
-export const resolveSaveToastAction = (missingCount: number | null): { label: string; href: "/app/shopping" | "/app/saved" } =>
-  missingCount != null && missingCount > 0
+export const resolveSaveToastAction = (gapCount: number | null): { label: string; href: "/app/shopping" | "/app/saved" } =>
+  gapCount != null && gapCount > 0
     ? { label: "Чего не хватает", href: "/app/shopping" }
     : { label: "Закладки", href: "/app/saved" };
 
@@ -97,20 +104,21 @@ export function RecipeSaveButton({
       if (next) {
         // На детальной странице (variant="button") ведём в список покупок, если
         // в рецепте есть нехватки — иначе в закладки, как и на витрине.
-        let missingCount: number | null = null;
+        let gapCount: number | null = null;
         if (variant === "button" && matchCtx) {
-          missingCount = matchCtx.state?.match?.missingCount ?? null;
+          const contextMatch = matchCtx.state?.match;
+          gapCount = contextMatch ? countStockGaps(contextMatch.lines) : null;
           // Матч ещё не догрузился к моменту клика — редкий путь, один лишний await.
-          if (missingCount == null) {
+          if (gapCount == null) {
             try {
               const fresh = await loadRecipeMatch(recipeId);
-              missingCount = fresh.match?.missingCount ?? null;
+              gapCount = fresh.match ? countStockGaps(fresh.match.lines) : null;
             } catch {
-              missingCount = null;
+              gapCount = null;
             }
           }
         }
-        const toastAction = resolveSaveToastAction(missingCount);
+        const toastAction = resolveSaveToastAction(gapCount);
         show({
           title: "В закладках",
           action: { label: toastAction.label, onClick: () => router.push(toastAction.href) }

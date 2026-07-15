@@ -915,6 +915,9 @@ export type RecipeMatchLineDto = {
   displayOrder: number;
   ingredientDisplayName: string | null;
   category: IngredientCategory | null;
+  // Ф23: бренд строки (если известен) — показывается подписью «категория · бренд»
+  // под именем в строках нехватки панели матча.
+  brand: string | null;
   status: RecipeMatchLineStatus;
   coveragePercent: number;
   requiredQuantityNormalized: number;
@@ -945,6 +948,10 @@ export type RecipeMatchDto = {
   targetBatchVolumeL: number;
   recipeBatchVolumeL: number;
   scaledToInventory: boolean;
+  // Ф28: true/false только на витринном пути БЕЗ явного объёма/партии (говорит,
+  // есть ли у смотрящего профиль оборудования); null — путь ему не принадлежит
+  // (батч/партия/явный targetBatchVolumeL), подсказка там неуместна.
+  hasEquipmentProfile: boolean | null;
 };
 
 // Элемент списка «рецепты под ваш склад» (обратный матчинг от инвентаря).

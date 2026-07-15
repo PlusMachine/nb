@@ -101,6 +101,8 @@ export type MatchLineInput = {
   profile: IngredientMatchProfile;
   requiredNormalizedQuantity: number;
   normalizedUnit: InventoryUnit | null;
+  /** Ф23: бренд строки — показывается подписью под именем в строках нехватки панели матча. */
+  brand?: string | null;
 };
 
 export type InventoryMatchEntry = {
@@ -416,6 +418,7 @@ export const matchLineAgainstInventory = (
       displayOrder: line.displayOrder,
       ingredientDisplayName: line.displayName,
       category: line.profile.category ?? null,
+      brand: line.brand ?? null,
       status: present ? "covered" : "missing",
       coveragePercent: present ? 100 : 0,
       requiredQuantityNormalized: required,
@@ -445,6 +448,7 @@ export const matchLineAgainstInventory = (
     displayOrder: line.displayOrder,
     ingredientDisplayName: line.displayName,
     category: line.profile.category ?? null,
+    brand: line.brand ?? null,
     status,
     coveragePercent: Math.round(coverage * 100),
     requiredQuantityNormalized: required,
@@ -507,6 +511,10 @@ const resolveMatchLabel = (matchPercent: number): RecipeMatchLabel => {
 export const summarizeMatch = (recipeId: string, lines: RecipeMatchLineDto[], context: {
   targetBatchVolumeL: number;
   recipeBatchVolumeL: number;
+  // Ф28: null везде, кроме витринного пути БЕЗ явного объёма/партии (см.
+  // computeRecipeMatch) — там true/false говорит панели, есть ли у смотрящего
+  // профиль оборудования, чтобы показать подсказку «задайте оборудование».
+  hasEquipmentProfile?: boolean | null;
 }): RecipeMatchDto => {
   let weightSum = 0;
   let weightedCoverage = 0;
@@ -530,7 +538,8 @@ export const summarizeMatch = (recipeId: string, lines: RecipeMatchLineDto[], co
     lines: lines.sort((a, b) => a.displayOrder - b.displayOrder),
     targetBatchVolumeL: roundTo(context.targetBatchVolumeL, 2),
     recipeBatchVolumeL: roundTo(context.recipeBatchVolumeL, 2),
-    scaledToInventory: Math.abs(context.targetBatchVolumeL - context.recipeBatchVolumeL) > 0.001
+    scaledToInventory: Math.abs(context.targetBatchVolumeL - context.recipeBatchVolumeL) > 0.001,
+    hasEquipmentProfile: context.hasEquipmentProfile ?? null
   };
 };
 
@@ -546,6 +555,9 @@ export const summarizeMatch = (recipeId: string, lines: RecipeMatchLineDto[], co
 const resolveDefaultEquipment = async (userId: string): Promise<{
   targetBatchVolumeL: number | null;
   brewhouseEfficiencyPct: number | null;
+  /** Ф28: есть ли у пользователя хотя бы один профиль оборудования (отличает
+   * «профиля нет → расчёт молча под объём рецепта» от «профиль есть»). */
+  hasProfile: boolean;
 }> => {
   const profiles = await listEquipmentProfiles(userId);
   const profile = profiles[0];
@@ -553,11 +565,12 @@ const resolveDefaultEquipment = async (userId: string): Promise<{
   const efficiency = profile?.brewhouseEfficiencyPct;
   return {
     targetBatchVolumeL: typeof volume === "number" && volume > 0 ? volume : null,
-    brewhouseEfficiencyPct: typeof efficiency === "number" && efficiency > 0 ? efficiency : null
+    brewhouseEfficiencyPct: typeof efficiency === "number" && efficiency > 0 ? efficiency : null,
+    hasProfile: profiles.length > 0
   };
 };
 
-const NO_DEFAULT_EQUIPMENT = { targetBatchVolumeL: null, brewhouseEfficiencyPct: null };
+const NO_DEFAULT_EQUIPMENT = { targetBatchVolumeL: null, brewhouseEfficiencyPct: null, hasProfile: false };
 
 // Масштаб рецепта под целевой объём: объём рецепта, целевой объём (явный →
 // дефолтный профиль оборудования → объём рецепта) и фактор пересчёта количеств.
@@ -649,6 +662,12 @@ export const computeRecipeMatch = async (input: {
     defaultEfficiencyPct: defaultEquipment.brewhouseEfficiencyPct
   });
 
+  // Ф28: тот же предикат, что выше выбирает resolveDefaultEquipment vs
+  // NO_DEFAULT_EQUIPMENT — только на этом пути (витрина/дашборд, без явного
+  // объёма и вне партии) уместно подсказывать «нет профиля оборудования».
+  const usedDefaultEquipment = !(input.targetBatchVolumeL || input.brewBatchId);
+  const hasEquipmentProfile = usedDefaultEquipment ? defaultEquipment.hasProfile : null;
+
   const index = indexInventoryEntries(buildInventoryEntries(inventoryItems, credits));
 
   // Ф6: строки рецепта могут нести userCustomIngredientId АВТОРА рецепта (когда
@@ -669,7 +688,8 @@ export const computeRecipeMatch = async (input: {
         displayName: ingredient.ingredientDisplayName ?? ingredient.ingredientDisplayNameSnapshot ?? null,
         profile,
         requiredNormalizedQuantity: ingredient.amountNormalizedQuantity,
-        normalizedUnit: parseInventoryUnit(ingredient.amountNormalizedUnit)
+        normalizedUnit: parseInventoryUnit(ingredient.amountNormalizedUnit),
+        brand: ingredient.ingredientBrand ?? ingredient.ingredientBrandName ?? null
       },
       index,
       // Дожим — только засыпи: хмель и дрожжи от эффективности затирания не зависят.
@@ -678,7 +698,7 @@ export const computeRecipeMatch = async (input: {
     return withOwnedCustomIngredientId(matched, ownedCustomIngredientIds);
   });
 
-  return summarizeMatch(recipe.id, lines, { targetBatchVolumeL, recipeBatchVolumeL });
+  return summarizeMatch(recipe.id, lines, { targetBatchVolumeL, recipeBatchVolumeL, hasEquipmentProfile });
 };
 
 // --- публичный API: склад → подходящие рецепты ----------------------------
@@ -743,7 +763,8 @@ const computeMatchForRecipeRow = (
   ownedCustomIngredientIds: Set<string>
 ): RecipeMatchDto => {
   const lines = recipe.ingredients.map((row) => {
-    const profile = profileFromRecipeIngredientRow(row, catalogById.get(row.ingredientCatalogItemId ?? ""));
+    const catalog = catalogById.get(row.ingredientCatalogItemId ?? "");
+    const profile = profileFromRecipeIngredientRow(row, catalog);
     const matched = matchLineAgainstInventory(
       {
         id: row.id,
@@ -752,7 +773,11 @@ const computeMatchForRecipeRow = (
         displayName: row.ingredientDisplayNameSnapshot ?? null,
         profile,
         requiredNormalizedQuantity: row.amountNormalizedQuantity,
-        normalizedUnit: parseInventoryUnit(row.amountNormalizedUnit)
+        normalizedUnit: parseInventoryUnit(row.amountNormalizedUnit),
+        // Ф23/бэклог: каталог для этих строк уже загружен батчем (loadCatalogForRecipes)
+        // — раньше brand не прокидывался сюда, из-за чего lines[].brand оставался
+        // null во всех батч-путях (рецепты под склад/shopping/матч партии).
+        brand: catalog?.brand ?? null
       },
       index,
       resolveLineScaleFactor(profile, volume.factor, volume.efficiencyFactor)

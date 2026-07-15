@@ -47,3 +47,22 @@ export const buildIngredientNameActionHref = (
   }
   return href;
 };
+
+// Ф23: ссылка на деталку каталожного ингредиента (/catalog/[source]/[id]) из
+// строки нехватки панели матча. "system" — сегмент для каталожных позиций,
+// "custom" — для кастомных (см. resolveCatalogSource в app/(public)/catalog/
+// [source]/[id]/page.tsx). Без привязки — фолбэк на поиск по имени, как у
+// buildIngredientNameActionHref/MatchGapNameRow.
+export const buildCatalogDetailHref = (opts: {
+  catalogItemId?: string | null;
+  customId?: string | null;
+  name?: string | null;
+}) => {
+  if (opts.catalogItemId) {
+    return `/catalog/system/${opts.catalogItemId}`;
+  }
+  if (opts.customId) {
+    return `/catalog/custom/${opts.customId}`;
+  }
+  return `/catalog?q=${encodeURIComponent(opts.name ?? "")}`;
+};

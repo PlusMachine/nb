@@ -2,6 +2,8 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
+import { ToastProvider } from "@nb/ui";
+
 import { RecipeMatchPanelView } from "../components/recipes/recipe-match-panel";
 import type { RecipeMatchDto, RecipeMatchLineDto } from "../features/recipes/contracts";
 
@@ -11,6 +13,7 @@ const baseLine = (overrides: Partial<RecipeMatchLineDto> = {}): RecipeMatchLineD
   displayOrder: 0,
   ingredientDisplayName: "Кориандр молотый",
   category: "consumable",
+  brand: null,
   status: "missing",
   coveragePercent: 0,
   requiredQuantityNormalized: 10,
@@ -36,11 +39,14 @@ const baseMatch = (lines: RecipeMatchLineDto[], overrides: Partial<RecipeMatchDt
   targetBatchVolumeL: 20,
   recipeBatchVolumeL: 20,
   scaledToInventory: false,
+  hasEquipmentProfile: null,
   ...overrides
 });
 
+// MatchGapRow (строки-нехватки с привязкой) использует useToast() — нужен
+// провайдер, как в recipe-card.test.ts для RecipeSaveButton.
 const render = (match: RecipeMatchDto) =>
-  renderToStaticMarkup(React.createElement(RecipeMatchPanelView, { match, onChanged: () => undefined }));
+  renderToStaticMarkup(React.createElement(ToastProvider, null, React.createElement(RecipeMatchPanelView, { match, onChanged: () => undefined })));
 
 describe("RecipeMatchPanelView — П3: строки-нехватки без привязки получают выход", () => {
   it("renders the inline «На склад» form for a gap line with only a custom-ingredient link", () => {
@@ -79,9 +85,23 @@ describe("RecipeMatchPanelView — П3: строки-нехватки без п�
 
 describe("RecipeMatchPanelView — П2: вердикт ведёт в список покупок", () => {
   it("делает «не хватает K» ссылкой на /app/shopping, когда нехватки есть", () => {
-    const html = render(baseMatch([baseLine()], { missingCount: 3, coveredLines: 2, totalLines: 5 }));
+    // Ф25: счётчик в шапке равен gapLines.length (реальным строкам-нехваткам),
+    // а не отдельно выставленному missingCount — фикстура несёт 3 gap-строки.
+    const html = render(baseMatch([
+      baseLine({ recipeIngredientId: "ri-1", displayOrder: 0 }),
+      baseLine({ recipeIngredientId: "ri-2", displayOrder: 1 }),
+      baseLine({ recipeIngredientId: "ri-3", displayOrder: 2 })
+    ], { coveredLines: 2, totalLines: 5 }));
 
     expect(html).toMatch(/<a[^>]+href="\/app\/shopping"[^>]*>\s*не хватает 3\s*<\/a>/);
+  });
+
+  it("Ф25: partial-строка тоже считается нехваткой в счётчике", () => {
+    const html = render(baseMatch([
+      baseLine({ recipeIngredientId: "ri-partial", status: "partial", coveragePercent: 40 })
+    ], { coveredLines: 0, totalLines: 1 }));
+
+    expect(html).toMatch(/<a[^>]+href="\/app\/shopping"[^>]*>\s*не хватает 1\s*<\/a>/);
   });
 
   it("не рендерит ссылку на /app/shopping, когда нехваток нет", () => {

@@ -45,7 +45,8 @@ const baseMatch: RecipeMatchDto = {
   lines: [],
   targetBatchVolumeL: 20,
   recipeBatchVolumeL: 20,
-  scaledToInventory: false
+  scaledToInventory: false,
+  hasEquipmentProfile: null
 };
 
 const makeMatch = (overrides: Partial<RecipeMatchDto>): RecipeMatchDto => ({ ...baseMatch, ...overrides });

@@ -445,6 +445,130 @@ describe("computeRecipeMatch — wiring", () => {
   });
 });
 
+// Ф23: бренд строки рецепта протянут в RecipeMatchLineDto — подпись «категория ·
+// бренд» под именем в строках нехватки панели матча (recipe-match-panel.tsx).
+describe("computeRecipeMatch — Ф23: бренд строки в DTO", () => {
+  const recipeWithBrand = (ingredientOverrides: Record<string, unknown>) => ({
+    id: "recipe-1",
+    batchSizeNormalizedQuantity: 20000,
+    batchSizeNormalizedUnit: "ml",
+    ingredients: [
+      {
+        id: "ri-1",
+        persistentKey: "ri-1-pk",
+        displayOrder: 0,
+        ingredientDisplayName: "Pilsner",
+        ingredientDisplayNameSnapshot: "Pilsner",
+        ingredientCategory: "fermentable",
+        ingredientSubtype: "malt",
+        type: "malt",
+        ingredientTechnicalData: { type: "malt", maltType: "base", colorEbcMin: 2, colorEbcMax: 4 },
+        ingredientCatalogItemId: "kursk--pilsner",
+        userCustomIngredientId: null,
+        amountNormalizedQuantity: 5000,
+        amountNormalizedUnit: "g",
+        ...ingredientOverrides
+      }
+    ]
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (listInventoryForUser as Mock).mockResolvedValue([]);
+    (listEquipmentProfiles as Mock).mockResolvedValue([]);
+  });
+
+  it("берёт ingredientBrand строки рецепта", async () => {
+    (getRecipeById as Mock).mockResolvedValue(recipeWithBrand({ ingredientBrand: "Курский солод" }));
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1" });
+
+    expect(result.lines[0].brand).toBe("Курский солод");
+  });
+
+  it("падает на ingredientBrandName, если ingredientBrand не задан", async () => {
+    (getRecipeById as Mock).mockResolvedValue(recipeWithBrand({ ingredientBrand: null, ingredientBrandName: "Soufflet" }));
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1" });
+
+    expect(result.lines[0].brand).toBe("Soufflet");
+  });
+
+  it("brand = null, если оба поля отсутствуют", async () => {
+    (getRecipeById as Mock).mockResolvedValue(recipeWithBrand({}));
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1" });
+
+    expect(result.lines[0].brand).toBeNull();
+  });
+});
+
+// Ф28: hasEquipmentProfile — только на витринном пути БЕЗ явного объёма/партии
+// говорит, есть ли у смотрящего профиль оборудования (нужно для подсказки
+// «задайте оборудование» в панели, вместо тихого расчёта под объём рецепта).
+describe("computeRecipeMatch — Ф28: hasEquipmentProfile", () => {
+  const simpleRecipe = () => ({
+    id: "recipe-1",
+    batchSizeNormalizedQuantity: 20000,
+    batchSizeNormalizedUnit: "ml",
+    ingredients: [
+      {
+        id: "ri-1",
+        persistentKey: "ri-1-pk",
+        displayOrder: 0,
+        ingredientDisplayName: "Pilsner",
+        ingredientDisplayNameSnapshot: "Pilsner",
+        ingredientCategory: "fermentable",
+        ingredientSubtype: "malt",
+        type: "malt",
+        ingredientTechnicalData: { type: "malt", maltType: "base", colorEbcMin: 2, colorEbcMax: 4 },
+        ingredientCatalogItemId: "kursk--pilsner",
+        userCustomIngredientId: null,
+        amountNormalizedQuantity: 5000,
+        amountNormalizedUnit: "g"
+      }
+    ]
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (getRecipeById as Mock).mockResolvedValue(simpleRecipe());
+    (listInventoryForUser as Mock).mockResolvedValue([]);
+    (db.query.brewBatches.findMany as Mock).mockResolvedValue([]);
+    (getBrewBatchInventoryCredits as Mock).mockResolvedValue(new Map());
+  });
+
+  it("витрина без явного объёма, у пользователя НЕТ профиля оборудования → false", async () => {
+    (listEquipmentProfiles as Mock).mockResolvedValue([]);
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1" });
+
+    expect(result.hasEquipmentProfile).toBe(false);
+  });
+
+  it("витрина без явного объёма, профиль ЕСТЬ → true", async () => {
+    (listEquipmentProfiles as Mock).mockResolvedValue([{ targetBatchVolumeL: 20 }]);
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1" });
+
+    expect(result.hasEquipmentProfile).toBe(true);
+  });
+
+  it("явный targetBatchVolumeL → null (профиль даже не запрашивается, подсказка неуместна)", async () => {
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1", targetBatchVolumeL: 30 });
+
+    expect(result.hasEquipmentProfile).toBeNull();
+    expect(listEquipmentProfiles).not.toHaveBeenCalled();
+  });
+
+  it("матч ПАРТИИ (brewBatchId) → null", async () => {
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1", brewBatchId: "bb-1" });
+
+    expect(result.hasEquipmentProfile).toBeNull();
+    expect(listEquipmentProfiles).not.toHaveBeenCalled();
+  });
+});
+
 // Ф6 (P0): userCustomIngredientId в строке рецепта — сырой FK кастомного
 // ингредиента АВТОРА рецепта, а не обязательно смотрящего (computeRecipeMatch
 // вызывается и для просмотра ЧУЖОГО рецепта). Утечка чужого id ломает инлайн-
