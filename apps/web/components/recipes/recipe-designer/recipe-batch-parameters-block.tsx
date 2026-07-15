@@ -37,6 +37,7 @@ export function RecipeBatchParametersBlock({
   equipmentProfiles,
   selectedEquipmentProfileId,
   onSelectEquipmentProfile,
+  isInheritedEquipmentSnapshot,
   canRescaleToVolume,
   onRescaleToVolume,
   onOpenBitternessSettings,
@@ -58,6 +59,8 @@ export function RecipeBatchParametersBlock({
   equipmentProfiles: EquipmentProfileDto[];
   selectedEquipmentProfileId: string | null;
   onSelectEquipmentProfile: (profileId: string | null) => void;
+  /** Снапшот унаследован от рецепта (чужой/недоступный профиль) — селект не должен врать «Без профиля». */
+  isInheritedEquipmentSnapshot: boolean;
   /** Показать инлайн-действие «Пересчитать под объём» (объём изменился с последнего сохранения). */
   canRescaleToVolume: boolean;
   onRescaleToVolume: () => void;
@@ -72,7 +75,9 @@ export function RecipeBatchParametersBlock({
   const equipmentProfileSelectValue = selectedEquipmentProfile?.id ?? "";
   const selectedEquipmentProfileLabel = selectedEquipmentProfile
     ? selectedEquipmentProfile.name
-    : "Без профиля";
+    : isInheritedEquipmentSnapshot
+      ? "Оборудование автора рецепта"
+      : "Без профиля";
   const fgSourceLabel = resolveRecipeFgSourceLabel(preview?.fgEstimateMode, preview?.fgEstimateDetails);
   const fgHelperText = resolveRecipeFgHelperText(preview?.fgEstimateMode, preview?.fg);
   // Числа устарели, пока идёт пересчёт или превью упало с ошибкой — приглушаем,

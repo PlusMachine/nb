@@ -1973,10 +1973,16 @@ export const buildCloneTitle = (baseTitle: string): string => {
   return `${trimmedBase}${suffix}`;
 };
 
-/** Общий билдер payload для клона: копия как ЧЕРНОВИК (private), полные данные. */
+/**
+ * Общий билдер payload для клона: копия как ЧЕРНОВИК (private), полные данные.
+ * `resetEquipmentProfileId` — для кросс-юзер клона: `equipmentProfileId` источника
+ * принадлежит ЧУЖОМУ автору, переносить FK на копию нельзя (профиль недоступен
+ * новому владельцу). Снапшот (`equipmentProfileSnapshot`) при этом сохраняется как
+ * есть — это и есть источник параметров расчёта для копии.
+ */
 export const buildRecipeClonePayload = (
   recipe: RecipeDetailDto,
-  options: { title: string; remapPrivateCustomToImported: boolean }
+  options: { title: string; remapPrivateCustomToImported: boolean; resetEquipmentProfileId?: boolean }
 ) => ({
   title: options.title,
   publicationState: "private" as const,
@@ -1989,7 +1995,7 @@ export const buildRecipeClonePayload = (
   authorNotes: recipe.authorNotes,
   processMeta: recipe.processMeta,
   calculationMeta: recipe.calculationMeta ?? null,
-  equipmentProfileId: recipe.equipmentProfileId ?? null,
+  equipmentProfileId: options.resetEquipmentProfileId ? null : recipe.equipmentProfileId ?? null,
   equipmentProfileSnapshot: recipe.equipmentProfileSnapshot ?? null,
   waterPlanMeta: recipe.waterPlanMeta ?? null,
   ingredients: recipe.ingredients.map((ingredient) =>
@@ -1999,20 +2005,69 @@ export const buildRecipeClonePayload = (
   )
 });
 
+/** Показатели рецепта, которые переносимы клону 1:1 (см. {@link buildInheritedStatsPatch}). */
+export type InheritedRecipeStatsPatch = Partial<Pick<RecipeListItemDto, "og" | "fg" | "abv" | "ibu" | "color">>;
+
+/**
+ * Показатели ИСТОЧНИКА (og/fg/abv/ibu/color) переносятся копии как есть, ПЕР-МЕТРИКА:
+ * у витринных/кураторских рецептов это авторитетные цифры первоисточника, положенные
+ * поверх движка сид-скриптом (см. docs/recipe-stats-divergence.md) — пересчёт движком
+ * заново (как делает `createRecipe` для любой копии) их бы потерял. Метрика с null у
+ * источника не переносится — на ней остаётся результат движка. Источник без единой
+ * ненулевой метрики → null (нечего переносить, патч не нужен).
+ */
+export const buildInheritedStatsPatch = (
+  source: Pick<RecipeDetailDto, "og" | "fg" | "abv" | "ibu" | "color">
+): InheritedRecipeStatsPatch | null => {
+  const patch: InheritedRecipeStatsPatch = {};
+  if (source.og != null) patch.og = source.og;
+  if (source.fg != null) patch.fg = source.fg;
+  if (source.abv != null) patch.abv = source.abv;
+  if (source.ibu != null) patch.ibu = source.ibu;
+  if (source.color != null) patch.color = source.color;
+
+  return Object.keys(patch).length > 0 ? patch : null;
+};
+
+/**
+ * Точечно докатывает унаследованные показатели поверх копии, только что созданной
+ * `createRecipe` (которая всегда пересчитывает статы движком заново). Контракт
+ * `createRecipe`/`recomputeRecipeStats` не трогаем — точечный `update` после факта.
+ * Пустой патч (источник без ненулевых метрик) — no-op, лишний update не шлём.
+ */
+const applyInheritedRecipeStats = async (
+  viewerId: string,
+  clone: RecipeDetailDto,
+  source: Pick<RecipeDetailDto, "og" | "fg" | "abv" | "ibu" | "color">
+): Promise<RecipeDetailDto> => {
+  const patch = buildInheritedStatsPatch(source);
+  if (!patch) {
+    return clone;
+  }
+
+  await db.update(recipes).set(patch).where(eq(recipes.id, clone.id));
+  return getRecipeById(viewerId, clone.id);
+};
+
 /**
  * Дубликат СВОЕГО рецепта (любой статус) → новый черновик-копия в моём владении.
  * Новый recipeFamilyId (не версия). Связь clonedFrom не ставится (это свой рецепт).
+ * Показатели источника наследуются копии (см. {@link applyInheritedRecipeStats}) —
+ * своя копия никогда не пересчитывает объём, поэтому исключение «пересчёт под
+ * другой объём» здесь неприменимо.
  */
 export const cloneRecipe = async (authorId: string, recipeId: string) => {
   const recipe = await getOwnedRecipeById(authorId, recipeId);
 
-  return createRecipe(
+  const clone = await createRecipe(
     authorId,
     buildRecipeClonePayload(recipe, {
       title: buildCloneTitle(recipe.title),
       remapPrivateCustomToImported: false
     })
   );
+
+  return applyInheritedRecipeStats(authorId, clone, recipe);
 };
 
 /**
@@ -2055,7 +2110,10 @@ const applyCloneTargetVolume = (
  * только если он published. userId приходит из серверной сессии — не из клиента.
  * targetBatchVolumeLitres — опциональный целевой объём (см. applyCloneTargetVolume):
  * мост с эфемерным пересчётом на публичной странице (`RecipeScalePanel`) — копия
- * сразу заводится в объёме, который пользователь выбрал для предпросмотра.
+ * сразу заводится в объёме, который пользователь выбрал для предпросмотра. Показатели
+ * источника наследуются копией (см. {@link applyInheritedRecipeStats}), КРОМЕ случая
+ * реального пересчёта под другой объём — тогда пользователь явно попросил другой
+ * объём, и правильный результат — свежий расчёт движка, а не цифры источника.
  * Копирование ЧУЖОГО рецепта инкрементит cloneCount источника («Скопировали N раз»);
  * копия своего же рецепта счётчик не трогает.
  */
@@ -2084,15 +2142,21 @@ export const cloneRecipeFromPublic = async (
     ? await getOwnedRecipeById(userId, sourceRecipeId)
     : await getPublicRecipeById(sourceRecipeId);
   const scaledSource = applyCloneTargetVolume(source, options?.targetBatchVolumeLitres);
+  const wasRescaled = scaledSource !== source;
 
-  const clone = await createRecipe(
+  let clone = await createRecipe(
     userId,
     buildRecipeClonePayload(scaledSource, {
       title: buildCloneTitle(source.title),
-      remapPrivateCustomToImported: !isOwn
+      remapPrivateCustomToImported: !isOwn,
+      resetEquipmentProfileId: !isOwn
     }),
     { clonedFromRecipeId: sourceRecipeId }
   );
+
+  if (!wasRescaled) {
+    clone = await applyInheritedRecipeStats(userId, clone, source);
+  }
 
   if (!isOwn) {
     // Инкремент по месту (а не read-modify-write) — параллельные копирования не

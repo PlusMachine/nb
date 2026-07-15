@@ -28,5 +28,10 @@ export {
   applyRecipeWaterAddFlowSaltToWaterPlan,
   shouldShowRescaleToVolumeAction,
   buildDesignerScaleInput,
-  type RecipeFermentablePickerScope
+  resolveInitialEquipmentState,
+  buildStatsDivergence,
+  RECIPE_STATS_DIVERGENCE_TOLERANCE,
+  type RecipeFermentablePickerScope,
+  type InitialEquipmentState,
+  type RecipeStatsForDivergence
 } from "./helpers";

@@ -9,8 +9,10 @@ import {
 import { buildIngredientSearchParams } from "@/components/ingredients/ingredient-picker";
 import { type RecipeIngredientCardSource } from "@/components/recipes/recipe-ingredient-card-display";
 import { resolveInventoryIngredientContextCategoryLabel } from "@/components/inventory/inventory-ingredient-context-summary";
+import { buildEquipmentProfileSnapshotFromDto } from "@/features/equipment-profiles/snapshot";
 import {
   DEFAULT_BREWHOUSE_EFFICIENCY_PCT,
+  type EquipmentProfileDto,
   type EquipmentProfileSnapshot
 } from "@/features/equipment-profiles/contracts";
 import type {
@@ -64,6 +66,11 @@ import {
   type RecipeWaterPlanFermentableInput,
   type RecipeWaterPlanResult
 } from "@/features/recipes/water-plan";
+import {
+  defaultPreferredGravityUnit,
+  formatGravity,
+  type PreferredGravityUnit
+} from "@/features/system/gravity-units";
 import {
   recipeWaterAddFlowCatalogIds,
   recipeWaterManualSaltIds,
@@ -531,7 +538,52 @@ export const cloneEquipmentProfileSnapshot = (value?: EquipmentProfileSnapshot |
 
 // Слепок профиля строит features/equipment-profiles/snapshot.ts — тот же билдер
 // нужен серверу при старте варки «на моём оборудовании» (features/brew-batches).
-export { buildEquipmentProfileSnapshotFromDto } from "@/features/equipment-profiles/snapshot";
+export { buildEquipmentProfileSnapshotFromDto };
+
+export type InitialEquipmentState = {
+  profileId: string | null;
+  snapshot: EquipmentProfileSnapshot | null;
+  isInheritedSnapshot: boolean;
+};
+
+/**
+ * Инициализация «Оборудования» для СУЩЕСТВУЮЩЕГО рецепта. Раньше чужой/несуществующий
+ * equipmentProfileId (копия чужого рецепта, оборудование продано/удалено) молча ронял
+ * снапшот в null, даже когда рецепт хранит валидный equipmentProfileSnapshot, — превью
+ * тогда плыло на DEFAULT_EVAPORATION_RATE (service.ts, computeRecipeStatsSnapshot).
+ * Приоритет: снапшот из самого рецепта (клон) > снапшот, собранный из СВОЕГО найденного
+ * профиля > null. profileId в state идёт только когда профиль реально принадлежит
+ * текущему пользователю — чужой id в select не тащим (RecipeBatchParametersBlock рисует
+ * для него синтетическую опцию «Оборудование автора рецепта»).
+ */
+export const resolveInitialEquipmentState = (
+  initialRecipe: RecipeDetailDto | null | undefined,
+  ownedProfiles: EquipmentProfileDto[]
+): InitialEquipmentState => {
+  if (!initialRecipe) {
+    return { profileId: null, snapshot: null, isInheritedSnapshot: false };
+  }
+
+  const ownedProfile = initialRecipe.equipmentProfileId
+    ? ownedProfiles.find((profile) => profile.id === initialRecipe.equipmentProfileId) ?? null
+    : null;
+
+  if (ownedProfile) {
+    return {
+      profileId: ownedProfile.id,
+      snapshot: cloneEquipmentProfileSnapshot(initialRecipe.equipmentProfileSnapshot ?? null)
+        ?? buildEquipmentProfileSnapshotFromDto(ownedProfile),
+      isInheritedSnapshot: false
+    };
+  }
+
+  const inheritedSnapshot = cloneEquipmentProfileSnapshot(initialRecipe.equipmentProfileSnapshot ?? null);
+  if (inheritedSnapshot) {
+    return { profileId: null, snapshot: inheritedSnapshot, isInheritedSnapshot: true };
+  }
+
+  return { profileId: null, snapshot: null, isInheritedSnapshot: false };
+};
 
 export const formatEquipmentProfileRecipeValue = (value: number) => {
   const rounded = Number(value.toFixed(2));
@@ -1259,6 +1311,85 @@ export const buildInitialPreview = (recipe?: RecipeDetailDto): RecipeDraftPrevie
     styleRange,
     styleFit
   };
+};
+
+export type RecipeStatsForDivergence = {
+  og: number | null;
+  abv: number | null;
+  ibu: number | null;
+  color: number | null;
+};
+
+/**
+ * Допуски расхождения «сохранённые статы vs расчёт движка» (Ф1, баннер-плашка).
+ * Витринные/кураторские рецепты несут авторские og/fg/abv/ibu/color поверх расчёта
+ * (seed-public-recipes.ts) — копия же всегда пересчитывается движком заново
+ * (createRecipe → recomputeRecipeStats). Допуски гасят шум округления, а не
+ * реальное расхождение источника с движком.
+ */
+export const RECIPE_STATS_DIVERGENCE_TOLERANCE = {
+  og: 0.002,
+  abv: 0.2,
+  ibu: 2,
+  color: 0.5
+} as const;
+
+// Крошечный эпсилон гасит шум плавающей точки на границе допуска (1.052 - 1.050
+// в IEEE754 — не ровно 0.002), не задевая реальные расхождения источника с
+// движком — те на порядки больше любого допуска.
+const DIVERGENCE_EPSILON = 1e-9;
+
+const exceedsDivergenceTolerance = (a: number, b: number, tolerance: number): boolean => (
+  Math.abs(a - b) > tolerance + DIVERGENCE_EPSILON
+);
+
+/**
+ * Метрики, чьи сохранённые значения (первоисточник) заметно разошлись с текущим
+ * client-side превью движка (previewRecipeDraftAction). FG сознательно не сравнивается —
+ * его считает отдельная оценка с собственным режимом (fgEstimateMode), не число «как есть».
+ * Формат чисел — тот же, что в шапке статов редактора (headerMetrics/summaryItems):
+ * OG — в единицах плотности пользователя через formatGravity, ABV/IBU/цвет — toFixed.
+ */
+export const buildStatsDivergence = (
+  saved: RecipeStatsForDivergence,
+  preview: RecipeStatsForDivergence,
+  gravityUnit: PreferredGravityUnit = defaultPreferredGravityUnit
+): string[] => {
+  const entries: string[] = [];
+
+  if (
+    saved.og != null
+    && preview.og != null
+    && exceedsDivergenceTolerance(saved.og, preview.og, RECIPE_STATS_DIVERGENCE_TOLERANCE.og)
+  ) {
+    entries.push(`НП ${formatGravity(saved.og, gravityUnit)} → ${formatGravity(preview.og, gravityUnit)}`);
+  }
+
+  if (
+    saved.abv != null
+    && preview.abv != null
+    && exceedsDivergenceTolerance(saved.abv, preview.abv, RECIPE_STATS_DIVERGENCE_TOLERANCE.abv)
+  ) {
+    entries.push(`ABV ${saved.abv.toFixed(1)}% → ${preview.abv.toFixed(1)}%`);
+  }
+
+  if (
+    saved.ibu != null
+    && preview.ibu != null
+    && exceedsDivergenceTolerance(saved.ibu, preview.ibu, RECIPE_STATS_DIVERGENCE_TOLERANCE.ibu)
+  ) {
+    entries.push(`IBU ${saved.ibu.toFixed(0)} → ${preview.ibu.toFixed(0)}`);
+  }
+
+  if (
+    saved.color != null
+    && preview.color != null
+    && exceedsDivergenceTolerance(saved.color, preview.color, RECIPE_STATS_DIVERGENCE_TOLERANCE.color)
+  ) {
+    entries.push(`Цвет ${saved.color.toFixed(1)} → ${preview.color.toFixed(1)} SRM`);
+  }
+
+  return entries;
 };
 
 export const buildEditorPayloadFromRecipe = (

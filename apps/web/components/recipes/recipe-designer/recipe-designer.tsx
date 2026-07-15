@@ -14,7 +14,8 @@ import {
   Lock,
   Plus,
   SlidersHorizontal,
-  StickyNote
+  StickyNote,
+  X
 } from "lucide-react";
 import React, { startTransition, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -73,6 +74,7 @@ import { scaleRecipeToVolume } from "@/features/recipes/scale";
 import {
   buildRecipeEditHref,
   buildRecipeDeleteConfirmDescription,
+  buildStatsDivergence,
   replaceRecipeEditorUrl,
   hopUseTypeLabels,
   hopUseTypeSectionLabels,
@@ -81,8 +83,8 @@ import {
   cloneRecipeProcessMeta,
   cloneRecipeCalculationMeta,
   cloneRecipeWaterPlanMeta,
-  cloneEquipmentProfileSnapshot,
   buildEquipmentProfileSnapshotFromDto,
+  resolveInitialEquipmentState,
   formatEquipmentProfileRecipeValue,
   DEFAULT_BOIL_TIME_MINUTES,
   DEFAULT_EFFICIENCY,
@@ -161,10 +163,6 @@ export function RecipeDesigner({
   const initialDefaultEquipmentProfile = initialRecipe
     ? null
     : equipmentProfiles.find((profile) => profile.isDefault) ?? equipmentProfiles[0] ?? null;
-  const initialSavedEquipmentProfile = initialRecipe?.equipmentProfileId
-    ? equipmentProfiles.find((profile) => profile.id === initialRecipe.equipmentProfileId) ?? null
-    : null;
-  const initialSelectedEquipmentProfile = initialRecipe ? initialSavedEquipmentProfile : initialDefaultEquipmentProfile;
   const [title, setTitle] = useState(initialRecipe?.title ?? initialTitle ?? "");
   const [styleId, setStyleId] = useState(initialRecipe?.styleId ?? initialStyleId ?? "");
   const [description, setDescription] = useState(initialRecipe?.description ?? "");
@@ -225,16 +223,23 @@ export function RecipeDesigner({
     removeManualSaltAddition,
     applyAcidConcentration
   } = useRecipeWaterPlan({ initialRecipe });
-  const [equipmentProfileId, setEquipmentProfileId] = useState<string | null>(initialSelectedEquipmentProfile?.id ?? null);
+  const [equipmentProfileId, setEquipmentProfileId] = useState<string | null>(() => (
+    initialRecipe
+      ? resolveInitialEquipmentState(initialRecipe, equipmentProfiles).profileId
+      : initialDefaultEquipmentProfile?.id ?? null
+  ));
   const [equipmentProfileSnapshot, setEquipmentProfileSnapshot] = useState<EquipmentProfileSnapshot | null>(() => (
     initialRecipe
-      ? (
-        initialSavedEquipmentProfile
-          ? cloneEquipmentProfileSnapshot(initialRecipe.equipmentProfileSnapshot ?? null)
-            ?? buildEquipmentProfileSnapshotFromDto(initialSavedEquipmentProfile)
-          : null
-      )
+      ? resolveInitialEquipmentState(initialRecipe, equipmentProfiles).snapshot
       : (initialDefaultEquipmentProfile ? buildEquipmentProfileSnapshotFromDto(initialDefaultEquipmentProfile) : null)
+  ));
+  // Профиль оборудования принадлежит автору оригинала (копия чужого/публичного
+  // рецепта) — снапшот унаследован из рецепта, а не собран из СВОЕГО профиля.
+  // Селект тогда честно показывает «Оборудование автора рецепта» вместо вранья
+  // «Без профиля» (Ф1). Сбрасывается при явном выборе своего профиля/«Без профиля»
+  // и не восстанавливается — до перезагрузки страницы, это ок для первой итерации.
+  const [isInheritedEquipmentSnapshot, setIsInheritedEquipmentSnapshot] = useState<boolean>(() => (
+    initialRecipe ? resolveInitialEquipmentState(initialRecipe, equipmentProfiles).isInheritedSnapshot : false
   ));
   // Вызываем useToast до useRecipeIngredients: колбэк onIngredientDeleted,
   // передаваемый в хук ниже, использует `show`.
@@ -287,6 +292,9 @@ export function RecipeDesigner({
   const [brewfatherJsonImport, setBrewfatherJsonImport] = useState("");
   const [preview, setPreview] = useState<RecipeDraftPreviewDto | null>(buildInitialPreview(initialRecipe));
   const [previewError, setPreviewError] = useState<string | null>(null);
+  // Плашка «показатели автора отличаются от расчёта» (Ф1) — закрывается крестиком
+  // на сессию компонента, не на рецепт: следующее открытие редактора её снова покажет.
+  const [statsDivergenceDismissed, setStatsDivergenceDismissed] = useState(false);
   const [recalculating, setRecalculating] = useState(false);
   const [bitternessSettingsOpen, setBitternessSettingsOpen] = useState(false);
   const [importExportOpen, setImportExportOpen] = useState(false);
@@ -543,6 +551,7 @@ export function RecipeDesigner({
     if (!profileId) {
       setEquipmentProfileId(null);
       setEquipmentProfileSnapshot(null);
+      setIsInheritedEquipmentSnapshot(false);
       return;
     }
 
@@ -553,6 +562,7 @@ export function RecipeDesigner({
 
     setEquipmentProfileId(profile.id);
     setEquipmentProfileSnapshot(buildEquipmentProfileSnapshotFromDto(profile));
+    setIsInheritedEquipmentSnapshot(false);
     setBatchSize((current) => ({
       ...current,
       quantity: formatEquipmentProfileRecipeValue(profile.targetBatchVolumeL)
@@ -992,7 +1002,7 @@ export function RecipeDesigner({
     const nextProcessMeta = cloneRecipeProcessMeta(recipe.processMeta);
     const nextCalculationMeta = cloneRecipeCalculationMeta(recipe.calculationMeta ?? null);
     const nextWaterPlanMeta = cloneRecipeWaterPlanMeta(recipe.waterPlanMeta ?? null);
-    const nextEquipmentProfileSnapshot = cloneEquipmentProfileSnapshot(recipe.equipmentProfileSnapshot ?? null);
+    const nextEquipmentState = resolveInitialEquipmentState(recipe, equipmentProfiles);
     const nextPayload = buildEditorPayloadFromRecipe(recipe, nextIngredients);
     const nextSignature = JSON.stringify(nextPayload);
 
@@ -1015,8 +1025,9 @@ export function RecipeDesigner({
     setProcessMeta(nextProcessMeta);
     setCalculationMeta(nextCalculationMeta);
     setWaterPlanMeta(nextWaterPlanMeta);
-    setEquipmentProfileId(recipe.equipmentProfileId ?? null);
-    setEquipmentProfileSnapshot(nextEquipmentProfileSnapshot);
+    setEquipmentProfileId(nextEquipmentState.profileId);
+    setEquipmentProfileSnapshot(nextEquipmentState.snapshot);
+    setIsInheritedEquipmentSnapshot(nextEquipmentState.isInheritedSnapshot);
     setIngredients(nextIngredients);
     setPreview(buildInitialPreview(recipe));
     setPreviewError(null);
@@ -1029,7 +1040,7 @@ export function RecipeDesigner({
     setImportExportOpen(false);
     onRecipeCreated?.(recipe);
     replaceRecipeEditorUrl(recipe.id);
-  }, [onRecipeCreated]);
+  }, [equipmentProfiles, onRecipeCreated]);
 
   const handleImportBeerXml = async (): Promise<RecipeEditorResult> => {
     const beerXml = beerXmlImport.trim();
@@ -1181,6 +1192,18 @@ export function RecipeDesigner({
   // Компактные ключевые метрики для закреплённой полосы — петля «изменил → увидел»
   // не должна теряться при прокрутке длинной формы (#18/#20).
   const headerStyle = getBeerStyleById(styleId.trim() || "");
+  // Расхождение сохранённых статов (первоисточник у витринных/кураторских рецептов)
+  // с client-side превью движка (Ф1) — только для существующего рецепта с непустыми
+  // сохранёнными статами; для нового рецепта сравнивать не с чем.
+  const statsDivergence = initialRecipe && preview && (
+    initialRecipe.og != null || initialRecipe.abv != null || initialRecipe.ibu != null || initialRecipe.color != null
+  )
+    ? buildStatsDivergence(
+      { og: initialRecipe.og, abv: initialRecipe.abv, ibu: initialRecipe.ibu, color: initialRecipe.color },
+      { og: preview.og, abv: preview.abv, ibu: preview.ibu, color: preview.color },
+      preferredGravityUnit
+    )
+    : [];
   // Диапазон КП рядом с точечной оценкой (#16/17) — та же пара границ, что и в
   // FgSettingsPopover, только компактно свёрнутая в один хвост "(мин–макс)".
   const headerFgRange = formatGravityRange(
@@ -1403,6 +1426,24 @@ export function RecipeDesigner({
             ) : null}
           </div>
         ) : null}
+
+        {!statsDivergenceDismissed && statsDivergence.length > 0 ? (
+          <div className="mt-3 flex flex-wrap items-start gap-3 rounded-lg bg-warning-subtle px-3 py-2 text-xs text-warning-subtle-foreground ring-1 ring-inset ring-warning/30">
+            <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" />
+            <span className="min-w-0 flex-1">
+              Показатели автора отличаются от расчёта движка: {statsDivergence.join(", ")}. При сохранении правок применится расчёт.
+            </span>
+            <button
+              type="button"
+              onClick={() => setStatsDivergenceDismissed(true)}
+              className="shrink-0 rounded-md p-0.5 text-warning-subtle-foreground/70 transition-colors hover:text-warning-subtle-foreground"
+              aria-label="Скрыть предупреждение"
+              title="Скрыть"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        ) : null}
       </section>
 
       <section className="grid items-start gap-4 lg:grid-cols-[11fr_9fr]">
@@ -1423,6 +1464,7 @@ export function RecipeDesigner({
           equipmentProfiles={equipmentProfiles}
           selectedEquipmentProfileId={equipmentProfileId}
           onSelectEquipmentProfile={handleSelectEquipmentProfile}
+          isInheritedEquipmentSnapshot={isInheritedEquipmentSnapshot}
           canRescaleToVolume={canRescaleToVolume}
           onRescaleToVolume={handleRescaleToVolume}
           onOpenBitternessSettings={() => setBitternessSettingsOpen(true)}

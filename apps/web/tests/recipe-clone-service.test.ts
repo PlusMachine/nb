@@ -7,7 +7,12 @@ vi.mock("server-only", () => ({}));
 // tests/recipes-read-components.test.ts, который тоже тянет service.ts транзитивно.
 
 import { defaultRecipeProcessMeta, type RecipeDetailDto } from "../features/recipes/contracts";
-import { assertRecipeCloneAllowed, buildCloneTitle, buildRecipeClonePayload } from "../features/recipes/service";
+import {
+  assertRecipeCloneAllowed,
+  buildCloneTitle,
+  buildInheritedStatsPatch,
+  buildRecipeClonePayload
+} from "../features/recipes/service";
 
 const sourceRecipe: RecipeDetailDto = {
   id: "src-1",
@@ -36,6 +41,8 @@ const sourceRecipe: RecipeDetailDto = {
   authorNotes: "Dry hop day 5",
   authorDisplayName: null,
   processMeta: defaultRecipeProcessMeta,
+  equipmentProfileId: "equip-1",
+  equipmentProfileSnapshot: { evaporationRateLPerHr: 3 } as RecipeDetailDto["equipmentProfileSnapshot"],
   heroImageId: null,
   rating: null,
   versions: [],
@@ -170,6 +177,48 @@ describe("buildRecipeClonePayload", () => {
     expect(snapshot.name).toBe("House Yeast");
     expect(snapshot.type).toBe("yeast");
     expect(snapshot.category).toBe("yeast");
+  });
+
+  it("keeps equipmentProfileId when cloning your OWN recipe", () => {
+    const payload = buildRecipeClonePayload(sourceRecipe, { title: "copy", remapPrivateCustomToImported: false });
+
+    expect(payload.equipmentProfileId).toBe("equip-1");
+    expect(payload.equipmentProfileSnapshot).toEqual(sourceRecipe.equipmentProfileSnapshot);
+  });
+
+  it("resets equipmentProfileId but keeps the snapshot for a cross-user clone", () => {
+    const payload = buildRecipeClonePayload(sourceRecipe, {
+      title: "copy",
+      remapPrivateCustomToImported: true,
+      resetEquipmentProfileId: true
+    });
+
+    expect(payload.equipmentProfileId).toBeNull();
+    expect(payload.equipmentProfileSnapshot).toEqual(sourceRecipe.equipmentProfileSnapshot);
+  });
+});
+
+describe("buildInheritedStatsPatch", () => {
+  it("carries over the full set of source stats", () => {
+    expect(buildInheritedStatsPatch(sourceRecipe)).toEqual({
+      og: 1.062,
+      fg: 1.012,
+      abv: 6.5,
+      ibu: 60,
+      color: 8
+    });
+  });
+
+  it("carries over only the non-null metrics", () => {
+    expect(
+      buildInheritedStatsPatch({ og: 1.05, fg: null, abv: null, ibu: 20, color: null })
+    ).toEqual({ og: 1.05, ibu: 20 });
+  });
+
+  it("returns null when the source has no stats at all", () => {
+    expect(
+      buildInheritedStatsPatch({ og: null, fg: null, abv: null, ibu: null, color: null })
+    ).toBeNull();
   });
 });
 

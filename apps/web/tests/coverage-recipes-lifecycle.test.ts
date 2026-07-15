@@ -267,8 +267,13 @@ vi.mock("@nb/db", () => {
     }),
     update: (table: { name: string }) => ({
       set: (set: any) => ({
-        where: (where: any) => ({
-          returning: async () => {
+        // Реальный Drizzle-билдер thenable на любом шаге цепочки — `await
+        // db.update(...).set(...).where(...)` без `.returning()` (как делает
+        // инкремент cloneCount и перенос унаследованных статов) реально бьёт в
+        // БД. Фейк повторяет это: `where(...)` одновременно и awaitable
+        // (`then`), и поддерживает явный `.returning()`.
+        where: (where: any) => {
+          const apply = () => {
             if (table.name === "recipe_ingredients") {
               const recipeId = getEqValue(where, "recipeId");
               const id = getEqValue(where, "id");
@@ -287,8 +292,13 @@ vi.mock("@nb/db", () => {
             const updated = { ...current, ...set };
             mockState.recipesById.set(id, updated);
             return [updated];
-          }
-        })
+          };
+
+          return {
+            returning: async () => apply(),
+            then: (onFulfilled: any, onRejected?: any) => Promise.resolve(apply()).then(onFulfilled, onRejected)
+          };
+        }
       })
     }),
     delete: (table: { name: string }) => ({
@@ -352,6 +362,7 @@ vi.mock("@nb/auth", async (importOriginal) => ({
   assertRateLimit: vi.fn(async () => {})
 }));
 
+import { starterEquipmentProfileDefaults } from "../features/equipment-profiles/contracts";
 import {
   cloneRecipe,
   cloneRecipeFromPublic,
@@ -694,6 +705,88 @@ describe("жизненный цикл рецептов", () => {
     expect(clone.authorId).toBe("u-me");
     expect(clone.publicationState).toBe("private");
     expect(clone.id).not.toBe(source.id);
+  });
+
+  // ── Наследование показателей источника (баг Ф1) ────────────────────────────
+  it("cloneRecipeFromPublic наследует «авторитетные» og/fg/abv/ibu/color источника без пересчёта движком", async () => {
+    const source = await createRecipe("u-other", buildPublicPayload({ title: "Курируемый лагер" }));
+    const engineStats = { og: source.og, fg: source.fg, abv: source.abv, ibu: source.ibu, color: source.color };
+
+    // Витринные/кураторские цифры первоисточника, положенные поверх движка (см.
+    // docs/recipe-stats-divergence.md) — заведомо отличные от того, что насчитал движок выше.
+    const authoritative = { og: 1.099, fg: 1.02, abv: 9.9, ibu: 99, color: 40 };
+    expect(authoritative).not.toEqual(engineStats);
+    mockState.recipesById.set(source.id, { ...mockState.recipesById.get(source.id), ...authoritative });
+
+    const clone = await cloneRecipeFromPublic("u-me", source.id);
+
+    expect(clone.og).toBe(authoritative.og);
+    expect(clone.fg).toBe(authoritative.fg);
+    expect(clone.abv).toBe(authoritative.abv);
+    expect(clone.ibu).toBe(authoritative.ibu);
+    expect(clone.color).toBe(authoritative.color);
+  });
+
+  it("cloneRecipeFromPublic с пересчётом под другой объём НЕ наследует статы источника", async () => {
+    const source = await createRecipe("u-other", buildPublicPayload({ title: "Курируемый лагер (объём)" }));
+    const authoritative = { og: 1.099, fg: 1.02, abv: 9.9, ibu: 99, color: 40 };
+    mockState.recipesById.set(source.id, { ...mockState.recipesById.get(source.id), ...authoritative });
+
+    const clone = await cloneRecipeFromPublic("u-me", source.id, { targetBatchVolumeLitres: 40 });
+
+    expect(clone.batchSizeEnteredQuantity).toBe(40);
+    expect(clone.og).not.toBe(authoritative.og);
+    expect(clone.ibu).not.toBe(authoritative.ibu);
+  });
+
+  it("cloneRecipe своего рецепта тоже наследует сохранённые показатели без пересчёта", async () => {
+    const original = await createRecipe("u1", buildPublicPayload({ title: "Мой лагер" }));
+    const authoritative = { og: 1.077, fg: 1.015, abv: 8.1, ibu: 33, color: 12 };
+    mockState.recipesById.set(original.id, { ...mockState.recipesById.get(original.id), ...authoritative });
+
+    const clone = await cloneRecipe("u1", original.id);
+
+    expect(clone.og).toBe(authoritative.og);
+    expect(clone.fg).toBe(authoritative.fg);
+    expect(clone.abv).toBe(authoritative.abv);
+    expect(clone.ibu).toBe(authoritative.ibu);
+    expect(clone.color).toBe(authoritative.color);
+  });
+
+  // ── Кросс-юзер клон не уносит чужой equipmentProfileId ─────────────────────
+  it("cloneRecipeFromPublic чужого рецепта обнуляет equipmentProfileId, но сохраняет снапшот", async () => {
+    const source = await createRecipe("u-other", buildPublicPayload({ title: "Чужой IPA с профилем" }));
+    const equipmentProfileId = uuid(777);
+    // Снапшот должен пройти equipmentProfileSnapshotSchema целиком (mapRecipeDetailDto
+    // safeParse-ит его молча в null иначе) — полный набор полей, не огрызок.
+    const equipmentProfileSnapshot = {
+      ...starterEquipmentProfileDefaults,
+      id: uuid(9990),
+      snapshotAt: "2026-07-15T00:00:00.000Z"
+    };
+    mockState.recipesById.set(source.id, {
+      ...mockState.recipesById.get(source.id),
+      equipmentProfileId,
+      equipmentProfileSnapshot
+    });
+
+    const clone = await cloneRecipeFromPublic("u-me", source.id);
+
+    expect(clone.equipmentProfileId).toBeNull();
+    expect(clone.equipmentProfileSnapshot).toEqual(equipmentProfileSnapshot);
+  });
+
+  it("cloneRecipe своего рецепта сохраняет equipmentProfileId", async () => {
+    const original = await createRecipe("u1", buildPublicPayload({ title: "Мой IPA с профилем" }));
+    const equipmentProfileId = uuid(778);
+    mockState.recipesById.set(original.id, {
+      ...mockState.recipesById.get(original.id),
+      equipmentProfileId
+    });
+
+    const clone = await cloneRecipe("u1", original.id);
+
+    expect(clone.equipmentProfileId).toBe(equipmentProfileId);
   });
 
   // ── Версии ─────────────────────────────────────────────────────────────────
