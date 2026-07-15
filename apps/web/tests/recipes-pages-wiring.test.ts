@@ -102,7 +102,7 @@ describe("recipes pages wiring", () => {
     expect(html).toContain("Сварить");
     expect(html).toContain("К рецептам");
     expect(html).not.toContain("Создать рецепт");
-    expect(html).not.toContain("Сохранённые");
+    expect(html).not.toContain("Закладки");
   });
 
   it("читает вид из cookie nb_my_recipes_view=list — рендерит list-вид", async () => {

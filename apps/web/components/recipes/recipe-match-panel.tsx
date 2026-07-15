@@ -1,14 +1,16 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { Check, ChevronDown, Loader2, Plus, X } from "lucide-react";
 
-import { addRecipeIngredientToInventory, loadRecipeMatch, type RecipeMatchViewerState } from "@/app/(public)/recipes/[slug]/match-actions";
+import { addRecipeIngredientToInventory } from "@/app/(public)/recipes/[slug]/match-actions";
 import type { RecipeMatchDto, RecipeMatchLineDto, RecipeMatchLineStatus, RecipeMatchLabel } from "@/features/recipes/contracts";
 import { buildIngredientNameActionHref } from "@/features/ingredients/catalog-links";
 import { inventoryUnitShortLabels } from "@/features/inventory/units";
 import { redirectToLoginWithNext } from "@/lib/auth-links";
+
+import { useRecipeMatch } from "./recipe-match-context";
 
 const statusMeta: Record<RecipeMatchLineStatus, { label: string; pill: string }> = {
   covered: { label: "Есть", pill: "bg-success-subtle text-success-subtle-foreground ring-success/30" },
@@ -17,14 +19,16 @@ const statusMeta: Record<RecipeMatchLineStatus, { label: string; pill: string }>
   missing: { label: "Нет", pill: "bg-destructive-subtle text-destructive-subtle-foreground ring-destructive-border" }
 };
 
-const labelMeta: Record<RecipeMatchLabel, { text: string; accent: string }> = {
+// Экспортированы — переиспользуются мобильной плашкой-вердиктом
+// (recipe-match-mobile-badge.tsx), чтобы не заводить вторую копию расцветки.
+export const labelMeta: Record<RecipeMatchLabel, { text: string; accent: string }> = {
   ready: { text: "Можно сварить из ваших запасов", accent: "text-success" },
   almost: { text: "Почти всё есть на складе", accent: "text-success" },
   partial: { text: "Часть ингредиентов уже есть", accent: "text-warning-subtle-foreground" },
   none: { text: "Подходящих ингредиентов на складе нет", accent: "text-muted-foreground" }
 };
 
-const percentRingColor = (matchPercent: number) => {
+export const percentRingColor = (matchPercent: number) => {
   if (matchPercent >= 100) return "text-success";
   if (matchPercent >= 70) return "text-lime-600 dark:text-lime-400";
   if (matchPercent >= 1) return "text-warning-subtle-foreground";
@@ -59,7 +63,7 @@ export function RecipeMatchPanelView({ match, onChanged }: { match: RecipeMatchD
   );
 
   return (
-    <section className="space-y-3 rounded-2xl border border-border bg-card p-4 shadow-sm">
+    <section id="match-panel" className="scroll-mt-[calc(var(--chrome-top,0px)+1rem)] space-y-3 rounded-2xl border border-border bg-card p-4 shadow-sm">
       <div className="flex items-center gap-3">
         <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-muted text-lg font-semibold tabular-nums ring-2 ring-current ${percentRingColor(match.matchPercent)}`}>
           {match.matchPercent}%
@@ -69,7 +73,14 @@ export function RecipeMatchPanelView({ match, onChanged }: { match: RecipeMatchD
           <p className={`text-sm font-medium ${label.accent}`}>{label.text}</p>
           <p className="mt-0.5 text-xs text-muted-foreground">
             Есть {match.coveredLines} из {match.totalLines}
-            {match.missingCount > 0 ? ` · не хватает ${match.missingCount}` : ""}
+            {match.missingCount > 0 ? (
+              <>
+                {" · "}
+                <Link href="/app/shopping" className="underline decoration-dotted underline-offset-2 transition-colors hover:text-foreground">
+                  не хватает {match.missingCount}
+                </Link>
+              </>
+            ) : null}
             {match.scaledToInventory ? ` · расчёт под ${numberFormatter.format(match.targetBatchVolumeL)} л` : ""}
           </p>
         </div>
@@ -262,42 +273,15 @@ function MatchGapNameRow({ line }: { line: RecipeMatchLineDto }) {
 
 /**
  * Панель «Совпадение со складом» на публичной странице рецепта. Персональный
- * матчинг тянется ПОСЛЕ гидрации через server action, чтобы документ оставался
- * кэшируемым для анонимов (тот же приём, что и форма оценки).
+ * матчинг тянется ПОСЛЕ гидрации через server action (в {@link RecipeMatchProvider},
+ * который оборачивает страницу), чтобы документ оставался кэшируемым для
+ * анонимов (тот же приём, что и форма оценки). Панель — один из потребителей
+ * общего контекста наравне с мобильной плашкой-вердиктом и кнопкой «В закладки».
  */
-export function RecipeMatchPanel({ recipeId }: { recipeId: string }) {
-  const [state, setState] = useState<RecipeMatchViewerState | null>(null);
-
-  // Перезапрос матча после добавления на склад: computeRecipeMatch читает склад
-  // на лету, поэтому достаточно повторно дёрнуть action — строка станет covered.
-  // Разовая ошибка перезапроса не должна выкидывать залогиненного в аноним или
-  // схлопывать панель: сохраняем прежнее состояние / прежний матч.
-  const reload = useCallback(async () => {
-    try {
-      const next = await loadRecipeMatch(recipeId);
-      setState((prev) => (!next.match && prev?.match ? prev : next));
-    } catch {
-      setState((prev) => prev ?? { authenticated: false, match: null });
-    }
-  }, [recipeId]);
-
-  useEffect(() => {
-    let active = true;
-    loadRecipeMatch(recipeId)
-      .then((next) => {
-        if (active) {
-          setState(next);
-        }
-      })
-      .catch(() => {
-        if (active) {
-          setState({ authenticated: false, match: null });
-        }
-      });
-    return () => {
-      active = false;
-    };
-  }, [recipeId]);
+export function RecipeMatchPanel() {
+  const ctx = useRecipeMatch();
+  const state = ctx?.state ?? null;
+  const reload = ctx?.reload ?? (async () => {});
 
   if (!state) {
     return null;

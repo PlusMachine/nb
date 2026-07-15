@@ -6,12 +6,24 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@nb/ui";
 
 import { loadRecipeSaveViewerState, toggleRecipeSaveAction } from "@/app/(public)/recipes/save-actions";
+import { loadRecipeMatch } from "@/app/(public)/recipes/[slug]/match-actions";
 import { redirectToLoginWithNext } from "@/lib/auth-links";
 
+import { useRecipeMatch } from "./recipe-match-context";
 import { useRecipeSaves } from "./recipe-saves-provider";
 
 /**
- * Кнопка «Сохранить» рецепт в «Сохранённые». На витрине (`variant="icon"`) — флажок
+ * П2: после добавления в закладки на детальной странице (`variant="button"`)
+ * ведём туда, где реально можно что-то сделать — если в рецепте есть нехватки,
+ * это список покупок, а не сама секция закладок.
+ */
+export const resolveSaveToastAction = (missingCount: number | null): { label: string; href: "/app/shopping" | "/app/saved" } =>
+  missingCount != null && missingCount > 0
+    ? { label: "Чего не хватает", href: "/app/shopping" }
+    : { label: "Закладки", href: "/app/saved" };
+
+/**
+ * Кнопка «В закладки» рецепта. На витрине (`variant="icon"`) — флажок
  * в углу карточки, состояние берётся из {@link RecipeSavesProvider}. На детальной
  * странице (`variant="button"`) провайдера нет — состояние грузится после гидрации
  * через server action, чтобы документ оставался кэшируемым. userId — только на сервере.
@@ -26,6 +38,7 @@ export function RecipeSaveButton({
   variant?: "icon" | "button";
 }) {
   const ctx = useRecipeSaves();
+  const matchCtx = useRecipeMatch();
   const router = useRouter();
   const { show } = useToast();
   const [standaloneSaved, setStandaloneSaved] = useState<boolean | null>(null);
@@ -80,17 +93,33 @@ export function RecipeSaveButton({
         }
         return;
       }
-      // Явный фидбэк только при добавлении (не при снятии): куда сохранено и где найти.
+      // Явный фидбэк только при добавлении (не при снятии): куда попало и где найти.
       if (next) {
+        // На детальной странице (variant="button") ведём в список покупок, если
+        // в рецепте есть нехватки — иначе в закладки, как и на витрине.
+        let missingCount: number | null = null;
+        if (variant === "button" && matchCtx) {
+          missingCount = matchCtx.state?.match?.missingCount ?? null;
+          // Матч ещё не догрузился к моменту клика — редкий путь, один лишний await.
+          if (missingCount == null) {
+            try {
+              const fresh = await loadRecipeMatch(recipeId);
+              missingCount = fresh.match?.missingCount ?? null;
+            } catch {
+              missingCount = null;
+            }
+          }
+        }
+        const toastAction = resolveSaveToastAction(missingCount);
         show({
-          title: "Сохранено",
-          action: { label: "Сохранённые", onClick: () => router.push("/app/saved") }
+          title: "В закладках",
+          action: { label: toastAction.label, onClick: () => router.push(toastAction.href) }
         });
       }
     });
   };
 
-  const label = saved ? "Убрать из сохранённых" : "Добавить в сохранённые";
+  const label = saved ? "Убрать из закладок" : "Добавить в закладки";
 
   const trigger =
     variant === "button" ? (
@@ -106,7 +135,7 @@ export function RecipeSaveButton({
         }`}
       >
         <Bookmark className={saved ? "h-4 w-4 fill-warning text-warning" : "h-4 w-4"} aria-hidden />
-        {saved ? "Сохранено" : "Сохранить"}
+        {saved ? "В закладках" : "В закладки"}
       </button>
     ) : (
       <button

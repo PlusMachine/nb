@@ -108,7 +108,7 @@ export type RecipeTab = { href: string; label: string; exact?: boolean };
 // витрина сообщества (доступна без логина).
 export const recipeTabs: RecipeTab[] = [
   { href: "/app/recipes", label: "Мои", exact: true },
-  { href: "/app/saved", label: "Сохранённые" },
+  { href: "/app/saved", label: "Закладки" },
   { href: "/recipes", label: "Найти" }
 ];
 

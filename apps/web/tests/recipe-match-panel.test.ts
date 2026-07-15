@@ -76,3 +76,19 @@ describe("RecipeMatchPanelView — П3: строки-нехватки без п�
     expect(html).not.toContain("Не хватает на складе");
   });
 });
+
+describe("RecipeMatchPanelView — П2: вердикт ведёт в список покупок", () => {
+  it("делает «не хватает K» ссылкой на /app/shopping, когда нехватки есть", () => {
+    const html = render(baseMatch([baseLine()], { missingCount: 3, coveredLines: 2, totalLines: 5 }));
+
+    expect(html).toMatch(/<a[^>]+href="\/app\/shopping"[^>]*>\s*не хватает 3\s*<\/a>/);
+  });
+
+  it("не рендерит ссылку на /app/shopping, когда нехваток нет", () => {
+    const html = render(baseMatch([baseLine({ status: "covered", coveragePercent: 100 })], { missingCount: 0 }));
+
+    expect(html).not.toContain('href="/app/shopping"');
+    expect(html).toContain("Есть 0 из 1");
+    expect(html).not.toContain("Есть 0 из 1 · ");
+  });
+});

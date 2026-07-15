@@ -40,7 +40,7 @@ describe("RecipeTabs", () => {
     expect(findTab).toContain("lucide");
   });
 
-  it('не помечает "Мои" и "Сохранённые" (остаются в рабочей зоне)', () => {
+  it('не помечает "Мои" и "Закладки" (остаются в рабочей зоне)', () => {
     mocks.usePathname.mockReturnValue("/app/recipes");
     const html = renderTabs();
     expect(linkHtml(html, "/app/recipes")).not.toContain("svg");

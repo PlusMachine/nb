@@ -12,6 +12,8 @@ import { RecipeSourceAttribution } from "./recipe-source-attribution";
 import { RecipeRatingForm } from "./recipe-rating-form";
 import { RecipeFeatureToggle } from "./recipe-feature-toggle";
 import { RecipeMatchPanel } from "./recipe-match-panel";
+import { RecipeMatchMobileBadge } from "./recipe-match-mobile-badge";
+import { RecipeMatchProvider } from "./recipe-match-context";
 import { RecipeScalePanel } from "./recipe-scale-panel";
 import { PublicRecipeWaterSection } from "./public-recipe-water-section";
 import {
@@ -57,51 +59,56 @@ export function PublicRecipePage({
   similarRecipes?: PublicRecipeListItem[];
 }) {
   return (
-    <main className="space-y-6 pt-6">
-      <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
-        <ol className="flex flex-wrap items-center gap-2">
-          <li><Link href="/" className="transition hover:text-foreground">Главная</Link></li>
-          <li aria-hidden="true">/</li>
-          <li><Link href="/recipes" className="transition hover:text-foreground">Рецепты</Link></li>
-          <li aria-hidden="true">/</li>
-          <li className="text-foreground">{recipe.title}</li>
-        </ol>
-      </nav>
+    <RecipeMatchProvider recipeId={recipe.id}>
+      <main className="space-y-6 pt-6">
+        <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
+          <ol className="flex flex-wrap items-center gap-2">
+            <li><Link href="/" className="transition hover:text-foreground">Главная</Link></li>
+            <li aria-hidden="true">/</li>
+            <li><Link href="/recipes" className="transition hover:text-foreground">Рецепты</Link></li>
+            <li aria-hidden="true">/</li>
+            <li className="text-foreground">{recipe.title}</li>
+          </ol>
+        </nav>
 
-      <PublicRecipeHeader recipe={recipe} />
+        <PublicRecipeHeader recipe={recipe} />
 
-      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
-        {/* Цифры — сразу под шапкой (быстрый ответ «что за пиво»), дальше суть
-            рецепта в порядке варки: обложка → описание → ингредиенты → вода →
-            затирание → кипячение → брожение. Затор/брожение — read-only, только
-            если в рецепте есть данные (ответ на «хватит ли, чтобы сварить» без клона). */}
-        <div className="min-w-0 space-y-6">
-          <RecipeStatsSummaryViewer recipe={recipe} />
-          {recipe.heroImageId ? <RecipePhotoHero imageId={recipe.heroImageId} title={recipe.title} /> : null}
-          <RecipeMetaSection recipe={recipe} showPrivateNotes={false} />
-          <RecipeIngredientsSection ingredients={recipe.ingredients} />
-          <PublicRecipeWaterSection recipe={recipe} />
-          <PublicRecipeMashSection processMeta={recipe.processMeta} />
-          <PublicRecipeBoilSection boilTimeMinutes={recipe.boilTimeMinutes} ingredients={recipe.ingredients} />
-          <PublicRecipeFermentationSection processMeta={recipe.processMeta} ingredients={recipe.ingredients} />
+        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+          {/* Цифры — сразу под шапкой (быстрый ответ «что за пиво»), дальше суть
+              рецепта в порядке варки: обложка → описание → ингредиенты → вода →
+              затирание → кипячение → брожение. Затор/брожение — read-only, только
+              если в рецепте есть данные (ответ на «хватит ли, чтобы сварить» без клона). */}
+          <div className="min-w-0 space-y-6">
+            <RecipeStatsSummaryViewer recipe={recipe} />
+            {/* П1: на <lg панель матча падает в самый низ страницы — вердикт
+                виден без прокрутки через весь рецепт, тап скроллит к панели. */}
+            <RecipeMatchMobileBadge />
+            {recipe.heroImageId ? <RecipePhotoHero imageId={recipe.heroImageId} title={recipe.title} /> : null}
+            <RecipeMetaSection recipe={recipe} showPrivateNotes={false} />
+            <RecipeIngredientsSection ingredients={recipe.ingredients} />
+            <PublicRecipeWaterSection recipe={recipe} />
+            <PublicRecipeMashSection processMeta={recipe.processMeta} />
+            <PublicRecipeBoilSection boilTimeMinutes={recipe.boilTimeMinutes} ingredients={recipe.ingredients} />
+            <PublicRecipeFermentationSection processMeta={recipe.processMeta} ingredients={recipe.ingredients} />
+          </div>
+
+          {/* Инструменты и провенанс — не мешают чтению рецепта, доступны в один клик. */}
+          <aside className="space-y-4 lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
+            {/* Кураторский тумблер «Выбор редакции» — грузит права/состояние клиентом
+                после гидрации; обычному пользователю не рендерится. */}
+            <RecipeFeatureToggle recipeId={recipe.id} slug={recipe.slug} />
+            {/* Персональный матчинг со складом тянется клиентом после гидрации → документ кэшируем. */}
+            <RecipeMatchPanel />
+            {/* Эфемерный пересчёт под объём — модалка, чистый клиент, без записи в БД. */}
+            <RecipeScalePanel recipe={recipe} />
+            <RecipeCloneAttribution clonedFrom={recipe.clonedFrom} ownerAuthorId={recipe.authorId} />
+            <RecipeSourceAttribution importMeta={recipe.importMeta} />
+          </aside>
         </div>
 
-        {/* Инструменты и провенанс — не мешают чтению рецепта, доступны в один клик. */}
-        <aside className="space-y-4 lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
-          {/* Кураторский тумблер «Выбор редакции» — грузит права/состояние клиентом
-              после гидрации; обычному пользователю не рендерится. */}
-          <RecipeFeatureToggle recipeId={recipe.id} slug={recipe.slug} />
-          {/* Персональный матчинг со складом тянется клиентом после гидрации → документ кэшируем. */}
-          <RecipeMatchPanel recipeId={recipe.id} />
-          {/* Эфемерный пересчёт под объём — модалка, чистый клиент, без записи в БД. */}
-          <RecipeScalePanel recipe={recipe} />
-          <RecipeCloneAttribution clonedFrom={recipe.clonedFrom} ownerAuthorId={recipe.authorId} />
-          <RecipeSourceAttribution importMeta={recipe.importMeta} />
-        </aside>
-      </div>
-
-      <RecipeRatingSection recipe={recipe} />
-      <SimilarRecipesSection recipes={similarRecipes} />
-    </main>
+        <RecipeRatingSection recipe={recipe} />
+        <SimilarRecipesSection recipes={similarRecipes} />
+      </main>
+    </RecipeMatchProvider>
   );
 }

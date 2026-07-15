@@ -7,7 +7,7 @@ import { listSavedRecipes } from "@/features/recipes/service";
 import { requireUser } from "@/lib/auth";
 
 export const metadata = {
-  title: "Сохранённые"
+  title: "Закладки"
 };
 
 export default async function SavedRecipesPage() {
@@ -17,7 +17,7 @@ export default async function SavedRecipesPage() {
   return (
     <main className="space-y-4">
       <section className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-2xl font-semibold">Сохранённые</h1>
+        <h1 className="text-2xl font-semibold">Закладки</h1>
         <Link href="/app/recipes/new" className="rounded-md bg-foreground px-3 py-2 text-sm font-medium text-background">
           Создать рецепт
         </Link>
@@ -31,7 +31,7 @@ export default async function SavedRecipesPage() {
             <Link href="/recipes" className="font-medium text-foreground underline underline-offset-2">
               рецепты сообщества
             </Link>{" "}
-            и сохраните понравившиеся.
+            и добавьте понравившиеся в закладки.
           </p>
         </section>
       ) : (

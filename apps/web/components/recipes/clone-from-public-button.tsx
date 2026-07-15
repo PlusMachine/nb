@@ -75,7 +75,7 @@ export function CloneFromPublicButton({
           disabled={pending}
           aria-label="Скопировать рецепт в «Мои рецепты»"
           // См. комментарий в recipe-save-button.tsx — тот же приём: визуальный бейдж
-          // 28×28 (под ним рядом «Сохранить»), кликабельная зона растёт невидимым
+          // 28×28 (под ним рядом «В закладки»), кликабельная зона растёт невидимым
           // before-псевдоэлементом до ~44×44.
           className="absolute right-2 top-11 z-10 inline-flex h-7 w-7 items-center justify-center rounded-full bg-card/70 text-muted-foreground backdrop-blur-sm transition before:absolute before:-inset-2 before:content-[''] hover:bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
         >

@@ -36,7 +36,7 @@ export default async function PublicRecipesPage({ searchParams }: { searchParams
   const familyCounts = await getPublicRecipeFamilyCounts();
   // Наличие данных для сортов «По рейтингу»/«Популярные» (count-conditional показ).
   const sortAvailability = await getPublicRecipeSortAvailability();
-  // Залогиненному показываем хаб-табы (Мои / Сохранённые / Найти); гостю — нет.
+  // Залогиненному показываем хаб-табы (Мои / Закладки / Найти); гостю — нет.
   const viewer = await getSessionUser();
   // Лёгкие опции для лейблов активных чипов (резолв id/code → название).
   const familyOptions: RecipeFamilyOption[] = [...catalog.families]
