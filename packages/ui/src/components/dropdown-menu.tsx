@@ -37,7 +37,16 @@ export function DropdownMenu({ trigger, items, align = "start", "aria-label": ar
             <RadixDropdownMenu.Item
               key={item.key}
               disabled={item.disabled}
-              onSelect={() => item.onSelect()}
+              // Откладываем вызов на следующий макротик: Radix Menu.handleSelect зовёт
+              // rootContext.onClose() синхронно вместе с этим onSelect, так что если
+              // пункт синхронно открывает Dialog (setOpen(true)), размонтирование Menu
+              // и монтирование Dialog попадают в один React-коммит. Оба используют
+              // @radix-ui/react-dismissable-layer, который держит module-level
+              // originalBodyPointerEvents — при коллизии слоёв финальное закрытие
+              // диалога восстанавливает body в pointer-events:none навсегда. setTimeout
+              // гарантирует, что Menu отмонтируется отдельным коммитом раньше, чем
+              // откроется Dialog.
+              onSelect={() => setTimeout(() => item.onSelect(), 0)}
               className={cn(
                 "flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-2 text-sm outline-none transition-colors",
                 "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
