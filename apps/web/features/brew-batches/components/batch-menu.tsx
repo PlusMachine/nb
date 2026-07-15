@@ -88,7 +88,7 @@ export function BatchMenu({
         }
       : {
           key: "cancel",
-          label: "Отменить варку",
+          label: "Отменить партию",
           icon: <XCircle className="h-4 w-4" aria-hidden />,
           tone: "danger" as const,
           onSelect: () => setCancelOpen(true)
@@ -99,11 +99,11 @@ export function BatchMenu({
     <>
       <DropdownMenu
         align="end"
-        aria-label="Действия с варкой"
+        aria-label="Действия с партией"
         trigger={
           <button
             type="button"
-            aria-label="Действия с варкой"
+            aria-label="Действия с партией"
             className="relative inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground before:absolute before:-inset-1 before:content-['']"
           >
             <MoreHorizontal className="h-5 w-5" aria-hidden />
@@ -152,9 +152,9 @@ export function BatchMenu({
 
       <ConfirmActionDialog
         open={cancelOpen}
-        title="Отменить варку?"
-        description="Варка будет помечена отменённой. Списанные на неё ингредиенты вернутся на склад. Это действие можно откатить («Вернуть в план»)."
-        confirmLabel="Отменить варку"
+        title="Отменить партию?"
+        description="Партия будет помечена отменённой. Списанные на неё ингредиенты вернутся на склад. Это действие можно откатить («Вернуть в план»)."
+        confirmLabel="Отменить партию"
         tone="danger"
         pending={busy}
         error={error}

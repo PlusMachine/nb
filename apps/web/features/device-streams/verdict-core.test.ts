@@ -226,6 +226,75 @@ describe("computeFermentVerdict — недостаток данных", () => {
   });
 });
 
+describe("computeFermentVerdict — Ф3б/Ф3в: внешние факты перекрывают эвристику по кривой", () => {
+  it("batchCompleted → batch_completed, даже если кривая активно падает", () => {
+    const sessionStartTs = 0;
+    const nowMs = 20 * HOUR_MS;
+    // Та же кривая, что в «рейт ≥0.002 → active» выше — без флага была бы active.
+    const points = [pt(sessionStartTs, 0, 1.05), pt(sessionStartTs, 10, 1.035), pt(sessionStartTs, 20, 1.02)];
+    expect(
+      computeFermentVerdict({ points, sessionStartTs, targetFg: null, batchCompleted: true, nowMs })
+    ).toEqual({ kind: "batch_completed" });
+  });
+
+  it("batchCompleted → batch_completed даже при <2 точек (данные кривой не нужны вовсе)", () => {
+    expect(
+      computeFermentVerdict({ points: [], sessionStartTs: null, targetFg: null, batchCompleted: true, nowMs: 0 })
+    ).toEqual({ kind: "batch_completed" });
+  });
+
+  it("fgConfirmed → fg_confirmed, даже если кривая активно падает", () => {
+    const sessionStartTs = 0;
+    const nowMs = 20 * HOUR_MS;
+    const points = [pt(sessionStartTs, 0, 1.05), pt(sessionStartTs, 10, 1.035), pt(sessionStartTs, 20, 1.02)];
+    expect(
+      computeFermentVerdict({ points, sessionStartTs, targetFg: null, fgConfirmed: true, nowMs })
+    ).toEqual({ kind: "fg_confirmed" });
+  });
+
+  it("fgConfirmed → fg_confirmed даже при <2 точек", () => {
+    expect(
+      computeFermentVerdict({ points: [], sessionStartTs: null, targetFg: null, fgConfirmed: true, nowMs: 0 })
+    ).toEqual({ kind: "fg_confirmed" });
+  });
+
+  it("batchCompleted побеждает fgConfirmed, если заданы оба", () => {
+    expect(
+      computeFermentVerdict({
+        points: [],
+        sessionStartTs: null,
+        targetFg: null,
+        batchCompleted: true,
+        fgConfirmed: true,
+        nowMs: 0
+      })
+    ).toEqual({ kind: "batch_completed" });
+  });
+
+  it("без флагов (undefined) — прежнее поведение, регрессия на кейсе «рейт ≥0.002 → active»", () => {
+    const sessionStartTs = 0;
+    const nowMs = 20 * HOUR_MS;
+    const points = [pt(sessionStartTs, 0, 1.05), pt(sessionStartTs, 10, 1.035), pt(sessionStartTs, 20, 1.02)];
+    expect(computeFermentVerdict({ points, sessionStartTs, targetFg: null, nowMs })).toEqual({ kind: "active" });
+  });
+
+  it("явные false — тоже прежнее поведение (не путать с truthy-проверкой)", () => {
+    const sessionStartTs = 0;
+    const nowMs = 20 * HOUR_MS;
+    const points = [pt(sessionStartTs, 0, 1.05), pt(sessionStartTs, 10, 1.035), pt(sessionStartTs, 20, 1.02)];
+    expect(
+      computeFermentVerdict({
+        points,
+        sessionStartTs,
+        targetFg: null,
+        batchCompleted: false,
+        fgConfirmed: false,
+        nowMs
+      })
+    ).toEqual({ kind: "active" });
+  });
+});
+
 // Именованные пороги должны быть реально используемым контрактом (а не «магическими числами»
 // в тестах) — сверяем значения констант с таблицей F5 спеки на случай будущей правки одного
 // без другого.

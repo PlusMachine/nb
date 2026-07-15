@@ -38,6 +38,8 @@ const MIN_HISTORY_MANUAL_MEASUREMENTS = 2;
 // Лейблы вердикта (§5 F5) — insufficient_data сюда не попадает (строка вердикта тогда не
 // рендерится вовсе, см. FermentVerdictRow).
 const VERDICT_LABELS: Record<Exclude<FermentVerdict["kind"], "insufficient_data">, string> = {
+  batch_completed: "Брожение завершено",
+  fg_confirmed: "Добродило — FG зафиксирован",
   awaiting_start: "Ждём начала брожения",
   not_started: "Брожение не началось?",
   active: "Бродит активно",
@@ -51,13 +53,23 @@ const WARNING_VERDICT_KINDS = new Set<FermentVerdict["kind"]>(["not_started", "p
 
 /**
  * Строка вердикта в сводке блока «Брожение» (§5 F5). insufficient_data — вообще не
- * рендерим (нечего сказать, П1: не кричащий блок). У likely_done — обязательная (П5)
- * приписка «Перед розливом подтвердите плотность ареометром» + ссылка на калькулятор
- * прайминга с предзаполненной температурой (FG калькулятор не принимает — ни у
- * priming-sugar, ни у keg-carbonation нет такого поля во входных данных).
+ * рендерим (нечего сказать, П1: не кричащий блок). На отменённой партии (cancelled) —
+ * тоже не рендерим (Ф3б, решение владельца): вердикт брожения теряет смысл, если варка
+ * отменена. У likely_done — обязательная (П5) приписка «Перед розливом подтвердите
+ * плотность ареометром» + ссылка на калькулятор прайминга с предзаполненной температурой
+ * (FG калькулятор не принимает — ни у priming-sugar, ни у keg-carbonation нет такого поля
+ * во входных данных).
  */
-function FermentVerdictRow({ verdict, tempC }: { verdict: FermentVerdict | null; tempC: number | null }) {
-  if (verdict === null || verdict.kind === "insufficient_data") {
+function FermentVerdictRow({
+  verdict,
+  tempC,
+  batchStatus
+}: {
+  verdict: FermentVerdict | null;
+  tempC: number | null;
+  batchStatus: BrewBatchStatus;
+}) {
+  if (verdict === null || verdict.kind === "insufficient_data" || batchStatus === "cancelled") {
     return null;
   }
 
@@ -198,7 +210,7 @@ export async function BatchFermentBlock({
 
       {hasAnyData ? <FermentSummaryRow summary={summary} gravityUnit={gravityUnit} /> : null}
 
-      <FermentVerdictRow verdict={summary.verdict} tempC={summary.tempC} />
+      <FermentVerdictRow verdict={summary.verdict} tempC={summary.tempC} batchStatus={batchStatus} />
 
       {variant === "active" ? (
         <SessionCalibrationControl sessions={calibrationSessions} measurements={calibrationMeasurements} gravityUnit={gravityUnit} />

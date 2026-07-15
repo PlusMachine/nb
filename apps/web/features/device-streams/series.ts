@@ -70,9 +70,11 @@ export type BatchFermentSummary = {
   /**
    * Вердикт состояния брожения (§5 F5) — по сглаженной кривой активного/последнего сеанса
    * устройства без excluded, либо (нет ни одного сеанса) по ручным замерам (П1/F7 —
-   * паритет «без устройства»). null — только для пустой сводки (чужая/несуществующая
-   * партия, см. emptySummary); для существующей партии всегда реальный вердикт (в т.ч.
-   * "insufficient_data", когда точек мало, — UI по конвенции его не показывает).
+   * паритет «без устройства»). Партия completed либо есть ручной замер isFinal (Ф3б/Ф3в)
+   * перекрывают эвристику по кривой — batch_completed/fg_confirmed. null — только для
+   * пустой сводки (чужая/несуществующая партия, см. emptySummary); для существующей
+   * партии всегда реальный вердикт (в т.ч. "insufficient_data", когда точек мало, — UI
+   * по конвенции его не показывает).
    */
   verdict: FermentVerdict | null;
   /**
@@ -240,6 +242,8 @@ const pickVerdictSession = (sessions: FermentSessionSeries[]): FermentSessionSer
  * excluded, либо (сеансов вообще нет) ручные замеры (П1/F7 — паритет «без устройства»).
  * verdictSession — уже выбран вызывающим кодом (pickVerdictSession), чтобы тот же id
  * можно было переиспользовать в сводке (BatchFermentSummary.verdictSessionId, M3-C).
+ * batchCompleted/fgConfirmed (Ф3б/Ф3в) прокидываются в обе ветки как есть — verdict-core
+ * сам решает, что они приоритетнее любой эвристики по кривой.
  * ⚠ Если вызывающий код передал windowHours — points сеанса уже урезаны этим окном, и
  * points[0] может быть не первой точкой сеанса целиком (искажает «падение с начала» из
  * verdict-core). Сегодня единственный вызывающий (BatchFermentBlock) окно не передаёт;
@@ -250,6 +254,8 @@ const computeBatchFermentVerdict = (
   verdictSession: FermentSessionSeries | null,
   manualMeasurements: ManualMeasurementPoint[],
   targetFg: number | null,
+  batchCompleted: boolean,
+  fgConfirmed: boolean,
   nowMs: number
 ): FermentVerdict => {
   if (verdictSession) {
@@ -262,6 +268,8 @@ const computeBatchFermentVerdict = (
       points,
       sessionStartTs: verdictSession.session.startedAt.getTime(),
       targetFg,
+      batchCompleted,
+      fgConfirmed,
       nowMs
     });
   }
@@ -269,7 +277,7 @@ const computeBatchFermentVerdict = (
   // Нет ни одного сеанса устройства — вердикт по ручным замерам; verdict-core сам вернёт
   // insufficient_data, если их меньше двух (F5/F7: «грубее, но работает»).
   const points = manualMeasurements.map((m) => ({ ts: m.ts, gravitySg: m.gravitySg }));
-  return computeFermentVerdict({ points, sessionStartTs: null, targetFg, nowMs });
+  return computeFermentVerdict({ points, sessionStartTs: null, targetFg, batchCompleted, fgConfirmed, nowMs });
 };
 
 /** Последняя не-excluded точка (по ts) среди точек всех сеансов, удовлетворяющая предикату. */
@@ -349,6 +357,11 @@ export const readBatchFermentSeries = async (
   const targetFg = (batch.recipeSnapshot as { fg?: number | null } | null)?.fg ?? null;
   const verdictSession = pickVerdictSession(sessions);
 
+  // Ф3б/Ф3в: партия завершена либо есть подтверждённый (isFinal) ручной замер — оба
+  // перекрывают эвристику по кривой в verdict-core, см. computeBatchFermentVerdict.
+  const batchCompleted = batch.status === "completed";
+  const fgConfirmed = manualMeasurements.some((m) => m.isFinal);
+
   const summary: BatchFermentSummary = {
     currentGravitySg,
     tempC,
@@ -357,7 +370,7 @@ export const readBatchFermentSeries = async (
     visibleAttenuationPct: visibleAttenuation(og, currentGravitySg),
     abvEstimate: hasAbvPair ? calculateAbv(og!, currentGravitySg!) : null,
     targetFg,
-    verdict: computeBatchFermentVerdict(verdictSession, manualMeasurements, targetFg, Date.now()),
+    verdict: computeBatchFermentVerdict(verdictSession, manualMeasurements, targetFg, batchCompleted, fgConfirmed, Date.now()),
     verdictSessionId: verdictSession?.session.id ?? null
   };
 

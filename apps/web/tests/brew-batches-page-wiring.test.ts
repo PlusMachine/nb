@@ -266,7 +266,7 @@ describe("Страница партии — акт «Итог» (A4)", () => {
   it("показывает склад партии: что списано и историю движений", async () => {
     const html = await renderDetail();
 
-    expect(html).toContain("Итог варки");
+    expect(html).toContain("Итог партии");
     expect(html).toContain("Склад");
     expect(html).toContain("Пильзнер");
     expect(html).toContain("История движений");

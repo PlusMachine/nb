@@ -14,7 +14,7 @@ export type FermentationNudge = { tone: "action" | "warn" | "info"; text: string
 
 // Первичное брожение уже отражено героем «день N из M» — отдельный чекбокс-дубль
 // «Поставить на брожение» в этом акте убираем (см. спеку §9). Экспортируется, чтобы
-// история завершённой варки прятала тот же нечекаемый шаг (иначе «Брожение 0/1»).
+// история завершённой партии прятала тот же нечекаемый шаг (иначе «Брожение 0/1»).
 export const HERO_STEP_IDS = new Set(["ferment:primary"]);
 
 function NudgeLine({ nudge }: { nudge: FermentationNudge | null }) {
@@ -43,7 +43,7 @@ function NudgeLine({ nudge }: { nudge: FermentationNudge | null }) {
 /**
  * Акт «Брожение» (статус fermenting): герой «день N из M · цель t°», подсказка
  * следующего действия (общий словарь с дашбордом), шаги брожения/розлива и переход
- * к завершению варки. Журнал замеров (FG) — соседней секцией, главный блок акта.
+ * к завершению партии. Журнал замеров (FG) — соседней секцией, главный блок акта.
  */
 export function FermentationBoard({
   brewBatchId,
@@ -86,7 +86,7 @@ export function FermentationBoard({
   );
   useWakeLock(hasRunningTimer);
   // Подтверждение спрашиваем всегда (Р11): типовой рецепт даёт единственный шаг
-  // брожения, и тот — герой, поэтому undone здесь обычно 0, а завершение варки на
+  // брожения, и тот — герой, поэтому undone здесь обычно 0, а завершение партии на
   // 1-м дне из 10 срабатывало одним кликом. Текст — в completion.ts (доменный слой).
   const finishConfirm = buildFinishBrewConfirm({ fermentDayN, plannedDays, undoneSteps: undone });
   const finishEarly = finishConfirm.tone === "danger";
@@ -120,7 +120,7 @@ export function FermentationBoard({
         <BrewTransitionButton
           brewBatchId={brewBatchId}
           to="completed"
-          label="Завершить варку"
+          label="Завершить партию"
           variant={!finishEarly && (cursor.total === 0 || cursor.actComplete) ? "primary" : "outline"}
           size="md"
           confirm={finishConfirm}

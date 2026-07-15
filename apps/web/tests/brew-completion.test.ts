@@ -64,8 +64,8 @@ describe("resolveBrewCompletionRatingSlug", () => {
   });
 });
 
-// --- Подтверждение завершения варки (B3) --------------------------------------
-// «Завершить варку» на 1-м дне брожения из 10 срабатывала одним кликом: подтверждение
+// --- Подтверждение завершения партии (B3) --------------------------------------
+// «Завершить партию» на 1-м дне брожения из 10 срабатывала одним кликом: подтверждение
 // показывалось, только когда в акте оставались неотмеченные шаги, а у типового рецепта
 // единственный шаг брожения — это герой «день N из M», и он из списка исключён.
 
@@ -73,7 +73,7 @@ describe("buildFinishBrewConfirm", () => {
   it("честно называет день и остаток плана при раннем завершении", () => {
     const confirm = buildFinishBrewConfirm({ fermentDayN: 1, plannedDays: 10, undoneSteps: 0 });
 
-    expect(confirm.title).toBe("Завершить варку?");
+    expect(confirm.title).toBe("Завершить партию?");
     expect(confirm.description).toContain("день 1 из 10");
     expect(confirm.description).toContain("ещё 9 дней");
     expect(confirm.tone).toBe("danger");
@@ -118,7 +118,7 @@ describe("buildFinishBrewConfirm", () => {
   });
 });
 
-describe("FermentationBoard — кнопка «Завершить варку»", () => {
+describe("FermentationBoard — кнопка «Завершить партию»", () => {
   const render = (props: { fermentDayN: number | null; plannedDays: number | null }) => {
     transitionProps.length = 0;
     const html = renderToStaticMarkup(

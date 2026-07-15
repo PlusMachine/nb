@@ -8,6 +8,10 @@
 //  (см. parse-core.ts, normalize-core.ts, series-core.ts).
 //
 //  Порядок проверок ниже (важен, закреплён тестами):
+//  0. Внешние факты бьют любую эвристику по кривой (Ф3б/Ф3в): batchCompleted
+//     (партия переведена в completed) → batch_completed; иначе fgConfirmed
+//     (есть ручной замер с isFinal) → fg_confirmed. Проверяются ДО минимума
+//     точек — этим двум веткам данные кривой не нужны вовсе.
 //  1. «Лаг» — падение с начала сеанса ещё не видно (<START_DROP_THRESHOLD_SG):
 //     единственная развилка, которая смотрит на elapsed-с-начала, а не на форму
 //     кривой (awaiting_start <36ч / not_started ≥36ч).
@@ -21,6 +25,8 @@
 // =============================================================================
 
 export type FermentVerdict =
+  | { kind: "batch_completed" } // «Брожение завершено» — партия закрыта (Ф3б)
+  | { kind: "fg_confirmed" } // «Добродило — FG зафиксирован» — ручной замер isFinal (Ф3в)
   | { kind: "awaiting_start" } // «Ждём начала брожения»
   | { kind: "not_started" } // «Брожение не началось?» ⚠
   | { kind: "active" } // «Бродит активно»
@@ -38,6 +44,10 @@ export type ComputeFermentVerdictInput = {
   sessionStartTs: number | null;
   /** Расчётный FG из снапшота рецепта партии, если есть. */
   targetFg: number | null;
+  /** Партия в статусе completed — форсит batch_completed раньше любой эвристики по кривой (Ф3б). */
+  batchCompleted?: boolean;
+  /** Есть ручной замер, отмеченный isFinal, — форсит fg_confirmed, если batchCompleted не сработал (Ф3в). */
+  fgConfirmed?: boolean;
   nowMs: number;
 };
 
@@ -118,7 +128,12 @@ const computeStableDays = (points: FermentVerdictPoint[]): number => {
 };
 
 export const computeFermentVerdict = (input: ComputeFermentVerdictInput): FermentVerdict => {
-  const { points, sessionStartTs, targetFg, nowMs } = input;
+  const { points, sessionStartTs, targetFg, nowMs, batchCompleted, fgConfirmed } = input;
+
+  // Внешние факты (Ф3б/Ф3в) — раньше даже проверки минимума точек: этим двум не нужна
+  // кривая вовсе, а «партия завершена»/«FG подтверждён вручную» весомее любой эвристики.
+  if (batchCompleted) return { kind: "batch_completed" };
+  if (fgConfirmed) return { kind: "fg_confirmed" };
 
   // Пусто/одна точка — сказать нечего, КРОМЕ живого сеанса моложе AWAITING_START_HOURS
   // (устройство ещё физически не успело прислать вторую точку — это тоже «ждём начала»).

@@ -83,7 +83,7 @@ export function BrewJournal({
   preferredGravityUnit: PreferredGravityUnit;
   /** Какой замер ждём в этом акте — задаёт подсказку в поле плотности (см. brew-day.ts). */
   measurementKind: BrewMeasurementKind;
-  /** Скрыть плитки OG/FG/ABV/сбраживание — уже показаны карточкой «Итог варки». */
+  /** Скрыть плитки OG/FG/ABV/сбраживание — уже показаны карточкой «Итог партии». */
   hideStats?: boolean;
   /** Контекстный заголовок секции (OG на варочном дне, FG на брожении). */
   title?: string;

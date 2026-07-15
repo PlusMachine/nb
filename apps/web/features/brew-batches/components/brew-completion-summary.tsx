@@ -42,7 +42,7 @@ function StatTile({
 }
 
 /**
- * Итог варки — карточка, которая появляется на детали партии при статусе
+ * Итог партии — карточка, которая появляется на детали партии при статусе
  * `completed`. Данные не пересчитываются: сводка (OG/FG/ABV/сбраживание) уже
  * приходит из `getBrewBatchDetail` → `summarizeBrewMeasurements`. Объём — из
  * снапшота плана варки (не «факт», плана без отдельного поля фактического
@@ -68,7 +68,7 @@ export function BrewCompletionSummary({
 
   return (
     <section className="space-y-4 rounded-2xl border border-border bg-card p-5 shadow-sm">
-      <h2 className="text-base font-semibold text-foreground">Итог варки</h2>
+      <h2 className="text-base font-semibold text-foreground">Итог партии</h2>
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
         <StatTile
