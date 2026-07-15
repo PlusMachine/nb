@@ -23,6 +23,7 @@
     "sim:ispindel": "pnpm -F @nb/web run sim:ispindel",
     "seed:articles": "pnpm -F @nb/web run seed:articles",
     "seed:public": "pnpm -F @nb/web run seed:public",
+    "fix:seed-yeast-analogs": "pnpm -F @nb/web run fix:seed-yeast-analogs",
     "firmware:publish": "pnpm -F @nb/web run firmware:publish",
     "cleanup:verifications": "pnpm -F @nb/web run cleanup:verifications",
     "recompute:recipe-stats": "pnpm -F @nb/web run recompute:recipe-stats",

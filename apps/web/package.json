@@ -15,6 +15,7 @@
     "sim:ispindel": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/sim-ispindel.ts",
     "seed:articles": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/seed-content-articles.ts",
     "seed:public": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/seed-public-recipes.ts",
+    "fix:seed-yeast-analogs": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/fix-seed-yeast-analogs.ts",
     "firmware:publish": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/publish-firmware-release.ts",
     "cleanup:verifications": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/cleanup-verifications.ts",
     "recompute:recipe-stats": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/recompute-recipe-stats.ts",

@@ -191,10 +191,10 @@ const C = {
   wy1968: "wyeast-1968-1968-london-esb-ale",
   wy3724: "wyeast-3724-3724-belgian-saison",
   wy3787: "wyeast-3787-3787-belgian-high-gravity",
-  kolsch: "asp-lab-al-513-kolsch",
-  hefe: "asp-lab-al-205-hefeweizen-ale",
+  kolsch: "white-labs-wlp029-german-ale",
+  hefe: "wyeast-3068-weihenstephan-weizen",
   wit: "asp-lab-al-204-belgian-witbier",
-  irish: "asp-lab-al-514-irish-ale"
+  irish: "wyeast-1084-irish-ale"
 } as const;
 
 // ---------------------------------------------------------------------------
