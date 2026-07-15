@@ -1,4 +1,10 @@
-import { beerStyleFixtures } from "@nb/brewing-core";
+import {
+  beerStyleFixtures,
+  buildBjcpLayoutQueryVariants,
+  buildBjcpQueryVariants,
+  foldBjcpSearchDiacritics,
+  scoreBjcpStyle
+} from "@nb/brewing-core";
 import { getBjcpCatalogData } from "@nb/content";
 
 import {
@@ -283,4 +289,100 @@ export const resolveFamilyStyleScopes = async (): Promise<Map<string, string[]>>
   }
 
   return scopes;
+};
+
+export type TextSearchScope = {
+  /** Нормализованные варианты запроса (транслит + curated-словарь) для ilike по title/автору. */
+  titleVariants: string[];
+  /** recipes.styleId[], уверенно сматченные термином запроса на стиль (код/алиасы/название). */
+  styleIds: string[];
+};
+
+// Ниже этого порога скор даёт только семейство/категория/бейдж стиля (см.
+// scoreBjcpStyle: их потолок — 420/380/260) — слишком шумно для матча
+// «запрос -> стиль». 700 отсекает эти уровни, но пропускает contains-хиты по
+// коду/алиасам/названию стиля (потолок exact-тира — 720), т.е. настоящие
+// «вайцен» → 10A, а не любое случайное слово.
+const CONFIDENT_STYLE_MATCH_SCORE = 700;
+const MAX_TEXT_SEARCH_STYLE_MATCHES = 6;
+// Ф3 (P1 ревью) + Ф8 (регрессия волны 4, живой прогон): короткие запросы
+// («и», «s») не должны расширяться вообще — ни в сторону стиля (prefix-скоринг
+// в scoreBjcpStyle не имеет нижнего порога длины сам по себе: «и» ->
+// ['2A','2B','2C','15A','15B','15C']), ни в сторону title-вариантов
+// (buildBjcpQueryVariants транслитерирует «и» в «i», и ilike '%i%' по
+// title/author матчит почти все рецепты). Ниже этого порога — никакой
+// экспансии: titleVariants = [trimmed], styleIds = [].
+const MIN_QUERY_EXPANSION_LENGTH = 3;
+// Ф6 (P2 ревью): общий кап на суммарный набор вариантов title (включая
+// раскладочный фолбэк includeLayoutVariants второго прохода) — без него
+// OR-цепочка ilike может неограниченно разрастись.
+const MAX_TITLE_VARIANTS = 16;
+
+/**
+ * Резолвит текстовый поиск `?q=` витрины `/recipes`: варианты запроса (транслит +
+ * curated-словарь из `@nb/brewing-core`, те же, что и умный поиск `/bjcp`) для
+ * ilike по названию/автору, плюс `recipes.styleId`, уверенно сматченные термином
+ * запроса на стиль (напр. «вайцен» → 10A через styleAliasMap).
+ *
+ * `includeLayoutVariants` — раскладочный фолбэк («gbkcyth» = «пилснер» на
+ * латинской раскладке): строго опционален, вызывающая сторона включает его
+ * только вторым проходом при нуле результатов первого (см. searchPublicRecipes).
+ *
+ * Пустой `q` — no-op без похода в каталог BJCP (в отличие от `resolveStyleScope`,
+ * которому каталог нужен для семейств — тут фильтровать нечего).
+ */
+export const resolveTextSearchScope = async (
+  q: string | undefined,
+  options: { includeLayoutVariants?: boolean } = {}
+): Promise<TextSearchScope> => {
+  const trimmed = q?.trim();
+  if (!trimmed) {
+    return { titleVariants: [], styleIds: [] };
+  }
+
+  // Ниже порога — буквальный trimmed и точка, см. комментарий у константы.
+  if (trimmed.length < MIN_QUERY_EXPANSION_LENGTH) {
+    return { titleVariants: [trimmed], styleIds: [] };
+  }
+
+  const folded = foldBjcpSearchDiacritics(trimmed);
+  const titleVariants = new Set<string>(buildBjcpQueryVariants(folded));
+  if (options.includeLayoutVariants) {
+    for (const variant of buildBjcpLayoutQueryVariants(folded)) {
+      titleVariants.add(variant);
+    }
+  }
+
+  const styleIds = new Set<string>();
+  {
+    const variants = [...titleVariants];
+    const catalog = await getBjcpCatalogData();
+    const index = buildStyleKeyIndex();
+
+    const confidentStyles = catalog.styles
+      .map((style) => ({ style, score: scoreBjcpStyle(style, trimmed, { variants }) }))
+      .filter((entry) => entry.score >= CONFIDENT_STYLE_MATCH_SCORE)
+      .sort((left, right) => right.score - left.score)
+      .slice(0, MAX_TEXT_SEARCH_STYLE_MATCHES);
+
+    for (const { style } of confidentStyles) {
+      for (const id of index.get(style.bjcpId) ?? []) {
+        styleIds.add(id);
+      }
+    }
+  }
+
+  // Ф4 (P1 ревью): чисто пунктуационный запрос длиной ≥3 («???», «...») схлопывается
+  // нормализацией в пустой набор titleVariants, а styleIds тоже пуст — но раз
+  // пользователь что-то ввёл, текстовое условие не должно молча пропадать
+  // (иначе `buildTextSearchCondition` вернёт null и поиск отдаст ВСЕ рецепты).
+  // Буквальный trimmed q как единственный вариант — прежнее поведение голого ilike.
+  // (Короткая пунктуация вроде «-» уже отсечена гейтом MIN_QUERY_EXPANSION_LENGTH выше.)
+  if (titleVariants.size === 0 && styleIds.size === 0) {
+    titleVariants.add(trimmed);
+  }
+
+  const cappedVariants = [...titleVariants].slice(0, MAX_TITLE_VARIANTS);
+
+  return { titleVariants: cappedVariants, styleIds: [...styleIds] };
 };

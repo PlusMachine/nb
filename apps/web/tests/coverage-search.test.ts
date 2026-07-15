@@ -534,6 +534,66 @@ describe("searchPublicRecipes: фильтры и сортировки", () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
+// 4b. searchPublicRecipes: текстовый поиск — транслит/curated-словарь/стиль,
+//     раскладка строго фолбэком при нуле результатов (Ф8).
+// ─────────────────────────────────────────────────────────────────────────────
+
+const mainQueries = () => mockState.captured.filter((entry) => entry.limit != null);
+
+describe("searchPublicRecipes: текстовый поиск (транслит/раскладка/стиль)", () => {
+  it("«пил» строит OR из нескольких ilike-вариантов (в т.ч. «пилснер» и «pilsner»)", async () => {
+    mockState.rows = [baseRecipeRow()];
+    await searchPublicRecipes(parsePublicRecipeFilters({ q: "пил" }));
+
+    const where = mainQuery()!.where as unknown[];
+    const orClause = where.find(
+      (clause): clause is unknown[] => Array.isArray(clause) && clause[0] === "or"
+    );
+    expect(orClause).toBeTruthy();
+    expect(orClause).toContainEqual(["ilike", "recipes.title", "%пилснер%"]);
+    expect(orClause).toContainEqual(["ilike", "recipes.title", "%pilsner%"]);
+    expect(orClause).toContainEqual(["ilike", "users.displayName", "%пилснер%"]);
+  });
+
+  it("пустой/пробельный q — ровно один основной запрос, без OR (не сломан существующий кейс)", async () => {
+    mockState.rows = [baseRecipeRow()];
+    await searchPublicRecipes(parsePublicRecipeFilters({ q: "   " }));
+
+    expect(mainQueries()).toHaveLength(1);
+    const where = mainQuery()!.where as unknown[];
+    expect(where.some((clause) => Array.isArray(clause) && clause[0] === "or")).toBe(false);
+  });
+
+  it("непустой первый проход НЕ запускает раскладочный фолбэк (1 основной запрос)", async () => {
+    mockState.rows = [baseRecipeRow()];
+    await searchPublicRecipes(parsePublicRecipeFilters({ q: "hazy ipa" }));
+
+    expect(mainQueries()).toHaveLength(1);
+  });
+
+  it("0 результатов первого прохода -> второй проход с раскладкой («gbkcyth» = «пилснер»)", async () => {
+    mockState.rows = []; // мок не фильтрует по WHERE — пустые rows эмулируют «0 результатов»
+    await searchPublicRecipes(parsePublicRecipeFilters({ q: "gbkcyth" }));
+
+    const queries = mainQueries();
+    expect(queries).toHaveLength(2); // первый проход + раскладочный фолбэк
+    const firstWhere = queries[0]!.where as unknown[];
+    const secondWhere = queries[1]!.where as unknown[];
+    const firstOr = firstWhere.find((c): c is unknown[] => Array.isArray(c) && c[0] === "or") ?? [];
+    const secondOr = secondWhere.find((c): c is unknown[] => Array.isArray(c) && c[0] === "or") ?? [];
+    expect(firstOr).not.toContainEqual(["ilike", "recipes.title", "%пилснер%"]);
+    expect(secondOr).toContainEqual(["ilike", "recipes.title", "%пилснер%"]);
+  });
+
+  it("фолбэк не трогает чистые фильтры без q (0 строк остаётся 0 строк, без второго прохода)", async () => {
+    mockState.rows = [];
+    await searchPublicRecipes(parsePublicRecipeFilters({ family: "___no_such_family___" }));
+
+    expect(mainQueries()).toHaveLength(1);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
 // 5. Подсказки склада: searchInventorySuggestions (дедуп уже добавленного)
 // ─────────────────────────────────────────────────────────────────────────────
 

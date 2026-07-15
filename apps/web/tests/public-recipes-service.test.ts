@@ -207,12 +207,43 @@ describe("searchPublicRecipes", () => {
     const main = mainQuery()!;
     const where = main.where as unknown[];
     expect(where).toContainEqual(["eq", "recipes.publicationState", "published"]);
-    expect(where).toContainEqual(["or", ["ilike", "recipes.title", "%ipa%"], ["ilike", "users.displayName", "%ipa%"]]);
+    // Текстовый OR теперь строится по вариантам запроса (транслит/curated-словарь,
+    // см. resolveTextSearchScope) — «ipa» остаётся среди них, но не единственный.
+    const orClause = where.find(
+      (clause): clause is unknown[] => Array.isArray(clause) && clause[0] === "or"
+    );
+    expect(orClause).toContainEqual(["ilike", "recipes.title", "%ipa%"]);
+    expect(orClause).toContainEqual(["ilike", "users.displayName", "%ipa%"]);
     expect(where).toContainEqual(["gte", "recipes.abv", 5]);
     expect(where).toContainEqual(["lte", "recipes.ibu", 60]);
     expect(main.order).toEqual([["desc", "recipes.abv"], ["desc", "recipes.updatedAt"]]);
     expect(main.limit).toBe(10);
     expect(main.offset).toBe(10);
+  });
+
+  // Ф7 (P2 ревью волны 4): % и _ — служебные символы Postgres LIKE/ILIKE (wildcard
+  // и single-char match) — экранируем их В САМОМ варианте до подстановки в `%...%`,
+  // иначе они действуют как маска вместо буквального символа запроса.
+  it("экранирует % в варианте запроса перед подстановкой в ilike-паттерн", async () => {
+    mockState.rows = [baseRow()];
+    await searchPublicRecipes(parsePublicRecipeFilters({ q: "50%off" }));
+
+    const where = mainQuery()!.where as unknown[];
+    const orClause = where.find(
+      (clause): clause is unknown[] => Array.isArray(clause) && clause[0] === "or"
+    );
+    expect(orClause).toContainEqual(["ilike", "recipes.title", "%50\\%off%"]);
+  });
+
+  it("экранирует _ (буквальный литерал через Ф4-фолбэк для пунктуационного запроса)", async () => {
+    mockState.rows = [baseRow()];
+    await searchPublicRecipes(parsePublicRecipeFilters({ q: "_" }));
+
+    const where = mainQuery()!.where as unknown[];
+    const orClause = where.find(
+      (clause): clause is unknown[] => Array.isArray(clause) && clause[0] === "or"
+    );
+    expect(orClause).toContainEqual(["ilike", "recipes.title", "%\\_%"]);
   });
 
   it("applies an IN filter on styleId for a style/family scope", async () => {

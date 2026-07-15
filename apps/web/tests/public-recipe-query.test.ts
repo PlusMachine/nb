@@ -6,7 +6,8 @@ import {
   parsePublicRecipeFilters,
   resolvePagination,
   resolvePublicRecipeSort,
-  resolveStyleScope
+  resolveStyleScope,
+  resolveTextSearchScope
 } from "../features/recipes/public-recipe-query";
 
 describe("parsePublicRecipeFilters", () => {
@@ -148,5 +149,102 @@ describe("resolveStyleScope", () => {
     for (const id of scope!) {
       expect(knownIds.has(id)).toBe(true);
     }
+  });
+});
+
+describe("resolveTextSearchScope", () => {
+  it("пустой/пробельный q -> пустой scope (без похода в каталог)", async () => {
+    expect(await resolveTextSearchScope(undefined)).toEqual({ titleVariants: [], styleIds: [] });
+    expect(await resolveTextSearchScope("   ")).toEqual({ titleVariants: [], styleIds: [] });
+  });
+
+  it("«пил» -> среди вариантов title есть и «пилснер», и «pilsner» (для «Летнего пилснера» и «Pilsner Urquell»)", async () => {
+    const scope = await resolveTextSearchScope("пил");
+    expect(scope.titleVariants).toContain("пилснер");
+    expect(scope.titleVariants).toContain("pilsner");
+  });
+
+  it("«вайцен»/«weizen» -> уверенный матч по стилю 10A (Weissbier/Weizen, напр. Weihenstephaner)", async () => {
+    const style10A = beerStyleFixtures.find((style) => (style.styleKey ?? style.bjcpId) === "10A");
+    expect(style10A).toBeTruthy();
+
+    const ruScope = await resolveTextSearchScope("вайцен");
+    expect(ruScope.styleIds).toContain(style10A!.id);
+
+    const enScope = await resolveTextSearchScope("weizen");
+    expect(enScope.styleIds).toContain(style10A!.id);
+  });
+
+  it("случайный мусор не тащит стили (нет fuzzy-матча по стилю)", async () => {
+    const scope = await resolveTextSearchScope("zzzqwerty12345");
+    expect(scope.styleIds).toEqual([]);
+  });
+
+  it("«gbkcyth» (раскладка «пилснер») без includeLayoutVariants не даёт пилснер-вариантов", async () => {
+    const scope = await resolveTextSearchScope("gbkcyth");
+    expect(scope.titleVariants).not.toContain("пилснер");
+    expect(scope.titleVariants).not.toContain("pilsner");
+  });
+
+  it("«gbkcyth» с includeLayoutVariants:true находит пилснер-варианты вторым проходом", async () => {
+    const scope = await resolveTextSearchScope("gbkcyth", { includeLayoutVariants: true });
+    expect(scope.titleVariants).toContain("пилснер");
+    expect(scope.titleVariants).toContain("pilsner");
+  });
+
+  // Ф3 (P1 ревью волны 4): короткие запросы («и», «s») давали случайные стили через
+  // prefix-скоринг без нижнего порога длины — «и» матчил ['2A','2B','2C','15A','15B','15C'].
+  it("однобуквенный запрос («и»/«s») не матчит стиль — длина ниже порога 3 символов", async () => {
+    expect((await resolveTextSearchScope("и")).styleIds).toEqual([]);
+    expect((await resolveTextSearchScope("s")).styleIds).toEqual([]);
+  });
+
+  it("двухбуквенный запрос тоже не матчит стиль", async () => {
+    expect((await resolveTextSearchScope("во")).styleIds).toEqual([]);
+  });
+
+  // Ф8 (регрессия волны 4, живой прогон): «и» транслитерировалось в «i» через
+  // buildBjcpQueryVariants, а ilike '%i%' по title/author матчил почти все
+  // опубликованные рецепты (44/44 вместо честного substring-совпадения по «и»).
+  // Ниже порога MIN_QUERY_EXPANSION_LENGTH варианты вообще не расширяются.
+  it("«и» -> titleVariants ровно [\"и\"], без транслита/синонимов", async () => {
+    const scope = await resolveTextSearchScope("и");
+    expect(scope.titleVariants).toEqual(["и"]);
+    expect(scope.styleIds).toEqual([]);
+  });
+
+  it("«и» с includeLayoutVariants:true тоже даёт ровно [\"и\"] (раскладочный фолбэк не подключается для коротких запросов)", async () => {
+    const scope = await resolveTextSearchScope("и", { includeLayoutVariants: true });
+    expect(scope.titleVariants).toEqual(["и"]);
+    expect(scope.styleIds).toEqual([]);
+  });
+
+  it("двухбуквенный «пи» -> titleVariants ровно [\"пи\"] (тоже ниже порога расширения)", async () => {
+    const scope = await resolveTextSearchScope("пи");
+    expect(scope.titleVariants).toEqual(["пи"]);
+    expect(scope.styleIds).toEqual([]);
+  });
+
+  // Ф4 (P1 ревью волны 4): чисто пунктуационный запрос не должен молча терять
+  // текстовое условие — иначе buildTextSearchCondition вернёт null и поиск отдаст
+  // ВСЕ рецепты вместо ожидаемого «ничего не нашлось».
+  it("«???» -> titleVariants=[\"???\"] (буквальный литерал, SQL-условие не пропадает)", async () => {
+    const scope = await resolveTextSearchScope("???");
+    expect(scope.titleVariants).toEqual(["???"]);
+    expect(scope.styleIds).toEqual([]);
+  });
+
+  it("«...» и «-» тоже дают буквальный titleVariant, а не пустой scope", async () => {
+    expect((await resolveTextSearchScope("...")).titleVariants).toEqual(["..."]);
+    expect((await resolveTextSearchScope("-")).titleVariants).toEqual(["-"]);
+  });
+
+  // Ф6 (P2 ревью волны 4): общий кап 16 вариантов, включая раскладочный фолбэк —
+  // без него OR-цепочка ilike в фолбэк-проходе не ограничена.
+  it("общий набор вариантов (с includeLayoutVariants) не превышает капа 16", async () => {
+    const withoutLayout = await resolveTextSearchScope("пил");
+    const withLayout = await resolveTextSearchScope("пил", { includeLayoutVariants: true });
+    expect(withoutLayout.titleVariants.length).toBeLessThanOrEqual(16);
+    expect(withLayout.titleVariants.length).toBeLessThanOrEqual(16);
   });
 });

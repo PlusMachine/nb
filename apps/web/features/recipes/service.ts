@@ -82,7 +82,9 @@ import {
   resolvePagination,
   resolvePublicRecipeSort,
   resolveStyleScope,
-  type PublicRecipeSortKey
+  resolveTextSearchScope,
+  type PublicRecipeSortKey,
+  type TextSearchScope
 } from "./public-recipe-query";
 import { computeBayesianRating } from "./rating-score";
 import { isRecipeIndexable, isUnmodifiedClone } from "./seo";
@@ -2656,44 +2658,60 @@ export const listRecipeSitemapEntries = async (): Promise<Array<{ slug: string; 
     .map((candidate) => ({ slug: candidate.slug, updatedAt: candidate.updatedAt }));
 };
 
-export const searchPublicRecipes = async (filters: PublicRecipeFilters): Promise<PublicRecipeListResult> => {
-  const conditions = [...publiclyVisibleRecipeConditions()];
+// `?q=` → или(...): по каждому варианту запроса (транслит/curated-словарь,
+// см. resolveTextSearchScope) — ilike по названию и по автору, плюс уверенный
+// матч по стилю (recipes.styleId IN (...)), если термин узнан как алиас/
+// название стиля («вайцен» → 10A). Пустой scope (нечего искать) → null, условие
+// не добавляется.
+// Ф7 (P2 ревью): % и _ — служебные символы Postgres LIKE/ILIKE (wildcard и
+// single-char match), экранируем их В САМОМ варианте до подстановки в шаблон
+// `%...%` — backslash - дефолтный ESCAPE в Postgres.
+const escapeLikePattern = (value: string) => value.replace(/[\\%_]/g, "\\$&");
 
-  if (filters.q) {
-    const term = `%${filters.q}%`;
-    const match = or(ilike(recipes.title, term), ilike(users.displayName, term));
-    if (match) {
-      conditions.push(match);
-    }
+const buildTextSearchCondition = (scope: TextSearchScope) => {
+  if (!scope.titleVariants.length && !scope.styleIds.length) {
+    return null;
   }
+
+  const clauses = [
+    ...scope.titleVariants.map((variant) => ilike(recipes.title, `%${escapeLikePattern(variant)}%`)),
+    ...scope.titleVariants.map((variant) => ilike(users.displayName, `%${escapeLikePattern(variant)}%`))
+  ];
+  if (scope.styleIds.length) {
+    clauses.push(inArray(recipes.styleId, scope.styleIds));
+  }
+
+  return or(...clauses);
+};
+
+export const searchPublicRecipes = async (filters: PublicRecipeFilters): Promise<PublicRecipeListResult> => {
+  const baseConditions = [...publiclyVisibleRecipeConditions()];
 
   const styleScope = await resolveStyleScope(filters);
   if (styleScope) {
     // Пустой scope (неизвестное семейство) → inArray([]) → 0 строк, без падения.
-    conditions.push(inArray(recipes.styleId, styleScope));
+    baseConditions.push(inArray(recipes.styleId, styleScope));
   }
 
   if (filters.colorMinSrm != null) {
-    conditions.push(gte(recipes.color, filters.colorMinSrm));
+    baseConditions.push(gte(recipes.color, filters.colorMinSrm));
   }
   if (filters.colorMaxSrm != null) {
-    conditions.push(lte(recipes.color, filters.colorMaxSrm));
+    baseConditions.push(lte(recipes.color, filters.colorMaxSrm));
   }
   if (filters.abvMin != null) {
-    conditions.push(gte(recipes.abv, filters.abvMin));
+    baseConditions.push(gte(recipes.abv, filters.abvMin));
   }
   if (filters.abvMax != null) {
-    conditions.push(lte(recipes.abv, filters.abvMax));
+    baseConditions.push(lte(recipes.abv, filters.abvMax));
   }
   if (filters.ibuMin != null) {
-    conditions.push(gte(recipes.ibu, filters.ibuMin));
+    baseConditions.push(gte(recipes.ibu, filters.ibuMin));
   }
   if (filters.ibuMax != null) {
-    conditions.push(lte(recipes.ibu, filters.ibuMax));
+    baseConditions.push(lte(recipes.ibu, filters.ibuMax));
   }
   // filters.method не применяется в Phase A — метод нигде не хранится.
-
-  const whereClause = and(...conditions);
 
   const { limit, offset, page, pageSize } = resolvePagination(filters.page, filters.pageSize);
   const sortPlan = resolvePublicRecipeSort(filters.sort);
@@ -2708,47 +2726,72 @@ export const searchPublicRecipes = async (filters: PublicRecipeFilters): Promise
   // Вторичный ключ updatedAt desc для стабильности (кроме случая, когда он же первичный).
   const orderBy = sortPlan.key === "updatedAt" ? [primaryOrder] : [primaryOrder, desc(recipes.updatedAt)];
 
-  const rows = await db
-    .select({
-      id: recipes.id,
-      slug: recipes.slug,
-      title: recipes.title,
-      authorId: recipes.authorId,
-      styleId: recipes.styleId,
-      og: recipes.og,
-      fg: recipes.fg,
-      abv: recipes.abv,
-      ibu: recipes.ibu,
-      color: recipes.color,
-      batchSizeNormalizedQuantity: recipes.batchSizeNormalizedQuantity,
-      batchSizeNormalizedUnit: recipes.batchSizeNormalizedUnit,
-      updatedAt: recipes.updatedAt,
-      createdAt: recipes.createdAt,
-      heroImageId: recipes.heroImageId,
-      ratingAvg: recipes.ratingAvg,
-      ratingCount: recipes.ratingCount,
-      saveCount: recipes.saveCount,
-      cloneCount: recipes.cloneCount,
-      featuredAt: recipes.featuredAt,
-      authorDisplayName: users.displayName,
-      authorImage: users.image,
-      heroThumbKey: recipeImages.storageKeyThumb,
-      heroBlurDataUrl: recipeImages.blurDataUrl
-    })
-    .from(recipes)
-    .leftJoin(users, eq(users.id, recipes.authorId))
-    .leftJoin(recipeImages, eq(recipeImages.id, recipes.heroImageId))
-    .where(whereClause)
-    .orderBy(...orderBy)
-    .limit(limit)
-    .offset(offset);
+  const runSearch = async (textScope: TextSearchScope | null) => {
+    const conditions = [...baseConditions];
+    const textCondition = textScope ? buildTextSearchCondition(textScope) : null;
+    if (textCondition) {
+      conditions.push(textCondition);
+    }
+    const whereClause = and(...conditions);
 
-  const totalRows = await db
-    .select({ value: count() })
-    .from(recipes)
-    .leftJoin(users, eq(users.id, recipes.authorId))
-    .where(whereClause);
-  const total = totalRows[0]?.value ?? 0;
+    const rows = await db
+      .select({
+        id: recipes.id,
+        slug: recipes.slug,
+        title: recipes.title,
+        authorId: recipes.authorId,
+        styleId: recipes.styleId,
+        og: recipes.og,
+        fg: recipes.fg,
+        abv: recipes.abv,
+        ibu: recipes.ibu,
+        color: recipes.color,
+        batchSizeNormalizedQuantity: recipes.batchSizeNormalizedQuantity,
+        batchSizeNormalizedUnit: recipes.batchSizeNormalizedUnit,
+        updatedAt: recipes.updatedAt,
+        createdAt: recipes.createdAt,
+        heroImageId: recipes.heroImageId,
+        ratingAvg: recipes.ratingAvg,
+        ratingCount: recipes.ratingCount,
+        saveCount: recipes.saveCount,
+        cloneCount: recipes.cloneCount,
+        featuredAt: recipes.featuredAt,
+        authorDisplayName: users.displayName,
+        authorImage: users.image,
+        heroThumbKey: recipeImages.storageKeyThumb,
+        heroBlurDataUrl: recipeImages.blurDataUrl
+      })
+      .from(recipes)
+      .leftJoin(users, eq(users.id, recipes.authorId))
+      .leftJoin(recipeImages, eq(recipeImages.id, recipes.heroImageId))
+      .where(whereClause)
+      .orderBy(...orderBy)
+      .limit(limit)
+      .offset(offset);
+
+    const totalRows = await db
+      .select({ value: count() })
+      .from(recipes)
+      .leftJoin(users, eq(users.id, recipes.authorId))
+      .where(whereClause);
+    const total = totalRows[0]?.value ?? 0;
+
+    return { rows, total };
+  };
+
+  let textScope: TextSearchScope | null = null;
+  if (filters.q) {
+    textScope = await resolveTextSearchScope(filters.q);
+  }
+
+  let { rows, total } = await runSearch(textScope);
+
+  // Раскладка — строго фолбэком: второй проход только когда есть текстовый
+  // запрос и первый (curated-варианты/транслит/стиль) не нашёл ни строки.
+  if (filters.q && total === 0) {
+    const layoutScope = await resolveTextSearchScope(filters.q, { includeLayoutVariants: true });
+    ({ rows, total } = await runSearch(layoutScope));
+  }
 
   // Фото BJCP-стилей (как на `/bjcp`) для рецептов без своего фото. Карта
   // кешируется в `@nb/content`, так что это дешёвый lookup, не N+1.
