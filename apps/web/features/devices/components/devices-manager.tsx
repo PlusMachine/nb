@@ -302,12 +302,14 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
               {demoError ? <p role="alert" className="text-xs text-destructive">{demoError}</p> : null}
             </div>
           ) : null}
-          <div className="flex flex-col items-end gap-1">
-            <Button variant="outline" onClick={() => void createDemoStream()} disabled={creatingDemoStream}>
-              {creatingDemoStream ? "Создаём…" : "Демо-ареометр"}
-            </Button>
-            {demoStreamError ? <p role="alert" className="text-xs text-destructive">{demoStreamError}</p> : null}
-          </div>
+          {demoAvailable ? (
+            <div className="flex flex-col items-end gap-1">
+              <Button variant="outline" onClick={() => void createDemoStream()} disabled={creatingDemoStream}>
+                {creatingDemoStream ? "Создаём…" : "Демо-ареометр"}
+              </Button>
+              {demoStreamError ? <p role="alert" className="text-xs text-destructive">{demoStreamError}</p> : null}
+            </div>
+          ) : null}
           <Button
             variant="outline"
             onClick={() => setConnectMode(connectMode === "none" ? "select" : "none")}
@@ -341,7 +343,11 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
           </div>
         ) : (
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
-            <span>{`Подключите устройство или создайте демо-пивоварню, чтобы продолжить варку «${visibleReturnRecipe.title}»`}</span>
+            <span>
+              {demoAvailable
+                ? `Подключите устройство или создайте демо-пивоварню, чтобы продолжить варку «${visibleReturnRecipe.title}»`
+                : `Подключите устройство, чтобы продолжить варку «${visibleReturnRecipe.title}»`}
+            </span>
             <button
               type="button"
               onClick={dismissReturnRecipe}

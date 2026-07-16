@@ -59,7 +59,7 @@ export function DeviceHeader({
           className="inline-flex items-center gap-1 text-sm text-muted-foreground transition hover:text-foreground"
         >
           <ChevronLeft className="h-4 w-4" aria-hidden />
-          <span className="hidden sm:inline">BrewForge</span>
+          <span className="hidden sm:inline">Устройства</span>
         </Link>
         <h1
           className="text-lg font-semibold text-foreground sm:text-xl"
