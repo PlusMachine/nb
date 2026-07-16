@@ -57,6 +57,7 @@ import {
   type RecipeDraftPreviewDto,
   type RecipeIngredientDto,
   type RecipeListItemDto,
+  type RecipeOgData,
   type OwnerRecipeCardDto,
   type RecipeHopUseType,
   type RecipeImportedIngredientSnapshot,
@@ -1448,7 +1449,7 @@ const computeRecipeStatsSnapshot = (input: {
       hops.push({
         id: ingredient.id,
         name: ingredient.source.displayName,
-        alphaAcidPercent: getIngredientAlphaAcidPercent(ingredient.source.raw, 5),
+        alphaAcidPercent: readNumberMeta(ingredient.stepMeta, "alphaAcidPct") ?? getIngredientAlphaAcidPercent(ingredient.source.raw, 5),
         weightG,
         boilTimeMinutes: resolveHopTimeMinutes(ingredient, input.boilTimeMinutes),
         use,
@@ -2431,6 +2432,46 @@ export const getPublicRecipeById = async (recipeId: string): Promise<RecipeDetai
 export const getPublicRecipeBySlug = async (slug: string): Promise<RecipeDetailDto> => {
   const recipe = await ensurePublicRecipeBySlug(slug);
   return await mapRecipeDetailDto(recipe, recipe.ingredients);
+};
+
+/**
+ * Тонкая выборка рецепта для OG-карточки (`/api/og/recipes/[slug]`): только
+ * скаляры строки + рейтинг + число варок, БЕЗ загрузки ингредиентов и без
+ * тяжёлого `mapRecipeDetailDto` (который делает N+1 по ингредиентам, версии,
+ * клон-источник, имя автора). Горячий публичный эндпоинт не должен платить за
+ * то, что карточке не нужно. Гейтинг публичной видимости — тот же
+ * `isRecipePubliclyVisible`, что и в `ensurePublicRecipeBySlug`.
+ */
+export const getPublicRecipeOgData = async (slug: string): Promise<RecipeOgData> => {
+  const recipe = await db.query.recipes.findFirst({
+    where: eq(recipes.slug, slug)
+  });
+
+  if (!recipe) {
+    throw new Error("NOT_FOUND");
+  }
+
+  if (!isRecipePubliclyVisible(recipe)) {
+    throw new Error("FORBIDDEN");
+  }
+
+  const list = mapRecipeListDto(recipe);
+  return {
+    title: list.title,
+    slug: list.slug,
+    styleId: list.styleId,
+    og: list.og,
+    abv: list.abv,
+    ibu: list.ibu,
+    color: list.color,
+    batchSizeNormalizedQuantity: list.batchSizeNormalizedQuantity,
+    batchSizeNormalizedUnit: list.batchSizeNormalizedUnit,
+    rating:
+      recipe.ratingCount > 0 && recipe.ratingAvg != null
+        ? { average: roundTo(recipe.ratingAvg, 1), count: recipe.ratingCount }
+        : null,
+    completedBrewCount: await resolveCompletedBrewCount(recipe.id)
+  };
 };
 
 const publicRecipeSortColumns = {

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { RecipeEditorPage } from "@/components/recipes/recipe-editor-page";
 import { listEquipmentProfiles } from "@/features/equipment-profiles/service";
+import { getInventoryStockCategoryFlags } from "@/features/inventory/service";
 import { listRecipeImages } from "@/features/recipe-images/service";
 import { countRecipeBrewBatches, getOwnedRecipeById } from "@/features/recipes/service";
 import { requireUser } from "@/lib/auth";
@@ -14,11 +15,12 @@ export default async function EditRecipePage({ params }: { params: Promise<{ id:
   try {
     // brewBatchCount — для подтверждения удаления: рецепт с варками удаляется не
     // бесследно (партии осиротеют), и диалог обязан назвать их число.
-    const [recipe, initialImages, equipmentProfiles, brewBatchCount] = await Promise.all([
+    const [recipe, initialImages, equipmentProfiles, brewBatchCount, inventoryStockByCategory] = await Promise.all([
       getOwnedRecipeById(user.id, id),
       listRecipeImages(id, user.id),
       listEquipmentProfiles(user.id),
-      countRecipeBrewBatches(user.id, id)
+      countRecipeBrewBatches(user.id, id),
+      getInventoryStockCategoryFlags(user.id)
     ]);
     return (
       <RecipeEditorPage
@@ -27,6 +29,7 @@ export default async function EditRecipePage({ params }: { params: Promise<{ id:
         initialImages={initialImages}
         equipmentProfiles={equipmentProfiles}
         brewBatchCount={brewBatchCount}
+        inventoryStockByCategory={inventoryStockByCategory}
         preferredGravityUnit={user.preferredGravityUnit}
       />
     );

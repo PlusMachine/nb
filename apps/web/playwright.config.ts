@@ -18,6 +18,10 @@ export default defineConfig({
     // Порт 3000 бывает занят другим dev-сервером (несколько сессий на одном
     // чекауте) — тогда прогон нацеливают на живой стенд через E2E_BASE_URL.
     baseURL: process.env.E2E_BASE_URL ?? "http://localhost:3000",
+    // Закреплено намеренно: нативный input[type=date] рендерит формат по локали браузера,
+    // без этого прогон на CI-локали давал ложный сигнал по формату «Дата варки».
+    locale: "ru-RU",
+    timezoneId: "Europe/Moscow",
     trace: "on-first-retry"
   },
   projects: [

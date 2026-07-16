@@ -5,22 +5,31 @@ import { describe, expect, it } from "vitest";
 import {
   buildIngredientSearchParams,
   buildIngredientPickerExpandLabel,
+  buildIngredientPickerResultRows,
   countIngredientPickerActiveScopes,
   countIngredientPickerRefinementCoverage,
+  createIngredientPickerSearchCache,
   IngredientPicker,
   IngredientPickerCustomOnlyChip,
   IngredientPickerFamilyChip,
   IngredientPickerFavoritesChip,
+  IngredientPickerGroupMemberRow,
+  IngredientPickerGroupRowFields,
   IngredientPickerLoadingState,
   ingredientPickerCollapsedRecentCount,
   ingredientPickerExpandedRecentCount,
   IngredientSelectionCard,
   IngredientPickerQuickStartPanel,
   IngredientPickerManufacturerChip,
+  IngredientPickerResultRowFields,
   IngredientPickerScopeResetButton,
   ingredientPickerMaltQuickStartFamilies,
   normalizeIngredientSearchResponse,
+  isIngredientPickerFullResultSetLoaded,
+  resolveIngredientPickerGroupKey,
   resolveIngredientPickerLoadingLabel,
+  resolveIngredientPickerNextExpandedGroupKey,
+  resolveIngredientPickerRowActivation,
   resolveIngredientPickerVisibleRecentItems,
   resolveIngredientPickerRowContent,
   resolveIngredientPickerRequestedLimit,
@@ -45,6 +54,21 @@ import {
 } from "../components/ingredients/ingredient-picker";
 import { resolveIngredientPickerRefinementPanelTitle } from "../components/ingredients/ingredient-picker";
 import { buildIngredientPickerQuickStartBrandsFromRecentSelections } from "../features/ingredients/picker-quick-start";
+import type { IngredientSearchResult } from "../features/ingredients/contracts";
+
+const buildSearchResult = (overrides: Partial<IngredientSearchResult> = {}): IngredientSearchResult => ({
+  items: [],
+  refinements: [],
+  total: 0,
+  isBroadMatch: false,
+  hasMore: false,
+  appliedManufacturer: null,
+  appliedGroup: null,
+  appliedFamily: null,
+  appliedFavoritesOnly: false,
+  appliedCustomOnly: false,
+  ...overrides
+});
 
 const buildSuggestionItem = (overrides: Record<string, unknown> = {}) => ({
   id: "malt-1",
@@ -1678,6 +1702,29 @@ describe("ingredient picker state helpers", () => {
     expect(html).toContain("Yakima Chief");
   });
 
+  it("translates the yeast form in picker badges instead of passing it through raw", () => {
+    const item = {
+      id: "yeast-1",
+      type: "yeast" as const,
+      category: "yeast" as const,
+      subtype: "yeast" as const,
+      displayName: "WLP001",
+      primaryLabelRu: "WLP001",
+      technicalData: {
+        type: "yeast" as const,
+        form: "liquid",
+        attenuationPctTypical: 75
+      },
+      defaultUnit: "ml" as const,
+      source: "catalog" as const
+    };
+
+    expect(buildIngredientPickerTechnicalBadges(item).map((badge) => badge.label)).toEqual([
+      "жидкие",
+      "Атт. 75%"
+    ]);
+  });
+
   it("renders malt picker badges with the same EBC accent treatment as inventory cards", () => {
     const item = buildSuggestionItem({
       technicalData: {
@@ -1965,5 +2012,262 @@ describe("ingredient picker state helpers", () => {
     expect(html).toContain("Weyermann");
     expect(html).toMatch(/Weyermann.*svg/);
     expect(html).toMatch(/Weyermann.*Жидкий солодовый экстракт/);
+  });
+
+  // Б4: смена источника «Склад» ↔ «Каталог» в редакторе рецепта меняет только проп
+  // searchIngredients на том же экземпляре пикера — кэш результатов не должен
+  // отдавать результат, закэшированный под тем же ключом другим fetcher'ом. Баг был:
+  // «Пшеничный» на пустом складе кэшировался пустым результатом, и после переключения
+  // на каталог тот же запрос отдавался из кэша вместо повторного похода в сеть.
+  it("createIngredientPickerSearchCache сбрасывает кэш при смене fetcher'а", () => {
+    const cache = createIngredientPickerSearchCache();
+    const stockFetcher = () => Promise.resolve([]);
+    const catalogFetcher = () => Promise.resolve([]);
+    const key = "пшеничный::::::::10";
+
+    expect(cache.get(stockFetcher, key)).toBeUndefined();
+    const emptyStockResult = buildSearchResult();
+    cache.set(stockFetcher, key, emptyStockResult);
+    expect(cache.get(stockFetcher, key)).toBe(emptyStockResult);
+
+    // Тот же ключ, другой fetcher — без фикса тут вернулся бы emptyStockResult
+    // из кэша, и searchIngredients(catalogFetcher) ни разу бы не вызвался.
+    expect(cache.get(catalogFetcher, key)).toBeUndefined();
+    const catalogResult = buildSearchResult({ total: 1 });
+    cache.set(catalogFetcher, key, catalogResult);
+    expect(cache.get(catalogFetcher, key)).toBe(catalogResult);
+
+    // Возврат к прежнему fetcher'у — кэш общий на «текущего» fetcher'а, а не
+    // отдельный на каждого, так что старая запись склада тоже не всплывает.
+    expect(cache.get(stockFetcher, key)).toBeUndefined();
+  });
+
+  it("createIngredientPickerSearchCache отдаёт результат из кэша при повторном запросе тем же fetcher'ом", () => {
+    const cache = createIngredientPickerSearchCache();
+    const fetcher = () => Promise.resolve([]);
+    const key = "солод::::::::10";
+    const result = buildSearchResult({ total: 5 });
+
+    cache.set(fetcher, key, result);
+    expect(cache.get(fetcher, key)).toBe(result);
+    expect(cache.get(fetcher, key)).toBe(result);
+  });
+});
+
+// Б5: группировка одноимённых записей каталога в drawer-пикере (opt-in через
+// groupSameNamed на IngredientPicker, включён только в ingredient-editor.tsx
+// для каталожного режима). Среда тестов — vitest environment "node" (без
+// jsdom/happy-dom/react-test-renderer в зависимостях проекта), поэтому
+// поведение по клику проверяется не через симуляцию DOM-событий (как в
+// consume-preview-dialog.test.tsx — тот же ограничитель), а через чистые
+// функции, которые обработчики компонента вызывают напрямую:
+// resolveIngredientPickerRowActivation решает «раскрыть» vs «выбрать» ровно
+// так же, как это делает activateRow в ingredient-picker.tsx.
+describe("Б5 — группировка одноимённых записей каталога (buildIngredientPickerResultRows)", () => {
+  const buildCatalogItem = (overrides: Record<string, unknown> = {}) => buildSuggestionItem({
+    displayName: "Пэйл Эль",
+    primaryLabelRu: "Пэйл Эль",
+    category: "fermentable",
+    subtype: "malt",
+    source: "catalog",
+    ...overrides
+  });
+
+  it("17 одноимённых каталожных записей разных производителей схлопываются в одну группу с count 17", () => {
+    const items = Array.from({ length: 17 }, (_, index) => buildCatalogItem({
+      id: `malt-${index}`,
+      brand: `Brand ${index}`,
+      countryCode: "DE",
+      countryName: "Германия",
+      // Реальный кейс из аудита: EBC 4.5-10.7 у разных производителей —
+      // технические данные не должны участвовать в ключе группы.
+      technicalData: { type: "malt", colorEbcMin: 4.5 + index * 0.3, colorEbcMax: 4.5 + index * 0.3 }
+    }));
+
+    const rows = buildIngredientPickerResultRows({ items, groupSameNamed: true });
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.kind).toBe("group");
+    if (rows[0]?.kind !== "group") throw new Error("expected group row");
+    expect(rows[0].items).toHaveLength(17);
+    expect(rows[0].items.map((item) => item.id)).toEqual(items.map((item) => item.id));
+    // Представитель — первая по текущему ранжированию запись.
+    expect(rows[0].representative.id).toBe("malt-0");
+  });
+
+  it("одиночная запись остаётся обычной строкой", () => {
+    const items = [buildCatalogItem({ id: "malt-solo" })];
+
+    const rows = buildIngredientPickerResultRows({ items, groupSameNamed: true });
+
+    expect(rows).toEqual([{ kind: "single", item: items[0] }]);
+  });
+
+  it("кастомная запись с тем же именем НЕ входит в группу каталожных", () => {
+    const catalogA = buildCatalogItem({ id: "malt-a" });
+    const catalogB = buildCatalogItem({ id: "malt-b" });
+    const custom = buildCatalogItem({ id: "malt-custom", source: "custom" });
+
+    const rows = buildIngredientPickerResultRows({
+      items: [catalogA, custom, catalogB],
+      groupSameNamed: true
+    });
+
+    expect(rows).toHaveLength(2);
+    expect(rows[0]?.kind).toBe("group");
+    if (rows[0]?.kind !== "group") throw new Error("expected group row");
+    expect(rows[0].items.map((item) => item.id)).toEqual(["malt-a", "malt-b"]);
+    expect(rows[1]).toEqual({ kind: "single", item: custom });
+  });
+
+  it("разные subtype не группируются, даже при одинаковом имени и категории", () => {
+    const maltItem = buildCatalogItem({ id: "malt-1", subtype: "malt" });
+    const fermentableItem = buildCatalogItem({ id: "ferm-1", subtype: "fermentable" });
+
+    const rows = buildIngredientPickerResultRows({
+      items: [maltItem, fermentableItem],
+      groupSameNamed: true
+    });
+
+    expect(rows).toEqual([
+      { kind: "single", item: maltItem },
+      { kind: "single", item: fermentableItem }
+    ]);
+  });
+
+  it("без groupSameNamed (default false) — старое поведение: каждая запись своя строка, клик всегда select", () => {
+    const items = Array.from({ length: 5 }, (_, index) => buildCatalogItem({ id: `malt-${index}` }));
+
+    const rows = buildIngredientPickerResultRows({ items, groupSameNamed: false });
+
+    expect(rows).toEqual(items.map((item) => ({ kind: "single", item })));
+    for (const row of rows) {
+      if (row.kind !== "single") throw new Error("expected single row");
+      expect(resolveIngredientPickerRowActivation(row)).toEqual({ type: "select", item: row.item });
+    }
+  });
+
+  it("resolveIngredientPickerRowActivation: группа раскрывает (не выбирает), одиночная запись выбирает", () => {
+    const item = buildCatalogItem({ id: "malt-1" });
+    const singleRow = { kind: "single" as const, item };
+    expect(resolveIngredientPickerRowActivation(singleRow)).toEqual({ type: "select", item });
+
+    const groupRow = {
+      kind: "group" as const,
+      key: resolveIngredientPickerGroupKey(item),
+      items: [item],
+      representative: item
+    };
+    expect(resolveIngredientPickerRowActivation(groupRow)).toEqual({ type: "expand", key: groupRow.key });
+  });
+
+  it("resolveIngredientPickerNextExpandedGroupKey — повторный клик по той же группе сворачивает, другая группа раскрывается", () => {
+    expect(resolveIngredientPickerNextExpandedGroupKey({ currentExpandedKey: null, activatedKey: "a" })).toBe("a");
+    expect(resolveIngredientPickerNextExpandedGroupKey({ currentExpandedKey: "a", activatedKey: "a" })).toBeNull();
+    expect(resolveIngredientPickerNextExpandedGroupKey({ currentExpandedKey: "a", activatedKey: "b" })).toBe("b");
+  });
+
+  it("resolveIngredientPickerGroupKey игнорирует технические данные (EBC) — только имя/категория/subtype", () => {
+    const a = buildCatalogItem({ id: "a", technicalData: { type: "malt", colorEbcMin: 4.5, colorEbcMax: 4.5 } });
+    const b = buildCatalogItem({ id: "b", technicalData: { type: "malt", colorEbcMin: 10.7, colorEbcMax: 10.7 } });
+    expect(resolveIngredientPickerGroupKey(a)).toBe(resolveIngredientPickerGroupKey(b));
+
+    const extraPale = buildCatalogItem({ id: "c", displayName: "Экстра Пэйл Эль", primaryLabelRu: "Экстра Пэйл Эль" });
+    expect(resolveIngredientPickerGroupKey(a)).not.toBe(resolveIngredientPickerGroupKey(extraPale));
+  });
+
+  it("IngredientPickerGroupMemberRow — «бренд · страна» с флагом; фолбэк на displayName без бренда/страны", () => {
+    const withBrandCountry = buildCatalogItem({ id: "x", brand: "Weyermann", countryCode: "DE", countryName: "Германия" });
+    const html = renderToStaticMarkup(
+      React.createElement("ul", null, React.createElement(IngredientPickerGroupMemberRow, {
+        item: withBrandCountry,
+        onSelect: () => {}
+      }))
+    );
+    expect(html).toContain("Weyermann · Германия");
+    expect(html).toContain("svg");
+
+    const bare = buildCatalogItem({
+      id: "y",
+      brand: null,
+      countryCode: null,
+      countryName: null,
+      displayName: "Пэйл Эль (без бренда)"
+    });
+    const bareHtml = renderToStaticMarkup(
+      React.createElement("ul", null, React.createElement(IngredientPickerGroupMemberRow, {
+        item: bare,
+        onSelect: () => {}
+      }))
+    );
+    expect(bareHtml).toContain("Пэйл Эль (без бренда)");
+  });
+
+  it("IngredientPickerResultRowFields — рендерит primaryName (для одиночных строк результата)", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(IngredientPickerResultRowFields, { item: buildCatalogItem({ id: "rep" }) })
+    );
+    expect(html).toContain("Пэйл Эль");
+  });
+
+  // Живой прогон: пилюля-счётчик группы врала (6/10/17 при total=17), т.к.
+  // сервер отдаёт срез (limit) и порядок при равных score нестабилен между
+  // запросами — считать по неполному набору нельзя.
+  it("isIngredientPickerFullResultSetLoaded — число показываем только когда сервер отдал ВЕСЬ набор целиком", () => {
+    expect(isIngredientPickerFullResultSetLoaded({ loadedItemsCount: 6, total: 17 })).toBe(false);
+    expect(isIngredientPickerFullResultSetLoaded({ loadedItemsCount: 10, total: 17 })).toBe(false);
+    expect(isIngredientPickerFullResultSetLoaded({ loadedItemsCount: 17, total: 17 })).toBe(true);
+    expect(isIngredientPickerFullResultSetLoaded({ loadedItemsCount: 17, total: 10 })).toBe(true);
+  });
+
+  // Живой прогон: заголовок группы рендерился как «Пэйл Эль · Weyermann» —
+  // выглядело как конкретная запись Weyermann, хотя внутри 17 производителей
+  // с разными EBC/экстрактивностью. Строка-группа обязана показывать только
+  // чистое имя + маркер раскрытия (всегда) + счётчик (только при полном наборе).
+  it("IngredientPickerGroupRowFields — только имя и маркер/счётчик, без бренда/флага/техбейджей представителя", () => {
+    const representative = buildCatalogItem({
+      id: "rep",
+      brand: "Weyermann",
+      countryCode: "DE",
+      countryName: "Германия",
+      technicalData: { type: "malt", colorEbcMin: 4.5, colorEbcMax: 4.5, extractPctDryBasis: 81 }
+    });
+    const items = [representative, buildCatalogItem({ id: "other", brand: "Castle Malting" })];
+    const row = {
+      kind: "group" as const,
+      key: resolveIngredientPickerGroupKey(representative),
+      items,
+      representative
+    };
+
+    const partialSetHtml = renderToStaticMarkup(
+      React.createElement(IngredientPickerGroupRowFields, {
+        row,
+        isExpanded: false,
+        isFullResultSetLoaded: false
+      })
+    );
+    expect(partialSetHtml).toContain("Пэйл Эль");
+    expect(partialSetHtml).not.toContain("Weyermann");
+    expect(partialSetHtml).not.toContain("Германия");
+    expect(partialSetHtml).not.toContain("EBC");
+    expect(partialSetHtml).not.toContain("Экст-ть");
+    // маркер раскрытия — всегда, даже без числа
+    expect(partialSetHtml).toContain('data-testid="ingredient-picker-group-chevron"');
+    expect(partialSetHtml).not.toContain('data-testid="ingredient-picker-group-count"');
+
+    const fullSetHtml = renderToStaticMarkup(
+      React.createElement(IngredientPickerGroupRowFields, {
+        row,
+        isExpanded: true,
+        isFullResultSetLoaded: true
+      })
+    );
+    expect(fullSetHtml).toContain('data-testid="ingredient-picker-group-count"');
+    expect(fullSetHtml).toContain(`>${items.length}<`);
+    expect(fullSetHtml).not.toContain("Weyermann");
+    expect(fullSetHtml).not.toContain("EBC");
+    // раскрыто — chevron развёрнут (rotate-180)
+    expect(fullSetHtml).toContain("rotate-180");
   });
 });

@@ -70,7 +70,9 @@ export function RecipeListRow({
       <div className="pointer-events-none min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-1.5">
           {recipe.featured ? <FeaturedBadge /> : null}
-          <StyleChip style={recipe.style} styleHref={recipe.styleHref} />
+          {/* В списке чип стиля — не ссылка: вся карточка ведёт на рецепт (stretched-link),
+              а кликабельный чип уводил в каталог. */}
+          <StyleChip style={recipe.style} styleHref={null} />
         </div>
         <h2 className="mt-1 line-clamp-2 break-words text-base font-semibold leading-snug text-foreground group-hover:text-muted-foreground">
           {recipe.name}

@@ -43,7 +43,7 @@ export default function manifest(): MetadataRoute.Manifest {
       }
     ],
     shortcuts: [
-      { name: "BrewForge", url: "/app/devices" },
+      { name: "Устройства", url: "/app/devices" },
       { name: "Партии", url: "/app/brew-batches" },
       { name: "Склад", url: "/app/ingredients" }
     ]

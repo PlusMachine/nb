@@ -11,6 +11,7 @@ import {
 import {
   importBrewfatherJsonToCanonicalRecipe
 } from "../features/recipes/interop/brewfather-json";
+import { readImportedStyleHint, resolveImportedStyleId } from "../features/recipes/interop/resolve-imported-style";
 
 const readImportExample = (fileName: string) => (
   readFileSync(new URL(`../../../ingredients/examples_for_import/${fileName}`, import.meta.url), "utf8")
@@ -254,6 +255,22 @@ describe("recipe interop and brew plan foundation", () => {
     expect(processMeta?.mashProfile?.steps?.[0]).toMatchObject({ temperatureC: 67, durationMinutes: 60 });
   });
 
+  it("exports the per-position stepMeta.alphaAcidPct override instead of the catalog alpha", () => {
+    const recipeWithAlphaOverride: RecipeDetailDto = {
+      ...sampleRecipe,
+      ingredients: sampleRecipe.ingredients.map((ingredient) => (
+        ingredient.ingredientCategory === "hop"
+          ? { ...ingredient, stepMeta: { ...(ingredient.stepMeta ?? {}), alphaAcidPct: 9.5 } }
+          : ingredient
+      ))
+    };
+
+    const beerXml = exportRecipeToBeerXml(recipeWithAlphaOverride);
+
+    expect(beerXml).toContain("<ALPHA>9.5</ALPHA>");
+    expect(beerXml).not.toContain("<ALPHA>6.5</ALPHA>");
+  });
+
   it("maps Brewfather JSON beta payload to canonical recipe ingredients", () => {
     const canonical = importBrewfatherJsonToCanonicalRecipe({
       name: "Brewfather IPA",
@@ -290,6 +307,28 @@ describe("recipe interop and brew plan foundation", () => {
         steps: [{ temperatureC: 66, durationMinutes: 60 }]
       }
     });
+  });
+
+  it("stashes the BJCP style hint from Brewfather and BeerXML payloads", () => {
+    const brewfather = importBrewfatherJsonToCanonicalRecipe(JSON.parse(readImportExample("apa_sunset_trail.checked.brewfather.json")));
+    expect(readImportedStyleHint(brewfather.importMeta)).toMatchObject({
+      name: "American Pale Ale",
+      categoryNumber: "18",
+      styleLetter: "B"
+    });
+
+    const beerXml = importBeerXmlToCanonicalRecipe(readImportExample("dubbel_abbey_lantern.checked.beerxml"));
+    expect(readImportedStyleHint(beerXml.importMeta)?.name).toBe("Belgian Dubbel");
+  });
+
+  it("resolves imported style hints to BJCP codes (name-first, code fallback)", async () => {
+    // Точное имя → код; NEIPA резолвится в 21C через синонимы умного поиска.
+    expect(await resolveImportedStyleId({ name: "American Pale Ale", categoryNumber: "18", styleLetter: "B" })).toBe("18B");
+    expect(await resolveImportedStyleId({ name: "Belgian Dubbel", categoryNumber: null, styleLetter: null })).toBe("26B");
+    expect(await resolveImportedStyleId({ name: "New England IPA", categoryNumber: "", styleLetter: "" })).toBe("21C");
+    // Пустая/мусорная подсказка не даёт уверенно-неверной привязки.
+    expect(await resolveImportedStyleId(null)).toBeNull();
+    expect(await resolveImportedStyleId({ name: "Совершенно несуществующий стиль зыз" })).toBeNull();
   });
 
   it.each(beerXmlExamples)("imports BeerXML example %s", (fileName, expectedTitle) => {

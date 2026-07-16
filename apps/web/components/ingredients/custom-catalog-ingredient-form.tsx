@@ -110,7 +110,7 @@ const userFacingIngredientKindOptions = [
   {
     value: "malt",
     label: "Солод",
-    description: "Базовый, карамельный, жженый",
+    description: "Базовый, карамельный, жжёный",
     category: "fermentable",
     subtype: "malt",
     icon: Wheat
@@ -118,7 +118,7 @@ const userFacingIngredientKindOptions = [
   {
     value: "fermentable",
     label: "Сбраживаемое",
-    description: "Сахар, сироп, мед",
+    description: "Сахар, сироп, мёд",
     category: "fermentable",
     subtype: "fermentable",
     icon: Wheat

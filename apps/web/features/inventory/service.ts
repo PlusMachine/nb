@@ -6,6 +6,7 @@ import {
   db,
   desc,
   eq,
+  gt,
   inArray,
   ingredientAliases,
   ingredientPackageVariants,
@@ -38,13 +39,17 @@ import {
   type InventoryItemMovementDto,
   type InventoryListItemDto,
   type InventorySourceDto,
+  type InventoryStockCategoryFlags,
   type InventorySummaryDto,
   updateInventoryItemSchema,
   updateInventoryQuantitySchema
 } from "./contracts";
-import type { IngredientTechnicalData } from "../ingredients/contracts";
+import type { IngredientCategory, IngredientTechnicalData } from "../ingredients/contracts";
 import { normalizeIngredientName } from "../ingredients/normalization";
-import { resolveIngredientTechnicalDataColorRangeEbc } from "../ingredients/technical-fields";
+import {
+  resolveIngredientTechnicalDataColorRangeEbc,
+  resolveIngredientTechnicalDataHopAlphaAcidPct
+} from "../ingredients/technical-fields";
 import {
   buildIngredientTypedSummary,
   resolveIngredientPrimaryDisplayName
@@ -1050,13 +1055,7 @@ const readFermentableExtractYieldPct = (technicalData?: IngredientTechnicalData 
 );
 
 const readHopAlphaAcidPct = (technicalData?: IngredientTechnicalData | null) => (
-  isHopTechnicalData(technicalData)
-    ? readFiniteNumber(
-      technicalData.alphaAcidPctTypical,
-      technicalData.alphaAcidPctMax,
-      technicalData.alphaAcidPctMin
-    )
-    : null
+  resolveIngredientTechnicalDataHopAlphaAcidPct(technicalData)
 );
 
 const readHopBetaAcidPct = (technicalData?: IngredientTechnicalData | null) => (
@@ -2047,6 +2046,39 @@ export const searchInventorySuggestions = async (
         inventoryPurchaseLinksCount: item.source.purchaseLinks?.count ?? null
       };
     });
+};
+
+// Б3 (редактор рецепта): нужен только boolean «есть на складе» per категория — для
+// стартового источника модалки добавления позиции. getInventorySummaries считает
+// куда больше (два join'а на ingredients/user_custom_ingredients, разбивка по
+// primary group/subtype) ради полной сводки склада — здесь это лишняя работа,
+// поэтому отдельный узкий запрос прямо по user_ingredients без джойнов.
+export const getInventoryStockCategoryFlags = async (userId: string): Promise<InventoryStockCategoryFlags> => {
+  const rows = await db
+    .selectDistinct({ category: userIngredients.ingredientCategory })
+    .from(userIngredients)
+    .where(and(
+      eq(userIngredients.userId, userId),
+      isNull(userIngredients.archivedAt),
+      gt(userIngredients.normalizedQuantity, 0)
+    ));
+
+  const flags: InventoryStockCategoryFlags = {
+    fermentable: false,
+    hop: false,
+    yeast: false,
+    consumable: false,
+    water_treatment: false
+  };
+
+  for (const row of rows) {
+    const category = row.category as IngredientCategory;
+    if (category in flags) {
+      flags[category] = true;
+    }
+  }
+
+  return flags;
 };
 
 export const getInventorySummaries = async (userId: string): Promise<InventorySummaryDto> => {

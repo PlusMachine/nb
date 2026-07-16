@@ -19,7 +19,8 @@ import {
   resolveIngredientBrandLabel,
   resolveIngredientCountry,
   resolveIngredientDisplayNames,
-  resolveIngredientFermentableKindLabel
+  resolveIngredientFermentableKindLabel,
+  resolveYeastFormLabelRu
 } from "@/features/ingredients/presentation";
 import {
   formatConsumableFormLabel,
@@ -127,8 +128,9 @@ const buildTypedBadges = (item: InventoryListItemDto) => {
 
   if (technicalData.type === "yeast") {
     const yeast = technicalData as Extract<NonNullable<typeof technicalData>, { type: "yeast" }>;
+    const yeastFormLabel = resolveYeastFormLabelRu(yeast.form);
     return [
-      yeast.form ? { label: yeast.form.replaceAll("_", " ") } : null,
+      yeastFormLabel ? { label: yeastFormLabel } : null,
       yeast.attenuationPctTypical != null ? { label: `Атт. ${formatValue(yeast.attenuationPctTypical)}%` } : null,
       yeast.fermentationTempCMin != null && yeast.fermentationTempCMax != null
         ? { label: `${formatValue(yeast.fermentationTempCMin)}–${formatValue(yeast.fermentationTempCMax)}°C` }

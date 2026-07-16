@@ -77,6 +77,8 @@ export type OnboardingStepLink = { href: string; label: string };
 export type OnboardingStep = {
   key: OnboardingStepKey;
   title: string;
+  /** Зачем этот шаг — одна строка пользы, а не пояснение к очевидному. */
+  hint?: string;
   done: boolean;
   links: OnboardingStepLink[];
 };
@@ -110,15 +112,17 @@ export const buildDashboardOnboarding = ({
     {
       key: "stock",
       title: "Пополните склад",
+      hint: "Рецепты сверяются со складом и показывают, чего не хватает под варку.",
       done: inventoryTotalItems > 0,
       links: [
-        { href: "/catalog", label: "Каталог" },
-        { href: "/app/ingredients", label: "Склад" }
+        { href: "/catalog", label: "Выбрать из каталога" },
+        { href: "/app/ingredients", label: "Добавить вручную" }
       ]
     },
     {
       key: "recipe",
       title: "Найдите или создайте рецепт",
+      hint: "Возьмите готовый рецепт сообщества или соберите свой в редакторе.",
       done: recipeCount + savedRecipeCount > 0,
       links: [
         { href: "/recipes", label: "Рецепты сообщества" },

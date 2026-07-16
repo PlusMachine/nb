@@ -24,6 +24,10 @@ type Props = {
   onResume: () => void;
   onSkip: () => void;
   onStop: () => void;
+  /** SKIP_STAGE уже отложен в окне undo (тост «Отменить») — «Далее» блокируем
+   *  отдельно от общего disabled, чтобы повторный тап не отменял предыдущую
+   *  отложенную команду (scheduleUndoable сбрасывает таймер на новый вызов). */
+  skipPending?: boolean;
 };
 
 export function TransportBar({
@@ -35,6 +39,7 @@ export function TransportBar({
   onResume,
   onSkip,
   onStop,
+  skipPending = false,
 }: Props) {
   const isPaused = stageName === "PAUSED";
   const running = stageName !== null && !NON_RUNNING.includes(stageName);
@@ -67,7 +72,7 @@ export function TransportBar({
       )}
 
       {!isPaused ? (
-        <Button variant="outline" size="md" onClick={onSkip} disabled={disabled}>
+        <Button variant="outline" size="md" onClick={onSkip} disabled={disabled || skipPending}>
           <SkipForward className="h-4 w-4" aria-hidden />
           Далее
         </Button>

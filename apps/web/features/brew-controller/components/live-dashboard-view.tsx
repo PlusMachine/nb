@@ -149,7 +149,7 @@ export function LiveDashboardView({
   variant = "page"
 }: Props) {
   const { telemetry, conn, isStale, isLive, lastError, remaining } = stream;
-  const { lease, controlsHeld, pending, send, requestTakeover, release, scheduleUndoable } = command;
+  const { lease, controlsHeld, pending, send, requestTakeover, release, scheduleUndoable, undo } = command;
 
   const [confirm, setConfirm] = useState<ConfirmState>(null);
   const [actionMsg, setActionMsg] = useState<string | null>(null);
@@ -201,11 +201,13 @@ export function LiveDashboardView({
   );
 
   // SKIP_STAGE — один тап + окно undo (отложенная отправка): хук шлёт команду
-  // через ~5с, «Отменить» в тосте останавливает отправку.
+  // через ~5с, «Отменить» в тосте останавливает отправку. Тост говорит «будет
+  // пропущена» (действие ещё не случилось) — «пропущена» в прошедшем времени
+  // читалась как мгновенный факт, хотя команда уходит только через UNDO_WINDOW_MS.
   const skipStage = useCallback(() => {
     setActionMsg(null);
     scheduleUndoable(cmdSkipStage(), {
-      label: "Стадия пропущена",
+      label: "Стадия будет пропущена",
       onResult: (r) => setActionMsg(r.ok ? "Стадия пропущена" : r.error ?? "Не удалось пропустить стадию")
     });
   }, [scheduleUndoable]);
@@ -359,6 +361,7 @@ export function LiveDashboardView({
               })
             }
             onEstop={() => void run(cmdEstop())}
+            skipPending={Boolean(undo)}
             actionMsg={actionMsg}
             transportError={lastError && conn === "error" ? lastError : null}
             noFreshTelemetry={(isStale || conn === "offline") && hasDevice}

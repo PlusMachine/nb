@@ -11,7 +11,8 @@ import type {
 import {
   resolveIngredientBrandLabel,
   resolveIngredientCountry,
-  resolveIngredientFermentableKindLabel
+  resolveIngredientFermentableKindLabel,
+  resolveYeastFormLabelRu
 } from "@/features/ingredients/presentation";
 import {
   formatConsumableFormLabel,
@@ -171,7 +172,7 @@ export const buildRecipeIngredientTechnicalBadges = (
     );
   } else if (technicalData.type === "yeast") {
     const yeast = technicalData as Extract<IngredientTechnicalData, { type: "yeast" }>;
-    pushBadge(yeast.form ? yeast.form.replaceAll("_", " ") : null);
+    pushBadge(resolveYeastFormLabelRu(yeast.form));
     pushBadge(yeast.attenuationPctTypical != null ? `Атт. ${formatValue(yeast.attenuationPctTypical)}%` : null);
     pushBadge(
       yeast.fermentationTempCMin != null && yeast.fermentationTempCMax != null

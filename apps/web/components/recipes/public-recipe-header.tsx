@@ -8,6 +8,7 @@ import { formatUpdatedLabel } from "@/features/recipes/format";
 import { inventoryUnitLabels } from "@/features/inventory/units";
 import { pluralize } from "@/lib/pluralize";
 import { BrewRecipeButton } from "./brew-recipe-button";
+import { RecipeHeaderShell } from "./recipe-color-band";
 import { CloneFromPublicButton } from "./clone-from-public-button";
 import { RecipeSaveButton } from "./recipe-save-button";
 
@@ -18,7 +19,7 @@ export function PublicRecipeHeader({ recipe }: { recipe: RecipeDetailDto }) {
   const cloneCount = recipe.cloneCount ?? 0;
 
   return (
-    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+    <RecipeHeaderShell colorSrm={recipe.color}>
       <div className="space-y-2">
         <div className="flex flex-wrap items-center gap-2">
           <span className="rounded-full bg-success-subtle px-2.5 py-0.5 text-xs font-medium text-success-subtle-foreground ring-1 ring-success/30">{recipePublicationStateLabels[recipe.publicationState]}</span>
@@ -65,6 +66,6 @@ export function PublicRecipeHeader({ recipe }: { recipe: RecipeDetailDto }) {
           </span>
         </div>
       </div>
-    </section>
+    </RecipeHeaderShell>
   );
 }

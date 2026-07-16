@@ -718,12 +718,12 @@ const buildFermentableSummary = (technicalData: Extract<IngredientTechnicalData,
 
 const buildYeastSummary = (technicalData: Extract<IngredientTechnicalData, { type: "yeast" }>) => (
   [
-    technicalData.form,
+    resolveYeastFormLabelRu(technicalData.form),
     technicalData.attenuationPctTypical != null
-      ? `${formatNumber(technicalData.attenuationPctTypical)}% attenuation`
+      ? `Атт. ${formatNumber(technicalData.attenuationPctTypical)}%`
       : null,
     technicalData.fermentationTempCMin != null && technicalData.fermentationTempCMax != null
-      ? `${formatNumber(technicalData.fermentationTempCMin)}-${formatNumber(technicalData.fermentationTempCMax)}C`
+      ? `${formatNumber(technicalData.fermentationTempCMin)}-${formatNumber(technicalData.fermentationTempCMax)}°C`
       : null
   ].filter(Boolean).join(" • ")
 );

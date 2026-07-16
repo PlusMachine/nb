@@ -213,7 +213,7 @@ describe("inventory add-flow", () => {
     }));
 
     expect(html).toContain("Параметры ингредиента");
-    expect(html).toContain("Количество и единица учета");
+    expect(html).toContain("Количество и единица учёта");
     expect(html).toContain('data-testid="custom-required-fields"');
     expect(html).toContain('data-testid="custom-optional-disclosure"');
     expect(html).toContain("Цена, даты и заметки");
@@ -327,7 +327,7 @@ describe("inventory add-flow", () => {
 
     expect(html).toContain('data-testid="custom-ingredient-create-panel"');
     expect(html).toContain("Параметры ингредиента");
-    expect(html).toContain("Количество и единица учета");
+    expect(html).toContain("Количество и единица учёта");
   });
 
   // П3: панель прокидывает предзаполненное имя из deeplink-а в форму создания.
@@ -361,7 +361,7 @@ describe("inventory add-flow", () => {
     expect(html).toContain("Экстрактивность, %");
     expect(html).toContain("Страна");
     expect(html).toContain("Создать свой ингредиент");
-    expect(html).not.toContain("Количество и единица учета");
+    expect(html).not.toContain("Количество и единица учёта");
     expect(html).not.toContain('data-testid="custom-required-fields"');
     expect(html).not.toContain('data-testid="custom-optional-disclosure"');
     expect(html).not.toContain("Создать и добавить в запасы");

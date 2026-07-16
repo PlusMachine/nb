@@ -463,6 +463,11 @@ export type InventorySummaryDto = {
   };
 };
 
+// Б3 (редактор рецепта): пустой склад по категории → модалка добавления стартует
+// с «Из каталога», а не «Из склада». Узкая проекция, отдельная от
+// InventorySummaryDto — тут нужен только boolean per category, без остальных счётчиков.
+export type InventoryStockCategoryFlags = Record<IngredientCategory, boolean>;
+
 export type InventoryMovementType = "consume" | "reserve" | "release" | "adjustment";
 
 // Одна запись журнала движений по позиции склада (UX-находка #19): когда, сколько

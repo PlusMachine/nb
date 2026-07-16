@@ -262,6 +262,45 @@ export const resolveIngredientTechnicalDataColorLovibond = (
   );
 };
 
+/**
+ * Эффективная альфа-кислотность хмеля: typical, если задан; иначе середина
+ * диапазона min-max (только когда заданы ОБА); иначе max; иначе min. Раньше
+ * пустой typical падал сразу на max — эффективная альфа (и посчитанный по ней
+ * IBU) молча завышалась до верхней границы диапазона сорта вместо разумной
+ * середины. Единственное место, где считается эта цепочка — дубли в
+ * match-service.ts/inventory/service.ts/ingredient-picker.tsx/
+ * catalog-ingredient-form.tsx/recipe-designer/helpers.ts сведены сюда.
+ */
+export const resolveHopEffectiveAlphaAcidPct = (
+  typical?: number | null,
+  min?: number | null,
+  max?: number | null
+): number | null => {
+  if (typeof typical === "number" && Number.isFinite(typical)) {
+    return typical;
+  }
+
+  const normalizedMin = typeof min === "number" && Number.isFinite(min) ? min : null;
+  const normalizedMax = typeof max === "number" && Number.isFinite(max) ? max : null;
+
+  if (normalizedMin != null && normalizedMax != null) {
+    return (normalizedMin + normalizedMax) / 2;
+  }
+
+  return normalizedMax ?? normalizedMin ?? null;
+};
+
+export const resolveIngredientTechnicalDataHopAlphaAcidPct = (
+  technicalData: IngredientTechnicalData | null | undefined
+): number | null => {
+  if (!technicalData || technicalData.type !== "hop") {
+    return null;
+  }
+
+  const hop = technicalData as Extract<IngredientTechnicalData, { type: "hop" }>;
+  return resolveHopEffectiveAlphaAcidPct(hop.alphaAcidPctTypical, hop.alphaAcidPctMin, hop.alphaAcidPctMax);
+};
+
 const inferType = (source: IngredientTechnicalSource): IngredientType | null => {
   if (
     source.type === "hop"
@@ -559,7 +598,7 @@ export const extractIngredientTechnicalFields = (source: IngredientTechnicalSour
   if (technicalData.type === "hop") {
     const hop = technicalData as Extract<IngredientTechnicalData, { type: "hop" }>;
     return {
-      hopAlphaAcidPct: hop.alphaAcidPctTypical ?? hop.alphaAcidPctMax ?? hop.alphaAcidPctMin ?? null,
+      hopAlphaAcidPct: resolveHopEffectiveAlphaAcidPct(hop.alphaAcidPctTypical, hop.alphaAcidPctMin, hop.alphaAcidPctMax),
       hopBetaAcidPct: hop.betaAcidPctTypical ?? hop.betaAcidPctMax ?? hop.betaAcidPctMin ?? null,
       hopTotalOilMlPer100g: hop.oilMl100gTypical ?? hop.oilMl100gMax ?? hop.oilMl100gMin ?? null,
       hopForm: hop.hopForm ?? null

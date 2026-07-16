@@ -858,7 +858,7 @@ export function CustomIngredientForm({
         <>
           <div className="rounded-xl border border-border p-4">
             <div className="mb-3">
-              <h3 className="text-sm font-medium text-foreground">Количество и единица учета</h3>
+              <h3 className="text-sm font-medium text-foreground">Количество и единица учёта</h3>
             </div>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2" data-testid="custom-required-fields">

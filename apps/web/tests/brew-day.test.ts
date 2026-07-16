@@ -148,9 +148,9 @@ describe("buildBrewDaySteps", () => {
     }));
     const fermentation = groups.find((group) => group.stage === "fermentation")!;
     expect(fermentation.steps[0].id).toBe("ferment:primary");
-    expect(fermentation.steps[1]).toMatchObject({ id: "ferment:add:dh1", kind: "addition", title: "Внести на брожении: Mosaic" });
+    expect(fermentation.steps[1]).toMatchObject({ id: "ferment:add:dh1", kind: "addition", title: "Сухое охмеление: Mosaic" });
     expect(fermentation.steps[1].detail).toContain("60 г");
-    expect(fermentation.steps[1].detail).toContain("4 дн.");
+    expect(fermentation.steps[1].detail).toContain("держать 4 дн.");
     // Не-хмелевая fermentation-добавка тоже долетает до гида.
     expect(fermentation.steps[2]).toMatchObject({ id: "ferment:add:dh2", kind: "addition", title: "Внести на брожении: Дубовые чипсы" });
   });

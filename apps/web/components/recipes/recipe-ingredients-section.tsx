@@ -1,6 +1,7 @@
 import React from "react";
 import { Droplets, FlaskConical, Hop, Package, Wheat } from "lucide-react";
 import { resolveIngredientCategory } from "@/features/ingredients/taxonomy";
+import type { IngredientTechnicalData } from "@/features/ingredients/contracts";
 import type { RecipeDetailDto } from "@/features/recipes/contracts";
 import { fermentableUseLabels, hopUseTypeLabels } from "@/features/recipes/ingredient-labels";
 import {
@@ -181,6 +182,20 @@ const grainSharePct = (ingredient: RecipeIngredient, totalGrams: number): string
 const buildIngredientCardSource = (ingredient: RecipeIngredient): RecipeIngredientCardSource => {
   const category = ingredient.ingredientCategory ?? resolveIngredientCategory({ type: ingredient.type });
 
+  // Override альфы позиции (recipe_ingredients.stepMeta.alphaAcidPct) должен совпадать
+  // с тем, что показывает редактор рецепта — подмешиваем его в копию technicalData,
+  // не трогая исходный объект (та же логика в recipe-designer/helpers.ts).
+  const hopTechnicalData = category === "hop" && ingredient.ingredientTechnicalData?.type === "hop"
+    ? ingredient.ingredientTechnicalData as Extract<IngredientTechnicalData, { type: "hop" }>
+    : null;
+  const stepMeta = (ingredient.stepMeta ?? null) as Record<string, unknown> | null;
+  const alphaAcidPctOverride = hopTechnicalData && stepMeta && typeof stepMeta.alphaAcidPct === "number" && Number.isFinite(stepMeta.alphaAcidPct)
+    ? stepMeta.alphaAcidPct
+    : null;
+  const technicalData = alphaAcidPctOverride != null && hopTechnicalData
+    ? { ...hopTechnicalData, alphaAcidPctTypical: alphaAcidPctOverride }
+    : ingredient.ingredientTechnicalData ?? null;
+
   return {
     type: ingredient.type,
     category,
@@ -192,7 +207,7 @@ const buildIngredientCardSource = (ingredient: RecipeIngredient): RecipeIngredie
     countryCode: ingredient.ingredientCountryCode ?? null,
     countryName: ingredient.ingredientCountryName ?? null,
     country: ingredient.ingredientCountry ?? null,
-    technicalData: ingredient.ingredientTechnicalData ?? null
+    technicalData
   };
 };
 

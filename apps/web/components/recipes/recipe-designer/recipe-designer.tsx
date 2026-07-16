@@ -1,7 +1,7 @@
 "use client";
 
 import { getBeerStyleById, getBjcpStyleDisplayName } from "@nb/brewing-core";
-import { useToast } from "@nb/ui";
+import { Button, useToast } from "@nb/ui";
 import {
   CircleCheck,
   CircleAlert,
@@ -27,11 +27,13 @@ import {
   exportRecipeBeerXmlAction,
   importBeerXmlRecipeAction,
   importBrewfatherJsonRecipeAction,
+  matchImportedIngredientsToCatalogAction,
   previewRecipeDraftAction,
   type RecipeEditorPayload,
   type RecipeEditorResult
 } from "@/app/(app)/app/recipes/actions";
 import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
+import { ImportedCatalogMatchDialog, type ImportedMatchLine } from "@/components/recipes/recipe-designer/imported-catalog-match-dialog";
 import {
   type EquipmentProfileDto,
   type EquipmentProfileSnapshot
@@ -42,7 +44,7 @@ import type {
   IngredientSuggestionItem,
   IngredientTechnicalData
 } from "@/features/ingredients/contracts";
-import { type InventoryUnit } from "@/features/inventory/units";
+import { inventoryUnitLabels, type InventoryUnit } from "@/features/inventory/units";
 import {
   defaultRecipeProcessMeta,
   type RecipeDetailDto,
@@ -112,6 +114,7 @@ import {
   getHopWeightTotalG,
   getHopTimeMinutesValue,
   readImportedDesignerIngredientSnapshot,
+  isImportedDesignerIngredient,
   isIngredientValid,
   getIngredientDraftFieldError,
   applyRecipeWaterAddFlowSaltToWaterPlan,
@@ -139,6 +142,8 @@ type Props = {
   equipmentProfiles?: EquipmentProfileDto[];
   /** Сколько партий пользователь сварил по этому рецепту — их судьбу называет подтверждение удаления. */
   brewBatchCount?: number;
+  /** Есть ли на складе хоть одна позиция по категории (Б3) — решает стартовый источник модалки добавления. */
+  inventoryStockByCategory?: Partial<Record<IngredientCategory, boolean>>;
   onSaveStatusChange?: (status: RecipeSaveStatus) => void;
   onRecipeCreated?: (recipe: RecipeDetailDto) => void;
   onPublicationStateChange?: (state: RecipePublicationState) => void;
@@ -151,6 +156,14 @@ export type { RecipeSaveStatus };
 // после клика «+ Создать профиль…» — оба события стреляют на одном и том же возврате.
 const EQUIPMENT_PROFILE_FOCUS_DEDUPE_MS = 1000;
 
+const importedMatchCategoryLabels: Record<string, string> = {
+  fermentable: "Сбраживаемое",
+  hop: "Хмель",
+  yeast: "Дрожжи",
+  consumable: "Специи и добавки",
+  water_treatment: "Водоподготовка"
+};
+
 export function RecipeDesigner({
   mode,
   initialRecipe,
@@ -160,6 +173,7 @@ export function RecipeDesigner({
   initialImages = [],
   equipmentProfiles = [],
   brewBatchCount = 0,
+  inventoryStockByCategory = {},
   onSaveStatusChange,
   onRecipeCreated,
   onPublicationStateChange,
@@ -274,12 +288,14 @@ export function RecipeDesigner({
     deleteIngredient,
     restoreIngredient,
     openImportedCatalogMatcher,
+    applyImportedCatalogMatches,
     updateIngredientQuantity,
     updateHopTimeMinutes
   } = useRecipeIngredients({
     initialRecipe,
     initialIngredientSelection,
     boilTimeMinutes: effectiveBoilTimeMinutes,
+    inventoryStockByCategory,
     onIngredientDeleted: ({ ingredient, index }) => {
       show({
         title: "Позиция удалена",
@@ -295,6 +311,11 @@ export function RecipeDesigner({
   useEffect(() => {
     restoreIngredientRef.current = restoreIngredient;
   }, [restoreIngredient]);
+  const ingredientsRef = useRef(ingredients);
+  ingredientsRef.current = ingredients;
+  const [matchDialogOpen, setMatchDialogOpen] = useState(false);
+  const [matchPending, setMatchPending] = useState(false);
+  const [matchLines, setMatchLines] = useState<ImportedMatchLine[]>([]);
   const [beerXmlExport, setBeerXmlExport] = useState("");
   const [beerXmlImport, setBeerXmlImport] = useState("");
   const [brewfatherJsonImport, setBrewfatherJsonImport] = useState("");
@@ -1140,6 +1161,58 @@ export function RecipeDesigner({
     replaceRecipeEditorUrl(recipe.id);
   }, [equipmentProfiles, onRecipeCreated]);
 
+  // Ф-«матч импорта»: пакетное сопоставление импортированных (name-only) строк
+  // с каталогом. Кандидаты подбирает сервер тем же путём, что и ручной пикер.
+  const openImportedCatalogMatch = React.useCallback(async (source?: DesignerIngredient[]) => {
+    const importedLines = (source ?? ingredientsRef.current).filter(isImportedDesignerIngredient);
+    if (!importedLines.length) {
+      return;
+    }
+    setMatchDialogOpen(true);
+    setMatchPending(true);
+    setMatchLines(importedLines.map((ingredient) => ({
+      localId: ingredient.localId,
+      name: readImportedDesignerIngredientSnapshot(ingredient)?.name ?? ingredient.selectedName ?? "Импортированная позиция",
+      type: ingredient.type,
+      category: ingredient.category,
+      categoryLabel: importedMatchCategoryLabels[ingredient.category] ?? ingredient.category,
+      amountLabel: `${ingredient.amountEnteredQuantity} ${inventoryUnitLabels[ingredient.amountEnteredUnit] ?? ingredient.amountEnteredUnit}`,
+      candidates: []
+    })));
+
+    try {
+      const results = await matchImportedIngredientsToCatalogAction(importedLines.map((ingredient) => ({
+        localId: ingredient.localId,
+        name: readImportedDesignerIngredientSnapshot(ingredient)?.name ?? ingredient.selectedName ?? "",
+        type: ingredient.type,
+        category: ingredient.category
+      })));
+      const candidatesByLocalId = new Map(results.map((result) => [result.localId, result.candidates]));
+      setMatchLines((current) => current.map((line) => ({
+        ...line,
+        candidates: candidatesByLocalId.get(line.localId) ?? []
+      })));
+    } catch {
+      setMatchDialogOpen(false);
+      show({ title: "Не удалось подобрать аналоги", description: "Попробуйте ещё раз." });
+    } finally {
+      setMatchPending(false);
+    }
+  }, [show]);
+
+  const handleApplyImportedMatches = (selections: Parameters<typeof applyImportedCatalogMatches>[0]) => {
+    const applied = applyImportedCatalogMatches(selections);
+    setMatchDialogOpen(false);
+    if (applied > 0) {
+      show({ title: `Сопоставлено с каталогом: ${applied}` });
+    }
+  };
+
+  const importedIngredientsCount = useMemo(
+    () => ingredients.filter(isImportedDesignerIngredient).length,
+    [ingredients]
+  );
+
   const handleImportBeerXml = async (): Promise<RecipeEditorResult> => {
     const beerXml = beerXmlImport.trim();
     if (!beerXml) {
@@ -1157,6 +1230,7 @@ export function RecipeDesigner({
       }
 
       applyImportedRecipe(result.recipe, result.message);
+      void openImportedCatalogMatch(result.recipe.ingredients.map(toDesignerIngredient));
 
       return result;
     } finally {
@@ -1191,6 +1265,7 @@ export function RecipeDesigner({
       }
 
       applyImportedRecipe(result.recipe, result.message);
+      void openImportedCatalogMatch(result.recipe.ingredients.map(toDesignerIngredient));
 
       return result;
     } finally {
@@ -1600,6 +1675,22 @@ export function RecipeDesigner({
         />
       </section>
 
+      {importedIngredientsCount > 0 ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-sky-500/30 bg-sky-50 px-4 py-3 dark:bg-sky-500/10">
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-sky-900 dark:text-sky-100">
+              Импортировано без привязки к каталогу: {importedIngredientsCount}
+            </p>
+            <p className="mt-0.5 text-xs text-sky-800/80 dark:text-sky-200/80">
+              Сопоставьте позиции с каталогом, чтобы работал склад, покупки и подбор аналогов.
+            </p>
+          </div>
+          <Button type="button" size="sm" disabled={matchPending} onClick={() => void openImportedCatalogMatch()}>
+            {matchPending ? "Подбираем..." : "Сопоставить с каталогом"}
+          </Button>
+        </div>
+      ) : null}
+
       <div className="space-y-4">
         {sectionDefinitions.map((section) => {
           const IconComponent = categoryIcons[section.category];
@@ -1848,6 +1939,14 @@ export function RecipeDesigner({
         onImportBrewfatherJson={handleImportBrewfatherJson}
         onClose={() => setImportExportOpen(false)}
         preferredGravityUnit={preferredGravityUnit}
+      />
+
+      <ImportedCatalogMatchDialog
+        open={matchDialogOpen}
+        pending={matchPending}
+        lines={matchLines}
+        onApply={handleApplyImportedMatches}
+        onClose={() => setMatchDialogOpen(false)}
       />
 
       {brewPickerRecipeId ? (

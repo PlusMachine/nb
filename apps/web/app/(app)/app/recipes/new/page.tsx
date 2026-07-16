@@ -5,6 +5,7 @@ import { getBeerStyleById } from "@nb/brewing-core";
 import { RecipeEditorPage } from "@/components/recipes/recipe-editor-page";
 import { listEquipmentProfiles } from "@/features/equipment-profiles/service";
 import { getIngredientSuggestionByRef } from "@/features/ingredients/catalog-service";
+import { getInventoryStockCategoryFlags } from "@/features/inventory/service";
 import { listRecipeImages } from "@/features/recipe-images/service";
 import { countRecipeBrewBatches, getNextDefaultRecipeTitle, getOwnedRecipeById } from "@/features/recipes/service";
 import { requireUser } from "@/lib/auth";
@@ -27,11 +28,12 @@ export default async function NewRecipePage({
 
   if (recipeId) {
     try {
-      const [recipe, initialImages, equipmentProfiles, brewBatchCount] = await Promise.all([
+      const [recipe, initialImages, equipmentProfiles, brewBatchCount, inventoryStockByCategory] = await Promise.all([
         getOwnedRecipeById(user.id, recipeId),
         listRecipeImages(recipeId, user.id),
         listEquipmentProfiles(user.id),
-        countRecipeBrewBatches(user.id, recipeId)
+        countRecipeBrewBatches(user.id, recipeId),
+        getInventoryStockCategoryFlags(user.id)
       ]);
 
       return (
@@ -41,6 +43,7 @@ export default async function NewRecipePage({
           initialImages={initialImages}
           equipmentProfiles={equipmentProfiles}
           brewBatchCount={brewBatchCount}
+          inventoryStockByCategory={inventoryStockByCategory}
           preferredGravityUnit={user.preferredGravityUnit}
         />
       );
@@ -52,12 +55,13 @@ export default async function NewRecipePage({
     }
   }
 
-  const [initialTitle, initialIngredientSelection, equipmentProfiles] = await Promise.all([
+  const [initialTitle, initialIngredientSelection, equipmentProfiles, inventoryStockByCategory] = await Promise.all([
     getNextDefaultRecipeTitle(user.id),
     addSource === "catalog" || addSource === "custom"
       ? getIngredientSuggestionByRef(user.id, addSource, addId ?? "")
       : Promise.resolve(null),
-    listEquipmentProfiles(user.id)
+    listEquipmentProfiles(user.id),
+    getInventoryStockCategoryFlags(user.id)
   ]);
 
   return (
@@ -67,6 +71,7 @@ export default async function NewRecipePage({
       initialStyleId={initialStyleId}
       initialIngredientSelection={initialIngredientSelection}
       equipmentProfiles={equipmentProfiles}
+      inventoryStockByCategory={inventoryStockByCategory}
       preferredGravityUnit={user.preferredGravityUnit}
     />
   );

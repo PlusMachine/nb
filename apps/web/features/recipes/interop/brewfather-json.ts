@@ -184,6 +184,19 @@ const mapBrewfatherBitternessFormula = (formula: string | null): BitternessFormu
   return null;
 };
 
+const readBrewfatherStyleHint = (style: unknown) => {
+  if (!isRecord(style)) {
+    return null;
+  }
+  const name = readString(style.name);
+  const categoryNumber = readString(style.categoryNumber);
+  const styleLetter = readString(style.styleLetter);
+  if (!name && !categoryNumber) {
+    return null;
+  }
+  return { name, categoryNumber, styleLetter };
+};
+
 export const importBrewfatherJsonToCanonicalRecipe = (payload: unknown): CanonicalRecipe => {
   if (!isRecord(payload)) {
     throw new Error("INVALID_BREWFATHER_JSON");
@@ -296,6 +309,7 @@ export const importBrewfatherJsonToCanonicalRecipe = (payload: unknown): Canonic
 
   const importedFormulaPreference = readString(payload.ibuFormula);
   const bitternessFormula = mapBrewfatherBitternessFormula(importedFormulaPreference);
+  const styleHint = readBrewfatherStyleHint(payload.style);
 
   return {
     title: readString(payload.name) ?? readString(payload.title) ?? "Imported Brewfather recipe",
@@ -307,6 +321,7 @@ export const importBrewfatherJsonToCanonicalRecipe = (payload: unknown): Canonic
       source: "brewfather_json_beta",
       importedAt: new Date().toISOString(),
       importedFormulaPreference,
+      styleHint,
       importedStats: {
         og: readNumber(payload.og),
         fg: readNumber(payload.fg) ?? readNumber(payload.fgEstimated),

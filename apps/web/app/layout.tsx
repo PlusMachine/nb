@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import "./globals.css";
 import { Providers } from "../components/providers";
 import { DevGuestBadge } from "@/components/shared/dev-guest-badge";
-import { getSessionUser, isDevGuestPreview } from "@/lib/auth";
+import { getSessionUser, getDevAuthState } from "@/lib/auth";
 import { getServerEnv } from "@/lib/env";
 import { THEME_COOKIE, parseThemePreference, themeInitScript } from "@/features/theme/theme";
 
@@ -50,8 +50,8 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const [devGuest, cookieStore, sessionUser] = await Promise.all([
-    isDevGuestPreview(),
+  const [devAuth, cookieStore, sessionUser] = await Promise.all([
+    getDevAuthState(),
     cookies(),
     getSessionUser()
   ]);
@@ -72,7 +72,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <div className="flex min-h-screen flex-col">
             <div className="flex-1">{children}</div>
           </div>
-          <DevGuestBadge active={devGuest} />
+          <DevGuestBadge active={devAuth.isGuest} accounts={devAuth.accounts} activeEmail={devAuth.activeEmail} />
         </Providers>
       </body>
     </html>

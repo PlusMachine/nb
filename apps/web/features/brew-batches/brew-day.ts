@@ -71,6 +71,14 @@ const fmtDays = (days: number | null): string | null => (
   days == null || days <= 0 ? null : `${Math.round(days)} дн.`
 );
 
+// Ф17: N в dryHopPlan — это срок ЭКСПОЗИЦИИ (сколько держать добавку), а не «через
+// N дней». Отдельный хелпер, чтобы не путать с fmtDays, которая используется в
+// других местах с иной семантикой (например «Поставить на брожение» — там N дней
+// длится сама стадия).
+const fmtHoldDays = (days: number | null): string | null => (
+  days == null || days <= 0 ? null : `держать ${Math.round(days)} дн.`
+);
+
 // Ф9 «граммы как факт»: packEquivalent, замороженный в снапшоте (см.
 // buildTimedAddition, features/brew-batches/brew-plan.ts) — считывает граммовку
 // пачки дрожжей, если она была известна на момент старта варки. Старые снапшоты
@@ -473,12 +481,15 @@ export const buildBrewDaySteps = (snapshot: BrewPlanSnapshot): BrewDayStageGroup
     if (!isRecord(raw)) {
       return;
     }
+    const stepMeta = isRecord(raw.stepMeta) ? raw.stepMeta : null;
+    const isDryHop = readString(raw, "category") === "hop"
+      || (stepMeta ? readString(stepMeta, "useType") === "dry_hop" : false);
     fermentation.push({
       id: `ferment:add:${additionKey(raw, index)}`,
       stage: "fermentation",
       kind: "addition",
-      title: `Внести на брожении: ${additionName(raw)}`,
-      detail: joinDetail(fmtAmount(raw), fmtDays(readFermentationDurationDays(raw))),
+      title: isDryHop ? `Сухое охмеление: ${additionName(raw)}` : `Внести на брожении: ${additionName(raw)}`,
+      detail: joinDetail(fmtAmount(raw), fmtHoldDays(readFermentationDurationDays(raw))),
       durationSeconds: null,
       temperatureC: null
     });

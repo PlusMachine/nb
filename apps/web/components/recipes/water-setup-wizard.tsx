@@ -330,20 +330,20 @@ const waterAdditionTargetLabels: Record<
   RecipeWaterManualSaltAdditionTarget,
   string
 > = {
-  all: "Весь объем",
+  all: "Весь объём",
   mash: "Затор",
   sparge: "Промывка",
 };
 
 const waterWarningLabels: Record<string, string> = {
   water_split_below_batch_volume:
-    "Сумма заторной и промывочной воды меньше объема партии.",
+    "Сумма заторной и промывочной воды меньше объёма партии.",
   mash_water_volume_zero:
     "Заторная вода 0 л — задайте объём затора или добавьте засыпь.",
   source_profile_missing_or_zero:
     "Выберите исходную воду или введите профиль вручную.",
   target_profile_missing_or_zero: "Выберите целевой профиль воды.",
-  grain_bill_missing_for_mash_ph: "Для расчета pH нужна засыпь.",
+  grain_bill_missing_for_mash_ph: "Для расчёта pH нужна засыпь.",
   target_not_reached_within_max_acid:
     "Целевой pH не достигнут в лимите кислоты.",
   calcium_above_practical_range: "Ca выше практического диапазона.",
@@ -382,7 +382,7 @@ const buildEquipmentWarningLabel = (
         : null;
     case "mash_volume_limit_exceeded":
       return limits.maxMashVolumeL != null
-        ? `Воды в заторе больше, чем вмещает заторник (${formatL(limits.maxMashVolumeL)}). Часть уйдет в промывку.`
+        ? `Воды в заторе больше, чем вмещает заторник (${formatL(limits.maxMashVolumeL)}). Часть уйдёт в промывку.`
         : null;
     case "mash_below_min_volume":
       return limits.minMashVolumeL != null
@@ -390,7 +390,7 @@ const buildEquipmentWarningLabel = (
         : null;
     case "kettle_volume_limit_exceeded":
       return limits.maxKettleVolumeL != null
-        ? `Объем до кипячения не помещается в котел (${formatL(limits.maxKettleVolumeL)}). Уменьшите объем партии.`
+        ? `Объём до кипячения не помещается в котёл (${formatL(limits.maxKettleVolumeL)}). Уменьшите объём партии.`
         : null;
     default:
       return null;
@@ -1027,7 +1027,7 @@ const buildWaterSetupSummary = ({
   mashPhEnabled: boolean;
 }): string => {
   if (!waterPlanMeta.setupEnabled) {
-    return "источник, цель, объемы и pH";
+    return "источник, цель, объёмы и pH";
   }
 
   const hasTarget = Boolean(effectiveWaterPlanMeta.targetProfile);
@@ -2680,7 +2680,7 @@ export function WaterSetupWizard({
 
             <section className="space-y-3">
               <h3 className="text-sm font-semibold text-foreground">
-                3. Объем воды
+                3. Объём воды
               </h3>
               <label className="block text-xs font-medium text-muted-foreground">
                 Водопоглощение дробиной, л/кг
@@ -2721,7 +2721,7 @@ export function WaterSetupWizard({
                   className={`rounded-xl border px-4 py-3 text-left text-sm ${!isSplitVolume ? "border-foreground bg-foreground text-background" : "border-border bg-card text-foreground hover:bg-muted"}`}
                 >
                   <span className="block font-semibold">
-                    Считать одним объемом
+                    Считать одним объёмом
                   </span>
                   <span
                     className={`mt-1 block text-xs ${!isSplitVolume ? "text-background" : "text-muted-foreground"}`}
@@ -2855,7 +2855,7 @@ export function WaterSetupWizard({
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0">
                   <h3 className="text-sm font-semibold text-foreground">
-                    Расчет
+                    Расчёт
                   </h3>
                 </div>
                 <Button
@@ -2874,7 +2874,7 @@ export function WaterSetupWizard({
                 >
                   {hasAppliedWaterPlan
                     ? "Заменить добавки"
-                    : "Применить расчет"}
+                    : "Применить расчёт"}
                 </Button>
               </div>
 
@@ -2971,7 +2971,7 @@ export function WaterSetupWizard({
                       }
                       className="h-4 w-4 rounded border-border"
                     />
-                    Считать пищевую соду (NaHCO3) в авторасчете
+                    Считать пищевую соду (NaHCO3) в авторасчёте
                   </label>
                 ) : null}
                 {mashPhEnabled ? (

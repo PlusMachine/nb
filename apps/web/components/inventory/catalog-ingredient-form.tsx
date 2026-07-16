@@ -34,7 +34,10 @@ import {
   resolveFermentableQuickStartGroupLabel
 } from "@/features/ingredients/picker-quick-start";
 import { resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
-import { resolveIngredientTechnicalDataColorRangeEbc } from "@/features/ingredients/technical-fields";
+import {
+  resolveIngredientTechnicalDataColorRangeEbc,
+  resolveIngredientTechnicalDataHopAlphaAcidPct
+} from "@/features/ingredients/technical-fields";
 import { isWaterTreatmentAcidLike, readWaterTreatmentConcentrationPct } from "@/features/ingredients/water-treatment";
 import { inventoryFermentableSubtypeLabels } from "@/features/inventory/page-model";
 import type { InventoryPriceInputMode } from "@/features/inventory/purchase-cost";
@@ -399,11 +402,7 @@ export const resolveCatalogBatchOverrideDefaults = (
   }
 
   if (isHopTechnicalData(selected.technicalData)) {
-    const alphaAcidPct = readFiniteNumber(
-      selected.technicalData.alphaAcidPctTypical,
-      selected.technicalData.alphaAcidPctMax,
-      selected.technicalData.alphaAcidPctMin
-    );
+    const alphaAcidPct = resolveIngredientTechnicalDataHopAlphaAcidPct(selected.technicalData);
 
     return {
       kind: "hop",

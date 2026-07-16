@@ -767,6 +767,69 @@ describe("recipe service", () => {
     expect(preview.ibu).toBeGreaterThan(0);
   });
 
+  it("stepMeta.alphaAcidPct override takes priority over catalog alpha in IBU calc", async () => {
+    // uuid(102) в beforeEach — Cascade с attributes.alpha_acid_pct_typical: 6 (каталожная альфа 6%).
+    const buildPayload = (alphaAcidPct?: number) => ({
+      title: "Whirlpool alpha override",
+      batchSizeEnteredQuantity: 20,
+      batchSizeEnteredUnit: "l",
+      boilTimeMinutes: 60,
+      ingredients: [
+        { ingredientCatalogItemId: uuid(101), type: "malt", amountEnteredQuantity: 4, amountEnteredUnit: "kg", stage: "mash" },
+        {
+          ingredientCatalogItemId: uuid(102),
+          type: "hop",
+          category: "hop",
+          amountEnteredQuantity: 80,
+          amountEnteredUnit: "g",
+          stage: "whirlpool",
+          timeOffset: 20,
+          stepMeta: alphaAcidPct == null
+            ? { useType: "whirlpool", timeMinutes: 20, temperatureC: 85 }
+            : { useType: "whirlpool", timeMinutes: 20, temperatureC: 85, alphaAcidPct }
+        }
+      ]
+    });
+
+    const catalogPreview = await previewRecipeDraft("u1", buildPayload());
+    const overridePreview = await previewRecipeDraft("u1", buildPayload(12));
+
+    expect(catalogPreview.ibu).toBeGreaterThan(0);
+    expect(overridePreview.ibu).toBeGreaterThan(catalogPreview.ibu as number);
+  });
+
+  it("without stepMeta.alphaAcidPct override, catalog alpha is used for IBU", async () => {
+    const buildPayload = (alphaAcidPct?: number) => ({
+      title: "Whirlpool no override",
+      batchSizeEnteredQuantity: 20,
+      batchSizeEnteredUnit: "l",
+      boilTimeMinutes: 60,
+      ingredients: [
+        { ingredientCatalogItemId: uuid(101), type: "malt", amountEnteredQuantity: 4, amountEnteredUnit: "kg", stage: "mash" },
+        {
+          ingredientCatalogItemId: uuid(102),
+          type: "hop",
+          category: "hop",
+          amountEnteredQuantity: 80,
+          amountEnteredUnit: "g",
+          stage: "whirlpool",
+          timeOffset: 20,
+          stepMeta: alphaAcidPct == null
+            ? { useType: "whirlpool", timeMinutes: 20, temperatureC: 85 }
+            : { useType: "whirlpool", timeMinutes: 20, temperatureC: 85, alphaAcidPct }
+        }
+      ]
+    });
+
+    const noOverridePreview = await previewRecipeDraft("u1", buildPayload());
+    // Явный override, РАВНЫЙ каталожной альфе (6%), обязан дать тот же IBU, что и без override, —
+    // это подтверждает, что фолбэк на getIngredientAlphaAcidPercent действительно берёт каталожное значение.
+    const explicitCatalogValuePreview = await previewRecipeDraft("u1", buildPayload(6));
+
+    expect(noOverridePreview.ibu).toBeGreaterThan(0);
+    expect(noOverridePreview.ibu).toBe(explicitCatalogValuePreview.ibu);
+  });
+
   it("creates imported recipes with recipe-local ingredient snapshots", async () => {
     const recipe = await createRecipeFromCanonicalImport("u1", {
       title: "Imported custom taxonomy",

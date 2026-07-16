@@ -118,7 +118,7 @@ const resolveUploadFailureMessage = (message: string | undefined, status: number
   }
 
   if (status >= 500) {
-    return "Не удалось загрузить. Попробуйте еще раз.";
+    return "Не удалось загрузить. Попробуйте ещё раз.";
   }
 
   return "Не удалось загрузить";
@@ -333,7 +333,7 @@ export function RecipeImagesSection({
           ...nextUploadingItem,
           status: "failed",
           progress: 0,
-          errorMessage: "Не удалось загрузить. Попробуйте еще раз.",
+          errorMessage: "Не удалось загрузить. Попробуйте ещё раз.",
           canRetry: true
         }));
         resolve();

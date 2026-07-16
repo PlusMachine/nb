@@ -42,6 +42,15 @@ const mocks = vi.hoisted(() => ({
   // Движок аллокаций мокаем только для guard-теста «страницы редактора его не зовут»:
   // списание — операция варки, редактор в склад не ходит (B1).
   listRecipeStockCoverage: vi.fn(),
+  // Б3: стартовый источник модалки добавления зависит от того, есть ли что на складе
+  // по категории — страницы редактора должны прокинуть эти флаги в RecipeEditorPage.
+  getInventoryStockCategoryFlags: vi.fn(async () => ({
+    fermentable: false,
+    hop: false,
+    yeast: false,
+    consumable: false,
+    water_treatment: false
+  })),
   getNextDefaultRecipeTitle: vi.fn(async () => "Новый рецепт 7"),
   // Н5: подтверждение удаления обязано сказать, что будет с варками рецепта, —
   // число партий страница берёт из сервиса и прокидывает в редактор.
@@ -69,6 +78,9 @@ vi.mock("../features/recipe-images/service", () => ({
 vi.mock("../features/recipes/inventory-service", () => ({
   listRecipeStockCoverage: mocks.listRecipeStockCoverage
 }));
+vi.mock("../features/inventory/service", () => ({
+  getInventoryStockCategoryFlags: mocks.getInventoryStockCategoryFlags
+}));
 vi.mock("../features/equipment-profiles/service", () => ({
   listEquipmentProfiles: mocks.listEquipmentProfiles
 }));
@@ -91,6 +103,8 @@ describe("recipe editor pages wiring", () => {
     expect(mocks.listEquipmentProfiles).toHaveBeenCalledWith("u-1");
     // Число партий рецепта — для честного подтверждения удаления (Н5).
     expect(mocks.countRecipeBrewBatches).toHaveBeenCalledWith("u-1", "r-1");
+    // Б3: флаги «есть на складе» по категории — для стартового источника модалки добавления.
+    expect(mocks.getInventoryStockCategoryFlags).toHaveBeenCalledWith("u-1");
     expect(html).toContain("Название рецепта");
     expect(html).not.toContain("Ингредиенты со склада");
     expect(mocks.listRecipeStockCoverage).not.toHaveBeenCalled();
@@ -112,6 +126,7 @@ describe("recipe editor pages wiring", () => {
     expect(html).not.toContain("Ингредиенты со склада");
     expect(mocks.getNextDefaultRecipeTitle).toHaveBeenCalledWith("u-1");
     expect(mocks.listEquipmentProfiles).toHaveBeenCalledWith("u-1");
+    expect(mocks.getInventoryStockCategoryFlags).toHaveBeenCalledWith("u-1");
     expect(html).toContain("Новый рецепт 7");
     expect(mocks.listRecipeStockCoverage).not.toHaveBeenCalled();
   });
@@ -129,6 +144,7 @@ describe("recipe editor pages wiring", () => {
     expect(mocks.listRecipeImages).toHaveBeenCalledWith("r-1", "u-1");
     expect(mocks.listEquipmentProfiles).toHaveBeenCalledWith("u-1");
     expect(mocks.countRecipeBrewBatches).toHaveBeenCalledWith("u-1", "r-1");
+    expect(mocks.getInventoryStockCategoryFlags).toHaveBeenCalledWith("u-1");
     expect(html).toContain("Edit me");
   });
 

@@ -9,6 +9,7 @@ export {
   buildRecipeEditorResumeHref,
   buildRecipeDeleteConfirmDescription,
   createEmptyIngredient,
+  resolveInitialAddIngredientInventoryIntentMode,
   applyHopUseTypeChange,
   isAutoRecipeTitle,
   isRecipeDraftWorthPersisting,

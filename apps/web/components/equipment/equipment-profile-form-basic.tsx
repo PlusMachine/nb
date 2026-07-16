@@ -213,7 +213,7 @@ export function EquipmentProfileFormFields({
               className={equipmentFormInputClassName}
             />
           </label>
-          <NumberField name="targetBatchVolumeL" label="Типичный объем партии, л" value={values.targetBatchVolumeL} onChange={setNumberField} />
+          <NumberField name="targetBatchVolumeL" label="Типичный объём партии, л" value={values.targetBatchVolumeL} onChange={setNumberField} />
           <NumberField name="brewhouseEfficiencyPct" label="Эффективность, %" value={values.brewhouseEfficiencyPct} onChange={setNumberField} step={0.1} min={1} max={100} />
           <NumberField name="evaporationRateLPerHr" label="Испарение, л/ч" value={values.evaporationRateLPerHr} onChange={setNumberField} />
           <NumberField name="trubChillerLossL" label="Потери в котле / на чиллере, л" value={values.trubChillerLossL} onChange={setNumberField} />
@@ -223,15 +223,15 @@ export function EquipmentProfileFormFields({
       </section>
 
       <details className="border-t border-border pt-4">
-        <summary className="cursor-pointer text-sm font-semibold text-foreground">Еще параметры (опционально)</summary>
+        <summary className="cursor-pointer text-sm font-semibold text-foreground">Ещё параметры (опционально)</summary>
         <div className="mt-3 grid gap-3 md:grid-cols-3">
           <NumberField name="fermenterLossL" label="Потери в ферментере, л" value={values.fermenterLossL} onChange={setNumberField} />
           <NumberField name="coolingShrinkagePct" label="Усадка при охлаждении, %" value={values.coolingShrinkagePct} onChange={setNumberField} step={0.1} max={20} />
-          <NumberField name="mashTunDeadspaceL" label="Мертвый объем заторника, л" value={values.mashTunDeadspaceL} onChange={setNumberField} />
-          <NumberField name="minMashVolumeL" label="Мин. объем заторника, л (опц.)" value={values.minMashVolumeL} onChange={setNumberField} />
+          <NumberField name="mashTunDeadspaceL" label="Мёртвый объём заторника, л" value={values.mashTunDeadspaceL} onChange={setNumberField} />
+          <NumberField name="minMashVolumeL" label="Мин. объём заторника, л (опц.)" value={values.minMashVolumeL} onChange={setNumberField} />
           <NumberField name="maxGrainKg" label="Макс. засыпь, кг (опц.)" value={values.maxGrainKg} onChange={setNumberField} />
-          <NumberField name="maxMashVolumeL" label="Макс. объем заторника, л (опц.)" value={values.maxMashVolumeL} onChange={setNumberField} />
-          <NumberField name="maxKettleVolumeL" label="Макс. объем котла, л (опц)" value={values.maxKettleVolumeL} onChange={setNumberField} />
+          <NumberField name="maxMashVolumeL" label="Макс. объём заторника, л (опц.)" value={values.maxMashVolumeL} onChange={setNumberField} />
+          <NumberField name="maxKettleVolumeL" label="Макс. объём котла, л (опц)" value={values.maxKettleVolumeL} onChange={setNumberField} />
           <NumberField name="hopUtilizationFactor" label="Калибровка утилизации хмеля" value={values.hopUtilizationFactor} onChange={setNumberField} step={0.01} min={0.01} />
           <NumberField name="altitudeM" label="Высота над уровнем моря, м" value={values.altitudeM} onChange={setNumberField} step={1} min={-500} max={9000} />
           <label className="text-xs font-medium text-muted-foreground md:col-span-3">
@@ -240,7 +240,7 @@ export function EquipmentProfileFormFields({
               name="notes"
               value={values.notes}
               onChange={(event) => setValues((current) => ({ ...current, notes: event.target.value }))}
-              className="mt-1 min-h-20 w-full rounded-md border border-border bg-card px-2.5 py-2 text-sm text-foreground"
+              className="mt-1 min-h-32 w-full rounded-md border border-border bg-card px-2.5 py-2 text-sm leading-relaxed text-foreground"
             />
           </label>
         </div>

@@ -49,7 +49,7 @@ export type RecipeWaterAdditiveRow = {
 };
 
 const groupLabels: Record<AdditiveTarget, string> = {
-  all: "Весь объем",
+  all: "Весь объём",
   mash: "Затор",
   sparge: "Промывка",
 };

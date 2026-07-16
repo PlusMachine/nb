@@ -114,7 +114,7 @@ const mapError = (error: unknown): AddIngredientResult => {
       return { ok: false, message: "Единица измерения покупки не поддерживается." };
     }
     if (error.message === "DERIVED_CUSTOM_NAME_CONFLICT") {
-      return { ok: false, message: "Не удалось создать пользовательскую версию ингредиента. Попробуйте еще раз." };
+      return { ok: false, message: "Не удалось создать пользовательскую версию ингредиента. Попробуйте ещё раз." };
     }
     if (error.message === "INVALID_PURCHASE_LINK_URL") {
       return { ok: false, message: "Проверьте ссылки на покупку: одна из ссылок заполнена некорректно." };
@@ -128,7 +128,7 @@ const mapError = (error: unknown): AddIngredientResult => {
     if (error.message === "CUSTOM_INGREDIENT_QUOTA_REACHED") {
       return { ok: false, message: `Достигнут предел числа собственных ингредиентов (${CUSTOM_INGREDIENT_MAX_COUNT_PER_USER}). Удалите ненужные, чтобы создавать новые.` };
     }
-    return { ok: false, message: "Не удалось сохранить ингредиент. Попробуйте еще раз." };
+    return { ok: false, message: "Не удалось сохранить ингредиент. Попробуйте ещё раз." };
   }
 
   return { ok: false, message: "Произошла неизвестная ошибка." };
@@ -461,7 +461,7 @@ export const setInventoryItemEmptyAction = async (inventoryItemId: string): Prom
       return { ok: false, message: "Позиция не найдена или недоступна." };
     }
 
-    return { ok: false, message: "Не удалось обнулить остаток. Попробуйте еще раз." };
+    return { ok: false, message: "Не удалось обнулить остаток. Попробуйте ещё раз." };
   }
 };
 
@@ -477,7 +477,7 @@ export const deleteInventoryItemAction = async (inventoryItemId: string): Promis
       return { ok: false, message: "Позиция не найдена или уже недоступна." };
     }
 
-    return { ok: false, message: "Не удалось удалить ингредиент. Попробуйте еще раз." };
+    return { ok: false, message: "Не удалось удалить ингредиент. Попробуйте ещё раз." };
   }
 };
 

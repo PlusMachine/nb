@@ -2066,7 +2066,7 @@ export function CalculatorPageClient({ slug }: { slug: CalculatorSlug }) {
       // error.message из core — техническое сообщение на английском (имя JS-переменной);
       // пользователю показываем только понятный русский текст.
       return {
-        primary: { label: "Расчет недоступен", value: "—", helper: "Проверьте входные значения." },
+        primary: { label: "Расчёт недоступен", value: "—", helper: "Проверьте входные значения." },
         stats: [],
         warnings: [],
         links: []

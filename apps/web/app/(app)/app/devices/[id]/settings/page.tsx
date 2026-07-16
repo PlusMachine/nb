@@ -7,6 +7,7 @@ import { Card } from "@nb/ui";
 import { STAGE_NUM } from "@nb/brewforge-protocol";
 
 import { requireUser } from "@/lib/auth";
+import { canUseDevices } from "@/features/devices/access";
 import { getDeviceById, getLatestTelemetryBrief } from "@/features/devices/service";
 import { summarizeDeviceConnection } from "@/features/devices/connection";
 import { listDeviceProfiles } from "@/features/devices/profiles";
@@ -27,6 +28,10 @@ export default async function DeviceSettingsPage({
   params: Promise<{ id: string }>;
 }) {
   const user = await requireUser();
+  // Раздел устройств в разработке: в production доступен только админу.
+  if (!canUseDevices(user.role)) {
+    notFound();
+  }
   const { id } = await params;
 
   const device = await getDeviceById(user.id, id);

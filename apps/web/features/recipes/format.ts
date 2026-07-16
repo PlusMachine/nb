@@ -47,18 +47,13 @@ export const formatUpdatedLabel = (value: Date, now = new Date()) => (
 
 // --- Компактные форматтеры для карточки витрины /recipes --------------------
 
-const decimalFormatter = new Intl.NumberFormat("ru-RU", {
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1
-});
-
 const volumeFormatter = new Intl.NumberFormat("ru-RU", {
   maximumFractionDigits: 1
 });
 
-/** ABV в виде `6,2 %` (RU-запятая, 1 знак). `null → "—"`. */
+/** ABV в виде `6.2 %` (точка, 1 знак). `null → "—"`. */
 export const formatAbvShort = (value: number | null) => (
-  value == null ? "—" : `${decimalFormatter.format(value)} %`
+  value == null ? "—" : `${value.toFixed(1)} %`
 );
 
 /** IBU как целое число. `null → "—"`. */

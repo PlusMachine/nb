@@ -97,7 +97,7 @@ export const deleteEquipmentProfileAction = async (profileId: string): Promise<{
       return { ok: false, message: "Профиль не найден или уже удален." };
     }
 
-    return { ok: false, message: "Не удалось удалить профиль оборудования. Попробуйте еще раз." };
+    return { ok: false, message: "Не удалось удалить профиль оборудования. Попробуйте ещё раз." };
   }
 };
 

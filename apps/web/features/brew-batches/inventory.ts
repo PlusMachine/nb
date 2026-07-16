@@ -588,6 +588,50 @@ export const consumeBrewBatchInventory = async (
   return { ...view, substituteAvailableCount };
 };
 
+/** Итог опционального списания склада при старте варки («Сварить самому» /
+ *  «Сварить на автоматике») — доезжает до вызывающего экшена честно, без
+ *  глотания ошибок. hasSubstitutes (Ф2) — на складе есть кандидаты на замену,
+ *  которые списание при старте не подставляет само (exact-only): точный
+ *  подбор не хватает/не находит позицию, но по match-group есть чем закрыть. */
+export type StartBrewConsumeResult =
+  | { ok: true; itemCount: number; hasSubstitutes?: boolean }
+  | {
+    ok: false;
+    code: "already_consumed" | "insufficient_stock" | "recipe_unavailable" | "nothing_to_consume" | "error";
+    hasSubstitutes?: boolean;
+  };
+
+const startBrewConsumeErrorCodeByMessage: Record<string, StartBrewConsumeResult & { ok: false }> = {
+  ALREADY_CONSUMED: { ok: false, code: "already_consumed" },
+  INSUFFICIENT_STOCK: { ok: false, code: "insufficient_stock" },
+  RECIPE_UNAVAILABLE: { ok: false, code: "recipe_unavailable" }
+};
+
+/**
+ * Опциональное списание склада при старте варки (единый вход «Сварить», обе
+ * ветки — «Сварить самому» и «Сварить на автоматике»): партия уже создана,
+ * здесь только exact-only списание её состава. Провал списания — честная
+ * ошибка отдельным полем, не глотается: партия при этом уже существует
+ * независимо от исхода списания.
+ */
+export const consumeBrewBatchInventoryForStart = async (
+  userId: string,
+  brewBatchId: string
+): Promise<StartBrewConsumeResult> => {
+  try {
+    const view = await consumeBrewBatchInventory(userId, brewBatchId);
+    // Списание отработало без ошибки, но склад не тронуло: ни одна строка
+    // рецепта не сопоставилась со складской позицией. Пользователь просил
+    // списать — молчать об этом («Списано: 0 поз.» бодрым тоном) нельзя.
+    return view.consumed.length > 0
+      ? { ok: true, itemCount: view.consumed.length, hasSubstitutes: view.substituteAvailableCount > 0 }
+      : { ok: false, code: "nothing_to_consume", hasSubstitutes: view.substituteAvailableCount > 0 };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "";
+    return startBrewConsumeErrorCodeByMessage[message] ?? { ok: false, code: "error" };
+  }
+};
+
 /**
  * Вернуть списанное этой партией на склад (откат при отмене/по кнопке). Реверс
  * нетто-списания: каждой позиции добавляем недостающее, пишем компенсирующую

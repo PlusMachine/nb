@@ -440,7 +440,16 @@ describe("ingestRaptWebhook — дедуп (deviceId, ts)", () => {
 
 describe("ingestRaptWebhook — денормализация сеанса", () => {
   it("активный сеанс устройства денормализуется в sessionId показания", async () => {
-    const first = await ingestRaptWebhook({ rawToken: TOKEN, body: raptPayload(), clientIp: null });
+    // receivedAt пинуем: без него берётся реальное «сейчас», и когда оно уходит
+    // за ±48ч от захардкоженного ts payload'а (2026-07-14), правило «ts вне окна →
+    // receivedAt» переписывает ts первого показания на now, ломая порядок со
+    // вторым (фиксированным) пакетом. Пин делает тест независимым от даты прогона.
+    const first = await ingestRaptWebhook({
+      rawToken: TOKEN,
+      body: raptPayload(),
+      clientIp: null,
+      receivedAt: new Date("2026-07-14T12:00:00Z")
+    });
     expect(first).toMatchObject({ kind: "stored" });
     const deviceId = store.devices[0]!.id as string;
     store.sessions.push({ id: "session-1", deviceId, endedAt: null });
@@ -458,7 +467,16 @@ describe("ingestRaptWebhook — денормализация сеанса", () =
 
 describe("ingestRaptWebhook — вызов processIngestAlerts (F6/M5-A)", () => {
   it("вызывается ПОСЛЕ успешной записи, с sessionId активного сеанса", async () => {
-    const first = await ingestRaptWebhook({ rawToken: TOKEN, body: raptPayload(), clientIp: null });
+    // receivedAt пинуем: без него берётся реальное «сейчас», и когда оно уходит
+    // за ±48ч от захардкоженного ts payload'а (2026-07-14), правило «ts вне окна →
+    // receivedAt» переписывает ts первого показания на now, ломая порядок со
+    // вторым (фиксированным) пакетом. Пин делает тест независимым от даты прогона.
+    const first = await ingestRaptWebhook({
+      rawToken: TOKEN,
+      body: raptPayload(),
+      clientIp: null,
+      receivedAt: new Date("2026-07-14T12:00:00Z")
+    });
     expect(first).toMatchObject({ kind: "stored" });
     const deviceId = store.devices[0]!.id as string;
     store.sessions.push({ id: "session-1", deviceId, endedAt: null });

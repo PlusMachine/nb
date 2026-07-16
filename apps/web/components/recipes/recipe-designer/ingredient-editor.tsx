@@ -42,9 +42,11 @@ import {
   clearRecipeIngredientSelection,
   applyRecipeIngredientCategoryContextChange,
   buildSelectedIngredientPreview,
+  formatEquipmentProfileRecipeValue,
   getHopUseType,
   getSectionTitle,
   isImportedDesignerIngredient,
+  resolveHopCatalogAlphaAcidPct,
   searchStockIngredientsForRecipe,
   searchRecipeWaterAddFlowCatalogIngredients,
   type RecipeIngredientEditorSourceMode,
@@ -90,6 +92,7 @@ export function IngredientEditor({
   const isHop = draft.category === "hop";
   const isWaterTreatmentAddFlow = !isExisting && draft.category === "water_treatment";
   const hopUseType = getHopUseType(draft);
+  const catalogAlphaAcidPct = isHop ? resolveHopCatalogAlphaAcidPct(draft.technicalData) : null;
   const quantityStep = getInventoryUnitInputStep(draft.amountEnteredUnit);
   const hasIngredientSelection = Boolean(
     draft.ingredientCatalogItemId || draft.userCustomIngredientId || isImportedDesignerIngredient(draft)
@@ -492,6 +495,10 @@ export function IngredientEditor({
                   forcedGroup={forcedRecipeIngredientGroup}
                   hideForcedGroupChip
                   onForcedGroupClear={forcedFermentableGroup ? () => handleFermentableScopeChange(null) : undefined}
+                  // Б5: одноимённые записи каталога от разных производителей —
+                  // схлопнуть в одну строку со счётчиком. Складские позиции
+                  // (партии) группировать нельзя — там group=false.
+                  groupSameNamed={sourceMode !== "use_stock"}
                   value={draft.selectedName}
                   onValueChange={(value) => onChange(applyQueryChange(draft, value))}
                   onSelect={(item) => {
@@ -632,6 +639,27 @@ export function IngredientEditor({
                     {recipeHopUseTypeUiOrder.map((useType) => <option key={useType} value={useType}>{hopUseTypeLabels[useType]}</option>)}
                   </select>
                 </label>
+
+                {hasIngredientSelection ? (
+                  <label className="space-y-1 text-xs font-medium text-foreground">
+                    Альфа, %
+                    <NumericInput
+                      min={0}
+                      max={30}
+                      step={0.1}
+                      value={draft.stepMeta.alphaAcidPct ?? ""}
+                      onChange={(event) => onChange({
+                        ...draft,
+                        stepMeta: {
+                          ...draft.stepMeta,
+                          alphaAcidPct: event.target.value
+                        }
+                      })}
+                      placeholder={catalogAlphaAcidPct != null ? formatEquipmentProfileRecipeValue(catalogAlphaAcidPct) : undefined}
+                      className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/10"
+                    />
+                  </label>
+                ) : null}
 
                 {(hopUseType === "boil" || hopUseType === "whirlpool" || hopUseType === "dip_hop") ? (
                   <label className="space-y-1 text-xs font-medium text-foreground">

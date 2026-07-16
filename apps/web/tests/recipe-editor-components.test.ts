@@ -21,6 +21,7 @@ import {
   applyHopUseTypeChange,
   buildRecipeDeleteConfirmDescription,
   createEmptyIngredient,
+  resolveInitialAddIngredientInventoryIntentMode,
   isAutoRecipeTitle,
   isRecipeDraftWorthPersisting,
   resolveRecipeFermentablePickerScopeContext,
@@ -72,6 +73,21 @@ vi.mock("../app/(app)/app/recipes/actions", () => ({
   importBeerXmlRecipeAction: vi.fn(),
   importBrewfatherJsonRecipeAction: vi.fn(),
   proposeRecipeIngredientAction: vi.fn()
+}));
+
+// new/page.tsx и [id]/edit/page.tsx (импортированы ниже только чтобы проверить их
+// тип — см. "renders without crashing") теперь зовут getInventoryStockCategoryFlags
+// (Б3) на верхнем уровне модуля страницы. Реальный features/inventory/service.ts
+// тянет server-only (через currency-rates.ts), которого нет в графе резолва
+// vitest, — мокаем модуль целиком, как и остальные сервисы страниц выше.
+vi.mock("../features/inventory/service", () => ({
+  getInventoryStockCategoryFlags: vi.fn(async () => ({
+    fermentable: false,
+    hop: false,
+    yeast: false,
+    consumable: false,
+    water_treatment: false
+  }))
 }));
 
 const buildRow = (overrides: Partial<Parameters<typeof getRecipeIngredientValidationError>[0]> = {}) => ({
@@ -842,6 +858,23 @@ describe("recipe editor components", () => {
     expect(applyHopUseTypeChange(dryHop, "boil").stepMeta.timeMinutes).toBe("60");
   });
 
+  // Б3: пустой склад по категории → модалка добавления стартует с «Из каталога»,
+  // непустой склад → прежнее «Из склада». Водоподготовка — всегда каталог,
+  // независимо от склада (соли на складе не заводят).
+  it("выбирает стартовый источник модалки добавления по наличию на складе", () => {
+    expect(resolveInitialAddIngredientInventoryIntentMode("fermentable", false)).toBe("catalog");
+    expect(resolveInitialAddIngredientInventoryIntentMode("fermentable", true)).toBe("use_stock");
+    expect(resolveInitialAddIngredientInventoryIntentMode("hop", false)).toBe("catalog");
+    expect(resolveInitialAddIngredientInventoryIntentMode("hop", true)).toBe("use_stock");
+    expect(resolveInitialAddIngredientInventoryIntentMode("yeast", false)).toBe("catalog");
+    expect(resolveInitialAddIngredientInventoryIntentMode("yeast", true)).toBe("use_stock");
+    expect(resolveInitialAddIngredientInventoryIntentMode("consumable", false)).toBe("catalog");
+    expect(resolveInitialAddIngredientInventoryIntentMode("consumable", true)).toBe("use_stock");
+    // Водоподготовка — всегда каталог, даже если на складе есть соли.
+    expect(resolveInitialAddIngredientInventoryIntentMode("water_treatment", false)).toBe("catalog");
+    expect(resolveInitialAddIngredientInventoryIntentMode("water_treatment", true)).toBe("catalog");
+  });
+
   it("renders manually added water treatments with the water-additive card style", () => {
     const html = renderDesignerMarkup({
       mode: "edit",
@@ -1009,12 +1042,27 @@ describe("recipe editor components", () => {
       preferredGravityUnit: "plato"
     });
 
-    expect(html).toContain("<span>Ваш рецепт и </span>");
+    expect(html).toContain(">Попадание в стиль</h2>");
     expect(html).toContain('href="/bjcp/bjcp-1a-american-light-lager"');
     expect(html).toContain(">BJCP Американский лёгкий лагер</span>");
-    expect(html).not.toContain(">Ваш рецепт и BJCP Американский лёгкий лагер</span>");
+    expect(html).not.toContain("Ваш рецепт и");
     expect(html).not.toContain("BJCP 1A · Описание стиля");
     expect(html).not.toContain("Открыть стиль в справочнике");
+  });
+
+  it("keeps the stats heading short and the long BJCP style name on its own truncated row", () => {
+    const html = renderDesignerMarkup({
+      mode: "edit",
+      initialRecipe: buildRecipeDetail({
+        styleId: "1A"
+      }),
+      preferredGravityUnit: "plato"
+    });
+
+    expect(html).toContain(">Попадание в стиль</h2>");
+    // Длинное имя стиля не должно приводить к переносу/обрезке заголовка — оно вынесено отдельной строкой.
+    expect(html).toContain(">BJCP Американский лёгкий лагер</span>");
+    expect(html).not.toContain("Ваш рецепт и");
   });
 
   it("builds publication readiness checklist for publish action", () => {

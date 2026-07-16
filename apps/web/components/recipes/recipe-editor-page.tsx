@@ -3,7 +3,7 @@
 import React, { useCallback, useState } from "react";
 
 import type { EquipmentProfileDto } from "@/features/equipment-profiles/contracts";
-import type { IngredientSuggestionItem } from "@/features/ingredients/contracts";
+import type { IngredientCategory, IngredientSuggestionItem } from "@/features/ingredients/contracts";
 import type { RecipeImageDto } from "@/features/recipe-images/contracts";
 import type { RecipeDetailDto, RecipePublicationState } from "@/features/recipes/contracts";
 import type { PreferredGravityUnit } from "@/features/system/gravity-units";
@@ -21,6 +21,7 @@ export function RecipeEditorPage({
   initialImages = [],
   equipmentProfiles = [],
   brewBatchCount = 0,
+  inventoryStockByCategory,
   preferredGravityUnit
 }: {
   mode: "create" | "edit";
@@ -31,6 +32,8 @@ export function RecipeEditorPage({
   initialImages?: RecipeImageDto[];
   equipmentProfiles?: EquipmentProfileDto[];
   brewBatchCount?: number;
+  /** Есть ли на складе хоть одна позиция по категории (Б3) — решает стартовый источник модалки добавления. */
+  inventoryStockByCategory?: Partial<Record<IngredientCategory, boolean>>;
   preferredGravityUnit: PreferredGravityUnit;
 }) {
   const [, setSaveStatus] = useState<RecipeSaveStatus>("saved");
@@ -60,6 +63,7 @@ export function RecipeEditorPage({
         initialImages={initialImages}
         equipmentProfiles={equipmentProfiles}
         brewBatchCount={brewBatchCount}
+        inventoryStockByCategory={inventoryStockByCategory}
         onSaveStatusChange={setSaveStatus}
         onRecipeCreated={handleRecipeCreated}
         onPublicationStateChange={setPublicationState}

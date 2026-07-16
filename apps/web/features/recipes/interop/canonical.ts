@@ -50,6 +50,19 @@ const asCustomYeastForm = (value?: string | null): CustomYeastForm | null => (
   value && customYeastForms.has(value as CustomYeastForm) ? value as CustomYeastForm : null
 );
 
+// Override альфы под конкретную позицию рецепта (recipe_ingredients.stepMeta.alphaAcidPct) —
+// stepMeta это passthrough-JSON, читаем его локально, не тянем readNumberMeta из service.ts.
+const readHopAlphaAcidPctOverride = (
+  category: IngredientCategory | null | undefined,
+  stepMeta: Record<string, unknown> | null
+): number | null => {
+  if (category !== "hop" || !stepMeta) {
+    return null;
+  }
+  const value = stepMeta.alphaAcidPct;
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+};
+
 const mapRecipeIngredientToCanonical = (
   ingredient: RecipeDetailDto["ingredients"][number]
 ): CanonicalRecipeIngredient => {
@@ -57,6 +70,7 @@ const mapRecipeIngredientToCanonical = (
     type: ingredient.type,
     technicalData: ingredient.ingredientTechnicalData ?? undefined
   });
+  const hopAlphaAcidPctOverride = readHopAlphaAcidPctOverride(ingredient.ingredientCategory, ingredient.stepMeta);
 
   return {
     name: ingredient.ingredientDisplayName ?? ingredient.ingredientDisplayNameSnapshot ?? "Ingredient",
@@ -69,7 +83,7 @@ const mapRecipeIngredientToCanonical = (
     stepMeta: ingredient.stepMeta,
     fermentableColorEbc: lovibondToEbc(technicalFields.fermentableColorLovibond),
     fermentableExtractYieldPct: technicalFields.fermentableExtractYieldPct ?? null,
-    hopAlphaAcidPct: technicalFields.hopAlphaAcidPct ?? null,
+    hopAlphaAcidPct: hopAlphaAcidPctOverride ?? technicalFields.hopAlphaAcidPct ?? null,
     hopForm: asCustomHopForm(technicalFields.hopForm),
     yeastAttenuationPct: technicalFields.yeastAttenuationPct ?? null,
     yeastForm: asCustomYeastForm(technicalFields.yeastForm),

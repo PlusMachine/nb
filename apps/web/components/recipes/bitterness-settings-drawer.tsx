@@ -29,7 +29,7 @@ export function BitternessSettingsDrawer({
       onOpenChange={(next) => {
         if (!next) onClose();
       }}
-      title="Настройки расчета горечи"
+      title="Настройки расчёта горечи"
       hideTitle
       size="lg"
     >
@@ -40,8 +40,8 @@ export function BitternessSettingsDrawer({
               <Settings className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-base font-semibold text-foreground">Настройки расчета горечи</h3>
-              <p className="mt-1 text-sm leading-6 text-muted-foreground">По умолчанию используется Tinseth с учетом whirlpool и плотности на момент добавления.</p>
+              <h3 className="text-base font-semibold text-foreground">Настройки расчёта горечи</h3>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">По умолчанию используется Tinseth с учётом whirlpool и плотности на момент добавления.</p>
             </div>
           </div>
           <DialogCloseButton />
@@ -95,7 +95,7 @@ export function BitternessSettingsDrawer({
             />
             <span>
               <span className="block font-medium text-foreground">Учитывать carryover позднего хмеля</span>
-              <span className="text-xs text-muted-foreground">Практическая оценка для хмеля, который попал в котел незадолго до flameout.</span>
+              <span className="text-xs text-muted-foreground">Практическая оценка для хмеля, который попал в котёл незадолго до flameout.</span>
             </span>
           </label>
 

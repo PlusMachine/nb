@@ -20,6 +20,7 @@ import type { FermentStep } from "@nb/brewforge-protocol";
 
 import type { TelemetryHistoryPoint } from "@/features/brew-batches/contracts";
 import { telemetryEndpoints, type TelemetrySource } from "@/features/brew-controller/telemetry-source";
+import { isFermenterModeRow } from "@/features/devices/fermenter-binding-core";
 
 const VB_W = 800;
 const VB_H = 280;
@@ -116,10 +117,15 @@ export function FermentHistoryChart({ source, hasDevice, initial, planSteps, win
   }, [historyUrl, hasDevice, windowDays]);
 
   const geom = useMemo(() => {
-    if (points.length === 0 && planSteps.length === 0) return null;
+    // Одна таблица телеметрии несёт кадры всех этапов партии (затирка/кипячение/
+    // охлаждение/брожение) — графику нужны только ferment-кадры, иначе шкала и
+    // день-0 сбиваются варочной телеметрией (60-70°C затирки, время до старта
+    // брожения).
+    const fermentPoints = points.filter((p) => isFermenterModeRow(p.appMode ?? null, p.stage));
+    if (fermentPoints.length === 0 && planSteps.length === 0) return null;
 
-    const originMs = points.length > 0 ? points[0]!.ts : Date.now();
-    const historyMaxDay = points.length > 0 ? (points[points.length - 1]!.ts - originMs) / DAY_MS : 0;
+    const originMs = fermentPoints.length > 0 ? fermentPoints[0]!.ts : Date.now();
+    const historyMaxDay = fermentPoints.length > 0 ? (fermentPoints[fermentPoints.length - 1]!.ts - originMs) / DAY_MS : 0;
     const planKnownDays = planSteps.reduce((sum, s) => sum + (s.hours > 0 ? s.hours / 24 : 0), 0);
     const hasOpenStep = planSteps.some((s) => s.hours === 0);
     const xMaxDays = Math.max(
@@ -131,7 +137,7 @@ export function FermentHistoryChart({ source, hasDevice, initial, planSteps, win
     const planPoints = buildPlanPoints(planSteps, xMaxDays);
     const tempValues = [
       ...planPoints.map((p) => p.tempC),
-      ...points.flatMap((p) => [p.primaryC, p.setpointC]).filter((v): v is number => v !== null),
+      ...fermentPoints.flatMap((p) => [p.primaryC, p.setpointC]).filter((v): v is number => v !== null),
     ];
     const temp = niceBounds(tempValues);
     const tempSpan = temp.max - temp.min || 1;
@@ -144,7 +150,7 @@ export function FermentHistoryChart({ source, hasDevice, initial, planSteps, win
     // Факт — разрыв на пропуск данных (null), без интерполяции (§12.1).
     let factPath = "";
     let pen = false;
-    for (const p of points) {
+    for (const p of fermentPoints) {
       const dayOfPoint = (p.ts - originMs) / DAY_MS;
       if (p.primaryC === null || !Number.isFinite(p.primaryC)) {
         pen = false;
@@ -157,7 +163,7 @@ export function FermentHistoryChart({ source, hasDevice, initial, planSteps, win
     const tempTicks = [temp.min, (temp.min + temp.max) / 2, temp.max].map((v) => ({ v, y: y(v) }));
     const dayTicks = Array.from({ length: 4 }, (_, i) => (xMaxDays / 3) * i);
 
-    return { xMaxDays, planPath, factPath, tempTicks, dayTicks, x, hasFact: points.some((p) => p.primaryC !== null) };
+    return { xMaxDays, planPath, factPath, tempTicks, dayTicks, x, hasFact: fermentPoints.some((p) => p.primaryC !== null) };
   }, [points, planSteps]);
 
   if (!hasDevice) return null;
@@ -172,7 +178,7 @@ export function FermentHistoryChart({ source, hasDevice, initial, planSteps, win
         </div>
       </div>
 
-      {!geom || !geom.hasFact ? (
+      {!geom ? (
         <div className="mt-3 flex h-32 items-center justify-center rounded-lg bg-card text-sm text-muted-foreground">
           истории пока нет
         </div>
@@ -195,7 +201,9 @@ export function FermentHistoryChart({ source, hasDevice, initial, planSteps, win
             {geom.planPath ? (
               <path d={geom.planPath} fill="none" stroke="hsl(var(--chart-setpoint))" strokeWidth={2} strokeDasharray="5 4" />
             ) : null}
-            <path d={geom.factPath} fill="none" stroke="hsl(var(--chart-temp))" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+            {geom.hasFact ? (
+              <path d={geom.factPath} fill="none" stroke="hsl(var(--chart-temp))" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+            ) : null}
           </svg>
 
           {geom.tempTicks.map((t, i) => (

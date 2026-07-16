@@ -62,7 +62,7 @@ export function FermenterPanel({ brewBatchId, status, deviceName, candidates, fr
       {status.kind === "mode-mismatch" ? (
         <p className="flex items-center gap-2 rounded-lg bg-warning-subtle px-3 py-2 text-sm font-medium text-warning-subtle-foreground">
           <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden />
-          Прибор больше не в режиме ферментации
+          Прибор не в режиме ферментации
         </p>
       ) : null}
 

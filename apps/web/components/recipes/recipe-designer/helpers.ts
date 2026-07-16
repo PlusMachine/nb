@@ -34,6 +34,7 @@ import {
 } from "@/features/ingredients/consumables";
 import { resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
 import { resolveIngredientCategory, resolveLegacyIngredientType } from "@/features/ingredients/taxonomy";
+import { resolveIngredientTechnicalDataHopAlphaAcidPct } from "@/features/ingredients/technical-fields";
 import { fermentableUseLabels, hopUseTypeLabels } from "@/features/recipes/ingredient-labels";
 import {
   formatInventoryQuantityInputValue,
@@ -297,6 +298,7 @@ export type DesignerIngredient = {
     durationDays?: string;
     fermentationTempC?: string;
     stageLabel?: string;
+    alphaAcidPct?: string;
   };
   inventoryIntentMode: RecipeInventoryIntentMode;
   inventorySelectionMeta: RecipeInventorySelectionMeta | null;
@@ -658,6 +660,21 @@ export const toOptionalNumber = (value: string) => {
   return trimmed ? Number(trimmed) : null;
 };
 
+// toOptionalNumber не проверяет isFinite (мусорная строка даёт NaN) — override альфы
+// хмеля нельзя писать в payload, не убедившись, что это конечное число.
+const toFiniteOptionalNumber = (value: string) => {
+  const parsed = toOptionalNumber(value);
+  return typeof parsed === "number" && Number.isFinite(parsed) ? parsed : null;
+};
+
+// Каталожная эффективная альфа позиции хмеля — резолвер общий с остальным кодом
+// (features/ingredients/technical-fields.ts, typical ?? середина(min,max) ?? max ?? min);
+// модуль клиент-совместимый (не тянет @nb/db), поэтому его можно импортировать
+// напрямую вместо локального дубля.
+export const resolveHopCatalogAlphaAcidPct = (
+  technicalData: IngredientTechnicalData | null | undefined
+): number | null => resolveIngredientTechnicalDataHopAlphaAcidPct(technicalData);
+
 export const normalizeSavePayload = (payload: RecipeEditorPayload): RecipeEditorPayload => ({
   ...payload,
   batchSizeEnteredUnit: payload.batchSizeEnteredUnit || DEFAULT_BATCH_SIZE_ENTERED_UNIT
@@ -958,6 +975,24 @@ export const createEmptyIngredient = (
 };
 
 /**
+ * Стартовый источник для модалки добавления новой позиции (Б3): пустой склад
+ * по категории — не с чего стартовать «со склада», сразу открываем каталог.
+ * Водоподготовка — всегда каталог (соли на складе не заводят). Склад непуст —
+ * прежнее поведение (склад-first). Переключатель источника руками не трогаем —
+ * это только про то, с чего открывается модалка.
+ */
+export const resolveInitialAddIngredientInventoryIntentMode = (
+  category: IngredientCategory,
+  hasStockInCategory: boolean
+): Extract<RecipeInventoryIntentMode, "use_stock" | "catalog"> => {
+  if (category === "water_treatment") {
+    return "catalog";
+  }
+
+  return hasStockInCategory ? "use_stock" : "catalog";
+};
+
+/**
  * Смена типа добавления хмеля. При переходе на «Кипячение» подставляет видимый
  * дефолт «мин» — время кипячения рецепта: ровно то число, которое иначе молча
  * подставил бы расчёт IBU (createEmptyIngredient делает так же при создании
@@ -984,6 +1019,43 @@ export const applyHopUseTypeChange = (
   };
 };
 
+// Альфа — атрибут сорта, не рецепта: при смене хмеля на другой старый override не должен
+// приклеиваться к новому сорту. Исключение — импортированная позиция (Brewfather/BeerXML):
+// если файл принёс свою альфу и она отличается от каталожной, переносим её как override,
+// чтобы сопоставление с каталогом не тихо съедало данные из импорта.
+const resolveNextHopAlphaAcidPctOnSelection = (
+  current: DesignerIngredient,
+  item: IngredientSuggestionItem,
+  nextCategory: IngredientCategory,
+  ingredientChanged: boolean
+): string | undefined => {
+  if (!ingredientChanged) {
+    return current.stepMeta.alphaAcidPct;
+  }
+
+  if (nextCategory !== "hop") {
+    return "";
+  }
+
+  const importedSnapshot = readImportedDesignerIngredientSnapshot(current);
+  if (!importedSnapshot || importedSnapshot.category !== "hop") {
+    return "";
+  }
+
+  const importedAlphaAcidPct = resolveHopCatalogAlphaAcidPct(importedSnapshot.technicalData ?? null);
+  const catalogAlphaAcidPct = resolveHopCatalogAlphaAcidPct(item.technicalData ?? null);
+  if (
+    importedAlphaAcidPct != null
+    && importedAlphaAcidPct > 0
+    && importedAlphaAcidPct <= 30
+    && importedAlphaAcidPct !== catalogAlphaAcidPct
+  ) {
+    return String(importedAlphaAcidPct);
+  }
+
+  return "";
+};
+
 export const applySelection = (current: DesignerIngredient, item: IngredientSuggestionItem): DesignerIngredient => {
   const nextCategory = item.category ?? current.category;
   const unitProfile = resolveHumanFacingInventoryUnitProfile({
@@ -1003,11 +1075,20 @@ export const applySelection = (current: DesignerIngredient, item: IngredientSugg
       ? current.stage
       : resolveRecipeConsumableDefaultStage(item.technicalData ?? null)
     : current.stage;
+  const nextIngredientCatalogItemId = item.source === "catalog" ? item.id : null;
+  const nextUserCustomIngredientId = item.source === "custom" ? item.id : null;
+  const ingredientChanged = nextIngredientCatalogItemId !== current.ingredientCatalogItemId
+    || nextUserCustomIngredientId !== current.userCustomIngredientId;
+  const nextAlphaAcidPct = resolveNextHopAlphaAcidPctOnSelection(current, item, nextCategory, ingredientChanged);
 
   return {
     ...current,
-    ingredientCatalogItemId: item.source === "catalog" ? item.id : null,
-    userCustomIngredientId: item.source === "custom" ? item.id : null,
+    ingredientCatalogItemId: nextIngredientCatalogItemId,
+    userCustomIngredientId: nextUserCustomIngredientId,
+    stepMeta: {
+      ...current.stepMeta,
+      alphaAcidPct: nextAlphaAcidPct
+    },
     selectedName: primaryName,
     selectedSecondaryName: secondaryName ?? "",
     selectedSummary: item.subtitle ?? "",
@@ -1028,6 +1109,13 @@ export const applySelection = (current: DesignerIngredient, item: IngredientSugg
     allowedUnits: unitProfile.allowedUnits,
     measurementDimension: unitProfile.measurementDimension,
     amountEnteredUnit: unitProfile.defaultUnit,
+    // Б6: единица «пачка» (дрожжи) — количество на расчёты рецепта не влияет, но
+    // без него позиция не сохраняется («Укажите количество больше нуля»). Пустое
+    // поле подставляем видимым дефолтом «1 пачка»; уже введённое пользователем
+    // количество не перетираем.
+    amountEnteredQuantity: unitProfile.defaultUnit === "pack" && !current.amountEnteredQuantity.trim()
+      ? "1"
+      : current.amountEnteredQuantity,
     stage: nextStage,
     inventoryIntentMode: item.inventoryItemId ? "use_stock" : item.source === "custom" ? "custom" : "catalog",
     inventorySelectionMeta: item.inventoryItemId
@@ -1221,6 +1309,20 @@ export const buildIngredientPayload = (ingredient: DesignerIngredient): RecipeEd
 
   if (ingredient.category === "hop") {
     stepMeta.useType = getHopUseType(ingredient);
+
+    // Не храним «замороженный» override, равный каталожному значению, — при обновлении
+    // каталога он бы начал врать. Пишем только конечное число в разумных пределах и
+    // только если оно реально отличается от эффективной альфы позиции.
+    const alphaAcidPct = toFiniteOptionalNumber(ingredient.stepMeta.alphaAcidPct ?? "");
+    const catalogAlphaAcidPct = resolveHopCatalogAlphaAcidPct(ingredient.technicalData);
+    if (
+      alphaAcidPct != null
+      && alphaAcidPct > 0
+      && alphaAcidPct <= 30
+      && alphaAcidPct !== catalogAlphaAcidPct
+    ) {
+      stepMeta.alphaAcidPct = alphaAcidPct;
+    }
   }
 
   if (timeMinutes != null) {
@@ -1326,7 +1428,8 @@ export const toDesignerIngredient = (ingredient: RecipeDetailDto["ingredients"][
       temperatureC: typeof stepMeta.temperatureC === "number" ? String(stepMeta.temperatureC) : "",
       durationDays: typeof stepMeta.durationDays === "number" ? String(stepMeta.durationDays) : "",
       fermentationTempC: typeof stepMeta.fermentationTempC === "number" ? String(stepMeta.fermentationTempC) : "",
-      stageLabel: typeof stepMeta.stageLabel === "string" ? stepMeta.stageLabel : ""
+      stageLabel: typeof stepMeta.stageLabel === "string" ? stepMeta.stageLabel : "",
+      alphaAcidPct: typeof stepMeta.alphaAcidPct === "number" ? String(stepMeta.alphaAcidPct) : ""
     },
     inventoryIntentMode: ingredient.inventoryIntentMode ?? "catalog",
     inventorySelectionMeta: ingredient.inventorySelectionMeta ?? null,
@@ -1516,19 +1619,34 @@ export const buildSummaryDetails = (ingredient: DesignerIngredient) => {
 
 export const getQuantityText = (ingredient: DesignerIngredient) => `${ingredient.amountEnteredQuantity || "—"} ${inventoryUnitLabels[ingredient.amountEnteredUnit] ?? ingredient.amountEnteredUnit}`;
 
-export const buildDesignerIngredientCardSource = (ingredient: DesignerIngredient): RecipeIngredientCardSource => ({
-  type: ingredient.type,
-  category: ingredient.category,
-  subtype: ingredient.subtype,
-  brand: ingredient.brand,
-  producer: ingredient.producer,
-  brandName: ingredient.brandName,
-  manufacturer: ingredient.manufacturer,
-  countryCode: ingredient.countryCode,
-  countryName: ingredient.countryName,
-  country: ingredient.country,
-  technicalData: ingredient.technicalData
-});
+export const buildDesignerIngredientCardSource = (ingredient: DesignerIngredient): RecipeIngredientCardSource => {
+  // Бейдж карточки должен показывать фактическую (переопределённую) альфу, а не
+  // каталожную, — но исходный technicalData ингредиента мутировать нельзя, поэтому
+  // подмешиваем override в неглубокую копию.
+  const hopTechnicalData = ingredient.category === "hop" && ingredient.technicalData?.type === "hop"
+    ? ingredient.technicalData as Extract<IngredientTechnicalData, { type: "hop" }>
+    : null;
+  const alphaAcidPctOverride = hopTechnicalData
+    ? toFiniteOptionalNumber(ingredient.stepMeta.alphaAcidPct ?? "")
+    : null;
+  const technicalData = alphaAcidPctOverride != null && hopTechnicalData
+    ? { ...hopTechnicalData, alphaAcidPctTypical: alphaAcidPctOverride }
+    : ingredient.technicalData;
+
+  return {
+    type: ingredient.type,
+    category: ingredient.category,
+    subtype: ingredient.subtype,
+    brand: ingredient.brand,
+    producer: ingredient.producer,
+    brandName: ingredient.brandName,
+    manufacturer: ingredient.manufacturer,
+    countryCode: ingredient.countryCode,
+    countryName: ingredient.countryName,
+    country: ingredient.country,
+    technicalData
+  };
+};
 
 export const getSectionTitle = (category: IngredientCategory) => {
   if (category === "fermentable") return "Сбраживаемое";

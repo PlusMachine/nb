@@ -120,7 +120,7 @@ describe("equipment profiles page", () => {
     expect(html).toContain("Garage BIAB");
     expect(html).toContain("Pilot Kettle");
     expect(html).toContain("Основной");
-    expect(html).toContain("Типичный объем партии");
+    expect(html).toContain("Типичный объём партии");
     expect(html).toContain("Эффективность");
     expect(html).toContain("Испарение");
     expect(html).toContain("Редактировать");
@@ -166,16 +166,16 @@ describe("equipment profiles page", () => {
     expect(html).toContain("Создать профиль");
     expect(html).not.toContain("Начните с рабочих значений");
     expect(html.match(/Создать профиль/g) ?? []).toHaveLength(1);
-    expect(html).toContain("Типичный объем партии, л");
+    expect(html).toContain("Типичный объём партии, л");
     expect(html).toContain("Испарение, л/ч");
     expect(html).toContain("Гидромодуль, л/кг");
     expect(html).not.toContain("Потери</h3>");
     expect(html).not.toContain("Потери и кипячение");
     expect(html).not.toContain("Кипячение, мин");
     expect(html).not.toContain("Вода / затор");
-    expect(html).toContain("Еще параметры (опционально)");
-    expect(html).toContain("Макс. объем котла, л (опц)");
-    expect(html).toContain("Макс. объем заторника, л (опц.)");
+    expect(html).toContain("Ещё параметры (опционально)");
+    expect(html).toContain("Макс. объём котла, л (опц)");
+    expect(html).toContain("Макс. объём заторника, л (опц.)");
     expect(html).not.toContain("Dead space заторника");
     expect(html).not.toContain("Dead space промывки");
     expect(html).not.toContain("Долив воды");
@@ -201,7 +201,7 @@ describe("equipment profiles page", () => {
     expect(html).toContain("Гидромодуль, л/кг");
     expect(html).not.toContain("Потери</h3>");
     expect(html).not.toContain("Вода / затор");
-    expect(html).toContain("Еще параметры (опционально)");
+    expect(html).toContain("Ещё параметры (опционально)");
     expect(html).not.toContain("Кипячение, мин");
     expect(html).not.toContain("Дополнительно");
     expect(html).not.toContain("Dead space заторника");

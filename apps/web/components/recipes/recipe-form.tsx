@@ -3,7 +3,7 @@
 import React from "react";
 
 import type { EquipmentProfileDto } from "@/features/equipment-profiles/contracts";
-import type { IngredientSuggestionItem } from "@/features/ingredients/contracts";
+import type { IngredientCategory, IngredientSuggestionItem } from "@/features/ingredients/contracts";
 import type { RecipeImageDto } from "@/features/recipe-images/contracts";
 import type { RecipeDetailDto } from "@/features/recipes/contracts";
 import type { RecipePublicationState } from "@/features/recipes/contracts";
@@ -20,6 +20,8 @@ type Props = {
   initialImages?: RecipeImageDto[];
   equipmentProfiles?: EquipmentProfileDto[];
   brewBatchCount?: number;
+  /** Есть ли на складе хоть одна позиция по категории (Б3) — решает стартовый источник модалки добавления. */
+  inventoryStockByCategory?: Partial<Record<IngredientCategory, boolean>>;
   onSaveStatusChange?: (status: RecipeSaveStatus) => void;
   onRecipeCreated?: (recipe: RecipeDetailDto) => void;
   onPublicationStateChange?: (state: RecipePublicationState) => void;
@@ -35,6 +37,7 @@ export function RecipeForm({
   initialImages,
   equipmentProfiles,
   brewBatchCount,
+  inventoryStockByCategory,
   onSaveStatusChange,
   onRecipeCreated,
   onPublicationStateChange,
@@ -50,6 +53,7 @@ export function RecipeForm({
       initialImages={initialImages}
       equipmentProfiles={equipmentProfiles}
       brewBatchCount={brewBatchCount}
+      inventoryStockByCategory={inventoryStockByCategory}
       onSaveStatusChange={onSaveStatusChange}
       onRecipeCreated={onRecipeCreated}
       onPublicationStateChange={onPublicationStateChange}

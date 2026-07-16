@@ -132,8 +132,8 @@ const summarizeCanonicalRecipe = (
     title: canonical.title,
     ingredientCountLabel: `${totalIngredients} поз.`,
     ingredientBreakdown: ingredientBreakdown || "категории не определены",
-    parameters: parameters || "объем и процесс не указаны",
-    stats: statsLabel || "расчетные показатели в файле не указаны",
+    parameters: parameters || "объём и процесс не указаны",
+    stats: statsLabel || "расчётные показатели в файле не указаны",
     mash: mashStepCount ? `${mashStepCount} шаг(а) затирания` : "профиль затирания не найден",
     ingredientPreview: ingredientPreview || "позиции не найдены"
   };
@@ -337,7 +337,7 @@ export function ImportExportModal({
       setStatus({
         tone: "error",
         message: "Файл не удалось прочитать.",
-        details: [reader.error?.message ?? "Попробуйте выбрать файл еще раз."]
+        details: [reader.error?.message ?? "Попробуйте выбрать файл ещё раз."]
       });
     };
     reader.onload = () => {

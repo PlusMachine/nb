@@ -569,6 +569,16 @@ export const importBeerXmlToCanonicalRecipe = (xml: string): CanonicalRecipe => 
   const rawIbuMethod = readTag(recipeBlock, "IBU_METHOD");
   const importedFormulaPreference = mapBeerXmlIbuMethodToBitternessFormula(rawIbuMethod) ?? "tinseth_whirlpool_v2";
 
+  const styleBlock = readBlocks(recipeBlock, "STYLE")[0] ?? null;
+  const styleHint = styleBlock
+    ? (() => {
+        const name = readTag(styleBlock, "NAME");
+        const categoryNumber = readTag(styleBlock, "CATEGORY_NUMBER");
+        const styleLetter = readTag(styleBlock, "STYLE_LETTER");
+        return name || categoryNumber ? { name, categoryNumber, styleLetter } : null;
+      })()
+    : null;
+
   return {
     title: readTag(recipeBlock, "NAME") ?? "Imported BeerXML recipe",
     batchSizeL: readNumberTag(recipeBlock, "BATCH_SIZE") ?? 20,
@@ -584,6 +594,7 @@ export const importBeerXmlToCanonicalRecipe = (xml: string): CanonicalRecipe => 
       source: "beerxml",
       importedAt: new Date().toISOString(),
       importedFormulaPreference,
+      styleHint,
       rawIbuMethod,
       importedStats: {
         og: readNumberTag(recipeBlock, "OG"),

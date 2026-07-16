@@ -3,7 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import { consumeBrewBatchInventory } from "@/features/brew-batches/inventory";
+import {
+  consumeBrewBatchInventoryForStart,
+  type StartBrewConsumeResult
+} from "@/features/brew-batches/inventory";
 import { createBrewBatchFromRecipe } from "@/features/brew-batches/service";
 import { listEquipmentProfiles } from "@/features/equipment-profiles/service";
 import type { RecipeDetailDto } from "@/features/recipes/contracts";
@@ -95,24 +98,14 @@ export const getBrewVolumeOptionsAction = async (recipeId: string): Promise<Brew
  *  самому» не подставляет сам (exact-only): точный подбор не хватает/не находит
  *  позицию, но по match-group есть чем закрыть. Флаг, а не свободный текст — сам
  *  текст подсказки живёт в brew-stock-notice.tsx (стройка URL не носит свободный
- *  текст, см. brew-picker-dialog.tsx). */
-export type StartBrewConsumeResult =
-  | { ok: true; itemCount: number; hasSubstitutes?: boolean }
-  | {
-    ok: false;
-    code: "already_consumed" | "insufficient_stock" | "recipe_unavailable" | "nothing_to_consume" | "error";
-    hasSubstitutes?: boolean;
-  };
+ *  текст, см. brew-picker-dialog.tsx). Тип живёт в features/brew-batches/inventory —
+ *  реэкспорт, чтобы brew-picker-dialog.tsx мог импортировать его отсюда же, откуда
+ *  и раньше. */
+export type { StartBrewConsumeResult };
 
 export type StartBrewFromRecipeResult =
   | { ok: true; brewBatchId: string; consume?: StartBrewConsumeResult }
   | { ok: false; code: "AUTH" | "NOT_FOUND" | "ERROR"; message: string };
-
-const consumeErrorCodeByMessage: Record<string, StartBrewConsumeResult & { ok: false }> = {
-  ALREADY_CONSUMED: { ok: false, code: "already_consumed" },
-  INSUFFICIENT_STOCK: { ok: false, code: "insufficient_stock" },
-  RECIPE_UNAVAILABLE: { ok: false, code: "recipe_unavailable" }
-};
 
 /**
  * Мост «любой доступный рецепт → варка» БЕЗ клонирования: создаёт партию варки во
@@ -155,28 +148,15 @@ export const startBrewFromRecipeAction = async (input: {
       equipmentProfileId: parsed.data.equipmentProfileId
     });
 
-    let consume: StartBrewConsumeResult | undefined;
-    if (parsed.data.consumeIngredients) {
-      try {
-        const view = await consumeBrewBatchInventory(user.id, batch.id);
-        // Списание отработало без ошибки, но склад не тронуло: ни одна строка
-        // рецепта не сопоставилась со складской позицией. Пользователь просил
-        // списать — молчать об этом («Списано: 0 поз.» бодрым тоном) нельзя.
-        //
-        // «Сварить самому» списывает exact-only (без диалога-предпросмотра с
-        // заменами, Ф2) — если у оставшихся строк ЕСТЬ кандидаты на замену той же
-        // группы, честно подсказываем: точный подбор их не видит. Списание
-        // одноразовое (hasConsumedAllocationsForBatch) — применить замену можно
-        // только через «Вернуть на склад» и повторное списание в «Списать со
-        // склада» на странице партии, а не «на этой же странице кнопкой».
-        consume = view.consumed.length > 0
-          ? { ok: true, itemCount: view.consumed.length, hasSubstitutes: view.substituteAvailableCount > 0 }
-          : { ok: false, code: "nothing_to_consume", hasSubstitutes: view.substituteAvailableCount > 0 };
-      } catch (error) {
-        const message = error instanceof Error ? error.message : "";
-        consume = consumeErrorCodeByMessage[message] ?? { ok: false, code: "error" };
-      }
-    }
+    // «Сварить самому» списывает exact-only (без диалога-предпросмотра с
+    // заменами, Ф2) — если у оставшихся строк ЕСТЬ кандидаты на замену той же
+    // группы, честно подсказываем: точный подбор их не видит. Списание
+    // одноразовое (hasConsumedAllocationsForBatch) — применить замену можно
+    // только через «Вернуть на склад» и повторное списание в «Списать со
+    // склада» на странице партии, а не «на этой же странице кнопкой».
+    const consume: StartBrewConsumeResult | undefined = parsed.data.consumeIngredients
+      ? await consumeBrewBatchInventoryForStart(user.id, batch.id)
+      : undefined;
 
     revalidatePath("/app/brew-batches");
     return { ok: true, brewBatchId: batch.id, consume };

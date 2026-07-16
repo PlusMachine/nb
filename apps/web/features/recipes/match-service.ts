@@ -11,7 +11,8 @@ import type { IngredientCategory } from "../ingredients/taxonomy";
 import type { IngredientType, IngredientTechnicalData } from "../ingredients/contracts";
 import {
   extractIngredientTechnicalData,
-  resolveIngredientTechnicalDataColorRangeEbc
+  resolveIngredientTechnicalDataColorRangeEbc,
+  resolveIngredientTechnicalDataHopAlphaAcidPct
 } from "../ingredients/technical-fields";
 import type { IngredientSubtype } from "../ingredients/contracts";
 import { resolveInventoryMeasurementForDisplay } from "../inventory/display";
@@ -227,10 +228,7 @@ export const resolveIngredientMatchComparisonValue = (
     return resolveIngredientTechnicalDataColorRangeEbc(technicalData ?? null)?.average ?? null;
   }
   if (category === "hop" && technicalData?.type === "hop") {
-    // Union несёт ещё и индекс-сигнатурный вариант ({type; [key: string]: unknown}) —
-    // прямое сужение по type даёт {} на числовых полях, поэтому явный Extract.
-    const hop = technicalData as Extract<IngredientTechnicalData, { type: "hop" }>;
-    return hop.alphaAcidPctTypical ?? hop.alphaAcidPctMax ?? hop.alphaAcidPctMin ?? null;
+    return resolveIngredientTechnicalDataHopAlphaAcidPct(technicalData);
   }
   return null;
 };

@@ -39,6 +39,7 @@ import {
   type AppMode,
   type FermentConfig,
   type DistillConfig,
+  type PromptAns,
 } from "@nb/brewforge-protocol";
 
 // ----------------------------- Конфигурация --------------------------------
@@ -97,6 +98,23 @@ const MANUAL_HEAT_MAX_MS = 30 * 60_000; // суммарно >30 мин MANUAL_HE
 // (advanceToNow): разовый catch-up ограничен, чтобы после простоя (никто не смотрел)
 // варка не «телепортировалась» на часы вперёд. Реальный опрос идёт чаще этого порога.
 const MAX_CATCHUP_MS = 5_000;
+// Демо-нянька (ensureDemoBrewing, UX-находка #16 + фикс Ф12): держим варку живой
+// на безлюдном пульте БЕЗ перезагрузки чужого плана — паритет с паттерном
+// apps/web/components/demo/demo-pult.tsx (PROMPT_AUTOCONFIRM_MS/DONE_RESTART_MS),
+// перенесённым внутрь класса, т.к. sim-transport не хранит состояние между HTTP-опросами.
+const DEMO_PROMPT_AUTOCONFIRM_MS = 6_000;
+const DEMO_DONE_RESTART_MS = 8_000;
+// Положительный ответ на каждый промпт — как ответил бы оператор, который хочет
+// продолжать варку (паритет с DEMO_PROMPT_ANSWERS в apps/web/components/demo/demo-pult.tsx).
+const DEMO_PROMPT_ANSWERS: Record<Prompt, PromptAns | null> = {
+  NONE: null,
+  SPARGE_WATER: "YES",
+  CONTINUE_DOUGH: "CONTINUE",
+  ADD_MALT: "OK",
+  IODINE: "CONTINUE",
+  REMOVE_MALT: "OK",
+  RESUME_BREW: "YES",
+};
 const clamp = (v: number, lo: number, hi: number): number =>
   v < lo ? lo : v > hi ? hi : v;
 
@@ -420,6 +438,10 @@ export class SimDevice {
   private pendingMs = 0; // накопитель дробного реального времени между advanceToNow
   private lastRealAt = Date.now(); // метка последнего продвижения (wall-clock, мс)
 
+  // --- демо-нянька (ensureDemoBrewing) — сколько времени промпт/DONE уже держатся ---
+  private demoPromptSeenAt: number | null = null;
+  private demoDoneSeenAt: number | null = null;
+
   constructor(cfg: SimConfig) {
     this.cfg = cfg;
     this.slots[0] = defaultRecipe();
@@ -476,18 +498,53 @@ export class SimDevice {
   }
 
   /**
-   * Демо-режим: держать варку «живой» на безлюдном пульте (UX-находка #16).
-   * Перезапускаем затирание, когда варка застряла на промпте оператора («Йодная
-   * проба» — демо некому подтвердить) ИЛИ доиграла до конца (DONE). Из чистого IDLE
-   * НЕ трогаем: IDLE — это результат STOP/сброса оператором самого демо, и повторный
-   * запуск откатывал бы его «Остановить» на следующем же опросе телеметрии.
-   * Ферментацию/дистилляцию (appMode!=="brew") не касаемся. Идемпотентно: пока варка
-   * идёт (не ждёт ack и не DONE) — no-op. Вызывать после advanceToNow(), перед snapshot().
+   * Демо-режим: держать варку «живой» на безлюдном пульте (UX-находка #16), НЕ
+   * перезагружая реально идущий план (Ф12 — старый вариант звал applyScenario("mash"),
+   * который жёстко перезапускал встроенный слот 0, отбрасывая рецепт пользователя,
+   * запушенный через startBrewOnDevice, и пилил график зацикленным mash). Паттерн
+   * — та же нянька, что apps/web/components/demo/demo-pult.tsx (демо-пульт держит
+   * её на уровне компонента; здесь она держится в самом SimDevice, т.к. sim-transport
+   * не хранит состояние между HTTP-опросами телеметрии):
+   *  - промпт оператора («Йодная проба» и т.п.) висит без ответа дольше
+   *    DEMO_PROMPT_AUTOCONFIRM_MS → подтверждаем его положительным ответом и
+   *    продолжаем ТЕКУЩИЙ активный план (advanceStep, не рестарт);
+   *  - варка доиграла до DONE и стоит там дольше DEMO_DONE_RESTART_MS → зацикливаем
+   *    ТОТ ЖЕ рецепт, что реально шёл (this.activeRecipe), а не встроенный слот 0.
+   * Из чистого IDLE НЕ трогаем: IDLE — это результат STOP/сброса оператором самого
+   * демо, и повторный запуск откатывал бы его «Остановить» на следующем же опросе
+   * телеметрии. Ферментацию/дистилляцию (appMode!=="brew") не касаемся.
+   * Вызывать после advanceToNow(), перед snapshot().
    */
   ensureDemoBrewing(): void {
     if (this.appMode !== "brew") return;
-    if (this.waitingAck || this.stage === "DONE") {
-      this.applyScenario("mash");
+    const now = Date.now();
+
+    if (this.waitingAck) {
+      if (this.demoPromptSeenAt == null) {
+        this.demoPromptSeenAt = now;
+      } else if (now - this.demoPromptSeenAt >= DEMO_PROMPT_AUTOCONFIRM_MS) {
+        const ans = DEMO_PROMPT_ANSWERS[this.activePrompt] ?? "OK";
+        this.addLog("info", `Демо-нянька: авто-подтверждение промпта ${this.activePrompt} (${ans})`);
+        this.waitingAck = false;
+        this.activePrompt = "NONE";
+        this.advanceStep("Демо-нянька: промпт подтверждён");
+        this.demoPromptSeenAt = null;
+      }
+    } else {
+      this.demoPromptSeenAt = null;
+    }
+
+    if (this.stage === "DONE") {
+      if (this.demoDoneSeenAt == null) {
+        this.demoDoneSeenAt = now;
+      } else if (now - this.demoDoneSeenAt >= DEMO_DONE_RESTART_MS) {
+        const slot = this.activeRecipe >= 0 && this.slots[this.activeRecipe] ? this.activeRecipe : 0;
+        const recipe = this.slots[slot] ?? this.slots[0]!;
+        this.beginBrew(slot, recipe);
+        this.demoDoneSeenAt = null;
+      }
+    } else {
+      this.demoDoneSeenAt = null;
     }
   }
 
@@ -1564,7 +1621,6 @@ export class SimDevice {
           this.stepIdx += 1;
           this.enterStep();
         }
-        this.statusLine = "Затирание (сценарий mash)";
         break;
       }
       case "fault":

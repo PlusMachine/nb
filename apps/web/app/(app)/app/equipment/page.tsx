@@ -158,7 +158,7 @@ function EquipmentProfileCard({
       </div>
 
       <div className="mt-4 grid gap-2 sm:grid-cols-3">
-        <ProfileMetric label="Типичный объем партии" value={formatLiters(profile.targetBatchVolumeL)} />
+        <ProfileMetric label="Типичный объём партии" value={formatLiters(profile.targetBatchVolumeL)} />
         <ProfileMetric label="Эффективность" value={formatPct(profile.brewhouseEfficiencyPct)} />
         <ProfileMetric label="Испарение" value={formatRate(profile.evaporationRateLPerHr)} />
       </div>

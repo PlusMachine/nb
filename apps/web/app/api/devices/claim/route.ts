@@ -2,6 +2,7 @@ import { assertRateLimit } from "@nb/auth";
 import { NextResponse } from "next/server";
 
 import { requireUser } from "@/lib/auth";
+import { canUseDevices } from "@/features/devices/access";
 import { claimDevice } from "@/features/devices/service";
 import { claimDeviceSchema } from "@/features/devices/contracts";
 import { mapDeviceError } from "@/features/devices/errors";
@@ -13,6 +14,10 @@ import { mapDeviceError } from "@/features/devices/errors";
 // раз (в БД хранится только его хэш). Ошибки маппятся по коду (см. errors.ts).
 export async function POST(request: Request) {
   const user = await requireUser();
+  // Раздел устройств в разработке: пейринг в production доступен только админу.
+  if (!canUseDevices(user.role)) {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  }
 
   // Антибрутфорс claim-кода: без лимита залогиненный юзер мог бы перебирать коды
   // и перехватывать пейринг чужого устройства.

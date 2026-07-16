@@ -25,6 +25,8 @@ type Props = {
   onSkip: () => void;
   onStop: () => void;
   onEstop: () => void;
+  /** SKIP_STAGE уже отложен в окне undo — блокирует только «Далее» (TransportBar). */
+  skipPending?: boolean;
   /** Короткий фидбек по последней команде (принято / nack / причина гейта). */
   actionMsg?: string | null;
   /** Ошибка телеметрии — показываем только в состоянии error. */
@@ -46,6 +48,7 @@ export function ControlDock({
   onSkip,
   onStop,
   onEstop,
+  skipPending,
   actionMsg,
   transportError,
   noFreshTelemetry,
@@ -69,6 +72,7 @@ export function ControlDock({
           onResume={onResume}
           onSkip={onSkip}
           onStop={onStop}
+          skipPending={skipPending}
         />
       </div>
 

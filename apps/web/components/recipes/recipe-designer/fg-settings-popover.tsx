@@ -157,7 +157,7 @@ export function FgSettingsPopover({
                 placeholder="Например, 75"
               />
               <span className="block text-[11px] font-normal text-muted-foreground">
-                Пусто — использовать авторасчет
+                Пусто — использовать авторасчёт
               </span>
             </label>
 

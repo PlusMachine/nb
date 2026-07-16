@@ -198,7 +198,7 @@ describe("recipe water flow UI", () => {
     expect(html).toContain("Настройка воды");
     expect(html).toContain("1. Исходная вода");
     expect(html).toContain("2. Целевой профиль");
-    expect(html).toContain("3. Объем воды");
+    expect(html).toContain("3. Объём воды");
     expect(html).not.toContain("Редактировать исходную воду вручную");
     expect(html).toContain("Водопоглощение дробиной, л/кг");
     expect(html).toContain("Сейчас: 0.80 л/кг");
@@ -219,7 +219,7 @@ describe("recipe water flow UI", () => {
       html.indexOf("Расширенные настройки"),
     );
     expect(html).toContain("Молочная кислота");
-    expect(html).toContain("Считать пищевую соду (NaHCO3) в авторасчете");
+    expect(html).toContain("Считать пищевую соду (NaHCO3) в авторасчёте");
     expect(html).not.toContain("добавки рассчитаны");
     expect(html).not.toContain("Lactic Acid");
     expect(html).not.toContain("Только минерализация");
@@ -308,10 +308,10 @@ describe("recipe water flow UI", () => {
     expect(html).toContain("Настройка воды");
     expect(html).toContain("1. Исходная вода");
     expect(html).toContain("2. Целевой профиль");
-    expect(html).toContain("источник, цель, объемы и pH");
+    expect(html).toContain("источник, цель, объёмы и pH");
     expect(html).not.toContain('aria-pressed="true"');
     expect(html).not.toContain("Выбранный профиль");
-    expect(html).not.toContain("3. Объем воды");
+    expect(html).not.toContain("3. Объём воды");
     expect(html).not.toContain("4. pH и подкисление");
     expect(html).not.toContain("Подходит по стилю");
   });
@@ -476,7 +476,7 @@ describe("recipe water flow UI", () => {
     expect(single.spargeWaterVolumeL).toBeNull();
     expect(single.spargeAcidificationEnabled).toBe(false);
     expect(single.manualSaltAdditions[0]?.target).toBe("all");
-    expect(html).toContain("Считать одним объемом");
+    expect(html).toContain("Считать одним объёмом");
   });
 
   it("lets users disable mash pH calculation from the target pH field", () => {
@@ -691,8 +691,8 @@ describe("recipe water flow UI", () => {
     );
 
     expect(result.mashAcidAddition?.mashAcidMl ?? 0).toBeGreaterThan(0);
-    expect(html).toContain("Расчет");
-    expect(html).toContain("Применить расчет");
+    expect(html).toContain("Расчёт");
+    expect(html).toContain("Применить расчёт");
     expect(html).toContain("Молочная кислота");
     expect(html).not.toContain("Удалить Молочная кислота");
   });
@@ -740,7 +740,7 @@ describe("recipe water flow UI", () => {
     );
 
     expect(html).toContain("Куда добавить Гипс");
-    expect(html).toContain("Весь объем");
+    expect(html).toContain("Весь объём");
     expect(html).toContain("Затор");
     expect(html).toContain("Промывка");
     expect(html).toContain('value="mash" selected=""');

@@ -418,12 +418,12 @@ export function BjcpCatalog({ catalog }: Props) {
           <ol className="flex flex-wrap items-center gap-2">
             <li><Link href="/" className="transition hover:text-foreground">Главная</Link></li>
             <li aria-hidden="true">/</li>
-            <li className="text-foreground">Стили пива</li>
+            <li className="text-foreground">Стили пива по BJCP</li>
           </ol>
         </nav>
 
         <h1 className="text-3xl font-semibold text-foreground sm:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
-          Стили пива
+          Стили пива по BJCP
         </h1>
 
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">

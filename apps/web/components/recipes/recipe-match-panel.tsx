@@ -11,8 +11,8 @@ import { addRecipeIngredientToInventory, loadMatchIngredientCard } from "@/app/(
 import type { RecipeMatchDto, RecipeMatchLineDto, RecipeMatchLineStatus, RecipeMatchLabel } from "@/features/recipes/contracts";
 import { buildCatalogDetailHref, buildIngredientNameActionHref } from "@/features/ingredients/catalog-links";
 import type { IngredientSuggestionItem } from "@/features/ingredients/contracts";
-import { ingredientCategoryLabels } from "@/features/ingredients/presentation";
-import { inventoryUnitShortLabels } from "@/features/inventory/units";
+import { ingredientCategoryLabels, resolveIngredientBrandLabel, resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
+import { inventoryUnitShortLabels, resolveHumanFacingInventoryUnitProfile, type InventoryUnit } from "@/features/inventory/units";
 import { redirectToLoginWithNext } from "@/lib/auth-links";
 
 import { useRecipeMatch } from "./recipe-match-context";
@@ -25,6 +25,14 @@ import { useRecipeMatch } from "./recipe-match-context";
 // только после гидрации по клику.
 const IngredientSelectionCard = dynamic(
   () => import("@/components/ingredients/ingredient-picker").then((m) => m.IngredientSelectionCard),
+  { ssr: false, loading: () => null }
+);
+
+// Тот же чанк, что и карточка выше: полноценный поиск по каталогу для ручного
+// выбора другого ингредиента в строке нехватки (владельческое решение: аналоги —
+// рекомендация, но ручной путь «найти и выбрать» должен быть всегда).
+const IngredientPicker = dynamic(
+  () => import("@/components/ingredients/ingredient-picker").then((m) => m.IngredientPicker),
   { ssr: false, loading: () => null }
 );
 
@@ -184,8 +192,7 @@ function MatchGapRow({
   targetBatchVolumeL: number;
   onAdded: () => void | Promise<void>;
 }) {
-  const unit = line.suggestedAddUnit!;
-  const unitLabel = inventoryUnitShortLabels[unit] ?? unit;
+  const lineUnit = line.suggestedAddUnit!;
   const errorId = `gap-error-${line.recipeIngredientId}`;
   const detailHref = buildCatalogDetailHref({
     catalogItemId: line.ingredientCatalogItemId,
@@ -196,19 +203,59 @@ function MatchGapRow({
   const { show } = useToast();
   const [open, setOpen] = useState(false);
   const [quantity, setQuantity] = useState(() => String(line.suggestedAddQuantity ?? ""));
+  const [unit, setUnit] = useState<InventoryUnit>(lineUnit);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Ф24: карточка ингредиента в развороте — грузится один раз при первом
   // открытии строки и кэшируется (cardRequested), повторные открытия/закрытия
-  // не бьют по серверу заново.
+  // не бьют по серверу заново. Вместе с карточкой приезжают аналоги группы.
   const [card, setCard] = useState<IngredientSuggestionItem | null>(null);
+  const [analogs, setAnalogs] = useState<IngredientSuggestionItem[]>([]);
   const [cardLoading, setCardLoading] = useState(false);
   const [cardRequested, setCardRequested] = useState(false);
+  // Выбранный вместо позиции рецепта ингредиент (аналог или найденный вручную);
+  // null = позиция из рецепта. На склад ложится именно выбор пользователя.
+  const [selected, setSelected] = useState<IngredientSuggestionItem | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerValue, setPickerValue] = useState("");
+
+  // Смена выбора пересчитывает единицу: предложенная нехватка остаётся, только
+  // если единица допустима у нового ингредиента — иначе величина исказилась бы
+  // (500 г → 500 пачек, тот же гард, что в форме склада, #20-ревью).
+  const applySelection = (item: IngredientSuggestionItem | null) => {
+    setSelected(item);
+    setPickerOpen(false);
+    setError(null);
+    if (!item) {
+      setUnit(lineUnit);
+      setQuantity(String(line.suggestedAddQuantity ?? ""));
+      return;
+    }
+    const profile = resolveHumanFacingInventoryUnitProfile({
+      type: item.type,
+      category: item.category,
+      subtype: item.subtype ?? null,
+      defaultDisplayUnit: item.defaultDisplayUnit ?? item.defaultUnit,
+      allowedUnits: item.allowedUnits,
+      measurementDimension: item.measurementDimension,
+      technicalData: item.technicalData ?? null
+    });
+    if (profile.allowedUnits.includes(lineUnit)) {
+      setUnit(lineUnit);
+      setQuantity(String(line.suggestedAddQuantity ?? ""));
+    } else {
+      setUnit(profile.defaultUnit);
+      setQuantity("");
+    }
+  };
 
   // Открываем форму всегда с актуальным предложением: если строка осталась
   // partial после прошлого добавления, нехватка уже меньше — берём свежее число.
   const openRow = () => {
     setQuantity(String(line.suggestedAddQuantity ?? ""));
+    setUnit(lineUnit);
+    setSelected(null);
+    setPickerOpen(false);
     setError(null);
     setOpen(true);
     if (!cardRequested) {
@@ -218,7 +265,10 @@ function MatchGapRow({
         ingredientCatalogItemId: line.ingredientCatalogItemId,
         userCustomIngredientId: line.userCustomIngredientId
       })
-        .then((state) => setCard(state.item))
+        .then((state) => {
+          setCard(state.item);
+          setAnalogs(state.analogs);
+        })
         .catch(() => setCard(null))
         .finally(() => setCardLoading(false));
     }
@@ -233,8 +283,12 @@ function MatchGapRow({
     setPending(true);
     setError(null);
     const result = await addRecipeIngredientToInventory({
-      ingredientCatalogItemId: line.ingredientCatalogItemId,
-      userCustomIngredientId: line.userCustomIngredientId,
+      ingredientCatalogItemId: selected
+        ? (selected.source === "catalog" ? selected.id : null)
+        : line.ingredientCatalogItemId,
+      userCustomIngredientId: selected
+        ? (selected.source === "custom" ? selected.id : null)
+        : line.userCustomIngredientId,
       enteredQuantity: value,
       enteredUnit: unit
     });
@@ -254,6 +308,9 @@ function MatchGapRow({
     setOpen(false);
     setPending(false);
   };
+
+  const shownItem = selected ?? card;
+  const unitLabel = inventoryUnitShortLabels[unit] ?? unit;
 
   return (
     <li className="rounded-lg bg-muted px-3 py-2">
@@ -289,10 +346,11 @@ function MatchGapRow({
               <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
               Загружаем…
             </div>
-          ) : card ? (
+          ) : shownItem ? (
             // Карточка появляется автоматически по клику «На склад» (инфо-превью
             // недостающего ингредиента, Ф24) — это не акт выбора пользователем,
-            // поэтому дефолтный label="Выбрано" здесь неуместен.
+            // поэтому дефолтный label="Выбрано" здесь неуместен. Если пользователь
+            // выбрал аналог/другой ингредиент — карточка показывает его выбор.
             // Фон: строка (li) уже bg-muted, а IngredientSelectionCard красится
             // в bg-muted по умолчанию — визуально сливается с единственной
             // границей 1px. bg-card проигрывает bg-muted по порядку в
@@ -301,10 +359,69 @@ function MatchGapRow({
             // поэтому нужен !bg-card (важность), которая гарантированно
             // перекрывает — подтверждено скриншотом в light/dark.
             <IngredientSelectionCard
-              item={card}
-              label={card.source === "custom" ? "Ваш ингредиент" : "Из каталога"}
+              item={shownItem}
+              label={selected ? "Ваш выбор" : shownItem.source === "custom" ? "Ваш ингредиент" : "Из рецепта"}
+              actionLabel={selected ? "Вернуть из рецепта" : undefined}
+              onAction={selected ? () => applySelection(null) : undefined}
               className="!bg-card"
             />
+          ) : null}
+          {pickerOpen ? (
+            <div className="space-y-1.5">
+              <IngredientPicker
+                value={pickerValue}
+                category={line.category ?? undefined}
+                autoFocus
+                onValueChange={setPickerValue}
+                onSelect={(item) => {
+                  applySelection(item);
+                  setPickerValue("");
+                }}
+                placeholder="Название ингредиента"
+              />
+              <button
+                type="button"
+                onClick={() => setPickerOpen(false)}
+                className="text-xs text-muted-foreground underline decoration-dotted underline-offset-2 transition-colors hover:text-foreground"
+              >
+                Отмена
+              </button>
+            </div>
+          ) : !cardLoading ? (
+            <div className="flex flex-wrap items-center gap-1.5">
+              {/* Аналоги той же группы (сорт/тип у других производителей): позиция
+                  из рецепта — рекомендация, а не приговор. Клик подменяет выбор. */}
+              {analogs.map((analog) => {
+                const isActive = selected?.source === analog.source && selected?.id === analog.id;
+                const brand = resolveIngredientBrandLabel(analog);
+                return (
+                  <button
+                    key={`${analog.source}:${analog.id}`}
+                    type="button"
+                    disabled={pending}
+                    onClick={() => applySelection(isActive ? null : analog)}
+                    className={`inline-flex max-w-full items-center rounded-full px-2.5 py-1 text-xs ring-1 transition ${
+                      isActive
+                        ? "bg-foreground text-background ring-foreground"
+                        : "bg-card text-foreground ring-border hover:bg-accent"
+                    }`}
+                  >
+                    <span className="truncate">
+                      {resolveIngredientDisplayNames(analog).primaryName}
+                      {brand ? ` · ${brand}` : ""}
+                    </span>
+                  </button>
+                );
+              })}
+              <button
+                type="button"
+                disabled={pending}
+                onClick={() => setPickerOpen(true)}
+                className="inline-flex items-center rounded-full border border-dashed border-border px-2.5 py-1 text-xs text-muted-foreground transition hover:bg-accent hover:text-foreground"
+              >
+                Найти другой…
+              </button>
+            </div>
           ) : null}
           {targetBatchVolumeL > 0 ? (
             <p className="text-xs text-muted-foreground">

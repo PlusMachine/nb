@@ -554,11 +554,8 @@ export default async function IngredientDetailPage({
 
           {canManage ? (
             <div className="grid gap-2 sm:grid-cols-2 xl:w-[360px]">
-              <Link href={buildIngredientCatalogActionHref("/app/ingredients", item.source, item.id)} className="inline-flex h-11 items-center justify-center rounded-xl bg-foreground px-4 text-sm font-medium text-background">
+              <Link href={buildIngredientCatalogActionHref("/app/ingredients", item.source, item.id)} className="inline-flex h-11 items-center justify-center rounded-xl bg-foreground px-4 text-sm font-medium text-background sm:col-span-2">
                 Добавить на склад
-              </Link>
-              <Link href={buildIngredientCatalogActionHref("/app/recipes/new", item.source, item.id)} className="inline-flex h-11 items-center justify-center rounded-xl border border-border bg-card px-4 text-sm font-medium text-foreground transition-colors hover:bg-accent">
-                Использовать в рецепте
               </Link>
               {item.source === "catalog" ? (
                 <Link href={`/catalog/new?derivedFrom=${item.id}`} className="inline-flex h-11 items-center justify-center rounded-xl border border-border bg-card px-4 text-sm font-medium text-foreground transition-colors hover:bg-accent sm:col-span-2">

@@ -115,9 +115,9 @@ describe("RecipeCard", () => {
     expect(html).not.toContain("Новый");
   });
 
-  it("formats the stat row (ABV comma, OG gravity, volume in litres)", () => {
+  it("formats the stat row (ABV dot, OG gravity, volume in litres)", () => {
     const html = renderCard(baseItem());
-    expect(html).toContain("6,2 %"); // ABV — RU comma
+    expect(html).toContain("6.2 %"); // ABV — точка (Ф13: единый разделитель показателей)
     expect(html).toContain("45"); // IBU
     expect(html).toContain("1.048"); // OG — gravity dot
     expect(html).toContain("20 л"); // volume

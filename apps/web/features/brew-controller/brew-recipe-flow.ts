@@ -17,6 +17,10 @@ import type { AckReason } from "@nb/brewforge-protocol";
 
 import { requireUser } from "@/lib/auth";
 import { createBrewBatchFromRecipe } from "@/features/brew-batches/service";
+import {
+  consumeBrewBatchInventoryForStart,
+  type StartBrewConsumeResult
+} from "@/features/brew-batches/inventory";
 
 import { startBrewOnDevice } from "./actions";
 import { describeStartBrewError, describeStartBrewNack } from "./messages";
@@ -31,6 +35,10 @@ export type StartBrewOnDeviceFromRecipeResult = {
   /** id созданной партии — есть, если createBrewBatchFromRecipe успел отработать. */
   brewBatchId: string | null;
   reason: AckReason | null;
+  /** Итог опционального списания склада (см. input.consumeIngredients) — есть,
+   *  только если списание запрашивалось. Списание — факт создания партии, не
+   *  зависит от того, пошёл ли нагрев (heatingStarted/REMOTE_DISABLED/иной nack). */
+  consume?: StartBrewConsumeResult;
 };
 
 /**
@@ -48,8 +56,15 @@ export async function startBrewOnDeviceFromRecipeAction(input: {
   /** Объём варки и оборудование — тот же выбор, что и в ручной ветке (диалог «Сварить»). */
   targetBatchVolumeL?: number;
   equipmentProfileId?: string;
+  /** «Сварить на автоматике» — списать ингредиенты рецепта со склада текущего
+   *  пользователя сразу при старте (тот же чекбокс, что и в виртуальной ветке). */
+  consumeIngredients?: boolean;
 }): Promise<StartBrewOnDeviceFromRecipeResult> {
   let brewBatchId: string | null = null;
+  // Списание фиксируется в БД ДО вызова устройства — поэтому его результат нужен
+  // и в catch (устройство бросило DEVICE_NOT_FOUND/NOT_CAPABLE/сеть): партия уже
+  // создана и склад уже списан, UI обязан это показать, а не потерять.
+  let consume: StartBrewConsumeResult | undefined;
   try {
     const user = await requireUser();
     const batch = await createBrewBatchFromRecipe(user.id, input.recipeId, {
@@ -58,6 +73,13 @@ export async function startBrewOnDeviceFromRecipeAction(input: {
       equipmentProfileId: input.equipmentProfileId
     });
     brewBatchId = batch.id;
+
+    // Списание — факт создания партии, не факт старта нагрева: прокидываем его
+    // во ВСЕ исходящие результаты ниже (heatingStarted/REMOTE_DISABLED/иной nack),
+    // а не только в happy path.
+    consume = input.consumeIngredients
+      ? await consumeBrewBatchInventoryForStart(user.id, batch.id)
+      : undefined;
 
     const outcome = await startBrewOnDevice({
       userId: user.id,
@@ -71,7 +93,8 @@ export async function startBrewOnDeviceFromRecipeAction(input: {
         message: "Рецепт отправлен, варка запущена.",
         heatingStarted: true,
         brewBatchId,
-        reason: outcome.reason
+        reason: outcome.reason,
+        consume
       };
     }
 
@@ -84,7 +107,8 @@ export async function startBrewOnDeviceFromRecipeAction(input: {
         message: `Рецепт загружен в слот ${outcome.slot ?? 0} и выбран. Включите удалённое управление на устройстве или запустите варку вручную.`,
         heatingStarted: false,
         brewBatchId,
-        reason: outcome.reason
+        reason: outcome.reason,
+        consume
       };
     }
 
@@ -94,7 +118,8 @@ export async function startBrewOnDeviceFromRecipeAction(input: {
       message: describeStartBrewNack(outcome.reason),
       heatingStarted: false,
       brewBatchId,
-      reason: outcome.reason
+      reason: outcome.reason,
+      consume
     };
   } catch (error) {
     return {
@@ -102,7 +127,8 @@ export async function startBrewOnDeviceFromRecipeAction(input: {
       message: describeStartBrewError(error),
       heatingStarted: false,
       brewBatchId,
-      reason: null
+      reason: null,
+      consume
     };
   }
 }

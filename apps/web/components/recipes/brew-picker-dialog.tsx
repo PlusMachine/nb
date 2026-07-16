@@ -23,7 +23,8 @@ import { Button, Dialog, DialogCloseButton, DialogFooter, DialogHeader } from "@
 import {
   getBrewVolumeOptionsAction,
   startBrewFromRecipeAction,
-  type BrewVolumeOptions
+  type BrewVolumeOptions,
+  type StartBrewConsumeResult
 } from "@/app/(public)/recipes/[slug]/brew-actions";
 import {
   BrewVolumeChoice,
@@ -52,6 +53,26 @@ const todayLocalDate = (): string => {
   return `${year}-${month}-${day}`;
 };
 
+/** Фидбэк списания склада для страницы партии — компактными query-параметрами,
+ *  не свободным текстом (сам текст подсказки живёт в brew-stock-notice.tsx).
+ *  Пусто, если списание вообще не запрашивалось (тогда на странице партии ни
+ *  слова про склад). Общая для обеих веток единого входа «Сварить» — «самому»
+ *  и «на автоматике». */
+const buildStockQuery = (consume?: StartBrewConsumeResult): string => {
+  if (!consume) return "";
+  const params = new URLSearchParams();
+  if (consume.ok) {
+    params.set("stock", "consumed");
+    params.set("items", String(consume.itemCount));
+  } else {
+    params.set("stock", consume.code);
+  }
+  if (consume.hasSubstitutes) {
+    params.set("consumeSubs", "1");
+  }
+  return params.toString();
+};
+
 export type BrewPickerDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -68,6 +89,9 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
   const [devices, setDevices] = useState<PickerDevice[]>([]);
   const [devicesLoading, setDevicesLoading] = useState(true);
   const [devicesError, setDevicesError] = useState<string | null>(null);
+  // Раздел устройств в разработке: /api/devices отвечает devicesEnabled=false →
+  // ветка автоматики (и CTA «Подключить BrewForge») скрывается целиком.
+  const [devicesEnabled, setDevicesEnabled] = useState(true);
   // Аноним: /api/devices отвечает 401 → не гоняем его через выбор режима и
   // создание партии до самого низа, а сразу предлагаем вход (UX-находка #11).
   const [authRequired, setAuthRequired] = useState(false);
@@ -83,7 +107,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
   const [customVolume, setCustomVolume] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [remoteDisabled, setRemoteDisabled] = useState<{ message: string; brewBatchId: string } | null>(null);
+  const [remoteDisabled, setRemoteDisabled] = useState<{ message: string; brewBatchId: string; query?: string } | null>(null);
   // Ключ идемпотентности «намерения сварить»: один на открытие диалога, стабилен
   // между ретраями (создать партию два раза одним намерением нельзя). Гард
   // inFlight режет повторный сабмит в том же тике до того, как отрисуется disabled.
@@ -106,8 +130,9 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
         return;
       }
       if (!res.ok) throw new Error("LIST_FAILED");
-      const data = (await res.json()) as { devices?: PickerDevice[] };
+      const data = (await res.json()) as { devices?: PickerDevice[]; devicesEnabled?: boolean };
       const list = data.devices ?? [];
+      setDevicesEnabled(data.devicesEnabled !== false);
       setDevices(list);
       // Автовыбор — только среди устройств, способных варить (стрим-ареометры
       // сюда не годятся, даже если формально "online").
@@ -227,23 +252,8 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
       });
       if (result.ok) {
         // Фидбэк списания довозим query-параметрами — страница партии покажет
-        // тост (см. brew-stock-notice.tsx). Параметры добавляем, только если
-        // списание вообще запрашивалось (иначе про склад на странице ни слова).
-        // consumeSubs — компактный флаг (не свободный текст в URL): «на складе
-        // есть замены, которые exact-only подбор не подставил сам».
-        const params = new URLSearchParams();
-        if (result.consume) {
-          if (result.consume.ok) {
-            params.set("stock", "consumed");
-            params.set("items", String(result.consume.itemCount));
-          } else {
-            params.set("stock", result.consume.code);
-          }
-          if (result.consume.hasSubstitutes) {
-            params.set("consumeSubs", "1");
-          }
-        }
-        const query = params.toString();
+        // тост (см. brew-stock-notice.tsx).
+        const query = buildStockQuery(result.consume);
         // Может пересекать зоны (публичная витрина → app) — полная навигация уместна.
         window.location.assign(`/app/brew-batches/${result.brewBatchId}${query ? `?${query}` : ""}`);
         return;
@@ -271,15 +281,32 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
         recipeId,
         deviceId: selectedDeviceId,
         idempotencyKey: ensureIdempotencyKey(),
+        consumeIngredients,
         ...volumeSelection
       });
       if (result.ok && result.heatingStarted && result.brewBatchId) {
-        window.location.assign(`/app/brew-batches/${result.brewBatchId}`);
+        const query = buildStockQuery(result.consume);
+        window.location.assign(`/app/brew-batches/${result.brewBatchId}${query ? `?${query}` : ""}`);
         return;
       }
       if (result.ok && result.brewBatchId) {
         // REMOTE_DISABLED — не уходим молча, ждём явного клика.
-        setRemoteDisabled({ message: result.message, brewBatchId: result.brewBatchId });
+        setRemoteDisabled({
+          message: result.message,
+          brewBatchId: result.brewBatchId,
+          query: buildStockQuery(result.consume)
+        });
+        return;
+      }
+      if (result.brewBatchId) {
+        // Устройство отказало/недоступно (nack или брошенная ошибка), НО партия
+        // уже создана, а склад (если просили) уже списан. Не теряем это за голым
+        // текстом ошибки: даём ссылку на партию с тем же фидбэком списания.
+        setRemoteDisabled({
+          message: result.message,
+          brewBatchId: result.brewBatchId,
+          query: buildStockQuery(result.consume)
+        });
         return;
       }
       setError(result.message);
@@ -359,7 +386,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
               </span>
             </span>
           </button>
-          {hasDeviceChoice ? (
+          {!devicesEnabled ? null : hasDeviceChoice ? (
             <button
               type="button"
               onClick={() => setScreen("device-pick")}
@@ -455,7 +482,11 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
       {screen === "device-confirm" ? (
         <div className="space-y-3 p-5">
           {remoteDisabled ? (
-            <RemoteDisabledNotice message={remoteDisabled.message} brewBatchId={remoteDisabled.brewBatchId} />
+            <RemoteDisabledNotice
+              message={remoteDisabled.message}
+              brewBatchId={remoteDisabled.brewBatchId}
+              query={remoteDisabled.query}
+            />
           ) : (
             <>
               <div className="flex items-start gap-3 rounded-lg border border-warning/30 bg-warning-subtle px-3 py-3 text-sm text-warning-subtle-foreground">
@@ -468,6 +499,19 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
                   </p>
                 </div>
               </div>
+              <label
+                className={`flex cursor-pointer items-start gap-3 rounded-lg border px-3 py-3 ${
+                  consumeIngredients ? "border-foreground bg-muted" : "border-border bg-card"
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={consumeIngredients}
+                  onChange={(event) => setConsumeIngredients(event.target.checked)}
+                  className="mt-1"
+                />
+                <span className="block text-sm font-semibold text-foreground">Списать ингредиенты со склада</span>
+              </label>
               {error ? (
                 <div
                   className="flex items-start gap-2 rounded-lg border border-destructive-border bg-destructive-subtle px-3 py-3 text-sm text-destructive-subtle-foreground"

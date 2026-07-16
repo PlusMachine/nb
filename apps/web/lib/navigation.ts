@@ -30,6 +30,8 @@ export type AppNavItem = {
   match?: string[];
   // пункт виден только пользователю с профилем мастера (см. resolveAppNavGroups)
   requiresMasterProfile?: boolean;
+  // пункт виден только с доступом к устройствам (см. resolveAppNavGroups)
+  requiresDevicesAccess?: boolean;
 };
 
 export const appNavGroups: AppNavItem[][] = [
@@ -44,7 +46,8 @@ export const appNavGroups: AppNavItem[][] = [
   ],
   [
     { href: "/app/equipment", label: "Оборудование", icon: Wrench },
-    { href: "/app/devices", label: "BrewForge", icon: Cpu },
+    // Раздел в разработке: в production пункт видит только админ (requiresDevicesAccess).
+    { href: "/app/devices", label: "Устройства", icon: Cpu, requiresDevicesAccess: true },
     // Кабинет мастера (docs/masters-showcase.md): пункт видят только владельцы
     // профиля (requiresMasterProfile → resolveAppNavGroups). Вход «стать
     // мастером» — CTA на витрине /masters, не постоянный пункт меню.
@@ -69,7 +72,13 @@ export const primaryNavItems = appNavItems.filter((item) => item.primary);
 // разделитель).
 export const resolveAppNavGroups = (user: AppChromeUser): AppNavItem[][] =>
   appNavGroups
-    .map((group) => group.filter((item) => !item.requiresMasterProfile || user.hasMasterProfile))
+    .map((group) =>
+      group.filter(
+        (item) =>
+          (!item.requiresMasterProfile || user.hasMasterProfile) &&
+          (!item.requiresDevicesAccess || user.hasDevicesAccess)
+      )
+    )
     .filter((group) => group.length > 0);
 
 // Витринные разделы в порядке приоритетов посетителя: используются
@@ -123,6 +132,9 @@ export type AppChromeUser = {
   isStaff?: boolean;
   // есть профиль мастера — показывает «Моя витрина» (вычисляется на сервере)
   hasMasterProfile?: boolean;
+  // раздел «Устройства» в разработке: в production виден только админу
+  // (вычисляется на сервере, см. features/devices/access.ts)
+  hasDevicesAccess?: boolean;
 };
 
 // Роуты, чей контент-браузер требует доп. ширину на ультрашироких экранах

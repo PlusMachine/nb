@@ -26,6 +26,7 @@ import {
   isSameTitle,
   type ActiveBrewProgressItem
 } from "@/features/brew-batches/contracts";
+import { canUseDevices } from "@/features/devices/access";
 import { isNewUserDashboard } from "@/features/dashboard/onboarding";
 import {
   buildDashboardOnboarding,
@@ -192,6 +193,7 @@ function OnboardingChecklist({ onboarding }: { onboarding: DashboardOnboarding }
                 )}
                 <p className={`text-sm font-semibold ${step.done ? "text-muted-foreground" : "text-foreground"}`}>{step.title}</p>
               </div>
+              {step.done || !step.hint ? null : <p className="text-xs leading-snug text-muted-foreground">{step.hint}</p>}
               {step.done ? null : (
                 <div className="flex flex-wrap gap-2">
                   {step.links.map((link) => (
@@ -540,10 +542,10 @@ export default async function AppZonePage() {
       : [];
 
   const discoverLinks = [
-    { href: "/articles", title: "Статьи", icon: BookOpen },
-    { href: "/bjcp", title: "Стили пива", icon: Sparkles },
+    { href: "/recipes", title: "Рецепты сообщества", icon: FlaskConical },
     { href: "/calculators", title: "Калькуляторы", icon: Calculator },
-    { href: "/recipes", title: "Рецепты сообщества", icon: FlaskConical }
+    { href: "/articles", title: "Статьи", icon: BookOpen },
+    { href: "/bjcp", title: "Стили пива", icon: Sparkles }
   ];
 
   const discoverStrip = (
@@ -635,7 +637,8 @@ export default async function AppZonePage() {
       <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <InventoryWidget summary={inventory} />
         <ShoppingWidget shopping={shopping} />
-        <DevicesWidget devices={devices} />
+        {/* Раздел устройств в разработке: без доступа виджет не показываем. */}
+        {canUseDevices(user.role) ? <DevicesWidget devices={devices} /> : null}
       </section>
 
       {brewableCards.length > 0 ? (

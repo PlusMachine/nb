@@ -10,6 +10,7 @@
 import { revalidatePath } from "next/cache";
 
 import { requireUser } from "@/lib/auth";
+import { canUseDemoDevices, canUseDevices } from "@/features/devices/access";
 import { listBrewBatchesForUser } from "@/features/brew-batches/service";
 import type { BrewBatchStatus } from "@/features/brew-batches/contracts";
 
@@ -96,6 +97,9 @@ export async function createStreamDeviceAction(
   input: ConnectStreamDeviceInput
 ): Promise<{ ok: true; deviceId: string; ingestUrl: string } | ActionError> {
   const user = await requireUser();
+  if (!canUseDevices(user.role)) {
+    return { ok: false, message: "Подключение устройств пока недоступно" };
+  }
   try {
     const result = await createStreamDevice(user.id, input);
     track("device_connected", { kind: input.kind, provider: "stream" });
@@ -112,6 +116,9 @@ export async function createDemoStreamDeviceAction(): Promise<
   { ok: true; deviceId: string; ingestUrl: string } | ActionError
 > {
   const user = await requireUser();
+  if (!canUseDemoDevices()) {
+    return { ok: false, message: "Демо-устройства недоступны" };
+  }
   try {
     const result = await createDemoStreamDevice(user.id);
     track("device_connected", { kind: "ispindel", provider: "stream", demo: true });
@@ -547,6 +554,9 @@ export async function getOrCreateRaptIntegrationAction(): Promise<
   { ok: true; integration: RaptIntegrationDto } | ActionError
 > {
   const user = await requireUser();
+  if (!canUseDevices(user.role)) {
+    return { ok: false, message: "Подключение устройств пока недоступно" };
+  }
   try {
     const integration = await createOrGetRaptIntegration(user.id);
     return { ok: true, integration };

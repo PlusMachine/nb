@@ -41,6 +41,13 @@ const SESSION_COOKIE = "nb_session";
  */
 const DEV_GUEST_COOKIE = "nb_dev_guest";
 
+/**
+ * Dev-only выбор активного аккаунта автологина. Когда задано несколько dev-аккаунтов
+ * (DEV_AUTH_EMAIL + DEV_AUTH_EMAILS), эта cookie хранит e-mail того, под кем сейчас
+ * работаем. Пусто/неизвестный e-mail — используется основной (DEV_AUTH_EMAIL).
+ */
+const DEV_ACCOUNT_COOKIE = "nb_dev_account";
+
 // Согласие на обработку ПДн (152-ФЗ): фиксируем момент и версию правовых документов
 // в БД при создании аккаунта. `accepted` приходит с формы входа/регистрации.
 const consentInput = (accepted?: boolean) => (accepted ? { version: LEGAL_DOC_VERSION } : undefined);
@@ -61,8 +68,44 @@ export const hasRequiredRole = (current: UserRole, required: UserRole) => roleWe
 const devAuthEmail =
   process.env.NODE_ENV === "production" ? undefined : process.env.DEV_AUTH_EMAIL?.trim() || undefined;
 
+/**
+ * Дополнительные dev-аккаунты для быстрого переключения (например второй QA-admin),
+ * задаются через DEV_AUTH_EMAILS="a@x,b@y". Основной аккаунт — всегда DEV_AUTH_EMAIL.
+ */
+const additionalDevAuthEmails =
+  process.env.NODE_ENV === "production"
+    ? []
+    : (process.env.DEV_AUTH_EMAILS ?? "")
+        .split(",")
+        .map((email) => email.trim())
+        .filter(Boolean);
+
+/**
+ * Полный список dev-аккаунтов автологина (первый — основной из DEV_AUTH_EMAIL).
+ * Без дублей (сравнение регистронезависимое). Пустой, если автологин выключен.
+ */
+export const devAuthEmails: string[] = devAuthEmail
+  ? [devAuthEmail, ...additionalDevAuthEmails].filter(
+      (email, index, all) => all.findIndex((other) => other.toLowerCase() === email.toLowerCase()) === index
+    )
+  : [];
+
 /** Активен ли dev-автологин (вне production и задан DEV_AUTH_EMAIL). */
 export const isDevAutoAuthEnabled = Boolean(devAuthEmail);
+
+/**
+ * Активный dev-аккаунт: e-mail из cookie nb_dev_account, если он в списке
+ * разрешённых, иначе основной (DEV_AUTH_EMAIL). undefined — если автологин выключен.
+ */
+const resolveActiveDevEmail = (chosen: string | undefined) => {
+  if (!devAuthEmail) {
+    return undefined;
+  }
+  const match = chosen
+    ? devAuthEmails.find((email) => email.toLowerCase() === chosen.trim().toLowerCase())
+    : undefined;
+  return match ?? devAuthEmail;
+};
 
 /**
  * Логирование секретов аутентификации (OTP-код, magic-link, ссылка сброса пароля)
@@ -87,8 +130,9 @@ export const getSessionUser = async () => {
   }
   // Гостевой просмотр в dev: автологин намеренно отключён до возврата в аккаунт.
   if (devAuthEmail && !cookieStore.get(DEV_GUEST_COOKIE)) {
+    const activeEmail = resolveActiveDevEmail(cookieStore.get(DEV_ACCOUNT_COOKIE)?.value);
     try {
-      return await completeEmailSignIn({ email: devAuthEmail });
+      return await completeEmailSignIn({ email: activeEmail! });
     } catch (error) {
       // Заблокированный/обезличенный dev-аккаунт: автологин обязан уважать бан,
       // иначе забаненного пользователя нельзя ни проверить, ни воспроизвести.
@@ -109,9 +153,40 @@ export const isDevGuestPreview = async () => {
   return Boolean((await cookies()).get(DEV_GUEST_COOKIE)?.value);
 };
 
-/** Выход из гостевого просмотра — вернуться в dev-аккаунт DEV_AUTH_EMAIL. */
+/** Выход из гостевого просмотра — вернуться в активный dev-аккаунт. */
 export const exitDevGuestPreview = async () => {
   (await cookies()).delete(DEV_GUEST_COOKIE);
+};
+
+/**
+ * Переключить активный dev-аккаунт (и заодно выйти из гостевого просмотра).
+ * E-mail должен быть из списка devAuthEmails, иначе — no-op.
+ */
+export const setDevAccount = async (email: string) => {
+  if (!devAuthEmail) {
+    return;
+  }
+  const match = devAuthEmails.find((known) => known.toLowerCase() === email.trim().toLowerCase());
+  if (!match) {
+    return;
+  }
+  const cookieStore = await cookies();
+  cookieStore.set(DEV_ACCOUNT_COOKIE, match, { httpOnly: true, sameSite: "lax", path: "/" });
+  cookieStore.delete(DEV_GUEST_COOKIE);
+};
+
+/** Состояние dev-автологина для бейджа: список аккаунтов, активный и режим гостя. */
+export const getDevAuthState = async () => {
+  if (!devAuthEmail) {
+    return { enabled: false, accounts: [] as string[], activeEmail: undefined as string | undefined, isGuest: false };
+  }
+  const cookieStore = await cookies();
+  return {
+    enabled: true,
+    accounts: devAuthEmails,
+    activeEmail: resolveActiveDevEmail(cookieStore.get(DEV_ACCOUNT_COOKIE)?.value),
+    isGuest: Boolean(cookieStore.get(DEV_GUEST_COOKIE)?.value)
+  };
 };
 
 export const requireUser = async () => {

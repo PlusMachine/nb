@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 
 import { requireUser } from "@/lib/auth";
+import { canUseDevices } from "@/features/devices/access";
 import { FERMENT_HISTORY_LIMIT, FERMENT_HISTORY_WINDOW_DAYS, TELEMETRY_HISTORY_LIMIT } from "@/features/brew-batches/contracts";
 import { deviceChannel } from "@/features/brew-controller";
 import { RAPT_PROVIDER_ID } from "@/features/brew-controller/rapt-cloud-provider";
@@ -29,6 +30,10 @@ import type { FermenterBatchLink } from "@/features/brew-controller/components/f
 // покажет нейтральное состояние загрузки, а не ложный «конфиг недоступен».
 export default async function DeviceConsolePage({ params }: { params: Promise<{ id: string }> }) {
   const user = await requireUser();
+  // Раздел устройств в разработке: в production доступен только админу.
+  if (!canUseDevices(user.role)) {
+    notFound();
+  }
   const { id } = await params;
 
   const device = await getDeviceById(user.id, id);

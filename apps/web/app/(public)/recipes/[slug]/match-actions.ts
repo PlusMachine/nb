@@ -32,7 +32,13 @@ export const loadRecipeMatch = async (recipeId: string): Promise<RecipeMatchView
   }
 };
 
-export type MatchIngredientCardState = { authenticated: boolean; item: IngredientSuggestionItem | null };
+export type MatchIngredientCardState = {
+  authenticated: boolean;
+  item: IngredientSuggestionItem | null;
+  // Аналоги той же группы (сорт хмеля, тип солода — см. listAnalogCatalogIngredients):
+  // строка нехватки предлагает их к выбору вместо жёстко зашитого бренда из рецепта.
+  analogs: IngredientSuggestionItem[];
+};
 
 // Ф24: карточка ингредиента для разворота строки «На склад» в панели матча —
 // презентация из общего каталожного пикера (IngredientSelectionCard), без
@@ -44,7 +50,7 @@ export const loadMatchIngredientCard = async (input: {
 }): Promise<MatchIngredientCardState> => {
   const user = await getSessionUser();
   if (!user) {
-    return { authenticated: false, item: null };
+    return { authenticated: false, item: null, analogs: [] };
   }
 
   const source: "catalog" | "custom" | null = input.ingredientCatalogItemId
@@ -54,15 +60,28 @@ export const loadMatchIngredientCard = async (input: {
       : null;
   const id = input.ingredientCatalogItemId ?? input.userCustomIngredientId ?? null;
   if (!source || !id) {
-    return { authenticated: true, item: null };
+    return { authenticated: true, item: null, analogs: [] };
   }
 
   try {
-    const { getIngredientSuggestionByRef } = await import("@/features/ingredients/catalog-service");
-    const item = await getIngredientSuggestionByRef(user.id, source, id);
-    return { authenticated: true, item };
+    const {
+      getUserCatalogIngredientByRef,
+      listAnalogCatalogIngredients,
+      toIngredientSuggestionItem
+    } = await import("@/features/ingredients/catalog-service");
+    const dto = await getUserCatalogIngredientByRef(user.id, source, id);
+    if (!dto) {
+      return { authenticated: true, item: null, analogs: [] };
+    }
+
+    // Аналоги есть только у системных каталожных позиций; у кастомных и у групп
+    // без надёжного ключа (дрожжи, расходники) список пуст — остаётся ручной поиск.
+    const analogs = source === "catalog"
+      ? (await listAnalogCatalogIngredients(dto, 4)).map((analog) => toIngredientSuggestionItem(analog))
+      : [];
+    return { authenticated: true, item: toIngredientSuggestionItem(dto), analogs };
   } catch {
-    return { authenticated: true, item: null };
+    return { authenticated: true, item: null, analogs: [] };
   }
 };
 

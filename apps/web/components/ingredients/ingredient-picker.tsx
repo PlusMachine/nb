@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { ChevronDown } from "lucide-react";
 
 import { IngredientFavoriteToggle } from "@/components/ingredients/ingredient-favorite-toggle";
 import { CountryFlag } from "@/components/shared/country-flag";
@@ -34,7 +35,8 @@ import {
   resolveIngredientBrandLabel,
   resolveIngredientCountry,
   resolveIngredientDisplayNames,
-  resolveIngredientFermentableKindLabel
+  resolveIngredientFermentableKindLabel,
+  resolveYeastFormLabelRu
 } from "@/features/ingredients/presentation";
 import {
   buildIngredientPickerQuickStartBrandsFromRecentSelections,
@@ -66,7 +68,8 @@ import {
 } from "@/features/ingredients/consumables";
 import {
   formatHopFormLabel,
-  resolveIngredientTechnicalDataColorRangeEbc
+  resolveIngredientTechnicalDataColorRangeEbc,
+  resolveIngredientTechnicalDataHopAlphaAcidPct
 } from "@/features/ingredients/technical-fields";
 import { resolveWaterTreatmentFormulaLabel } from "@/features/ingredients/water-treatment";
 import {
@@ -109,6 +112,11 @@ type Props = {
   includeCustom?: boolean;
   allowCustomOnlyFilter?: boolean;
   enableQuickStart?: boolean;
+  // Б5: группировать одноимённые каталожные записи (разные производители) в
+  // одну строку со счётчиком, раскрываемую по клику. Opt-in, default false —
+  // не меняет поведение остальных потребителей пикера. Складские позиции
+  // (партии) и кастомные записи в группировку никогда не попадают.
+  groupSameNamed?: boolean;
   searchOnEmptyQuery?: boolean;
   proposeIngredient?: (params: {
     q: string;
@@ -438,6 +446,118 @@ export const resolveVisibleIngredientItems = ({
     : items
 );
 
+// Б5: группировка одноимённых записей каталога в результатах пикера (opt-in
+// через проп groupSameNamed на IngredientPicker). Строится ПОСЛЕ видимого среза
+// (resolveVisibleIngredientItems), поэтому total/isBroadMatch/«Показать все
+// результаты» продолжают считаться от сырых чисел сервера.
+export type IngredientPickerResultRow =
+  | { kind: "single"; item: IngredientSuggestionItem }
+  | {
+      kind: "group";
+      key: string;
+      items: IngredientSuggestionItem[];
+      representative: IngredientSuggestionItem;
+    };
+
+// Ключ группы — по резолвленному primaryName (тому же имени, что видит
+// пользователь в строке) + category + subtype. Намеренно НЕ через
+// family/match-group ключи (resolveIngredientMatchKey) — те семейные и утащат
+// «Экстра Пэйл Эль» в группу «Пэйл Эль».
+export const resolveIngredientPickerGroupKey = (item: IngredientSuggestionItem) => {
+  const { primaryName } = resolveIngredientPickerRowContent(item);
+  return `${normalizeSearchText(primaryName)}::${item.category ?? ""}::${item.subtype ?? ""}`;
+};
+
+// Группируются только каталожные item'ы (source === "catalog") — кастомные
+// записи всегда остаются отдельными строками, даже при совпадении имени.
+// Складские позиции (партии) защищены отдельно, на уровне вызывающего: в
+// ingredient-editor.tsx groupSameNamed включается только для sourceMode !==
+// "use_stock" — при поиске по складу эта функция вообще не вызывается с
+// groupSameNamed=true (там же встречаются складские item'ы с source: "catalog",
+// см. features/inventory/service.ts, если позиция привязана к каталогу — сам
+// source не был бы надёжным различителем). Группировка через Map по всему
+// видимому набору — порядок
+// строк определяется первым вхождением ключа, смежность не предполагается.
+export const buildIngredientPickerResultRows = ({
+  items,
+  groupSameNamed
+}: {
+  items: IngredientSuggestionItem[];
+  groupSameNamed: boolean;
+}): IngredientPickerResultRow[] => {
+  if (!groupSameNamed) {
+    return items.map((item) => ({ kind: "single", item }));
+  }
+
+  const rows: IngredientPickerResultRow[] = [];
+  const rowIndexByGroupKey = new Map<string, number>();
+
+  for (const item of items) {
+    if (item.source !== "catalog") {
+      rows.push({ kind: "single", item });
+      continue;
+    }
+
+    const groupKey = resolveIngredientPickerGroupKey(item);
+    const existingIndex = rowIndexByGroupKey.get(groupKey);
+    if (existingIndex === undefined) {
+      rowIndexByGroupKey.set(groupKey, rows.length);
+      rows.push({ kind: "single", item });
+      continue;
+    }
+
+    const existingRow = rows[existingIndex]!;
+    if (existingRow.kind === "single") {
+      rows[existingIndex] = {
+        kind: "group",
+        key: groupKey,
+        items: [existingRow.item, item],
+        representative: existingRow.item
+      };
+    } else {
+      existingRow.items.push(item);
+    }
+  }
+
+  return rows;
+};
+
+// Дефект живого прогона: сервер отдаёт срез (limit) результатов, и при
+// одинаковом score порядок между запросами нестабилен — то же одноимённое
+// название может попасть в группу то 6, то 10, то всеми 17 экземплярами.
+// Числовой счётчик группы врёт, если группа построена не по полному набору.
+// Показываем число ТОЛЬКО когда сервер отдал весь набор целиком (items.length
+// >= total) — иначе только маркер раскрытия, без числа.
+export const isIngredientPickerFullResultSetLoaded = ({
+  loadedItemsCount,
+  total
+}: {
+  loadedItemsCount: number;
+  total: number;
+}) => loadedItemsCount >= total;
+
+// Что должно произойти при активации строки результата (клик/Enter): группа —
+// раскрыть список производителей (НЕ выбрать), одиночная запись — выбрать как
+// раньше. Компонент вызывает эту функцию напрямую из обработчика, чтобы
+// контракт «клик по группе не вызывает onSelect» был проверяем без DOM.
+export const resolveIngredientPickerRowActivation = (
+  row: IngredientPickerResultRow
+): { type: "expand"; key: string } | { type: "select"; item: IngredientSuggestionItem } => (
+  row.kind === "group"
+    ? { type: "expand", key: row.key }
+    : { type: "select", item: row.item }
+);
+
+// Переключение раскрытой группы: повторный клик по той же группе сворачивает
+// список производителей.
+export const resolveIngredientPickerNextExpandedGroupKey = ({
+  currentExpandedKey,
+  activatedKey
+}: {
+  currentExpandedKey: string | null;
+  activatedKey: string;
+}) => (currentExpandedKey === activatedKey ? null : activatedKey);
+
 export const countIngredientPickerRefinementCoverage = (
   refinements: IngredientSearchRefinement[]
 ) => refinements.reduce((sum, refinement) => sum + refinement.count, 0);
@@ -549,6 +669,40 @@ export const buildIngredientCacheKey = ({
   limit: number;
 }) => `${normalizeSearchText(q)}::${type ?? ""}::${category ?? ""}::${subtype ?? ""}::${normalizeSearchText(family ?? "")}::${normalizeSearchText(group ?? "")}::${normalizeSearchText(manufacturer ?? "")}::${favoritesOnly ? "favorites" : "all-items"}::${customOnly ? "custom-only" : "all-sources"}::${includeCustom === false ? "catalog" : "all"}::${limit}`;
 
+// Кэш результатов поиска пикера ключуется по query/фильтрам (buildIngredientCacheKey),
+// но не по тому, каким fetcher'ом (`searchIngredients`) они получены. Пикер не
+// размонтируется при смене источника данных — например, переключение «Склад» ↔
+// «Каталог» в редакторе рецепта (ingredient-editor.tsx) меняет только этот проп на
+// том же экземпляре компонента. Без привязки к fetcher'у пустой результат,
+// закэшированный под ключом «пшеничный» на складе, отдавался бы из кэша и при
+// последующем поиске «пшеничный» в каталоге — сеть так и не вызывалась бы.
+// Эта обёртка над Map сбрасывает кэш сама, как только меняется fetcher, так что
+// вызывающему (эффекту поиска в IngredientPicker) не нужно об этом помнить.
+export const createIngredientPickerSearchCache = () => {
+  let activeFetcher: unknown;
+  let hasActiveFetcher = false;
+  let store = new Map<string, IngredientSearchResult>();
+
+  const ensureFetcher = (fetcher: unknown) => {
+    if (!hasActiveFetcher || fetcher !== activeFetcher) {
+      activeFetcher = fetcher;
+      hasActiveFetcher = true;
+      store = new Map();
+    }
+  };
+
+  return {
+    get(fetcher: unknown, key: string): IngredientSearchResult | undefined {
+      ensureFetcher(fetcher);
+      return store.get(key);
+    },
+    set(fetcher: unknown, key: string, value: IngredientSearchResult): void {
+      ensureFetcher(fetcher);
+      store.set(key, value);
+    }
+  };
+};
+
 const shouldPromoteBrandToPrimaryRow = (item: IngredientSuggestionItem) => (
   item.subtype === "malt"
 );
@@ -630,16 +784,6 @@ const formatBadgeValue = (value: number) => (
   value % 1 === 0 ? String(value) : value.toFixed(1).replace(/\.0$/, "")
 );
 
-const readBadgeNumber = (...values: Array<number | null | undefined>) => {
-  for (const value of values) {
-    if (typeof value === "number" && Number.isFinite(value)) {
-      return value;
-    }
-  }
-
-  return null;
-};
-
 export type IngredientPickerTechnicalBadge = {
   key: string;
   label: string;
@@ -699,11 +843,7 @@ export const buildIngredientPickerTechnicalBadges = (item: IngredientSuggestionI
 
   if (technicalData.type === "hop") {
     const hop = technicalData as Extract<NonNullable<typeof technicalData>, { type: "hop" }>;
-    const alphaAcidPct = readBadgeNumber(
-      hop.alphaAcidPctTypical,
-      hop.alphaAcidPctMax,
-      hop.alphaAcidPctMin
-    );
+    const alphaAcidPct = resolveIngredientTechnicalDataHopAlphaAcidPct(hop);
     const hopFormLabel = formatHopFormLabel(hop.hopForm);
 
     pushBadge(alphaAcidPct != null ? `Альфа ${formatBadgeValue(alphaAcidPct)}%` : null);
@@ -722,7 +862,7 @@ export const buildIngredientPickerTechnicalBadges = (item: IngredientSuggestionI
     );
   } else if (technicalData.type === "yeast") {
     const yeast = technicalData as Extract<NonNullable<typeof technicalData>, { type: "yeast" }>;
-    pushBadge(yeast.form ? yeast.form.replaceAll("_", " ") : null);
+    pushBadge(resolveYeastFormLabelRu(yeast.form));
     pushBadge(yeast.attenuationPctTypical != null ? `Атт. ${formatBadgeValue(yeast.attenuationPctTypical)}%` : null);
     pushBadge(
       yeast.fermentationTempCMin != null && yeast.fermentationTempCMax != null
@@ -1035,6 +1175,140 @@ export const resolveIngredientPickerRowContent = (item: IngredientSuggestionItem
     subtitle,
     stockLabel
   };
+};
+
+// Содержимое строки результата пикера (имя + бейджи + мета) — общее для
+// одиночной записи и заголовка группы одноимённых записей (Б5), где оно
+// строится по репрезентативной (первой по ранжированию) записи группы.
+export const IngredientPickerResultRowFields = ({ item }: { item: IngredientSuggestionItem }) => {
+  const { primaryName, secondaryName, inlineKindLabel, inlineBrand, country, subtitle, stockLabel } = resolveIngredientPickerRowContent(item);
+  const ownershipBadgeLabel = resolveIngredientOwnershipBadgeLabel(item);
+  const brandLabel = resolveIngredientBrandLabel(item);
+  const technicalBadges = buildIngredientPickerTechnicalBadges(item);
+  const lowerMetaSummary = resolveIngredientPickerMetaSummary({
+    subtitle,
+    brandLabel: inlineBrand ? null : brandLabel
+  });
+  const showLowerMetaSummary = shouldSuppressIngredientPickerMetaSummary(item, technicalBadges)
+    ? null
+    : lowerMetaSummary;
+
+  return (
+    <div className="min-w-0">
+      <div className="flex min-w-0 items-center gap-2">
+        <span className="truncate font-medium text-foreground">{primaryName}</span>
+        {ownershipBadgeLabel ? (
+          <span className="shrink-0 rounded-full bg-warning-subtle px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-warning-subtle-foreground ring-1 ring-warning/30">
+            {ownershipBadgeLabel}
+          </span>
+        ) : null}
+        {inlineKindLabel ? (
+          <span className="truncate rounded-full bg-card px-2 py-0.5 text-[10px] font-medium text-muted-foreground ring-1 ring-ring">
+            {inlineKindLabel}
+          </span>
+        ) : null}
+        {inlineBrand ? (
+          <span className="inline-flex min-w-0 items-center gap-2 text-sm font-semibold text-foreground">
+            <span aria-hidden="true" className="text-muted-foreground">•</span>
+            <span className="truncate">{inlineBrand}</span>
+            {country ? (
+              <CountryFlag
+                countryCode={country.code}
+                className="h-3 w-4 shrink-0 ring-0"
+              />
+            ) : null}
+          </span>
+        ) : null}
+      </div>
+      {secondaryName ? <div className="text-xs text-muted-foreground">{secondaryName}</div> : null}
+      {inlineBrand ? (
+        showLowerMetaSummary ? (
+          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-muted-foreground">
+            {showLowerMetaSummary ? <span>{showLowerMetaSummary}</span> : null}
+          </div>
+        ) : null
+      ) : (
+        <IngredientPickerMetaLine
+          brandLabel={brandLabel}
+          country={country}
+          summary={showLowerMetaSummary}
+        />
+      )}
+      <IngredientPickerTechnicalBadges badges={technicalBadges} stockLabel={stockLabel} className="mt-1.5" />
+      <IngredientPickerInventoryMetaLine item={item} className="mt-1.5" compact />
+    </div>
+  );
+};
+
+// Строка производителя в раскрытой группе одноимённых записей (Б5) — «бренд ·
+// страна» с флагом, паттерн вторичной строки как в
+// imported-catalog-match-dialog.tsx (candidateSecondaryLine).
+export const IngredientPickerGroupMemberRow = ({
+  item,
+  onSelect
+}: {
+  item: IngredientSuggestionItem;
+  onSelect: (item: IngredientSuggestionItem) => void;
+}) => {
+  const { country } = resolveIngredientPickerRowContent(item);
+  const brandLabel = resolveIngredientBrandLabel(item);
+  const label = [brandLabel, country?.label].filter((part): part is string => Boolean(part)).join(" · ")
+    || item.displayName;
+
+  return (
+    <button
+      type="button"
+      role="option"
+      aria-selected={false}
+      onPointerDown={(event) => event.preventDefault()}
+      onClick={() => onSelect(item)}
+      className="flex w-full items-center gap-2 py-1.5 pl-8 pr-3 text-left text-sm hover:bg-accent"
+    >
+      {country ? (
+        <CountryFlag countryCode={country.code} className="h-3 w-4 shrink-0 ring-0" />
+      ) : null}
+      <span className="truncate text-foreground">{label}</span>
+    </button>
+  );
+};
+
+// Содержимое строки-группы одноимённых записей (Б5) — намеренно НЕ
+// переиспользует IngredientPickerResultRowFields: группа объединяет записи
+// РАЗНЫХ производителей (представитель — лишь первая по ранжированию), поэтому
+// бренд/флаг/техбейджи представителя показывать нельзя — это выглядело бы как
+// конкретная запись конкретного производителя, а внутри их много и техданные
+// (EBC, экстрактивность и т.п.) у них различаются. Строка-группа показывает
+// только чистое имя + маркер раскрытия, и число экземпляров — но только когда
+// оно достоверно (см. isIngredientPickerFullResultSetLoaded).
+export const IngredientPickerGroupRowFields = ({
+  row,
+  isExpanded,
+  isFullResultSetLoaded
+}: {
+  row: Extract<IngredientPickerResultRow, { kind: "group" }>;
+  isExpanded: boolean;
+  isFullResultSetLoaded: boolean;
+}) => {
+  const { primaryName } = resolveIngredientPickerRowContent(row.representative);
+
+  return (
+    <div className="flex w-full min-w-0 items-center gap-2">
+      <span className="min-w-0 flex-1 truncate font-medium text-foreground">{primaryName}</span>
+      {isFullResultSetLoaded ? (
+        <span
+          data-testid="ingredient-picker-group-count"
+          className="shrink-0 rounded-full bg-card px-1.5 py-0.5 text-[10px] text-muted-foreground ring-1 ring-ring"
+        >
+          {row.items.length}
+        </span>
+      ) : null}
+      <ChevronDown
+        aria-hidden="true"
+        data-testid="ingredient-picker-group-chevron"
+        className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
+      />
+    </div>
+  );
 };
 
 type IngredientSelectionCardProps = {
@@ -1936,6 +2210,7 @@ export const IngredientPicker = ({
   includeCustom = true,
   allowCustomOnlyFilter = false,
   enableQuickStart = false,
+  groupSameNamed = false,
   searchOnEmptyQuery = false,
   proposeIngredient = defaultProposeIngredient,
   searchIngredients = defaultSearchIngredients,
@@ -1973,12 +2248,14 @@ export const IngredientPicker = ({
   const [isQuickStartRecentLoading, setIsQuickStartRecentLoading] = useState(false);
   const [suppressQuickStart, setSuppressQuickStart] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  // Б5: ключ раскрытой группы одноимённых записей (см. buildIngredientPickerResultRows).
+  const [expandedGroupKey, setExpandedGroupKey] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [hasResolvedQuery, setHasResolvedQuery] = useState(false);
   const [emptyStateMessage, setEmptyStateMessage] = useState<string | null>(null);
-  const cacheRef = useRef(new Map<string, IngredientSearchResult>());
+  const cacheRef = useRef(createIngredientPickerSearchCache());
   const quickStartCacheRef = useRef(new Map<string, IngredientPickerQuickStartResult>());
   const committedLabelRef = useRef(value ?? "");
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -2057,6 +2334,20 @@ export const IngredientPicker = ({
     isBroadMatch: searchResult.isBroadMatch,
     isExpanded
   }), [isExpanded, searchResult.isBroadMatch, searchResult.items]);
+
+  // Б5: строки результатов — либо 1:1 с visibleItems (groupSameNamed=false,
+  // поведение остальных потребителей не меняется), либо одноимённые каталожные
+  // записи схлопнуты в одну строку-группу.
+  const visibleRows = useMemo(() => buildIngredientPickerResultRows({
+    items: visibleItems,
+    groupSameNamed
+  }), [groupSameNamed, visibleItems]);
+
+  // Раскрытие группы сбрасывается при любой смене видимого набора строк — новый
+  // запрос, смена фильтров/скоупа, «Показать все результаты», закрытие пикера.
+  useEffect(() => {
+    setExpandedGroupKey(null);
+  }, [visibleItems]);
 
   useEffect(() => {
     setQuery(value ?? "");
@@ -2192,7 +2483,7 @@ export const IngredientPicker = ({
       includeCustom,
       limit: requestedLimit
     });
-    const cached = cacheRef.current.get(cacheKey);
+    const cached = cacheRef.current.get(searchIngredients, cacheKey);
     if (cached) {
       setSearchResult(cached);
       setActiveIndex(0);
@@ -2232,7 +2523,7 @@ export const IngredientPicker = ({
           activeFavoritesOnly,
           activeCustomOnly
         );
-        cacheRef.current.set(cacheKey, nextResult);
+        cacheRef.current.set(searchIngredients, cacheKey, nextResult);
         setSearchResult(nextResult);
         setActiveIndex(0);
         setIsLoading(false);
@@ -2322,14 +2613,27 @@ export const IngredientPicker = ({
     };
   }, [category, hasHydratedRecentSelections, initialQuickStartAvailability, initialQuickStartData, loadQuickStartIngredients, quickStartRecentReferences, quickStartRecentReferencesKey, recentSelections, showQuickStart, subtype]);
 
-  const grouped = useMemo(() => visibleItems.reduce<Record<string, IngredientSuggestionItem[]>>((acc, item) => {
-    const groupKey = item.category ?? item.type;
+  // Существующая группировка по категориям (для заголовков-секций, когда поиск
+  // идёт без явного category) — прецедент паттерна для Б5, работает над
+  // строками (visibleRows), а не сырыми item'ами, чтобы группа одноимённых
+  // записей не расползлась по секциям.
+  const groupedRows = useMemo(() => visibleRows.reduce<Record<string, IngredientPickerResultRow[]>>((acc, row) => {
+    const representative = row.kind === "group" ? row.representative : row.item;
+    const groupKey = representative.category ?? representative.type;
     acc[groupKey] ??= [];
-    acc[groupKey].push(item);
+    acc[groupKey].push(row);
     return acc;
-  }, {}), [visibleItems]);
+  }, {}), [visibleRows]);
 
-  const showGroupHeaders = !category && Object.keys(grouped).length > 1;
+  const showGroupHeaders = !category && Object.keys(groupedRows).length > 1;
+
+  // Дефект живого прогона: до тех пор пока сервер не отдал весь набор
+  // результатов, count строки-группы недостоверен (см.
+  // isIngredientPickerFullResultSetLoaded) — прячем число, оставляем маркер.
+  const isGroupCountTrustworthy = isIngredientPickerFullResultSetLoaded({
+    loadedItemsCount: searchResult.items.length,
+    total: searchResult.total
+  });
 
   const commitSelection = (item: IngredientSuggestionItem) => {
     if (enableQuickStart) {
@@ -2361,6 +2665,26 @@ export const IngredientPicker = ({
     setHasResolvedQuery(false);
     setEmptyStateMessage(null);
     onSelect(item);
+  };
+
+  const toggleGroupExpansion = (key: string) => {
+    setExpandedGroupKey((current) => resolveIngredientPickerNextExpandedGroupKey({
+      currentExpandedKey: current,
+      activatedKey: key
+    }));
+  };
+
+  // Б5: единая точка активации строки результата (клик/Enter) — делегирует
+  // чистой resolveIngredientPickerRowActivation, чтобы контракт «группа не
+  // выбирает» был завязан на тестируемую функцию, а не разбросан по JSX.
+  const activateRow = (row: IngredientPickerResultRow) => {
+    const activation = resolveIngredientPickerRowActivation(row);
+    if (activation.type === "expand") {
+      toggleGroupExpansion(activation.key);
+      return;
+    }
+
+    commitSelection(activation.item);
   };
 
   const applyScopedSearchState = ({
@@ -2795,7 +3119,7 @@ export const IngredientPicker = ({
         </div>
       ) : null}
 
-      {visibleItems.length > 0 ? (
+      {visibleRows.length > 0 ? (
         <div id={listboxId} role="listbox">
           {ingredientSectionTitle ? (
             <div className="flex items-center justify-between gap-3 bg-muted px-3 py-1 text-xs text-muted-foreground">
@@ -2806,98 +3130,84 @@ export const IngredientPicker = ({
             </div>
           ) : null}
 
-          {Object.entries(grouped).map(([group, groupItems]) => (
+          {Object.entries(groupedRows).map(([group, rows]) => (
             <div key={group} className="border-b last:border-b-0">
               {showGroupHeaders ? (
                 <div className="bg-muted px-3 py-1 text-xs text-muted-foreground">
                   {ingredientCategoryLabels[group as IngredientCategory] ?? group}
                 </div>
               ) : null}
-              {groupItems.map((item) => {
-                const index = visibleItems.findIndex((candidate) => (
-                  candidate.id === item.id
-                  && candidate.source === item.source
-                ));
-                const { primaryName, secondaryName, inlineKindLabel, inlineBrand, country, subtitle, stockLabel } = resolveIngredientPickerRowContent(item);
-                const ownershipBadgeLabel = resolveIngredientOwnershipBadgeLabel(item);
-                const brandLabel = resolveIngredientBrandLabel(item);
-                const technicalBadges = buildIngredientPickerTechnicalBadges(item);
-                const lowerMetaSummary = resolveIngredientPickerMetaSummary({
-                  subtitle,
-                  brandLabel: inlineBrand ? null : brandLabel
-                });
-                const showLowerMetaSummary = shouldSuppressIngredientPickerMetaSummary(item, technicalBadges)
-                  ? null
-                  : lowerMetaSummary;
+              {rows.map((row) => {
+                const index = visibleRows.indexOf(row);
 
+                if (row.kind === "single") {
+                  const item = row.item;
+                  return (
+                    <div
+                      key={`${item.source}:${item.id}`}
+                      role="option"
+                      aria-selected={index === activeIndex}
+                      className={`px-3 py-2 text-sm hover:bg-accent ${index === activeIndex ? "bg-accent" : ""}`}
+                      onPointerDown={(event) => event.preventDefault()}
+                    >
+                      <div className="flex items-start gap-2">
+                        <button
+                          type="button"
+                          onClick={() => activateRow(row)}
+                          className="min-w-0 flex-1 text-left"
+                        >
+                          <IngredientPickerResultRowFields item={item} />
+                        </button>
+                        <IngredientFavoriteToggle
+                          reference={{
+                            source: item.source,
+                            id: item.id
+                          }}
+                          initialFavorite={item.isFavorite ?? false}
+                          suppressParentInteraction
+                          label={item.isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
+                        />
+                      </div>
+                    </div>
+                  );
+                }
+
+                // Б5: строка-группа одноимённых каталожных записей — клик
+                // раскрывает список производителей вместо выбора.
+                const isGroupExpanded = expandedGroupKey === row.key;
                 return (
-                  <div
-                    key={`${item.source}:${item.id}`}
-                    role="option"
-                    aria-selected={index === activeIndex}
-                    className={`px-3 py-2 text-sm hover:bg-accent ${index === activeIndex ? "bg-accent" : ""}`}
-                    onPointerDown={(event) => event.preventDefault()}
-                  >
-                    <div className="flex items-start gap-2">
+                  <div key={`group:${row.key}`}>
+                    <div
+                      role="option"
+                      aria-selected={index === activeIndex}
+                      aria-expanded={isGroupExpanded}
+                      className={`px-3 py-2 text-sm hover:bg-accent ${index === activeIndex ? "bg-accent" : ""}`}
+                      onPointerDown={(event) => event.preventDefault()}
+                    >
                       <button
                         type="button"
-                        onClick={() => commitSelection(item)}
-                        className="min-w-0 flex-1 text-left"
+                        onClick={() => activateRow(row)}
+                        className="flex w-full min-w-0 items-center gap-2 text-left"
+                        data-testid="ingredient-picker-group-row"
                       >
-                        <div className="min-w-0">
-                          <div className="flex min-w-0 items-center gap-2">
-                            <span className="truncate font-medium text-foreground">{primaryName}</span>
-                            {ownershipBadgeLabel ? (
-                              <span className="shrink-0 rounded-full bg-warning-subtle px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-warning-subtle-foreground ring-1 ring-warning/30">
-                                {ownershipBadgeLabel}
-                              </span>
-                            ) : null}
-                            {inlineKindLabel ? (
-                              <span className="truncate rounded-full bg-card px-2 py-0.5 text-[10px] font-medium text-muted-foreground ring-1 ring-ring">
-                                {inlineKindLabel}
-                              </span>
-                            ) : null}
-                            {inlineBrand ? (
-                              <span className="inline-flex min-w-0 items-center gap-2 text-sm font-semibold text-foreground">
-                                <span aria-hidden="true" className="text-muted-foreground">•</span>
-                                <span className="truncate">{inlineBrand}</span>
-                                {country ? (
-                                  <CountryFlag
-                                    countryCode={country.code}
-                                    className="h-3 w-4 shrink-0 ring-0"
-                                  />
-                                ) : null}
-                              </span>
-                            ) : null}
-                          </div>
-                          {secondaryName ? <div className="text-xs text-muted-foreground">{secondaryName}</div> : null}
-                          {inlineBrand ? (
-                            showLowerMetaSummary ? (
-                              <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-muted-foreground">
-                                {showLowerMetaSummary ? <span>{showLowerMetaSummary}</span> : null}
-                              </div>
-                            ) : null
-                          ) : (
-                            <IngredientPickerMetaLine
-                              brandLabel={brandLabel}
-                              country={country}
-                              summary={showLowerMetaSummary}
-                            />
-                          )}
-                          <IngredientPickerTechnicalBadges badges={technicalBadges} stockLabel={stockLabel} className="mt-1.5" />
-                          <IngredientPickerInventoryMetaLine item={item} className="mt-1.5" compact />
-                        </div>
+                        <IngredientPickerGroupRowFields
+                          row={row}
+                          isExpanded={isGroupExpanded}
+                          isFullResultSetLoaded={isGroupCountTrustworthy}
+                        />
                       </button>
-                      <IngredientFavoriteToggle
-                        reference={{
-                          source: item.source,
-                          id: item.id
-                        }}
-                        initialFavorite={item.isFavorite ?? false}
-                        suppressParentInteraction
-                        label={item.isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
-                      />
                     </div>
+                    {isGroupExpanded ? (
+                      <div className="border-t border-border bg-muted/40 py-1" data-testid="ingredient-picker-group-members">
+                        {row.items.map((memberItem) => (
+                          <IngredientPickerGroupMemberRow
+                            key={`${memberItem.source}:${memberItem.id}`}
+                            item={memberItem}
+                            onSelect={commitSelection}
+                          />
+                        ))}
+                      </div>
+                    ) : null}
                   </div>
                 );
               })}
@@ -3059,7 +3369,7 @@ export const IngredientPicker = ({
             role="combobox"
             aria-expanded={isOpen}
             aria-busy={isLoadingVisible}
-            aria-controls={showSuggestions && visibleItems.length > 0 ? listboxId : undefined}
+            aria-controls={showSuggestions && visibleRows.length > 0 ? listboxId : undefined}
             aria-autocomplete="list"
             onKeyDown={(event) => {
               if (event.key === "Escape") {
@@ -3111,10 +3421,10 @@ export const IngredientPicker = ({
                 clearGroupFilter();
                 return;
               }
-              if (visibleItems.length === 0) return;
+              if (visibleRows.length === 0) return;
               if (event.key === "ArrowDown") {
                 event.preventDefault();
-                setActiveIndex((index) => Math.min(index + 1, visibleItems.length - 1));
+                setActiveIndex((index) => Math.min(index + 1, visibleRows.length - 1));
               }
               if (event.key === "ArrowUp") {
                 event.preventDefault();
@@ -3122,9 +3432,12 @@ export const IngredientPicker = ({
               }
               if (event.key === "Enter") {
                 event.preventDefault();
-                const active = visibleItems[activeIndex];
+                // Б5: строки-стрелки ходят только по верхним строкам (группа =
+                // 1 позиция); Enter на группе раскрывает список производителей
+                // (не выбирает), выбор конкретного производителя — мышью.
+                const active = visibleRows[activeIndex];
                 if (active) {
-                  commitSelection(active);
+                  activateRow(active);
                 }
               }
             }}

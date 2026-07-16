@@ -69,7 +69,7 @@ describe("calculator pages", () => {
     const html = renderToStaticMarkup(React.createElement(CalculatorsPage));
 
     expect(html).toContain("Калькуляторы для пивоварения");
-    expect(html).toContain("Расчеты для домашнего пивоварения");
+    expect(html).toContain("Расчёты для домашнего пивоварения");
     expect(html).not.toContain("Что хотите рассчитать?");
     expect(html).not.toContain("Фильтры калькуляторов");
     expect(html).not.toContain("Быстрые переходы");

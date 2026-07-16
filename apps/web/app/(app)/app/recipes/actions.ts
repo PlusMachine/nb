@@ -156,7 +156,7 @@ const mapRecipeEditorError = (error: unknown): RecipeEditorResult => {
     }
   }
 
-  return { ok: false, message: "Не удалось сохранить рецепт. Попробуйте еще раз." };
+  return { ok: false, message: "Не удалось сохранить рецепт. Попробуйте ещё раз." };
 };
 
 // Отсечка мегабайтного входа импорта ДО парсинга: строку меряем напрямую,
@@ -201,7 +201,7 @@ const mapRecipeImportError = (error: unknown, formatLabel: string): RecipeEditor
     if (error.message === "IMPORTED_CUSTOM_NAME_CONFLICT") {
       return {
         ok: false,
-        message: `${formatLabel}: не удалось подобрать уникальное имя для одного из импортируемых ингредиентов. Переименуйте похожий собственный ингредиент или попробуйте импорт еще раз.`
+        message: `${formatLabel}: не удалось подобрать уникальное имя для одного из импортируемых ингредиентов. Переименуйте похожий собственный ингредиент или попробуйте импорт ещё раз.`
       };
     }
 
@@ -211,11 +211,11 @@ const mapRecipeImportError = (error: unknown, formatLabel: string): RecipeEditor
   }
 
   const mapped = mapRecipeEditorError(error);
-  const genericMessage = "Не удалось сохранить рецепт. Попробуйте еще раз.";
+  const genericMessage = "Не удалось сохранить рецепт. Попробуйте ещё раз.";
   return {
     ...mapped,
     message: mapped.message === genericMessage
-      ? `${formatLabel}: импорт не выполнен. Проверьте файл и попробуйте еще раз.`
+      ? `${formatLabel}: импорт не выполнен. Проверьте файл и попробуйте ещё раз.`
       : `${formatLabel}: ${mapped.message}`
   };
 };
@@ -304,7 +304,7 @@ export const deleteRecipeAction = async (recipeId: string): Promise<{ ok: boolea
       return { ok: false, message: "Рецепт не найден или уже недоступен." };
     }
 
-    return { ok: false, message: "Не удалось удалить рецепт. Попробуйте еще раз." };
+    return { ok: false, message: "Не удалось удалить рецепт. Попробуйте ещё раз." };
   }
 };
 
@@ -615,7 +615,9 @@ export const importBeerXmlRecipeAction = async (
     const user = await requireUser();
     assertImportInputWithinLimit(beerXml);
     const { createRecipeFromCanonicalImport } = await import("@/features/recipes/interop/import-service");
+    const { resolveImportedStyleId, readImportedStyleHint } = await import("@/features/recipes/interop/resolve-imported-style");
     const canonical = importBeerXmlToCanonicalRecipe(beerXml);
+    canonical.styleId = await resolveImportedStyleId(readImportedStyleHint(canonical.importMeta));
     const recipe = await createRecipeFromCanonicalImport(user.id, canonical);
 
     revalidatePath("/app/recipes");
@@ -639,7 +641,9 @@ export const importBrewfatherJsonRecipeAction = async (
     const user = await requireUser();
     assertImportInputWithinLimit(payload);
     const { createRecipeFromCanonicalImport } = await import("@/features/recipes/interop/import-service");
+    const { resolveImportedStyleId, readImportedStyleHint } = await import("@/features/recipes/interop/resolve-imported-style");
     const canonical = importBrewfatherJsonToCanonicalRecipe(payload);
+    canonical.styleId = await resolveImportedStyleId(readImportedStyleHint(canonical.importMeta));
     const recipe = await createRecipeFromCanonicalImport(user.id, canonical);
 
     revalidatePath("/app/recipes");
@@ -654,6 +658,51 @@ export const importBrewfatherJsonRecipeAction = async (
   } catch (error) {
     return mapRecipeImportError(error, "Brewfather JSON");
   }
+};
+
+export type ImportedCatalogMatchRequestLine = {
+  localId: string;
+  name: string;
+  type: IngredientType;
+  category: IngredientCategory;
+  subtype?: string | null;
+};
+
+export type ImportedCatalogMatchResultLine = {
+  localId: string;
+  candidates: IngredientSuggestionItem[];
+};
+
+/**
+ * Пакетный подбор кандидатов из каталога для импортированных (name-only) строк
+ * рецепта. Использует тот же путь, что и ручной пикер (`searchUserCatalogIngredients`
+ * с учётом склада/custom/избранного пользователя), поэтому результаты пригодны
+ * для прямого применения через `applySelection` на клиенте. Ошибка по одной
+ * строке не роняет весь запрос — такая строка просто остаётся без кандидатов.
+ */
+export const matchImportedIngredientsToCatalogAction = async (
+  lines: ImportedCatalogMatchRequestLine[]
+): Promise<ImportedCatalogMatchResultLine[]> => {
+  const user = await requireUser();
+  const { searchUserCatalogIngredients } = await import("@/features/ingredients/catalog-service");
+
+  return Promise.all((lines ?? []).slice(0, 100).map(async (line) => {
+    const q = line.name?.trim();
+    if (!q) {
+      return { localId: line.localId, candidates: [] };
+    }
+    try {
+      const result = await searchUserCatalogIngredients(user.id, {
+        q,
+        type: line.type,
+        category: line.category,
+        limit: 5
+      });
+      return { localId: line.localId, candidates: result.items };
+    } catch {
+      return { localId: line.localId, candidates: [] };
+    }
+  }));
 };
 
 export const createRecipeDraftForImageUploadAction = async (

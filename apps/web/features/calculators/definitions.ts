@@ -245,7 +245,7 @@ const formatSg = (value: number) => value.toFixed(3);
 // info — постоянная сноска (не ошибка, без тревожной иконки), warning — требует внимания.
 export const coreWarningCopy: Record<string, { text: string; tone: "info" | "warning" }> = {
   mash_ph_ballpark_estimate: { text: "Оценка pH ориентировочная — не замена pH-метру.", tone: "info" },
-  mash_acid_model_practical_approximation: { text: "Расчет кислоты — практическое приближение, не точная лабораторная модель.", tone: "info" },
+  mash_acid_model_practical_approximation: { text: "Расчёт кислоты — практическое приближение, не точная лабораторная модель.", tone: "info" },
   high_sodium: { text: "Высокий натрий (>150 ppm) — возможен солоноватый привкус.", tone: "warning" },
   high_sulfate: { text: "Высокий сульфат (>350 ppm) — резкая, сухая горечь.", tone: "warning" },
   high_chloride: { text: "Высокий хлорид (>250 ppm) — риск излишней полноты/солоноватости.", tone: "warning" },
@@ -1026,14 +1026,14 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         { value: "add_extract_to_gravity", label: "Добавить экстракт/сахар до цели" },
         { value: "extra_boil_time", label: "Дополнительное время кипячения" }
       ]),
-      numberField("currentVolumeL", "Текущий объем", "л", { min: 0.1 }),
+      numberField("currentVolumeL", "Текущий объём", "л", { min: 0.1 }),
       numberField("currentGravity", "Текущая плотность", "SG", { min: 1, step: 0.001 }),
       numberField("targetGravity", "Целевая плотность", "SG", {
         min: 1,
         step: 0.001,
         visibleWhen: (state) => DILUTION_GRAVITY_TARGET_MODES.has(s(state.mode, "dilute_to_gravity"))
       }),
-      numberField("targetVolumeL", "Целевой объем", "л", {
+      numberField("targetVolumeL", "Целевой объём", "л", {
         min: 0.1,
         visibleWhen: (state) => DILUTION_VOLUME_TARGET_MODES.has(s(state.mode, "dilute_to_gravity"))
       }),
@@ -1348,7 +1348,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       return { ...withGravity, additions: [{ ...first, alphaAcidPercent: params.aa }, ...currentRows.slice(1)] };
     },
     fields: [
-      numberField("postBoilVolumeL", "Объем после кипячения", "л", { min: 0.1 }),
+      numberField("postBoilVolumeL", "Объём после кипячения", "л", { min: 0.1 }),
       numberField("wortGravity", "Плотность сусла", "SG", {
         min: 0,
         dynamicUnit: (state) => gravityScaleUnitLabel(resolveGravityUnit(state)),
@@ -1489,7 +1489,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
     },
     fields: [
       selectField("sugarType", "Праймер", sugarTypeOptions, { variant: "chips", fullWidth: true }),
-      numberField("beerVolumeL", "Объем пива", "л", { min: 0.1 }),
+      numberField("beerVolumeL", "Объём пива", "л", { min: 0.1 }),
       numberField("beerTemperatureC", "Температура пива", "°C", {
         step: 0.5,
         helper: "В конце брожения, даже если пиво уже охладили"
@@ -1745,7 +1745,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         : stored
     ),
     fields: [
-      numberField("wortVolumeL", "Объем сусла", "л", { min: 0.1 }),
+      numberField("wortVolumeL", "Объём сусла", "л", { min: 0.1 }),
       numberField("gravity", "Плотность", "SG", {
         min: 1,
         dynamicUnit: (state) => gravityScaleUnitLabel(resolveGravityUnit(state)),
@@ -1774,7 +1774,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         max: 100,
         step: 1,
         advanced: true,
-        helper: "Пусто — считаем по дате производства или берем типовую"
+        helper: "Пусто — считаем по дате производства или берём типовую"
       })
     ],
     calculate: (state) => {
@@ -1795,7 +1795,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         ? `${formatLiters(result.starterVolumeL)} стартера`
         : starterMode === "none" && result.pitchStatus === "underpitch"
           ? "Дрожжей не хватает — добавьте пакет или сделайте стартер"
-          : "Без стартера по расчету";
+          : "Без стартера по расчёту";
 
       const stats: CalculatorResultStat[] = [
         { label: "Нужно клеток", value: `${compactNumber(result.requiredCellsBillion, 0)} млрд` },
@@ -1898,7 +1898,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         advanced: true,
         visibleWhen: (state) => s(state.methodPreset, "mashTunWithSparge") !== "extract"
       }),
-      numberField("kettleLossL", "Потери в котле", "л", { min: 0, advanced: true, helper: "Мертвый объем котла/фильтра — что не сливается" }),
+      numberField("kettleLossL", "Потери в котле", "л", { min: 0, advanced: true, helper: "Мёртвый объём котла/фильтра — что не сливается" }),
       numberField("trubChillerLossL", "Осадок/чиллер", "л", { min: 0, advanced: true, helper: "Остается с хмелевым осадком и в чиллере после кипячения" }),
       numberField("coolingShrinkagePercent", "Усадка при охлаждении", "%", { min: 0, advanced: true })
     ],
@@ -1928,7 +1928,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       stats.push(
         { label: "До кипячения", value: formatLiters(result.preBoilVolumeL) },
         { label: "После кипячения", value: formatLiters(result.postBoilHotVolumeL) },
-        { label: "Холодный объем", value: formatLiters(result.postBoilCoolVolumeL) }
+        { label: "Холодный объём", value: formatLiters(result.postBoilCoolVolumeL) }
       );
 
       return {
@@ -1940,7 +1940,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         stats,
         warnings: translateCoreWarnings(result.warnings),
         links: [
-          { label: "Использовать объемы в воде и pH", href: buildCalculatorHref("water-ph", { mashWater: result.mashWaterL, spargeWater: result.spargeWaterL }) },
+          { label: "Использовать объёмы в воде и pH", href: buildCalculatorHref("water-ph", { mashWater: result.mashWaterL, spargeWater: result.spargeWaterL }) },
           ...relatedLinks(["dilution-boiloff", "ibu", "unit-converter"])
         ]
       };
@@ -1965,7 +1965,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         { value: "infusion", label: "Долив кипятка" }
       ], { variant: "segmented" }),
       numberField("grainKg", "Зерно", "кг", { min: 0, step: 0.1 }),
-      numberField("mashWaterL", "Объем воды", "л", {
+      numberField("mashWaterL", "Объём воды", "л", {
         min: 0.1,
         visibleWhen: (state) => s(state.mode, "strike") === "strike"
       }),
@@ -1982,7 +1982,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         step: 0.1,
         advanced: true,
         visibleWhen: (state) => s(state.mode, "strike") === "strike",
-        helper: "Сколько тепла заберет холодный котел, в эквиваленте литров воды. Прогреваете заранее — оставьте 0"
+        helper: "Сколько тепла заберёт холодный котёл, в эквиваленте литров воды. Прогреваете заранее — оставьте 0"
       }),
       numberField("currentMashWaterL", "Воды в заторе", "л", {
         min: 0.1,
@@ -2022,7 +2022,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
           ],
           warnings: translateCoreWarnings(result.warnings),
           links: [
-            { label: "Учесть объем в воде на варку", href: buildCalculatorHref("brewing-water-volume", { grainWeightKg: grainKg, mashThicknessLPerKg: result.newThicknessLPerKg }) },
+            { label: "Учесть объём в воде на варку", href: buildCalculatorHref("brewing-water-volume", { grainWeightKg: grainKg, mashThicknessLPerKg: result.newThicknessLPerKg }) },
             ...relatedLinks(["water-ph", "brewhouse-efficiency", "unit-converter"])
           ]
         };
@@ -2052,7 +2052,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         ],
         warnings: translateCoreWarnings(result.warnings),
         links: [
-          { label: "Учесть объем в воде на варку", href: buildCalculatorHref("brewing-water-volume", { grainWeightKg: grainKg, mashThicknessLPerKg: result.mashThicknessLPerKg }) },
+          { label: "Учесть объём в воде на варку", href: buildCalculatorHref("brewing-water-volume", { grainWeightKg: grainKg, mashThicknessLPerKg: result.mashThicknessLPerKg }) },
           ...relatedLinks(["water-ph", "brewhouse-efficiency", "unit-converter"])
         ]
       };
@@ -2076,7 +2076,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         : stored
     ),
     fields: [
-      numberField("batchVolumeL", "Объем партии", "л", { min: 0.1 }),
+      numberField("batchVolumeL", "Объём партии", "л", { min: 0.1 }),
       selectField("colorUnit", "Шкала цвета", [
         { value: "EBC", label: "EBC" },
         { value: "Lovibond", label: "°L" }
@@ -2175,7 +2175,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         { value: "measure", label: "Узнать эффективность" },
         { value: "predict", label: "Прогноз НП" }
       ], { variant: "segmented" }),
-      numberField("batchVolumeL", "Объем сусла", "л", {
+      numberField("batchVolumeL", "Объём сусла", "л", {
         min: 0.1,
         helper: "В который замеряете плотность — обычно в ферментере"
       }),
@@ -2302,7 +2302,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       sugarPerLiter: params.sugarPerLiter ?? state.sugarPerLiter
     }),
     fields: [
-      numberField("beerVolumeL", "Объем пива", "л", { min: 0.1 }),
+      numberField("beerVolumeL", "Объём пива", "л", { min: 0.1 }),
       numberField("packagingLossL", "Потери при розливе", "л", { min: 0 }),
       selectField("bottleSizeL", "Бутылка", [
         { value: "0.33", label: "0.33 л" },
@@ -2323,7 +2323,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       });
 
       const stats: CalculatorResultStat[] = [
-        { label: "Объем розлива", value: formatLiters(result.packageVolumeL) }
+        { label: "Объём розлива", value: formatLiters(result.packageVolumeL) }
       ];
       if (sugarPerLiter > 0) {
         stats.push({ label: "Сахар на бутылку", value: formatGrams(result.sugarPerBottleG) });
@@ -2376,7 +2376,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         { value: "speise", label: "Шпайзе / гайл" },
         { value: "krausen", label: "Кройцен" }
       ], { variant: "segmented" }),
-      numberField("beerVolumeL", "Объем пива", "л", { min: 0.1 }),
+      numberField("beerVolumeL", "Объём пива", "л", { min: 0.1 }),
       numberField("targetCo2", "Целевой CO2", "об.", { min: 0, step: 0.1 }),
       numberField("speiseGravity", "Плотность сусла", "SG", {
         min: 1,
@@ -2403,9 +2403,9 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       });
 
       return {
-        primary: { label: "Добавить сусло", value: formatLiters(result.speiseVolumeToAddL), helper: `Финальный объем ${formatLiters(result.finalVolumeL)}` },
+        primary: { label: "Добавить сусло", value: formatLiters(result.speiseVolumeToAddL), helper: `Финальный объём ${formatLiters(result.finalVolumeL)}` },
         stats: [
-          { label: "Финальный объем", value: formatLiters(result.finalVolumeL) },
+          { label: "Финальный объём", value: formatLiters(result.finalVolumeL) },
           { label: "Изменение ABV", value: formatPercent(result.approximateAbvChange, 2), helper: "дображивание в бутылке" },
           { label: "Остаточный CO2", value: `${result.residualCo2.toFixed(2)} об.`, helper: "по температуре пива" }
         ],

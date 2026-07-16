@@ -106,41 +106,45 @@ export function RecipeStyleStatsBlock({
   return (
     <section className="flex h-full flex-col overflow-hidden rounded-2xl border border-border/70 bg-card shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)]">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-muted/40 px-4 py-3">
-        <div className="flex min-w-0 items-center gap-2">
-          <h2 className="truncate text-sm font-semibold text-foreground">
-            {styleName && selectedStyleArticleHref ? (
-              <>
-                <span>Ваш рецепт и </span>
-                <a
-                  href={selectedStyleArticleHref}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={`Открыть описание BJCP стиля ${selectedStyle?.name ?? styleName}`}
-                  className="inline-flex min-w-0 items-center gap-1.5 rounded-md underline-offset-2 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  <span className="truncate">{`BJCP ${styleName}`}</span>
-                  <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                </a>
-              </>
-            ) : styleName ? `Ваш рецепт и BJCP ${styleName}` : "Расчёт показателей"}
-          </h2>
-          {comparableItems.length > 0 ? (
-            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${overallFit ? "bg-success-subtle text-success-subtle-foreground ring-1 ring-inset ring-success/30" : "bg-muted text-muted-foreground ring-1 ring-inset ring-border"}`}>
-              {overallFit ? <CircleCheck className="h-3 w-3" /> : <CircleAlert className="h-3 w-3" />}
-              {overallFit ? "В стиле" : "Отклонения"}
-            </span>
-          ) : null}
-          {hasSelectedStyle && hasCalculatedMetrics && !hasAnyStyleMetric ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground ring-1 ring-inset ring-border">
-              <CircleAlert className="h-3 w-3" />
-              Диапазоны BJCP не указаны
-            </span>
-          ) : null}
-          {recalculating ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-              <Loader2 className="h-3 w-3 animate-spin" />
-              Пересчёт…
-            </span>
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <div className="flex min-w-0 items-center gap-2">
+            <h2 className="truncate text-sm font-semibold text-foreground">
+              {hasSelectedStyle ? "Попадание в стиль" : "Расчёт показателей"}
+            </h2>
+            {comparableItems.length > 0 ? (
+              <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${overallFit ? "bg-success-subtle text-success-subtle-foreground ring-1 ring-inset ring-success/30" : "bg-muted text-muted-foreground ring-1 ring-inset ring-border"}`}>
+                {overallFit ? <CircleCheck className="h-3 w-3" /> : <CircleAlert className="h-3 w-3" />}
+                {overallFit ? "В стиле" : "Отклонения"}
+              </span>
+            ) : null}
+            {hasSelectedStyle && hasCalculatedMetrics && !hasAnyStyleMetric ? (
+              <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground ring-1 ring-inset ring-border">
+                <CircleAlert className="h-3 w-3" />
+                Диапазоны BJCP не указаны
+              </span>
+            ) : null}
+            {recalculating ? (
+              <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                <Loader2 className="h-3 w-3 animate-spin" />
+                Пересчёт…
+              </span>
+            ) : null}
+          </div>
+          {styleName ? (
+            selectedStyleArticleHref ? (
+              <a
+                href={selectedStyleArticleHref}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`Открыть описание BJCP стиля ${selectedStyle?.name ?? styleName}`}
+                className="inline-flex min-w-0 items-center gap-1.5 rounded-md text-xs text-muted-foreground underline-offset-2 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <span className="truncate">{`BJCP ${styleName}`}</span>
+                <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+              </a>
+            ) : (
+              <span className="truncate text-xs text-muted-foreground">{`BJCP ${styleName}`}</span>
+            )
           ) : null}
         </div>
         {previewError ? <p className="text-xs text-destructive">{previewError}</p> : null}

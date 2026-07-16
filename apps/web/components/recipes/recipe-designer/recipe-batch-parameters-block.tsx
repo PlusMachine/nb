@@ -129,7 +129,7 @@ export function RecipeBatchParametersBlock({
           type="button"
           onClick={onOpenBitternessSettings}
           className="relative inline-flex h-7 w-7 items-center justify-center rounded-lg text-[13px] leading-none text-muted-foreground transition-colors before:absolute before:-inset-2 before:content-[''] hover:bg-accent hover:text-foreground"
-          aria-label="Открыть настройки расчета горечи"
+          aria-label="Открыть настройки расчёта горечи"
         >
           ⚙
         </button>

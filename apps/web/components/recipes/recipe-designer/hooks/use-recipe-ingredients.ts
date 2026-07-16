@@ -12,6 +12,7 @@ import type { RecipeDetailDto, RecipeHopUseType } from "@/features/recipes/contr
 import {
   applySelection,
   createEmptyIngredient,
+  resolveInitialAddIngredientInventoryIntentMode,
   resolveRecipeFermentableSubtype,
   serializeIngredient,
   toDesignerIngredient,
@@ -29,12 +30,15 @@ export function useRecipeIngredients({
   initialRecipe,
   initialIngredientSelection = null,
   boilTimeMinutes,
+  inventoryStockByCategory = {},
   onIngredientDeleted
 }: {
   initialRecipe?: RecipeDetailDto;
   initialIngredientSelection?: IngredientSuggestionItem | null;
   /** Время кипячения рецепта — им предзаполняется поле «мин» у хмеля на кипячение. */
   boilTimeMinutes: number;
+  /** Есть ли на складе хоть одна позиция по категории (Б3) — решает стартовый источник модалки добавления. */
+  inventoryStockByCategory?: Partial<Record<IngredientCategory, boolean>>;
   onIngredientDeleted?: (payload: { ingredient: DesignerIngredient; index: number }) => void;
 }) {
   const [ingredients, setIngredients] = useState<DesignerIngredient[]>(
@@ -114,13 +118,14 @@ export function useRecipeIngredients({
       null,
       boilTimeMinutes
     );
-    const draft = category === "water_treatment"
-      ? {
-          ...baseDraft,
-          inventoryIntentMode: "catalog" as const,
-          inventorySelectionMeta: null,
-        }
-      : baseDraft;
+    const draft = {
+      ...baseDraft,
+      inventoryIntentMode: resolveInitialAddIngredientInventoryIntentMode(
+        category,
+        Boolean(inventoryStockByCategory[category])
+      ),
+      inventorySelectionMeta: null
+    };
     maybeOpenEditor({
       localId: null,
       category,
@@ -168,6 +173,23 @@ export function useRecipeIngredients({
     });
   };
 
+  // Пакетное сопоставление импортированных строк с каталогом: для каждой
+  // выбранной позиции прогоняем тот же `applySelection`, что и ручной пикер —
+  // единицы/technicalData/имена и снятие статуса «Импортировано» гарантированно
+  // совпадают с ручным путём. Количество и localId сохраняются. Возвращает
+  // число реально применённых позиций.
+  const applyImportedCatalogMatches = (selections: Record<string, IngredientSuggestionItem>) => {
+    // Счётчик считаем по снимку списка ДО применения — не в теле updater'а
+    // (в StrictMode он может выполниться дважды и удвоить число).
+    const selectedIds = new Set(Object.keys(selections));
+    const applied = ingredients.filter((ingredient) => selectedIds.has(ingredient.localId)).length;
+    setIngredients((current) => current.map((ingredient) => {
+      const item = selections[ingredient.localId];
+      return item ? applySelection(ingredient, item) : ingredient;
+    }));
+    return applied;
+  };
+
   const updateIngredientQuantity = (localId: string, quantity: string) => {
     setIngredients((current) =>
       current.map((ingredient) => ingredient.localId === localId ? { ...ingredient, amountEnteredQuantity: quantity } : ingredient)
@@ -208,6 +230,7 @@ export function useRecipeIngredients({
     deleteIngredient,
     restoreIngredient,
     openImportedCatalogMatcher,
+    applyImportedCatalogMatches,
     updateIngredientQuantity,
     updateHopTimeMinutes
   };
