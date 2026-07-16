@@ -15,10 +15,20 @@ const nextConfig: NextConfig = {
   // через require в рантайме (импортируется @nb/push из серверного роута/моста).
   // @resvg/resvg-js — нативный .node-бинарь (рендер наклеек), webpack его не парсит.
   serverExternalPackages: ["web-push", "@resvg/resvg-js"],
-  // TTF наклеек читаются по динамическому пути (fontDirs) — file tracing сам
-  // их не находит, без этого standalone-сборка останется без шрифтов.
+  // TTF читаются по динамическому пути (fontDirs/labelFontsDir) — file tracing сам
+  // их не находит, без этого standalone-сборка останется без шрифтов. Нужно и
+  // наклейкам, и OG-карточкам (features/og/fonts.ts берёт те же Rubik TTF).
   outputFileTracingIncludes: {
-    "/api/labels/[recipeId]": ["./features/labels/fonts/**/*"]
+    "/api/labels/[recipeId]": ["./features/labels/fonts/**/*"],
+    "/api/og/recipes/[slug]": ["./features/labels/fonts/**/*"],
+    // Ф2: остальные рантайм-роуты OG-карточек (Satori читает те же Rubik TTF).
+    // Калькуляторы/обложки разделов рендерятся на билде (file-convention, SSG) —
+    // рантайм-зависимости от шрифтов у них нет, tracing им не нужен.
+    "/api/og/catalog/[source]/[id]": ["./features/labels/fonts/**/*"],
+    "/api/og/bjcp/[slug]": ["./features/labels/fonts/**/*"],
+    "/api/og/articles/[slug]": ["./features/labels/fonts/**/*"],
+    "/api/og/masters/[slug]": ["./features/labels/fonts/**/*"],
+    "/api/og/beer/[slug]": ["./features/labels/fonts/**/*"]
   },
   async redirects() {
     // Каталог переехал из рабочей зоны в публичную: /app/catalog -> /catalog.

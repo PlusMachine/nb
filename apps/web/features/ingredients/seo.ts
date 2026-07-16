@@ -198,6 +198,14 @@ export const buildCatalogListMetadata = (params: {
         title,
         description: landing.metaDescription,
         type: "website"
+      },
+      twitter: {
+        // Своей картинки у лендинга нет (сайтовый дефолт не наследуется при своём
+        // openGraph без images) → summary, иначе пустая большая карточка. Брендовая
+        // обложка хаба каталога — Ф3 (docs/specs/og-images.md §5.8).
+        card: "summary",
+        title,
+        description: landing.metaDescription
       }
     };
   }
@@ -220,6 +228,13 @@ export const buildCatalogListMetadata = (params: {
       title: CATALOG_BASE_TITLE,
       description: CATALOG_BASE_DESCRIPTION,
       type: "website"
+    },
+    twitter: {
+      // Своей картинки у хаба нет → summary (иначе пустая большая карточка).
+      // Брендовая обложка /catalog — Ф3 (docs/specs/og-images.md §5.8).
+      card: "summary",
+      title: CATALOG_BASE_TITLE,
+      description: CATALOG_BASE_DESCRIPTION
     }
   };
 };
@@ -354,6 +369,10 @@ export const buildIngredientDetailMetadata = (
   const title = `${namePart} — ${typeLabel}${brand ? ` ${brand}` : ""}`;
   const description = buildIngredientDetailDescription(item);
 
+  // Фото у ингредиентов нет → og:image всегда генерённая карточка каталога
+  // (docs/specs/og-images.md §5.3). width/height ставим — карточка ровно 1200×630.
+  const ogImage = { url: `/api/og/catalog/${params.source}/${params.id}`, width: 1200, height: 630, alt: title };
+
   if (params.source === "custom") {
     return {
       title,
@@ -365,7 +384,14 @@ export const buildIngredientDetailMetadata = (
       openGraph: {
         title,
         description,
-        type: "website"
+        type: "website",
+        images: [ogImage]
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: [ogImage.url]
       }
     };
   }
@@ -386,7 +412,14 @@ export const buildIngredientDetailMetadata = (
     openGraph: {
       title,
       description,
-      type: "website"
+      type: "website",
+      images: [ogImage]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage.url]
     }
   };
 };

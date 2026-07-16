@@ -88,13 +88,19 @@ beforeEach(() => {
 });
 
 describe("bjcp style page — OG/twitter image without a real hero photo", () => {
-  it("omits openGraph/twitter images when heroImageUrl is only the shared BJCP placeholder", async () => {
+  it("serves the generated OG card when heroImageUrl is only the shared BJCP placeholder", async () => {
     const { generateMetadata } = await import("../app/(public)/bjcp/[slug]/page");
 
     const metadata = await generateMetadata({ params: Promise.resolve({ slug: fakeArticle.slug }) });
 
-    expect(metadata.openGraph?.images).toBeUndefined();
-    // Без своего фото twitter card вовсе не объявляем — падает на сайтовый дефолт.
-    expect(metadata.twitter).toBeUndefined();
+    // Плейсхолдер (нет живого фото) → генерённая OG-карточка стиля 1200×630
+    // (docs/specs/og-images.md §5.4), а не сайтовый дефолт. Картинка теперь
+    // есть всегда → twitter summary_large_image.
+    const cardUrl = "http://localhost:3000/api/og/bjcp/bjcp-99z-placeholder-style";
+    expect(metadata.openGraph?.images).toEqual([
+      { url: cardUrl, width: 1200, height: 630, alt: "Тестовый стиль без фото" }
+    ]);
+    expect(metadata.twitter).toMatchObject({ card: "summary_large_image" });
+    expect((metadata.twitter as any)?.images).toEqual([cardUrl]);
   });
 });

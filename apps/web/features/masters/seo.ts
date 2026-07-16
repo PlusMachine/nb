@@ -49,6 +49,8 @@ export const buildMarketListMetadata = (): Metadata => ({
     description: MARKET_LIST_DESCRIPTION
   },
   twitter: {
+    // Картинки у списка нет (сайтовый дефолт не наследуется при своём openGraph) →
+    // summary, иначе пустая большая карточка. Генерённый OG — Ф2.
     card: "summary",
     title: MARKET_LIST_TITLE,
     description: MARKET_LIST_DESCRIPTION
@@ -65,6 +67,12 @@ export const buildMasterPageMetadata = (slug: string, snapshot: MasterPublishedS
   const canonicalPath = `/masters/${slug}`;
   const coverImagePath = resolveMasterCoverImagePath(snapshot);
 
+  // Фото галереи приоритетно; без него — генерённая OG-карточка мастера 1200×630
+  // (docs/specs/og-images.md §5.6). Картинка теперь есть всегда → summary_large_image.
+  const ogImage = coverImagePath
+    ? { url: coverImagePath, alt: title }
+    : { url: `/api/og/masters/${slug}`, width: 1200, height: 630, alt: title };
+
   return {
     title,
     description,
@@ -76,12 +84,13 @@ export const buildMasterPageMetadata = (slug: string, snapshot: MasterPublishedS
       url: canonicalPath,
       title,
       description,
-      images: coverImagePath ? [coverImagePath] : undefined
+      images: [ogImage]
     },
     twitter: {
-      card: coverImagePath ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title,
-      description
+      description,
+      images: [ogImage.url]
     }
   };
 };

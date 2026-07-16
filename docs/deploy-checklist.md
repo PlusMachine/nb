@@ -23,6 +23,15 @@
 - [ ] `SMS_PROVIDER` переключить с `log` на `smsc`/`smsru` + реквизиты (`SMS_API_KEY`, `SMS_LOGIN`, `SMS_SENDER`) — иначе код входа по SMS не уйдёт реально, а останется только в логах.
 - [ ] Настроить реальную отправку e-mail (OTP/magic-link/password-reset сейчас логируются в dev, `SMTP_*` в `.env.example`).
 
+## Брендинг / имя продукта
+
+- [ ] Принять финальное имя (кандидаты: «NB» / «hmelo») и применить его перед первым публичным деплоем:
+  - `SITE_NAME` в prod `.env` (сейчас дефолт «NB» из `@nb/shared`);
+  - wordmark OG-карточек — `apps/web/features/og/theme.ts` (после реализации `docs/specs/og-images.md`);
+  - статичная заглушка `apps/web/app/opengraph-image.png` — перегенерить `node apps/web/scripts/generate-og-image.mjs`;
+  - иконки `app/icon.svg` / `apple-icon.png` (знак «NB» нарисован текстом).
+- [ ] Если имя меняется ПОСЛЕ того, как ссылки уже ходили по чатам — сбросить кэш превью Telegram через @WebpageBot по ключевым URL.
+
 ## Прочее из `.env.example`
 
 - [ ] `AUTH_SECRET` — заменить dev-значение на случайный секрет ≥32 символов.

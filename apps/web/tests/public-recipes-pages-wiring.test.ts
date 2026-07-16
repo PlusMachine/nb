@@ -147,7 +147,9 @@ describe("public recipe pages wiring", () => {
     expect(metadata.title).toContain("рецепт");
     expect(metadata.title).toContain("Американский IPA");
     expect(metadata.description).toContain("ABV");
-    expect(metadata.openGraph?.images).toEqual(["/api/recipe-images/img-42/large"]);
+    expect(metadata.openGraph?.images).toEqual([
+      { url: "/api/recipe-images/img-42/large", alt: expect.stringContaining("Public IPA") }
+    ]);
   });
 
   it("вызывает notFound() прямо из generateMetadata для NOT_FOUND/FORBIDDEN (без стриминга заглушки)", async () => {

@@ -31,7 +31,7 @@ const loadBeerFromRoute = async ({ params, searchParams }: RouteParams) => {
 };
 
 export async function generateMetadata(route: RouteParams): Promise<Metadata> {
-  const beer = await loadBeerFromRoute(route);
+  const [beer, { k, b, n, abv }] = await Promise.all([loadBeerFromRoute(route), route.searchParams]);
   if (!beer) {
     // Статус решаем в metadata, до стриминга тела — как на странице рецепта.
     notFound();
@@ -39,13 +39,26 @@ export async function generateMetadata(route: RouteParams): Promise<Metadata> {
 
   const { APP_URL } = getServerEnv();
   const baseUrl = APP_URL.replace(/\/$/, "");
-  const coverImage = beer.heroPhotoUrl ?? beer.styleImageUrl;
   const description =
     beer.descriptionParagraphs[0]?.slice(0, 200) ??
     (beer.style ? `${beer.style.name} от домашнего пивовара.` : "Домашнее пиво.");
+  const title = beer.style ? `${beer.title} — ${beer.style.name}` : beer.title;
+
+  // Реальное фото пивовара приоритетно. Иначе — генерённая карточка с фактами
+  // бутылки (розлив/партия/ABV из query переносим в URL карточки), а не общий
+  // стакан стиля: для ссылки с QR она информативнее (docs/specs/og-images.md §5.7).
+  const ogCardQuery = new URLSearchParams();
+  if (b) ogCardQuery.set("b", b);
+  if (n) ogCardQuery.set("n", n);
+  if (abv) ogCardQuery.set("abv", abv);
+  if (k) ogCardQuery.set("k", k);
+  const ogCardQs = ogCardQuery.toString();
+  const ogImage = beer.heroPhotoUrl
+    ? { url: `${baseUrl}${beer.heroPhotoUrl}`, alt: title }
+    : { url: `${baseUrl}/api/og/beer/${beer.slug}${ogCardQs ? `?${ogCardQs}` : ""}`, width: 1200, height: 630, alt: title };
 
   return {
-    title: beer.style ? `${beer.title} — ${beer.style.name}` : beer.title,
+    title,
     description,
     // Страница живёт для отсканировавших QR, в поиске ей делать нечего:
     // published-контент уже индексируется на /recipes/<slug>, а непубличный
@@ -54,7 +67,13 @@ export async function generateMetadata(route: RouteParams): Promise<Metadata> {
     openGraph: {
       title: beer.title,
       description,
-      images: coverImage ? [`${baseUrl}${coverImage}`] : undefined
+      images: [ogImage]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage.url]
     }
   };
 }

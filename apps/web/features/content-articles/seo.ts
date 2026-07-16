@@ -42,6 +42,13 @@ export const buildArticleMetadata = (article: ContentArticleDto): Metadata => {
   const publishedTime = (article.publishedAt ?? article.createdAt).toISOString();
   const modifiedTime = article.updatedAt.toISOString();
 
+  // Своя обложка приоритетна (произвольный аспект — без width/height, площадки
+  // определят сами). Без обложки — генерённая OG-карточка статьи 1200×630
+  // (docs/specs/og-images.md §5.5). Картинка теперь есть всегда → summary_large_image.
+  const ogImage = hasCover
+    ? { url: article.coverImageUrl as string, alt: title }
+    : { url: `/api/og/articles/${article.slug}`, width: 1200, height: 630, alt: title };
+
   return {
     title,
     description,
@@ -53,15 +60,16 @@ export const buildArticleMetadata = (article: ContentArticleDto): Metadata => {
       url: canonicalPath,
       title,
       description,
-      images: hasCover ? [article.coverImageUrl as string] : undefined,
+      images: [ogImage],
       publishedTime,
       modifiedTime,
       locale: "ru_RU"
     },
     twitter: {
-      card: hasCover ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title,
-      description
+      description,
+      images: [ogImage.url]
     }
   };
 };

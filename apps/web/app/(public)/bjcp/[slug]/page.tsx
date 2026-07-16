@@ -68,6 +68,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const canonicalUrl = `${APP_URL}/bjcp/${article.slug}`;
   const hasRealHeroImage = resolveHasRealHeroImage(article);
   const absoluteHeroImageUrl = hasRealHeroImage ? `${APP_URL}${article.heroImageUrl}` : null;
+  // Без своей иллюстрации (плейсхолдер) — генерённая OG-карточка стиля 1200×630
+  // (docs/specs/og-images.md §5.4). Своё фото — без width/height (аспект произвольный).
+  const ogCardUrl = `${APP_URL}/api/og/bjcp/${article.slug}`;
+  const ogImages = absoluteHeroImageUrl
+    ? [{ url: absoluteHeroImageUrl, alt: article.title }]
+    : [{ url: ogCardUrl, width: 1200, height: 630, alt: article.title }];
 
   return {
     title: article.seoTitle,
@@ -84,18 +90,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       url: canonicalUrl,
       siteName: "NB",
       tags: article.keywords,
-      images: absoluteHeroImageUrl ? [absoluteHeroImageUrl] : undefined
+      images: ogImages
     },
-    twitter: absoluteHeroImageUrl
-      ? {
-        card: "summary_large_image",
-        title: article.seoTitle,
-        description: article.seoDescription,
-        images: [absoluteHeroImageUrl]
-      }
-      // Без своего фото у стиля — плейсхолдер под "large_image" не объявляем,
-      // карточка падает на сайтовый дефолт (app/opengraph-image.png, layout.tsx).
-      : undefined
+    twitter: {
+      card: "summary_large_image",
+      title: article.seoTitle,
+      description: article.seoDescription,
+      images: [absoluteHeroImageUrl ?? ogCardUrl]
+    }
   };
 }
 

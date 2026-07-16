@@ -858,6 +858,30 @@ export type RecipeDetailDto = RecipeListItemDto & {
   cloneCount?: number;
 };
 
+/**
+ * Тонкая проекция рецепта для OG-карточки (превью ссылки). Карточке нужны только
+ * скаляры строки + рейтинг + число варок + styleId — НЕ ингредиенты, версии,
+ * клон-источник, автор. Отдельный тип, чтобы горячий публичный OG-эндпоинт не
+ * тащил тяжёлый `mapRecipeDetailDto` с N+1 по ингредиентам (см.
+ * `getPublicRecipeOgData` в ./service.ts). `RecipeDetailDto` структурно
+ * присваиваем в `RecipeOgData` — та же карточка строится и из детального DTO.
+ */
+export type RecipeOgData = Pick<
+  RecipeListItemDto,
+  | "title"
+  | "slug"
+  | "styleId"
+  | "og"
+  | "abv"
+  | "ibu"
+  | "color"
+  | "batchSizeNormalizedQuantity"
+  | "batchSizeNormalizedUnit"
+> & {
+  rating: { average: number; count: number } | null;
+  completedBrewCount: number;
+};
+
 export type RecipeDraftPreviewDto = {
   batchSizeEnteredQuantity: number;
   batchSizeEnteredUnit: InventoryUnit;

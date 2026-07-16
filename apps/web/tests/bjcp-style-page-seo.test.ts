@@ -122,7 +122,9 @@ describe("bjcp style page — OG/twitter image", () => {
     const { generateMetadata } = await import("../app/(public)/bjcp/[slug]/page");
 
     const metadata = await generateMetadata({ params: Promise.resolve({ slug: "bjcp-1a-american-light-lager" }) });
-    expect(metadata.openGraph?.images).toEqual(["http://localhost:3000/images/bjcp/1A%20%E2%80%94%20American%20Light%20Lager.png"]);
+    expect(metadata.openGraph?.images).toEqual([
+      { url: "http://localhost:3000/images/bjcp/1A%20%E2%80%94%20American%20Light%20Lager.png", alt: expect.any(String) }
+    ]);
     expect(metadata.twitter).toMatchObject({ card: "summary_large_image" });
     expect((metadata.twitter as any)?.images).toEqual(["http://localhost:3000/images/bjcp/1A%20%E2%80%94%20American%20Light%20Lager.png"]);
   });

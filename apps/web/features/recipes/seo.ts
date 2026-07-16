@@ -164,6 +164,17 @@ export const buildPublicRecipeMetadata = (recipe: RecipeDetailDto, style: BeerSt
   const title = styleName ? `${recipe.title} — рецепт ${styleName}` : `${recipe.title} — рецепт`;
   const description = buildRecipeFactDescription(recipe, style);
   const heroImagePath = resolveHeroImagePath(recipe.heroImageId);
+  // Своё фото приоритетно; иначе — динамическая OG-карточка (стиль+статы+цвет),
+  // docs/specs/og-images.md §5.1. Картинка теперь есть ВСЕГДА → twitter-card
+  // всегда summary_large_image (большое превью в Telegram).
+  //
+  // width/height 1200×630 объявляем ТОЛЬКО для генерённой карточки (она точно
+  // такого размера). Фото рецепта — WebP произвольного аспекта (часто портрет),
+  // жёсткие 1200×630 на нём врут строгим потребителям (WhatsApp/VK) → на ветке
+  // фото размеры не указываем, площадки определят сами.
+  const ogImage = heroImagePath
+    ? { url: heroImagePath, alt: title }
+    : { url: `/api/og/recipes/${recipe.slug}`, width: 1200, height: 630, alt: title };
 
   // S2: клон без существенных правок канонизируется на источник вместо себя —
   // см. isUnmodifiedClone выше.
@@ -200,12 +211,13 @@ export const buildPublicRecipeMetadata = (recipe: RecipeDetailDto, style: BeerSt
       url: canonicalPath,
       title,
       description,
-      images: heroImagePath ? [heroImagePath] : undefined
+      images: [ogImage]
     },
     twitter: {
-      card: heroImagePath ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title,
-      description
+      description,
+      images: [ogImage.url]
     }
   };
 };
@@ -347,6 +359,14 @@ export const buildPublicRecipeListMetadata = (rawSearchParams: PublicRecipeListR
       title,
       description: RECIPES_LIST_DESCRIPTION,
       type: "website"
+    },
+    twitter: {
+      // Своей картинки у витрины нет (сайтовый дефолт не наследуется при своём
+      // openGraph без images) → summary, иначе пустая большая карточка. Брендовая
+      // обложка /recipes — Ф3 (docs/specs/og-images.md §5.8).
+      card: "summary",
+      title,
+      description: RECIPES_LIST_DESCRIPTION
     }
   };
 };

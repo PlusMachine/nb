@@ -123,17 +123,25 @@ describe("features/recipes/seo — публичная деталка рецеп�
     expect(metadata.description).toContain("Солод: Пейл эль солод");
     expect(metadata.description).toContain("хмель: Цитра");
     expect(metadata.description).not.toContain("Свободный текст автора");
-    expect(metadata.openGraph?.images).toEqual(["/api/recipe-images/img-42/large"]);
-    expect(metadata.twitter).toMatchObject({ card: "summary_large_image" });
+    // С фото: og:image = само фото рецепта. Размеры НЕ указываем (фото
+    // произвольного аспекта — 1200×630 на нём соврало бы), только url+alt.
+    expect(metadata.openGraph?.images).toEqual([
+      { url: "/api/recipe-images/img-42/large", alt: "Hazy IPA — рецепт Американский IPA" }
+    ]);
+    expect(metadata.twitter).toMatchObject({ card: "summary_large_image", images: ["/api/recipe-images/img-42/large"] });
   });
 
-  it("buildPublicRecipeMetadata: без стиля и без фото — title всё равно содержит «рецепт», OG без изображения", () => {
+  it("buildPublicRecipeMetadata: без стиля и без фото — title содержит «рецепт», og:image = динамическая карточка", () => {
     const recipe = buildRecipe({ styleId: null, heroImageId: null });
     const metadata = buildPublicRecipeMetadata(recipe, null);
 
     expect(metadata.title).toBe("Hazy IPA — рецепт");
-    expect(metadata.openGraph?.images).toBeUndefined();
-    expect(metadata.twitter).toMatchObject({ card: "summary" });
+    // Без фото: og:image = генерённая OG-карточка /api/og/recipes/<slug>,
+    // twitter всегда summary_large_image (docs/specs/og-images.md §5.1, §7).
+    expect(metadata.openGraph?.images).toEqual([
+      { url: "/api/og/recipes/hazy-ipa", width: 1200, height: 630, alt: "Hazy IPA — рецепт" }
+    ]);
+    expect(metadata.twitter).toMatchObject({ card: "summary_large_image", images: ["/api/og/recipes/hazy-ipa"] });
   });
 
   it("buildPublicRecipeMetadata: описание обрезается по границе слова ~200 символов", () => {
