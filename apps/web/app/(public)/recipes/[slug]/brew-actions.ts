@@ -3,10 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import {
-  consumeBrewBatchInventoryForStart,
-  type StartBrewConsumeResult
-} from "@/features/brew-batches/inventory";
 import { createBrewBatchFromRecipe } from "@/features/brew-batches/service";
 import { listEquipmentProfiles } from "@/features/equipment-profiles/service";
 import type { RecipeDetailDto } from "@/features/recipes/contracts";
@@ -25,9 +21,6 @@ const brewInputSchema = z.object({
   /** Профиль оборудования, на котором варим (только свой). Не задан — профиль рецепта. */
   equipmentProfileId: z.string().uuid().optional(),
   recipeId: z.string().uuid(),
-  /** «Сварить самому» (виртуальная ветка единого входа «Сварить») — списать
-   *  ингредиенты со склада ТЕКУЩЕГО пользователя сразу при старте. */
-  consumeIngredients: z.boolean().optional(),
   /** Ключ идемпотентности создания партии (двойной клик/ретрай → одна партия). */
   idempotencyKey: z.string().uuid().optional(),
   /** Опциональная дата варки (акт «Подготовка») — задаётся сразу в диалоге «Сварить». */
@@ -93,18 +86,8 @@ export const getBrewVolumeOptionsAction = async (recipeId: string): Promise<Brew
   }
 };
 
-/** Итог опционального списания склада — доезжает до диалога честно, без глотания ошибок.
- *  hasSubstitutes (Ф2) — на складе есть кандидаты на замену, которые «Сварить
- *  самому» не подставляет сам (exact-only): точный подбор не хватает/не находит
- *  позицию, но по match-group есть чем закрыть. Флаг, а не свободный текст — сам
- *  текст подсказки живёт в brew-stock-notice.tsx (стройка URL не носит свободный
- *  текст, см. brew-picker-dialog.tsx). Тип живёт в features/brew-batches/inventory —
- *  реэкспорт, чтобы brew-picker-dialog.tsx мог импортировать его отсюда же, откуда
- *  и раньше. */
-export type { StartBrewConsumeResult };
-
 export type StartBrewFromRecipeResult =
-  | { ok: true; brewBatchId: string; consume?: StartBrewConsumeResult }
+  | { ok: true; brewBatchId: string }
   | { ok: false; code: "AUTH" | "NOT_FOUND" | "ERROR"; message: string };
 
 /**
@@ -113,18 +96,15 @@ export type StartBrewFromRecipeResult =
  * чужого published). В «Мои рецепты» ничего не копируется. userId берётся ТОЛЬКО
  * из серверной сессии — клиентскому payload не доверяем (в сигнатуре userId нет).
  *
- * Единый вход «Сварить», виртуальная ветка («Сварить самому»): создаёт партию в
- * статусе 'planned' и ведёт в акт «Подготовка» — сам варочный день пользователь
- * запускает там (кнопка «Начать варочный день»), клик в диалоге варку не
- * запускает (решение аудита №2 от 2026-07-03, отменяет прежнее «переводим в
- * 'brewing' сразу же»). Опционально списывает ингредиенты рецепта со склада —
- * результат списания возвращается отдельным полем `consume`, не проглатывается:
- * партия при этом создаётся в любом случае, а провал списания — честная ошибка,
- * которую диалог доносит до страницы партии тостом.
+ * Единый вход «Сварить», виртуальная ветка («Вручную»): создаёт партию в статусе
+ * 'planned' и ведёт в акт «Подготовка» — сам варочный день пользователь запускает
+ * там (кнопка «Начать варочный день»), клик в диалоге варку не запускает (решение
+ * аудита №2 от 2026-07-03, отменяет прежнее «переводим в 'brewing' сразу же»).
+ * Списание склада сюда не входит — единственная точка списания теперь диалог с
+ * превью на странице партии.
  */
 export const startBrewFromRecipeAction = async (input: {
   recipeId: string;
-  consumeIngredients?: boolean;
   idempotencyKey?: string;
   plannedFor?: string;
   targetBatchVolumeL?: number;
@@ -148,18 +128,8 @@ export const startBrewFromRecipeAction = async (input: {
       equipmentProfileId: parsed.data.equipmentProfileId
     });
 
-    // «Сварить самому» списывает exact-only (без диалога-предпросмотра с
-    // заменами, Ф2) — если у оставшихся строк ЕСТЬ кандидаты на замену той же
-    // группы, честно подсказываем: точный подбор их не видит. Списание
-    // одноразовое (hasConsumedAllocationsForBatch) — применить замену можно
-    // только через «Вернуть на склад» и повторное списание в «Списать со
-    // склада» на странице партии, а не «на этой же странице кнопкой».
-    const consume: StartBrewConsumeResult | undefined = parsed.data.consumeIngredients
-      ? await consumeBrewBatchInventoryForStart(user.id, batch.id)
-      : undefined;
-
     revalidatePath("/app/brew-batches");
-    return { ok: true, brewBatchId: batch.id, consume };
+    return { ok: true, brewBatchId: batch.id };
   } catch (error) {
     if (error instanceof Error && (error.message === "NOT_FOUND" || error.message === "FORBIDDEN")) {
       return { ok: false, code: "NOT_FOUND", message: "Рецепт не найден или недоступен для варки." };

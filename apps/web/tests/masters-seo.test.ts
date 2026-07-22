@@ -29,6 +29,20 @@ describe("masters seo", () => {
     expect(metadata.alternates?.canonical).toBe("/market");
   });
 
+  it("подключает брендовую обложку хаба /market (Ф3, docs/specs/og-images.md)", () => {
+    const metadata = buildMarketListMetadata();
+    expect(metadata.openGraph?.images).toEqual([
+      expect.objectContaining({ url: "/api/og/sections/market" })
+    ]);
+    expect(metadata.twitter).toMatchObject({ card: "summary_large_image", images: ["/api/og/sections/market"] });
+  });
+
+  it("openGraph несёт locale/siteName (страница замещает openGraph родительского layout целиком)", () => {
+    const metadata = buildMarketListMetadata();
+    expect(metadata.openGraph).toMatchObject({ locale: "ru_RU" });
+    expect((metadata.openGraph as { siteName?: string } | undefined)?.siteName).toBeTruthy();
+  });
+
   it("builds master page metadata with the name, specializations and city in the title", () => {
     const metadata = buildMasterPageMetadata("kuznya-ivanova", baseSnapshot);
     expect(metadata.title).toBe("Кузница Иванова — Ёмкости и ЦКТ, Автоматика, Тюмень");

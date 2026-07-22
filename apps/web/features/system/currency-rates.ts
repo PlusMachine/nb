@@ -9,8 +9,18 @@ import {
   type SystemCurrencyRateMap
 } from "./currency";
 
-export const listSystemCurrencyRates = async (): Promise<SystemCurrencyRateMap> => {
-  const rows = await db
+// db или открытая транзакция — тот же паттерн, что и в features/shopping/data.ts
+// (ShoppingDbClient) / features/inventory/service.ts (InventoryDbClient).
+// ⚠ Внутри db.transaction(...) нельзя ходить в глобальный пул db мимо клиента
+// транзакции: транзакция уже держит одно соединение пула, а этот вызов просит
+// у пула ВТОРОЕ — если пул исчерпан конкурентными транзакциями, каждая из них
+// ждёт свободное соединение, которое никогда не освободится (все заняты такими
+// же ждущими транзакциями) — самодедлок пула.
+type CurrencyRatesDbClient = Parameters<Parameters<typeof db.transaction>[0]>[0];
+type CurrencyRatesClient = typeof db | CurrencyRatesDbClient;
+
+export const listSystemCurrencyRates = async (client: CurrencyRatesClient = db): Promise<SystemCurrencyRateMap> => {
+  const rows = await client
     .select({
       currency: systemCurrencyRates.currency,
       rubMinorPerUnit: systemCurrencyRates.rubMinorPerUnit

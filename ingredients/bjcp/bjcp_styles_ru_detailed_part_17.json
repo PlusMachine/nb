@@ -1,356 +1,356 @@
 {
-  "source": {
-    "document": "2021_Guidelines_Beer_1.25.pdf",
-    "guideline_edition": "BJCP 2021",
-    "translation_notes_ru": "Подробный перевод выполнен по оригинальному гайду BJCP 2021 с редакторской вычиткой на русском языке. Формулировки сохранены близко к оригиналу, но местами сглажены и нормализованы ради естественного профильного русского текста."
-  },
-  "progress": {
-    "styles_total_in_guideline": 128,
-    "styles_translated_in_this_file": 6,
-    "translated_style_ids": [
-      "30A",
-      "30B",
-      "30C",
-      "30D",
-      "31A",
-      "31B"
-    ],
-    "translated_categories": [
-      "30",
-      "31"
-    ],
-    "next_recommended_batch": [
-      "32A",
-      "32B",
-      "33A",
-      "33B",
-      "34A",
-      "34B",
-      "34C"
-    ]
-  },
-  "categories": [
-    {
-      "category_id": "30",
-      "category_en": "SPICED BEER",
-      "category_ru": "Пиво со специями, травами и овощами",
-      "overview_ru": "Категория охватывает specialty-сорта, где дополнительный характер создают кулинарные специи, травы и овощи в широком, бытовом смысле слова, а не в строгом ботаническом. Сюда же BJCP относит орехи, перцы чили, кофе, шоколад, хвойные побеги, цедру, ревень и сходные ингредиенты. Кулинарные фрукты и зерновые сюда не входят. Ключ к оценке — не буквальный поиск каждого ингредиента, а то, насколько убедительно и гармонично заявленная идея встроена в пиво как в пиво."
-    },
-    {
-      "category_id": "31",
-      "category_en": "ALTERNATIVE FERMENTABLES BEER",
-      "category_ru": "Пиво с альтернативными зерновыми и сахарами",
-      "overview_ru": "Эта категория объединяет specialty-сорта, где дополнительный характер создают либо нестандартные зерновые, либо сахара и подсластители. Важен не сам факт их использования, а заметный сенсорный вклад в аромат, вкус или фактуру. Если добавка практически не читается, пиво следует оценивать как обычный базовый стиль."
-    }
+ "source": {
+  "document": "2021_Guidelines_Beer_1.25.pdf",
+  "guideline_edition": "BJCP 2021",
+  "translation_notes_ru": "Подробный перевод выполнен по оригинальному гайду BJCP 2021 с редакторской вычиткой на русском языке. Формулировки сохранены близко к оригиналу, но местами сглажены и нормализованы ради естественного профильного русского текста."
+ },
+ "progress": {
+  "styles_total_in_guideline": 128,
+  "styles_translated_in_this_file": 6,
+  "translated_style_ids": [
+   "30A",
+   "30B",
+   "30C",
+   "30D",
+   "31A",
+   "31B"
   ],
-  "styles": [
-    {
-      "bjcp_id": "30A",
-      "name_en": "Spice, Herb, or Vegetable Beer",
-      "name_ru": "Пиво со специями, травами или овощами",
-      "category_id": "30",
-      "category_en": "SPICED BEER",
-      "category_ru": "Пиво со специями, травами и овощами",
-      "bjcp_heading": "30A. Spice, Herb, or Vegetable Beer",
-      "description_short_ru": "Пиво, где характер специй, трав или овощей ясно читается, но остаётся в гармонии с базовым стилем и не делает напиток искусственным на вкус.",
-      "sections_en": {
-        "overall_impression": "An appealing fusion of spices, herbs, or vegetables (SHVs) and beer, but still recognizable as beer. The SHV character should be evident but in balance with the beer, not so forward as to suggest an artificial product.",
-        "aroma": "Varies by base style. The SHV character should be noticeable in the aroma; however, some SHVs (e.g., ginger, cinnamon, rosemary) have stronger aromas and are more distinctive than others (e.g., most vegetables) – allow for a range of SHV character and intensity from subtle to aggressive. Hop aroma may be lower than in the base style to better show the SHV character. The SHVs should add an extra complexity, but not be so prominent as to unbalance the resulting presentation.",
-        "appearance": "Varies by base style and special ingredients. Lighter-colored beer may show distinctive ingredient colors, including in the head. Variable clarity, although haze is generally undesirable. Some ingredients may impact head retention.",
-        "flavor": "Varies by base style. As with aroma, distinctive SHV flavors should be noticeable, and may range in intensity from subtle to aggressive. Some SHVs are inherently bitter and may result in a beer more bitter than the declared base style. Bitterness, hop and malt flavors, alcohol content, and fermentation byproducts, such as esters, should be appropriate for the base style, but be harmonious and balanced with the distinctive SHV flavors present.",
-        "mouthfeel": "Varies by base style. SHVs may increase or decrease body. Some SHVs may add a bit of astringency, although a ‘raw’ spice character is undesirable.",
-        "comments": "The description of the beer is critical for evaluation; judges should think more about the declared concept than trying to detect each individual ingredient. Balance, drinkability, and execution of the theme are the most important deciding factors. The SHVs should complement the original style and not overwhelm it. Base style attributes will be different after the addition of SHVs; do not expect the beer to taste identical to the unadulterated base style.",
-        "history": "",
-        "characteristic_ingredients": "",
-        "style_comparison": "",
-        "entry_instructions": "The entrant must specify the type of spices, herbs, or vegetables used, but individual ingredients do not need to be specified if a well-known spice blend is used (e.g., apple pie spice, curry powder, chili powder). Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
-      },
-      "sections_ru": {
-        "overall_impression": "Привлекательное сочетание специй, трав или овощей с пивом, которое при этом по-прежнему однозначно остаётся пивом. Характер SHV-компонентов должен быть заметным, но уравновешенным, без ощущения искусственности.",
-        "aroma": "Зависит от базового стиля. Характер специй, трав или овощей должен ощущаться в аромате, но нужно помнить, что одни SHV-компоненты — например, имбирь, корица или розмарин — звучат гораздо ярче и узнаваемее, чем другие, вроде большинства овощей. Поэтому допустим широкий диапазон интенсивности: от тонкой до весьма выразительной. Хмелевой аромат может быть слабее, чем у базового стиля, чтобы лучше показать SHV-характер. Эти ингредиенты должны добавлять сложности, а не разрушать общий баланс.",
-        "appearance": "Зависит от базового стиля и специальных ингредиентов. В светлом пиве цвет добавок может проявляться заметно, в том числе в оттенке пены. Прозрачность может быть разной, но выраженная мутность обычно нежелательна. Некоторые ингредиенты способны ухудшать стойкость пены.",
-        "flavor": "Зависит от базового стиля. Как и в аромате, вкус специй, трав или овощей должен быть отчётливо заметен, а по интенсивности может варьироваться от деликатного до напористого. Некоторые SHV-компоненты сами по себе горчат, поэтому итоговое пиво может оказаться горче, чем заявленный базовый стиль. Горечь, хмелевой и солодовый профиль, крепость и побочные продукты брожения — например эфиры — должны оставаться уместными для базы и при этом гармонировать с SHV-характером.",
-        "mouthfeel": "Зависит от базового стиля. SHV-компоненты могут как усиливать, так и ослаблять ощущение тела. Некоторые из них способны добавлять лёгкую вяжущесть, однако ощущение «сырой специи» нежелательно.",
-        "comments": "Описание пива здесь критически важно: судье важнее понять заявленную идею, чем пытаться вычислить каждый отдельный ингредиент. Главные критерии — баланс, питкость и качество реализации замысла. SHV-компоненты должны дополнять исходный стиль, а не подавлять его. После их добавления базовый стиль неизбежно меняется, поэтому не стоит ожидать вкуса, полностью идентичного «чистой» базе.",
-        "history": "",
-        "characteristic_ingredients": "",
-        "style_comparison": "",
-        "entry_instructions": "Участник должен указать, какие именно специи, травы или овощи использовались, но если применялась общеизвестная смесь специй, перечислять каждый компонент отдельно не требуется — например, apple pie spice, curry powder или chili powder. Также необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Общее описание особой природы пива может закрывать все обязательные пункты."
-      },
-      "vital_statistics": {
-        "note": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer."
-      },
-      "vital_statistics_text": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer.",
-      "commercial_examples_text": "Alesmith Speedway Stout, Elysian Avatar Jasmine IPA, Founders Breakfast Stout, Rogue Yellow Snow Pilsner, Traquair Jacobite Ale, Young’s Double Chocolate Stout",
-      "tags_en": [
-        "specialty-beer",
-        "spice"
-      ],
-      "source_guideline_page_start": 68,
-      "source_pdf_page_start": 84,
-      "tags_ru": [
-        "специальное пиво",
-        "специи"
-      ],
-      "translation_status": "completed",
-      "general_notes_en": "Often called Spice Beer, regardless of whether spices, herbs, or vegetables are used.",
-      "general_notes_ru": "Этот стиль нередко просто называют Spice Beer — независимо от того, используются ли в нём именно специи, травы или овощи."
-    },
-    {
-      "bjcp_id": "30B",
-      "name_en": "Autumn Seasonal Beer",
-      "name_ru": "Осеннее сезонное пиво",
-      "category_id": "30",
-      "category_en": "SPICED BEER",
-      "category_ru": "Пиво со специями, травами и овощами",
-      "bjcp_heading": "30B. Autumn Seasonal Beer",
-      "description_short_ru": "Солодовое, пряное сезонное пиво с атмосферой осени и сбора урожая: часто с тыквой или похожими овощами, тёплыми специями и мягко согревающим, насыщенным финишем.",
-      "sections_en": {
-        "overall_impression": "A malty, spiced beer that often has a moderately rich body and slightly warming finish suggesting a good accompaniment for the cool fall season, and often evocative of harvest or Thanksgiving traditions.",
-        "aroma": "Malty, spicy, and balanced. A wide range is possible, as long as it evokes the harvest theme. The declared ingredients and concept set the expectation. Hops are often subtle. Alcohol is often present, but smooth and supportive. The components should be well-integrated, and create a coherent presentation. See Flavor section for spice, malt, sugar, and vegetable character.",
-        "appearance": "Medium amber to coppery-brown; lighter versions are more common. Clear, if not opaque. Well-formed, persistent, off-white to tan head. Some versions with squashes will take on an unusual hue for beer, with orange-like hints.",
-        "flavor": "Malty, spicy, and balanced. Allow for brewer creativity in meeting the theme objective. Warming or sweet spices common. Rich, toasty malty flavors are common, and may include caramel, toasted bread or pie crust, biscuit, or nut flavors. May include distinctive sugar flavors, like molasses, honey, or brown sugar. Flavor derived from squash-based vegetables are often elusive, often only providing a richer sweetness. The special ingredients should be supportive and balanced, not overshadowing the base beer. Bitterness and hop flavor are usually restrained to not interfere with the special character. Usually finishes somewhat full and satisfying, occasionally with a light alcohol flavor. Roasted malt characteristics are typically absent.",
-        "mouthfeel": "Body is usually medium to full, and may be chewy. Moderately low to moderately high carbonation. Age character allowable. Warming alcohol allowable.",
-        "comments": "Using the sensory profile of products that suggest the harvest season, like pumpkin pie, apple pie, or candied yams, balanced with a supportive, often malty base beer. The description of the beer is critical for evaluation; judges should think more about the declared concept than trying to detect each individual ingredient. Balance, drinkability, and execution of the theme are the most important deciding factors.",
-        "history": "",
-        "characteristic_ingredients": "Spices are required, and often include those evocative of the fall, harvest, or Thanksgiving season (e.g., allspice, nutmeg, cinnamon, cloves, ginger) but any combination is possible and creativity is encouraged. Flavorful adjuncts are common (e.g., molasses, invert sugar, brown sugar, honey, maple syrup). Squash-type or gourd-type vegetables (most frequently pumpkin) are often used.",
-        "style_comparison": "",
-        "entry_instructions": "The entrant must specify the type of spices, herbs, or vegetables used; individual ingredients do not need to be specified if a well-known blend of spices is used (e.g., pumpkin pie spice). Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
-      },
-      "sections_ru": {
-        "overall_impression": "Солодовое, пряное пиво, нередко с умеренно плотным телом и слегка согревающим финишем, которое хорошо подходит к прохладному осеннему сезону и часто вызывает ассоциации со сбором урожая или Днём благодарения.",
-        "aroma": "Солодовый, пряный, сбалансированный. Диапазон трактовок может быть очень широким, если пиво убедительно передаёт тему урожая. Ожидания задают заявленные ингредиенты и общий замысел. Хмель обычно играет второстепенную роль. Алкоголь часто присутствует, но должен быть мягким и поддерживающим. Все компоненты должны быть хорошо интегрированы и складываться в цельный образ. По пряностям, солоду, сахарам и овощному характеру ориентируются прежде всего на вкусовой профиль.",
-        "appearance": "Цвет от среднего янтарного до медно-коричневого; более светлые версии встречаются чаще. Пиво должно быть прозрачным, если только оно не настолько тёмное, что прозрачность неразличима. Пена хорошо сформированная, стойкая, от грязно-белой до светло-кремовой. Варианты с тыквенными могут давать необычный для пива оттенок с оранжевыми нюансами.",
-        "flavor": "Солодовый, пряный, сбалансированный. Здесь допускается творческая свобода, если она работает на сезонную идею. Часто встречаются согревающие или сладковатые специи. Богатый поджаристый солодовый профиль может напоминать карамель, поджаренный хлеб, корочку пирога, бисквит или орехи. Возможны и заметные сахарные оттенки — меласса, мёд, коричневый сахар. Вкус, связанный с тыквенными овощами, нередко остаётся неявным и чаще проявляется как более глубокая, насыщенная сладость. Специальные ингредиенты должны поддерживать базу и быть с ней в равновесии, а не затмевать её. Горечь и хмелевой вкус обычно сдержанные, чтобы не мешать специальному характеру. Финиш обычно довольно полный и удовлетворяющий; иногда заметна лёгкая алкогольная нотка. Поджаренно-обжарённые солода обычно отсутствуют.",
-        "mouthfeel": "Тело обычно от среднего к полному и может быть даже чуть жевательным. Карбонизация — от умеренно низкой до умеренно высокой. Допустимы следы выдержки. Согревающее действие алкоголя также допустимо.",
-        "comments": "Стиль строится на сенсорных ассоциациях с продуктами, напоминающими сезон урожая, — тыквенный пирог, яблочный пирог, засахаренный батат — и на поддерживающей, чаще всего солодовой пивной базе. Описание пива здесь особенно важно: судья должен оценивать прежде всего заявленную идею, а не пытаться распознать каждый отдельный ингредиент. Главные критерии — баланс, питкость и убедительность реализации замысла.",
-        "history": "",
-        "characteristic_ingredients": "Специи обязательны; чаще всего это то, что ассоциируется с осенью, урожаем и Днём благодарения — например, душистый перец, мускатный орех, корица, гвоздика, имбирь, — но допустимы любые сочетания, и творческий подход приветствуется. Часто используются выразительные добавки вроде мелассы, инвертного сахара, коричневого сахара, мёда или кленового сиропа. Нередко применяются овощи тыквенного типа, чаще всего сама тыква.",
-        "style_comparison": "",
-        "entry_instructions": "Участник должен указать, какие специи, травы или овощи использовались; перечислять каждый компонент не требуется, если применялась общеизвестная смесь вроде pumpkin pie spice. Также необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Общее описание особой природы пива может закрывать все обязательные пункты."
-      },
-      "vital_statistics": {
-        "note": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer. ABV is generally above 5%, and most examples are somewhat amber-copper in color."
-      },
-      "vital_statistics_text": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer. ABV is generally above 5%, and most examples are somewhat amber-copper in color.",
-      "commercial_examples_text": "Dogfish Head Punkin Ale, Elysian Punkuccino, Rogue Pumpkin Patch Ale, Schlafly Pumpkin Ale, UFO Pumpkin, Weyerbacher Imperial Pumpkin",
-      "tags_en": [
-        "specialty-beer",
-        "spice"
-      ],
-      "source_guideline_page_start": 68,
-      "source_pdf_page_start": 84,
-      "tags_ru": [
-        "специальное пиво",
-        "специи"
-      ],
-      "translation_status": "completed",
-      "general_notes_en": "Autumn Seasonal Beers are beers that suggest cool weather and the autumn harvest season, and may include pumpkins, gourds, or other squashes, and associated spices.",
-      "general_notes_ru": "Осенние сезонные сорта должны вызывать ассоциации с прохладной погодой и временем сбора урожая; в них могут использоваться тыквы, другие виды тыквенных и характерные для сезона специи."
-    },
-    {
-      "bjcp_id": "30C",
-      "name_en": "Winter Seasonal Beer",
-      "name_ru": "Зимнее сезонное пиво",
-      "category_id": "30",
-      "category_en": "SPICED BEER",
-      "category_ru": "Пиво со специями, травами и овощами",
-      "bjcp_heading": "30C. Winter Seasonal Beer",
-      "description_short_ru": "Более крепкое и тёмное сезонное пиво с пряностями, сухофруктами и иногда специальными сахарами, рассчитанное на холодное время года и праздничное зимнее настроение.",
-      "sections_en": {
-        "overall_impression": "A stronger, darker, spiced beer that often has a rich body and warming finish suggesting a good accompaniment for the cold winter season.",
-        "aroma": "Malty, spicy, fruity, and balanced. A wide range is possible, as long as it evokes the holiday theme. The declared ingredients and concept set the expectation. Fruit is often dark or dried in character. Hops are often subtle. Alcohol is often present, but smooth and supportive. Malty and sugary aromas tend to be greater in the balance, and support the spices. The components should be well-integrated, and create a coherent presentation. See Flavor section for spice, malt, sugar, and fruit character.",
-        "appearance": "Medium amber to very dark brown; darker versions are more common. Clear, if not opaque. Usually clear, although darker versions may be virtually opaque. Well-formed, persistent, off-white to tan head.",
-        "flavor": "Malty, spicy, fruity, and balanced. Allow for brewer creativity in meeting the theme objective. Warming or sweet spices common. Rich, sweet malty flavors are common, and may include caramel, toast, nutty, or chocolate flavors. May include dried fruit or dried fruit peel flavors such as raisin, plum, fig, cherry, orange peel, or lemon peel. May include distinctive sugar flavors, like molasses, honey, or brown sugar. The special ingredients should be supportive and balanced, not overshadowing the base beer. Bitterness and hop flavor are usually restrained to not interfere with special character. Usually finishes rather full and satisfying, often with a light alcohol flavor. Roasted malt characteristics are rare, and not usually stronger than chocolate.",
-        "mouthfeel": "Body is usually medium to full, often with a malty chewiness. Moderately low to moderately high carbonation. Age character allowable. Warming alcohol allowable.",
-        "comments": "Using the sensory profile of products that suggest the holiday season, such as Christmas cookies, gingerbread, English-type Christmas pudding, rum cakes, eggnog, evergreen trees, potpourri, or mulling spices, balanced with a supportive, often malty, warming, and darker base beer. The description of the beer is critical for evaluation; judges should think more about the declared concept than trying to detect each individual ingredient. Balance, drinkability, and execution of the theme are the most important deciding factors.",
-        "history": "The winter holiday season is a traditional time when old friends get together, where beer of a somewhat higher alcohol content and richness is served. Many breweries offer seasonal products that may be darker, stronger, spiced, or otherwise more characterful than their year-round beers. Spiced versions are an American or Belgian tradition, since English or German breweries traditionally do not use spices in their beer. Many American craft examples were inspired by Anchor Our Special Ale, first produced in 1975.",
-        "characteristic_ingredients": "Spices are required, and often include those evocative of the Christmas season (e.g., allspice, nutmeg, cinnamon, cloves, ginger) but any combination is possible and creativity is encouraged. Fruit peel (e.g., oranges, lemon) may be used, as may subtle additions of other fruits (often dried or dark fruit). Flavorful adjuncts are often used (e.g., molasses, treacle, invert sugar, brown sugar, honey, maple syrup). Usually ales, although strong dark lagers exist.",
-        "style_comparison": "",
-        "entry_instructions": "The entrant must specify the type of spices, sugars, fruits, or additional fermentables used; individual ingredients do not need to be specified if a well-known blend of spices is used (e.g., mulling spice). Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
-      },
-      "sections_ru": {
-        "overall_impression": "Более крепкое, более тёмное и пряное пиво, нередко с насыщенным телом и согревающим финишем, хорошо подходящее к холодному зимнему сезону.",
-        "aroma": "Солодовый, пряный, фруктовый, сбалансированный. Диапазон возможных трактовок широк, если пиво убедительно передаёт праздничную зимнюю тему. Ожидания задают заявленные ингредиенты и общая идея. Фрукты чаще всего тёмные или сушёные по характеру. Хмель обычно сдержан. Алкоголь нередко присутствует, но должен быть мягким и поддерживающим. В балансе обычно сильнее ощущаются солодовые и сахаристые тона, которые служат опорой для специй. Все компоненты должны быть хорошо интегрированы и складываться в цельный образ. За деталями по специям, солоду, сахарам и фруктам ориентируются прежде всего на вкусовой профиль.",
-        "appearance": "Цвет от среднего янтарного до очень тёмно-коричневого; более тёмные версии встречаются чаще. Пиво должно быть прозрачным, если только оно не настолько тёмное, что прозрачность уже неразличима. Обычно всё же прозрачное, хотя самые тёмные версии могут казаться почти непросветными. Пена хорошо сформированная, стойкая, от грязно-белой до светло-коричневатой.",
-        "flavor": "Солодовый, пряный, фруктовый, сбалансированный. Творческий подход здесь допустим, если он работает на зимнюю праздничную тему. Часто встречаются согревающие или сладковатые специи. Богатый сладковатый солодовый профиль может включать карамель, тост, ореховые или шоколадные оттенки. Возможны сухофрукты или цедра сушёных фруктов — изюм, слива, инжир, вишня, апельсиновая или лимонная цедра. Допустимы и выразительные сахарные ноты — меласса, мёд, коричневый сахар. Специальные ингредиенты должны поддерживать базу и быть с ней в равновесии, а не перекрывать её. Горечь и хмелевой вкус обычно сдержанны, чтобы не мешать специальному характеру. Финиш чаще довольно полный и удовлетворяющий, нередко с лёгкой алкогольной нотой. Обжарённый солодовый характер встречается редко и обычно не выходит дальше шоколадного уровня.",
-        "mouthfeel": "Тело обычно от среднего к полному, нередко с плотной, слегка жевательной солодовостью. Карбонизация — от умеренно низкой до умеренно высокой. Допустимы следы выдержки. Согревающий алкоголь также допустим.",
-        "comments": "Стиль опирается на сенсорные ассоциации с продуктами и ароматами зимних праздников: рождественское печенье, имбирные пряники, английский Christmas pudding, ромовые кексы, эгг-ног, хвойные деревья, попурри, смеси для глинтвейна — всё это на поддерживающей, обычно солодовой, согревающей и более тёмной пивной базе. Описание пива здесь критически важно: судье важнее понять заявленную идею, чем вычислять каждый отдельный ингредиент. Главные критерии — баланс, питкость и качество реализации замысла.",
-        "history": "Зимние праздники традиционно были временем встреч старых друзей, когда к столу подавали более крепкое и более богатое по вкусу пиво. Многие пивоварни выпускают сезонные продукты, которые темнее, крепче, прянее или просто богаче по характеру, чем их круглогодичные сорта. Версии со специями — скорее американская или бельгийская традиция, поскольку английские и немецкие пивоварни исторически специи в пиве почти не использовали. Многие американские крафтовые образцы выросли из влияния Anchor Our Special Ale, впервые сваренного в 1975 году.",
-        "characteristic_ingredients": "Специи обязательны; чаще всего это то, что ассоциируется с рождественским сезоном, — душистый перец, мускатный орех, корица, гвоздика, имбирь, — но допустимы любые сочетания, и творческий подход приветствуется. Может использоваться фруктовая цедра — например, апельсиновая или лимонная, — а также деликатные добавки других фруктов, чаще сушёных или тёмных. Нередко применяются выразительные добавки вроде мелассы, трекла, инвертного сахара, коричневого сахара, мёда или кленового сиропа. Обычно это эли, хотя возможны и крепкие тёмные лагеры.",
-        "style_comparison": "",
-        "entry_instructions": "Участник должен указать, какие специи, сахара, фрукты или другие ферментируемые добавки использовались; перечислять каждый компонент отдельно не требуется, если применялась общеизвестная смесь специй, например mulling spice. Также необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Общее описание особой природы пива может закрывать все обязательные пункты."
-      },
-      "vital_statistics": {
-        "note": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer. ABV is generally above 6%, and most examples are somewhat dark in color."
-      },
-      "vital_statistics_text": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer. ABV is generally above 6%, and most examples are somewhat dark in color.",
-      "commercial_examples_text": "Anchor Christmas Ale, Great Lakes Christmas Ale, Harpoon Winter Warmer, Rogue Santa’s Private Reserve, Schlafly Christmas Ale, Troeg’s The Mad Elf",
-      "tags_en": [
-        "specialty-beer",
-        "spice"
-      ],
-      "source_guideline_page_start": 69,
-      "source_pdf_page_start": 85,
-      "tags_ru": [
-        "специальное пиво",
-        "специи"
-      ],
-      "translation_status": "completed",
-      "general_notes_en": "Winter Seasonal Beers are beers that suggest cold weather and the Christmas holiday season, and may include holiday spices, specialty sugars, and other products that are reminiscent of the festive season.",
-      "general_notes_ru": "Зимние сезонные сорта должны ассоциироваться с холодной погодой и рождественско-новогодним временем; в них могут использоваться праздничные специи, специальные сахара и другие ингредиенты, напоминающие о зимнем сезоне."
-    },
-    {
-      "bjcp_id": "30D",
-      "name_en": "Specialty Spice Beer",
-      "name_ru": "Специальное пиво со специями, травами или овощами",
-      "category_id": "30",
-      "category_en": "SPICED BEER",
-      "category_ru": "Пиво со специями, травами и овощами",
-      "bjcp_heading": "30D. Specialty Spice Beer",
-      "description_short_ru": "Версия SHV-пива, где к специям, травам или овощам добавлены другие специальные ингредиенты или процессы; все дополнительные компоненты должны читаться, но оставаться в гармонии и с SHV-характером, и с базовым пивом.",
-      "sections_en": {
-        "overall_impression": "An appealing combination of spices, herbs, or vegetables (SHVs), sugars, and beer, but still recognizable as beer. The SHV and sugar character should both be evident but in balance with the beer, not so forward as to suggest an artificial product.",
-        "aroma": "Same as SHV Beer, except that some additional fermentables (e.g., honey, molasses) may add an aroma component. Whatever additional aroma component is present should be in balance with the SHV and the beer components, and be a pleasant combination.",
-        "appearance": "Same as Spice, Herb, or Vegetable Beer.",
-        "flavor": "Same as SHV Beer, except that some additional fermentables (e.g., honey, molasses) may add a flavor component. Whatever additional flavor component is present should be in balance with the SHV and the beer components, and be a pleasant combination. Added sugars should not have a raw, unfermented flavor. Some added sugars will have unfermentable elements that may provide a fuller and sweeter finish; fully fermentable sugars may thin out the finish.",
-        "mouthfeel": "Same as SHV Beer, although depending on the type of sugar added, could increase or decrease the body.",
-        "comments": "If the additional fermentables or processes do not add a distinguishable character to the beer, enter it as one of the other (non-Specialty) Spiced Beer styles and omit a description of the extra ingredients or processes.",
-        "history": "",
-        "characteristic_ingredients": "",
-        "style_comparison": "",
-        "entry_instructions": "The entrant must specify the type of SHVs used, but individual ingredients do not need to be specified if a well-known spice blend is used (e.g., apple pie spice, curry powder, chili powder). The entrant must specify the type of additional ingredient (per the introduction) or special process employed. Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
-      },
-      "sections_ru": {
-        "overall_impression": "Привлекательное сочетание специй, трав или овощей, дополнительных сахаров и пива, которое при этом всё ещё однозначно остаётся пивом. И SHV-характер, и сахарный компонент должны быть заметными, но уравновешенными относительно базы, без ощущения искусственности.",
-        "aroma": "Как у SHV Beer, но некоторые дополнительные ферментируемые компоненты — например, мёд или меласса — могут добавлять собственную ароматическую ноту. Любой такой дополнительный аромат должен быть приятным, гармоничным и находиться в балансе как с SHV-компонентами, так и с самим пивом.",
-        "appearance": "Как у Spice, Herb, or Vegetable Beer.",
-        "flavor": "Как у SHV Beer, но некоторые дополнительные ферментируемые ингредиенты — например, мёд или меласса — могут добавлять свой вкусовой слой. Этот дополнительный вкус должен быть приятным и гармонично сочетаться и с SHV-характером, и с базовым пивом. Добавленные сахара не должны казаться сырыми и недобродившими. Некоторые из них содержат несбраживаемые компоненты, которые делают финиш полнее и слаще; полностью сбраживаемые сахара, наоборот, могут облегчать и подсушивать финиш.",
-        "mouthfeel": "Как у SHV Beer, однако в зависимости от типа добавленного сахара тело может как увеличиваться, так и уменьшаться.",
-        "comments": "Если дополнительные ферментируемые ингредиенты или особые процессы не придают пиву различимого характера, такой образец следует заявлять в один из других, не-specialty, стилей раздела Spiced Beer и не описывать лишние ингредиенты или процессы.",
-        "history": "",
-        "characteristic_ingredients": "",
-        "style_comparison": "",
-        "entry_instructions": "Участник должен указать, какие SHV-компоненты использовались; если применялась общеизвестная смесь специй, перечислять каждый ингредиент отдельно не требуется — например, apple pie spice, curry powder или chili powder. Также нужно указать тип дополнительного ингредиента, разрешённого вводной частью категории, либо использованный специальный процесс. Кроме того, необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Общее описание особой природы пива может закрывать все обязательные пункты."
-      },
-      "vital_statistics": {
-        "note": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer."
-      },
-      "vital_statistics_text": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer.",
-      "commercial_examples_text": "New Belgium Honey Orange Tripel, Westbrook It’s Tiki Time",
-      "tags_en": [
-        "specialty-beer",
-        "spice"
-      ],
-      "source_guideline_page_start": 69,
-      "source_pdf_page_start": 85,
-      "tags_ru": [
-        "специальное пиво",
-        "специи"
-      ],
-      "translation_status": "completed",
-      "general_notes_en": "A Specialty Spice Beer is a 30A Spice, Herb, or Vegetable (SHV) Beer with some additional ingredients, such as fermentable sugars (e.g., honey, brown sugar, invert sugar, maple syrup), sweeteners (e.g., lactose), adjuncts, alternative grains, or other special ingredients added, or some additional process applied. 30B Autumn and 30C Winter Seasonal Beers already allow additional ingredients, and should not be used as a base in this style.",
-      "general_notes_ru": "Это вариант 30A Spice, Herb, or Vegetable Beer, куда, помимо SHV-компонентов, добавлены другие специальные ингредиенты — например ферментируемые сахара, подсластители, добавочные материалы, альтернативные зерновые — либо применён особый технологический приём. Осенние и зимние сезонные версии 30B и 30C уже изначально допускают дополнительные ингредиенты и не должны использоваться как база для этого стиля."
-    },
-    {
-      "bjcp_id": "31A",
-      "name_en": "Alternative Grain Beer",
-      "name_ru": "Пиво с альтернативными зерновыми",
-      "category_id": "31",
-      "category_en": "ALTERNATIVE FERMENTABLES BEER",
-      "category_ru": "Пиво с альтернативными зерновыми и сахарами",
-      "bjcp_heading": "31A. Alternative Grain Beer",
-      "description_short_ru": "Пиво, где дополнительное или нестандартное зерновое сырьё вносит узнаваемый вклад в аромат, вкус или фактуру, но не разрушает логику базового стиля.",
-      "sections_en": {
-        "overall_impression": "A base beer enhanced by or featuring the character of additional grains. The specific character depends greatly on the added grains.",
-        "aroma": "Same as base beer style. The added grain will lend a particular character, although with some grains the beer will simply seem a bit more grainy or nutty, and some may have a relatively neutral character.",
-        "appearance": "Same as base beer style, although some additional haze may be noticeable.",
-        "flavor": "Same as base beer style. The additional grain should be noticeable in flavor, although it may not be necessarily identifiable. Some grains add an additional grainy, bready, or nutty flavor, while others simply enhance the flavor of the base beer. Some grains add a dryness to the finish.",
-        "mouthfeel": "Same as the base beer, although many additional grains (e.g., oats, rye) increase body and viscosity, while some (e.g., GF grains) create a thinner beer.",
-        "comments": "The additional grain should be apparent somewhere in the sensory profile. If the alternative grain does not provide a noticeable distinguishable character to the beer, enter it as the base style. This style should not be used for styles where the alternative grain is fundamental to the style definition (e.g., Rye IPA, Oatmeal Stout, Rice- or Corn-based International Lager). Note that sake is not beer, and is not intended for this category.",
-        "history": "",
-        "characteristic_ingredients": "",
-        "style_comparison": "",
-        "entry_instructions": "The entrant must specify the type of alternative grain used. Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
-      },
-      "sections_ru": {
-        "overall_impression": "Базовое пиво, в котором характер дополнительных зерновых либо заметно усиливает профиль, либо выходит на первый план. Конкретный результат сильно зависит от того, какое именно зерно использовано.",
-        "aroma": "Как у базового стиля, но дополнительное зерновое сырьё должно вносить свой оттенок. Иногда это просто более выраженная зерновая или ореховая нота, а некоторые виды сырья дают довольно нейтральный эффект.",
-        "appearance": "Как у базового стиля, хотя может появляться немного дополнительной мутности.",
-        "flavor": "Как у базового стиля. Вклад альтернативного зернового должен ощущаться во вкусе, хотя он не обязан всегда чётко опознаваться как конкретный ингредиент. Одни зерновые добавляют зерновые, хлебные или ореховые оттенки, другие лишь усиливают вкусовую базу пива. Некоторые способны подсушивать финиш.",
-        "mouthfeel": "Как у базового пива, однако многие дополнительные зерновые — например, овёс или рожь — увеличивают тело и вязкость, тогда как некоторые, в том числе безглютеновые, наоборот, делают пиво более тонким по фактуре.",
-        "comments": "Дополнительное зерновое должно читаться хотя бы в какой-то части сенсорного профиля. Если оно не даёт заметного отличимого характера, пиво следует заявлять как обычный базовый стиль. Этот стиль не предназначен для тех случаев, где альтернативное зерно уже является определяющим элементом самого стиля — например, Rye IPA, Oatmeal Stout или International Lager на рисе либо кукурузе. И отдельно: саке не является пивом и не относится к этой категории.",
-        "history": "",
-        "characteristic_ingredients": "",
-        "style_comparison": "",
-        "entry_instructions": "Участник должен указать, какое именно альтернативное зерновое использовалось. Также необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Общее описание особой природы пива может закрывать все обязательные пункты."
-      },
-      "vital_statistics": {
-        "note": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer."
-      },
-      "vital_statistics_text": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer.",
-      "commercial_examples_text": "Blue/Point Rastafarye Ale, Green’s India Pale Ale, Lakefront New Grist, New Planet Pale Ale, Rogue Morimoto Soba Ale, Voodoo Swimming Jeans",
-      "tags_en": [
-        "specialty-beer"
-      ],
-      "source_guideline_page_start": 71,
-      "source_pdf_page_start": 87,
-      "tags_ru": [
-        "специальное пиво"
-      ],
-      "translation_status": "completed",
-      "general_notes_en": "An Alternative Grain Beer is a standard beer (Classic Style or not) with additional or non-standard brewing grains (e.g., rye, oats, buckwheat, spelt, millet, sorghum, rice) added or used exclusively. Gluten-free (GF) beers made from completely gluten-free ingredients may be entered here, while GF beers using process-based gluten removal should be entered in their respective base style categories.",
-      "general_notes_ru": "Это обычное пиво — классического стиля или нет — в котором дополнительно используются нестандартные зерновые, либо пиво, сваренное исключительно на таком сырье: например, рожь, овёс, гречиха, спельта, просо, сорго, рис. Полностью безглютеновые версии из действительно gluten-free ингредиентов заявляются сюда; пиво, где глютен удалён технологически, следует относить к соответствующему базовому стилю."
-    },
-    {
-      "bjcp_id": "31B",
-      "name_en": "Alternative Sugar Beer",
-      "name_ru": "Пиво с альтернативными сахарами",
-      "category_id": "31",
-      "category_en": "ALTERNATIVE FERMENTABLES BEER",
-      "category_ru": "Пиво с альтернативными зерновыми и сахарами",
-      "bjcp_heading": "31B. Alternative Sugar Beer",
-      "description_short_ru": "Пиво, где альтернативные сахара или подсластители вносят заметный ароматический, вкусовой или текстурный вклад, но напиток при этом остаётся именно пивом, а не уходит в сторону медовухи или десертного продукта.",
-      "sections_en": {
-        "overall_impression": "A tasteful integration of sugar and beer, but still recognizable as beer. The sugar character should both be evident and in balance with the beer, not so forward as to suggest an artificial product.",
-        "aroma": "Same as the base beer, except that some additional fermentables (e.g., honey, molasses) may add an aroma, which should be a pleasant, balanced combination with the beer.",
-        "appearance": "Same as the base beer, although some sugars will bring additional, usually darker, colors.",
-        "flavor": "Same as the base beer, except that some additional fermentables (e.g., honey, molasses) may add a flavor, which should be a pleasant, balanced combination with the beer. Added sugars should not have a raw, unfermented flavor. Some unfermentable sugars provide a fuller finish, while fully fermentable sugars can thin out the finish.",
-        "mouthfeel": "Same as the base beer, although depending on the type of sugar added, could increase or decrease the body.",
-        "comments": "The additional sugar should be apparent somewhere in the sensory profile. If the sugars do not add a distinguishable character to the beer, enter it in the base style category. A honey-based beer should not have so much honey that it is perceived more like a mead with beer (i.e., a braggot) than a honey beer. This style should not be used for styles where the alternative sugar is fundamental to the style definition, or where a small amount of neutral-flavored sugar is used simply to increase gravity, increase attenuation, or lighten flavor or body; those beers should be entered as the normal base style.",
-        "history": "",
-        "characteristic_ingredients": "",
-        "style_comparison": "",
-        "entry_instructions": "The entrant must specify the type of sugar used. Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
-      },
-      "sections_ru": {
-        "overall_impression": "Вкусное и уместное сочетание сахара и пива, которое при этом всё ещё явно остаётся пивом. Сахарный характер должен быть заметным, но находиться в равновесии с остальными компонентами и не создавать ощущения искусственности.",
-        "aroma": "Как у базового пива, но некоторые дополнительные ферментируемые компоненты — например, мёд или меласса — могут вносить собственную ароматическую ноту. Она должна быть приятной и гармонично сочетаться с пивной основой.",
-        "appearance": "Как у базового пива, хотя отдельные виды сахаров могут давать дополнительный, чаще более тёмный оттенок цвета.",
-        "flavor": "Как у базового пива, но некоторые дополнительные ферментируемые компоненты — например, мёд или меласса — могут привносить собственный вкусовой слой, который должен быть приятным и сбалансированным относительно пивной базы. Добавленные сахара не должны казаться сырыми и недобродившими. Несбраживаемые сахара нередко делают финиш полнее, тогда как полностью сбраживаемые могут, наоборот, облегчать и сушить его.",
-        "mouthfeel": "Как у базового пива, хотя в зависимости от типа добавленного сахара тело может как увеличиваться, так и уменьшаться.",
-        "comments": "Дополнительный сахар должен проявляться хотя бы в какой-то части сенсорного профиля. Если он не даёт различимого характера, пиво следует заявлять как обычный базовый стиль. Медовое пиво не должно содержать столько мёда, чтобы восприниматься скорее как гибрид медовухи и пива, то есть braggot, а не как собственно honey beer. Этот стиль не предназначен для тех случаев, где альтернативный сахар является неотъемлемой частью определения стиля, либо когда небольшое количество нейтрального сахара используется лишь для повышения начальной плотности, увеличения сбраживаемости или облегчения тела и вкуса; такие сорта нужно относить к обычному базовому стилю.",
-        "history": "",
-        "characteristic_ingredients": "",
-        "style_comparison": "",
-        "entry_instructions": "Участник должен указать, какой именно сахар использовался. Также необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Общее описание особой природы пива может закрывать все обязательные пункты."
-      },
-      "vital_statistics": {
-        "note": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer."
-      },
-      "vital_statistics_text": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer.",
-      "commercial_examples_text": "Bell’s Hopslam, Cervejaria Colorado Appia, Fifth Hammer Break of Jawn, Groundswell Piloncillo, Long Trail Harvest, New Glarus Cabin Fever",
-      "tags_en": [
-        "specialty-beer"
-      ],
-      "source_guideline_page_start": 71,
-      "source_pdf_page_start": 87,
-      "tags_ru": [
-        "специальное пиво"
-      ],
-      "translation_status": "completed",
-      "general_notes_en": "An Alternative Sugar Beer is a standard beer (Classic Style or not) with added sweeteners, including fermentable sugars (e.g., honey, brown sugar, invert sugar, molasses, treacle, maple syrup, sorghum), unfermentable sugars (e.g., lactose), sugar alcohols (e.g., sorbitol), and any other sweetener (natural or artificial) that affects the flavor profile. The beers may or may not have any residual sweetness; it depends on the type of sugar, but flavor contributions are expected.",
-      "general_notes_ru": "Это обычное пиво — классического стиля или нет — с добавлением подсластителей: сбраживаемых сахаров вроде мёда, коричневого сахара, инвертного сахара, мелассы, трекла, кленового сиропа или сорго; несбраживаемых сахаров, например лактозы; сахарных спиртов вроде сорбита; и любых других натуральных или искусственных подсластителей, влияющих на вкусовой профиль. Остаточная сладость может быть, а может и не быть — всё зависит от типа сахара, но сам его вклад должен ощущаться."
-    }
+  "translated_categories": [
+   "30",
+   "31"
+  ],
+  "next_recommended_batch": [
+   "32A",
+   "32B",
+   "33A",
+   "33B",
+   "34A",
+   "34B",
+   "34C"
   ]
+ },
+ "categories": [
+  {
+   "category_id": "30",
+   "category_en": "SPICED BEER",
+   "category_ru": "Пиво со специями, травами и овощами",
+   "overview_ru": "Категория охватывает specialty-сорта, где дополнительный характер создают кулинарные специи, травы и овощи в широком, бытовом смысле слова, а не в строгом ботаническом. Сюда же BJCP относит орехи, перцы чили, кофе, шоколад, хвойные побеги, цедру, ревень и сходные ингредиенты. Кулинарные фрукты и зерновые сюда не входят. Ключ к оценке — не буквальный поиск каждого ингредиента, а то, насколько убедительно и гармонично заявленная идея встроена в пиво как в пиво."
+  },
+  {
+   "category_id": "31",
+   "category_en": "ALTERNATIVE FERMENTABLES BEER",
+   "category_ru": "Пиво с альтернативными зерновыми и сахарами",
+   "overview_ru": "Эта категория объединяет specialty-сорта, где дополнительный характер создают либо нестандартные зерновые, либо сахара и подсластители. Важен не сам факт их использования, а заметный сенсорный вклад в аромат, вкус или фактуру. Если добавка практически не читается, пиво следует оценивать как обычный базовый стиль."
+  }
+ ],
+ "styles": [
+  {
+   "bjcp_id": "30A",
+   "name_en": "Spice, Herb, or Vegetable Beer",
+   "name_ru": "Пиво со специями, травами или овощами",
+   "category_id": "30",
+   "category_en": "SPICED BEER",
+   "category_ru": "Пиво со специями, травами и овощами",
+   "bjcp_heading": "30A. Spice, Herb, or Vegetable Beer",
+   "description_short_ru": "Пиво, где характер специй, трав или овощей ясно читается, но остаётся в гармонии с базовым стилем и не делает напиток искусственным на вкус.",
+   "sections_en": {
+    "overall_impression": "An appealing fusion of spices, herbs, or vegetables (SHVs) and beer, but still recognizable as beer. The SHV character should be evident but in balance with the beer, not so forward as to suggest an artificial product.",
+    "aroma": "Varies by base style. The SHV character should be noticeable in the aroma; however, some SHVs (e.g., ginger, cinnamon, rosemary) have stronger aromas and are more distinctive than others (e.g., most vegetables) – allow for a range of SHV character and intensity from subtle to aggressive. Hop aroma may be lower than in the base style to better show the SHV character. The SHVs should add an extra complexity, but not be so prominent as to unbalance the resulting presentation.",
+    "appearance": "Varies by base style and special ingredients. Lighter-colored beer may show distinctive ingredient colors, including in the head. Variable clarity, although haze is generally undesirable. Some ingredients may impact head retention.",
+    "flavor": "Varies by base style. As with aroma, distinctive SHV flavors should be noticeable, and may range in intensity from subtle to aggressive. Some SHVs are inherently bitter and may result in a beer more bitter than the declared base style. Bitterness, hop and malt flavors, alcohol content, and fermentation byproducts, such as esters, should be appropriate for the base style, but be harmonious and balanced with the distinctive SHV flavors present.",
+    "mouthfeel": "Varies by base style. SHVs may increase or decrease body. Some SHVs may add a bit of astringency, although a ‘raw’ spice character is undesirable.",
+    "comments": "The description of the beer is critical for evaluation; judges should think more about the declared concept than trying to detect each individual ingredient. Balance, drinkability, and execution of the theme are the most important deciding factors. The SHVs should complement the original style and not overwhelm it. Base style attributes will be different after the addition of SHVs; do not expect the beer to taste identical to the unadulterated base style.",
+    "history": "",
+    "characteristic_ingredients": "",
+    "style_comparison": "",
+    "entry_instructions": "The entrant must specify the type of spices, herbs, or vegetables used, but individual ingredients do not need to be specified if a well-known spice blend is used (e.g., apple pie spice, curry powder, chili powder). Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+   },
+   "sections_ru": {
+    "overall_impression": "Привлекательное сочетание специй, трав или овощей с пивом, которое при этом по-прежнему однозначно остаётся пивом. Характер SHV-компонентов должен быть заметным, но уравновешенным, без ощущения искусственности.",
+    "aroma": "Зависит от базового стиля. Характер специй, трав или овощей должен ощущаться в аромате, но нужно помнить, что одни SHV-компоненты — например, имбирь, корица или розмарин — звучат гораздо ярче и узнаваемее, чем другие, вроде большинства овощей. Поэтому допустим широкий диапазон интенсивности: от тонкой до весьма выразительной. Хмелевой аромат может быть слабее, чем у базового стиля, чтобы лучше показать SHV-характер. Эти ингредиенты должны добавлять сложности, а не разрушать общий баланс.",
+    "appearance": "Зависит от базового стиля и специальных ингредиентов. В светлом пиве цвет добавок может проявляться заметно, в том числе в оттенке пены. Прозрачность может быть разной, но выраженная мутность обычно нежелательна. Некоторые ингредиенты способны ухудшать стойкость пены.",
+    "flavor": "Зависит от базового стиля. Как и в аромате, вкус специй, трав или овощей должен быть отчётливо заметен, а по интенсивности может варьироваться от деликатного до напористого. Некоторые SHV-компоненты сами по себе горчат, поэтому итоговое пиво может оказаться горче, чем заявленный базовый стиль. Горечь, хмелевой и солодовый профиль, крепость и побочные продукты брожения — например эфиры — должны оставаться уместными для базы и при этом гармонировать с SHV-характером.",
+    "mouthfeel": "Зависит от базового стиля. SHV-компоненты могут как усиливать, так и ослаблять ощущение тела. Некоторые из них способны добавлять лёгкую вяжущесть, однако ощущение «сырой специи» нежелательно.",
+    "comments": "Описание пива здесь критически важно: судье важнее понять заявленную идею, чем пытаться вычислить каждый отдельный ингредиент. Главные критерии — баланс, питкость и качество реализации замысла. SHV-компоненты должны дополнять исходный стиль, а не подавлять его. После их добавления базовый стиль неизбежно меняется, поэтому не стоит ожидать вкуса, полностью идентичного «чистой» базе.",
+    "history": "",
+    "characteristic_ingredients": "",
+    "style_comparison": "",
+    "entry_instructions": "Участник должен указать, какие именно специи, травы или овощи использовались, но если применялась общеизвестная смесь специй, перечислять каждый компонент отдельно не требуется — например, apple pie spice, curry powder или chili powder. Также необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Общее описание особой природы пива может закрывать все обязательные пункты."
+   },
+   "vital_statistics": {
+    "note": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer."
+   },
+   "vital_statistics_text": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer.",
+   "commercial_examples_text": "Alesmith Speedway Stout, Elysian Avatar Jasmine IPA, Founders Breakfast Stout, Rogue Yellow Snow Pilsner, Traquair Jacobite Ale, Young’s Double Chocolate Stout",
+   "tags_en": [
+    "specialty-beer",
+    "spice"
+   ],
+   "source_guideline_page_start": 68,
+   "source_pdf_page_start": 84,
+   "tags_ru": [
+    "специальное пиво",
+    "пряный"
+   ],
+   "translation_status": "completed",
+   "general_notes_en": "Often called Spice Beer, regardless of whether spices, herbs, or vegetables are used.",
+   "general_notes_ru": "Этот стиль нередко просто называют Spice Beer — независимо от того, используются ли в нём именно специи, травы или овощи."
+  },
+  {
+   "bjcp_id": "30B",
+   "name_en": "Autumn Seasonal Beer",
+   "name_ru": "Осеннее сезонное пиво",
+   "category_id": "30",
+   "category_en": "SPICED BEER",
+   "category_ru": "Пиво со специями, травами и овощами",
+   "bjcp_heading": "30B. Autumn Seasonal Beer",
+   "description_short_ru": "Солодовое, пряное сезонное пиво с атмосферой осени и сбора урожая: часто с тыквой или похожими овощами, тёплыми специями и мягко согревающим, насыщенным финишем.",
+   "sections_en": {
+    "overall_impression": "A malty, spiced beer that often has a moderately rich body and slightly warming finish suggesting a good accompaniment for the cool fall season, and often evocative of harvest or Thanksgiving traditions.",
+    "aroma": "Malty, spicy, and balanced. A wide range is possible, as long as it evokes the harvest theme. The declared ingredients and concept set the expectation. Hops are often subtle. Alcohol is often present, but smooth and supportive. The components should be well-integrated, and create a coherent presentation. See Flavor section for spice, malt, sugar, and vegetable character.",
+    "appearance": "Medium amber to coppery-brown; lighter versions are more common. Clear, if not opaque. Well-formed, persistent, off-white to tan head. Some versions with squashes will take on an unusual hue for beer, with orange-like hints.",
+    "flavor": "Malty, spicy, and balanced. Allow for brewer creativity in meeting the theme objective. Warming or sweet spices common. Rich, toasty malty flavors are common, and may include caramel, toasted bread or pie crust, biscuit, or nut flavors. May include distinctive sugar flavors, like molasses, honey, or brown sugar. Flavor derived from squash-based vegetables are often elusive, often only providing a richer sweetness. The special ingredients should be supportive and balanced, not overshadowing the base beer. Bitterness and hop flavor are usually restrained to not interfere with the special character. Usually finishes somewhat full and satisfying, occasionally with a light alcohol flavor. Roasted malt characteristics are typically absent.",
+    "mouthfeel": "Body is usually medium to full, and may be chewy. Moderately low to moderately high carbonation. Age character allowable. Warming alcohol allowable.",
+    "comments": "Using the sensory profile of products that suggest the harvest season, like pumpkin pie, apple pie, or candied yams, balanced with a supportive, often malty base beer. The description of the beer is critical for evaluation; judges should think more about the declared concept than trying to detect each individual ingredient. Balance, drinkability, and execution of the theme are the most important deciding factors.",
+    "history": "",
+    "characteristic_ingredients": "Spices are required, and often include those evocative of the fall, harvest, or Thanksgiving season (e.g., allspice, nutmeg, cinnamon, cloves, ginger) but any combination is possible and creativity is encouraged. Flavorful adjuncts are common (e.g., molasses, invert sugar, brown sugar, honey, maple syrup). Squash-type or gourd-type vegetables (most frequently pumpkin) are often used.",
+    "style_comparison": "",
+    "entry_instructions": "The entrant must specify the type of spices, herbs, or vegetables used; individual ingredients do not need to be specified if a well-known blend of spices is used (e.g., pumpkin pie spice). Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+   },
+   "sections_ru": {
+    "overall_impression": "Солодовое, пряное пиво, нередко с умеренно плотным телом и слегка согревающим финишем, которое хорошо подходит к прохладному осеннему сезону и часто вызывает ассоциации со сбором урожая или Днём благодарения.",
+    "aroma": "Солодовый, пряный, сбалансированный. Диапазон трактовок может быть очень широким, если пиво убедительно передаёт тему урожая. Ожидания задают заявленные ингредиенты и общий замысел. Хмель обычно играет второстепенную роль. Алкоголь часто присутствует, но должен быть мягким и поддерживающим. Все компоненты должны быть хорошо интегрированы и складываться в цельный образ. По пряностям, солоду, сахарам и овощному характеру ориентируются прежде всего на вкусовой профиль.",
+    "appearance": "Цвет от среднего янтарного до медно-коричневого; более светлые версии встречаются чаще. Пиво должно быть прозрачным, если только оно не настолько тёмное, что прозрачность неразличима. Пена хорошо сформированная, стойкая, от грязно-белой до светло-кремовой. Варианты с тыквенными могут давать необычный для пива оттенок с оранжевыми нюансами.",
+    "flavor": "Солодовый, пряный, сбалансированный. Здесь допускается творческая свобода, если она работает на сезонную идею. Часто встречаются согревающие или сладковатые специи. Богатый поджаристый солодовый профиль может напоминать карамель, поджаренный хлеб, корочку пирога, бисквит или орехи. Возможны и заметные сахарные оттенки — меласса, мёд, коричневый сахар. Вкус, связанный с тыквенными овощами, нередко остаётся неявным и чаще проявляется как более глубокая, насыщенная сладость. Специальные ингредиенты должны поддерживать базу и быть с ней в равновесии, а не затмевать её. Горечь и хмелевой вкус обычно сдержанные, чтобы не мешать специальному характеру. Финиш обычно довольно полный и удовлетворяющий; иногда заметна лёгкая алкогольная нотка. Обжаренный солодовый характер обычно отсутствует.",
+    "mouthfeel": "Тело обычно от среднего к полному и может быть даже чуть жевательным. Карбонизация — от умеренно низкой до умеренно высокой. Допустимы следы выдержки. Согревающее действие алкоголя также допустимо.",
+    "comments": "Стиль строится на сенсорных ассоциациях с продуктами, напоминающими сезон урожая, — тыквенный пирог, яблочный пирог, засахаренный батат — и на поддерживающей, чаще всего солодовой пивной базе. Описание пива здесь особенно важно: судья должен оценивать прежде всего заявленную идею, а не пытаться распознать каждый отдельный ингредиент. Главные критерии — баланс, питкость и убедительность реализации замысла.",
+    "history": "",
+    "characteristic_ingredients": "Специи обязательны; чаще всего это то, что ассоциируется с осенью, урожаем и Днём благодарения — например, душистый перец, мускатный орех, корица, гвоздика, имбирь, — но допустимы любые сочетания, и творческий подход приветствуется. Часто используются выразительные добавки вроде мелассы, инвертного сахара, коричневого сахара, мёда или кленового сиропа. Нередко применяются овощи тыквенного типа, чаще всего сама тыква.",
+    "style_comparison": "",
+    "entry_instructions": "Участник должен указать, какие специи, травы или овощи использовались; перечислять каждый компонент не требуется, если применялась общеизвестная смесь вроде pumpkin pie spice. Также необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Общее описание особой природы пива может закрывать все обязательные пункты."
+   },
+   "vital_statistics": {
+    "note": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer. ABV is generally above 5%, and most examples are somewhat amber-copper in color."
+   },
+   "vital_statistics_text": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer. ABV is generally above 5%, and most examples are somewhat amber-copper in color.",
+   "commercial_examples_text": "Dogfish Head Punkin Ale, Elysian Punkuccino, Rogue Pumpkin Patch Ale, Schlafly Pumpkin Ale, UFO Pumpkin, Weyerbacher Imperial Pumpkin",
+   "tags_en": [
+    "specialty-beer",
+    "spice"
+   ],
+   "source_guideline_page_start": 68,
+   "source_pdf_page_start": 84,
+   "tags_ru": [
+    "специальное пиво",
+    "пряный"
+   ],
+   "translation_status": "completed",
+   "general_notes_en": "Autumn Seasonal Beers are beers that suggest cool weather and the autumn harvest season, and may include pumpkins, gourds, or other squashes, and associated spices.",
+   "general_notes_ru": "Осенние сезонные сорта должны вызывать ассоциации с прохладной погодой и временем сбора урожая; в них могут использоваться тыквы, другие виды тыквенных и характерные для сезона специи."
+  },
+  {
+   "bjcp_id": "30C",
+   "name_en": "Winter Seasonal Beer",
+   "name_ru": "Зимнее сезонное пиво",
+   "category_id": "30",
+   "category_en": "SPICED BEER",
+   "category_ru": "Пиво со специями, травами и овощами",
+   "bjcp_heading": "30C. Winter Seasonal Beer",
+   "description_short_ru": "Более крепкое и тёмное сезонное пиво с пряностями, сухофруктами и иногда специальными сахарами, рассчитанное на холодное время года и праздничное зимнее настроение.",
+   "sections_en": {
+    "overall_impression": "A stronger, darker, spiced beer that often has a rich body and warming finish suggesting a good accompaniment for the cold winter season.",
+    "aroma": "Malty, spicy, fruity, and balanced. A wide range is possible, as long as it evokes the holiday theme. The declared ingredients and concept set the expectation. Fruit is often dark or dried in character. Hops are often subtle. Alcohol is often present, but smooth and supportive. Malty and sugary aromas tend to be greater in the balance, and support the spices. The components should be well-integrated, and create a coherent presentation. See Flavor section for spice, malt, sugar, and fruit character.",
+    "appearance": "Medium amber to very dark brown; darker versions are more common. Clear, if not opaque. Usually clear, although darker versions may be virtually opaque. Well-formed, persistent, off-white to tan head.",
+    "flavor": "Malty, spicy, fruity, and balanced. Allow for brewer creativity in meeting the theme objective. Warming or sweet spices common. Rich, sweet malty flavors are common, and may include caramel, toast, nutty, or chocolate flavors. May include dried fruit or dried fruit peel flavors such as raisin, plum, fig, cherry, orange peel, or lemon peel. May include distinctive sugar flavors, like molasses, honey, or brown sugar. The special ingredients should be supportive and balanced, not overshadowing the base beer. Bitterness and hop flavor are usually restrained to not interfere with special character. Usually finishes rather full and satisfying, often with a light alcohol flavor. Roasted malt characteristics are rare, and not usually stronger than chocolate.",
+    "mouthfeel": "Body is usually medium to full, often with a malty chewiness. Moderately low to moderately high carbonation. Age character allowable. Warming alcohol allowable.",
+    "comments": "Using the sensory profile of products that suggest the holiday season, such as Christmas cookies, gingerbread, English-type Christmas pudding, rum cakes, eggnog, evergreen trees, potpourri, or mulling spices, balanced with a supportive, often malty, warming, and darker base beer. The description of the beer is critical for evaluation; judges should think more about the declared concept than trying to detect each individual ingredient. Balance, drinkability, and execution of the theme are the most important deciding factors.",
+    "history": "The winter holiday season is a traditional time when old friends get together, where beer of a somewhat higher alcohol content and richness is served. Many breweries offer seasonal products that may be darker, stronger, spiced, or otherwise more characterful than their year-round beers. Spiced versions are an American or Belgian tradition, since English or German breweries traditionally do not use spices in their beer. Many American craft examples were inspired by Anchor Our Special Ale, first produced in 1975.",
+    "characteristic_ingredients": "Spices are required, and often include those evocative of the Christmas season (e.g., allspice, nutmeg, cinnamon, cloves, ginger) but any combination is possible and creativity is encouraged. Fruit peel (e.g., oranges, lemon) may be used, as may subtle additions of other fruits (often dried or dark fruit). Flavorful adjuncts are often used (e.g., molasses, treacle, invert sugar, brown sugar, honey, maple syrup). Usually ales, although strong dark lagers exist.",
+    "style_comparison": "",
+    "entry_instructions": "The entrant must specify the type of spices, sugars, fruits, or additional fermentables used; individual ingredients do not need to be specified if a well-known blend of spices is used (e.g., mulling spice). Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+   },
+   "sections_ru": {
+    "overall_impression": "Более крепкое, более тёмное и пряное пиво, нередко с насыщенным телом и согревающим финишем, хорошо подходящее к холодному зимнему сезону.",
+    "aroma": "Солодовый, пряный, фруктовый, сбалансированный. Диапазон возможных трактовок широк, если пиво убедительно передаёт праздничную зимнюю тему. Ожидания задают заявленные ингредиенты и общая идея. Фрукты чаще всего тёмные или сушёные по характеру. Хмель обычно сдержан. Алкоголь нередко присутствует, но должен быть мягким и поддерживающим. В балансе обычно сильнее ощущаются солодовые и сахаристые тона, которые служат опорой для специй. Все компоненты должны быть хорошо интегрированы и складываться в цельный образ. За деталями по специям, солоду, сахарам и фруктам ориентируются прежде всего на вкусовой профиль.",
+    "appearance": "Цвет от среднего янтарного до очень тёмно-коричневого; более тёмные версии встречаются чаще. Пиво должно быть прозрачным, если только оно не настолько тёмное, что прозрачность уже неразличима. Обычно всё же прозрачное, хотя самые тёмные версии могут казаться почти непросветными. Пена хорошо сформированная, стойкая, от грязно-белой до светло-коричневатой.",
+    "flavor": "Солодовый, пряный, фруктовый, сбалансированный. Творческий подход здесь допустим, если он работает на зимнюю праздничную тему. Часто встречаются согревающие или сладковатые специи. Богатый сладковатый солодовый профиль может включать карамель, поджаренный хлеб, ореховые или шоколадные оттенки. Возможны сухофрукты или цедра сушёных фруктов — изюм, слива, инжир, вишня, апельсиновая или лимонная цедра. Допустимы и выразительные сахарные ноты — меласса, мёд, коричневый сахар. Специальные ингредиенты должны поддерживать базу и быть с ней в равновесии, а не перекрывать её. Горечь и хмелевой вкус обычно сдержанны, чтобы не мешать специальному характеру. Финиш чаще довольно полный и удовлетворяющий, нередко с лёгкой алкогольной нотой. Обжаренный солодовый характер встречается редко и обычно не выходит дальше шоколадного уровня.",
+    "mouthfeel": "Тело обычно от среднего к полному, нередко с плотной, слегка жевательной солодовостью. Карбонизация — от умеренно низкой до умеренно высокой. Допустимы следы выдержки. Согревающий алкоголь также допустим.",
+    "comments": "Стиль опирается на сенсорные ассоциации с продуктами и ароматами зимних праздников: рождественское печенье, имбирные пряники, английский Christmas pudding, ромовые кексы, эгг-ног, хвойные деревья, попурри, смеси для глинтвейна — всё это на поддерживающей, обычно солодовой, согревающей и более тёмной пивной базе. Описание пива здесь критически важно: судье важнее понять заявленную идею, чем вычислять каждый отдельный ингредиент. Главные критерии — баланс, питкость и качество реализации замысла.",
+    "history": "Зимние праздники традиционно были временем встреч старых друзей, когда к столу подавали более крепкое и более богатое по вкусу пиво. Многие пивоварни выпускают сезонные продукты, которые темнее, крепче, прянее или просто богаче по характеру, чем их круглогодичные сорта. Версии со специями — скорее американская или бельгийская традиция, поскольку английские и немецкие пивоварни исторически специи в пиве почти не использовали. Многие американские крафтовые образцы выросли из влияния Anchor Our Special Ale, впервые сваренного в 1975 году.",
+    "characteristic_ingredients": "Специи обязательны; чаще всего это то, что ассоциируется с рождественским сезоном, — душистый перец, мускатный орех, корица, гвоздика, имбирь, — но допустимы любые сочетания, и творческий подход приветствуется. Может использоваться фруктовая цедра — например, апельсиновая или лимонная, — а также деликатные добавки других фруктов, чаще сушёных или тёмных. Нередко применяются выразительные добавки вроде мелассы, трекла, инвертного сахара, коричневого сахара, мёда или кленового сиропа. Обычно это эли, хотя возможны и крепкие тёмные лагеры.",
+    "style_comparison": "",
+    "entry_instructions": "Участник должен указать, какие специи, сахара, фрукты или другие ферментируемые добавки использовались; перечислять каждый компонент отдельно не требуется, если применялась общеизвестная смесь специй, например mulling spice. Также необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Общее описание особой природы пива может закрывать все обязательные пункты."
+   },
+   "vital_statistics": {
+    "note": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer. ABV is generally above 6%, and most examples are somewhat dark in color."
+   },
+   "vital_statistics_text": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer. ABV is generally above 6%, and most examples are somewhat dark in color.",
+   "commercial_examples_text": "Anchor Christmas Ale, Great Lakes Christmas Ale, Harpoon Winter Warmer, Rogue Santa’s Private Reserve, Schlafly Christmas Ale, Troeg’s The Mad Elf",
+   "tags_en": [
+    "specialty-beer",
+    "spice"
+   ],
+   "source_guideline_page_start": 69,
+   "source_pdf_page_start": 85,
+   "tags_ru": [
+    "специальное пиво",
+    "пряный"
+   ],
+   "translation_status": "completed",
+   "general_notes_en": "Winter Seasonal Beers are beers that suggest cold weather and the Christmas holiday season, and may include holiday spices, specialty sugars, and other products that are reminiscent of the festive season.",
+   "general_notes_ru": "Зимние сезонные сорта должны ассоциироваться с холодной погодой и рождественско-новогодним временем; в них могут использоваться праздничные специи, специальные сахара и другие ингредиенты, напоминающие о зимнем сезоне."
+  },
+  {
+   "bjcp_id": "30D",
+   "name_en": "Specialty Spice Beer",
+   "name_ru": "Специальное пиво со специями, травами или овощами",
+   "category_id": "30",
+   "category_en": "SPICED BEER",
+   "category_ru": "Пиво со специями, травами и овощами",
+   "bjcp_heading": "30D. Specialty Spice Beer",
+   "description_short_ru": "Версия SHV-пива, где к специям, травам или овощам добавлены другие специальные ингредиенты или процессы; все дополнительные компоненты должны читаться, но оставаться в гармонии и с SHV-характером, и с базовым пивом.",
+   "sections_en": {
+    "overall_impression": "An appealing combination of spices, herbs, or vegetables (SHVs), sugars, and beer, but still recognizable as beer. The SHV and sugar character should both be evident but in balance with the beer, not so forward as to suggest an artificial product.",
+    "aroma": "Same as SHV Beer, except that some additional fermentables (e.g., honey, molasses) may add an aroma component. Whatever additional aroma component is present should be in balance with the SHV and the beer components, and be a pleasant combination.",
+    "appearance": "Same as Spice, Herb, or Vegetable Beer.",
+    "flavor": "Same as SHV Beer, except that some additional fermentables (e.g., honey, molasses) may add a flavor component. Whatever additional flavor component is present should be in balance with the SHV and the beer components, and be a pleasant combination. Added sugars should not have a raw, unfermented flavor. Some added sugars will have unfermentable elements that may provide a fuller and sweeter finish; fully fermentable sugars may thin out the finish.",
+    "mouthfeel": "Same as SHV Beer, although depending on the type of sugar added, could increase or decrease the body.",
+    "comments": "If the additional fermentables or processes do not add a distinguishable character to the beer, enter it as one of the other (non-Specialty) Spiced Beer styles and omit a description of the extra ingredients or processes.",
+    "history": "",
+    "characteristic_ingredients": "",
+    "style_comparison": "",
+    "entry_instructions": "The entrant must specify the type of SHVs used, but individual ingredients do not need to be specified if a well-known spice blend is used (e.g., apple pie spice, curry powder, chili powder). The entrant must specify the type of additional ingredient (per the introduction) or special process employed. Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+   },
+   "sections_ru": {
+    "overall_impression": "Привлекательное сочетание специй, трав или овощей, дополнительных сахаров и пива, которое при этом всё ещё однозначно остаётся пивом. И SHV-характер, и сахарный компонент должны быть заметными, но уравновешенными относительно базы, без ощущения искусственности.",
+    "aroma": "Как у SHV Beer, но некоторые дополнительные ферментируемые компоненты — например, мёд или меласса — могут добавлять собственную ароматическую ноту. Любой такой дополнительный аромат должен быть приятным, гармоничным и находиться в балансе как с SHV-компонентами, так и с самим пивом.",
+    "appearance": "Как у Spice, Herb, or Vegetable Beer.",
+    "flavor": "Как у SHV Beer, но некоторые дополнительные ферментируемые ингредиенты — например, мёд или меласса — могут добавлять свой вкусовой слой. Этот дополнительный вкус должен быть приятным и гармонично сочетаться и с SHV-характером, и с базовым пивом. Добавленные сахара не должны казаться сырыми и недобродившими. Некоторые из них содержат несбраживаемые компоненты, которые делают финиш полнее и слаще; полностью сбраживаемые сахара, наоборот, могут облегчать и подсушивать финиш.",
+    "mouthfeel": "Как у SHV Beer, однако в зависимости от типа добавленного сахара тело может как увеличиваться, так и уменьшаться.",
+    "comments": "Если дополнительные ферментируемые ингредиенты или особые процессы не придают пиву различимого характера, такой образец следует заявлять в один из других, не-specialty, стилей раздела Spiced Beer и не описывать лишние ингредиенты или процессы.",
+    "history": "",
+    "characteristic_ingredients": "",
+    "style_comparison": "",
+    "entry_instructions": "Участник должен указать, какие SHV-компоненты использовались; если применялась общеизвестная смесь специй, перечислять каждый ингредиент отдельно не требуется — например, apple pie spice, curry powder или chili powder. Также нужно указать тип дополнительного ингредиента, разрешённого вводной частью категории, либо использованный специальный процесс. Кроме того, необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Общее описание особой природы пива может закрывать все обязательные пункты."
+   },
+   "vital_statistics": {
+    "note": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer."
+   },
+   "vital_statistics_text": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer.",
+   "commercial_examples_text": "New Belgium Honey Orange Tripel, Westbrook It’s Tiki Time",
+   "tags_en": [
+    "specialty-beer",
+    "spice"
+   ],
+   "source_guideline_page_start": 69,
+   "source_pdf_page_start": 85,
+   "tags_ru": [
+    "специальное пиво",
+    "пряный"
+   ],
+   "translation_status": "completed",
+   "general_notes_en": "A Specialty Spice Beer is a 30A Spice, Herb, or Vegetable (SHV) Beer with some additional ingredients, such as fermentable sugars (e.g., honey, brown sugar, invert sugar, maple syrup), sweeteners (e.g., lactose), adjuncts, alternative grains, or other special ingredients added, or some additional process applied. 30B Autumn and 30C Winter Seasonal Beers already allow additional ingredients, and should not be used as a base in this style.",
+   "general_notes_ru": "Это вариант 30A Spice, Herb, or Vegetable Beer, куда, помимо SHV-компонентов, добавлены другие специальные ингредиенты — например ферментируемые сахара, подсластители, добавочные материалы, альтернативные зерновые — либо применён особый технологический приём. Осенние и зимние сезонные версии 30B и 30C уже изначально допускают дополнительные ингредиенты и не должны использоваться как база для этого стиля."
+  },
+  {
+   "bjcp_id": "31A",
+   "name_en": "Alternative Grain Beer",
+   "name_ru": "Пиво с альтернативными зерновыми",
+   "category_id": "31",
+   "category_en": "ALTERNATIVE FERMENTABLES BEER",
+   "category_ru": "Пиво с альтернативными зерновыми и сахарами",
+   "bjcp_heading": "31A. Alternative Grain Beer",
+   "description_short_ru": "Пиво, где дополнительное или нестандартное зерновое сырьё вносит узнаваемый вклад в аромат, вкус или фактуру, но не разрушает логику базового стиля.",
+   "sections_en": {
+    "overall_impression": "A base beer enhanced by or featuring the character of additional grains. The specific character depends greatly on the added grains.",
+    "aroma": "Same as base beer style. The added grain will lend a particular character, although with some grains the beer will simply seem a bit more grainy or nutty, and some may have a relatively neutral character.",
+    "appearance": "Same as base beer style, although some additional haze may be noticeable.",
+    "flavor": "Same as base beer style. The additional grain should be noticeable in flavor, although it may not be necessarily identifiable. Some grains add an additional grainy, bready, or nutty flavor, while others simply enhance the flavor of the base beer. Some grains add a dryness to the finish.",
+    "mouthfeel": "Same as the base beer, although many additional grains (e.g., oats, rye) increase body and viscosity, while some (e.g., GF grains) create a thinner beer.",
+    "comments": "The additional grain should be apparent somewhere in the sensory profile. If the alternative grain does not provide a noticeable distinguishable character to the beer, enter it as the base style. This style should not be used for styles where the alternative grain is fundamental to the style definition (e.g., Rye IPA, Oatmeal Stout, Rice- or Corn-based International Lager). Note that sake is not beer, and is not intended for this category.",
+    "history": "",
+    "characteristic_ingredients": "",
+    "style_comparison": "",
+    "entry_instructions": "The entrant must specify the type of alternative grain used. Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+   },
+   "sections_ru": {
+    "overall_impression": "Базовое пиво, в котором характер дополнительных зерновых либо заметно усиливает профиль, либо выходит на первый план. Конкретный результат сильно зависит от того, какое именно зерно использовано.",
+    "aroma": "Как у базового стиля, но дополнительное зерновое сырьё должно вносить свой оттенок. Иногда это просто более выраженная зерновая или ореховая нота, а некоторые виды сырья дают довольно нейтральный эффект.",
+    "appearance": "Как у базового стиля, хотя может появляться немного дополнительной мутности.",
+    "flavor": "Как у базового стиля. Вклад альтернативного зернового должен ощущаться во вкусе, хотя он не обязан всегда чётко опознаваться как конкретный ингредиент. Одни зерновые добавляют зерновые, хлебные или ореховые оттенки, другие лишь усиливают вкусовую базу пива. Некоторые способны подсушивать финиш.",
+    "mouthfeel": "Как у базового пива, однако многие дополнительные зерновые — например, овёс или рожь — увеличивают тело и вязкость, тогда как некоторые, в том числе безглютеновые, наоборот, делают пиво более тонким по фактуре.",
+    "comments": "Дополнительное зерновое должно читаться хотя бы в какой-то части сенсорного профиля. Если оно не даёт заметного отличимого характера, пиво следует заявлять как обычный базовый стиль. Этот стиль не предназначен для тех случаев, где альтернативное зерно уже является определяющим элементом самого стиля — например, Rye IPA, Oatmeal Stout или International Lager на рисе либо кукурузе. И отдельно: саке не является пивом и не относится к этой категории.",
+    "history": "",
+    "characteristic_ingredients": "",
+    "style_comparison": "",
+    "entry_instructions": "Участник должен указать, какое именно альтернативное зерновое использовалось. Также необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Общее описание особой природы пива может закрывать все обязательные пункты."
+   },
+   "vital_statistics": {
+    "note": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer."
+   },
+   "vital_statistics_text": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer.",
+   "commercial_examples_text": "Blue/Point Rastafarye Ale, Green’s India Pale Ale, Lakefront New Grist, New Planet Pale Ale, Rogue Morimoto Soba Ale, Voodoo Swimming Jeans",
+   "tags_en": [
+    "specialty-beer"
+   ],
+   "source_guideline_page_start": 71,
+   "source_pdf_page_start": 87,
+   "tags_ru": [
+    "специальное пиво"
+   ],
+   "translation_status": "completed",
+   "general_notes_en": "An Alternative Grain Beer is a standard beer (Classic Style or not) with additional or non-standard brewing grains (e.g., rye, oats, buckwheat, spelt, millet, sorghum, rice) added or used exclusively. Gluten-free (GF) beers made from completely gluten-free ingredients may be entered here, while GF beers using process-based gluten removal should be entered in their respective base style categories.",
+   "general_notes_ru": "Это обычное пиво — классического стиля или нет — в котором дополнительно используются нестандартные зерновые, либо пиво, сваренное исключительно на таком сырье: например, рожь, овёс, гречиха, спельта, просо, сорго, рис. Полностью безглютеновые версии из действительно gluten-free ингредиентов заявляются сюда; пиво, где глютен удалён технологически, следует относить к соответствующему базовому стилю."
+  },
+  {
+   "bjcp_id": "31B",
+   "name_en": "Alternative Sugar Beer",
+   "name_ru": "Пиво с альтернативными сахарами",
+   "category_id": "31",
+   "category_en": "ALTERNATIVE FERMENTABLES BEER",
+   "category_ru": "Пиво с альтернативными зерновыми и сахарами",
+   "bjcp_heading": "31B. Alternative Sugar Beer",
+   "description_short_ru": "Пиво, где альтернативные сахара или подсластители вносят заметный ароматический, вкусовой или текстурный вклад, но напиток при этом остаётся именно пивом, а не уходит в сторону медовухи или десертного продукта.",
+   "sections_en": {
+    "overall_impression": "A tasteful integration of sugar and beer, but still recognizable as beer. The sugar character should both be evident and in balance with the beer, not so forward as to suggest an artificial product.",
+    "aroma": "Same as the base beer, except that some additional fermentables (e.g., honey, molasses) may add an aroma, which should be a pleasant, balanced combination with the beer.",
+    "appearance": "Same as the base beer, although some sugars will bring additional, usually darker, colors.",
+    "flavor": "Same as the base beer, except that some additional fermentables (e.g., honey, molasses) may add a flavor, which should be a pleasant, balanced combination with the beer. Added sugars should not have a raw, unfermented flavor. Some unfermentable sugars provide a fuller finish, while fully fermentable sugars can thin out the finish.",
+    "mouthfeel": "Same as the base beer, although depending on the type of sugar added, could increase or decrease the body.",
+    "comments": "The additional sugar should be apparent somewhere in the sensory profile. If the sugars do not add a distinguishable character to the beer, enter it in the base style category. A honey-based beer should not have so much honey that it is perceived more like a mead with beer (i.e., a braggot) than a honey beer. This style should not be used for styles where the alternative sugar is fundamental to the style definition, or where a small amount of neutral-flavored sugar is used simply to increase gravity, increase attenuation, or lighten flavor or body; those beers should be entered as the normal base style.",
+    "history": "",
+    "characteristic_ingredients": "",
+    "style_comparison": "",
+    "entry_instructions": "The entrant must specify the type of sugar used. Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+   },
+   "sections_ru": {
+    "overall_impression": "Вкусное и уместное сочетание сахара и пива, которое при этом всё ещё явно остаётся пивом. Сахарный характер должен быть заметным, но находиться в равновесии с остальными компонентами и не создавать ощущения искусственности.",
+    "aroma": "Как у базового пива, но некоторые дополнительные ферментируемые компоненты — например, мёд или меласса — могут вносить собственную ароматическую ноту. Она должна быть приятной и гармонично сочетаться с пивной основой.",
+    "appearance": "Как у базового пива, хотя отдельные виды сахаров могут давать дополнительный, чаще более тёмный оттенок цвета.",
+    "flavor": "Как у базового пива, но некоторые дополнительные ферментируемые компоненты — например, мёд или меласса — могут привносить собственный вкусовой слой, который должен быть приятным и сбалансированным относительно пивной базы. Добавленные сахара не должны казаться сырыми и недобродившими. Несбраживаемые сахара нередко делают финиш полнее, тогда как полностью сбраживаемые могут, наоборот, облегчать и сушить его.",
+    "mouthfeel": "Как у базового пива, хотя в зависимости от типа добавленного сахара тело может как увеличиваться, так и уменьшаться.",
+    "comments": "Дополнительный сахар должен проявляться хотя бы в какой-то части сенсорного профиля. Если он не даёт различимого характера, пиво следует заявлять как обычный базовый стиль. Медовое пиво не должно содержать столько мёда, чтобы восприниматься скорее как гибрид медовухи и пива, то есть braggot, а не как собственно honey beer. Этот стиль не предназначен для тех случаев, где альтернативный сахар является неотъемлемой частью определения стиля, либо когда небольшое количество нейтрального сахара используется лишь для повышения начальной плотности, увеличения сбраживаемости или облегчения тела и вкуса; такие сорта нужно относить к обычному базовому стилю.",
+    "history": "",
+    "characteristic_ingredients": "",
+    "style_comparison": "",
+    "entry_instructions": "Участник должен указать, какой именно сахар использовался. Также необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Общее описание особой природы пива может закрывать все обязательные пункты."
+   },
+   "vital_statistics": {
+    "note": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer."
+   },
+   "vital_statistics_text": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer.",
+   "commercial_examples_text": "Bell’s Hopslam, Cervejaria Colorado Appia, Fifth Hammer Break of Jawn, Groundswell Piloncillo, Long Trail Harvest, New Glarus Cabin Fever",
+   "tags_en": [
+    "specialty-beer"
+   ],
+   "source_guideline_page_start": 71,
+   "source_pdf_page_start": 87,
+   "tags_ru": [
+    "специальное пиво"
+   ],
+   "translation_status": "completed",
+   "general_notes_en": "An Alternative Sugar Beer is a standard beer (Classic Style or not) with added sweeteners, including fermentable sugars (e.g., honey, brown sugar, invert sugar, molasses, treacle, maple syrup, sorghum), unfermentable sugars (e.g., lactose), sugar alcohols (e.g., sorbitol), and any other sweetener (natural or artificial) that affects the flavor profile. The beers may or may not have any residual sweetness; it depends on the type of sugar, but flavor contributions are expected.",
+   "general_notes_ru": "Это обычное пиво — классического стиля или нет — с добавлением подсластителей: сбраживаемых сахаров вроде мёда, коричневого сахара, инвертного сахара, мелассы, трекла, кленового сиропа или сорго; несбраживаемых сахаров, например лактозы; сахарных спиртов вроде сорбита; и любых других натуральных или искусственных подсластителей, влияющих на вкусовой профиль. Остаточная сладость может быть, а может и не быть — всё зависит от типа сахара, но сам его вклад должен ощущаться."
+  }
+ ]
 }

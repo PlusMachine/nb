@@ -66,14 +66,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   const { APP_URL } = getServerEnv();
   const canonicalUrl = `${APP_URL}/bjcp/${article.slug}`;
-  const hasRealHeroImage = resolveHasRealHeroImage(article);
-  const absoluteHeroImageUrl = hasRealHeroImage ? `${APP_URL}${article.heroImageUrl}` : null;
-  // Без своей иллюстрации (плейсхолдер) — генерённая OG-карточка стиля 1200×630
-  // (docs/specs/og-images.md §5.4). Своё фото — без width/height (аспект произвольный).
+  // Всегда генерённая карточка 1200×630 (docs/specs/og-images.md §5.4, Ф5):
+  // собственная иллюстрация стиля больше не отдаётся сырым PNG в og:image —
+  // она встраивается фото-врезкой внутрь той же карточки (api/og/bjcp/[slug]
+  // сам решает, есть ли иллюстрация, через loadBjcpOgPhoto).
   const ogCardUrl = `${APP_URL}/api/og/bjcp/${article.slug}`;
-  const ogImages = absoluteHeroImageUrl
-    ? [{ url: absoluteHeroImageUrl, alt: article.title }]
-    : [{ url: ogCardUrl, width: 1200, height: 630, alt: article.title }];
+  const ogImages = [{ url: ogCardUrl, width: 1200, height: 630, alt: article.title }];
 
   return {
     title: article.seoTitle,
@@ -96,7 +94,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       card: "summary_large_image",
       title: article.seoTitle,
       description: article.seoDescription,
-      images: [absoluteHeroImageUrl ?? ogCardUrl]
+      images: [ogCardUrl]
     }
   };
 }

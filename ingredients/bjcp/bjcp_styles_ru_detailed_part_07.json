@@ -1,425 +1,425 @@
 {
-  "source": {
-    "document": "BJCP 2021 Beer Style Guidelines",
-    "file_name": "2021_Guidelines_Beer_1.25.pdf",
-    "language": "ru",
-    "translation_scope": "detailed",
-    "notes": "Подробный русский перевод седьмой части корпуса BJCP: категории 14-15 с сохранением короткого описания, полных секций и оригинальных английских секций для сверки."
-  },
-  "progress": {
-    "styles_total_in_guideline": 128,
-    "styles_translated_in_this_file": 6,
-    "translated_style_ids": [
-      "14A",
-      "14B",
-      "14C",
-      "15A",
-      "15B",
-      "15C"
-    ],
-    "translated_categories": [
-      "14",
-      "15"
-    ],
-    "next_recommended_batch": [
-      "16A",
-      "16B",
-      "16C",
-      "16D",
-      "17A",
-      "17B"
-    ]
-  },
-  "categories": [
-    {
-      "category_id": "14",
-      "category_en": "SCOTTISH ALE",
-      "category_ru": "Шотландский эль",
-      "overview_ru": "В эту категорию входят современные шотландские эли 60/-, 70/- и 80/-, которые в нынешнем виде сформировались уже после Второй мировой войны и обычно слабее, слаще, темнее и менее охмелены, чем сопоставимые английские аналоги."
-    },
-    {
-      "category_id": "15",
-      "category_en": "IRISH BEER",
-      "category_ru": "Ирландское пиво",
-      "overview_ru": "В эту категорию входят традиционные ирландские сорта верхового брожения — от янтарных до чёрных, умеренной или умеренно высокой крепости, причём реальный диапазон их интерпретаций заметно шире, чем кажется по массовым экспортным образцам."
-    }
+ "source": {
+  "document": "BJCP 2021 Beer Style Guidelines",
+  "file_name": "2021_Guidelines_Beer_1.25.pdf",
+  "language": "ru",
+  "translation_scope": "detailed",
+  "notes": "Подробный русский перевод седьмой части корпуса BJCP: категории 14-15 с сохранением короткого описания, полных секций и оригинальных английских секций для сверки."
+ },
+ "progress": {
+  "styles_total_in_guideline": 128,
+  "styles_translated_in_this_file": 6,
+  "translated_style_ids": [
+   "14A",
+   "14B",
+   "14C",
+   "15A",
+   "15B",
+   "15C"
   ],
-  "styles": [
-    {
-      "bjcp_id": "14A",
-      "bjcp_heading": "14A. Scottish Light",
-      "category_id": "14",
-      "category_en": "SCOTTISH ALE",
-      "category_ru": "Шотландский эль",
-      "name_en": "Scottish Light",
-      "name_ru": "Шотландский light",
-      "description_short_ru": "Низкоалкогольный солодовый шотландский эль с лёгкими нотами карамели, тоста, ириса и фруктов, где небольшая жареная сухость уравновешивает остаточную сладость.",
-      "sections_ru": {
-        "overall_impression": "Низкоалкогольный солодовый эль с лёгкими нотами карамели, тоста, ириса и фруктов. Небольшая жареная сухость в финале уравновешивает остаточную сладость, а горечь ощущается главным образом как средство не дать пиву стать приторным.",
-        "aroma": "Солодовый аромат от слабого до умеренного, с нотами карамели и ириса, а также лёгкими тостовыми и сахаристыми оттенками, которые могут напоминать поджаренные хлебные крошки, савоярди, сухое английское печенье, крекеры graham или сливочную тянучку. Допустимы лёгкая фруктовость семечковых плодов и лёгкий аромат английского хмеля — землистый, цветочный, апельсиново-цитрусовый, пряный и т. п.",
-        "appearance": "Цвет от глубокого медного до тёмно-коричневого. Пиво прозрачное. Пена от низкой до умеренной, кремовая, грязно-белая.",
-        "flavor": "Во вкусе солод от среднего уровня, с тостово-хлебной основой и оттенками карамели и ириса, переходящими в слегка поджаренную сухость финала. Возможен широкий спектр оттенков карамелизованного сахара и поджаренного хлеба — в той же логике, что и в аромате. Солодовый профиль и брожение чистые. Допустимы лёгкие эфиры и лёгкий вкус хмеля, схожий по дескрипторам с ароматом. Горечи достаточно, чтобы пиво не было приторным, но баланс и послевкусие остаются солодовыми.",
-        "mouthfeel": "Тело от умеренно лёгкого до среднего. Карбонизация от низкой до умеренной. Текстура может быть умеренно кремовой.",
-        "comments": "Подробные общие замечания см. во вводном описании категории. Из-за более высокой конечной плотности и остаточной сладости пиво может казаться менее горьким, чем предполагают спецификации. Обычно это разливной сорт, и встречается он сравнительно редко. Не стоит принимать лёгкую жареную сухость за дымность: дыма в этом стиле нет.",
-        "history": "См. вводное описание категории. Названия по шиллингам применялись к mild, то есть к невыдержанному пиву, ещё до Первой мировой войны, однако современную форму стиль приобрёл только после Второй мировой.",
-        "characteristic_ingredients": "В самом простом варианте — pale ale malt; также могут использоваться окрашенные солода, сахара, кукуруза, пшеница, кристальные солода, красители и самые разные другие зерновые. Чистые дрожжи. Мягкая вода. Торфяной копчёный солод недопустим.",
-        "style_comparison": "См. вводное описание категории. По профилю похож на другие шотландские эли, но слабее по алкоголю и темнее по цвету. По крепости сопоставим с нижней границей Dark Mild, но имеет иной баланс и другой вкусовой профиль."
-      },
-      "sections_en": {
-        "overall_impression": "A low-alcohol, malty beer with light caramel, toast, toffee, and fruit flavors. A slight roast dryness offsets the residual sweetness in the finish, with the bitterness perceived only to keep the beer from being cloying.",
-        "aroma": "Low to medium maltiness with caramel and toffee notes, and light toasty and sugary qualities that might be reminiscent of toasted breadcrumbs, ladyfingers, English biscuits, graham crackers, or butterscotch. Light pome fruitiness and light English hop aroma (earthy, floral, orange-citrus, spicy, etc.) allowable.",
-        "appearance": "Deep copper to dark brown. Clear. Low to moderate, creamy off-white.",
-        "flavor": "Medium toasty-bready malt with caramel and toffee overtones, finishing with a slightly roasty dryness. A wide range of caramelized sugar and toasted bread type of flavors are possible, using similar descriptors as the aroma. Clean maltiness and fermentation profile. Light esters and hop flavor allowable (similar descriptors as aroma). Sufficient bitterness to not be cloying, but with a malty balance and aftertaste.",
-        "mouthfeel": "Medium-low to medium body. Low to moderate carbonation. May be moderately creamy.",
-        "comments": "See category introduction for detailed comments. May not seem as bitter as specifications indicate due to higher finishing gravity and residual sweetness. Typically a draught product, but somewhat rare. Do not mis-perceive the light roasty dryness as smoke; smoke is not present in these beers.",
-        "history": "See category introduction. The Shilling ale names were used for mild (unaged) beer before World War I, but the styles took modern form only after World War II.",
-        "characteristic_ingredients": "At its simplest, pale ale malt, but can also use colored malt, sugars, corn, wheat, crystal malts, colorants, and a variety of other grains. Clean yeast. Soft water. No peat-smoked malt.",
-        "style_comparison": "See category introduction. Similar to other Scottish Ales but lower in alcohol, and darker in color. Similar in strength to the low end of Dark Mild, but with a different flavor profile and balance."
-      },
-      "vital_statistics_text": "OG: 1.030 – 1.035 | IBUs: 10 – 20 | FG: 1.010 – 1.013 | SRM: 17 – 25 | ABV: 2.5 – 3.3%",
-      "vital_statistics": {
-        "og": "1.030-1.035",
-        "ibu": "10-20",
-        "fg": "1.010-1.013",
-        "srm": "17-25",
-        "abv": "2.5-3.3%"
-      },
-      "commercial_examples_text": "Belhaven Best, McEwan's 60/-",
-      "tags_en": [
-        "session-strength",
-        "amber-color",
-        "top-fermented",
-        "british-isles",
-        "traditional-style",
-        "amber-ale-family",
-        "malty"
-      ],
-      "source_pdf_page_start": 41,
-      "source_guideline_page_start": 25,
-      "tags_ru": [
-        "сессионная крепость",
-        "янтарный цвет",
-        "верховое брожение",
-        "Британские острова",
-        "традиционный стиль",
-        "семейство amber ale",
-        "солодовый"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1"
-    },
-    {
-      "bjcp_id": "14B",
-      "bjcp_heading": "14B. Scottish Heavy",
-      "category_id": "14",
-      "category_en": "SCOTTISH ALE",
-      "category_ru": "Шотландский эль",
-      "name_en": "Scottish Heavy",
-      "name_ru": "Шотландский heavy",
-      "description_short_ru": "Слабоалкогольный, но более плотный солодовый шотландский эль с карамелью, тостом, ирисом и фруктовостью, где лёгкая жареная сухость сдерживает остаточную сладость.",
-      "sections_ru": {
-        "overall_impression": "Слабоалкогольный солодовый эль с лёгкими нотами карамели, тоста, ириса и фруктов. Небольшая жареная сухость в финале уравновешивает остаточную сладость, а горечь ощущается прежде всего как противовес приторности.",
-        "aroma": "Солодовый аромат от умеренно слабого до среднего, с карамельными и ирисовыми оттенками, а также лёгкими тостовыми и сахаристыми нотами, напоминающими поджаренные хлебные крошки, савоярди, сухое английское печенье, крекеры graham или сливочную тянучку. Допустимы лёгкая фруктовость семечковых плодов и лёгкий аромат английского хмеля — землистый, цветочный, апельсиново-цитрусовый, пряный и т. п.",
-        "appearance": "Цвет от бледно-медного до коричневого. Прозрачность хорошая. Пена от низкой до умеренной, кремовая, грязно-белая.",
-        "flavor": "Солодовый вкус среднего уровня, тостово-хлебный, с карамельными и ирисовыми полутонами и лёгкой жареной сухостью в финале. Возможен широкий спектр оттенков карамелизованного сахара и поджаренного хлеба, как и в аромате. Солодовость и профиль брожения чистые. Допустимы лёгкие эфиры и лёгкий вкус хмеля тех же направлений, что и в аромате. Горечи достаточно, чтобы не допустить приторности, но баланс и послевкусие остаются солодовыми.",
-        "mouthfeel": "Тело от умеренно лёгкого до среднего. Карбонизация от низкой до умеренной. Возможна умеренно кремовая текстура.",
-        "comments": "Подробные комментарии см. во вводном описании категории. Из-за более высокой конечной плотности и остаточной сладости пиво может восприниматься менее горьким, чем подсказывают числовые параметры. Лёгкую жареную сухость не следует путать с дымностью: дыма здесь нет.",
-        "history": "См. вводное описание категории. Названия по шиллингам применялись к mild до Первой мировой войны, но современный вид стиль приобрёл только после Второй мировой.",
-        "characteristic_ingredients": "В базовом виде — pale ale malt и окрашенные солода; также могут использоваться сахара, кукуруза, пшеница, кристальные солода, красители и различные другие зерновые. Чистые дрожжи. Мягкая вода. Торфяной копчёный солод исключён.",
-        "style_comparison": "См. вводное описание категории. По вкусовому профилю близок к другим шотландским элям, но светлее по цвету и крепче, чем Scottish Light. По крепости сопоставим с Ordinary Bitter, но отличается балансом и общим профилем."
-      },
-      "sections_en": {
-        "overall_impression": "A lower-alcohol, malty beer with light caramel, toast, toffee, and fruity flavors. A slight roast dryness offsets the residual sweetness in the finish, with the bitterness perceived only to keep the beer from being cloying.",
-        "aroma": "Medium-low to medium maltiness with caramel and toffee notes, and light toasty and sugary qualities that might be reminiscent of toasted breadcrumbs, ladyfingers, English biscuits, graham crackers, or butterscotch. Light pome fruitiness and light English hop aroma (earthy, floral, orange-citrus, spicy, etc.) allowable.",
-        "appearance": "Pale copper to brown. Clear. Low to moderate, creamy off-white.",
-        "flavor": "Medium toasty-bready malt with caramel and toffee overtones, finishing with a slightly roasty dryness. A wide range of caramelized sugar and toasted bread type of flavors are possible, using similar descriptors as the aroma. Clean maltiness and fermentation profile. Light esters and hop flavor allowable (similar descriptors as aroma). Sufficient bitterness to not be cloying, but with a malty balance and aftertaste.",
-        "mouthfeel": "Medium-low to medium body. Low to moderate carbonation. May be moderately creamy.",
-        "comments": "See category introduction for detailed comments. May not seem as bitter as specifications indicate due to higher finishing gravity and residual sweetness. Do not mis-perceive the light roasty dryness as smoke; smoke is not present in these beers.",
-        "history": "See category introduction. The Shilling ale names were used for mild (unaged) beer before World War I, but the styles took modern form only after World War II.",
-        "characteristic_ingredients": "At its simplest, pale ale malt and colored malt, but can also use sugars, corn, wheat, crystal malts, colorants, and a variety of other grains. Clean yeast. Soft water. No peat-smoked malt.",
-        "style_comparison": "See category introduction. Similar to other Scottish Ales in flavor profile, lighter in color and stronger than a Scottish Light. Similar in strength to Ordinary Bitter, but with a different flavor profile and balance."
-      },
-      "vital_statistics_text": "OG: 1.035 – 1.040 | IBUs: 10 – 20 | FG: 1.010 – 1.015 | SRM: 12 – 20 | ABV: 3.3 – 3.9%",
-      "vital_statistics": {
-        "og": "1.035-1.040",
-        "ibu": "10-20",
-        "fg": "1.010-1.015",
-        "srm": "12-20",
-        "abv": "3.3-3.9%"
-      },
-      "commercial_examples_text": "McEwan's 70/-, Orkney Raven Ale",
-      "tags_en": [
-        "session-strength",
-        "amber-color",
-        "top-fermented",
-        "british-isles",
-        "traditional-style",
-        "amber-ale-family",
-        "malty"
-      ],
-      "source_pdf_page_start": 41,
-      "source_guideline_page_start": 25,
-      "tags_ru": [
-        "сессионная крепость",
-        "янтарный цвет",
-        "верховое брожение",
-        "Британские острова",
-        "традиционный стиль",
-        "семейство amber ale",
-        "солодовый"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1"
-    },
-    {
-      "bjcp_id": "14C",
-      "bjcp_heading": "14C. Scottish Export",
-      "category_id": "14",
-      "category_en": "SCOTTISH ALE",
-      "category_ru": "Шотландский эль",
-      "name_en": "Scottish Export",
-      "name_ru": "Шотландский export",
-      "description_short_ru": "Шотландский солодовый эль умеренной крепости с лёгкими нотами карамели, тоста, ириса и фруктов; небольшая жареная сухость поддерживает сладость и удерживает баланс.",
-      "sections_ru": {
-        "overall_impression": "Солодовый эль умеренной крепости с лёгкими тонами карамели, тоста, ириса и фруктов. Небольшая жареная сухость в финале уравновешивает остаточную сладость, а горечь ощущается лишь настолько, чтобы пиво не казалось приторным.",
-        "aroma": "Солодовость среднего уровня, с карамельными и ирисовыми оттенками, а также лёгкими тостовыми и сахаристыми нотами, которые могут напоминать поджаренные хлебные крошки, савоярди, сухое английское печенье, крекеры graham или сливочную тянучку. Допустимы лёгкая фруктовость семечковых плодов и лёгкий аромат английского хмеля — землистый, цветочный, апельсиново-цитрусовый, пряный и т. п.",
-        "appearance": "Цвет от бледно-медного до коричневого. Пиво прозрачное. Пена от низкой до умеренной, кремовая, грязно-белая.",
-        "flavor": "Солодовый вкус среднего уровня, тостово-хлебный, с карамельными и ирисовыми полутонами и слегка жареной сухостью в финале. Возможен широкий спектр оттенков карамелизованного сахара и поджаренного хлеба, как и в аромате. Солодовость и брожение чистые. Допустимы лёгкие эфиры и лёгкий хмелевой вкус тех же направлений, что и в аромате. Горечи достаточно, чтобы не дать пиву уйти в приторность, но баланс и послевкусие остаются солодовыми.",
-        "mouthfeel": "Тело среднее. Карбонизация от умеренно низкой до умеренной. Возможна умеренно кремовая текстура.",
-        "comments": "Подробные замечания см. во вводном описании категории. Из-за более высокой конечной плотности и остаточной сладости пиво может казаться менее горьким, чем показывают спецификации. Лёгкую жареную сухость не стоит принимать за дымный характер: дыма здесь нет. Американизированные версии часто бывают крепче — подобно тому, как в США нередко усиливают Irish Red Ale.",
-        "history": "См. вводное описание категории. Названия по шиллингам использовались для mild ещё до Первой мировой войны, но современную форму стиль приобрёл только после Второй мировой.",
-        "characteristic_ingredients": "В самом простом варианте — pale ale malt и окрашенные солода; также возможны сахара, кукуруза, пшеница, кристальные солода, красители и различные другие зерновые. Чистые дрожжи. Мягкая вода. Торфяной копчёный солод недопустим.",
-        "style_comparison": "См. вводное описание категории. Крепче других шотландских элей, но со сходным вкусовым профилем. По крепости сопоставим с Best Bitter и Strong Bitter, однако отличается балансом и характером вкуса."
-      },
-      "sections_en": {
-        "overall_impression": "A moderate-strength, malty beer with light caramel, toast, toffee, and fruit flavors. A slight roast dryness offsets the residual sweetness in the finish, with the bitterness perceived only to keep the beer from being cloying.",
-        "aroma": "Medium maltiness with caramel and toffee notes, and light toasty and sugary qualities that might be reminiscent of toasted breadcrumbs, ladyfingers, English biscuits, graham crackers, or butterscotch. Light pome fruitiness and light English hop aroma (earthy, floral, orange-citrus, spicy, etc.) allowable.",
-        "appearance": "Pale copper to brown. Clear. Low to moderate, creamy off-white.",
-        "flavor": "Medium toasty-bready malt with caramel and toffee overtones, finishing with a slightly roasty dryness. A wide range of caramelized sugar and toasted bread type of flavors are possible, using similar descriptors as the aroma. Clean maltiness and fermentation profile. Light esters and hop flavor allowable (similar descriptors as aroma). Sufficient bitterness to not be cloying, but with a malty balance and aftertaste.",
-        "mouthfeel": "Medium body. Medium-low to medium carbonation. May be moderately creamy.",
-        "comments": "See category introduction for detailed comments. May not seem as bitter as specifications indicate due to higher finishing gravity and residual sweetness. Do not mis-perceive the light roasty dryness as smoke; smoke is not present in these beers. Americanized versions are often greater in strength (similar to American treatment of Irish Red Ales).",
-        "history": "See category introduction. The Shilling ale names were used for mild (unaged) beer before World War I, but the styles took modern form only after World War II.",
-        "characteristic_ingredients": "At its simplest, pale ale malt and colored malt, but can also use sugars, corn, wheat, crystal malts, colorants, and a variety of other grains. Clean yeast. Soft water. No peat-smoked malt.",
-        "style_comparison": "See category introduction. Stronger than other Scottish Ales, but with a similar flavor profile. Similar in strength to Best Bitter and Strong Bitter, but with a different flavor profile and balance."
-      },
-      "vital_statistics_text": "OG: 1.040 – 1.060 | IBUs: 15 – 30 | FG: 1.010 – 1.016 | SRM: 12 – 20 | ABV: 3.9 – 6.0%",
-      "vital_statistics": {
-        "og": "1.040-1.060",
-        "ibu": "15-30",
-        "fg": "1.010-1.016",
-        "srm": "12-20",
-        "abv": "3.9-6.0%"
-      },
-      "commercial_examples_text": "Belhaven Scottish Ale, Broughton Wee Jock 80 Shilling, Caledonian Edinburgh Castle, McEwan’s 80/-, McEwan’s Export, Traquair Bear Ale",
-      "tags_en": [
-        "standard-strength",
-        "amber-color",
-        "top-fermented",
-        "british-isles",
-        "traditional-style",
-        "amber-ale-family",
-        "malty"
-      ],
-      "source_pdf_page_start": 42,
-      "source_guideline_page_start": 26,
-      "tags_ru": [
-        "стандартная крепость",
-        "янтарный цвет",
-        "верховое брожение",
-        "Британские острова",
-        "традиционный стиль",
-        "семейство amber ale",
-        "солодовый"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1"
-    },
-    {
-      "bjcp_id": "15A",
-      "bjcp_heading": "15A. Irish Red Ale",
-      "category_id": "15",
-      "category_en": "IRISH BEER",
-      "category_ru": "Ирландское пиво",
-      "name_en": "Irish Red Ale",
-      "name_ru": "Ирландский red ale",
-      "description_short_ru": "Питкий янтарно-красный ирландский эль с тонким, слегка солодовым балансом, мягкой карамельной сладостью, зерновито-бисквитным вкусом и суховатым жареным финишем.",
-      "sections_ru": {
-        "overall_impression": "Питкое пинтовое пиво, нередко с довольно тонким вкусом. Баланс слегка смещён в солодовую сторону; во входе возможна мягкая сладость ириса или карамели, середина вкуса бывает слегка зерновито-бисквитной, а в финале появляется штрих жареной сухости. Одни версии сильнее подчёркивают карамель и сладость, другие — зерновую середину вкуса и сухой жареный финиш.",
-        "aroma": "Солодовый аромат от слабого до умеренного: либо нейтрально-зерновой, либо с лёгкими карамельными, тостовыми или ирисовыми оттенками. Очень лёгкая маслянистость допустима. Лёгкий землистый или цветочный аромат хмеля допустим. В целом профиль довольно чистый.",
-        "appearance": "Цвет от средне-янтарного до средне красновато-медного. Пиво прозрачное. Пена невысокая, от грязно-белой до светло-кремовой, со средней стойкостью.",
-        "flavor": "Карамельный солодовый вкус и сладость могут варьировать от умеренных до почти отсутствующих; изредка встречается лёгкий оттенок намазанного маслом тоста или ириса. Часто середина вкуса довольно нейтральная и зерновая, либо к финишу появляется лёгкая тостовая или бисквитная нота вместе с лёгким вкусом жареного зерна, который и даёт характерную сухость послевкусия. Лёгкий землистый или цветочный вкус хмеля допустим. Горечь от средне-низкой до средней. Финиш от умеренно сухого до сухого. Профиль чистый и гладкий. Низкий уровень эфиров допустим. Баланс обычно слегка солодовый, хотя небольшая доля жареного зерна может немного усилить восприятие горечи.",
-        "mouthfeel": "Тело от умеренно лёгкого до среднего. Если присутствует низкий уровень диацетила, возможна слегка скользкая текстура, но это не обязательно. Карбонизация умеренная. Ощущение во рту гладкое.",
-        "comments": "Стиль описан достаточно широко, чтобы включать не только классические ирландские образцы. Ирландские версии обычно слабее по алкоголю, более зерновые и суше в финале, тогда как неирландские нередко крепче, слаще, более карамельные и эфирные, и часто выпускаются как сезонные сорта.",
-        "history": "Хотя у Ирландии давняя традиция элей, современный Irish Red Ale по сути представляет собой адаптацию или интерпретацию популярного английского bitter: с меньшим охмелением и небольшой долей жареного зерна для цвета и сухости, хотя некоторые авторы предполагают более глубокую историю. В Ирландии стиль был заново открыт уже в эпоху крафта и сегодня почти обязателен в линейке пивоварни наряду с pale ale и stout.",
-        "characteristic_ingredients": "Обычно содержит немного жареного ячменя или чёрного солода для красноватого цвета и сухого жареного финала. Базовый светлый солод. Карамельные солода исторически были импортными и стоили дороже, поэтому использовались не всеми пивоварами.",
-        "style_comparison": "Ирландский эквивалент English Bitter с меньшей горечью и меньшим хмелевым акцентом, но с суховатым финишем за счёт жареного ячменя. Более выброженный, с меньшим телом и меньшей карамельностью, чем шотландские эли сопоставимой крепости."
-      },
-      "sections_en": {
-        "overall_impression": "An easy-drinking pint, often with subtle flavors. Slightly malty in the balance sometimes with an initial soft toffee or caramel sweetness, a slightly grainy-biscuity palate, and a touch of roasted dryness in the finish. Some versions can emphasize the caramel and sweetness more, while others will favor the grainy palate and roasted dryness.",
-        "aroma": "Low to moderate malt aroma, either neutral-grainy or with a lightly caramel, toast, or toffee character. Very light buttery character optional. Low earthy or floral hop aroma optional. Quite clean.",
-        "appearance": "Medium amber to medium reddish-copper color. Clear. Low off-white to tan colored head, average persistence.",
-        "flavor": "Moderate to very little caramel malt flavor and sweetness, rarely with a light buttered toast or toffee-like quality. The palate often is fairly neutral and grainy, or can take on a lightly toasty or biscuity note as it finishes with a light taste of roasted grain, which lends a characteristic dryness to the finish. A light earthy or floral hop flavor is optional. Medium to medium-low bitterness. Medium-dry to dry finish. Clean and smooth. Low esters optional. The balance tends to be slightly towards the malt, although light use of roasted grains may increase the perception of bitterness slightly.",
-        "mouthfeel": "Medium-light to medium body, although examples containing low levels of diacetyl may have a slightly slick mouthfeel (not required). Moderate carbonation. Smooth.",
-        "comments": "The style is fairly broad to allow for examples beyond the traditional ones from Ireland. Irish examples tend to be lower alcohol, grainier, and drier in the finish, while non-Irish versions are often higher in alcohol, sweeter, perhaps more caramelly and estery, and are often seasonal offerings.",
-        "history": "While Ireland has a long ale brewing heritage, the modern Irish Red Ale style is essentially an adaptation or interpretation of the popular English Bitter style with less hopping and a bit of roast to add color and dryness, although some suggest a longer history. Rediscovered as a craft beer style in Ireland, today it is an essential part of most brewery lineups, along with a pale ale and a stout.",
-        "characteristic_ingredients": "Generally has a bit of roasted barley or black malt to provide reddish color and dry roasted finish. Pale base malt. Caramel malts were historically imported and more expensive, so not all brewers would use them.",
-        "style_comparison": "A less-bitter and hoppy Irish equivalent to an English Bitter, with a dryish finish due to roasted barley. More attenuated with less caramel flavor and body than equivalent-strength Scottish Ales."
-      },
-      "vital_statistics_text": "OG: 1.036 – 1.046 | IBUs: 18 – 28 | FG: 1.010 – 1.014 | SRM: 9 – 14 | ABV: 3.8 – 5.0%",
-      "vital_statistics": {
-        "og": "1.036-1.046",
-        "ibu": "18-28",
-        "fg": "1.010-1.014",
-        "srm": "9-14",
-        "abv": "3.8-5.0%"
-      },
-      "commercial_examples_text": "Franciscan Well Rebel Red, Kilkenny Irish Beer, Murphy’s Irish Red, O’Hara’s Irish Red Ale, Porterhouse Nitro Red Ale, Smithwick’s Irish Ale",
-      "tags_en": [
-        "standard-strength",
-        "amber-color",
-        "top-fermented",
-        "british-isles",
-        "traditional-style",
-        "amber-ale-family",
-        "balanced"
-      ],
-      "source_pdf_page_start": 43,
-      "source_guideline_page_start": 27,
-      "tags_ru": [
-        "стандартная крепость",
-        "янтарный цвет",
-        "верховое брожение",
-        "Британские острова",
-        "традиционный стиль",
-        "семейство amber ale",
-        "сбалансированный"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1"
-    },
-    {
-      "bjcp_id": "15B",
-      "bjcp_heading": "15B. Irish Stout",
-      "category_id": "15",
-      "category_en": "IRISH BEER",
-      "category_ru": "Ирландское пиво",
-      "name_en": "Irish Stout",
-      "name_ru": "Ирландский stout",
-      "description_short_ru": "Чёрный ирландский стаут с выраженной жареной, часто кофейной нотой; баланс варьирует от почти ровного до заметно горького, а версия с nitro подачей даёт характерную кремовость.",
-      "sections_ru": {
-        "overall_impression": "Чёрное пиво с выраженным жареным характером, часто напоминающим кофе. Баланс может быть как довольно ровным, так и заметно горьким: более уравновешенные версии несут немного солодовой сладости, более горькие — весьма сухие. Разливные версии обычно кажутся кремовыми из-за подачи на азоте, но бутылочные образцы этого эффекта не имеют. Жареный профиль может уходить от сухого кофейного в сторону более шоколадного.",
-        "aroma": "Чаще всего доминирует умеренный кофейный аромат; возможны лёгкие вторичные тона тёмного шоколада, какао или жареного зерна. Низкий уровень эфиров допустим. Лёгкий землистый или цветочный аромат хмеля также возможен.",
-        "appearance": "Цвет от угольно-чёрного до очень тёмно-коричневого с гранатовыми отблесками. Как говорит Guinness, их пиво кажется чёрным, но на деле это очень тёмный оттенок рубинового. Пиво непрозрачное. При подаче на азоте характерна густая, кремовая, долго держащаяся пена от кремовой до коричневатой, но от бутылочной версии такой плотной нитро-шапки ждать не стоит.",
-        "flavor": "Вкус жареного зерна или солода — от умеренного до выраженного, при горечи от средней до высокой. Финиш может быть сухим и кофейным либо более сбалансированным, с лёгкой карамельной или солодовой сладостью. Обычно присутствуют кофейные оттенки, но возможна и горько-шоколадная либо несладко-шоколадная грань, сохраняющаяся до финала. Баланс могут смягчать небольшая кремовость, умеренно слабая фруктовость или средний землистый хмелевой вкус. Уровень горечи, степень жарености и сухость финиша заметно варьируют — в этом стиле допустима интерпретация пивоваром.",
-        "mouthfeel": "Тело от умеренно лёгкого до умеренно полного, с некоторой кремовостью — особенно при nitro-подаче. Карбонизация от низкой до умеренной. Несмотря на высокую хмелевую горечь и значительную долю тёмных зёрен, пиво удивительно гладкое. Возможна лёгкая вяжущесть от жареного зерна, но грубость недопустима.",
-        "comments": "Традиционно это разливной стиль. Современные образцы почти всегда ассоциируются с nitro-подачей. Бутылочное пиво не стоит оценивать по меркам той же кремовости и стойкости пены, что даёт подача смесью газов. В Ирландии существуют региональные отличия, подобно вариативности английских bitter. Дублинские версии чаще строятся на жареном ячмене, суше и горче; коркские — мягче, слаще и чаще дают шоколадные и специальные солодовые оттенки.",
-        "history": "Стиль вырос из лондонских портеров, но с более полным, кремовым и «стаутовым» телом и крепостью. Guinness с 1799 года варила только porter, а примерно с 1810-го — более «крепкий» его вариант. Ирландский stout окончательно разошёлся с лондонским single stout, или просто porter, к концу XIX века, когда акцент сместился в сторону более тёмных солодов и жареного ячменя. После Второй мировой Guinness начала использовать хлопья ячменя, а бренд Guinness Draught появился в 1959 году. Банки и бутылки с виджетом для имитации draught появились в конце 1980-х и в 1990-е.",
-        "characteristic_ingredients": "Тёмные жареные солода или зерно в количестве, достаточном, чтобы пиво было чёрным. Светлый базовый солод. Для тела могут использоваться несоложёные зёрна.",
-        "style_comparison": "Слабее, чем Irish Extra Stout. По цвету темнее English Porter: здесь пиво чёрное, а не коричневое."
-      },
-      "sections_en": {
-        "overall_impression": "A black beer with a pronounced roasted flavor, often similar to coffee. The balance can range from fairly even to quite bitter, with the more balanced versions having a little malty sweetness and the bitter versions being quite dry. Draught versions typically are creamy from a nitro pour, but bottled versions will not have this dispense-derived character. The roasted flavor can range from dry and coffee-like to somewhat chocolaty.",
-        "aroma": "Moderate coffee-like aroma typically dominates; may have slight dark chocolate, cocoa, or roasted grain secondary notes. Medium-low esters optional. Low earthy or floral hop aroma optional.",
-        "appearance": "Jet black to deep brown with garnet highlights in color. According to Guinness, “Guinness beer may appear black, but it is actually a very dark shade of ruby.” Opaque. A thick, creamy, long-lasting, tan- to brown-colored head is characteristic when served on nitro, but don’t expect a tight, creamy head on a bottled beer.",
-        "flavor": "Moderate roasted grain or malt flavor with a medium to high bitterness. The finish can be dry and coffee-like to moderately balanced with a touch of caramel or malty sweetness. Typically has coffee-like flavors, but also may have a bittersweet or unsweetened chocolate character in the palate, lasting into the finish. Balancing factors may include some creaminess, medium-low fruitiness, or medium earthy hop flavor. The level of bitterness is somewhat variable, as is the roasted character and the dryness of the finish; allow for interpretation by brewers.",
-        "mouthfeel": "Medium-light to medium-full body, with a somewhat creamy character – especially when served by nitro pour. Low to moderate carbonation. For the high hop bitterness and significant proportion of dark grains present, this beer is remarkably smooth. May have a light astringency from the roasted grains, although harshness is undesirable.",
-        "comments": "Traditionally a draught product. Modern examples are almost always associated with a nitro pour. Do not expect bottled beers to have the full, creamy texture or very long-lasting head associated with mixed-gas dispense. Regional differences exist in Ireland, similar to variability in English Bitters. Dublin-type stouts use roasted barley, are more bitter, and are drier. Cork-type stouts are sweeter, less bitter, and have flavors from chocolate and specialty malts.",
-        "history": "The style evolved from London porters, but reflecting a fuller, creamier, more “stout” body and strength. Guinness began brewing only porter in 1799, and a “stouter kind of porter” around 1810. Irish stout diverged from London single stout (or simply porter) in the late 1800s, with an emphasis on darker malts and roast barley. Guinness began using flaked barley after WWII, and Guinness Draught was launched as a brand in 1959. Draught (“widget”) cans and bottles were developed in the late 1980s and 1990s.",
-        "characteristic_ingredients": "Dark roasted malts or grains, enough to make the beer black in color. Pale malt. May use unmalted grains for body.",
-        "style_comparison": "Lower strength than an Irish Extra Stout. Darker in color (black) than an English Porter (brown)."
-      },
-      "vital_statistics_text": "OG: 1.036 – 1.044 | IBUs: 25 – 45 | FG: 1.007 – 1.011 | SRM: 25 – 40 | ABV: 3.8 – 5.0%",
-      "vital_statistics": {
-        "og": "1.036-1.044",
-        "ibu": "25-45",
-        "fg": "1.007-1.011",
-        "srm": "25-40",
-        "abv": "3.8-5.0%"
-      },
-      "commercial_examples_text": "Beamish Irish Stout, Belhaven Black Stout, Guinness Draught, Murphy’s Irish Stout, O’Hara’s Irish Stout, Porterhouse Irish Stout",
-      "tags_en": [
-        "standard-strength",
-        "dark-color",
-        "top-fermented",
-        "british-isles",
-        "traditional-style",
-        "stout-family",
-        "bitter",
-        "roasty"
-      ],
-      "source_pdf_page_start": 43,
-      "source_guideline_page_start": 27,
-      "tags_ru": [
-        "стандартная крепость",
-        "тёмный цвет",
-        "верховое брожение",
-        "Британские острова",
-        "традиционный стиль",
-        "семейство stout",
-        "горький",
-        "поджаренный"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1"
-    },
-    {
-      "bjcp_id": "15C",
-      "bjcp_heading": "15C. Irish Extra Stout",
-      "category_id": "15",
-      "category_en": "IRISH BEER",
-      "category_ru": "Ирландское пиво",
-      "name_en": "Irish Extra Stout",
-      "name_ru": "Ирландский extra stout",
-      "description_short_ru": "Более плотный и насыщенный чёрный ирландский стаут с яркой жареной нотой кофе и тёмного шоколада, где баланс идёт от умеренно горько-сладкого до сухо-горького.",
-      "sections_ru": {
-        "overall_impression": "Более полнотелое чёрное пиво с выраженным жареным характером, часто напоминающим кофе и тёмный шоколад, и с некоторой солодовой сложностью. Баланс может колебаться от умеренно горько-сладкого до горького; более сбалансированные версии способны давать до умеренной солодовой насыщенности, тогда как горькие версии бывают весьма сухими.",
-        "aroma": "Аромат кофе от умеренного до умеренно высокого, часто с лёгкими вторичными тонами тёмного шоколада, какао, бисквита, ванили или жареного зерна. Умеренно низкие эфиры допустимы. Хмелевой аромат отсутствует или очень слабый; если проявляется, то обычно как лёгкая землистость или пряность. В аромате доминируют солод и жареные ноты.",
-        "appearance": "Пиво угольно-чёрное и непрозрачное. Характерна густая, кремовая, стойкая пена светло-коричневого оттенка.",
-        "flavor": "Жареное зерно или солод ощущаются от умеренного до умеренно высокого уровня, при горечи от средней до умеренно высокой. Финиш может быть сухим, кофейным, либо более уравновешенным, с карамельной или солодовой сладостью до умеренного уровня. Обычно присутствуют кофейные жареные ноты, но нередко и выраженный тёмно-шоколадный характер, сохраняющийся до финиша. Фоновые оттенки mocha или бисквита часто добавляют сложности. Умеренно слабая фруктовость допустима. Средний землистый или пряный вкус хмеля допустим. Уровень горечи, степень жарености и сухость финиша варьируют — пивоварская интерпретация здесь вполне уместна.",
-        "mouthfeel": "Тело от умеренно полного до полного, с некоторой кремовостью. Карбонизация умеренная. Текстура очень гладкая. Возможна лёгкая вяжущесть от жареного зерна, но грубая жёсткость недопустима. Иногда ощущается лёгкое согревание алкоголем.",
-        "comments": "Традиционно это более крепкий бутылочный продукт, в рамках которого допустим довольно широкий диапазон интерпретаций; чаще всего различаются степень жарености и уровень сладости. Большинство классических ирландских коммерческих образцов имеют крепость примерно 5.6–6.0% ABV.",
-        "history": "Происходит от тех же корней, что и Irish Stout, но как более крепкая версия. Guinness Extra Stout — сначала Extra Superior Porter, позднее Double Stout — впервые была сварена в 1821 году и изначально существовала главным образом как бутылочный продукт.",
-        "characteristic_ingredients": "Похоже на Irish Stout. Возможны дополнительные тёмные кристальные солода или тёмные сахара.",
-        "style_comparison": "По крепости и интенсивности вкуса находится между Irish Stout и Foreign Extra Stout, при схожем общем балансе. Даёт больше тела, насыщенности и нередко больше солодовой сложности, чем Irish Stout. По цвету чёрный, а не коричневый, как English Porter."
-      },
-      "sections_en": {
-        "overall_impression": "A fuller-bodied black beer with a pronounced roasted flavor, often similar to coffee and dark chocolate with some malty complexity. The balance can range from moderately bittersweet to bitter, with the more balanced versions having up to moderate malty richness and the bitter versions being quite dry.",
-        "aroma": "Moderate to moderately high coffee-like aroma, often with slight dark chocolate, cocoa, biscuit, vanilla, or roasted grain secondary notes. Medium-low esters optional. Hop aroma low to none, may be lightly earthy or spicy, but is typically absent. Malt and roast dominate the aroma.",
-        "appearance": "Jet black. Opaque. A thick, creamy, persistent tan head is characteristic.",
-        "flavor": "Moderate to moderately high dark-roasted grain or malt flavor with a medium to medium-high bitterness. The finish can be dry and coffee-like to moderately balanced with up to moderate caramel or malty sweetness. Typically has roasted coffee-like flavors, but also often has a dark chocolate character in the palate, lasting into the finish. Background mocha or biscuit flavors are often present and add complexity. Medium-low fruitiness optional. Medium earthy or spicy hop flavor optional. The level of bitterness is somewhat variable, as is the roasted character and the dryness of the finish; allow for interpretation by brewers.",
-        "mouthfeel": "Medium-full to full body, with a somewhat creamy character. Moderate carbonation. Very smooth. May have a light astringency from the roasted grains, although harshness is undesirable. A slightly warming character may be detected.",
-        "comments": "Traditionally a stronger, bottled product with a range of equally valid possible interpretations, varying most frequently in roast flavor and sweetness. Most traditional Irish commercial examples are in the 5.6 to 6.0% ABV range.",
-        "history": "Same roots as Irish Stout, but as a stronger product. Guinness Extra Stout (Extra Superior Porter, later Double Stout) was first brewed in 1821, and was primarily a bottled product.",
-        "characteristic_ingredients": "Similar to Irish Stout. May have additional dark crystal malts or dark sugars.",
-        "style_comparison": "Midway between an Irish Stout and a Foreign Extra Stout in strength and flavor intensity, although with a similar balance. More body, richness, and often malt complexity than an Irish Stout. Black in color, not brown like an English Porter."
-      },
-      "vital_statistics_text": "OG: 1.052 – 1.062 | IBUs: 35 – 50 | FG: 1.010 – 1.014 | SRM: 30 – 40 | ABV: 5.0 – 6.5%",
-      "vital_statistics": {
-        "og": "1.052-1.062",
-        "ibu": "35-50",
-        "fg": "1.010-1.014",
-        "srm": "30-40",
-        "abv": "5.0-6.5%"
-      },
-      "commercial_examples_text": "Guinness Extra Stout, O’Hara’s Leann Folláin, Porterhouse XXXX, Sheaf Stout",
-      "tags_en": [
-        "high-strength",
-        "dark-color",
-        "top-fermented",
-        "british-isles",
-        "traditional-style",
-        "stout-family",
-        "bitter",
-        "roasty"
-      ],
-      "source_pdf_page_start": 44,
-      "source_guideline_page_start": 28,
-      "tags_ru": [
-        "высокая крепость",
-        "тёмный цвет",
-        "верховое брожение",
-        "Британские острова",
-        "традиционный стиль",
-        "семейство stout",
-        "горький",
-        "поджаренный"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1"
-    }
+  "translated_categories": [
+   "14",
+   "15"
+  ],
+  "next_recommended_batch": [
+   "16A",
+   "16B",
+   "16C",
+   "16D",
+   "17A",
+   "17B"
   ]
+ },
+ "categories": [
+  {
+   "category_id": "14",
+   "category_en": "SCOTTISH ALE",
+   "category_ru": "Шотландский эль",
+   "overview_ru": "В эту категорию входят современные шотландские эли 60/-, 70/- и 80/-, которые в нынешнем виде сформировались уже после Второй мировой войны и обычно слабее, слаще, темнее и менее охмелены, чем сопоставимые английские аналоги."
+  },
+  {
+   "category_id": "15",
+   "category_en": "IRISH BEER",
+   "category_ru": "Ирландское пиво",
+   "overview_ru": "В эту категорию входят традиционные ирландские сорта верхового брожения — от янтарных до чёрных, умеренной или умеренно высокой крепости, причём реальный диапазон их интерпретаций заметно шире, чем кажется по массовым экспортным образцам."
+  }
+ ],
+ "styles": [
+  {
+   "bjcp_id": "14A",
+   "bjcp_heading": "14A. Scottish Light",
+   "category_id": "14",
+   "category_en": "SCOTTISH ALE",
+   "category_ru": "Шотландский эль",
+   "name_en": "Scottish Light",
+   "name_ru": "Шотландский лайт",
+   "description_short_ru": "Низкоалкогольный солодовый шотландский эль с лёгкими нотами карамели, тоста, ириса и фруктов, где небольшая жареная сухость уравновешивает остаточную сладость.",
+   "sections_ru": {
+    "overall_impression": "Низкоалкогольный солодовый эль с лёгкими нотами карамели, тоста, ириса и фруктов. Небольшая жареная сухость в финале уравновешивает остаточную сладость, а горечь ощущается главным образом как средство не дать пиву стать приторным.",
+    "aroma": "Солодовый аромат от слабого до умеренного, с нотами карамели и ириса, а также лёгкими тостовыми и сахаристыми оттенками, которые могут напоминать поджаренные сухари, савоярди, сухое английское печенье, крекеры грэм или сливочную тянучку. Допустимы лёгкая фруктовость семечковых плодов и лёгкий аромат английского хмеля — землистый, цветочный, апельсиново-цитрусовый, пряный и т. п.",
+    "appearance": "Цвет от глубокого медного до тёмно-коричневого. Пиво прозрачное. Пена от низкой до умеренной, кремовая, грязно-белая.",
+    "flavor": "Солодовость средняя, тостово-хлебная, с оттенками карамели и ириса, переходящими в слегка поджаренную сухость финала. Возможен широкий спектр оттенков карамелизованного сахара и поджаренного хлеба — в той же логике, что и в аромате. Солодовый профиль и брожение чистые. Допустимы лёгкие эфиры и лёгкий вкус хмеля, схожий по дескрипторам с ароматом. Горечи достаточно, чтобы пиво не было приторным, но баланс и послевкусие остаются солодовыми.",
+    "mouthfeel": "Тело от умеренно лёгкого до среднего. Карбонизация от низкой до умеренной. Текстура может быть умеренно кремовой.",
+    "comments": "Подробные общие замечания см. во вводном описании категории. Из-за более высокой конечной плотности и остаточной сладости пиво может казаться менее горьким, чем предполагают спецификации. Обычно это разливной сорт, и встречается он сравнительно редко. Не стоит принимать лёгкую жареную сухость за дымность: дыма в этом стиле нет.",
+    "history": "См. вводное описание категории. Названия по шиллингам применялись к mild, то есть к невыдержанному пиву, ещё до Первой мировой войны, однако современную форму стиль приобрёл только после Второй мировой.",
+    "characteristic_ingredients": "В самом простом варианте — pale ale malt; также могут использоваться окрашенные солода, сахара, кукуруза, пшеница, кристальные солода, красители и самые разные другие зерновые. Чистые дрожжи. Мягкая вода. Торфяной копчёный солод недопустим.",
+    "style_comparison": "См. вводное описание категории. По профилю похож на другие шотландские эли, но слабее по алкоголю и темнее по цвету. По крепости сопоставим с нижней границей Dark Mild, но имеет иной баланс и другой вкусовой профиль."
+   },
+   "sections_en": {
+    "overall_impression": "A low-alcohol, malty beer with light caramel, toast, toffee, and fruit flavors. A slight roast dryness offsets the residual sweetness in the finish, with the bitterness perceived only to keep the beer from being cloying.",
+    "aroma": "Low to medium maltiness with caramel and toffee notes, and light toasty and sugary qualities that might be reminiscent of toasted breadcrumbs, ladyfingers, English biscuits, graham crackers, or butterscotch. Light pome fruitiness and light English hop aroma (earthy, floral, orange-citrus, spicy, etc.) allowable.",
+    "appearance": "Deep copper to dark brown. Clear. Low to moderate, creamy off-white.",
+    "flavor": "Medium toasty-bready malt with caramel and toffee overtones, finishing with a slightly roasty dryness. A wide range of caramelized sugar and toasted bread type of flavors are possible, using similar descriptors as the aroma. Clean maltiness and fermentation profile. Light esters and hop flavor allowable (similar descriptors as aroma). Sufficient bitterness to not be cloying, but with a malty balance and aftertaste.",
+    "mouthfeel": "Medium-low to medium body. Low to moderate carbonation. May be moderately creamy.",
+    "comments": "See category introduction for detailed comments. May not seem as bitter as specifications indicate due to higher finishing gravity and residual sweetness. Typically a draught product, but somewhat rare. Do not mis-perceive the light roasty dryness as smoke; smoke is not present in these beers.",
+    "history": "See category introduction. The Shilling ale names were used for mild (unaged) beer before World War I, but the styles took modern form only after World War II.",
+    "characteristic_ingredients": "At its simplest, pale ale malt, but can also use colored malt, sugars, corn, wheat, crystal malts, colorants, and a variety of other grains. Clean yeast. Soft water. No peat-smoked malt.",
+    "style_comparison": "See category introduction. Similar to other Scottish Ales but lower in alcohol, and darker in color. Similar in strength to the low end of Dark Mild, but with a different flavor profile and balance."
+   },
+   "vital_statistics_text": "OG: 1.030 – 1.035 | IBUs: 10 – 20 | FG: 1.010 – 1.013 | SRM: 17 – 25 | ABV: 2.5 – 3.3%",
+   "vital_statistics": {
+    "og": "1.030-1.035",
+    "ibu": "10-20",
+    "fg": "1.010-1.013",
+    "srm": "17-25",
+    "abv": "2.5-3.3%"
+   },
+   "commercial_examples_text": "Belhaven Best, McEwan's 60/-",
+   "tags_en": [
+    "session-strength",
+    "amber-color",
+    "top-fermented",
+    "british-isles",
+    "traditional-style",
+    "amber-ale-family",
+    "malty"
+   ],
+   "source_pdf_page_start": 41,
+   "source_guideline_page_start": 25,
+   "tags_ru": [
+    "сессионная крепость",
+    "янтарный цвет",
+    "верховое брожение",
+    "Британские острова",
+    "традиционный стиль",
+    "семейство янтарных элей",
+    "солодовый"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1"
+  },
+  {
+   "bjcp_id": "14B",
+   "bjcp_heading": "14B. Scottish Heavy",
+   "category_id": "14",
+   "category_en": "SCOTTISH ALE",
+   "category_ru": "Шотландский эль",
+   "name_en": "Scottish Heavy",
+   "name_ru": "Шотландский хэви",
+   "description_short_ru": "Слабоалкогольный, но более плотный солодовый шотландский эль с карамелью, тостом, ирисом и фруктовостью, где лёгкая жареная сухость сдерживает остаточную сладость.",
+   "sections_ru": {
+    "overall_impression": "Слабоалкогольный солодовый эль с лёгкими нотами карамели, тоста, ириса и фруктов. Небольшая жареная сухость в финале уравновешивает остаточную сладость, а горечь ощущается прежде всего как противовес приторности.",
+    "aroma": "Солодовый аромат от умеренно слабого до среднего, с карамельными и ирисовыми оттенками, а также лёгкими тостовыми и сахаристыми нотами, напоминающими поджаренные сухари, савоярди, сухое английское печенье, крекеры грэм или сливочную тянучку. Допустимы лёгкая фруктовость семечковых плодов и лёгкий аромат английского хмеля — землистый, цветочный, апельсиново-цитрусовый, пряный и т. п.",
+    "appearance": "Цвет от бледно-медного до коричневого. Прозрачность хорошая. Пена от низкой до умеренной, кремовая, грязно-белая.",
+    "flavor": "Солодовый вкус среднего уровня, тостово-хлебный, с карамельными и ирисовыми полутонами и лёгкой жареной сухостью в финале. Возможен широкий спектр оттенков карамелизованного сахара и поджаренного хлеба, как и в аромате. Солодовость и профиль брожения чистые. Допустимы лёгкие эфиры и лёгкий вкус хмеля тех же направлений, что и в аромате. Горечи достаточно, чтобы не допустить приторности, но баланс и послевкусие остаются солодовыми.",
+    "mouthfeel": "Тело от умеренно лёгкого до среднего. Карбонизация от низкой до умеренной. Возможна умеренно кремовая текстура.",
+    "comments": "Подробные комментарии см. во вводном описании категории. Из-за более высокой конечной плотности и остаточной сладости пиво может восприниматься менее горьким, чем подсказывают числовые параметры. Лёгкую жареную сухость не следует путать с дымностью: дыма здесь нет.",
+    "history": "См. вводное описание категории. Названия по шиллингам применялись к mild до Первой мировой войны, но современный вид стиль приобрёл только после Второй мировой.",
+    "characteristic_ingredients": "В базовом виде — pale ale malt и окрашенные солода; также могут использоваться сахара, кукуруза, пшеница, кристальные солода, красители и различные другие зерновые. Чистые дрожжи. Мягкая вода. Торфяной копчёный солод исключён.",
+    "style_comparison": "См. вводное описание категории. По вкусовому профилю близок к другим шотландским элям, но светлее по цвету и крепче, чем Scottish Light. По крепости сопоставим с Ordinary Bitter, но отличается балансом и общим профилем."
+   },
+   "sections_en": {
+    "overall_impression": "A lower-alcohol, malty beer with light caramel, toast, toffee, and fruity flavors. A slight roast dryness offsets the residual sweetness in the finish, with the bitterness perceived only to keep the beer from being cloying.",
+    "aroma": "Medium-low to medium maltiness with caramel and toffee notes, and light toasty and sugary qualities that might be reminiscent of toasted breadcrumbs, ladyfingers, English biscuits, graham crackers, or butterscotch. Light pome fruitiness and light English hop aroma (earthy, floral, orange-citrus, spicy, etc.) allowable.",
+    "appearance": "Pale copper to brown. Clear. Low to moderate, creamy off-white.",
+    "flavor": "Medium toasty-bready malt with caramel and toffee overtones, finishing with a slightly roasty dryness. A wide range of caramelized sugar and toasted bread type of flavors are possible, using similar descriptors as the aroma. Clean maltiness and fermentation profile. Light esters and hop flavor allowable (similar descriptors as aroma). Sufficient bitterness to not be cloying, but with a malty balance and aftertaste.",
+    "mouthfeel": "Medium-low to medium body. Low to moderate carbonation. May be moderately creamy.",
+    "comments": "See category introduction for detailed comments. May not seem as bitter as specifications indicate due to higher finishing gravity and residual sweetness. Do not mis-perceive the light roasty dryness as smoke; smoke is not present in these beers.",
+    "history": "See category introduction. The Shilling ale names were used for mild (unaged) beer before World War I, but the styles took modern form only after World War II.",
+    "characteristic_ingredients": "At its simplest, pale ale malt and colored malt, but can also use sugars, corn, wheat, crystal malts, colorants, and a variety of other grains. Clean yeast. Soft water. No peat-smoked malt.",
+    "style_comparison": "See category introduction. Similar to other Scottish Ales in flavor profile, lighter in color and stronger than a Scottish Light. Similar in strength to Ordinary Bitter, but with a different flavor profile and balance."
+   },
+   "vital_statistics_text": "OG: 1.035 – 1.040 | IBUs: 10 – 20 | FG: 1.010 – 1.015 | SRM: 12 – 20 | ABV: 3.3 – 3.9%",
+   "vital_statistics": {
+    "og": "1.035-1.040",
+    "ibu": "10-20",
+    "fg": "1.010-1.015",
+    "srm": "12-20",
+    "abv": "3.3-3.9%"
+   },
+   "commercial_examples_text": "McEwan's 70/-, Orkney Raven Ale",
+   "tags_en": [
+    "session-strength",
+    "amber-color",
+    "top-fermented",
+    "british-isles",
+    "traditional-style",
+    "amber-ale-family",
+    "malty"
+   ],
+   "source_pdf_page_start": 41,
+   "source_guideline_page_start": 25,
+   "tags_ru": [
+    "сессионная крепость",
+    "янтарный цвет",
+    "верховое брожение",
+    "Британские острова",
+    "традиционный стиль",
+    "семейство янтарных элей",
+    "солодовый"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1"
+  },
+  {
+   "bjcp_id": "14C",
+   "bjcp_heading": "14C. Scottish Export",
+   "category_id": "14",
+   "category_en": "SCOTTISH ALE",
+   "category_ru": "Шотландский эль",
+   "name_en": "Scottish Export",
+   "name_ru": "Шотландский экспорт",
+   "description_short_ru": "Шотландский солодовый эль умеренной крепости с лёгкими нотами карамели, тоста, ириса и фруктов; небольшая жареная сухость поддерживает сладость и удерживает баланс.",
+   "sections_ru": {
+    "overall_impression": "Солодовый эль умеренной крепости с лёгкими тонами карамели, тоста, ириса и фруктов. Небольшая жареная сухость в финале уравновешивает остаточную сладость, а горечь ощущается лишь настолько, чтобы пиво не казалось приторным.",
+    "aroma": "Солодовость среднего уровня, с карамельными и ирисовыми оттенками, а также лёгкими тостовыми и сахаристыми нотами, которые могут напоминать поджаренные сухари, савоярди, сухое английское печенье, крекеры грэм или сливочную тянучку. Допустимы лёгкая фруктовость семечковых плодов и лёгкий аромат английского хмеля — землистый, цветочный, апельсиново-цитрусовый, пряный и т. п.",
+    "appearance": "Цвет от бледно-медного до коричневого. Пиво прозрачное. Пена от низкой до умеренной, кремовая, грязно-белая.",
+    "flavor": "Солодовый вкус среднего уровня, тостово-хлебный, с карамельными и ирисовыми полутонами и слегка жареной сухостью в финале. Возможен широкий спектр оттенков карамелизованного сахара и поджаренного хлеба, как и в аромате. Солодовость и брожение чистые. Допустимы лёгкие эфиры и лёгкий хмелевой вкус тех же направлений, что и в аромате. Горечи достаточно, чтобы не дать пиву уйти в приторность, но баланс и послевкусие остаются солодовыми.",
+    "mouthfeel": "Тело среднее. Карбонизация от умеренно низкой до умеренной. Возможна умеренно кремовая текстура.",
+    "comments": "Подробные замечания см. во вводном описании категории. Из-за более высокой конечной плотности и остаточной сладости пиво может казаться менее горьким, чем показывают спецификации. Лёгкую жареную сухость не стоит принимать за дымный характер: дыма здесь нет. Американизированные версии часто бывают крепче — подобно тому, как в США нередко усиливают Irish Red Ale.",
+    "history": "См. вводное описание категории. Названия по шиллингам использовались для mild ещё до Первой мировой войны, но современную форму стиль приобрёл только после Второй мировой.",
+    "characteristic_ingredients": "В самом простом варианте — pale ale malt и окрашенные солода; также возможны сахара, кукуруза, пшеница, кристальные солода, красители и различные другие зерновые. Чистые дрожжи. Мягкая вода. Торфяной копчёный солод недопустим.",
+    "style_comparison": "См. вводное описание категории. Крепче других шотландских элей, но со сходным вкусовым профилем. По крепости сопоставим с Best Bitter и Strong Bitter, однако отличается балансом и характером вкуса."
+   },
+   "sections_en": {
+    "overall_impression": "A moderate-strength, malty beer with light caramel, toast, toffee, and fruit flavors. A slight roast dryness offsets the residual sweetness in the finish, with the bitterness perceived only to keep the beer from being cloying.",
+    "aroma": "Medium maltiness with caramel and toffee notes, and light toasty and sugary qualities that might be reminiscent of toasted breadcrumbs, ladyfingers, English biscuits, graham crackers, or butterscotch. Light pome fruitiness and light English hop aroma (earthy, floral, orange-citrus, spicy, etc.) allowable.",
+    "appearance": "Pale copper to brown. Clear. Low to moderate, creamy off-white.",
+    "flavor": "Medium toasty-bready malt with caramel and toffee overtones, finishing with a slightly roasty dryness. A wide range of caramelized sugar and toasted bread type of flavors are possible, using similar descriptors as the aroma. Clean maltiness and fermentation profile. Light esters and hop flavor allowable (similar descriptors as aroma). Sufficient bitterness to not be cloying, but with a malty balance and aftertaste.",
+    "mouthfeel": "Medium body. Medium-low to medium carbonation. May be moderately creamy.",
+    "comments": "See category introduction for detailed comments. May not seem as bitter as specifications indicate due to higher finishing gravity and residual sweetness. Do not mis-perceive the light roasty dryness as smoke; smoke is not present in these beers. Americanized versions are often greater in strength (similar to American treatment of Irish Red Ales).",
+    "history": "See category introduction. The Shilling ale names were used for mild (unaged) beer before World War I, but the styles took modern form only after World War II.",
+    "characteristic_ingredients": "At its simplest, pale ale malt and colored malt, but can also use sugars, corn, wheat, crystal malts, colorants, and a variety of other grains. Clean yeast. Soft water. No peat-smoked malt.",
+    "style_comparison": "See category introduction. Stronger than other Scottish Ales, but with a similar flavor profile. Similar in strength to Best Bitter and Strong Bitter, but with a different flavor profile and balance."
+   },
+   "vital_statistics_text": "OG: 1.040 – 1.060 | IBUs: 15 – 30 | FG: 1.010 – 1.016 | SRM: 12 – 20 | ABV: 3.9 – 6.0%",
+   "vital_statistics": {
+    "og": "1.040-1.060",
+    "ibu": "15-30",
+    "fg": "1.010-1.016",
+    "srm": "12-20",
+    "abv": "3.9-6.0%"
+   },
+   "commercial_examples_text": "Belhaven Scottish Ale, Broughton Wee Jock 80 Shilling, Caledonian Edinburgh Castle, McEwan’s 80/-, McEwan’s Export, Traquair Bear Ale",
+   "tags_en": [
+    "standard-strength",
+    "amber-color",
+    "top-fermented",
+    "british-isles",
+    "traditional-style",
+    "amber-ale-family",
+    "malty"
+   ],
+   "source_pdf_page_start": 42,
+   "source_guideline_page_start": 26,
+   "tags_ru": [
+    "стандартная крепость",
+    "янтарный цвет",
+    "верховое брожение",
+    "Британские острова",
+    "традиционный стиль",
+    "семейство янтарных элей",
+    "солодовый"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1"
+  },
+  {
+   "bjcp_id": "15A",
+   "bjcp_heading": "15A. Irish Red Ale",
+   "category_id": "15",
+   "category_en": "IRISH BEER",
+   "category_ru": "Ирландское пиво",
+   "name_en": "Irish Red Ale",
+   "name_ru": "Ирландский красный эль",
+   "description_short_ru": "Питкий янтарно-красный ирландский эль с тонким, слегка солодовым балансом, мягкой карамельной сладостью, зерновито-бисквитным вкусом и суховатым жареным финишем.",
+   "sections_ru": {
+    "overall_impression": "Лёгкое питкое пиво, нередко с довольно тонким вкусом. Баланс слегка смещён в солодовую сторону; в начале вкуса возможна мягкая сладость ириса или карамели, середина вкуса бывает слегка зерновито-бисквитной, а в финале появляется штрих жареной сухости. Одни версии сильнее подчёркивают карамель и сладость, другие — зерновую середину вкуса и сухой жареный финиш.",
+    "aroma": "Солодовый аромат от слабого до умеренного: либо нейтрально-зерновой, либо с лёгкими карамельными, тостовыми или ирисовыми оттенками. Очень лёгкая маслянистость допустима. Лёгкий землистый или цветочный аромат хмеля допустим. В целом профиль довольно чистый.",
+    "appearance": "Цвет от средне-янтарного до средне красновато-медного. Пиво прозрачное. Пена невысокая, от почти белой до бежевой, со средней стойкостью.",
+    "flavor": "Карамельный солодовый вкус и сладость могут варьировать от умеренных до почти отсутствующих; изредка встречается лёгкий оттенок намазанного маслом тоста или ириса. Часто середина вкуса довольно нейтральная и зерновая, либо к финишу появляется лёгкая тостовая или бисквитная нота вместе с лёгким вкусом жареного зерна, который и даёт характерную сухость послевкусия. Лёгкий землистый или цветочный вкус хмеля допустим. Горечь от средне-низкой до средней. Финиш от умеренно сухого до сухого. Профиль чистый и гладкий. Низкий уровень эфиров допустим. Баланс обычно слегка солодовый, хотя небольшая доля жареного зерна может немного усилить восприятие горечи.",
+    "mouthfeel": "Тело от умеренно лёгкого до среднего. Если присутствует низкий уровень диацетила, возможна слегка скользкая текстура, но это не обязательно. Карбонизация умеренная. Ощущение во рту гладкое.",
+    "comments": "Стиль описан достаточно широко, чтобы включать не только классические ирландские образцы. Ирландские версии обычно слабее по алкоголю, более зерновые и суше в финале, тогда как неирландские нередко крепче, слаще, более карамельные и эфирные, и часто выпускаются как сезонные сорта.",
+    "history": "Хотя у Ирландии давняя традиция элей, современный Irish Red Ale по сути представляет собой адаптацию или интерпретацию популярного английского bitter: с меньшим охмелением и небольшой долей жареного зерна для цвета и сухости, хотя некоторые авторы предполагают более глубокую историю. В Ирландии стиль был заново открыт уже в эпоху крафта и сегодня почти обязателен в линейке пивоварни наряду с pale ale и stout.",
+    "characteristic_ingredients": "Обычно содержит немного жареного ячменя или чёрного солода для красноватого цвета и сухого жареного финала. Базовый светлый солод. Карамельные солода исторически были импортными и стоили дороже, поэтому использовались не всеми пивоварами.",
+    "style_comparison": "Ирландский эквивалент English Bitter с меньшей горечью и меньшим хмелевым акцентом, но с суховатым финишем за счёт жареного ячменя. Более выброженный, с меньшим телом и меньшей карамельностью, чем шотландские эли сопоставимой крепости."
+   },
+   "sections_en": {
+    "overall_impression": "An easy-drinking pint, often with subtle flavors. Slightly malty in the balance sometimes with an initial soft toffee or caramel sweetness, a slightly grainy-biscuity palate, and a touch of roasted dryness in the finish. Some versions can emphasize the caramel and sweetness more, while others will favor the grainy palate and roasted dryness.",
+    "aroma": "Low to moderate malt aroma, either neutral-grainy or with a lightly caramel, toast, or toffee character. Very light buttery character optional. Low earthy or floral hop aroma optional. Quite clean.",
+    "appearance": "Medium amber to medium reddish-copper color. Clear. Low off-white to tan colored head, average persistence.",
+    "flavor": "Moderate to very little caramel malt flavor and sweetness, rarely with a light buttered toast or toffee-like quality. The palate often is fairly neutral and grainy, or can take on a lightly toasty or biscuity note as it finishes with a light taste of roasted grain, which lends a characteristic dryness to the finish. A light earthy or floral hop flavor is optional. Medium to medium-low bitterness. Medium-dry to dry finish. Clean and smooth. Low esters optional. The balance tends to be slightly towards the malt, although light use of roasted grains may increase the perception of bitterness slightly.",
+    "mouthfeel": "Medium-light to medium body, although examples containing low levels of diacetyl may have a slightly slick mouthfeel (not required). Moderate carbonation. Smooth.",
+    "comments": "The style is fairly broad to allow for examples beyond the traditional ones from Ireland. Irish examples tend to be lower alcohol, grainier, and drier in the finish, while non-Irish versions are often higher in alcohol, sweeter, perhaps more caramelly and estery, and are often seasonal offerings.",
+    "history": "While Ireland has a long ale brewing heritage, the modern Irish Red Ale style is essentially an adaptation or interpretation of the popular English Bitter style with less hopping and a bit of roast to add color and dryness, although some suggest a longer history. Rediscovered as a craft beer style in Ireland, today it is an essential part of most brewery lineups, along with a pale ale and a stout.",
+    "characteristic_ingredients": "Generally has a bit of roasted barley or black malt to provide reddish color and dry roasted finish. Pale base malt. Caramel malts were historically imported and more expensive, so not all brewers would use them.",
+    "style_comparison": "A less-bitter and hoppy Irish equivalent to an English Bitter, with a dryish finish due to roasted barley. More attenuated with less caramel flavor and body than equivalent-strength Scottish Ales."
+   },
+   "vital_statistics_text": "OG: 1.036 – 1.046 | IBUs: 18 – 28 | FG: 1.010 – 1.014 | SRM: 9 – 14 | ABV: 3.8 – 5.0%",
+   "vital_statistics": {
+    "og": "1.036-1.046",
+    "ibu": "18-28",
+    "fg": "1.010-1.014",
+    "srm": "9-14",
+    "abv": "3.8-5.0%"
+   },
+   "commercial_examples_text": "Franciscan Well Rebel Red, Kilkenny Irish Beer, Murphy’s Irish Red, O’Hara’s Irish Red Ale, Porterhouse Nitro Red Ale, Smithwick’s Irish Ale",
+   "tags_en": [
+    "standard-strength",
+    "amber-color",
+    "top-fermented",
+    "british-isles",
+    "traditional-style",
+    "amber-ale-family",
+    "balanced"
+   ],
+   "source_pdf_page_start": 43,
+   "source_guideline_page_start": 27,
+   "tags_ru": [
+    "стандартная крепость",
+    "янтарный цвет",
+    "верховое брожение",
+    "Британские острова",
+    "традиционный стиль",
+    "семейство янтарных элей",
+    "сбалансированный"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1"
+  },
+  {
+   "bjcp_id": "15B",
+   "bjcp_heading": "15B. Irish Stout",
+   "category_id": "15",
+   "category_en": "IRISH BEER",
+   "category_ru": "Ирландское пиво",
+   "name_en": "Irish Stout",
+   "name_ru": "Ирландский стаут",
+   "description_short_ru": "Чёрный ирландский стаут с выраженной жареной, часто кофейной нотой; баланс варьирует от почти ровного до заметно горького, а при подаче на азоте появляется характерная кремовость.",
+   "sections_ru": {
+    "overall_impression": "Чёрное пиво с выраженным жареным характером, часто напоминающим кофе. Баланс может быть как довольно ровным, так и заметно горьким: более уравновешенные версии несут немного солодовой сладости, более горькие — весьма сухие. Разливные версии обычно кажутся кремовыми из-за подачи на азоте, но бутылочные образцы этого эффекта не имеют. Жареный профиль может уходить от сухого кофейного в сторону более шоколадного.",
+    "aroma": "Чаще всего доминирует умеренный кофейный аромат; возможны лёгкие вторичные тона тёмного шоколада, какао или жареного зерна. Низкий уровень эфиров допустим. Лёгкий землистый или цветочный аромат хмеля также возможен.",
+    "appearance": "Цвет от угольно-чёрного до очень тёмно-коричневого с гранатовыми отблесками. Как говорит Guinness, их пиво кажется чёрным, но на деле это очень тёмный оттенок рубинового. Пиво непрозрачное. При подаче на азоте характерна густая, кремовая, долго держащаяся пена от кремовой до коричневатой, но от бутылочной версии такой плотной нитро-шапки ждать не стоит.",
+    "flavor": "Умеренный вкус обжаренного зерна или солода, при горечи от средней до высокой. Финиш может быть сухим и кофейным либо более сбалансированным, с лёгкой карамельной или солодовой сладостью. Обычно присутствуют кофейные оттенки, но возможен и характер горького шоколада, сохраняющийся до финала. Баланс могут смягчать небольшая кремовость, умеренно слабая фруктовость или средний землистый хмелевой вкус. Уровень горечи, степень жарености и сухость финиша заметно варьируют — в этом стиле допустима интерпретация пивоваром.",
+    "mouthfeel": "Тело от умеренно лёгкого до умеренно полного, с некоторой кремовостью — особенно при подаче на азоте. Карбонизация от низкой до умеренной. Несмотря на высокую хмелевую горечь и значительную долю тёмных зёрен, пиво удивительно гладкое. Возможна лёгкая вяжущесть от жареного зерна, но грубость недопустима.",
+    "comments": "Традиционно это разливной стиль. Современные образцы почти всегда ассоциируются с подачей на азоте. Бутылочное пиво не стоит оценивать по меркам той же кремовости и стойкости пены, что даёт подача смесью газов. В Ирландии существуют региональные отличия, подобно вариативности английских bitter. Дублинские версии чаще строятся на жареном ячмене, суше и горче; коркские — мягче, слаще и чаще дают шоколадные и специальные солодовые оттенки.",
+    "history": "Стиль вырос из лондонских портеров, но с более полным, кремовым и «стаутовым» телом и крепостью. Guinness с 1799 года варила только porter, а примерно с 1810-го — более «крепкий» его вариант. Ирландский stout окончательно разошёлся с лондонским single stout, или просто porter, к концу XIX века, когда акцент сместился в сторону более тёмных солодов и жареного ячменя. После Второй мировой Guinness начала использовать хлопья ячменя, а бренд Guinness Draught появился в 1959 году. Банки и бутылки с виджетом для имитации draught появились в конце 1980-х и в 1990-е.",
+    "characteristic_ingredients": "Тёмные жареные солода или зерно в количестве, достаточном, чтобы пиво было чёрным. Светлый базовый солод. Для тела могут использоваться несоложёные зёрна.",
+    "style_comparison": "Слабее, чем Irish Extra Stout. По цвету темнее English Porter: здесь пиво чёрное, а не коричневое."
+   },
+   "sections_en": {
+    "overall_impression": "A black beer with a pronounced roasted flavor, often similar to coffee. The balance can range from fairly even to quite bitter, with the more balanced versions having a little malty sweetness and the bitter versions being quite dry. Draught versions typically are creamy from a nitro pour, but bottled versions will not have this dispense-derived character. The roasted flavor can range from dry and coffee-like to somewhat chocolaty.",
+    "aroma": "Moderate coffee-like aroma typically dominates; may have slight dark chocolate, cocoa, or roasted grain secondary notes. Medium-low esters optional. Low earthy or floral hop aroma optional.",
+    "appearance": "Jet black to deep brown with garnet highlights in color. According to Guinness, “Guinness beer may appear black, but it is actually a very dark shade of ruby.” Opaque. A thick, creamy, long-lasting, tan- to brown-colored head is characteristic when served on nitro, but don’t expect a tight, creamy head on a bottled beer.",
+    "flavor": "Moderate roasted grain or malt flavor with a medium to high bitterness. The finish can be dry and coffee-like to moderately balanced with a touch of caramel or malty sweetness. Typically has coffee-like flavors, but also may have a bittersweet or unsweetened chocolate character in the palate, lasting into the finish. Balancing factors may include some creaminess, medium-low fruitiness, or medium earthy hop flavor. The level of bitterness is somewhat variable, as is the roasted character and the dryness of the finish; allow for interpretation by brewers.",
+    "mouthfeel": "Medium-light to medium-full body, with a somewhat creamy character – especially when served by nitro pour. Low to moderate carbonation. For the high hop bitterness and significant proportion of dark grains present, this beer is remarkably smooth. May have a light astringency from the roasted grains, although harshness is undesirable.",
+    "comments": "Traditionally a draught product. Modern examples are almost always associated with a nitro pour. Do not expect bottled beers to have the full, creamy texture or very long-lasting head associated with mixed-gas dispense. Regional differences exist in Ireland, similar to variability in English Bitters. Dublin-type stouts use roasted barley, are more bitter, and are drier. Cork-type stouts are sweeter, less bitter, and have flavors from chocolate and specialty malts.",
+    "history": "The style evolved from London porters, but reflecting a fuller, creamier, more “stout” body and strength. Guinness began brewing only porter in 1799, and a “stouter kind of porter” around 1810. Irish stout diverged from London single stout (or simply porter) in the late 1800s, with an emphasis on darker malts and roast barley. Guinness began using flaked barley after WWII, and Guinness Draught was launched as a brand in 1959. Draught (“widget”) cans and bottles were developed in the late 1980s and 1990s.",
+    "characteristic_ingredients": "Dark roasted malts or grains, enough to make the beer black in color. Pale malt. May use unmalted grains for body.",
+    "style_comparison": "Lower strength than an Irish Extra Stout. Darker in color (black) than an English Porter (brown)."
+   },
+   "vital_statistics_text": "OG: 1.036 – 1.044 | IBUs: 25 – 45 | FG: 1.007 – 1.011 | SRM: 25 – 40 | ABV: 3.8 – 5.0%",
+   "vital_statistics": {
+    "og": "1.036-1.044",
+    "ibu": "25-45",
+    "fg": "1.007-1.011",
+    "srm": "25-40",
+    "abv": "3.8-5.0%"
+   },
+   "commercial_examples_text": "Beamish Irish Stout, Belhaven Black Stout, Guinness Draught, Murphy’s Irish Stout, O’Hara’s Irish Stout, Porterhouse Irish Stout",
+   "tags_en": [
+    "standard-strength",
+    "dark-color",
+    "top-fermented",
+    "british-isles",
+    "traditional-style",
+    "stout-family",
+    "bitter",
+    "roasty"
+   ],
+   "source_pdf_page_start": 43,
+   "source_guideline_page_start": 27,
+   "tags_ru": [
+    "стандартная крепость",
+    "тёмный цвет",
+    "верховое брожение",
+    "Британские острова",
+    "традиционный стиль",
+    "семейство стаутов",
+    "горький",
+    "обжаренный"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1"
+  },
+  {
+   "bjcp_id": "15C",
+   "bjcp_heading": "15C. Irish Extra Stout",
+   "category_id": "15",
+   "category_en": "IRISH BEER",
+   "category_ru": "Ирландское пиво",
+   "name_en": "Irish Extra Stout",
+   "name_ru": "Ирландский экстра-стаут",
+   "description_short_ru": "Более плотный и насыщенный чёрный ирландский стаут с яркой жареной нотой кофе и тёмного шоколада, где баланс идёт от умеренно горько-сладкого до сухо-горького.",
+   "sections_ru": {
+    "overall_impression": "Более полнотелое чёрное пиво с выраженным жареным характером, часто напоминающим кофе и тёмный шоколад, и с некоторой солодовой сложностью. Баланс может колебаться от умеренно горько-сладкого до горького; более сбалансированные версии способны давать до умеренной солодовой насыщенности, тогда как горькие версии бывают весьма сухими.",
+    "aroma": "Аромат кофе от умеренного до умеренно высокого, часто с лёгкими вторичными тонами тёмного шоколада, какао, бисквита, ванили или жареного зерна. Умеренно низкие эфиры допустимы. Хмелевой аромат отсутствует или очень слабый; если проявляется, то обычно как лёгкая землистость или пряность. В аромате доминируют солод и жареные ноты.",
+    "appearance": "Пиво угольно-чёрное и непрозрачное. Характерна густая, кремовая, стойкая пена светло-коричневого оттенка.",
+    "flavor": "Жареное зерно или солод ощущаются от умеренного до умеренно высокого уровня, при горечи от средней до умеренно высокой. Финиш может быть сухим, кофейным, либо более уравновешенным, с карамельной или солодовой сладостью до умеренного уровня. Обычно присутствуют кофейные жареные ноты, но нередко и выраженный тёмно-шоколадный характер, сохраняющийся до финиша. Фоновые оттенки мокко или бисквита часто добавляют сложности. Умеренно слабая фруктовость допустима. Средний землистый или пряный вкус хмеля допустим. Уровень горечи, степень жарености и сухость финиша варьируют — пивоварская интерпретация здесь вполне уместна.",
+    "mouthfeel": "Тело от умеренно полного до полного, с некоторой кремовостью. Карбонизация умеренная. Текстура очень гладкая. Возможна лёгкая вяжущесть от жареного зерна, но грубая жёсткость недопустима. Иногда ощущается лёгкое согревание алкоголем.",
+    "comments": "Традиционно это более крепкий бутылочный продукт, в рамках которого допустим довольно широкий диапазон интерпретаций; чаще всего различаются степень жарености и уровень сладости. Большинство классических ирландских коммерческих образцов имеют крепость примерно 5,6–6,0 % ABV.",
+    "history": "Происходит от тех же корней, что и Irish Stout, но как более крепкая версия. Guinness Extra Stout — сначала Extra Superior Porter, позднее Double Stout — впервые была сварена в 1821 году и изначально существовала главным образом как бутылочный продукт.",
+    "characteristic_ingredients": "Похоже на Irish Stout. Возможны дополнительные тёмные кристальные солода или тёмные сахара.",
+    "style_comparison": "По крепости и интенсивности вкуса находится между Irish Stout и Foreign Extra Stout, при схожем общем балансе. Даёт больше тела, насыщенности и нередко больше солодовой сложности, чем Irish Stout. По цвету чёрный, а не коричневый, как English Porter."
+   },
+   "sections_en": {
+    "overall_impression": "A fuller-bodied black beer with a pronounced roasted flavor, often similar to coffee and dark chocolate with some malty complexity. The balance can range from moderately bittersweet to bitter, with the more balanced versions having up to moderate malty richness and the bitter versions being quite dry.",
+    "aroma": "Moderate to moderately high coffee-like aroma, often with slight dark chocolate, cocoa, biscuit, vanilla, or roasted grain secondary notes. Medium-low esters optional. Hop aroma low to none, may be lightly earthy or spicy, but is typically absent. Malt and roast dominate the aroma.",
+    "appearance": "Jet black. Opaque. A thick, creamy, persistent tan head is characteristic.",
+    "flavor": "Moderate to moderately high dark-roasted grain or malt flavor with a medium to medium-high bitterness. The finish can be dry and coffee-like to moderately balanced with up to moderate caramel or malty sweetness. Typically has roasted coffee-like flavors, but also often has a dark chocolate character in the palate, lasting into the finish. Background mocha or biscuit flavors are often present and add complexity. Medium-low fruitiness optional. Medium earthy or spicy hop flavor optional. The level of bitterness is somewhat variable, as is the roasted character and the dryness of the finish; allow for interpretation by brewers.",
+    "mouthfeel": "Medium-full to full body, with a somewhat creamy character. Moderate carbonation. Very smooth. May have a light astringency from the roasted grains, although harshness is undesirable. A slightly warming character may be detected.",
+    "comments": "Traditionally a stronger, bottled product with a range of equally valid possible interpretations, varying most frequently in roast flavor and sweetness. Most traditional Irish commercial examples are in the 5.6 to 6.0% ABV range.",
+    "history": "Same roots as Irish Stout, but as a stronger product. Guinness Extra Stout (Extra Superior Porter, later Double Stout) was first brewed in 1821, and was primarily a bottled product.",
+    "characteristic_ingredients": "Similar to Irish Stout. May have additional dark crystal malts or dark sugars.",
+    "style_comparison": "Midway between an Irish Stout and a Foreign Extra Stout in strength and flavor intensity, although with a similar balance. More body, richness, and often malt complexity than an Irish Stout. Black in color, not brown like an English Porter."
+   },
+   "vital_statistics_text": "OG: 1.052 – 1.062 | IBUs: 35 – 50 | FG: 1.010 – 1.014 | SRM: 30 – 40 | ABV: 5.0 – 6.5%",
+   "vital_statistics": {
+    "og": "1.052-1.062",
+    "ibu": "35-50",
+    "fg": "1.010-1.014",
+    "srm": "30-40",
+    "abv": "5.0-6.5%"
+   },
+   "commercial_examples_text": "Guinness Extra Stout, O’Hara’s Leann Folláin, Porterhouse XXXX, Sheaf Stout",
+   "tags_en": [
+    "high-strength",
+    "dark-color",
+    "top-fermented",
+    "british-isles",
+    "traditional-style",
+    "stout-family",
+    "bitter",
+    "roasty"
+   ],
+   "source_pdf_page_start": 44,
+   "source_guideline_page_start": 28,
+   "tags_ru": [
+    "высокая крепость",
+    "тёмный цвет",
+    "верховое брожение",
+    "Британские острова",
+    "традиционный стиль",
+    "семейство стаутов",
+    "горький",
+    "обжаренный"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1"
+  }
+ ]
 }

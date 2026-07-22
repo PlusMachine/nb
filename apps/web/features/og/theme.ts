@@ -8,6 +8,14 @@ export const OG_SIZE = { width: 1200, height: 630 } as const;
 
 export const OG_CONTENT_TYPE = "image/png";
 
+/** Ширина фото-врезки (Ф5) — треть холста; высота врезки всегда = OG_SIZE.height. */
+export const OG_PHOTO_WIDTH = 400;
+
+/** Приёмочный бюджет веса ЛЮБОЙ карточки (docs/specs/og-images.md §8 Ф5). */
+export const OG_WEIGHT_BUDGET_BYTES = 300 * 1024;
+
+export const OG_JPEG_CONTENT_TYPE = "image/jpeg";
+
 /**
  * Кэш-заголовок для route-хендлеров карточек. TG всё равно кэширует превью на
  * своей стороне; s-maxage согласован с revalidate публичной деталки рецепта.

@@ -1,447 +1,447 @@
 {
-  "source": {
-    "document": "BJCP 2021 Beer Style Guidelines",
-    "file_name": "2021_Guidelines_Beer_1.25.pdf",
-    "language": "ru",
-    "translation_scope": "detailed",
-    "notes": "Подробный русский перевод одиннадцатой части корпуса BJCP: категории 22-23 (до 23B) с сохранением короткого описания, полных секций и оригинальных английских секций для сверки."
-  },
-  "progress": {
-    "styles_total_in_guideline": 128,
-    "styles_translated_in_this_file": 6,
-    "translated_style_ids": [
-      "22A",
-      "22B",
-      "22C",
-      "22D",
-      "23A",
-      "23B"
-    ],
-    "translated_categories": [
-      "22",
-      "23"
-    ],
-    "next_recommended_batch": [
-      "23C",
-      "23D",
-      "23E",
-      "23F",
-      "23G",
-      "24A",
-      "24B",
-      "24C"
-    ]
-  },
-  "categories": [
-    {
-      "category_id": "22",
-      "category_en": "STRONG AMERICAN ALE",
-      "category_ru": "Крепкий американский эль",
-      "overview_ru": "В эту категорию входят современные американские крепкие эли с разным соотношением солода и хмеля. Их объединяют повышенная крепость и отсутствие выраженной обжаренности."
-    },
-    {
-      "category_id": "23",
-      "category_en": "EUROPEAN SOUR ALE",
-      "category_ru": "Европейский кислый эль",
-      "overview_ru": "Категория объединяет традиционные кислые стили Европы, которые продолжают варить и сегодня. Многие из них, хотя и не все, содержат пшеницу. Обычно у них низкая горечь, а баланс задаёт именно кислотность, а не хмель. Некоторые версии могут быть подслащены или ароматизированы — либо на пивоварне, либо уже при подаче."
-    }
+ "source": {
+  "document": "BJCP 2021 Beer Style Guidelines",
+  "file_name": "2021_Guidelines_Beer_1.25.pdf",
+  "language": "ru",
+  "translation_scope": "detailed",
+  "notes": "Подробный русский перевод одиннадцатой части корпуса BJCP: категории 22-23 (до 23B) с сохранением короткого описания, полных секций и оригинальных английских секций для сверки."
+ },
+ "progress": {
+  "styles_total_in_guideline": 128,
+  "styles_translated_in_this_file": 6,
+  "translated_style_ids": [
+   "22A",
+   "22B",
+   "22C",
+   "22D",
+   "23A",
+   "23B"
   ],
-  "styles": [
-    {
-      "bjcp_id": "22A",
-      "name_en": "Double IPA",
-      "name_ru": "Двойной IPA",
-      "category_id": "22",
-      "category_en": "STRONG AMERICAN ALE",
-      "category_ru": "Крепкий американский эль",
-      "bjcp_heading": "22A. Double IPA",
-      "description_short_ru": "Очень хмелевой, крепкий и заметно горький светлый эль с сухим финишем и высокой, но контролируемой интенсивностью. Сила должна ощущаться, но питкость остаётся важной частью стиля.",
-      "sections_en": {
-        "overall_impression": "An intensely hoppy, fairly strong, bitter pale ale without the big, rich, complex maltiness, residual sweetness, and body of an American Barleywine. Strongly hopped, but clean, dry, and lacking harshness. Despite showing its strength, drinkability is an important consideration.",
-        "aroma": "A prominent to intense hop aroma typically featuring modern American or New World hop characteristics such as citrus, floral, pine, resin, spice, tropical fruit, stone fruit, berry, or melon. A supportive, clean, neutral to grainy maltiness may be found in the background. Neutral to lightly fruity fermentation profile. Alcohol may be noted, but should not be solventy.",
-        "appearance": "Gold to light orange-copper color, but most modern versions are fairly pale. Good clarity, although a little haze is acceptable. Moderate-sized, persistent, white to off-white head.",
-        "flavor": "Strong and complex hop flavor (same descriptors as aroma). Moderately high to very high bitterness, but should not be harsh. Low to medium supportive, clean, soft, unobtrusive malt character; may have light caramel or toast flavors. Dry to medium-dry finish, not sweet or heavy, with a lingering hoppy, bitter aftertaste. Low to moderate fruitiness optional. A light, clean, smooth alcohol flavor is allowable.",
-        "mouthfeel": "Medium-light to medium body, with a smooth texture. Medium to medium-high carbonation. No harsh hop-derived astringency. Restrained, smooth alcohol warmth acceptable.",
-        "comments": "Rarely called Imperial IPA. Many modern versions have multiple dry-hop additions.",
-        "history": "An American craft beer innovation first developed in the mid-late 1990s as more intense version of American IPA. Became more mainstream and popular throughout the 2000s, and inspired additional IPA creativity. Russian River Pliny the Elder, first brewed in 2000, helped popularize the style.",
-        "characteristic_ingredients": "Neutral base malt. Sugar adjuncts common. Crystal malts rare. American or New World hops. Neutral or lightly fruity yeast. No oak.",
-        "style_comparison": "Bigger than English and American IPAs in alcohol strength, bitterness, and hoppiness. Less malty-rich, less body, drier, and with a greater overall hop balance than American Barleywine.",
-        "entry_instructions": ""
-      },
-      "sections_ru": {
-        "overall_impression": "Предельно хмелевой, довольно крепкий и ярко горький светлый эль без той массивной, богатой, сложной солодовости, остаточной сладости и полноты тела, которые характерны для American Barleywine. Хмель должен быть мощным, но профиль — чистым, сухим и лишённым грубости. Несмотря на солидную крепость, стиль должен оставаться питким.",
-        "aroma": "Хмелевой аромат — от яркого до очень интенсивного; обычно с современными американскими или новосветскими оттенками: цитрус, цветы, хвоя, смола, специи, тропические и косточковые фрукты, ягоды, дыня. На заднем плане может присутствовать поддерживающая чистая нейтральная или слегка зерновая солодовость. Брожение — нейтральное либо с лёгкой фруктовостью. Алкоголь может ощущаться, но не должен быть растворительным.",
-        "appearance": "Цвет от золотистого до светло оранжево-медного, хотя большинство современных версий довольно светлые. Прозрачность хорошая, но небольшая дымка допустима. Пена среднего размера, стойкая, белая или слегка кремовая.",
-        "flavor": "Вкус хмеля сильный и сложный; возможны те же дескрипторы, что и в аромате. Горечь — от умеренно высокой до очень высокой, но не грубая. Солодовая опора — от слабой до средней, чистая, мягкая, ненавязчивая; допустимы лёгкие карамельные или тостовые оттенки. Финиш — сухой или умеренно сухой, без тяжёлой сладости, с долгим хмелевым и горьким послевкусием. Лёгкая или умеренная фруктовость возможна. Допустим лёгкий, чистый, гладкий алкогольный тон.",
-        "mouthfeel": "Тело от умеренно лёгкого до среднего, текстура гладкая. Карбонизация — от средней до умеренно высокой. Недопустима грубая терпкость от хмеля. Сдержанное и мягкое алкогольное тепло допустимо.",
-        "comments": "Название Imperial IPA встречается, но используется редко. Во многих современных версиях практикуют несколько внесений dry hop.",
-        "history": "Американская крафтовая инновация, сформировавшаяся в середине-конце 1990-х как более интенсивная версия American IPA. В 2000-х стиль стал гораздо популярнее и заметнее на рынке и подтолкнул дальнейшее развитие IPA-направления. Одним из пив, сыгравших ключевую роль в популяризации стиля, был Russian River Pliny the Elder, впервые сваренный в 2000 году.",
-        "characteristic_ingredients": "Нейтральный базовый солод. Сахара-адъюнкты используются часто. Карамельные солода редки. Хмель — американский или новосветский. Дрожжи нейтральные либо слегка фруктовые. Древесная выдержка не используется.",
-        "style_comparison": "Крепче, горче и хмелевее, чем English IPA и American IPA. В сравнении с American Barleywine — менее солодово-богатый, менее плотный, более сухой и с ещё более явным хмелевым балансом.",
-        "entry_instructions": ""
-      },
-      "vital_statistics": {
-        "og": "1.065 – 1.085",
-        "ibu": "60 – 100",
-        "fg": "1.008 – 1.018",
-        "srm": "6 – 14",
-        "abv": "7.5 – 10.0%"
-      },
-      "vital_statistics_text": "OG: 1.065 – 1.085 | IBUs: 60 – 100 | FG: 1.008 – 1.018 | SRM: 6 – 14 | ABV: 7.5 – 10.0%",
-      "commercial_examples_text": "Columbus Brewing Bohdi, Fat Head’s Hop Juju, Port Brewing Hop-15, Russian River Pliny the Elder, Stone Ruination Double IPA 2.0, Wicked Weed Freak of Nature",
-      "tags_en": [
-        "very-high-strength",
-        "pale-color",
-        "top-fermented",
-        "north-america",
-        "craft-style",
-        "ipa-family",
-        "bitter",
-        "hoppy"
-      ],
-      "source_guideline_page_start": 43,
-      "source_pdf_page_start": 59,
-      "translation_status": "completed",
-      "tags_ru": [
-        "очень высокая крепость",
-        "светлый цвет",
-        "верховое брожение",
-        "Северная Америка",
-        "крафтовый стиль",
-        "семейство IPA",
-        "горький",
-        "хмелевой"
-      ]
-    },
-    {
-      "bjcp_id": "22B",
-      "name_en": "American Strong Ale",
-      "name_ru": "Американский крепкий эль",
-      "category_id": "22",
-      "category_en": "STRONG AMERICAN ALE",
-      "category_ru": "Крепкий американский эль",
-      "bjcp_heading": "22B. American Strong Ale",
-      "description_short_ru": "Широкая американская категория для крепких, заметно солодовых и хмелевых элей, которые находятся между Double IPA, Red IPA и American Barleywine.",
-      "sections_en": {
-        "overall_impression": "A malty, bitter, and strong American Ale fitting in the space between American Barleywine, Double IPA, and Red IPA. The malty and hoppy flavors can be quite strong, but are generally in balance.",
-        "aroma": "Medium to high hop aroma typically featuring modern American or New World hop characteristics such as citrus, floral, pine, resinous, spicy, tropical fruit, stone fruit, berry, or melon. Moderate to bold maltiness supporting the hop profile, with medium to dark caramel common, toasty or bready possible, and background notes of light roast or chocolate allowable. Neutral to moderately fruity fermentation profile. Alcohol may be noted, but should not be solventy.",
-        "appearance": "Medium amber to deep copper or light brown. Moderate-low to medium-sized off-white to light tan head; may have low head retention. Good clarity. Legs possible.",
-        "flavor": "Medium to high malt, with a caramel, toffee, or dark fruit quality. Malt complexity can include additional toasty, bready, or rich flavors in support. Light chocolate or roast allowable, but should not be burnt or sharp. Medium-high to high bitterness. Moderate to high hop flavor, same descriptors as aroma. Low to moderate esters. May have a noticeable alcohol flavor, but should not be sharp. Medium to high malty sweetness on the palate, finishing somewhat dry to somewhat sweet. Should not be syrupy, sweet, or cloying. Bitter to bittersweet aftertaste, with hops, malt, and alcohol noticeable.",
-        "mouthfeel": "Medium to full body. An alcohol warmth may be present, but should not be excessively hot. Light hop astringency allowable. Medium-low to medium carbonation.",
-        "comments": "A fairly broad style describing beers labeled in various ways, including modern Double Red Ales and other strong, malty-but-hoppy beers that aren’t quite in the Barleywine class. Diverse enough to include what may be viewed as a strong American Amber Ale with room for stronger versions of other American Ale styles.",
-        "history": "While modern craft versions were developed as “imperial” strength versions of American amber or red ales, the style has much in common with historic American Stock Ales. Strong, malty beers were highly hopped to keep as provision beers prior to Prohibition. There is no continuous legacy of brewing stock ales in this manner, but the resemblance is considerable (albeit without the age character).",
-        "characteristic_ingredients": "Pale base malt. Medium to dark crystal malts common. American or New World hops. Neutral or lightly fruity yeast.",
-        "style_comparison": "Generally not as strong and as rich as an American Barleywine. More malt balanced than an American or Double IPA. More American hop intensity than a British Strong Ale. Maltier and fuller-bodied than a Red IPA.",
-        "entry_instructions": ""
-      },
-      "sections_ru": {
-        "overall_impression": "Солодовый, горький и крепкий американский эль, занимающий промежуточное положение между American Barleywine, Double IPA и Red IPA. И солод, и хмель могут быть очень выразительными, но в целом стиль обычно держится на балансе между ними.",
-        "aroma": "Хмелевой аромат — от среднего до высокого, обычно с современными американскими или новосветскими характеристиками: цитрус, цветы, хвоя, смола, специи, тропические и косточковые фрукты, ягоды, дыня. Солодовая база — от умеренной до мощной, поддерживающая хмель; обычны средние и тёмные карамельные ноты, возможны тостовые или хлебные оттенки, а также лёгкий шоколадный или слегка обжаренный фон. Профиль брожения — от нейтрального до умеренно фруктового. Алкоголь может ощущаться, но не должен быть растворительным.",
-        "appearance": "Цвет от средне-янтарного до глубокого медного или светло-коричневого. Пена от умеренно низкой до средней, от кремовой до светло-бежевой; стойкость может быть невысокой. Прозрачность хорошая. На бокале возможны «ножки».",
-        "flavor": "Солодовый вкус — от среднего до высокого, с карамельными, ирисочными или тёмно-фруктовыми оттенками. Дополнительную сложность могут давать тостовые, хлебные или просто богатые солодовые ноты. Лёгкий шоколадный или обжаренный штрих допустим, но не должен быть жжёным или резким. Горечь — от средне-высокой до высокой. Хмелевой вкус — от умеренного до высокого, с теми же дескрипторами, что и в аромате. Эфиры — от слабых до умеренных. Алкоголь может быть заметен, но не должен колоть или жечь. На нёбе солодовая сладость — от средней до высокой; финиш — от несколько сухого до несколько сладковатого. Пиво не должно быть сиропным, приторным или вязко-сладким. Послевкусие — от горького до горько-сладкого, с заметными хмелем, солодом и алкоголем.",
-        "mouthfeel": "Тело от среднего до полного. Алкогольное тепло допустимо, но не должно быть чрезмерно горячим. Лёгкая хмелевая терпкость допустима. Карбонизация — от умеренно низкой до средней.",
-        "comments": "Довольно широкая категория, куда попадают по-разному маркируемые пива, включая современные Double Red Ale и другие крепкие, солодово-хмелевые эли, которые ещё не дотягивают до класса Barleywine. Стиль достаточно широк, чтобы включать в себя как усиленный American Amber Ale, так и более крепкие версии других американских элей.",
-        "history": "Хотя современные крафтовые версии выросли как «имперские» по крепости варианты американских amber ale и red ale, у стиля есть немало общего с историческими American Stock Ale. До сухого закона крепкие солодовые сорта заметно охмеляли, чтобы они лучше хранились как запасное пиво. Непрерывной традиции именно такого stock ale не сохранилось, но сходство остаётся весьма заметным — пусть и без характера выдержки.",
-        "characteristic_ingredients": "Светлый базовый солод. Часто используются карамельные солода средней и тёмной степени. Хмель — американский или новосветский. Дрожжи нейтральные либо слегка фруктовые.",
-        "style_comparison": "Обычно менее крепкий и менее роскошно-солодовый, чем American Barleywine. Более солодово сбалансирован, чем American IPA и Double IPA. По американской хмелевой интенсивности опережает British Strong Ale. Более солодовый и более полнотелый, чем Red IPA.",
-        "entry_instructions": ""
-      },
-      "vital_statistics": {
-        "og": "1.062 – 1.090",
-        "ibu": "50 – 100",
-        "fg": "1.014 – 1.024",
-        "srm": "7 – 18",
-        "abv": "6.3 – 10.0%"
-      },
-      "vital_statistics_text": "OG: 1.062 – 1.090 | IBUs: 50 – 100 | FG: 1.014 – 1.024 | SRM: 7 – 18 | ABV: 6.3 – 10.0%",
-      "commercial_examples_text": "Arrogant Bastard Ale, Fat Head’s Bone Head, Great Lakes Nosferatu, Oskar Blues G’Knight, Port Brewing Shark Attack Double Red Ale",
-      "tags_en": [
-        "high-strength",
-        "amber-color",
-        "top-fermented",
-        "north-america",
-        "craft-style",
-        "strong-ale-family",
-        "bitter",
-        "hoppy"
-      ],
-      "source_guideline_page_start": 43,
-      "source_pdf_page_start": 59,
-      "translation_status": "completed",
-      "tags_ru": [
-        "высокая крепость",
-        "янтарный цвет",
-        "верховое брожение",
-        "Северная Америка",
-        "крафтовый стиль",
-        "семейство strong ale",
-        "горький",
-        "хмелевой"
-      ]
-    },
-    {
-      "bjcp_id": "22C",
-      "name_en": "American Barleywine",
-      "name_ru": "Американский барли вайн",
-      "category_id": "22",
-      "category_en": "STRONG AMERICAN ALE",
-      "category_ru": "Крепкий американский эль",
-      "bjcp_heading": "22C. American Barleywine",
-      "description_short_ru": "Очень крепкий американский эль для медленного употребления: богатый, солодовый, ощутимо хмелевой и всегда заметно горький, с плотным телом и согревающим послевкусием.",
-      "sections_en": {
-        "overall_impression": "A very strong, malty, hoppy, bitter American ale with a rich palate, full mouthfeel, and warming aftertaste, suitable for contemplative sipping.",
-        "aroma": "Strong malt and hop aroma dominates. Hops are moderate to assertive, showing a range of American, New World, or English characteristics. Citrusy, fruity, or resiny are classic attributes, but others are possible, including those from modern hops. Strong grainy, bready, toasty, light caramel, or neutral malt richness, but typically not with darker caramel, roast, or deep fruit aspects. Low to moderately strong esters and alcohol, lower in the balance than the malt and hops. Intensities fade with age.",
-        "appearance": "Color ranges from amber to medium copper, rarely up to light brown. Ruby highlights common. Moderately-low to large off-white to light tan head; may have low head retention. Good to brilliant clarity but may have some chill haze. The color may appear to have great depth, as if viewed through a thick glass lens. Legs possible.",
-        "flavor": "Similar malt and hop flavors as the aroma (same descriptors apply). Moderately strong to aggressive bitterness, tempered by a rich, malty palate. Moderate to high hop flavor. Low to moderate esters. Noticeable alcohol, but not solventy. Moderately low to moderately high malty sweetness on the palate, with a somewhat malty to dry but full finish. Age will often dry out the beer, and smooth out the flavors. The balance is malty, but always bitter.",
-        "mouthfeel": "Full-bodied and chewy, with a velvety, luscious texture, declining with age. A smooth alcohol warmth should be noticeable, but shouldn’t burn. Carbonation may be low to moderate, depending on age and conditioning.",
-        "comments": "Sometimes labeled as “Barley Wine” or “Barleywine-style ale”. Recently many US breweries seem to have discontinued their Barleywines, made them barrel-aged, or rebranded them as some form of IPA.",
-        "history": "Traditionally the strongest ale offered by a brewery, often associated with the winter season and vintage-dated. As with many American craft beer styles, an adaptation of an English style using American ingredients and balance. One of the first American craft beer versions was Anchor Old Foghorn, first brewed in 1975. Sierra Nevada Bigfoot, first brewed in 1983, set the standard for the hop-forward style of today. The story goes that when Sierra Nevada first sent Bigfoot out for lab analysis, the lab called and said, “your Barleywine is too bitter” – to which Sierra Nevada replied, “thank you.”",
-        "characteristic_ingredients": "Pale malt with some specialty malts. Dark malts used with great restraint. Many varieties of hops can be used, but typically includes American hops. American or English ale yeast.",
-        "style_comparison": "Greater emphasis on hop bitterness, flavor, and aroma than English Barley Wine, often featuring American hop varieties. Typically paler than the darker English Barley Wines and lacking their deeper malt flavors, but darker than the golden English Barley Wines. Differs from a Double IPA in that the hops are not extreme, the malt is more forward, and the body is fuller and often richer. American Barleywine typically has more residual sweetness than Double IPA, which affects the overall drinkability (sipping vs. drinking).",
-        "entry_instructions": ""
-      },
-      "sections_ru": {
-        "overall_impression": "Очень крепкий, солодовый, хмелевой и горький американский эль с богатым вкусом, полным телом и согревающим послевкусием. Это пиво скорее для вдумчивого, неторопливого распития, чем для залповой питкости.",
-        "aroma": "Доминируют мощные ароматы солода и хмеля. Хмель — от умеренного до напористого, с американскими, новосветскими или английскими чертами. Классические варианты часто дают цитрус, фруктовость или смолу, но возможны и другие оттенки, включая современные хмелевые профили. Солодовая насыщенность сильная: зерновая, хлебная, тостовая, слегка карамельная или просто богатая по ощущению, но обычно без тёмной карамели, выраженной обжаренности и глубоких тёмно-фруктовых тонов. Эфиры и алкоголь — от слабых до умеренно сильных, но в балансе уступают солоду и хмелю. С возрастом интенсивность аромата смягчается.",
-        "appearance": "Цвет от янтарного до средне-медного, изредка до светло-коричневого. Часто заметны рубиновые отблески. Пена от умеренно низкой до крупной, беловатая или светло-бежевая; её стойкость может быть невысокой. Прозрачность — хорошая или блестящая, хотя лёгкая холодная муть допустима. Цвет часто кажется очень глубоким, будто смотришь через толстую стеклянную линзу. Возможны «ножки» на бокале.",
-        "flavor": "Во вкусе проявляются те же солодовые и хмелевые оттенки, что и в аромате. Горечь — от уверенной до агрессивной, но её смягчает богатое солодовое тело. Хмелевой вкус — от умеренного до высокого. Эфиры — от слабых до умеренных. Алкоголь заметен, но не растворительный. Солодовая сладость на нёбе — от умеренно слабой до умеренно высокой; финиш при этом может быть как довольно солодовым, так и более сухим, но остаётся полным. С возрастом пиво обычно подсушивается и становится более сглаженным по вкусу. Баланс солодовый, но горечь всегда остаётся заметной.",
-        "mouthfeel": "Тело полное, жевательное, с бархатистой, почти роскошной текстурой, которая с возрастом постепенно становится менее насыщенной. Мягкое алкогольное тепло должно ощущаться, но не жечь. Карбонизация — от низкой до средней, в зависимости от выдержки и кондиционирования.",
-        "comments": "Иногда стиль обозначают как “Barley Wine” или “Barleywine-style ale”. В последние годы многие американские пивоварни либо сняли свои Barleywine с производства, либо перевели их в бочковые версии, либо вообще переупаковали в какую-нибудь разновидность IPA.",
-        "history": "Традиционно это самый крепкий эль в линейке пивоварни, часто связанный с зимним сезоном и винтажными выпусками. Как и многие американские крафтовые стили, это адаптация английского образца под американские ингредиенты и американский баланс. Одним из первых американских крафтовых примеров был Anchor Old Foghorn, впервые сваренный в 1975 году. Sierra Nevada Bigfoot, появившийся в 1983 году, задал стандарт современного хмелево-ориентированного направления. По известной истории, когда Sierra Nevada впервые отправила Bigfoot в лабораторию, оттуда позвонили и сказали: «Ваш barleywine слишком горький», на что на пивоварне ответили: «Спасибо».",
-        "characteristic_ingredients": "Светлый солод с добавлением специальных солодов. Тёмные солода используют очень сдержанно. Можно применять разные сорта хмеля, но обычно в рецепте присутствует американский хмель. Дрожжи — американские или английские эльные.",
-        "style_comparison": "По горечи, хмелевому вкусу и аромату заметно выразительнее, чем English Barley Wine, и часто строится на американских сортах хмеля. Обычно светлее тёмных английских Barley Wine и лишён их более глубоких солодовых тонов, но всё же темнее золотистых английских версий. От Double IPA отличается тем, что хмель здесь не доведён до экстремума, солод подан более вперёд, а тело полнее и богаче. В American Barleywine обычно больше остаточной сладости, чем в Double IPA, что напрямую влияет на характер питкости: скорее sipping, чем drinking.",
-        "entry_instructions": ""
-      },
-      "vital_statistics": {
-        "og": "1.080 – 1.120",
-        "ibu": "50 – 100",
-        "fg": "1.016 – 1.030",
-        "srm": "9 – 18",
-        "abv": "8.0 – 12.0%"
-      },
-      "vital_statistics_text": "OG: 1.080 – 1.120 | IBUs: 50 – 100 | FG: 1.016 – 1.030 | SRM: 9 – 18 | ABV: 8.0 – 12.0%",
-      "commercial_examples_text": "Anchor Old Foghorn, Bell’s Third Coast Old Ale, East End Gratitude, Hair of the Dog Doggie Claws, Sierra Nevada Bigfoot",
-      "tags_en": [
-        "very-high-strength",
-        "amber-color",
-        "top-fermented",
-        "north-america",
-        "craft-style",
-        "strong-ale-family",
-        "bitter",
-        "hoppy"
-      ],
-      "source_guideline_page_start": 44,
-      "source_pdf_page_start": 60,
-      "translation_status": "completed",
-      "tags_ru": [
-        "очень высокая крепость",
-        "янтарный цвет",
-        "верховое брожение",
-        "Северная Америка",
-        "крафтовый стиль",
-        "семейство strong ale",
-        "горький",
-        "хмелевой"
-      ]
-    },
-    {
-      "bjcp_id": "22D",
-      "name_en": "Wheatwine",
-      "name_ru": "Уитвайн",
-      "category_id": "22",
-      "category_en": "STRONG AMERICAN ALE",
-      "category_ru": "Крепкий американский эль",
-      "bjcp_heading": "22D. Wheatwine",
-      "description_short_ru": "Крепкое пшеничное sipping-пиво с выраженным хлебно-зерновым профилем, насыщенной текстурой и сложностью, в которой пшеница стоит на первом плане.",
-      "sections_en": {
-        "overall_impression": "A richly textured, high alcohol sipping beer with a significant grainy, bready flavor, and a sleek body. The emphasis is first on the bready, wheaty flavors with malt, hops, fruity yeast, and alcohol complexity.",
-        "aroma": "Hop aroma is mild and can represent just about any hop variety. Moderate to moderately-strong bready, wheaty malt character, often with additional malt complexity such as honey and caramel. A light, clean, alcohol aroma may be noted. Low to medium fruity notes may be apparent. Very low diacetyl optional. Banana-and-clove Weizen yeast character is inappropriate.",
-        "appearance": "Color ranging from gold to deep amber, often with garnet or ruby highlights. Low to medium off-white head. The head may have creamy texture, and good retention. Chill haze is allowable, but usually clears up as the beer gets warmer. High alcohol and viscosity may be visible as legs.",
-        "flavor": "Moderate to moderately-high bready wheat malt flavor, dominant in the flavor balance over any hop character. Low to moderate toasty, caramel, biscuity, or honey malt notes can add a welcome complexity, but are not required. Low to medium hop flavor, reflecting any variety. Moderate to moderately-high fruitiness, often with a dried-fruit character. Low to moderate bitterness, creating a malty to even balance. Should not be syrupy or under-attenuated.",
-        "mouthfeel": "Medium-full to full body. Chewy, often with a luscious, velvety texture. Low to moderate carbonation. Light to moderate smooth alcohol warmth optional.",
-        "comments": "Much of the color arises from a lengthy boil. Some commercial examples may be stronger than the Vital Statistics.",
-        "history": "An American craft beer style that was first brewed at the Rubicon Brewing Company in 1988. Usually a winter seasonal, vintage, or one-off release.",
-        "characteristic_ingredients": "Typically brewed with a combination of American two-row and American wheat. Style commonly uses 50% or more wheat malt. Restrained use of dark malts. Any variety of hops may be used. May be oak-aged.",
-        "style_comparison": "More than simply a wheat-based Barleywine, many versions have very expressive fruity and hoppy notes, while others develop complexity through oak aging. Less emphasis on the hops than American Barleywine. Has roots in American Wheat Beer rather than any German wheat style, so should not have any Weizen yeast character.",
-        "entry_instructions": ""
-      },
-      "sections_ru": {
-        "overall_impression": "Плотное по текстуре, крепкое пиво для неспешного употребления с выраженным зерновым и хлебным вкусом и гладким телом. В центре внимания — хлебно-пшеничный профиль, а уже затем солодовая, хмелевая, дрожжевая фруктовость и алкогольная сложность.",
-        "aroma": "Хмелевой аромат слабый и может отражать практически любой сорт хмеля. Пшенично-хлебный солодовый характер — от умеренного до умеренно сильного; нередко его дополняют медовые и карамельные оттенки. Может ощущаться лёгкий чистый алкоголь. Допустимы слабые или умеренные фруктовые ноты. Очень низкий диацетил возможен. Бананово-гвоздичный дрожжевой профиль, характерный для Weizen, здесь неуместен.",
-        "appearance": "Цвет от золотистого до глубокого янтарного, часто с гранатовыми или рубиновыми отблесками. Пена от низкой до средней, беловатая; может иметь кремовую текстуру и хорошую стойкость. Допустима холодная муть, но обычно она уходит по мере нагревания пива. Высокая крепость и вязкость могут проявляться «ножками» на бокале.",
-        "flavor": "Вкус пшеничного солода — от умеренного до умеренно высокого, хлебный и доминирующий в балансе над любым хмелевым характером. Дополнительную сложность могут приносить тостовые, карамельные, бисквитные или медовые солодовые оттенки, но они не обязательны. Хмелевой вкус — от слабого до среднего, допустим любой сортовой профиль. Фруктовость — от умеренной до умеренно высокой, часто с оттенками сухофруктов. Горечь — от слабой до умеренной, баланс от солодового до почти ровного. Пиво не должно быть сиропным или недоброженным.",
-        "mouthfeel": "Тело от умеренно полного до полного. Текстура жевательная, часто сочная и бархатистая. Карбонизация — от низкой до умеренной. Допустимо лёгкое или умеренное мягкое алкогольное тепло.",
-        "comments": "Значительная часть цвета формируется за счёт продолжительного кипа. Некоторые коммерческие версии могут быть крепче, чем указано в vital statistics.",
-        "history": "Американский крафтовый стиль, впервые сваренный на Rubicon Brewing Company в 1988 году. Чаще всего это зимний сезонный, винтажный или разовый релиз.",
-        "characteristic_ingredients": "Обычно варится на сочетании американского двухрядного солода и американской пшеницы. В рецепте нередко используют 50% и более пшеничного солода. Тёмные солода добавляют сдержанно. Хмель может быть любого сорта. Допустима выдержка на дубе.",
-        "style_comparison": "Это не просто barleywine на пшеничной основе. Многие версии показывают очень выразительную фруктовость и хмелевой профиль, а другие набирают сложность благодаря выдержке в дубе. Акцент на хмеле здесь слабее, чем в American Barleywine. Стиль вырос скорее из American Wheat Beer, чем из какого-либо немецкого пшеничного направления, поэтому характера дрожжей Weizen здесь быть не должно.",
-        "entry_instructions": ""
-      },
-      "vital_statistics": {
-        "og": "1.080 – 1.120",
-        "ibu": "30 – 60",
-        "fg": "1.016 – 1.030",
-        "srm": "6 – 14",
-        "abv": "8.0 – 12.0%"
-      },
-      "vital_statistics_text": "OG: 1.080 – 1.120 | IBUs: 30 – 60 | FG: 1.016 – 1.030 | SRM: 6 – 14 | ABV: 8.0 – 12.0%",
-      "commercial_examples_text": "The Bruery White Oak, Castelain Winter Ale, Perennial Heart of Gold, Two Brothers Bare Tree",
-      "tags_en": [
-        "very-high-strength",
-        "amber-color",
-        "top-fermented",
-        "north-america",
-        "craft-style",
-        "strong-ale-family",
-        "wheat-beer-family",
-        "balanced",
-        "hoppy"
-      ],
-      "source_guideline_page_start": 44,
-      "source_pdf_page_start": 60,
-      "translation_status": "completed",
-      "tags_ru": [
-        "очень высокая крепость",
-        "янтарный цвет",
-        "верховое брожение",
-        "Северная Америка",
-        "крафтовый стиль",
-        "семейство strong ale",
-        "семейство wheat beer",
-        "сбалансированный",
-        "хмелевой"
-      ]
-    },
-    {
-      "bjcp_id": "23A",
-      "name_en": "Berliner Weisse",
-      "name_ru": "Берлинер вайссе",
-      "category_id": "23",
-      "category_en": "EUROPEAN SOUR ALE",
-      "category_ru": "Европейский кислый эль",
-      "bjcp_heading": "23A. Berliner Weisse",
-      "description_short_ru": "Очень светлое, освежающее и низкоалкогольное немецкое пшеничное пиво с чистой молочнокислой кислотностью, высокой карбонизацией и лёгкой хлебно-тестовой солодовой поддержкой.",
-      "sections_en": {
-        "overall_impression": "A very pale, refreshing, low-alcohol German wheat beer with a clean lactic sourness and a very high carbonation level. A light bread dough malt flavor supports the sourness, which shouldn’t seem artificial. A gentle fruitiness is found in the best examples.",
-        "aroma": "A moderate to moderately-high sharply sour character is dominant. Can have up to a moderately fruitiness, often lemon, tart apple, peach, or apricot, and a light floral note. No hop aroma. The wheat may be perceived as raw bread dough in fresher versions; combined with the acidity, may suggest sourdough bread.",
-        "appearance": "Straw in color, can be very pale. Clarity ranges from clear to somewhat hazy. Large, dense, white head with poor retention. Highly effervescent.",
-        "flavor": "Clean lactic sourness dominates and can be quite strong. A complementary doughy, bready, or grainy wheat flavor is generally noticeable. Hop bitterness is undetectable; sourness provides the balance rather than hops. Never vinegary. Bright yet restrained fruitiness may be detected as apricot-peach, citrus-lemon, or tart apple. Very dry finish. Balance dominated by sourness, but some malt flavor should be present. No hop flavor. No THP.",
-        "mouthfeel": "Light body, but never thin. Very high carbonation. No sensation of alcohol. Crisp acidity.",
-        "comments": "Any Brett character is restrained, and is typically expressed as fruity and floral notes, not funky. Aged examples can show a cider, honey, hay, or gentle wildflower character, and sometimes increased acidity.\n\nIn Germany, it is classified as a Schankbier denoting a small beer of starting gravity in the range 7-8 °P. Fruited or Spiced versions should be entered as 29A Fruit Beer, as 30A Spice, Herb, or Vegetable Beer, or as 29B Fruit and Spice Beer.",
-        "history": "A regional specialty of Berlin. Referred to by Napoleon's troops in 1809 as “the Champagne of the North” due to its lively and elegant character. At one point, it was smoked and there used to be Märzen-strength (14 °P) version. Increasingly rare in Germany, but now produced in several other countries.",
-        "characteristic_ingredients": "Pilsner malt. Usually wheat malt, often at least half the grist. A symbiotic co-fermentation with top-fermenting yeast and LAB provides the sharp sourness, which may be enhanced by blending of beers of different ages during fermentation and by cool aging. Decoction mashing with mash hopping is traditional. German brewing scientists believe that Brett is essential to get the correct, fruity-floral flavor profile.",
-        "style_comparison": "Compared to Lambic, has a clean lactic sourness with restrained to below sensory threshold Brett. Also lower in alcohol content. Compared to Straight Sour Beer and Catharina Sour, is lower gravity and may contain Brett.",
-        "entry_instructions": ""
-      },
-      "sections_ru": {
-        "overall_impression": "Очень светлое, освежающее и низкоалкогольное немецкое пшеничное пиво с чистой молочнокислой кислотностью и очень высокой карбонизацией. Кислотность поддерживается лёгким вкусом хлебного теста; она не должна казаться искусственной. Лучшие образцы показывают ещё и деликатную фруктовость.",
-        "aroma": "Доминирует отчётливая, от умеренной до умеренно высокой, острая кислотность. Возможна фруктовость — вплоть до умеренной, чаще с оттенками лимона, кислого яблока, персика или абрикоса, а также лёгкая цветочная нота. Хмелевой аромат отсутствует. В более свежих версиях пшеница может напоминать сырое хлебное тесто, и в сочетании с кислотностью это иногда вызывает ассоциацию с заквасочным хлебом.",
-        "appearance": "Цвет соломенно-светлый, вплоть до очень бледного. Прозрачность — от чистой до слегка мутноватой. Пена крупная, плотная, белая, но нестойкая. Пиво очень игристое.",
-        "flavor": "Чистая молочнокислая кислотность доминирует и может быть весьма сильной. Обычно хорошо заметен поддерживающий пшеничный вкус: тестовый, хлебный или зерновой. Хмелевая горечь не ощущается; баланс здесь создаёт именно кислотность, а не хмель. Уксусность недопустима. Возможна яркая, но сдержанная фруктовость с оттенками абрикоса, персика, лимона или кислого яблока. Финиш очень сухой. Баланс смещён в сторону кислотности, но некоторая солодовая составляющая всё же должна присутствовать. Хмелевой вкус отсутствует. THP недопустим.",
-        "mouthfeel": "Тело лёгкое, но не водянистое. Карбонизация очень высокая. Алкоголь не должен ощущаться. Кислотность — хрусткая и освежающая.",
-        "comments": "Любой характер Brett здесь должен быть очень сдержанным и обычно выражается фруктовыми и цветочными оттенками, а не «фанковостью». Выдержанные версии могут показывать ноты сидра, мёда, сена или лёгких полевых цветов, а иногда и более выраженную кислотность.\n\nВ Германии стиль относится к классу Schankbier, то есть к «малому пиву» с начальной плотностью в районе 7-8 °P. Фруктовые и пряные версии следует заявлять как 29A Fruit Beer, 30A Spice, Herb, or Vegetable Beer или 29B Fruit and Spice Beer.",
-        "history": "Региональная специалитетная версия Берлина. В 1809 году солдаты Наполеона называли его «Шампанским Севера» за живой и элегантный характер. В какой-то период стиль бывал и копчёным, а также существовала версия крепостью Märzen — около 14 °P. В самой Германии он встречается всё реже, но сегодня его варят и в других странах.",
-        "characteristic_ingredients": "Пильзнерский солод. Обычно используется и пшеничный солод, нередко не менее половины засыпи. Резкую кислотность даёт симбиотическое совместное брожение верховыми дрожжами и LAB; её могут дополнительно усиливать смешивание пива разного возраста в ходе брожения и холодная выдержка. Традиционны декокционный затор и mash hopping. Немецкие учёные-пивовары считают, что Brett необходим для формирования правильного фруктово-цветочного профиля.",
-        "style_comparison": "По сравнению с Lambic здесь чистая молочнокислая кислотность и Brett на уровне от очень слабого до почти порогового. Кроме того, алкоголь ниже. В сравнении с Straight Sour Beer и Catharina Sour плотность ниже, а Brett может присутствовать.",
-        "entry_instructions": ""
-      },
-      "vital_statistics": {
-        "og": "1.028 – 1.032",
-        "ibu": "3 – 8",
-        "fg": "1.003 – 1.006",
-        "srm": "2 – 3",
-        "abv": "2.8 – 3.8%"
-      },
-      "vital_statistics_text": "OG: 1.028 – 1.032 | IBUs: 3 – 8 | FG: 1.003 – 1.006 | SRM: 2 – 3 | ABV: 2.8 – 3.8%",
-      "commercial_examples_text": "Bayerischer Bahnhof Berliner Style Weisse, Berliner Berg Berliner Weisse, Brauerei Meierei Weiße, Lemke Berlin Budike Weisse, Schell's Brewing Company Schelltheiss, Urban Chestnut Ku’damm",
-      "tags_en": [
-        "session-strength",
-        "pale-color",
-        "top-fermented",
-        "central-europe",
-        "traditional-style",
-        "wheat-beer-family",
-        "sour"
-      ],
-      "source_guideline_page_start": 45,
-      "source_pdf_page_start": 61,
-      "translation_status": "completed",
-      "tags_ru": [
-        "сессионная крепость",
-        "светлый цвет",
-        "верховое брожение",
-        "Центральная Европа",
-        "традиционный стиль",
-        "семейство wheat beer",
-        "кислый"
-      ]
-    },
-    {
-      "bjcp_id": "23B",
-      "name_en": "Flanders Red Ale",
-      "name_ru": "Фламандский красный эль",
-      "category_id": "23",
-      "category_en": "EUROPEAN SOUR ALE",
-      "category_ru": "Европейский кислый эль",
-      "bjcp_heading": "23B. Flanders Red Ale",
-      "description_short_ru": "Кислый и фруктовый фламандский красно-коричневый эль, выдержанный в дубе, с поджаристо-солодовой опорой, танинным сухим финишем и виноподобной сложностью.",
-      "sections_en": {
-        "overall_impression": "A sour and fruity oak-aged reddish-brown Belgian-style ale with supportive toasty malt flavors and fruit complexity. The dry, tannic finish supports the suggestion of a vintage red wine.",
-        "aroma": "Complex fruity-sour profile with supporting malt. Fruitiness is high, and reminiscent of black cherries, oranges, plums, red currants, or fruit leather. Low to medium-low vanilla, chocolate, or peppery phenol can be present for complexity. The sour aroma ranges from moderate to high. A dominant vinegary character is inappropriate, although low to moderate levels of acetic acid are acceptable if balanced with the malt. No hop aroma.",
-        "appearance": "Deep red, burgundy to reddish-brown in color. Good clarity. White to very pale tan head. Average to good head retention.",
-        "flavor": "Moderate to moderately-high malty flavors often have a soft toasty-rich quality. Intense fruit flavors, same descriptors as aroma. Complex, moderate to high sourness, accentuated by the esters; should not be a simple lactic sourness. A dominant vinegary character is inappropriate, although low to moderate acetic acid is acceptable if balanced with the malt. Generally as the sour character increases, the malt character fades to more of a background flavor (and vice versa). Low to medium-low vanilla, chocolate, or peppery phenols optional. No hop flavor. Restrained bitterness; balanced to the malt side. Acids and tannins can enhance the perception of bitterness, and provide balance and structure. Some versions are sweetened, or blended to be sweet; allow for a wide range of sweetness levels, which can soften the acidic bite and acetic perception.",
-        "mouthfeel": "Medium body, often enhanced by tannins. Low to medium carbonation. Low to medium astringency, often with a prickly acidity. Deceivingly light and crisp on the palate although a somewhat sweet finish is not uncommon.",
-        "comments": "The “wine-like” observation should not be taken too literally; it may suggest a high-acid French Burgundy to some, but it is clearly not identical. Produced by long aging (up to two years) in large wooden vats (foeders), blending of young and well-aged beer, and variable amounts of sweetening of the final product. A wide range of products are possible depending on the actual blend and whether any sweetening takes place. Acetic flavors may be noted, but not all acidity in this beer is from acetic acid; vinegar is over six times greater in total acidity than this style. Fruited versions should be entered as a 29A Fruit Beer.",
-        "history": "An indigenous beer of West Flanders, typified by the products of the Rodenbach brewery, established in 1821. Aging in wooden vats and blending of old and young beers borrowed from the English tradition. Belgian brewers consider Flanders Red and Oud Bruin to be of the same style family, but the distinction was first made when Michael Jackson first defined beer styles, since the flavor profiles are distinctly different. Many modern examples are influenced by the popularity of Rodenbach Grand Cru.",
-        "characteristic_ingredients": "Vienna or Munich malts, a variety of caramel malts, maize. Low alpha acid continental hops. Sacch, Lacto, and Brett. Aged in oak. Sometimes blended and sweetened (natural or artificial).",
-        "style_comparison": "Less malty-rich than an Oud Bruin, often with more of a fruity-tart and acetic profile.",
-        "entry_instructions": ""
-      },
-      "sections_ru": {
-        "overall_impression": "Кислый и фруктовый красновато-коричневый бельгийский эль, выдержанный в дубе, с поддерживающими тостово-солодовыми оттенками и сложной фруктовостью. Сухой, танинный финиш создаёт ассоциацию с выдержанным красным вином.",
-        "aroma": "Профиль сложный, фруктово-кислый, с поддержкой солода. Фруктовость высокая и может напоминать чёрную вишню, апельсин, сливу, красную смородину или фруктовую пастилу. Для дополнительной сложности возможны слабые или умеренно слабые оттенки ванили, шоколада или перечных фенолов. Кислотность в аромате — от умеренной до высокой. Доминирующий уксусный характер недопустим, хотя слабый или умеренный уровень уксусной кислоты приемлем, если он уравновешен солодом. Хмелевой аромат отсутствует.",
-        "appearance": "Цвет от глубокого красного и бургундского до красновато-коричневого. Прозрачность хорошая. Пена белая или очень светло-бежевая. Стойкость — от средней до хорошей.",
-        "flavor": "Солодовый вкус — от умеренного до умеренно высокого, часто с мягкой, богатой тостовостью. Фруктовый вкус интенсивный, с теми же дескрипторами, что и в аромате. Кислотность сложная, от умеренной до высокой, и подчёркивается эфирами; это не должна быть просто прямолинейная молочнокислость. Доминирующая уксусность недопустима, однако слабый или умеренный уровень уксусной кислоты допустим при хорошем солодовом балансе. Обычно по мере роста кислотности солод уходит больше в фон — и наоборот. Слабые или умеренно слабые ноты ванили, шоколада или перечных фенолов допустимы. Хмелевой вкус отсутствует. Горечь сдержанная; баланс смещён в солодовую сторону. Кислоты и танины могут усиливать ощущение горечи, а также придавать пиву баланс и структуру. Некоторые версии подслащивают или купажируют так, чтобы они были слаще; поэтому уровень сладости может сильно варьироваться, смягчая кислотный укус и восприятие уксусности.",
-        "mouthfeel": "Тело среднее, нередко усиленное танинностью. Карбонизация — от низкой до средней. Терпкость — от слабой до средней, часто с покалывающей кислотностью. Во рту пиво кажется обманчиво лёгким и хрустким, хотя слегка сладковатый финиш тоже не редкость.",
-        "comments": "Сравнение со «вкусом вина» не стоит понимать буквально: у кого-то стиль может вызвать ассоциации с высококислотным французским Burgundy, но полным аналогом вину он, конечно, не является. Стиль формируется долгой выдержкой — до двух лет — в больших деревянных чанах (foeders), смешиванием молодого и хорошо выдержанного пива, а также разной степенью подслащивания конечного продукта. В зависимости от купажа и наличия подслащивания возможен очень широкий спектр результатов. Уксусные оттенки могут встречаться, но не вся кислотность здесь происходит от уксусной кислоты; по общей кислотности обычный уксус более чем в шесть раз интенсивнее этого стиля. Фруктовые версии следует заявлять как 29A Fruit Beer.",
-        "history": "Местный стиль Западной Фландрии, классическим представителем которого считаются пива Rodenbach — пивоварни, основанной в 1821 году. Выдержка в деревянных чанах и купажирование старого и молодого пива были заимствованы из английской традиции. Бельгийские пивовары считают Flanders Red и Oud Bruin частью одного семейства, но различие между ними закрепилось после того, как Michael Jackson впервые описал пивные стили как отдельные категории, поскольку их вкусовые профили заметно различаются. Многие современные версии находятся под влиянием популярности Rodenbach Grand Cru.",
-        "characteristic_ingredients": "Венский или мюнхенский солод, различные карамельные солода, кукуруза. Континентальный хмель с низким альфа-кислотным потенциалом. Sacch, Lacto и Brett. Выдержка в дубе. Иногда пиво купажируют и подслащивают — натурально или искусственно.",
-        "style_comparison": "Менее солодово-насыщенный, чем Oud Bruin, и чаще показывает более фруктово-терпкий и уксусно-кислый профиль.",
-        "entry_instructions": ""
-      },
-      "vital_statistics": {
-        "og": "1.048 – 1.057",
-        "ibu": "10 – 25",
-        "fg": "1.002 – 1.012",
-        "srm": "10 – 17",
-        "abv": "4.6 – 6.5%"
-      },
-      "vital_statistics_text": "OG: 1.048 – 1.057 | IBUs: 10 – 25 | FG: 1.002 – 1.012 | SRM: 10 – 17 | ABV: 4.6 – 6.5%",
-      "commercial_examples_text": "Cuvée des Jacobins, Duchesse de Bourgogne, New Belgium La Folie, Rodenbach Classic, Rodenbach Grand Cru, Vichtenaar Flemish Ale",
-      "tags_en": [
-        "standard-strength",
-        "amber-color",
-        "top-fermented",
-        "western-europe",
-        "traditional-style",
-        "balanced",
-        "sour",
-        "wood"
-      ],
-      "source_guideline_page_start": 45,
-      "source_pdf_page_start": 61,
-      "translation_status": "completed",
-      "tags_ru": [
-        "стандартная крепость",
-        "янтарный цвет",
-        "верховое брожение",
-        "Западная Европа",
-        "традиционный стиль",
-        "сбалансированный",
-        "кислый",
-        "древесный"
-      ]
-    }
+  "translated_categories": [
+   "22",
+   "23"
+  ],
+  "next_recommended_batch": [
+   "23C",
+   "23D",
+   "23E",
+   "23F",
+   "23G",
+   "24A",
+   "24B",
+   "24C"
   ]
+ },
+ "categories": [
+  {
+   "category_id": "22",
+   "category_en": "STRONG AMERICAN ALE",
+   "category_ru": "Крепкий американский эль",
+   "overview_ru": "В эту категорию входят современные американские крепкие эли с разным соотношением солода и хмеля. Их объединяют повышенная крепость и отсутствие выраженной обжаренности."
+  },
+  {
+   "category_id": "23",
+   "category_en": "EUROPEAN SOUR ALE",
+   "category_ru": "Европейский кислый эль",
+   "overview_ru": "Категория объединяет традиционные кислые стили Европы, которые продолжают варить и сегодня. Многие из них, хотя и не все, содержат пшеницу. Обычно у них низкая горечь, а баланс задаёт именно кислотность, а не хмель. Некоторые версии могут быть подслащены или ароматизированы — либо на пивоварне, либо уже при подаче."
+  }
+ ],
+ "styles": [
+  {
+   "bjcp_id": "22A",
+   "name_en": "Double IPA",
+   "name_ru": "Двойной IPA",
+   "category_id": "22",
+   "category_en": "STRONG AMERICAN ALE",
+   "category_ru": "Крепкий американский эль",
+   "bjcp_heading": "22A. Double IPA",
+   "description_short_ru": "Очень хмелевой, крепкий и заметно горький светлый эль с сухим финишем и высокой, но контролируемой интенсивностью. Сила должна ощущаться, но питкость остаётся важной частью стиля.",
+   "sections_en": {
+    "overall_impression": "An intensely hoppy, fairly strong, bitter pale ale without the big, rich, complex maltiness, residual sweetness, and body of an American Barleywine. Strongly hopped, but clean, dry, and lacking harshness. Despite showing its strength, drinkability is an important consideration.",
+    "aroma": "A prominent to intense hop aroma typically featuring modern American or New World hop characteristics such as citrus, floral, pine, resin, spice, tropical fruit, stone fruit, berry, or melon. A supportive, clean, neutral to grainy maltiness may be found in the background. Neutral to lightly fruity fermentation profile. Alcohol may be noted, but should not be solventy.",
+    "appearance": "Gold to light orange-copper color, but most modern versions are fairly pale. Good clarity, although a little haze is acceptable. Moderate-sized, persistent, white to off-white head.",
+    "flavor": "Strong and complex hop flavor (same descriptors as aroma). Moderately high to very high bitterness, but should not be harsh. Low to medium supportive, clean, soft, unobtrusive malt character; may have light caramel or toast flavors. Dry to medium-dry finish, not sweet or heavy, with a lingering hoppy, bitter aftertaste. Low to moderate fruitiness optional. A light, clean, smooth alcohol flavor is allowable.",
+    "mouthfeel": "Medium-light to medium body, with a smooth texture. Medium to medium-high carbonation. No harsh hop-derived astringency. Restrained, smooth alcohol warmth acceptable.",
+    "comments": "Rarely called Imperial IPA. Many modern versions have multiple dry-hop additions.",
+    "history": "An American craft beer innovation first developed in the mid-late 1990s as more intense version of American IPA. Became more mainstream and popular throughout the 2000s, and inspired additional IPA creativity. Russian River Pliny the Elder, first brewed in 2000, helped popularize the style.",
+    "characteristic_ingredients": "Neutral base malt. Sugar adjuncts common. Crystal malts rare. American or New World hops. Neutral or lightly fruity yeast. No oak.",
+    "style_comparison": "Bigger than English and American IPAs in alcohol strength, bitterness, and hoppiness. Less malty-rich, less body, drier, and with a greater overall hop balance than American Barleywine.",
+    "entry_instructions": ""
+   },
+   "sections_ru": {
+    "overall_impression": "Предельно хмелевой, довольно крепкий и ярко горький светлый эль без той массивной, богатой, сложной солодовости, остаточной сладости и полноты тела, которые характерны для American Barleywine. Хмель должен быть мощным, но профиль — чистым, сухим и лишённым грубости. Несмотря на солидную крепость, стиль должен оставаться питким.",
+    "aroma": "Хмелевой аромат — от яркого до очень интенсивного; обычно с современными американскими или новосветскими оттенками: цитрус, цветы, хвоя, смола, специи, тропические и косточковые фрукты, ягоды, дыня. На заднем плане может присутствовать поддерживающая чистая нейтральная или слегка зерновая солодовость. Брожение — нейтральное либо с лёгкой фруктовостью. Алкоголь может ощущаться, но не должен быть растворительным.",
+    "appearance": "Цвет от золотистого до светло оранжево-медного, хотя большинство современных версий довольно светлые. Прозрачность хорошая, но небольшая дымка допустима. Пена среднего размера, стойкая, белая или слегка кремовая.",
+    "flavor": "Вкус хмеля сильный и сложный; возможны те же дескрипторы, что и в аромате. Горечь — от умеренно высокой до очень высокой, но не грубая. Солодовая опора — от слабой до средней, чистая, мягкая, ненавязчивая; допустимы лёгкие карамельные или тостовые оттенки. Финиш — сухой или умеренно сухой, без тяжёлой сладости, с долгим хмелевым и горьким послевкусием. Лёгкая или умеренная фруктовость возможна. Допустим лёгкий, чистый, гладкий алкогольный тон.",
+    "mouthfeel": "Тело от умеренно лёгкого до среднего, текстура гладкая. Карбонизация — от средней до умеренно высокой. Недопустима грубая терпкость от хмеля. Сдержанное и мягкое алкогольное тепло допустимо.",
+    "comments": "Название Imperial IPA встречается, но используется редко. Во многих современных версиях практикуют несколько внесений сухого охмеления.",
+    "history": "Американская крафтовая инновация, сформировавшаяся в середине-конце 1990-х как более интенсивная версия American IPA. В 2000-х стиль стал гораздо популярнее и заметнее на рынке и подтолкнул дальнейшее развитие IPA-направления. Одним из пив, сыгравших ключевую роль в популяризации стиля, был Russian River Pliny the Elder, впервые сваренный в 2000 году.",
+    "characteristic_ingredients": "Нейтральный базовый солод. Сахарные несоложёные добавки используются часто. Карамельные солода редки. Хмель — американский или новосветский. Дрожжи нейтральные либо слегка фруктовые. Древесная выдержка не используется.",
+    "style_comparison": "Крепче, горче и хмелевее, чем English IPA и American IPA. В сравнении с American Barleywine — менее солодово-богатый, менее плотный, более сухой и с ещё более явным хмелевым балансом.",
+    "entry_instructions": ""
+   },
+   "vital_statistics": {
+    "og": "1.065 – 1.085",
+    "ibu": "60 – 100",
+    "fg": "1.008 – 1.018",
+    "srm": "6 – 14",
+    "abv": "7.5 – 10.0%"
+   },
+   "vital_statistics_text": "OG: 1.065 – 1.085 | IBUs: 60 – 100 | FG: 1.008 – 1.018 | SRM: 6 – 14 | ABV: 7.5 – 10.0%",
+   "commercial_examples_text": "Columbus Brewing Bohdi, Fat Head’s Hop Juju, Port Brewing Hop-15, Russian River Pliny the Elder, Stone Ruination Double IPA 2.0, Wicked Weed Freak of Nature",
+   "tags_en": [
+    "very-high-strength",
+    "pale-color",
+    "top-fermented",
+    "north-america",
+    "craft-style",
+    "ipa-family",
+    "bitter",
+    "hoppy"
+   ],
+   "source_guideline_page_start": 43,
+   "source_pdf_page_start": 59,
+   "translation_status": "completed",
+   "tags_ru": [
+    "очень высокая крепость",
+    "светлый цвет",
+    "верховое брожение",
+    "Северная Америка",
+    "крафтовый стиль",
+    "семейство IPA",
+    "горький",
+    "хмелевой"
+   ]
+  },
+  {
+   "bjcp_id": "22B",
+   "name_en": "American Strong Ale",
+   "name_ru": "Американский крепкий эль",
+   "category_id": "22",
+   "category_en": "STRONG AMERICAN ALE",
+   "category_ru": "Крепкий американский эль",
+   "bjcp_heading": "22B. American Strong Ale",
+   "description_short_ru": "Широкая американская категория для крепких, заметно солодовых и хмелевых элей, которые находятся между Double IPA, Red IPA и American Barleywine.",
+   "sections_en": {
+    "overall_impression": "A malty, bitter, and strong American Ale fitting in the space between American Barleywine, Double IPA, and Red IPA. The malty and hoppy flavors can be quite strong, but are generally in balance.",
+    "aroma": "Medium to high hop aroma typically featuring modern American or New World hop characteristics such as citrus, floral, pine, resinous, spicy, tropical fruit, stone fruit, berry, or melon. Moderate to bold maltiness supporting the hop profile, with medium to dark caramel common, toasty or bready possible, and background notes of light roast or chocolate allowable. Neutral to moderately fruity fermentation profile. Alcohol may be noted, but should not be solventy.",
+    "appearance": "Medium amber to deep copper or light brown. Moderate-low to medium-sized off-white to light tan head; may have low head retention. Good clarity. Legs possible.",
+    "flavor": "Medium to high malt, with a caramel, toffee, or dark fruit quality. Malt complexity can include additional toasty, bready, or rich flavors in support. Light chocolate or roast allowable, but should not be burnt or sharp. Medium-high to high bitterness. Moderate to high hop flavor, same descriptors as aroma. Low to moderate esters. May have a noticeable alcohol flavor, but should not be sharp. Medium to high malty sweetness on the palate, finishing somewhat dry to somewhat sweet. Should not be syrupy, sweet, or cloying. Bitter to bittersweet aftertaste, with hops, malt, and alcohol noticeable.",
+    "mouthfeel": "Medium to full body. An alcohol warmth may be present, but should not be excessively hot. Light hop astringency allowable. Medium-low to medium carbonation.",
+    "comments": "A fairly broad style describing beers labeled in various ways, including modern Double Red Ales and other strong, malty-but-hoppy beers that aren’t quite in the Barleywine class. Diverse enough to include what may be viewed as a strong American Amber Ale with room for stronger versions of other American Ale styles.",
+    "history": "While modern craft versions were developed as “imperial” strength versions of American amber or red ales, the style has much in common with historic American Stock Ales. Strong, malty beers were highly hopped to keep as provision beers prior to Prohibition. There is no continuous legacy of brewing stock ales in this manner, but the resemblance is considerable (albeit without the age character).",
+    "characteristic_ingredients": "Pale base malt. Medium to dark crystal malts common. American or New World hops. Neutral or lightly fruity yeast.",
+    "style_comparison": "Generally not as strong and as rich as an American Barleywine. More malt balanced than an American or Double IPA. More American hop intensity than a British Strong Ale. Maltier and fuller-bodied than a Red IPA.",
+    "entry_instructions": ""
+   },
+   "sections_ru": {
+    "overall_impression": "Солодовый, горький и крепкий американский эль, занимающий промежуточное положение между American Barleywine, Double IPA и Red IPA. И солод, и хмель могут быть очень выразительными, но в целом стиль обычно держится на балансе между ними.",
+    "aroma": "Хмелевой аромат — от среднего до высокого, обычно с современными американскими или новосветскими характеристиками: цитрус, цветы, хвоя, смола, специи, тропические и косточковые фрукты, ягоды, дыня. Солодовая база — от умеренной до мощной, поддерживающая хмель; обычны средние и тёмные карамельные ноты, возможны тостовые или хлебные оттенки, а также лёгкий шоколадный или слегка обжаренный фон. Профиль брожения — от нейтрального до умеренно фруктового. Алкоголь может ощущаться, но не должен быть растворительным.",
+    "appearance": "Цвет от средне-янтарного до глубокого медного или светло-коричневого. Пена от умеренно низкой до средней, от кремовой до светло-бежевой; стойкость может быть невысокой. Прозрачность хорошая. На бокале возможны «ножки».",
+    "flavor": "Солодовый вкус — от среднего до высокого, с карамельными, ирисочными или тёмно-фруктовыми оттенками. Дополнительную сложность могут давать тостовые, хлебные или просто богатые солодовые ноты. Лёгкий шоколадный или обжаренный штрих допустим, но не должен быть жжёным или резким. Горечь — от средне-высокой до высокой. Хмелевой вкус — от умеренного до высокого, с теми же дескрипторами, что и в аромате. Эфиры — от слабых до умеренных. Алкоголь может быть заметен, но не должен колоть или жечь. Во вкусе солодовая сладость — от средней до высокой; финиш — от несколько сухого до несколько сладковатого. Пиво не должно быть сиропным, приторным или вязко-сладким. Послевкусие — от горького до горько-сладкого, с заметными хмелем, солодом и алкоголем.",
+    "mouthfeel": "Тело от среднего до полного. Алкогольное тепло допустимо, но не должно быть чрезмерно горячим. Лёгкая хмелевая терпкость допустима. Карбонизация — от умеренно низкой до средней.",
+    "comments": "Довольно широкая категория, куда попадают по-разному маркируемые пива, включая современные Double Red Ale и другие крепкие, солодово-хмелевые эли, которые ещё не дотягивают до класса Barleywine. Стиль достаточно широк, чтобы включать в себя как усиленный American Amber Ale, так и более крепкие версии других американских элей.",
+    "history": "Хотя современные крафтовые версии выросли как «имперские» по крепости варианты американских amber ale и red ale, у стиля есть немало общего с историческими American Stock Ale. До сухого закона крепкие солодовые сорта заметно охмеляли, чтобы они лучше хранились как запасное пиво. Непрерывной традиции именно такого stock ale не сохранилось, но сходство остаётся весьма заметным — пусть и без характера выдержки.",
+    "characteristic_ingredients": "Светлый базовый солод. Часто используются карамельные солода средней и тёмной степени. Хмель — американский или новосветский. Дрожжи нейтральные либо слегка фруктовые.",
+    "style_comparison": "Обычно менее крепкий и менее роскошно-солодовый, чем American Barleywine. Более солодово сбалансирован, чем American IPA и Double IPA. По американской хмелевой интенсивности опережает British Strong Ale. Более солодовый и более полнотелый, чем Red IPA.",
+    "entry_instructions": ""
+   },
+   "vital_statistics": {
+    "og": "1.062 – 1.090",
+    "ibu": "50 – 100",
+    "fg": "1.014 – 1.024",
+    "srm": "7 – 18",
+    "abv": "6.3 – 10.0%"
+   },
+   "vital_statistics_text": "OG: 1.062 – 1.090 | IBUs: 50 – 100 | FG: 1.014 – 1.024 | SRM: 7 – 18 | ABV: 6.3 – 10.0%",
+   "commercial_examples_text": "Arrogant Bastard Ale, Fat Head’s Bone Head, Great Lakes Nosferatu, Oskar Blues G’Knight, Port Brewing Shark Attack Double Red Ale",
+   "tags_en": [
+    "high-strength",
+    "amber-color",
+    "top-fermented",
+    "north-america",
+    "craft-style",
+    "strong-ale-family",
+    "bitter",
+    "hoppy"
+   ],
+   "source_guideline_page_start": 43,
+   "source_pdf_page_start": 59,
+   "translation_status": "completed",
+   "tags_ru": [
+    "высокая крепость",
+    "янтарный цвет",
+    "верховое брожение",
+    "Северная Америка",
+    "крафтовый стиль",
+    "семейство крепких элей",
+    "горький",
+    "хмелевой"
+   ]
+  },
+  {
+   "bjcp_id": "22C",
+   "name_en": "American Barleywine",
+   "name_ru": "Американский барли вайн",
+   "category_id": "22",
+   "category_en": "STRONG AMERICAN ALE",
+   "category_ru": "Крепкий американский эль",
+   "bjcp_heading": "22C. American Barleywine",
+   "description_short_ru": "Очень крепкий американский эль для медленного употребления: богатый, солодовый, ощутимо хмелевой и всегда заметно горький, с плотным телом и согревающим послевкусием.",
+   "sections_en": {
+    "overall_impression": "A very strong, malty, hoppy, bitter American ale with a rich palate, full mouthfeel, and warming aftertaste, suitable for contemplative sipping.",
+    "aroma": "Strong malt and hop aroma dominates. Hops are moderate to assertive, showing a range of American, New World, or English characteristics. Citrusy, fruity, or resiny are classic attributes, but others are possible, including those from modern hops. Strong grainy, bready, toasty, light caramel, or neutral malt richness, but typically not with darker caramel, roast, or deep fruit aspects. Low to moderately strong esters and alcohol, lower in the balance than the malt and hops. Intensities fade with age.",
+    "appearance": "Color ranges from amber to medium copper, rarely up to light brown. Ruby highlights common. Moderately-low to large off-white to light tan head; may have low head retention. Good to brilliant clarity but may have some chill haze. The color may appear to have great depth, as if viewed through a thick glass lens. Legs possible.",
+    "flavor": "Similar malt and hop flavors as the aroma (same descriptors apply). Moderately strong to aggressive bitterness, tempered by a rich, malty palate. Moderate to high hop flavor. Low to moderate esters. Noticeable alcohol, but not solventy. Moderately low to moderately high malty sweetness on the palate, with a somewhat malty to dry but full finish. Age will often dry out the beer, and smooth out the flavors. The balance is malty, but always bitter.",
+    "mouthfeel": "Full-bodied and chewy, with a velvety, luscious texture, declining with age. A smooth alcohol warmth should be noticeable, but shouldn’t burn. Carbonation may be low to moderate, depending on age and conditioning.",
+    "comments": "Sometimes labeled as “Barley Wine” or “Barleywine-style ale”. Recently many US breweries seem to have discontinued their Barleywines, made them barrel-aged, or rebranded them as some form of IPA.",
+    "history": "Traditionally the strongest ale offered by a brewery, often associated with the winter season and vintage-dated. As with many American craft beer styles, an adaptation of an English style using American ingredients and balance. One of the first American craft beer versions was Anchor Old Foghorn, first brewed in 1975. Sierra Nevada Bigfoot, first brewed in 1983, set the standard for the hop-forward style of today. The story goes that when Sierra Nevada first sent Bigfoot out for lab analysis, the lab called and said, “your Barleywine is too bitter” – to which Sierra Nevada replied, “thank you.”",
+    "characteristic_ingredients": "Pale malt with some specialty malts. Dark malts used with great restraint. Many varieties of hops can be used, but typically includes American hops. American or English ale yeast.",
+    "style_comparison": "Greater emphasis on hop bitterness, flavor, and aroma than English Barley Wine, often featuring American hop varieties. Typically paler than the darker English Barley Wines and lacking their deeper malt flavors, but darker than the golden English Barley Wines. Differs from a Double IPA in that the hops are not extreme, the malt is more forward, and the body is fuller and often richer. American Barleywine typically has more residual sweetness than Double IPA, which affects the overall drinkability (sipping vs. drinking).",
+    "entry_instructions": ""
+   },
+   "sections_ru": {
+    "overall_impression": "Очень крепкий, солодовый, хмелевой и горький американский эль с богатым вкусом, полным телом и согревающим послевкусием. Это пиво скорее для вдумчивого, неторопливого распития, чем для залповой питкости.",
+    "aroma": "Доминируют мощные ароматы солода и хмеля. Хмель — от умеренного до напористого, с американскими, новосветскими или английскими чертами. Классические варианты часто дают цитрус, фруктовость или смолу, но возможны и другие оттенки, включая современные хмелевые профили. Солодовая насыщенность сильная: зерновая, хлебная, тостовая, слегка карамельная или просто богатая по ощущению, но обычно без тёмной карамели, выраженной обжаренности и глубоких тёмно-фруктовых тонов. Эфиры и алкоголь — от слабых до умеренно сильных, но в балансе уступают солоду и хмелю. С возрастом интенсивность аромата смягчается.",
+    "appearance": "Цвет от янтарного до средне-медного, изредка до светло-коричневого. Часто заметны рубиновые отблески. Пена от умеренно низкой до крупной, беловатая или светло-бежевая; её стойкость может быть невысокой. Прозрачность — хорошая или блестящая, хотя лёгкая холодная муть допустима. Цвет часто кажется очень глубоким, будто смотришь через толстую стеклянную линзу. Возможны «ножки» на бокале.",
+    "flavor": "Во вкусе проявляются те же солодовые и хмелевые оттенки, что и в аромате. Горечь — от уверенной до агрессивной, но её смягчает богатое солодовое тело. Хмелевой вкус — от умеренного до высокого. Эфиры — от слабых до умеренных. Алкоголь заметен, но не растворительный. Во вкусе солодовая сладость — от умеренно слабой до умеренно высокой; финиш при этом может быть как довольно солодовым, так и более сухим, но остаётся полным. С возрастом пиво обычно подсушивается и становится более сглаженным по вкусу. Баланс солодовый, но горечь всегда остаётся заметной.",
+    "mouthfeel": "Тело полное, плотное, вязкое, с бархатистой, почти роскошной текстурой, которая с возрастом постепенно становится менее насыщенной. Мягкое алкогольное тепло должно ощущаться, но не жечь. Карбонизация — от низкой до средней, в зависимости от выдержки и кондиционирования.",
+    "comments": "Иногда стиль обозначают как «Barley Wine» или «Barleywine-style ale». В последние годы многие американские пивоварни либо сняли свои Barleywine с производства, либо перевели их в бочковые версии, либо вообще переупаковали в какую-нибудь разновидность IPA.",
+    "history": "Традиционно это самый крепкий эль в линейке пивоварни, часто связанный с зимним сезоном и винтажными выпусками. Как и многие американские крафтовые стили, это адаптация английского образца под американские ингредиенты и американский баланс. Одним из первых американских крафтовых примеров был Anchor Old Foghorn, впервые сваренный в 1975 году. Sierra Nevada Bigfoot, появившийся в 1983 году, задал стандарт современного хмелево-ориентированного направления. По известной истории, когда Sierra Nevada впервые отправила Bigfoot в лабораторию, оттуда позвонили и сказали: «Ваш barleywine слишком горький», на что на пивоварне ответили: «Спасибо».",
+    "characteristic_ingredients": "Светлый солод с добавлением специальных солодов. Тёмные солода используют очень сдержанно. Можно применять разные сорта хмеля, но обычно в рецепте присутствует американский хмель. Дрожжи — американские или английские элевые.",
+    "style_comparison": "По горечи, хмелевому вкусу и аромату заметно выразительнее, чем English Barley Wine, и часто строится на американских сортах хмеля. Обычно светлее тёмных английских Barley Wine и лишён их более глубоких солодовых тонов, но всё же темнее золотистых английских версий. От Double IPA отличается тем, что хмель здесь не доведён до экстремума, солод подан более вперёд, а тело полнее и богаче. В American Barleywine обычно больше остаточной сладости, чем в Double IPA, что напрямую влияет на характер питкости: скорее для смакования, чем для питья залпом.",
+    "entry_instructions": ""
+   },
+   "vital_statistics": {
+    "og": "1.080 – 1.120",
+    "ibu": "50 – 100",
+    "fg": "1.016 – 1.030",
+    "srm": "9 – 18",
+    "abv": "8.0 – 12.0%"
+   },
+   "vital_statistics_text": "OG: 1.080 – 1.120 | IBUs: 50 – 100 | FG: 1.016 – 1.030 | SRM: 9 – 18 | ABV: 8.0 – 12.0%",
+   "commercial_examples_text": "Anchor Old Foghorn, Bell’s Third Coast Old Ale, East End Gratitude, Hair of the Dog Doggie Claws, Sierra Nevada Bigfoot",
+   "tags_en": [
+    "very-high-strength",
+    "amber-color",
+    "top-fermented",
+    "north-america",
+    "craft-style",
+    "strong-ale-family",
+    "bitter",
+    "hoppy"
+   ],
+   "source_guideline_page_start": 44,
+   "source_pdf_page_start": 60,
+   "translation_status": "completed",
+   "tags_ru": [
+    "очень высокая крепость",
+    "янтарный цвет",
+    "верховое брожение",
+    "Северная Америка",
+    "крафтовый стиль",
+    "семейство крепких элей",
+    "горький",
+    "хмелевой"
+   ]
+  },
+  {
+   "bjcp_id": "22D",
+   "name_en": "Wheatwine",
+   "name_ru": "Уитвайн",
+   "category_id": "22",
+   "category_en": "STRONG AMERICAN ALE",
+   "category_ru": "Крепкий американский эль",
+   "bjcp_heading": "22D. Wheatwine",
+   "description_short_ru": "Крепкое пшеничное пиво для неспешного смакования с выраженным хлебно-зерновым профилем, насыщенной текстурой и сложностью, в которой пшеница стоит на первом плане.",
+   "sections_en": {
+    "overall_impression": "A richly textured, high alcohol sipping beer with a significant grainy, bready flavor, and a sleek body. The emphasis is first on the bready, wheaty flavors with malt, hops, fruity yeast, and alcohol complexity.",
+    "aroma": "Hop aroma is mild and can represent just about any hop variety. Moderate to moderately-strong bready, wheaty malt character, often with additional malt complexity such as honey and caramel. A light, clean, alcohol aroma may be noted. Low to medium fruity notes may be apparent. Very low diacetyl optional. Banana-and-clove Weizen yeast character is inappropriate.",
+    "appearance": "Color ranging from gold to deep amber, often with garnet or ruby highlights. Low to medium off-white head. The head may have creamy texture, and good retention. Chill haze is allowable, but usually clears up as the beer gets warmer. High alcohol and viscosity may be visible as legs.",
+    "flavor": "Moderate to moderately-high bready wheat malt flavor, dominant in the flavor balance over any hop character. Low to moderate toasty, caramel, biscuity, or honey malt notes can add a welcome complexity, but are not required. Low to medium hop flavor, reflecting any variety. Moderate to moderately-high fruitiness, often with a dried-fruit character. Low to moderate bitterness, creating a malty to even balance. Should not be syrupy or under-attenuated.",
+    "mouthfeel": "Medium-full to full body. Chewy, often with a luscious, velvety texture. Low to moderate carbonation. Light to moderate smooth alcohol warmth optional.",
+    "comments": "Much of the color arises from a lengthy boil. Some commercial examples may be stronger than the Vital Statistics.",
+    "history": "An American craft beer style that was first brewed at the Rubicon Brewing Company in 1988. Usually a winter seasonal, vintage, or one-off release.",
+    "characteristic_ingredients": "Typically brewed with a combination of American two-row and American wheat. Style commonly uses 50% or more wheat malt. Restrained use of dark malts. Any variety of hops may be used. May be oak-aged.",
+    "style_comparison": "More than simply a wheat-based Barleywine, many versions have very expressive fruity and hoppy notes, while others develop complexity through oak aging. Less emphasis on the hops than American Barleywine. Has roots in American Wheat Beer rather than any German wheat style, so should not have any Weizen yeast character.",
+    "entry_instructions": ""
+   },
+   "sections_ru": {
+    "overall_impression": "Плотное по текстуре, крепкое пиво для неспешного употребления с выраженным зерновым и хлебным вкусом и гладким телом. В центре внимания — хлебно-пшеничный профиль, а уже затем солодовая, хмелевая, дрожжевая фруктовость и алкогольная сложность.",
+    "aroma": "Хмелевой аромат слабый и может отражать практически любой сорт хмеля. Пшенично-хлебный солодовый характер — от умеренного до умеренно сильного; нередко его дополняют медовые и карамельные оттенки. Может ощущаться лёгкий чистый алкоголь. Допустимы слабые или умеренные фруктовые ноты. Очень низкий диацетил возможен. Бананово-гвоздичный дрожжевой профиль, характерный для Weizen, здесь неуместен.",
+    "appearance": "Цвет от золотистого до глубокого янтарного, часто с гранатовыми или рубиновыми отблесками. Пена от низкой до средней, беловатая; может иметь кремовую текстуру и хорошую стойкость. Допустима холодная муть, но обычно она уходит по мере нагревания пива. Высокая крепость и вязкость могут проявляться «ножками» на бокале.",
+    "flavor": "Вкус пшеничного солода — от умеренного до умеренно высокого, хлебный и доминирующий в балансе над любым хмелевым характером. Дополнительную сложность могут приносить тостовые, карамельные, бисквитные или медовые солодовые оттенки, но они не обязательны. Хмелевой вкус — от слабого до среднего, допустим любой сортовой профиль. Фруктовость — от умеренной до умеренно высокой, часто с оттенками сухофруктов. Горечь — от слабой до умеренной, баланс от солодового до почти ровного. Пиво не должно быть сиропным или недоброженным.",
+    "mouthfeel": "Тело от умеренно полного до полного. Текстура плотная, вязкая, часто сочная и бархатистая. Карбонизация — от низкой до умеренной. Допустимо лёгкое или умеренное мягкое алкогольное тепло.",
+    "comments": "Значительная часть цвета формируется за счёт продолжительного кипячения. Некоторые коммерческие версии могут быть крепче, чем указано в vital statistics.",
+    "history": "Американский крафтовый стиль, впервые сваренный на Rubicon Brewing Company в 1988 году. Чаще всего это зимний сезонный, винтажный или разовый релиз.",
+    "characteristic_ingredients": "Обычно варится на сочетании американского двухрядного солода и американской пшеницы. В рецепте нередко используют 50% и более пшеничного солода. Тёмные солода добавляют сдержанно. Хмель может быть любого сорта. Допустима выдержка на дубе.",
+    "style_comparison": "Это не просто barleywine на пшеничной основе. Многие версии показывают очень выразительную фруктовость и хмелевой профиль, а другие набирают сложность благодаря выдержке в дубе. Акцент на хмеле здесь слабее, чем в American Barleywine. Стиль вырос скорее из American Wheat Beer, чем из какого-либо немецкого пшеничного направления, поэтому характера дрожжей Weizen здесь быть не должно.",
+    "entry_instructions": ""
+   },
+   "vital_statistics": {
+    "og": "1.080 – 1.120",
+    "ibu": "30 – 60",
+    "fg": "1.016 – 1.030",
+    "srm": "6 – 14",
+    "abv": "8.0 – 12.0%"
+   },
+   "vital_statistics_text": "OG: 1.080 – 1.120 | IBUs: 30 – 60 | FG: 1.016 – 1.030 | SRM: 6 – 14 | ABV: 8.0 – 12.0%",
+   "commercial_examples_text": "The Bruery White Oak, Castelain Winter Ale, Perennial Heart of Gold, Two Brothers Bare Tree",
+   "tags_en": [
+    "very-high-strength",
+    "amber-color",
+    "top-fermented",
+    "north-america",
+    "craft-style",
+    "strong-ale-family",
+    "wheat-beer-family",
+    "balanced",
+    "hoppy"
+   ],
+   "source_guideline_page_start": 44,
+   "source_pdf_page_start": 60,
+   "translation_status": "completed",
+   "tags_ru": [
+    "очень высокая крепость",
+    "янтарный цвет",
+    "верховое брожение",
+    "Северная Америка",
+    "крафтовый стиль",
+    "семейство крепких элей",
+    "семейство пшеничного пива",
+    "сбалансированный",
+    "хмелевой"
+   ]
+  },
+  {
+   "bjcp_id": "23A",
+   "name_en": "Berliner Weisse",
+   "name_ru": "Берлинер вайссе",
+   "category_id": "23",
+   "category_en": "EUROPEAN SOUR ALE",
+   "category_ru": "Европейский кислый эль",
+   "bjcp_heading": "23A. Berliner Weisse",
+   "description_short_ru": "Очень светлое, освежающее и низкоалкогольное немецкое пшеничное пиво с чистой молочнокислой кислотностью, высокой карбонизацией и лёгкой хлебно-тестовой солодовой поддержкой.",
+   "sections_en": {
+    "overall_impression": "A very pale, refreshing, low-alcohol German wheat beer with a clean lactic sourness and a very high carbonation level. A light bread dough malt flavor supports the sourness, which shouldn’t seem artificial. A gentle fruitiness is found in the best examples.",
+    "aroma": "A moderate to moderately-high sharply sour character is dominant. Can have up to a moderately fruitiness, often lemon, tart apple, peach, or apricot, and a light floral note. No hop aroma. The wheat may be perceived as raw bread dough in fresher versions; combined with the acidity, may suggest sourdough bread.",
+    "appearance": "Straw in color, can be very pale. Clarity ranges from clear to somewhat hazy. Large, dense, white head with poor retention. Highly effervescent.",
+    "flavor": "Clean lactic sourness dominates and can be quite strong. A complementary doughy, bready, or grainy wheat flavor is generally noticeable. Hop bitterness is undetectable; sourness provides the balance rather than hops. Never vinegary. Bright yet restrained fruitiness may be detected as apricot-peach, citrus-lemon, or tart apple. Very dry finish. Balance dominated by sourness, but some malt flavor should be present. No hop flavor. No THP.",
+    "mouthfeel": "Light body, but never thin. Very high carbonation. No sensation of alcohol. Crisp acidity.",
+    "comments": "Any Brett character is restrained, and is typically expressed as fruity and floral notes, not funky. Aged examples can show a cider, honey, hay, or gentle wildflower character, and sometimes increased acidity.\n\nIn Germany, it is classified as a Schankbier denoting a small beer of starting gravity in the range 7-8 °P. Fruited or Spiced versions should be entered as 29A Fruit Beer, as 30A Spice, Herb, or Vegetable Beer, or as 29B Fruit and Spice Beer.",
+    "history": "A regional specialty of Berlin. Referred to by Napoleon's troops in 1809 as “the Champagne of the North” due to its lively and elegant character. At one point, it was smoked and there used to be Märzen-strength (14 °P) version. Increasingly rare in Germany, but now produced in several other countries.",
+    "characteristic_ingredients": "Pilsner malt. Usually wheat malt, often at least half the grist. A symbiotic co-fermentation with top-fermenting yeast and LAB provides the sharp sourness, which may be enhanced by blending of beers of different ages during fermentation and by cool aging. Decoction mashing with mash hopping is traditional. German brewing scientists believe that Brett is essential to get the correct, fruity-floral flavor profile.",
+    "style_comparison": "Compared to Lambic, has a clean lactic sourness with restrained to below sensory threshold Brett. Also lower in alcohol content. Compared to Straight Sour Beer and Catharina Sour, is lower gravity and may contain Brett.",
+    "entry_instructions": ""
+   },
+   "sections_ru": {
+    "overall_impression": "Очень светлое, освежающее и низкоалкогольное немецкое пшеничное пиво с чистой молочнокислой кислотностью и очень высокой карбонизацией. Кислотность поддерживается лёгким вкусом хлебного теста; она не должна казаться искусственной. Лучшие образцы показывают ещё и деликатную фруктовость.",
+    "aroma": "Доминирует отчётливая, от умеренной до умеренно высокой, острая кислотность. Возможна фруктовость — вплоть до умеренной, чаще с оттенками лимона, кислого яблока, персика или абрикоса, а также лёгкая цветочная нота. Хмелевой аромат отсутствует. В более свежих версиях пшеница может напоминать сырое хлебное тесто, и в сочетании с кислотностью это иногда вызывает ассоциацию с заквасочным хлебом.",
+    "appearance": "Цвет соломенно-светлый, вплоть до очень бледного. Прозрачность — от чистой до слегка мутноватой. Пена крупная, плотная, белая, но нестойкая. Пиво очень игристое.",
+    "flavor": "Чистая молочнокислая кислотность доминирует и может быть весьма сильной. Обычно хорошо заметен поддерживающий пшеничный вкус: тестовый, хлебный или зерновой. Хмелевая горечь не ощущается; баланс здесь создаёт именно кислотность, а не хмель. Уксусность недопустима. Возможна яркая, но сдержанная фруктовость с оттенками абрикоса, персика, лимона или кислого яблока. Финиш очень сухой. Баланс смещён в сторону кислотности, но некоторая солодовая составляющая всё же должна присутствовать. Хмелевой вкус отсутствует. THP недопустим.",
+    "mouthfeel": "Тело лёгкое, но не водянистое. Карбонизация очень высокая. Алкоголь не должен ощущаться. Кислотность резкая, освежающая.",
+    "comments": "Любой характер Brett здесь должен быть очень сдержанным и обычно выражается фруктовыми и цветочными оттенками, а не «фанковостью». Выдержанные версии могут показывать ноты сидра, мёда, сена или лёгких полевых цветов, а иногда и более выраженную кислотность.\n\nВ Германии стиль относится к классу Schankbier, то есть к «малому пиву» с начальной плотностью в районе 7-8 °P. Фруктовые и пряные версии следует заявлять как 29A Fruit Beer, 30A Spice, Herb, or Vegetable Beer или 29B Fruit and Spice Beer.",
+    "history": "Берлинский региональный специалитет. В 1809 году солдаты Наполеона называли его «Шампанским Севера» за живой и элегантный характер. В какой-то период стиль бывал и копчёным, а также существовала версия крепостью Märzen — около 14 °P. В самой Германии он встречается всё реже, но сегодня его варят и в других странах.",
+    "characteristic_ingredients": "Пильзнерский солод. Обычно используется и пшеничный солод, нередко не менее половины засыпи. Резкую кислотность даёт симбиотическое совместное брожение верховыми дрожжами и LAB; её могут дополнительно усиливать смешивание пива разного возраста в ходе брожения и холодная выдержка. Традиционно отварочное затирание с охмелением затора. Немецкие учёные-пивовары считают, что Brett необходим для формирования правильного фруктово-цветочного профиля.",
+    "style_comparison": "По сравнению с Lambic здесь чистая молочнокислая кислотность и сдержанный, вплоть до уровня ниже порога восприятия, Brett. Кроме того, алкоголь ниже. В сравнении с Straight Sour Beer и Catharina Sour плотность ниже, а Brett может присутствовать.",
+    "entry_instructions": ""
+   },
+   "vital_statistics": {
+    "og": "1.028 – 1.032",
+    "ibu": "3 – 8",
+    "fg": "1.003 – 1.006",
+    "srm": "2 – 3",
+    "abv": "2.8 – 3.8%"
+   },
+   "vital_statistics_text": "OG: 1.028 – 1.032 | IBUs: 3 – 8 | FG: 1.003 – 1.006 | SRM: 2 – 3 | ABV: 2.8 – 3.8%",
+   "commercial_examples_text": "Bayerischer Bahnhof Berliner Style Weisse, Berliner Berg Berliner Weisse, Brauerei Meierei Weiße, Lemke Berlin Budike Weisse, Schell's Brewing Company Schelltheiss, Urban Chestnut Ku’damm",
+   "tags_en": [
+    "session-strength",
+    "pale-color",
+    "top-fermented",
+    "central-europe",
+    "traditional-style",
+    "wheat-beer-family",
+    "sour"
+   ],
+   "source_guideline_page_start": 45,
+   "source_pdf_page_start": 61,
+   "translation_status": "completed",
+   "tags_ru": [
+    "сессионная крепость",
+    "светлый цвет",
+    "верховое брожение",
+    "Центральная Европа",
+    "традиционный стиль",
+    "семейство пшеничного пива",
+    "кислый"
+   ]
+  },
+  {
+   "bjcp_id": "23B",
+   "name_en": "Flanders Red Ale",
+   "name_ru": "Фламандский красный эль",
+   "category_id": "23",
+   "category_en": "EUROPEAN SOUR ALE",
+   "category_ru": "Европейский кислый эль",
+   "bjcp_heading": "23B. Flanders Red Ale",
+   "description_short_ru": "Кислый и фруктовый фламандский красно-коричневый эль, выдержанный в дубе, с поджаристо-солодовой опорой, танинным сухим финишем и виноподобной сложностью.",
+   "sections_en": {
+    "overall_impression": "A sour and fruity oak-aged reddish-brown Belgian-style ale with supportive toasty malt flavors and fruit complexity. The dry, tannic finish supports the suggestion of a vintage red wine.",
+    "aroma": "Complex fruity-sour profile with supporting malt. Fruitiness is high, and reminiscent of black cherries, oranges, plums, red currants, or fruit leather. Low to medium-low vanilla, chocolate, or peppery phenol can be present for complexity. The sour aroma ranges from moderate to high. A dominant vinegary character is inappropriate, although low to moderate levels of acetic acid are acceptable if balanced with the malt. No hop aroma.",
+    "appearance": "Deep red, burgundy to reddish-brown in color. Good clarity. White to very pale tan head. Average to good head retention.",
+    "flavor": "Moderate to moderately-high malty flavors often have a soft toasty-rich quality. Intense fruit flavors, same descriptors as aroma. Complex, moderate to high sourness, accentuated by the esters; should not be a simple lactic sourness. A dominant vinegary character is inappropriate, although low to moderate acetic acid is acceptable if balanced with the malt. Generally as the sour character increases, the malt character fades to more of a background flavor (and vice versa). Low to medium-low vanilla, chocolate, or peppery phenols optional. No hop flavor. Restrained bitterness; balanced to the malt side. Acids and tannins can enhance the perception of bitterness, and provide balance and structure. Some versions are sweetened, or blended to be sweet; allow for a wide range of sweetness levels, which can soften the acidic bite and acetic perception.",
+    "mouthfeel": "Medium body, often enhanced by tannins. Low to medium carbonation. Low to medium astringency, often with a prickly acidity. Deceivingly light and crisp on the palate although a somewhat sweet finish is not uncommon.",
+    "comments": "The “wine-like” observation should not be taken too literally; it may suggest a high-acid French Burgundy to some, but it is clearly not identical. Produced by long aging (up to two years) in large wooden vats (foeders), blending of young and well-aged beer, and variable amounts of sweetening of the final product. A wide range of products are possible depending on the actual blend and whether any sweetening takes place. Acetic flavors may be noted, but not all acidity in this beer is from acetic acid; vinegar is over six times greater in total acidity than this style. Fruited versions should be entered as a 29A Fruit Beer.",
+    "history": "An indigenous beer of West Flanders, typified by the products of the Rodenbach brewery, established in 1821. Aging in wooden vats and blending of old and young beers borrowed from the English tradition. Belgian brewers consider Flanders Red and Oud Bruin to be of the same style family, but the distinction was first made when Michael Jackson first defined beer styles, since the flavor profiles are distinctly different. Many modern examples are influenced by the popularity of Rodenbach Grand Cru.",
+    "characteristic_ingredients": "Vienna or Munich malts, a variety of caramel malts, maize. Low alpha acid continental hops. Sacch, Lacto, and Brett. Aged in oak. Sometimes blended and sweetened (natural or artificial).",
+    "style_comparison": "Less malty-rich than an Oud Bruin, often with more of a fruity-tart and acetic profile.",
+    "entry_instructions": ""
+   },
+   "sections_ru": {
+    "overall_impression": "Кислый и фруктовый красновато-коричневый бельгийский эль, выдержанный в дубе, с поддерживающими тостово-солодовыми оттенками и сложной фруктовостью. Сухой, танинный финиш создаёт ассоциацию с выдержанным красным вином.",
+    "aroma": "Профиль сложный, фруктово-кислый, с поддержкой солода. Фруктовость высокая и может напоминать чёрную вишню, апельсин, сливу, красную смородину или фруктовую пастилу. Для дополнительной сложности возможны слабые или умеренно слабые оттенки ванили, шоколада или перечных фенолов. Кислотность в аромате — от умеренной до высокой. Доминирующий уксусный характер недопустим, хотя слабый или умеренный уровень уксусной кислоты приемлем, если он уравновешен солодом. Хмелевой аромат отсутствует.",
+    "appearance": "Цвет от глубокого красного и бургундского до красновато-коричневого. Прозрачность хорошая. Пена белая или очень светло-бежевая. Стойкость — от средней до хорошей.",
+    "flavor": "Солодовый вкус — от умеренного до умеренно высокого, часто с мягкой, богатой тостовостью. Фруктовый вкус интенсивный, с теми же дескрипторами, что и в аромате. Кислотность сложная, от умеренной до высокой, и подчёркивается эфирами; это не должна быть просто прямолинейная молочнокислость. Доминирующая уксусность недопустима, однако слабый или умеренный уровень уксусной кислоты допустим при хорошем солодовом балансе. Обычно по мере роста кислотности солод уходит больше в фон — и наоборот. Слабые или умеренно слабые ноты ванили, шоколада или перечных фенолов допустимы. Хмелевой вкус отсутствует. Горечь сдержанная; баланс смещён в солодовую сторону. Кислоты и танины могут усиливать ощущение горечи, а также придавать пиву баланс и структуру. Некоторые версии подслащивают или купажируют так, чтобы они были слаще; поэтому уровень сладости может сильно варьироваться, смягчая кислотный укус и восприятие уксусности.",
+    "mouthfeel": "Тело среднее, нередко усиленное танинностью. Карбонизация — от низкой до средней. Терпкость — от слабой до средней, часто с покалывающей кислотностью. Во рту пиво кажется обманчиво лёгким и освежающим, хотя слегка сладковатый финиш тоже не редкость.",
+    "comments": "Сравнение со «вкусом вина» не стоит понимать буквально: у кого-то стиль может вызвать ассоциации с высококислотным французским бургундским, но полным аналогом вину он, конечно, не является. Стиль формируется долгой выдержкой — до двух лет — в больших деревянных чанах (foeders), смешиванием молодого и хорошо выдержанного пива, а также разной степенью подслащивания конечного продукта. В зависимости от купажа и наличия подслащивания возможен очень широкий спектр результатов. Уксусные оттенки могут встречаться, но не вся кислотность здесь происходит от уксусной кислоты; по общей кислотности обычный уксус более чем в шесть раз интенсивнее этого стиля. Фруктовые версии следует заявлять как 29A Fruit Beer.",
+    "history": "Местный стиль Западной Фландрии, классическим представителем которого считаются пива Rodenbach — пивоварни, основанной в 1821 году. Выдержка в деревянных чанах и купажирование старого и молодого пива были заимствованы из английской традиции. Бельгийские пивовары считают Flanders Red и Oud Bruin частью одного семейства, но различие между ними закрепилось после того, как Майкл Джексон впервые описал пивные стили как отдельные категории, поскольку их вкусовые профили заметно различаются. Многие современные версии находятся под влиянием популярности Rodenbach Grand Cru.",
+    "characteristic_ingredients": "Венский или мюнхенский солод, различные карамельные солода, кукуруза. Континентальный хмель с низким альфа-кислотным потенциалом. Sacch, Lacto и Brett. Выдержка в дубе. Иногда пиво купажируют и подслащивают — натурально или искусственно.",
+    "style_comparison": "Менее солодово-насыщенный, чем Oud Bruin, и чаще показывает более фруктово-кислый и уксусный профиль.",
+    "entry_instructions": ""
+   },
+   "vital_statistics": {
+    "og": "1.048 – 1.057",
+    "ibu": "10 – 25",
+    "fg": "1.002 – 1.012",
+    "srm": "10 – 17",
+    "abv": "4.6 – 6.5%"
+   },
+   "vital_statistics_text": "OG: 1.048 – 1.057 | IBUs: 10 – 25 | FG: 1.002 – 1.012 | SRM: 10 – 17 | ABV: 4.6 – 6.5%",
+   "commercial_examples_text": "Cuvée des Jacobins, Duchesse de Bourgogne, New Belgium La Folie, Rodenbach Classic, Rodenbach Grand Cru, Vichtenaar Flemish Ale",
+   "tags_en": [
+    "standard-strength",
+    "amber-color",
+    "top-fermented",
+    "western-europe",
+    "traditional-style",
+    "balanced",
+    "sour",
+    "wood"
+   ],
+   "source_guideline_page_start": 45,
+   "source_pdf_page_start": 61,
+   "translation_status": "completed",
+   "tags_ru": [
+    "стандартная крепость",
+    "янтарный цвет",
+    "верховое брожение",
+    "Западная Европа",
+    "традиционный стиль",
+    "сбалансированный",
+    "кислый",
+    "древесная выдержка"
+   ]
+  }
+ ]
 }

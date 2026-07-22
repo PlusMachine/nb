@@ -37,6 +37,7 @@ import {
 } from "@nb/brewing-core";
 import { assertRateLimit } from "@nb/auth";
 import { getBjcpStyleHeroImageByBjcpId } from "@nb/content";
+import { normalizeSearchText, swapKeyboardLayout } from "@nb/search";
 import {
   createRecipePayloadSchema,
   defaultRecipeProcessMeta,
@@ -2470,7 +2471,8 @@ export const getPublicRecipeOgData = async (slug: string): Promise<RecipeOgData>
       recipe.ratingCount > 0 && recipe.ratingAvg != null
         ? { average: roundTo(recipe.ratingAvg, 1), count: recipe.ratingCount }
         : null,
-    completedBrewCount: await resolveCompletedBrewCount(recipe.id)
+    completedBrewCount: await resolveCompletedBrewCount(recipe.id),
+    heroImageId: recipe.heroImageId ?? null
   };
 };
 
@@ -2829,9 +2831,15 @@ export const searchPublicRecipes = async (filters: PublicRecipeFilters): Promise
 
   // Раскладка — строго фолбэком: второй проход только когда есть текстовый
   // запрос и первый (curated-варианты/транслит/стиль) не нашёл ни строки.
+  // Rescue-выдача (С4): помечаем только когда второй проход реально нашёл
+  // результаты — иначе correctedQuery указывал бы на пустую выдачу.
+  let rescue: { correctedQuery: string } | null = null;
   if (filters.q && total === 0) {
     const layoutScope = await resolveTextSearchScope(filters.q, { includeLayoutVariants: true });
     ({ rows, total } = await runSearch(layoutScope));
+    if (total > 0) {
+      rescue = { correctedQuery: normalizeSearchText(swapKeyboardLayout(filters.q)) };
+    }
   }
 
   // Фото BJCP-стилей (как на `/bjcp`) для рецептов без своего фото. Карта
@@ -2842,7 +2850,8 @@ export const searchPublicRecipes = async (filters: PublicRecipeFilters): Promise
     items: rows.map((row) => mapPublicRecipeListItem(row, styleHeroImageByBjcpId)),
     total,
     page,
-    pageSize
+    pageSize,
+    rescue
   };
 };
 

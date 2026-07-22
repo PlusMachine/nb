@@ -25,61 +25,137 @@ const emptyView: BrewBatchInventoryView = {
   log: []
 };
 
-describe("BrewInventory — вход в «Чего не хватает» из акта «Подготовка» (S3/S4)", () => {
-  it("показывает нехватку как ссылку целиком на «Чего не хватает», когда позиций не хватает", () => {
+// Ф5 (docs/brew-start-flow-redesign.md): кнопка «Списать со склада» знает про
+// покрытие склада, посчитанное на странице партии (computeRecipeMatch). Три
+// исхода — пустой склад (кнопки нет вовсе, только объяснение и вход в покупки),
+// частичное покрытие (кнопка + честная подпись «N из M») и полное (кнопка +
+// заметный призыв) — плюс два вырожденных случая: коверидж не посчитан (null) и
+// кнопка недоступна независимо от коверижда (canConsume=false).
+describe("BrewInventory — Ф5: коверидж склада у кнопки списания", () => {
+  it("пустой склад: кнопки «Списать со склада» нет, есть объяснение и ссылка в покупки", () => {
     const html = renderToStaticMarkup(
-      <BrewInventory brewBatchId="bb-1" view={emptyView} status="planned" prepShortage={{ missingCount: 5 }} />
+      <BrewInventory
+        brewBatchId="bb-1"
+        view={emptyView}
+        status="planned"
+        stockCoverage={{ totalLines: 5, presentCount: 0, coveredCount: 0, fullyCovered: false }}
+      />
     );
 
-    expect(html).toContain("Не хватает 5 позиций");
+    expect(html).not.toContain("Списать со склада");
+    expect(html).toContain("Ингредиентов этого рецепта нет на складе");
     expect(html).toContain('href="/app/shopping"');
-    // D19: ссылкой становится ВЕСЬ текст «Не хватает N позиций» — отдельного
-    // хвоста-лейбла «Список покупок» больше нет.
-    expect(html).not.toContain("Список покупок");
-    expect(html).toMatch(/<a[^>]*href="\/app\/shopping"[^>]*>[^<]*Не хватает 5 позиций/);
+    expect(html).toContain("Чего не хватает");
   });
 
-  // Склонение "позиция/позиции/позиций" — то же правило (mod10/mod100), что в
-  // components/shopping/shopping-list-view.tsx: 1 → ед.ч., 2-4 → "позиции",
-  // 5+ (и 11-14) → "позиций".
-  it("склоняет «позиция» для 1 и «позиции» для 2-4", () => {
-    const oneHtml = renderToStaticMarkup(
-      <BrewInventory brewBatchId="bb-1" view={emptyView} status="planned" prepShortage={{ missingCount: 1 }} />
-    );
-    expect(oneHtml).toContain("Не хватает 1 позиция");
-
-    const threeHtml = renderToStaticMarkup(
-      <BrewInventory brewBatchId="bb-1" view={emptyView} status="planned" prepShortage={{ missingCount: 3 }} />
-    );
-    expect(threeHtml).toContain("Не хватает 3 позиции");
-  });
-
-  it("показывает зелёную строку без ссылки, когда нехваток нет", () => {
+  it("частичное покрытие: кнопка остаётся, рядом честная подпись «N из M позиций»", () => {
     const html = renderToStaticMarkup(
-      <BrewInventory brewBatchId="bb-1" view={emptyView} status="planned" prepShortage={{ missingCount: 0 }} />
+      <BrewInventory
+        brewBatchId="bb-1"
+        view={emptyView}
+        status="planned"
+        stockCoverage={{ totalLines: 5, presentCount: 3, coveredCount: 3, fullyCovered: false }}
+      />
     );
 
-    expect(html).toContain("Ингредиенты на складе есть");
-    expect(html).not.toContain('href="/app/shopping"');
-    expect(html).not.toContain("Не хватает");
+    expect(html).toContain("Списать со склада");
+    expect(html).toContain("На складе 3 из 5 позиций");
+    expect(html).toContain('href="/app/shopping"');
+    // Призыва «списать?» тут быть не должно — покрытие неполное, не дублируем.
+    expect(html).not.toContain("Все ингредиенты есть на складе");
   });
 
-  it("не рендерит ни одну из строк, если проп не передан", () => {
-    const html = renderToStaticMarkup(<BrewInventory brewBatchId="bb-1" view={emptyView} status="planned" />);
-
-    expect(html).not.toContain("Ингредиенты на складе есть");
-    expect(html).not.toContain("Не хватает");
-    expect(html).not.toContain('href="/app/shopping"');
-  });
-
-  it("не рендерит строки и при явном null (акты вне «Подготовки»)", () => {
+  // Находка 1: подпись обязана честно считать ЗАКРЫТЫЕ позиции (coveredCount:
+  // covered+substitute), а не presentCount (тот считает и partial — товар есть,
+  // но меньше нужного). Иначе «На складе 5 из 5» врёт при неполном покрытии.
+  it("presentCount врёт полным покрытием, coveredCount честно показывает нехватку (Находка 1)", () => {
     const html = renderToStaticMarkup(
-      <BrewInventory brewBatchId="bb-1" view={emptyView} status="brewing" prepShortage={null} />
+      <BrewInventory
+        brewBatchId="bb-1"
+        view={emptyView}
+        status="planned"
+        stockCoverage={{ totalLines: 5, presentCount: 5, coveredCount: 4, fullyCovered: false }}
+      />
     );
 
-    expect(html).not.toContain("Ингредиенты на складе есть");
-    expect(html).not.toContain("Не хватает");
+    expect(html).toContain("Списать со склада");
+    expect(html).toContain("На складе 4 из 5 позиций");
+    expect(html).not.toContain("Все ингредиенты есть на складе");
+  });
+
+  it("coveredCount === totalLines при !fullyCovered (закрыто целиком заменами): подписи и ссылки в покупки нет", () => {
+    const html = renderToStaticMarkup(
+      <BrewInventory
+        brewBatchId="bb-1"
+        view={emptyView}
+        status="planned"
+        stockCoverage={{ totalLines: 5, presentCount: 5, coveredCount: 5, fullyCovered: false }}
+      />
+    );
+
+    expect(html).toContain("Списать со склада");
+    expect(html).not.toContain("На складе");
+    expect(html).not.toContain("Все ингредиенты есть на складе");
     expect(html).not.toContain('href="/app/shopping"');
+  });
+
+  it("полное покрытие: заметный призыв «Все ингредиенты есть на складе — списать?»", () => {
+    const html = renderToStaticMarkup(
+      <BrewInventory
+        brewBatchId="bb-1"
+        view={emptyView}
+        status="planned"
+        stockCoverage={{ totalLines: 4, presentCount: 4, coveredCount: 4, fullyCovered: true }}
+      />
+    );
+
+    expect(html).toContain("Списать со склада");
+    expect(html).toContain("Все ингредиенты есть на складе — списать?");
+    expect(html).not.toContain("На складе 4 из 4");
+  });
+
+  it("stockCoverage=null: ни одна из коверидж-строк не рендерится", () => {
+    const html = renderToStaticMarkup(
+      <BrewInventory brewBatchId="bb-1" view={emptyView} status="planned" stockCoverage={null} />
+    );
+
+    expect(html).not.toContain("Ингредиентов этого рецепта нет на складе");
+    expect(html).not.toContain("На складе");
+    expect(html).not.toContain("Все ингредиенты есть на складе");
+    // Кнопка при этом доступна — коверидж просто не посчитан, а не «нет на складе».
+    expect(html).toContain("Списать со склада");
+  });
+
+  it("canConsume=false (партия уже списана): коверидж-строки не рендерятся, даже если пришёл полный stockCoverage", () => {
+    const consumedView: BrewBatchInventoryView = {
+      brewBatchId: "bb-1",
+      recipeId: "r-1",
+      hasConsumed: true,
+      canRestore: true,
+      batchAlreadyConsumed: true,
+      consumed: [{
+        inventoryItemId: "ii-1",
+        ingredientDisplayName: "Пильзнер",
+        quantityNormalized: 4000,
+        normalizedUnit: "g",
+        requiredQuantityNormalized: null
+      }],
+      log: []
+    };
+
+    const html = renderToStaticMarkup(
+      <BrewInventory
+        brewBatchId="bb-1"
+        view={consumedView}
+        status="brewing"
+        stockCoverage={{ totalLines: 4, presentCount: 4, coveredCount: 4, fullyCovered: true }}
+      />
+    );
+
+    expect(html).not.toContain("Все ингредиенты есть на складе");
+    expect(html).not.toContain("На складе");
+    expect(html).not.toContain("Ингредиентов этого рецепта нет на складе");
+    expect(html).not.toContain("Списать со склада");
   });
 });
 

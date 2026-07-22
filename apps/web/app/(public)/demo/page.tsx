@@ -10,6 +10,8 @@ import { DemoFermentationSection } from "@/components/demo/demo-fermentation";
 import { DemoInventorySection } from "@/components/demo/demo-inventory";
 import { DemoRecipesSection } from "@/components/demo/demo-recipes";
 import { calculators } from "@/features/calculators/catalog";
+import { getSectionOgImage } from "@/features/og/section";
+import { getServerEnv } from "@/lib/env";
 
 // Каркас пульта, пока грузится чанк симуляции — те же габариты, что и
 // внутренняя заглушка DemoPult (до её монтирования на клиенте), чтобы не было
@@ -39,10 +41,26 @@ const DemoPult = dynamic(() => import("@/components/demo/demo-pult").then((mod) 
   loading: DemoPultSkeleton
 });
 
+const title = "Демо";
+const description =
+  "Мастерская пивовара изнутри: рецепты, склад, варочный день с автоматикой BrewForge и брожение — на реалистичных примерах, без регистрации.";
+
 export const metadata: Metadata = {
-  title: "Демо",
-  description:
-    "Мастерская пивовара изнутри: рецепты, склад, варочный день с автоматикой BrewForge и брожение — на реалистичных примерах, без регистрации."
+  title,
+  description,
+  // Своего twitter не задаём — наследуется дефолт из корневого layout
+  // (summary_large_image), картинка обложки раздела (Ф3) достаточна.
+  // openGraph страницы ЗАМЕЩАЕТ openGraph родительского layout целиком (не
+  // мёржится) — locale/siteName повторяем сами (см. app/(public)/page.tsx).
+  openGraph: {
+    type: "website",
+    locale: "ru_RU",
+    siteName: getServerEnv().SITE_NAME,
+    url: "/demo",
+    title,
+    description,
+    images: [getSectionOgImage("demo")]
+  }
 };
 
 const ANCHORS = [

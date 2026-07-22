@@ -54,7 +54,11 @@ vi.mock("next/navigation", () => ({
   redirect: mocks.redirect,
   notFound: mocks.notFound,
   usePathname: vi.fn(() => "/app/recipes"),
-  useRouter: vi.fn(() => ({ push: mocks.push }))
+  useRouter: vi.fn(() => ({ push: mocks.push })),
+  // RecipeTabs (рендерится содержимым страницы) читает ?intent= через
+  // useSearchParams — в этих тестах реальный URL не участвует, поэтому
+  // пустые параметры (вне brew-режима во всех сценариях ниже).
+  useSearchParams: vi.fn(() => new URLSearchParams())
 }));
 vi.mock("next/headers", () => ({
   cookies: vi.fn(async () => ({
@@ -93,16 +97,22 @@ describe("recipes pages wiring", () => {
     expect(html).toContain("Пока нет рецептов");
   });
 
-  it("intent=brew скрывает табы/«Создать рецепт», показывает «Сварить»/«К рецептам»", async () => {
+  it("intent=brew: честный заголовок, «К рецептам», табы видны, «Создать рецепт» скрыт, карточка ведёт в рецепт (Ф1)", async () => {
     const { MyRecipesContent } = await import("../app/(app)/app/recipes/content");
     const view = await MyRecipesContent({ searchParams: Promise.resolve({ intent: "brew" }) });
     // Рендер не должен падать даже с key-механикой галереи (задача 1 ревью).
     const html = renderToStaticMarkup(view);
 
-    expect(html).toContain("Сварить");
+    expect(html).toContain("Выберите рецепт и начните варку");
     expect(html).toContain("К рецептам");
     expect(html).not.toContain("Создать рецепт");
-    expect(html).not.toContain("Закладки");
+    // Табы (в т.ч. «Закладки») больше не прячутся в brew-режиме — единая
+    // страница выбора без скрытой смены поведения (Ф1).
+    expect(html).toContain("Закладки");
+    // Клик по телу карточки ведёт в рецепт как в manage-режиме; варка —
+    // отдельной кнопкой «Сварить» на карточке (проверяется в owner-recipe-card.test.tsx).
+    expect(html).toContain('href="/app/recipes/r-1/edit"');
+    expect(html).toContain("Сварить");
   });
 
   it("читает вид из cookie nb_my_recipes_view=list — рендерит list-вид", async () => {

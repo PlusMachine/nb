@@ -1,448 +1,448 @@
 {
-  "source": {
-    "document": "BJCP 2021 Beer Style Guidelines",
-    "file_name": "2021_Guidelines_Beer_1.25.pdf",
-    "language": "ru",
-    "translation_scope": "detailed",
-    "notes": "Подробный русский перевод восьмой части корпуса BJCP: категории 16-17 с сохранением короткого описания, полных секций и оригинальных английских секций для сверки."
-  },
-  "progress": {
-    "styles_total_in_guideline": 128,
-    "styles_translated_in_this_file": 6,
-    "translated_style_ids": [
-      "16A",
-      "16B",
-      "16C",
-      "16D",
-      "17A",
-      "17B"
-    ],
-    "translated_categories": [
-      "16",
-      "17"
-    ],
-    "next_recommended_batch": [
-      "17C",
-      "17D",
-      "18A",
-      "18B",
-      "19A",
-      "19B",
-      "19C"
-    ]
-  },
-  "categories": [
-    {
-      "category_id": "16",
-      "category_en": "DARK BRITISH BEER",
-      "category_ru": "Тёмное британское пиво",
-      "overview_ru": "В эту категорию входят современные британские и ирландские стауты — от умеренно крепких до довольно крепких, от сладких до горьковатых, без выраженной жжёной грубости, исторически происходящие из английской традиции, хотя сегодня часть из них чаще ассоциируется с Ирландией."
-    },
-    {
-      "category_id": "17",
-      "category_en": "STRONG BRITISH ALE",
-      "category_ru": "Крепкий британский эль",
-      "overview_ru": "Эта категория охватывает более крепкие эли Британских островов без выраженной жареной составляющей. По стилевому полю она лежит выше bitter, mild и brown ale, но исключает porter и stout."
-    }
+ "source": {
+  "document": "BJCP 2021 Beer Style Guidelines",
+  "file_name": "2021_Guidelines_Beer_1.25.pdf",
+  "language": "ru",
+  "translation_scope": "detailed",
+  "notes": "Подробный русский перевод восьмой части корпуса BJCP: категории 16-17 с сохранением короткого описания, полных секций и оригинальных английских секций для сверки."
+ },
+ "progress": {
+  "styles_total_in_guideline": 128,
+  "styles_translated_in_this_file": 6,
+  "translated_style_ids": [
+   "16A",
+   "16B",
+   "16C",
+   "16D",
+   "17A",
+   "17B"
   ],
-  "styles": [
-    {
-      "bjcp_id": "16A",
-      "bjcp_heading": "16A. Sweet Stout",
-      "category_id": "16",
-      "category_en": "DARK BRITISH BEER",
-      "category_ru": "Тёмное британское пиво",
-      "name_en": "Sweet Stout",
-      "name_ru": "Сладкий стаут",
-      "description_short_ru": "Очень тёмный, сладкий, полнотелый и слегка обжаренный стаут, который может напоминать кофе со сливками или подслащённый эспрессо.",
-      "sections_ru": {
-        "overall_impression": "Очень тёмный, сладкий, полнотелый и слегка обжаренный стаут, который может напоминать кофе со сливками или подслащённый эспрессо.",
-        "aroma": "Мягкий аромат обжаренного зерна, иногда с кофейными или шоколадными оттенками. Часто присутствует ощущение сливочной сладости. Фруктовость может быть от слабой до умеренно высокой. Низкий уровень диацетила допустим. Низкий цветочный или землистый хмелевой аромат также допустим.",
-        "appearance": "Цвет от очень тёмно-коричневого до чёрного. Пиво прозрачное, если не считать его непрозрачным из-за цвета. Пена кремовая, от желтовато-коричневой до коричневой.",
-        "flavor": "Во вкусе доминируют тёмные обжаренные, кофейные или шоколадные тона. Эфиры от слабых до умеренных. Горечь умеренная. Сладость от средней до высокой уравновешивает жареный характер и горечь и тянется в финал. Баланс между тёмными солодами или зерном и сладостью может заметно варьировать: от явно сладкого до умеренно сухого и слегка поджаренного. Низкий диацетил допустим. Низкий цветочный или землистый вкус хмеля допустим.",
-        "mouthfeel": "Тело от умеренно полного до полного, текстура кремовая. Карбонизация от низкой до умеренной. Высокая остаточная сладость от несброженных сахаров усиливает ощущение полноты во рту.",
-        "comments": "В Британии начальная плотность обычно ниже, чем у экспортных и американских версий, порой даже ниже указанных здесь диапазонов. Вариации внутри стиля значительны: сильнее всего меняются уровень остаточной сладости, интенсивность жареного профиля и баланс между этими двумя сторонами.",
-        "history": "Английский вариант стаута, сформировавшийся в начале XX века. Исторически был известен как “Milk Stout” или “Cream Stout”; в самой Англии такие обозначения юридически больше не допускаются, хотя в других странах могут встречаться. Название “milk” связано с использованием молочного сахара — лактозы — в качестве подсластителя. Изначально стиль продвигали как укрепляющий напиток для больных и кормящих матерей.",
-        "characteristic_ingredients": "В основе — светлый базовый солод и тёмные солода или зерновые. Возможны зерновые и сахарные добавки. Для дополнительной остаточной сладости часто используют лактозу.",
-        "style_comparison": "Гораздо слаще и воспринимается менее горьким, чем другие стауты, за исключением более крепкого Tropical Stout. Жареный профиль мягкий, без жжёной резкости, свойственной другим разновидностям стаута. По балансу может напоминать Oatmeal Stout, но обычно заметно слаще.",
-        "entry_instructions": ""
-      },
-      "sections_en": {
-        "overall_impression": "A very dark, sweet, full-bodied, slightly roasty stout that can suggest coffee-and-cream, or sweetened espresso.",
-        "aroma": "Mild roasted grain aroma, sometimes with coffee or chocolate notes. An impression of cream-like sweetness often exists. Fruitiness can be low to moderately high. Low diacetyl optional. Low floral or earthy hop aroma optional.",
-        "appearance": "Very dark brown to black in color. Clear, if not opaque. Creamy tan to brown head.",
-        "flavor": "Dark, roasted, coffee or chocolate flavors dominate the palate. Low to moderate fruity esters. Moderate bitterness. Medium to high sweetness provides a counterpoint to the roasted character and bitterness, lasting into the finish. The balance between dark grains or malts and sweetness can vary, from quite sweet to moderately dry and somewhat roasty. Low diacetyl optional. Low floral or earthy hop flavor optional.",
-        "mouthfeel": "Medium-full to full-bodied and creamy. Low to moderate carbonation. High residual sweetness from unfermented sugars enhances the full-tasting mouthfeel.",
-        "comments": "Gravities are low in Britain (sometimes lower than the statistics below), higher in exported and US products. Variations exist, with the level of residual sweetness, the intensity of the roast character, and the balance between the two being the variables most subject to interpretation.",
-        "history": "An English style of stout developed in the early 1900s. Historically known as “Milk” or “Cream” stouts, legally this designation is no longer permitted in England but may be acceptable elsewhere. The “milk” name is derived from the use of the milk sugar lactose as a sweetener. Originally marketed as a tonic for invalids and nursing mothers.",
-        "characteristic_ingredients": "Base of pale malt with dark malts or grains. May use grain or sugar adjuncts. Lactose is frequently added to provide additional residual sweetness.",
-        "style_comparison": "Much sweeter and less bitter-tasting than other stouts, except the stronger Tropical Stout. The roast character is mild, not burnt like other stouts. Can be similar in balance to Oatmeal Stout, albeit with more sweetness.",
-        "entry_instructions": ""
-      },
-      "vital_statistics_text": "OG: 1.044 - 1.060 IBUs: 20 - 40 FG: 1.012 - 1.024 SRM: 30 - 40 ABV: 4.0 - 6.0%",
-      "vital_statistics": {
-        "og": "1.044 - 1.060",
-        "fg": "1.012 - 1.024",
-        "ibu": "20 - 40",
-        "srm": "30 - 40",
-        "abv": "4.0 - 6.0%"
-      },
-      "commercial_examples_text": "Bristol Beer Factory Milk Stout, Firestone Nitro Merlin Milk Stout, Left Hand Milk Stout, Lancaster Milk Stout, Mackeson's XXX Stout, Marston’s Pearl Jet Stout",
-      "tags_en": [
-        "standard-strength",
-        "dark-color",
-        "top-fermented",
-        "british-isles",
-        "traditional-style",
-        "stout-family",
-        "malty",
-        "roasty",
-        "sweet"
-      ],
-      "source_pdf_page_start": 45,
-      "source_guideline_page_start": 29,
-      "tags_ru": [
-        "стандартная крепость",
-        "тёмный цвет",
-        "верховое брожение",
-        "Британские острова",
-        "традиционный стиль",
-        "семейство stout",
-        "солодовый",
-        "обжаренный",
-        "сладкий"
-      ],
-      "translation_status": "completed"
-    },
-    {
-      "bjcp_id": "16B",
-      "bjcp_heading": "16B. Oatmeal Stout",
-      "category_id": "16",
-      "category_en": "DARK BRITISH BEER",
-      "category_ru": "Тёмное британское пиво",
-      "name_en": "Oatmeal Stout",
-      "name_ru": "Овсяный стаут",
-      "description_short_ru": "Тёмный, обжаренный, полнотелый стаут с достаточной сладостью, чтобы поддержать овсяную основу. Уровень сладости, баланс и выраженность овса могут заметно отличаться.",
-      "sections_ru": {
-        "overall_impression": "Тёмный, обжаренный, полнотелый стаут с достаточной сладостью, чтобы поддержать овсяную основу. Уровень сладости, баланс и выраженность овса могут заметно отличаться от версии к версии.",
-        "aroma": "Мягкий зерновой, жареный, кофейный характер с лёгкой солодовой сладостью, которая может создавать впечатление кофе со сливками. Фруктовость — от слабой до умеренно высокой. Допустим умеренно слабый землистый или цветочный аромат хмеля. Лёгкий зерново-ореховый аромат овса также допустим. Диацетил на уровне от низкого до умеренно низкого допустим, но обычно отсутствует.",
-        "appearance": "Цвет от коричневого до чёрного. Пена густая, кремовая, стойкая, от желтовато-коричневой до коричневой. Пиво прозрачное, если не считать его непрозрачным из-за цвета.",
-        "flavor": "Во вкусе профиль близок к аромату: мягкая жареная кофейность, молочный шоколад или впечатление кофе со сливками, плюс фруктовость от слабой до умеренно высокой. Овёс может добавлять тостовые, ореховые, зерновые или землистые оттенки. Горечь средняя. Финал — от умеренно сладкого до умеренно сухого, и именно он сильно влияет на восприятие баланса. Послевкусие солодовое, жареное, ореховое. Допустим умеренно слабый землистый или цветочный вкус хмеля. Диацетил на уровне от низкого до умеренно низкого допустим, но обычно отсутствует.",
-        "mouthfeel": "Тело от умеренно полного до полного; текстура гладкая, шелковистая, бархатистая, иногда почти маслянисто-скользкая благодаря овсу. Характер кремовый. Карбонизация от средней до умеренно высокой. Более крепкие версии могут слегка согревать.",
-        "comments": "При оценке стоит учитывать допустимый разброс по балансу и трактовке стиля. Американские версии обычно более хмелевые, менее сладкие и менее фруктовые, чем английские. Горечь, сладость и ощущение овса могут варьировать весьма широко. Небольшая доля овса даёт прежде всего шёлковистость тела и дополнительную вкусовую насыщенность, а высокая доля делает вкус ощутимо более овсяным и почти маслянистым по ощущениям, нередко с более суховатым финалом.",
-        "history": "Вариант так называемых “питательных” или “лечебных” стаутов рубежа XIX–XX веков, в которых в засыпь добавляли овёс. Развивался параллельно сладкому стауту с лактозой, но независимо от него. В ранней шотландской версии использовали заметную долю овсяного солода. Позднее был и сомнительный этап, когда некоторые английские пивовары буквально подбрасывали горсть овса в parti-gyle стауты лишь ради законного права продавать “полезный” Oatmeal Stout. Наибольшей популярности стиль достиг в Англии между двумя мировыми войнами, а в эпоху крафта возродился уже как экспортный формат, после чего стал популярным и в американском крафтовом пивоварении — уже с реально заметной, а не символической долей овса.",
-        "characteristic_ingredients": "Светлые, карамельные и тёмные жареные солода и зерновые, часто шоколадный солод. Овсяные хлопья или соложёный овёс — обычно 5–20% и более. Хмель главным образом идёт на горечь. Возможны пивоваренные сахара и сиропы. Дрожжи английского эля.",
-        "style_comparison": "Чаще всего это нечто среднее между Irish Extra Stout и Sweet Stout с добавлением овса. Более сладкие версии ближе к Sweet Stout, где овёс заменяет лактозу, а более сухие — к более ореховому и насыщенному Irish Extra Stout. В обоих случаях стиль подчёркивает тело и тактильность.",
-        "entry_instructions": ""
-      },
-      "sections_en": {
-        "overall_impression": "A dark, roasty, full-bodied stout with enough sweetness to support the oat backbone. The sweetness, balance, and oatmeal impression can vary considerably.",
-        "aroma": "Mild grainy, roasty, coffee-like character with a light malty sweetness that can give a coffee-and-cream impression. Low to medium-high fruitiness. Medium-low earthy or floral hop aroma optional. A light grainy-nutty oatmeal aroma is optional. Medium-low diacetyl optional but typically absent.",
-        "appearance": "Brown to black in color. Thick, creamy, persistent tan- to brown-colored head. Clear, if not opaque.",
-        "flavor": "Similar to the aroma, with a mild roasted coffee, milk chocolate, or coffee-and-cream flavor, and low to moderately-high fruitiness. Oats can add a toasty-nutty, grainy, or earthy flavor. Medium bitterness. Medium-sweet to medium-dry finish, which affects the perception of balance. Malty, roasty, nutty aftertaste. Medium-low earthy or floral hop flavor optional. Medium-low diacetyl optional but typically absent.",
-        "mouthfeel": "Medium-full to full body, with a smooth, silky, velvety, sometimes an almost oily slickness from the oatmeal. Creamy. Medium to medium-high carbonation. Stronger versions may be lightly warming.",
-        "comments": "When judging, allow for differences in balance and interpretation. American versions tend to be more hoppy, less sweet, and less fruity than English examples. Bitterness, sweetness, and oatmeal impression varies. Light use of oatmeal may give a certain silkiness of body and richness of flavor, while heavy use of oatmeal can be fairly intense in flavor with an almost oily mouthfeel and dryish finish.",
-        "history": "A variant of nourishing or invalid stouts around 1900 using oatmeal in the grist, similar to but independent of the development of sweet stout using lactose. An original Scottish version used a significant amount of oat malt. Later went through a shady phase where some English brewers would throw a handful of oats into their parti-gyled stouts in order to legally produce a “healthy” Oatmeal Stout for marketing purposes. Most popular in England between the World Wars, was revived in the craft beer era for export, which helped lead to its adoption as a popular modern American craft beer style that uses a noticeable (not symbolic) quantity of oats.",
-        "characteristic_ingredients": "Pale, caramel, and dark roasted malts (often chocolate) and grains. Oatmeal or malted oats (5-20% or more). Hops primarily for bittering. Can use brewing sugars or syrups. English ale yeast.",
-        "style_comparison": "Most are like a cross between an Irish Extra Stout and a Sweet Stout with oatmeal added. Several variations exist, with the sweeter versions more like a Sweet Stout with oatmeal instead of lactose, and the drier versions more like a more nutty, flavorful Irish Extra Stout. Both tend to emphasize the body and mouthfeel.",
-        "entry_instructions": ""
-      },
-      "vital_statistics_text": "OG: 1.045 - 1.065 IBUs: 25 - 40 FG: 1.010 - 1.018 SRM: 22 - 40 ABV: 4.2 - 5.9%",
-      "vital_statistics": {
-        "og": "1.045 - 1.065",
-        "fg": "1.010 - 1.018",
-        "ibu": "25 - 40",
-        "srm": "22 - 40",
-        "abv": "4.2 - 5.9%"
-      },
-      "commercial_examples_text": "Anderson Valley Barney Flats Oatmeal Stout, Broughton Stout Jock, St-Ambroise Oatmeal Stout, Samuel Smith Oatmeal Stout, Summit Oatmeal Stout, Young's London Stout",
-      "tags_en": [
-        "standard-strength",
-        "dark-color",
-        "top-fermented",
-        "british-isles",
-        "traditional-style",
-        "stout-family",
-        "balanced",
-        "roasty"
-      ],
-      "source_pdf_page_start": 45,
-      "source_guideline_page_start": 29,
-      "tags_ru": [
-        "стандартная крепость",
-        "тёмный цвет",
-        "верховое брожение",
-        "Британские острова",
-        "традиционный стиль",
-        "семейство stout",
-        "сбалансированный",
-        "обжаренный"
-      ],
-      "translation_status": "completed"
-    },
-    {
-      "bjcp_id": "16C",
-      "bjcp_heading": "16C. Tropical Stout",
-      "category_id": "16",
-      "category_en": "DARK BRITISH BEER",
-      "category_ru": "Тёмное британское пиво",
-      "name_en": "Tropical Stout",
-      "name_ru": "Тропический стаут",
-      "description_short_ru": "Очень тёмный, сладковатый, фруктовый стаут умеренно высокой крепости с мягкой обжаренностью без жжёной грубости.",
-      "sections_ru": {
-        "overall_impression": "Очень тёмный, сладковатый, фруктовый стаут умеренно высокой крепости с мягкой обжаренностью без жжёной грубости.",
-        "aroma": "Заметная сладость от умеренной до высокой сразу выходит на первый план. Жареный аромат кофе или шоколада — от умеренного до высокого, но без подгорелых тонов. Фруктовость от средней до высокой. Возможны ноты мелассы, лакрицы, жжёного сахара, сухофруктов или винные оттенки. Более крепкие версии могут давать лёгкий, чистый алкогольный штрих. Низкий аромат хмеля допустим. Низкий диацетил также допустим.",
-        "appearance": "Цвет от очень тёмно-коричневого до чёрного. Из-за насыщенного цвета прозрачность обычно плохо различима. Пиво прозрачное, если не считать его непрозрачным из-за цвета. Пена крупная, от желтовато-коричневой до коричневой, с хорошей стойкостью.",
-        "flavor": "Пиво довольно сладкое, с мягкими вкусами тёмных зёрен и сдержанной горечью от умеренно низкой до средней. Обжаренный профиль гладкий, чаще кофейный или шоколадный, но сладкий финал смягчает его в общем балансе. Во вкусе не должно быть жжёного солода и грубой остроты в конце. Эфиры от умеренных до высоких. Возможны тона сладкого тёмного рома, мелассы или жжёного сахара. Низкий вкус хмеля допустим. Диацетил на уровне до умеренно низкого допустим.",
-        "mouthfeel": "Тело от умеренно полного до полного, часто с мягкой, кремовой текстурой. Алкоголь может приятно согревать, но не должен быть жгучим. Карбонизация от средней до умеренно высокой.",
-        "comments": "Для жаркого климата стиль удивительно освежающий. Уровень сладости может заметно различаться. В слове “tropical” речь идёт о происхождении и популярности в тропических регионах, а не о вкусе тропических фруктов от хмеля или фруктовых добавок.",
-        "history": "Местная адаптация Foreign Extra Stout, которую варили с использованием местных ингредиентов и приёмов на Карибах и в других тропических рынках. Горечь здесь ниже, чем у экспортных стаутов, поскольку такое пиво не нужно было перевозить на дальние расстояния и его подстраивали под местные вкусовые предпочтения.",
-        "characteristic_ingredients": "Похож на Sweet Stout, но с более высокой плотностью. Используются светлые и тёмные жареные солода и зерновые. Хмель в основном отвечает за горечь. Для увеличения плотности возможны добавки и сахар. Обычно стиль варят на лагерных дрожжах при тёплом брожении.",
-        "style_comparison": "По впечатлению это как увеличенный Sweet Stout с более выраженной фруктовостью. Отчасти напоминает некоторые Imperial Stout, но без высокой горечи, мощной или жжёной обжаренности и без заметного позднего охмеления, к тому же с меньшей крепостью. Намного слаще и менее хмелевой, чем American Stout. Также заметно слаще и менее горький, чем сопоставимый по плотности Foreign Extra Stout.",
-        "entry_instructions": ""
-      },
-      "sections_en": {
-        "overall_impression": "A very dark, sweet, fruity, moderately strong stout with smooth, roasty flavors, yet no burnt harshness.",
-        "aroma": "Moderate to high intensity sweetness is prominent. Moderate to high coffee or chocolate roasty aroma, but not burnt. Medium to high fruitiness. May have a molasses, licorice, burnt sugar, dried fruit, or vinous aromatics. Stronger versions can have a subtle, clean aroma of alcohol. Low hop aroma optional. Low diacetyl optional.",
-        "appearance": "Very deep brown to black in color. Clarity usually obscured by deep color. Clear, if not opaque. Large tan to brown head with good retention.",
-        "flavor": "Quite sweet with a smooth dark grain flavors, and restrained, medium-low to medium bitterness. Smooth, roasty flavor, often like coffee or chocolate, although moderated in the balance by the sweet finish. No burnt malt flavor or harsh bite in the finish. Moderate to high fruity esters. Can have a sweet, dark rum, molasses, or burnt sugar-like quality. Low hop flavor optional. Medium-low diacetyl optional.",
-        "mouthfeel": "Medium-full to full body, often with a smooth, creamy character. May have a warming but not hot alcohol presence. Moderate to moderately-high carbonation.",
-        "comments": "Surprisingly refreshing in a hot climate. Sweetness levels can vary significantly. Tropical implies that the beer originated in and is popular in the tropics, not that it has characteristics of tropical fruit from hops or fruit.",
-        "history": "A local adaptation of Foreign Extra Stouts brewed with indigenous ingredients and methods in the Caribbean and other tropical markets. Bitterness lower than export-type stouts since these beers do not have to be shipped abroad, and to suit local palate preferences.",
-        "characteristic_ingredients": "Similar to a Sweet Stout, but higher gravity. Pale and dark roasted malts and grains. Hops mostly for bitterness. May use adjuncts and sugar to boost gravity. Typically made with warm-fermented lager yeast.",
-        "style_comparison": "Tastes like a scaled-up Sweet Stout with higher fruitiness. Similar to some Imperial Stouts without the high bitterness, strong or burnt roastiness, and late hops, and with lower alcohol. Much sweeter and less hoppy than American Stouts. Much sweeter and less bitter than the similar-gravity Foreign Extra Stouts.",
-        "entry_instructions": ""
-      },
-      "vital_statistics_text": "OG: 1.056 - 1.075 IBUs: 30 - 50 FG: 1.010 - 1.018 SRM: 30 - 40 ABV: 5.5 - 8.0%",
-      "vital_statistics": {
-        "og": "1.056 - 1.075",
-        "fg": "1.010 - 1.018",
-        "ibu": "30 - 50",
-        "srm": "30 - 40",
-        "abv": "5.5 - 8.0%"
-      },
-      "commercial_examples_text": "ABC Extra Stout, Bahamian Strong Back Stout, Dragon Stout, Jamaica Stout, Lion Stout, Royal Extra Stout",
-      "tags_en": [
-        "high-strength",
-        "dark-color",
-        "top-fermented",
-        "british-isles",
-        "traditional-style",
-        "stout-family",
-        "malty",
-        "roasty",
-        "sweet"
-      ],
-      "source_pdf_page_start": 46,
-      "source_guideline_page_start": 30,
-      "tags_ru": [
-        "повышенная крепость",
-        "тёмный цвет",
-        "верховое брожение",
-        "Британские острова",
-        "традиционный стиль",
-        "семейство stout",
-        "солодовый",
-        "обжаренный",
-        "сладкий"
-      ],
-      "translation_status": "completed"
-    },
-    {
-      "bjcp_id": "16D",
-      "bjcp_heading": "16D. Foreign Extra Stout",
-      "category_id": "16",
-      "category_en": "DARK BRITISH BEER",
-      "category_ru": "Тёмное британское пиво",
-      "name_en": "Foreign Extra Stout",
-      "name_ru": "Иностранный экстра-стаут",
-      "description_short_ru": "Очень тёмный, насыщенный, умеренно крепкий и довольно сухой стаут с ярко выраженными обжаренными вкусами.",
-      "sections_ru": {
-        "overall_impression": "Очень тёмный, насыщенный, умеренно крепкий и довольно сухой стаут с ярко выраженными обжаренными вкусами.",
-        "aroma": "Обжаренный аромат от умеренного до высокого: кофе, тёмный шоколад или слегка поджаренное зерно. Фруктовость от слабой до средней. Возможны сладковатые, паточные, лакричные, сухофруктовые или винные оттенки. Более крепкие версии могут иметь лёгкий, чистый алкогольный тон. Допустим слабый землистый, травянистый или цветочный аромат хмеля. Низкий диацетил допустим.",
-        "appearance": "Цвет от очень тёмно-коричневого до чёрного. Из-за глубины цвета прозрачность обычно плохо различима. Пиво прозрачное, если не считать его непрозрачным из-за цвета. Пена крупная, от желтовато-коричневой до коричневой, с хорошей стойкостью.",
-        "flavor": "Жареный профиль от умеренного до высокого, напоминающий кофе, тёмный шоколад или слегка подгоревшее зерно, но без резкого, колючего укуса. Эфиры от слабых до средних. Горечь от средней до высокой. Финал умеренно сухой. Допустим умеренный землистый, травянистый или цветочный вкус хмеля. Диацетил на уровне до умеренно низкого допустим.",
-        "mouthfeel": "Тело от умеренно полного до полного, часто гладкое, иногда слегка кремовое. Алкоголь может приятно согревать, но не должен быть жгучим. Карбонизация от средней до умеренно высокой.",
-        "comments": "Также известен как Foreign Stout, Export Stout и Foreign Export Stout. Исторические версии, по крайней мере до Первой мировой войны, имели ту же начальную плотность, что и “домашние” Extra Stout, но в зависимости от пивоварни могли выходить крепче по алкоголю благодаря длинной вторичной выдержке, где пиво дорабатывали Brettanomyces. Главное отличие между внутренними и экспортными версиями заключалось в уровне охмеления и длительности созревания.",
-        "history": "Сегодня это более крепкие стауты, предназначенные для экспорта, но их история уходит в XVIII–XIX века, когда они были более сильно охмелёнными версиями крепких экспортных стаутов. Изначально пиво выдерживали в чанах, но Guinness отказался от этой практики в 1950-х. По данным Guinness, Guinness Foreign Extra Stout, изначально называвшийся West India Porter, а позднее Foreign Extra Double Stout, впервые сварили в 1801 году — с “дополнительным количеством хмеля, чтобы придать ему узнаваемый вкус и более долгий срок хранения в жаркую погоду”.",
-        "characteristic_ingredients": "Светлые и тёмные жареные солода и зерновые; исторически также могли использоваться коричневые и янтарные солода. Хмель в основном нужен для горечи, чаще английских сортов. Для повышения плотности возможны добавки и сахар.",
-        "style_comparison": "По балансу близок к Irish Extra Stout, но крепче по алкоголю. Не такой масштабный и интенсивный, как Imperial Stout. Лишён той мощной горечи и позднего охмеления, которые характерны для American Stout. По плотности сопоставим с Tropical Stout, но суше в финале и заметно более горький.",
-        "entry_instructions": ""
-      },
-      "sections_en": {
-        "overall_impression": "A very dark, rich, moderately strong, fairly dry stout with prominent roast flavors.",
-        "aroma": "Moderate to high roast, like coffee, dark chocolate, or lightly burnt grain. Low to medium fruitiness. May have a sweet aroma, or molasses, licorice, dried fruit, or vinous aromatics. Stronger versions can have a subtle, clean aroma of alcohol. Low earthy, herbal, or floral hop aroma optional. Low diacetyl optional.",
-        "appearance": "Very deep brown to black in color. Clarity usually obscured by deep color. Clear, if not opaque. Large tan to brown head with good retention.",
-        "flavor": "Moderate to high roast, like coffee, dark chocolate, or lightly burnt grain, although without a sharp bite. Low to medium esters. Medium to high bitterness. Moderately dry finish. Moderate earthy, herbal, or floral hop flavor optional. Medium-low diacetyl optional.",
-        "mouthfeel": "Medium-full to full body, often with a smooth, sometimes creamy character. May have a warming but not hot alcohol presence. Moderate to moderately-high carbonation.",
-        "comments": "Also known as Foreign Stout, Export Stout, and Foreign Export Stout. Historic versions (before WWI, at least) had the same OG as domestic Extra Stouts, but depending on the brewery could have had a higher ABV because it had a long secondary with Brett chewing away at it. The difference between domestic and foreign versions were the hopping and length of maturation.",
-        "history": "Stronger stouts brewed for the export market today, but with a history stretching back to the 18th and 19th centuries when they were more heavily-hopped versions of stronger export stouts. Vatted originally, but Guinness stopped this practice in the 1950s. Guinness Foreign Extra Stout (originally, West India Porter, later Foreign Extra Double Stout) was first brewed in 1801 according to Guinness with “extra hops to give it a distinctive taste and a longer shelf life in hot weather.”",
-        "characteristic_ingredients": "Pale and dark roasted malts and grains, historically also could have used brown and amber malts. Hops mostly for bitterness, typically English varieties. May use adjuncts and sugar to boost gravity.",
-        "style_comparison": "Similar in balance to an Irish Extra Stout, but with more alcohol. Not as big or intense as an Imperial Stout. Lacking the strong bitterness and high late hops of American Stout. Similar gravity as Tropical Stout, but with a drier finish and higher bitterness.",
-        "entry_instructions": ""
-      },
-      "vital_statistics_text": "OG: 1.056 - 1.075 IBUs: 50 - 70 FG: 1.010 - 1.018 SRM: 30 - 40 ABV: 6.3 - 8.0%",
-      "vital_statistics": {
-        "og": "1.056 - 1.075",
-        "fg": "1.010 - 1.018",
-        "ibu": "50 - 70",
-        "srm": "30 - 40",
-        "abv": "6.3 - 8.0%"
-      },
-      "commercial_examples_text": "Coopers Best Extra Stout, Guinness Foreign Extra Stout, The Kernel Export Stout London 1890, La Cumbre Malpais Stout, Pelican Tsunami Export Stout, Ridgeway Foreign Export Stout",
-      "tags_en": [
-        "high-strength",
-        "dark-color",
-        "top-fermented",
-        "british-isles",
-        "traditional-style",
-        "stout-family",
-        "balanced",
-        "roasty"
-      ],
-      "source_pdf_page_start": 46,
-      "source_guideline_page_start": 30,
-      "tags_ru": [
-        "повышенная крепость",
-        "тёмный цвет",
-        "верховое брожение",
-        "Британские острова",
-        "традиционный стиль",
-        "семейство stout",
-        "сбалансированный",
-        "обжаренный"
-      ],
-      "translation_status": "completed"
-    },
-    {
-      "bjcp_id": "17A",
-      "bjcp_heading": "17A. British Strong Ale",
-      "category_id": "17",
-      "category_en": "STRONG BRITISH ALE",
-      "category_ru": "Крепкий британский эль",
-      "name_en": "British Strong Ale",
-      "name_ru": "Крепкий британский эль",
-      "description_short_ru": "Британский эль заметной крепости, традиционно дображиваемый в бутылке и выдерживаемый в погребе. Допускает широкий диапазон интерпретаций, но обычно сочетает солодовую насыщенность, поздний хмель, эфиры и согревающее тепло алкоголя.",
-      "sections_ru": {
-        "overall_impression": "Британский эль заметной крепости, традиционно дображиваемый в бутылке и выдерживаемый в погребе. Допускает широкий диапазон интерпретаций, но чаще всего сочетает в разных пропорциях солодовую насыщенность, поздний хмель и горечь, фруктовые эфиры и согревающее алкогольное тепло. Вклад солода и добавок может очень сильно меняться, но итоговый вкус должен оставаться цельным и приятным.",
-        "aroma": "Солодово-сладкий аромат с фруктовыми эфирами, нередко со сложным сочетанием сухофруктов, карамели, орехов, ириса и других тонов специальных солодов. Небольшие алкогольные ноты допустимы, но не должны быть жгучими или растворительными. Хмелевой аромат тоже может сильно варьировать, хотя чаще встречаются землистые, смолистые, фруктовые или цветочные оттенки. Баланс может быть очень разным, но в большинстве образцов ощущается комбинация солода, фруктов, хмеля и алкоголя в разных интенсивностях.",
-        "appearance": "Цвет от янтарного до тёмного красновато-коричневого; многие образцы довольно тёмные. Обычно пиво прозрачное, хотя самые тёмные версии могут казаться почти непрозрачными. Пена от умеренной до низкой, кремовая или светло-бежёвая, со средней стойкостью.",
-        "flavor": "Солодовый характер от среднего до высокого, часто насыщенный, с ореховыми, ирисочными или карамельными тонами. В более тёмных версиях иногда встречаются лёгкие шоколадные оттенки. Дополнительную сложность могут давать пивоваренные сахара. Баланс обычно солодовый, но охмеление может быть и вполне заметным, из-за чего восприятие солодовости меняется. Фруктовые эфиры умеренные и обычны; нередко они уходят в тёмные или сушёные фрукты. Финал — от умеренно сухого до слегка сладковатого. Крепость по алкоголю должна ощущаться, но не доминировать. Низкий диацетил допустим, хотя в целом нежелателен.",
-        "mouthfeel": "Тело от среднего до полного, вязковатое, “жевательное”. Алкогольное тепло обычно заметно и здесь уместно. Карбонизация от низкой до умеренной. Текстура гладкая.",
-        "comments": "Это скорее удобная конкурсная категория, чем один жёстко очерченный стиль: крепость и характер образцов могут сильно различаться. Она занимает пространство между пивом обычной плотности и Barley Wine. Сюда могут попадать светлые солодово-хмелевые крепкие эли, английские winter warmer, крепкие тёмные mild, менее масштабные Burton ale и другие необычные британские сорта в этом диапазоне плотности, не попадающие в соседние категории. Судьям стоит допускать широкий спектр интерпретаций: если пиво укладывается в диапазон крепости и при этом сохраняет интересный британский характер, оно, скорее всего, уместно в этом стиле.",
-        "history": "Это сборная категория из нескольких второстепенных традиций, каждая со своей собственной историей. Не стоит выводить из неё какое-то единое историческое происхождение — такого намерения здесь нет. По сути это современная британская специальная конкурсная категория, где главным “особым” признаком выступает уровень алкоголя.",
-        "characteristic_ingredients": "Засыпь варьирует, но часто строится на светлом базовом солоде с карамельными и специальными солодами. Более тёмные образцы могут использовать небольшое количество тёмных солодов, например шоколадного или жжёного. Сахаристые и крахмалистые добавки — кукуруза, ячменные хлопья, пшеница и т. п. — вполне обычны. Финишное охмеление традиционно английское.",
-        "style_comparison": "По диапазону плотности сильно пересекается с Old Ale, но не должен иметь характера выдержки. Интерпретации возможны самые разные. Не должен быть таким же богатым и мощным, как English Barley Wine. Крепче, чем повседневные Strong Bitter, British Brown Ale и English Porter. По характеру специальных солодов и/или сахара выраженнее, чем American Strong Ale.",
-        "entry_instructions": ""
-      },
-      "sections_en": {
-        "overall_impression": "An ale of respectable alcoholic strength, traditionally bottled-conditioned and cellared. Can have a wide range of interpretations, but most will have varying degrees of malty richness, late hops and bitterness, fruity esters, and alcohol warmth. The malt and adjunct flavors and intensity can vary widely, but any combination should result in an agreeable palate experience.",
-        "aroma": "Malty-sweet with fruity esters, often with a complex blend of dried-fruit, caramel, nuts, toffee, or other specialty malt aromas. Some alcohol notes are acceptable, but shouldn’t be hot or solventy. Hop aromas can vary widely, but typically have earthy, resiny, fruity, or floral notes. The balance can vary widely, but most examples will have a blend of malt, fruit, hops, and alcohol in varying intensities.",
-        "appearance": "Amber to dark reddish-brown color; many are fairly dark. Generally clear, although darker versions may be almost opaque. Moderate to low cream- to light tan-colored head with average retention.",
-        "flavor": "Medium to high malt character often rich with nutty, toffee, or caramel flavors. Light chocolate notes are sometimes found in darker beers. May have interesting flavor complexity from brewing sugars. Balance is often malty, but may be well hopped, which affects the impression of maltiness. Moderate fruity esters are common, often with a dark fruit or dried fruit character. The finish may vary from medium dry to somewhat sweet. Alcoholic strength should be evident, not overwhelming. Low diacetyl optional, but generally not desirable.",
-        "mouthfeel": "Medium to full, chewy body. Alcohol warmth is often evident and always welcome. Low to moderate carbonation. Smooth texture.",
-        "comments": "An entry category more than a style; the strength and character of examples can vary widely. Fits in the style space between normal gravity beers and Barley Wines. Can include pale malty-hoppy beers, English winter warmers, strong dark milds, smaller Burton ales, and other unique beers in the general gravity range that don’t fit other categories. Judges should allow for a significant range in character, as long as the beer is within the alcohol strength range and has an interesting “British” character, it likely fits the style.",
-        "history": "A collection of unrelated minor styles, each of which has its own heritage. Do not use this category grouping to infer a historical relationship between examples – none is intended. This is a modern British specialty judging category where the “special” attribute is alcohol level.",
-        "characteristic_ingredients": "Grists vary, often based on pale malt with caramel and specialty malts. Some darker examples suggest a light use of dark malts (e.g., chocolate, black malt). Sugary and starchy adjuncts (e.g., maize, flaked barley, wheat) are common. Finishing hops are traditionally English.",
-        "style_comparison": "Significant overlap in gravity with Old Ale, but not having an aged character. A wide range of interpretations is possible. Should not be as rich or strong as an English Barley Wine. Stronger than the stronger everyday Strong Bitter, British Brown Ale, and English Porter. More specialty malt or sugar character than American Strong Ale.",
-        "entry_instructions": ""
-      },
-      "vital_statistics_text": "OG: 1.055 - 1.080 IBUs: 30 - 60 FG: 1.015 - 1.022 SRM: 8 - 22 ABV: 5.5 - 8.0%",
-      "vital_statistics": {
-        "og": "1.055 - 1.080",
-        "fg": "1.015 - 1.022",
-        "ibu": "30 - 60",
-        "srm": "8 - 22",
-        "abv": "5.5 - 8.0%"
-      },
-      "commercial_examples_text": "Fuller’s 1845, Harvey’s Elizabethan Ale, J.W. Lees Moonraker, McEwan’s Champion, Samuel Smith’s Winter Welcome, Shepherd Neame 1698",
-      "tags_en": [
-        "high-strength",
-        "amber-color",
-        "top-fermented",
-        "british-isles",
-        "traditional-style",
-        "strong-ale-family",
-        "malty"
-      ],
-      "source_pdf_page_start": 47,
-      "source_guideline_page_start": 31,
-      "tags_ru": [
-        "повышенная крепость",
-        "янтарный цвет",
-        "верховое брожение",
-        "Британские острова",
-        "традиционный стиль",
-        "семейство strong ale",
-        "солодовый"
-      ],
-      "translation_status": "completed"
-    },
-    {
-      "bjcp_id": "17B",
-      "bjcp_heading": "17B. Old Ale",
-      "category_id": "17",
-      "category_en": "STRONG BRITISH ALE",
-      "category_ru": "Крепкий британский эль",
-      "name_en": "Old Ale",
-      "name_ru": "Старый эль",
-      "description_short_ru": "Английский эль выше средней крепости, обычно менее мощный, чем English Barley Wine, но чаще солодовый и согревающий. В хорошем образце заметны положительные эффекты выдержки.",
-      "sections_ru": {
-        "overall_impression": "Английский эль выше средней крепости, обычно не такой мощный и богатый, как English Barley Wine, но чаще с выраженной солодовой основой. Согревающий. В хорошем образце заметны положительные эффекты зрелости и выдержки.",
-        "aroma": "Солодово-сладкий аромат с фруктовыми эфирами, часто со сложным сочетанием сухофруктов, винных тонов, карамели, мелассы, ириса, светлой патоки и других оттенков специальных солодов. Допустимы алкогольные и ореховые окислительные ноты, напоминающие хорошие Sherry, Port или Madeira. Хмелевой аромат, как правило, отсутствует.",
-        "appearance": "Цвет от глубокого янтарного до очень тёмного красновато-коричневого, хотя большинство образцов довольно тёмные. Выдержка и окисление могут ещё сильнее затемнять пиво. Прозрачное, но может казаться почти непрозрачным. Пена от умеренной до низкой, кремовая или светло-бежевая; стойкость от средней до слабой.",
-        "flavor": "Солодовый характер от среднего до высокого, с роскошной солодовой сложностью, часто с ореховыми, карамельными или паточными оттенками. Лёгкие шоколадные или жареные солодовые тона допустимы, но не должны выходить на первый план. Баланс обычно солодово-сладкий, хотя охмеление тоже может быть вполне заметным; восприятие горечи нередко зависит от степени выдержки. Эфиры от умеренных до высоких обычны и могут уходить в сухофрукты или винные ноты. Финал — от сухого до слегка сладковатого. Длительная выдержка может вносить окислительные оттенки, напоминающие зрелые Sherry, Port или Madeira. Алкогольная крепость должна ощущаться, но не подавлять. Низкий диацетил допустим.",
-        "mouthfeel": "Тело от среднего до полного, плотное и “жевательное”, хотя у более старых образцов оно может быть легче из-за продолжающегося выбраживания во время выдержки. Алкогольное тепло обычно заметно и здесь весьма уместно. Карбонизация от низкой до умеренной, в зависимости от возраста и условий выдержки. Возможна лёгкая кислотность, а при выдержке в дереве — и некоторая танинность; оба признака допустимы.",
-        "comments": "Крепость и характер варьируют очень широко. Главная определяющая черта стиля — именно впечатление выдержки, которое может проявляться по-разному: через сложность, окисление, кожаные тона, винность и т. п. Многие из этих оттенков в других стилях считались бы дефектами, но здесь они приемлемы, если в итоге пиво остаётся приятно питким и сложным. Это, однако, не означает, что откровенно испорченное и труднопиткое пиво вдруг становится “в стиле”. Old Peculier — знаменитый, но довольно самобытный пример, заметно отличающийся от большинства других Old Ale.",
-        "history": "Исторически это выдержанный эль, который либо использовали как stock ale для купажирования, либо пили в полной крепости. Термины stale и stock здесь относятся именно к пиву, которое долго выдерживали или хранили. Сегодня в Британии прослеживаются как минимум два отчётливых направления: более слабые невыдержанные разливные версии, близкие к mild около 4,5% ABV, и более крепкие выдержанные версии, чаще всего в диапазоне 6–8% и выше.",
-        "characteristic_ingredients": "Состав может сильно различаться, хотя в целом он близок к British Strong Ale. При этом решающим фактором финального профиля здесь становится не столько сама варка, сколько характер выдержки и обращения с пивом.",
-        "style_comparison": "Частично перекрывается с British Strong Ale и нижней частью диапазона English Barley Wine, но Old Ale всегда должен нести в себе характер выдержки. Выше примерно 7% ABV граница между Old Ale и Barley Wine уже довольно условна и обычно сводится к тому, насколько явно в пиве выражен зрелый, выдержанный характер.",
-        "entry_instructions": ""
-      },
-      "sections_en": {
-        "overall_impression": "A stronger-than-average English ale, though usually not as strong or rich as an English Barley Wine, but usually malty. Warming. Shows positive maturation effects of a well-kept, aged beer.",
-        "aroma": "Malty-sweet with fruity esters, often with a complex blend of dried fruit, vinous, caramel, molasses, toffee, light treacle, or other specialty malt aromas. Some alcohol and nutty oxidative notes are acceptable, akin to those found in Sherry, Port, or Madeira. Hop aroma not usually present.",
-        "appearance": "Deep amber to very dark reddish-brown color, but most are fairly dark. Age and oxidation may darken the beer further. Clear, but can be almost opaque. Moderate to low cream- to light tan-colored head; retention average to poor.",
-        "flavor": "Medium to high malt character with a luscious malt complexity, often with nut, caramel, or molasses-like flavors. Light chocolate or roasted malt flavors are optional, but should never be prominent. Balance is often malty-sweet, but may be well hopped; the impression of bitterness often depends on amount of aging. Moderate to high fruity esters are common, and may take on a dried-fruit or vinous character. The finish may vary from dry to somewhat sweet. Extended aging may contribute oxidative flavors similar to a fine old Sherry, Port, or Madeira. Alcoholic strength should be evident, though not overwhelming. Low diacetyl optional.",
-        "mouthfeel": "Medium to full, chewy body, although older examples may be lower in body due to continued attenuation during conditioning. Alcohol warmth is often evident and always welcome. Low to moderate carbonation, depending on age and conditioning. Light acidity may be present, as well as some tannin if wood-aged; both are optional.",
-        "comments": "Strength and character vary widely. The predominant defining quality for this style is the impression of age, which can manifest itself in different ways (complexity, oxidation, leather, vinous qualities, etc.). Many of these qualities are otherwise faults, but if the resulting character of the beer is pleasantly drinkable and complex, then those characteristics are acceptable. In no way should those allowable characteristics be interpreted as making an undrinkably off-flavored beer as somehow in style. Old Peculier is a well-known but fairly unique beer that is quite different than other Old Ales.",
-        "history": "Historically, an aged ale used as stock ales for blending or enjoyed at full strength (stale or stock refers to beers that were aged or stored for a significant period of time). There are at least two definite types in Britain today, weaker, unaged draught ones that are similar to milds of around 4.5%, and stronger aged ones that are often 6-8% or more.",
-        "characteristic_ingredients": "Composition varies, although generally similar to British Strong Ales. The age character is the biggest driver of the final style profile, which is more handling than brewing.",
-        "style_comparison": "Roughly overlapping the British Strong Ale and the lower end of the English Barley Wine styles, but always having an aged quality. The distinction between an Old Ale and a Barley Wine is somewhat arbitrary above 7% ABV, and generally means having a more significant aged quality.",
-        "entry_instructions": ""
-      },
-      "vital_statistics_text": "OG: 1.055 - 1.088 IBUs: 30 - 60 FG: 1.015 - 1.022 SRM: 10 - 22 ABV: 5.5 - 9.0%",
-      "vital_statistics": {
-        "og": "1.055 - 1.088",
-        "fg": "1.015 - 1.022",
-        "ibu": "30 - 60",
-        "srm": "10 - 22",
-        "abv": "5.5 - 9.0%"
-      },
-      "commercial_examples_text": "Avery Old Jubilation, Berlina Old Ale, Greene King Strong Suffolk Ale, Marston Owd Roger, Theakston Old Peculier",
-      "tags_en": [
-        "high-strength",
-        "amber-color",
-        "top-fermented",
-        "british-isles",
-        "traditional-style",
-        "strong-ale-family",
-        "malty",
-        "aged"
-      ],
-      "source_pdf_page_start": 47,
-      "source_guideline_page_start": 31,
-      "tags_ru": [
-        "повышенная крепость",
-        "янтарный цвет",
-        "верховое брожение",
-        "Британские острова",
-        "традиционный стиль",
-        "семейство strong ale",
-        "солодовый",
-        "выдержанное"
-      ],
-      "translation_status": "completed"
-    }
+  "translated_categories": [
+   "16",
+   "17"
+  ],
+  "next_recommended_batch": [
+   "17C",
+   "17D",
+   "18A",
+   "18B",
+   "19A",
+   "19B",
+   "19C"
   ]
+ },
+ "categories": [
+  {
+   "category_id": "16",
+   "category_en": "DARK BRITISH BEER",
+   "category_ru": "Тёмное британское пиво",
+   "overview_ru": "В эту категорию входят современные британские и ирландские стауты — от умеренно крепких до довольно крепких, от сладких до горьковатых, без выраженной жжёной грубости, исторически происходящие из английской традиции, хотя сегодня часть из них чаще ассоциируется с Ирландией."
+  },
+  {
+   "category_id": "17",
+   "category_en": "STRONG BRITISH ALE",
+   "category_ru": "Крепкий британский эль",
+   "overview_ru": "Эта категория охватывает более крепкие эли Британских островов без выраженной жареной составляющей. По стилевому полю она лежит выше bitter, mild и brown ale, но исключает porter и stout."
+  }
+ ],
+ "styles": [
+  {
+   "bjcp_id": "16A",
+   "bjcp_heading": "16A. Sweet Stout",
+   "category_id": "16",
+   "category_en": "DARK BRITISH BEER",
+   "category_ru": "Тёмное британское пиво",
+   "name_en": "Sweet Stout",
+   "name_ru": "Сладкий стаут",
+   "description_short_ru": "Очень тёмный, сладкий, полнотелый и слегка обжаренный стаут, который может напоминать кофе со сливками или подслащённый эспрессо.",
+   "sections_ru": {
+    "overall_impression": "Очень тёмный, сладкий, полнотелый и слегка обжаренный стаут, который может напоминать кофе со сливками или подслащённый эспрессо.",
+    "aroma": "Мягкий аромат обжаренного зерна, иногда с кофейными или шоколадными оттенками. Часто присутствует ощущение сливочной сладости. Фруктовость может быть от слабой до умеренно высокой. Низкий уровень диацетила допустим. Низкий цветочный или землистый хмелевой аромат также допустим.",
+    "appearance": "Цвет от очень тёмно-коричневого до чёрного. Прозрачное, хотя из-за тёмного цвета может казаться непрозрачным. Пена кремовая, от желтовато-коричневой до коричневой.",
+    "flavor": "Во вкусе доминируют тёмные обжаренные, кофейные или шоколадные тона. Эфиры от слабых до умеренных. Горечь умеренная. Сладость от средней до высокой уравновешивает жареный характер и горечь и тянется в финал. Баланс между тёмными солодами или зерном и сладостью может заметно варьировать: от явно сладкого до умеренно сухого и слегка поджаренного. Низкий диацетил допустим. Низкий цветочный или землистый вкус хмеля допустим.",
+    "mouthfeel": "Тело от умеренно полного до полного, текстура кремовая. Карбонизация от низкой до умеренной. Высокая остаточная сладость от несброженных сахаров усиливает ощущение полноты во рту.",
+    "comments": "В Британии начальная плотность обычно ниже, чем у экспортных и американских версий, порой даже ниже указанных здесь диапазонов. Вариации внутри стиля значительны: сильнее всего меняются уровень остаточной сладости, интенсивность жареного профиля и баланс между этими двумя сторонами.",
+    "history": "Английский вариант стаута, сформировавшийся в начале XX века. Исторически был известен как «Milk Stout» или «Cream Stout»; в самой Англии такие обозначения юридически больше не допускаются, хотя в других странах могут встречаться. Название «milk» связано с использованием молочного сахара — лактозы — в качестве подсластителя. Изначально стиль продвигали как укрепляющий напиток для больных и кормящих матерей.",
+    "characteristic_ingredients": "В основе — светлый базовый солод и тёмные солода или зерновые. Возможны зерновые и сахарные добавки. Для дополнительной остаточной сладости часто используют лактозу.",
+    "style_comparison": "Гораздо слаще и воспринимается менее горьким, чем другие стауты, за исключением более крепкого Tropical Stout. Жареный профиль мягкий, без жжёной резкости, свойственной другим разновидностям стаута. По балансу может напоминать Oatmeal Stout, но обычно заметно слаще.",
+    "entry_instructions": ""
+   },
+   "sections_en": {
+    "overall_impression": "A very dark, sweet, full-bodied, slightly roasty stout that can suggest coffee-and-cream, or sweetened espresso.",
+    "aroma": "Mild roasted grain aroma, sometimes with coffee or chocolate notes. An impression of cream-like sweetness often exists. Fruitiness can be low to moderately high. Low diacetyl optional. Low floral or earthy hop aroma optional.",
+    "appearance": "Very dark brown to black in color. Clear, if not opaque. Creamy tan to brown head.",
+    "flavor": "Dark, roasted, coffee or chocolate flavors dominate the palate. Low to moderate fruity esters. Moderate bitterness. Medium to high sweetness provides a counterpoint to the roasted character and bitterness, lasting into the finish. The balance between dark grains or malts and sweetness can vary, from quite sweet to moderately dry and somewhat roasty. Low diacetyl optional. Low floral or earthy hop flavor optional.",
+    "mouthfeel": "Medium-full to full-bodied and creamy. Low to moderate carbonation. High residual sweetness from unfermented sugars enhances the full-tasting mouthfeel.",
+    "comments": "Gravities are low in Britain (sometimes lower than the statistics below), higher in exported and US products. Variations exist, with the level of residual sweetness, the intensity of the roast character, and the balance between the two being the variables most subject to interpretation.",
+    "history": "An English style of stout developed in the early 1900s. Historically known as “Milk” or “Cream” stouts, legally this designation is no longer permitted in England but may be acceptable elsewhere. The “milk” name is derived from the use of the milk sugar lactose as a sweetener. Originally marketed as a tonic for invalids and nursing mothers.",
+    "characteristic_ingredients": "Base of pale malt with dark malts or grains. May use grain or sugar adjuncts. Lactose is frequently added to provide additional residual sweetness.",
+    "style_comparison": "Much sweeter and less bitter-tasting than other stouts, except the stronger Tropical Stout. The roast character is mild, not burnt like other stouts. Can be similar in balance to Oatmeal Stout, albeit with more sweetness.",
+    "entry_instructions": ""
+   },
+   "vital_statistics_text": "OG: 1.044 - 1.060 IBUs: 20 - 40 FG: 1.012 - 1.024 SRM: 30 - 40 ABV: 4.0 - 6.0%",
+   "vital_statistics": {
+    "og": "1.044 - 1.060",
+    "fg": "1.012 - 1.024",
+    "ibu": "20 - 40",
+    "srm": "30 - 40",
+    "abv": "4.0 - 6.0%"
+   },
+   "commercial_examples_text": "Bristol Beer Factory Milk Stout, Firestone Nitro Merlin Milk Stout, Left Hand Milk Stout, Lancaster Milk Stout, Mackeson's XXX Stout, Marston’s Pearl Jet Stout",
+   "tags_en": [
+    "standard-strength",
+    "dark-color",
+    "top-fermented",
+    "british-isles",
+    "traditional-style",
+    "stout-family",
+    "malty",
+    "roasty",
+    "sweet"
+   ],
+   "source_pdf_page_start": 45,
+   "source_guideline_page_start": 29,
+   "tags_ru": [
+    "стандартная крепость",
+    "тёмный цвет",
+    "верховое брожение",
+    "Британские острова",
+    "традиционный стиль",
+    "семейство стаутов",
+    "солодовый",
+    "обжаренный",
+    "сладкий"
+   ],
+   "translation_status": "completed"
+  },
+  {
+   "bjcp_id": "16B",
+   "bjcp_heading": "16B. Oatmeal Stout",
+   "category_id": "16",
+   "category_en": "DARK BRITISH BEER",
+   "category_ru": "Тёмное британское пиво",
+   "name_en": "Oatmeal Stout",
+   "name_ru": "Овсяный стаут",
+   "description_short_ru": "Тёмный, обжаренный, полнотелый стаут с достаточной сладостью, чтобы поддержать овсяную основу. Уровень сладости, баланс и выраженность овса могут заметно отличаться.",
+   "sections_ru": {
+    "overall_impression": "Тёмный, обжаренный, полнотелый стаут с достаточной сладостью, чтобы поддержать овсяную основу. Уровень сладости, баланс и выраженность овса могут заметно отличаться от версии к версии.",
+    "aroma": "Мягкий зерновой, жареный, кофейный характер с лёгкой солодовой сладостью, которая может создавать впечатление кофе со сливками. Фруктовость — от слабой до умеренно высокой. Допустим умеренно слабый землистый или цветочный аромат хмеля. Лёгкий зерново-ореховый аромат овса также допустим. Диацетил на уровне от низкого до умеренно низкого допустим, но обычно отсутствует.",
+    "appearance": "Цвет от коричневого до чёрного. Пена густая, кремовая, стойкая, от желтовато-коричневой до коричневой. Прозрачное, хотя из-за тёмного цвета может казаться непрозрачным.",
+    "flavor": "Во вкусе профиль близок к аромату: мягкая жареная кофейность, молочный шоколад или впечатление кофе со сливками, плюс фруктовость от слабой до умеренно высокой. Овёс может добавлять тостовые, ореховые, зерновые или землистые оттенки. Горечь средняя. Финал — от умеренно сладкого до умеренно сухого, и именно он сильно влияет на восприятие баланса. Послевкусие солодовое, жареное, ореховое. Допустим умеренно слабый землистый или цветочный вкус хмеля. Диацетил на уровне от низкого до умеренно низкого допустим, но обычно отсутствует.",
+    "mouthfeel": "Тело от умеренно полного до полного; текстура гладкая, шелковистая, бархатистая, иногда почти маслянисто-скользкая благодаря овсу. Характер кремовый. Карбонизация от средней до умеренно высокой. Более крепкие версии могут слегка согревать.",
+    "comments": "При оценке стоит учитывать допустимый разброс по балансу и трактовке стиля. Американские версии обычно более хмелевые, менее сладкие и менее фруктовые, чем английские. Горечь, сладость и ощущение овса могут варьировать весьма широко. Небольшая доля овса даёт прежде всего шёлковистость тела и дополнительную вкусовую насыщенность, а высокая доля делает вкус ощутимо более овсяным и почти маслянистым по ощущениям, нередко с более суховатым финалом.",
+    "history": "Вариант так называемых «питательных» или «лечебных» стаутов рубежа XIX–XX веков, в которых в засыпь добавляли овёс. Развивался параллельно сладкому стауту с лактозой, но независимо от него. В ранней шотландской версии использовали заметную долю овсяного солода. Позднее был и сомнительный этап, когда некоторые английские пивовары буквально подбрасывали горсть овса в parti-gyle стауты лишь ради законного права продавать «полезный» Oatmeal Stout. Наибольшей популярности стиль достиг в Англии между двумя мировыми войнами, а в эпоху крафта возродился уже как экспортный формат, после чего стал популярным и в американском крафтовом пивоварении — уже с реально заметной, а не символической долей овса.",
+    "characteristic_ingredients": "Светлые, карамельные и тёмные жареные солода и зерновые, часто шоколадный солод. Овсяные хлопья или соложёный овёс — обычно 5–20% и более. Хмель главным образом идёт на горечь. Возможны пивоваренные сахара и сиропы. Английские элевые дрожжи.",
+    "style_comparison": "Чаще всего это нечто среднее между Irish Extra Stout и Sweet Stout с добавлением овса. Более сладкие версии ближе к Sweet Stout, где овёс заменяет лактозу, а более сухие — к более ореховому и насыщенному Irish Extra Stout. В обоих случаях стиль подчёркивает тело и тактильность.",
+    "entry_instructions": ""
+   },
+   "sections_en": {
+    "overall_impression": "A dark, roasty, full-bodied stout with enough sweetness to support the oat backbone. The sweetness, balance, and oatmeal impression can vary considerably.",
+    "aroma": "Mild grainy, roasty, coffee-like character with a light malty sweetness that can give a coffee-and-cream impression. Low to medium-high fruitiness. Medium-low earthy or floral hop aroma optional. A light grainy-nutty oatmeal aroma is optional. Medium-low diacetyl optional but typically absent.",
+    "appearance": "Brown to black in color. Thick, creamy, persistent tan- to brown-colored head. Clear, if not opaque.",
+    "flavor": "Similar to the aroma, with a mild roasted coffee, milk chocolate, or coffee-and-cream flavor, and low to moderately-high fruitiness. Oats can add a toasty-nutty, grainy, or earthy flavor. Medium bitterness. Medium-sweet to medium-dry finish, which affects the perception of balance. Malty, roasty, nutty aftertaste. Medium-low earthy or floral hop flavor optional. Medium-low diacetyl optional but typically absent.",
+    "mouthfeel": "Medium-full to full body, with a smooth, silky, velvety, sometimes an almost oily slickness from the oatmeal. Creamy. Medium to medium-high carbonation. Stronger versions may be lightly warming.",
+    "comments": "When judging, allow for differences in balance and interpretation. American versions tend to be more hoppy, less sweet, and less fruity than English examples. Bitterness, sweetness, and oatmeal impression varies. Light use of oatmeal may give a certain silkiness of body and richness of flavor, while heavy use of oatmeal can be fairly intense in flavor with an almost oily mouthfeel and dryish finish.",
+    "history": "A variant of nourishing or invalid stouts around 1900 using oatmeal in the grist, similar to but independent of the development of sweet stout using lactose. An original Scottish version used a significant amount of oat malt. Later went through a shady phase where some English brewers would throw a handful of oats into their parti-gyled stouts in order to legally produce a “healthy” Oatmeal Stout for marketing purposes. Most popular in England between the World Wars, was revived in the craft beer era for export, which helped lead to its adoption as a popular modern American craft beer style that uses a noticeable (not symbolic) quantity of oats.",
+    "characteristic_ingredients": "Pale, caramel, and dark roasted malts (often chocolate) and grains. Oatmeal or malted oats (5-20% or more). Hops primarily for bittering. Can use brewing sugars or syrups. English ale yeast.",
+    "style_comparison": "Most are like a cross between an Irish Extra Stout and a Sweet Stout with oatmeal added. Several variations exist, with the sweeter versions more like a Sweet Stout with oatmeal instead of lactose, and the drier versions more like a more nutty, flavorful Irish Extra Stout. Both tend to emphasize the body and mouthfeel.",
+    "entry_instructions": ""
+   },
+   "vital_statistics_text": "OG: 1.045 - 1.065 IBUs: 25 - 40 FG: 1.010 - 1.018 SRM: 22 - 40 ABV: 4.2 - 5.9%",
+   "vital_statistics": {
+    "og": "1.045 - 1.065",
+    "fg": "1.010 - 1.018",
+    "ibu": "25 - 40",
+    "srm": "22 - 40",
+    "abv": "4.2 - 5.9%"
+   },
+   "commercial_examples_text": "Anderson Valley Barney Flats Oatmeal Stout, Broughton Stout Jock, St-Ambroise Oatmeal Stout, Samuel Smith Oatmeal Stout, Summit Oatmeal Stout, Young's London Stout",
+   "tags_en": [
+    "standard-strength",
+    "dark-color",
+    "top-fermented",
+    "british-isles",
+    "traditional-style",
+    "stout-family",
+    "balanced",
+    "roasty"
+   ],
+   "source_pdf_page_start": 45,
+   "source_guideline_page_start": 29,
+   "tags_ru": [
+    "стандартная крепость",
+    "тёмный цвет",
+    "верховое брожение",
+    "Британские острова",
+    "традиционный стиль",
+    "семейство стаутов",
+    "сбалансированный",
+    "обжаренный"
+   ],
+   "translation_status": "completed"
+  },
+  {
+   "bjcp_id": "16C",
+   "bjcp_heading": "16C. Tropical Stout",
+   "category_id": "16",
+   "category_en": "DARK BRITISH BEER",
+   "category_ru": "Тёмное британское пиво",
+   "name_en": "Tropical Stout",
+   "name_ru": "Тропический стаут",
+   "description_short_ru": "Очень тёмный, сладковатый, фруктовый стаут умеренно высокой крепости с мягкой обжаренностью без жжёной грубости.",
+   "sections_ru": {
+    "overall_impression": "Очень тёмный, сладковатый, фруктовый стаут умеренно высокой крепости с мягкой обжаренностью без жжёной грубости.",
+    "aroma": "Заметная сладость от умеренной до высокой сразу выходит на первый план. Жареный аромат кофе или шоколада — от умеренного до высокого, но без подгорелых тонов. Фруктовость от средней до высокой. Возможны ноты мелассы, лакрицы, жжёного сахара, сухофруктов или винные оттенки. Более крепкие версии могут давать лёгкий, чистый алкогольный штрих. Низкий аромат хмеля допустим. Низкий диацетил также допустим.",
+    "appearance": "Цвет от очень тёмно-коричневого до чёрного. Из-за насыщенного цвета прозрачность обычно плохо различима. Прозрачное, хотя из-за тёмного цвета может казаться непрозрачным. Пена крупная, от желтовато-коричневой до коричневой, с хорошей стойкостью.",
+    "flavor": "Пиво довольно сладкое, с мягкими вкусами тёмных зёрен и сдержанной горечью от умеренно низкой до средней. Обжаренный профиль гладкий, чаще кофейный или шоколадный, но сладкий финал смягчает его в общем балансе. Во вкусе не должно быть жжёного солода и грубой остроты в конце. Эфиры от умеренных до высоких. Возможны тона сладкого тёмного рома, мелассы или жжёного сахара. Низкий вкус хмеля допустим. Диацетил на уровне до умеренно низкого допустим.",
+    "mouthfeel": "Тело от умеренно полного до полного, часто с мягкой, кремовой текстурой. Алкоголь может приятно согревать, но не должен быть жгучим. Карбонизация от средней до умеренно высокой.",
+    "comments": "Для жаркого климата стиль удивительно освежающий. Уровень сладости может заметно различаться. В слове «tropical» речь идёт о происхождении и популярности в тропических регионах, а не о вкусе тропических фруктов от хмеля или фруктовых добавок.",
+    "history": "Местная адаптация Foreign Extra Stout, которую варили с использованием местных ингредиентов и приёмов на Карибах и в других тропических рынках. Горечь здесь ниже, чем у экспортных стаутов, поскольку такое пиво не нужно было перевозить на дальние расстояния и его подстраивали под местные вкусовые предпочтения.",
+    "characteristic_ingredients": "Похож на Sweet Stout, но с более высокой плотностью. Используются светлые и тёмные жареные солода и зерновые. Хмель в основном отвечает за горечь. Для увеличения плотности возможны добавки и сахар. Обычно стиль сбраживают лагерными дрожжами при тёплой температуре.",
+    "style_comparison": "По впечатлению это как более крепкая версия Sweet Stout с более выраженной фруктовостью. Отчасти напоминает некоторые Imperial Stout, но без высокой горечи, мощной или жжёной обжаренности и без заметного позднего охмеления, к тому же с меньшей крепостью. Намного слаще и менее хмелевой, чем American Stout. Также заметно слаще и менее горький, чем сопоставимый по плотности Foreign Extra Stout.",
+    "entry_instructions": ""
+   },
+   "sections_en": {
+    "overall_impression": "A very dark, sweet, fruity, moderately strong stout with smooth, roasty flavors, yet no burnt harshness.",
+    "aroma": "Moderate to high intensity sweetness is prominent. Moderate to high coffee or chocolate roasty aroma, but not burnt. Medium to high fruitiness. May have a molasses, licorice, burnt sugar, dried fruit, or vinous aromatics. Stronger versions can have a subtle, clean aroma of alcohol. Low hop aroma optional. Low diacetyl optional.",
+    "appearance": "Very deep brown to black in color. Clarity usually obscured by deep color. Clear, if not opaque. Large tan to brown head with good retention.",
+    "flavor": "Quite sweet with a smooth dark grain flavors, and restrained, medium-low to medium bitterness. Smooth, roasty flavor, often like coffee or chocolate, although moderated in the balance by the sweet finish. No burnt malt flavor or harsh bite in the finish. Moderate to high fruity esters. Can have a sweet, dark rum, molasses, or burnt sugar-like quality. Low hop flavor optional. Medium-low diacetyl optional.",
+    "mouthfeel": "Medium-full to full body, often with a smooth, creamy character. May have a warming but not hot alcohol presence. Moderate to moderately-high carbonation.",
+    "comments": "Surprisingly refreshing in a hot climate. Sweetness levels can vary significantly. Tropical implies that the beer originated in and is popular in the tropics, not that it has characteristics of tropical fruit from hops or fruit.",
+    "history": "A local adaptation of Foreign Extra Stouts brewed with indigenous ingredients and methods in the Caribbean and other tropical markets. Bitterness lower than export-type stouts since these beers do not have to be shipped abroad, and to suit local palate preferences.",
+    "characteristic_ingredients": "Similar to a Sweet Stout, but higher gravity. Pale and dark roasted malts and grains. Hops mostly for bitterness. May use adjuncts and sugar to boost gravity. Typically made with warm-fermented lager yeast.",
+    "style_comparison": "Tastes like a scaled-up Sweet Stout with higher fruitiness. Similar to some Imperial Stouts without the high bitterness, strong or burnt roastiness, and late hops, and with lower alcohol. Much sweeter and less hoppy than American Stouts. Much sweeter and less bitter than the similar-gravity Foreign Extra Stouts.",
+    "entry_instructions": ""
+   },
+   "vital_statistics_text": "OG: 1.056 - 1.075 IBUs: 30 - 50 FG: 1.010 - 1.018 SRM: 30 - 40 ABV: 5.5 - 8.0%",
+   "vital_statistics": {
+    "og": "1.056 - 1.075",
+    "fg": "1.010 - 1.018",
+    "ibu": "30 - 50",
+    "srm": "30 - 40",
+    "abv": "5.5 - 8.0%"
+   },
+   "commercial_examples_text": "ABC Extra Stout, Bahamian Strong Back Stout, Dragon Stout, Jamaica Stout, Lion Stout, Royal Extra Stout",
+   "tags_en": [
+    "high-strength",
+    "dark-color",
+    "top-fermented",
+    "british-isles",
+    "traditional-style",
+    "stout-family",
+    "malty",
+    "roasty",
+    "sweet"
+   ],
+   "source_pdf_page_start": 46,
+   "source_guideline_page_start": 30,
+   "tags_ru": [
+    "высокая крепость",
+    "тёмный цвет",
+    "верховое брожение",
+    "Британские острова",
+    "традиционный стиль",
+    "семейство стаутов",
+    "солодовый",
+    "обжаренный",
+    "сладкий"
+   ],
+   "translation_status": "completed"
+  },
+  {
+   "bjcp_id": "16D",
+   "bjcp_heading": "16D. Foreign Extra Stout",
+   "category_id": "16",
+   "category_en": "DARK BRITISH BEER",
+   "category_ru": "Тёмное британское пиво",
+   "name_en": "Foreign Extra Stout",
+   "name_ru": "Иностранный экстра-стаут",
+   "description_short_ru": "Очень тёмный, насыщенный, умеренно крепкий и довольно сухой стаут с ярко выраженными обжаренными вкусами.",
+   "sections_ru": {
+    "overall_impression": "Очень тёмный, насыщенный, умеренно крепкий и довольно сухой стаут с ярко выраженными обжаренными вкусами.",
+    "aroma": "Обжаренный аромат от умеренного до высокого: кофе, тёмный шоколад или слегка подгоревшее (жжёное) зерно. Фруктовость от слабой до средней. Возможны сладковатые, паточные, лакричные, сухофруктовые или винные оттенки. Более крепкие версии могут иметь лёгкий, чистый алкогольный тон. Допустим слабый землистый, травянистый или цветочный аромат хмеля. Низкий диацетил допустим.",
+    "appearance": "Цвет от очень тёмно-коричневого до чёрного. Из-за глубины цвета прозрачность обычно плохо различима. Прозрачное, хотя из-за тёмного цвета может казаться непрозрачным. Пена крупная, от желтовато-коричневой до коричневой, с хорошей стойкостью.",
+    "flavor": "Жареный профиль от умеренного до высокого, напоминающий кофе, тёмный шоколад или слегка подгоревшее зерно, но без резкой, колючей жёсткости. Эфиры от слабых до средних. Горечь от средней до высокой. Финал умеренно сухой. Допустим умеренный землистый, травянистый или цветочный вкус хмеля. Диацетил на уровне до умеренно низкого допустим.",
+    "mouthfeel": "Тело от умеренно полного до полного, часто гладкое, иногда слегка кремовое. Алкоголь может приятно согревать, но не должен быть жгучим. Карбонизация от средней до умеренно высокой.",
+    "comments": "Также известен как Foreign Stout, Export Stout и Foreign Export Stout. Исторические версии, по крайней мере до Первой мировой войны, имели ту же начальную плотность, что и «домашние» Extra Stout, но в зависимости от пивоварни могли выходить крепче по алкоголю благодаря длинной вторичной выдержке, где пиво дорабатывали Brettanomyces. Главное отличие между внутренними и экспортными версиями заключалось в уровне охмеления и длительности созревания.",
+    "history": "Сегодня это более крепкие стауты, предназначенные для экспорта, но их история уходит в XVIII–XIX века, когда они были более сильно охмелёнными версиями крепких экспортных стаутов. Изначально пиво выдерживали в чанах, но Guinness отказалась от этой практики в 1950-х. По данным Guinness, Guinness Foreign Extra Stout, изначально называвшийся West India Porter, а позднее Foreign Extra Double Stout, впервые сварили в 1801 году — с «дополнительным количеством хмеля, чтобы придать ему узнаваемый вкус и более долгий срок хранения в жаркую погоду».",
+    "characteristic_ingredients": "Светлые и тёмные жареные солода и зерновые; исторически также могли использоваться коричневые и янтарные солода. Хмель в основном нужен для горечи, чаще английских сортов. Для повышения плотности возможны добавки и сахар.",
+    "style_comparison": "По балансу близок к Irish Extra Stout, но крепче по алкоголю. Не такой масштабный и интенсивный, как Imperial Stout. Лишён той мощной горечи и позднего охмеления, которые характерны для American Stout. По плотности сопоставим с Tropical Stout, но суше в финале и заметно более горький.",
+    "entry_instructions": ""
+   },
+   "sections_en": {
+    "overall_impression": "A very dark, rich, moderately strong, fairly dry stout with prominent roast flavors.",
+    "aroma": "Moderate to high roast, like coffee, dark chocolate, or lightly burnt grain. Low to medium fruitiness. May have a sweet aroma, or molasses, licorice, dried fruit, or vinous aromatics. Stronger versions can have a subtle, clean aroma of alcohol. Low earthy, herbal, or floral hop aroma optional. Low diacetyl optional.",
+    "appearance": "Very deep brown to black in color. Clarity usually obscured by deep color. Clear, if not opaque. Large tan to brown head with good retention.",
+    "flavor": "Moderate to high roast, like coffee, dark chocolate, or lightly burnt grain, although without a sharp bite. Low to medium esters. Medium to high bitterness. Moderately dry finish. Moderate earthy, herbal, or floral hop flavor optional. Medium-low diacetyl optional.",
+    "mouthfeel": "Medium-full to full body, often with a smooth, sometimes creamy character. May have a warming but not hot alcohol presence. Moderate to moderately-high carbonation.",
+    "comments": "Also known as Foreign Stout, Export Stout, and Foreign Export Stout. Historic versions (before WWI, at least) had the same OG as domestic Extra Stouts, but depending on the brewery could have had a higher ABV because it had a long secondary with Brett chewing away at it. The difference between domestic and foreign versions were the hopping and length of maturation.",
+    "history": "Stronger stouts brewed for the export market today, but with a history stretching back to the 18th and 19th centuries when they were more heavily-hopped versions of stronger export stouts. Vatted originally, but Guinness stopped this practice in the 1950s. Guinness Foreign Extra Stout (originally, West India Porter, later Foreign Extra Double Stout) was first brewed in 1801 according to Guinness with “extra hops to give it a distinctive taste and a longer shelf life in hot weather.”",
+    "characteristic_ingredients": "Pale and dark roasted malts and grains, historically also could have used brown and amber malts. Hops mostly for bitterness, typically English varieties. May use adjuncts and sugar to boost gravity.",
+    "style_comparison": "Similar in balance to an Irish Extra Stout, but with more alcohol. Not as big or intense as an Imperial Stout. Lacking the strong bitterness and high late hops of American Stout. Similar gravity as Tropical Stout, but with a drier finish and higher bitterness.",
+    "entry_instructions": ""
+   },
+   "vital_statistics_text": "OG: 1.056 - 1.075 IBUs: 50 - 70 FG: 1.010 - 1.018 SRM: 30 - 40 ABV: 6.3 - 8.0%",
+   "vital_statistics": {
+    "og": "1.056 - 1.075",
+    "fg": "1.010 - 1.018",
+    "ibu": "50 - 70",
+    "srm": "30 - 40",
+    "abv": "6.3 - 8.0%"
+   },
+   "commercial_examples_text": "Coopers Best Extra Stout, Guinness Foreign Extra Stout, The Kernel Export Stout London 1890, La Cumbre Malpais Stout, Pelican Tsunami Export Stout, Ridgeway Foreign Export Stout",
+   "tags_en": [
+    "high-strength",
+    "dark-color",
+    "top-fermented",
+    "british-isles",
+    "traditional-style",
+    "stout-family",
+    "balanced",
+    "roasty"
+   ],
+   "source_pdf_page_start": 46,
+   "source_guideline_page_start": 30,
+   "tags_ru": [
+    "высокая крепость",
+    "тёмный цвет",
+    "верховое брожение",
+    "Британские острова",
+    "традиционный стиль",
+    "семейство стаутов",
+    "сбалансированный",
+    "обжаренный"
+   ],
+   "translation_status": "completed"
+  },
+  {
+   "bjcp_id": "17A",
+   "bjcp_heading": "17A. British Strong Ale",
+   "category_id": "17",
+   "category_en": "STRONG BRITISH ALE",
+   "category_ru": "Крепкий британский эль",
+   "name_en": "British Strong Ale",
+   "name_ru": "Крепкий британский эль",
+   "description_short_ru": "Британский эль заметной крепости, традиционно дображиваемый в бутылке и выдерживаемый в погребе. Допускает широкий диапазон интерпретаций, но обычно сочетает солодовую насыщенность, поздний хмель, эфиры и согревающее тепло алкоголя.",
+   "sections_ru": {
+    "overall_impression": "Британский эль заметной крепости, традиционно дображиваемый в бутылке и выдерживаемый в погребе. Допускает широкий диапазон интерпретаций, но чаще всего сочетает в разных пропорциях солодовую насыщенность, поздний хмель и горечь, фруктовые эфиры и согревающее алкогольное тепло. Вклад солода и добавок может очень сильно меняться, но итоговый вкус должен оставаться цельным и приятным.",
+    "aroma": "Солодово-сладкий аромат с фруктовыми эфирами, нередко со сложным сочетанием сухофруктов, карамели, орехов, ириса и других тонов специальных солодов. Небольшие алкогольные ноты допустимы, но не должны быть жгучими или растворительными. Хмелевой аромат тоже может сильно варьировать, хотя чаще встречаются землистые, смолистые, фруктовые или цветочные оттенки. Баланс может быть очень разным, но в большинстве образцов ощущается комбинация солода, фруктов, хмеля и алкоголя в разных интенсивностях.",
+    "appearance": "Цвет от янтарного до тёмного красновато-коричневого; многие образцы довольно тёмные. Обычно пиво прозрачное, хотя самые тёмные версии могут казаться почти непрозрачными. Пена от умеренной до низкой, кремовая или светло-бежевая, со средней стойкостью.",
+    "flavor": "Солодовый характер от среднего до высокого, часто насыщенный, с ореховыми, ирисочными или карамельными тонами. В более тёмных версиях иногда встречаются лёгкие шоколадные оттенки. Дополнительную сложность могут давать пивоваренные сахара. Баланс обычно солодовый, но охмеление может быть и вполне заметным, из-за чего восприятие солодовости меняется. Фруктовые эфиры умеренные и обычны; нередко они уходят в тёмные или сушёные фрукты. Финал — от умеренно сухого до слегка сладковатого. Крепость по алкоголю должна ощущаться, но не доминировать. Низкий диацетил допустим, хотя в целом нежелателен.",
+    "mouthfeel": "Тело от среднего до полного, вязковатое, «жевательное». Алкогольное тепло обычно заметно и здесь уместно. Карбонизация от низкой до умеренной. Текстура гладкая.",
+    "comments": "Это скорее удобная конкурсная категория, чем один жёстко очерченный стиль: крепость и характер образцов могут сильно различаться. Она занимает пространство между пивом обычной плотности и Barley Wine. Сюда могут попадать светлые солодово-хмелевые крепкие эли, английские winter warmer, крепкие тёмные mild, менее масштабные Burton ale и другие необычные британские сорта в этом диапазоне плотности, не попадающие в соседние категории. Судьям стоит допускать широкий спектр интерпретаций: если пиво укладывается в диапазон крепости и при этом сохраняет интересный британский характер, оно, скорее всего, уместно в этом стиле.",
+    "history": "Это сборная категория из нескольких второстепенных традиций, каждая со своей собственной историей. Не стоит выводить из неё какое-то единое историческое происхождение — такого намерения здесь нет. По сути это современная британская специальная конкурсная категория, где главным «особым» признаком выступает уровень алкоголя.",
+    "characteristic_ingredients": "Засыпь варьирует, но часто строится на светлом базовом солоде с карамельными и специальными солодами. Более тёмные образцы могут использовать небольшое количество тёмных солодов, например шоколадного или жжёного. Сахаристые и крахмалистые добавки — кукуруза, ячменные хлопья, пшеница и т. п. — вполне обычны. Финишное охмеление традиционно английское.",
+    "style_comparison": "По диапазону плотности сильно пересекается с Old Ale, но не должен иметь характера выдержки. Интерпретации возможны самые разные. Не должен быть таким же богатым и мощным, как English Barley Wine. Крепче даже самых крепких повседневных Strong Bitter, British Brown Ale и English Porter. По характеру специальных солодов и/или сахара выраженнее, чем American Strong Ale.",
+    "entry_instructions": ""
+   },
+   "sections_en": {
+    "overall_impression": "An ale of respectable alcoholic strength, traditionally bottled-conditioned and cellared. Can have a wide range of interpretations, but most will have varying degrees of malty richness, late hops and bitterness, fruity esters, and alcohol warmth. The malt and adjunct flavors and intensity can vary widely, but any combination should result in an agreeable palate experience.",
+    "aroma": "Malty-sweet with fruity esters, often with a complex blend of dried-fruit, caramel, nuts, toffee, or other specialty malt aromas. Some alcohol notes are acceptable, but shouldn’t be hot or solventy. Hop aromas can vary widely, but typically have earthy, resiny, fruity, or floral notes. The balance can vary widely, but most examples will have a blend of malt, fruit, hops, and alcohol in varying intensities.",
+    "appearance": "Amber to dark reddish-brown color; many are fairly dark. Generally clear, although darker versions may be almost opaque. Moderate to low cream- to light tan-colored head with average retention.",
+    "flavor": "Medium to high malt character often rich with nutty, toffee, or caramel flavors. Light chocolate notes are sometimes found in darker beers. May have interesting flavor complexity from brewing sugars. Balance is often malty, but may be well hopped, which affects the impression of maltiness. Moderate fruity esters are common, often with a dark fruit or dried fruit character. The finish may vary from medium dry to somewhat sweet. Alcoholic strength should be evident, not overwhelming. Low diacetyl optional, but generally not desirable.",
+    "mouthfeel": "Medium to full, chewy body. Alcohol warmth is often evident and always welcome. Low to moderate carbonation. Smooth texture.",
+    "comments": "An entry category more than a style; the strength and character of examples can vary widely. Fits in the style space between normal gravity beers and Barley Wines. Can include pale malty-hoppy beers, English winter warmers, strong dark milds, smaller Burton ales, and other unique beers in the general gravity range that don’t fit other categories. Judges should allow for a significant range in character, as long as the beer is within the alcohol strength range and has an interesting “British” character, it likely fits the style.",
+    "history": "A collection of unrelated minor styles, each of which has its own heritage. Do not use this category grouping to infer a historical relationship between examples – none is intended. This is a modern British specialty judging category where the “special” attribute is alcohol level.",
+    "characteristic_ingredients": "Grists vary, often based on pale malt with caramel and specialty malts. Some darker examples suggest a light use of dark malts (e.g., chocolate, black malt). Sugary and starchy adjuncts (e.g., maize, flaked barley, wheat) are common. Finishing hops are traditionally English.",
+    "style_comparison": "Significant overlap in gravity with Old Ale, but not having an aged character. A wide range of interpretations is possible. Should not be as rich or strong as an English Barley Wine. Stronger than the stronger everyday Strong Bitter, British Brown Ale, and English Porter. More specialty malt or sugar character than American Strong Ale.",
+    "entry_instructions": ""
+   },
+   "vital_statistics_text": "OG: 1.055 - 1.080 IBUs: 30 - 60 FG: 1.015 - 1.022 SRM: 8 - 22 ABV: 5.5 - 8.0%",
+   "vital_statistics": {
+    "og": "1.055 - 1.080",
+    "fg": "1.015 - 1.022",
+    "ibu": "30 - 60",
+    "srm": "8 - 22",
+    "abv": "5.5 - 8.0%"
+   },
+   "commercial_examples_text": "Fuller’s 1845, Harvey’s Elizabethan Ale, J.W. Lees Moonraker, McEwan’s Champion, Samuel Smith’s Winter Welcome, Shepherd Neame 1698",
+   "tags_en": [
+    "high-strength",
+    "amber-color",
+    "top-fermented",
+    "british-isles",
+    "traditional-style",
+    "strong-ale-family",
+    "malty"
+   ],
+   "source_pdf_page_start": 47,
+   "source_guideline_page_start": 31,
+   "tags_ru": [
+    "высокая крепость",
+    "янтарный цвет",
+    "верховое брожение",
+    "Британские острова",
+    "традиционный стиль",
+    "семейство крепких элей",
+    "солодовый"
+   ],
+   "translation_status": "completed"
+  },
+  {
+   "bjcp_id": "17B",
+   "bjcp_heading": "17B. Old Ale",
+   "category_id": "17",
+   "category_en": "STRONG BRITISH ALE",
+   "category_ru": "Крепкий британский эль",
+   "name_en": "Old Ale",
+   "name_ru": "Старый эль",
+   "description_short_ru": "Английский эль выше средней крепости, обычно менее мощный, чем English Barley Wine, но чаще солодовый и согревающий. В хорошем образце заметны положительные эффекты выдержки.",
+   "sections_ru": {
+    "overall_impression": "Английский эль выше средней крепости, обычно не такой мощный и богатый, как English Barley Wine, но чаще с выраженной солодовой основой. Согревающий. В хорошем образце заметны положительные эффекты зрелости и выдержки.",
+    "aroma": "Солодово-сладкий аромат с фруктовыми эфирами, часто со сложным сочетанием сухофруктов, винных тонов, карамели, мелассы, ириса, светлой патоки и других оттенков специальных солодов. Допустимы алкогольные и ореховые окислительные ноты, напоминающие хороший херес, портвейн или мадеру. Хмелевой аромат, как правило, отсутствует.",
+    "appearance": "Цвет от глубокого янтарного до очень тёмного красновато-коричневого, хотя большинство образцов довольно тёмные. Выдержка и окисление могут ещё сильнее затемнять пиво. Прозрачное, но может казаться почти непрозрачным. Пена от умеренной до низкой, кремовая или светло-бежевая; стойкость от средней до слабой.",
+    "flavor": "Солодовый характер от среднего до высокого, с роскошной солодовой сложностью, часто с ореховыми, карамельными или паточными оттенками. Лёгкие шоколадные или жареные солодовые тона допустимы, но не должны выходить на первый план. Баланс обычно солодово-сладкий, хотя охмеление тоже может быть вполне заметным; восприятие горечи нередко зависит от степени выдержки. Эфиры от умеренных до высоких обычны и могут уходить в сухофрукты или винные ноты. Финал — от сухого до слегка сладковатого. Длительная выдержка может вносить окислительные оттенки, напоминающие зрелый херес, портвейн или мадеру. Алкогольная крепость должна ощущаться, но не подавлять. Низкий диацетил допустим.",
+    "mouthfeel": "Тело от среднего до полного, плотное и «жевательное», хотя у более старых образцов оно может быть легче из-за продолжающегося выбраживания во время выдержки. Алкогольное тепло обычно заметно и здесь весьма уместно. Карбонизация от низкой до умеренной, в зависимости от возраста и условий выдержки. Возможна лёгкая кислотность, а при выдержке в дереве — и некоторая танинность; оба признака допустимы.",
+    "comments": "Крепость и характер варьируют очень широко. Главная определяющая черта стиля — именно впечатление выдержки, которое может проявляться по-разному: через сложность, окисление, кожаные тона, винность и т. п. Многие из этих оттенков в других стилях считались бы дефектами, но здесь они приемлемы, если в итоге пиво остаётся приятно питким и сложным. Это, однако, не означает, что откровенно испорченное и труднопиткое пиво вдруг становится «в стиле». Old Peculier — знаменитый, но довольно самобытный пример, заметно отличающийся от большинства других Old Ale.",
+    "history": "Исторически это выдержанный эль, который либо использовали как stock ale для купажирования, либо пили в полной крепости. Термины stale и stock здесь относятся именно к пиву, которое долго выдерживали или хранили. Сегодня в Британии прослеживаются как минимум два отчётливых направления: более слабые невыдержанные разливные версии, близкие к mild около 4,5% ABV, и более крепкие выдержанные версии, чаще всего в диапазоне 6–8% и выше.",
+    "characteristic_ingredients": "Состав может сильно различаться, хотя в целом он близок к British Strong Ale. При этом решающим фактором финального профиля здесь становится не столько сама варка, сколько характер выдержки и обращения с пивом.",
+    "style_comparison": "Частично перекрывается с British Strong Ale и нижней частью диапазона English Barley Wine, но Old Ale всегда должен нести в себе характер выдержки. Выше примерно 7% ABV граница между Old Ale и Barley Wine уже довольно условна и обычно сводится к тому, насколько явно в пиве выражен зрелый, выдержанный характер.",
+    "entry_instructions": ""
+   },
+   "sections_en": {
+    "overall_impression": "A stronger-than-average English ale, though usually not as strong or rich as an English Barley Wine, but usually malty. Warming. Shows positive maturation effects of a well-kept, aged beer.",
+    "aroma": "Malty-sweet with fruity esters, often with a complex blend of dried fruit, vinous, caramel, molasses, toffee, light treacle, or other specialty malt aromas. Some alcohol and nutty oxidative notes are acceptable, akin to those found in Sherry, Port, or Madeira. Hop aroma not usually present.",
+    "appearance": "Deep amber to very dark reddish-brown color, but most are fairly dark. Age and oxidation may darken the beer further. Clear, but can be almost opaque. Moderate to low cream- to light tan-colored head; retention average to poor.",
+    "flavor": "Medium to high malt character with a luscious malt complexity, often with nut, caramel, or molasses-like flavors. Light chocolate or roasted malt flavors are optional, but should never be prominent. Balance is often malty-sweet, but may be well hopped; the impression of bitterness often depends on amount of aging. Moderate to high fruity esters are common, and may take on a dried-fruit or vinous character. The finish may vary from dry to somewhat sweet. Extended aging may contribute oxidative flavors similar to a fine old Sherry, Port, or Madeira. Alcoholic strength should be evident, though not overwhelming. Low diacetyl optional.",
+    "mouthfeel": "Medium to full, chewy body, although older examples may be lower in body due to continued attenuation during conditioning. Alcohol warmth is often evident and always welcome. Low to moderate carbonation, depending on age and conditioning. Light acidity may be present, as well as some tannin if wood-aged; both are optional.",
+    "comments": "Strength and character vary widely. The predominant defining quality for this style is the impression of age, which can manifest itself in different ways (complexity, oxidation, leather, vinous qualities, etc.). Many of these qualities are otherwise faults, but if the resulting character of the beer is pleasantly drinkable and complex, then those characteristics are acceptable. In no way should those allowable characteristics be interpreted as making an undrinkably off-flavored beer as somehow in style. Old Peculier is a well-known but fairly unique beer that is quite different than other Old Ales.",
+    "history": "Historically, an aged ale used as stock ales for blending or enjoyed at full strength (stale or stock refers to beers that were aged or stored for a significant period of time). There are at least two definite types in Britain today, weaker, unaged draught ones that are similar to milds of around 4.5%, and stronger aged ones that are often 6-8% or more.",
+    "characteristic_ingredients": "Composition varies, although generally similar to British Strong Ales. The age character is the biggest driver of the final style profile, which is more handling than brewing.",
+    "style_comparison": "Roughly overlapping the British Strong Ale and the lower end of the English Barley Wine styles, but always having an aged quality. The distinction between an Old Ale and a Barley Wine is somewhat arbitrary above 7% ABV, and generally means having a more significant aged quality.",
+    "entry_instructions": ""
+   },
+   "vital_statistics_text": "OG: 1.055 - 1.088 IBUs: 30 - 60 FG: 1.015 - 1.022 SRM: 10 - 22 ABV: 5.5 - 9.0%",
+   "vital_statistics": {
+    "og": "1.055 - 1.088",
+    "fg": "1.015 - 1.022",
+    "ibu": "30 - 60",
+    "srm": "10 - 22",
+    "abv": "5.5 - 9.0%"
+   },
+   "commercial_examples_text": "Avery Old Jubilation, Berlina Old Ale, Greene King Strong Suffolk Ale, Marston Owd Roger, Theakston Old Peculier",
+   "tags_en": [
+    "high-strength",
+    "amber-color",
+    "top-fermented",
+    "british-isles",
+    "traditional-style",
+    "strong-ale-family",
+    "malty",
+    "aged"
+   ],
+   "source_pdf_page_start": 47,
+   "source_guideline_page_start": 31,
+   "tags_ru": [
+    "высокая крепость",
+    "янтарный цвет",
+    "верховое брожение",
+    "Британские острова",
+    "традиционный стиль",
+    "семейство крепких элей",
+    "солодовый",
+    "выдержанный"
+   ],
+   "translation_status": "completed"
+  }
+ ]
 }

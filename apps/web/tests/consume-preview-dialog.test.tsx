@@ -13,7 +13,6 @@ import {
   computeOverbookedInventoryItems,
   ConsumeInventoryDialog,
   ConsumeLineRow,
-  getBlockingShortLines,
   type SubstitutionSelections
 } from "../features/brew-batches/components/consume-preview-dialog";
 import type { BrewBatchConsumePlanLine } from "../features/brew-batches/contracts";
@@ -68,7 +67,7 @@ describe("ConsumeLineRow — рендер по видам строки пред�
     expect(html).not.toContain("остаток");
   });
 
-  it("exact_short + exactClamps=true (дрожжи): тёплый (warning) стиль, «спишем остаток», без замены", () => {
+  it("exact_short + exactClamps=true (дрожжи): тёплый (warning) стиль, «спишем остаток», без замены, не блокирует", () => {
     const html = renderRow({
       recipeIngredientId: "ri-2",
       displayName: "US-05",
@@ -86,13 +85,12 @@ describe("ConsumeLineRow — рендер по видам строки пред�
     expect(html).toContain("−22 г");
     expect(html).toContain("На складе 11 г");
     expect(html).toContain("спишем остаток");
-    expect(html).not.toContain("не хватит");
     expect(html).toContain("text-warning");
     expect(html).not.toContain("checkbox");
     expect(html).not.toContain("вместо «");
   });
 
-  it("exact_short + exactClamps=false (солод): «не хватит» + та же замена, что у substitute_available", () => {
+  it("exact_short + exactClamps=false (солод): та же формулировка «спишем остаток» + доступна замена, не блокирует", () => {
     const line: BrewBatchConsumePlanLine = {
       recipeIngredientId: "ri-2b",
       displayName: "Munich BrandA",
@@ -110,8 +108,10 @@ describe("ConsumeLineRow — рендер по видам строки пред�
 
     const uncheckedHtml = renderRow(line, { checked: false, inventoryItemId: "ii-sub" });
     expect(uncheckedHtml).toContain("На складе 500 г");
-    expect(uncheckedHtml).toContain("не хватит");
-    expect(uncheckedHtml).not.toContain("спишем остаток");
+    // Формулировка одна на оба значения exactClamps — сервер клампит короткую
+    // строку в любом случае (Ф4, partial-режим), замена лишь предпочтительнее.
+    expect(uncheckedHtml).toContain("спишем остаток");
+    expect(uncheckedHtml).not.toContain("не хватит");
     expect(uncheckedHtml).toContain("вместо «Munich BrandA»");
     expect(uncheckedHtml).toContain("Munich BrandB");
     expect(uncheckedHtml).toContain("EBC 16 ↔ 18");
@@ -180,7 +180,7 @@ describe("ConsumeLineRow — рендер по видам строки пред�
     expect(html).toMatch(/<select[^>]*disabled/);
   });
 
-  it("missing: имя + «Нет на складе» + ссылки «Найти в каталоге» и «Чего не хватает»", () => {
+  it("missing: имя + «будет пропущено» + ссылки «Найти в каталоге» и «Чего не хватает»", () => {
     const html = renderRow({
       recipeIngredientId: "ri-5",
       displayName: "Каскад",
@@ -195,7 +195,7 @@ describe("ConsumeLineRow — рендер по видам строки пред�
     });
 
     expect(html).toContain("Каскад");
-    expect(html).toContain("Нет на складе");
+    expect(html).toContain("Нет на складе — будет пропущено");
     expect(html).toContain('href="/catalog/system/abc"');
     expect(html).toContain("Найти в каталоге");
     expect(html).toContain('href="/app/shopping"');
@@ -218,47 +218,6 @@ describe("ConsumeLineRow — рендер по видам строки пред�
 
     expect(html).not.toContain("Найти в каталоге");
     expect(html).toContain('href="/app/shopping"');
-  });
-});
-
-// Ф1(в): чистый гард — список строк, блокирующих подтверждение (короткий exact,
-// не клампится, замена не отмечена). Тестируется без DOM.
-describe("getBlockingShortLines — чистая функция", () => {
-  const shortLine = (overrides: Partial<BrewBatchConsumePlanLine> = {}): BrewBatchConsumePlanLine => ({
-    recipeIngredientId: "ri-short",
-    displayName: "Munich BrandA",
-    category: "fermentable",
-    requiredLabel: "2 кг",
-    requiredQuantityNormalized: 2000,
-    kind: "exact_short",
-    exactClamps: false,
-    exact: { inventoryItemId: "ii-exact", name: "Munich BrandA", availableQuantity: 500, availableLabel: "500 г", isShort: true, comparison: null },
-    substitutes: [
-      { inventoryItemId: "ii-sub", name: "Munich BrandB", availableQuantity: 5000, availableLabel: "5 кг", isShort: false, comparison: null }
-    ],
-    catalogSearchHref: null,
-    ...overrides
-  });
-
-  it("короткий exact без клампа и без отмеченной замены — блокирует", () => {
-    const lines = [shortLine()];
-    expect(getBlockingShortLines(lines, {})).toHaveLength(1);
-  });
-
-  it("тот же короткий exact, но замена отмечена — не блокирует", () => {
-    const lines = [shortLine()];
-    const selections: SubstitutionSelections = { "ri-short": { checked: true, inventoryItemId: "ii-sub" } };
-    expect(getBlockingShortLines(lines, selections)).toHaveLength(0);
-  });
-
-  it("короткий exact с exactClamps=true (дрожжи) — не блокирует (кламп легален)", () => {
-    const lines = [shortLine({ exactClamps: true, substitutes: [] })];
-    expect(getBlockingShortLines(lines, {})).toHaveLength(0);
-  });
-
-  it("kind=exact (не short) — не блокирует", () => {
-    const lines = [shortLine({ kind: "exact", exact: { inventoryItemId: "ii-exact", name: "Munich BrandA", availableQuantity: 5000, availableLabel: "5 кг", isShort: false, comparison: null } })];
-    expect(getBlockingShortLines(lines, {})).toHaveLength(0);
   });
 });
 
@@ -352,5 +311,42 @@ describe("computeOverbookedInventoryItems — чистая функция", () =
       substitutes: [{ inventoryItemId: "ii-shared", name: "Позиция", availableQuantity: 1000, availableLabel: "1 кг", isShort: true, comparison: null }]
     });
     expect(computeOverbookedInventoryItems([lineSub], {})).toEqual([]);
+  });
+
+  // П0-регрессия: спрос считался ПОЛНОЙ потребностью против остатка, а не
+  // клампованной величиной — одиночная короткая строка без замены сама себя
+  // объявляла overbooked и намертво блокировала подтверждение списания всей
+  // партии (списание ведь всегда частичное, Ф4, сервер сам клампит остаток).
+  it("одиночная короткая exact_short строка без замены — спрос клампуется остатком, НЕ overbooked", () => {
+    const lineShort = exactLine({
+      recipeIngredientId: "ri-short",
+      kind: "exact_short",
+      requiredQuantityNormalized: 5000,
+      exact: { inventoryItemId: "ii-short", name: "Позиция", availableQuantity: 3000, availableLabel: "3 кг", isShort: true, comparison: null },
+      substitutes: []
+    });
+    expect(computeOverbookedInventoryItems([lineShort], {})).toEqual([]);
+  });
+
+  it("две короткие exact_short строки бронируют одну и ту же позицию — сумма клампов превышает остаток, overbooked", () => {
+    const lineA = exactLine({
+      recipeIngredientId: "ri-short-a",
+      kind: "exact_short",
+      requiredQuantityNormalized: 5000,
+      exact: { inventoryItemId: "ii-shared-short", name: "Позиция", availableQuantity: 3000, availableLabel: "3 кг", isShort: true, comparison: null }
+    });
+    const lineB = exactLine({
+      recipeIngredientId: "ri-short-b",
+      kind: "exact_short",
+      requiredQuantityNormalized: 5000,
+      exact: { inventoryItemId: "ii-shared-short", name: "Позиция", availableQuantity: 3000, availableLabel: "3 кг", isShort: true, comparison: null }
+    });
+    const overbooked = computeOverbookedInventoryItems([lineA, lineB], {});
+    expect(overbooked).toHaveLength(1);
+    expect(overbooked[0]!.inventoryItemId).toBe("ii-shared-short");
+    // Каждая строка клампуется остатком (3000), но их ДВЕ на одну позицию —
+    // 3000 + 3000 = 6000 > 3000, настоящее двойное бронирование.
+    expect(overbooked[0]!.demandNormalized).toBe(6000);
+    expect(overbooked[0]!.availableQuantity).toBe(3000);
   });
 });

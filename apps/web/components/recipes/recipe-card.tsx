@@ -42,7 +42,7 @@ export function RecipeCard({
   const authorName = recipe.author.displayName ?? "Автор";
 
   return (
-    <article className="group relative overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-sm transition hover:border-border hover:shadow-md">
+    <article className="group relative overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-sm transition hover:border-border hover:shadow-md skin-hop:duration-200 skin-hop:hover:-translate-y-0.5">
       <Link
         href={`/recipes/${recipe.slug}`}
         aria-label={recipe.name}

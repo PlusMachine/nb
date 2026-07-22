@@ -522,6 +522,30 @@ export const buildIngredientPickerResultRows = ({
   return rows;
 };
 
+// Идентификатор строки — тот же, что и в key= листбокса ниже (`${source}:${id}`
+// для одиночной, `group:${key}` для группы одноимённых), нужен, чтобы найти
+// строку-разделитель rescue без завязки на индекс/ссылку на объект строки.
+export const resolveIngredientPickerRowKey = (row: IngredientPickerResultRow): string => (
+  row.kind === "single" ? `${row.item.source}:${row.item.id}` : `group:${row.key}`
+);
+
+// Rescue-выдача (С4): ключ ПЕРВОЙ строки выпадашки, у которой совпадение —
+// рескью (раскладка/token-scatter/фаззи) — перед ней рендерится разделитель
+// «Возможно, вы имели в виду:». У строки-группы (Б5) признак берётся с
+// representative (та же запись, что показывается пользователю до разворота).
+// null — рескью-строк нет, разделитель не рендерится.
+export const resolveFirstIngredientPickerRescueRowKey = (
+  rows: IngredientPickerResultRow[]
+): string | null => {
+  for (const row of rows) {
+    const representative = row.kind === "single" ? row.item : row.representative;
+    if (representative.matchRescue) {
+      return resolveIngredientPickerRowKey(row);
+    }
+  }
+  return null;
+};
+
 // Дефект живого прогона: сервер отдаёт срез (limit) результатов, и при
 // одинаковом score порядок между запросами нестабилен — то же одноимённое
 // название может попасть в группу то 6, то 10, то всеми 17 экземплярами.
@@ -2627,6 +2651,13 @@ export const IngredientPicker = ({
 
   const showGroupHeaders = !category && Object.keys(groupedRows).length > 1;
 
+  // Rescue-выдача (С4): ключ строки, перед которой нужно вставить разделитель
+  // «Возможно, вы имели в виду:» — см. resolveFirstIngredientPickerRescueRowKey.
+  const firstRescueRowKey = useMemo(
+    () => resolveFirstIngredientPickerRescueRowKey(visibleRows),
+    [visibleRows]
+  );
+
   // Дефект живого прогона: до тех пор пока сервер не отдал весь набор
   // результатов, count строки-группы недостоверен (см.
   // isIngredientPickerFullResultSetLoaded) — прячем число, оставляем маркер.
@@ -3139,36 +3170,47 @@ export const IngredientPicker = ({
               ) : null}
               {rows.map((row) => {
                 const index = visibleRows.indexOf(row);
+                const rowKey = resolveIngredientPickerRowKey(row);
+                // Rescue-выдача (С4): разделитель перед первой строкой, чья
+                // выдача — рескью (не завязан на visibleRows/activeIndex, чисто
+                // визуальный маркер вне role="option").
+                const rescueDivider = rowKey === firstRescueRowKey ? (
+                  <div className="bg-muted px-3 py-1 text-xs text-muted-foreground">
+                    Возможно, вы имели в виду:
+                  </div>
+                ) : null;
 
                 if (row.kind === "single") {
                   const item = row.item;
                   return (
-                    <div
-                      key={`${item.source}:${item.id}`}
-                      role="option"
-                      aria-selected={index === activeIndex}
-                      className={`px-3 py-2 text-sm hover:bg-accent ${index === activeIndex ? "bg-accent" : ""}`}
-                      onPointerDown={(event) => event.preventDefault()}
-                    >
-                      <div className="flex items-start gap-2">
-                        <button
-                          type="button"
-                          onClick={() => activateRow(row)}
-                          className="min-w-0 flex-1 text-left"
-                        >
-                          <IngredientPickerResultRowFields item={item} />
-                        </button>
-                        <IngredientFavoriteToggle
-                          reference={{
-                            source: item.source,
-                            id: item.id
-                          }}
-                          initialFavorite={item.isFavorite ?? false}
-                          suppressParentInteraction
-                          label={item.isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
-                        />
+                    <React.Fragment key={rowKey}>
+                      {rescueDivider}
+                      <div
+                        role="option"
+                        aria-selected={index === activeIndex}
+                        className={`px-3 py-2 text-sm hover:bg-accent ${index === activeIndex ? "bg-accent" : ""}`}
+                        onPointerDown={(event) => event.preventDefault()}
+                      >
+                        <div className="flex items-start gap-2">
+                          <button
+                            type="button"
+                            onClick={() => activateRow(row)}
+                            className="min-w-0 flex-1 text-left"
+                          >
+                            <IngredientPickerResultRowFields item={item} />
+                          </button>
+                          <IngredientFavoriteToggle
+                            reference={{
+                              source: item.source,
+                              id: item.id
+                            }}
+                            initialFavorite={item.isFavorite ?? false}
+                            suppressParentInteraction
+                            label={item.isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
+                          />
+                        </div>
                       </div>
-                    </div>
+                    </React.Fragment>
                   );
                 }
 
@@ -3176,39 +3218,42 @@ export const IngredientPicker = ({
                 // раскрывает список производителей вместо выбора.
                 const isGroupExpanded = expandedGroupKey === row.key;
                 return (
-                  <div key={`group:${row.key}`}>
-                    <div
-                      role="option"
-                      aria-selected={index === activeIndex}
-                      aria-expanded={isGroupExpanded}
-                      className={`px-3 py-2 text-sm hover:bg-accent ${index === activeIndex ? "bg-accent" : ""}`}
-                      onPointerDown={(event) => event.preventDefault()}
-                    >
-                      <button
-                        type="button"
-                        onClick={() => activateRow(row)}
-                        className="flex w-full min-w-0 items-center gap-2 text-left"
-                        data-testid="ingredient-picker-group-row"
+                  <React.Fragment key={rowKey}>
+                    {rescueDivider}
+                    <div>
+                      <div
+                        role="option"
+                        aria-selected={index === activeIndex}
+                        aria-expanded={isGroupExpanded}
+                        className={`px-3 py-2 text-sm hover:bg-accent ${index === activeIndex ? "bg-accent" : ""}`}
+                        onPointerDown={(event) => event.preventDefault()}
                       >
-                        <IngredientPickerGroupRowFields
-                          row={row}
-                          isExpanded={isGroupExpanded}
-                          isFullResultSetLoaded={isGroupCountTrustworthy}
-                        />
-                      </button>
-                    </div>
-                    {isGroupExpanded ? (
-                      <div className="border-t border-border bg-muted/40 py-1" data-testid="ingredient-picker-group-members">
-                        {row.items.map((memberItem) => (
-                          <IngredientPickerGroupMemberRow
-                            key={`${memberItem.source}:${memberItem.id}`}
-                            item={memberItem}
-                            onSelect={commitSelection}
+                        <button
+                          type="button"
+                          onClick={() => activateRow(row)}
+                          className="flex w-full min-w-0 items-center gap-2 text-left"
+                          data-testid="ingredient-picker-group-row"
+                        >
+                          <IngredientPickerGroupRowFields
+                            row={row}
+                            isExpanded={isGroupExpanded}
+                            isFullResultSetLoaded={isGroupCountTrustworthy}
                           />
-                        ))}
+                        </button>
                       </div>
-                    ) : null}
-                  </div>
+                      {isGroupExpanded ? (
+                        <div className="border-t border-border bg-muted/40 py-1" data-testid="ingredient-picker-group-members">
+                          {row.items.map((memberItem) => (
+                            <IngredientPickerGroupMemberRow
+                              key={`${memberItem.source}:${memberItem.id}`}
+                              item={memberItem}
+                              onSelect={commitSelection}
+                            />
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
+                  </React.Fragment>
                 );
               })}
             </div>

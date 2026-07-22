@@ -26,10 +26,12 @@ import {
   ingredientPickerMaltQuickStartFamilies,
   normalizeIngredientSearchResponse,
   isIngredientPickerFullResultSetLoaded,
+  resolveFirstIngredientPickerRescueRowKey,
   resolveIngredientPickerGroupKey,
   resolveIngredientPickerLoadingLabel,
   resolveIngredientPickerNextExpandedGroupKey,
   resolveIngredientPickerRowActivation,
+  resolveIngredientPickerRowKey,
   resolveIngredientPickerVisibleRecentItems,
   resolveIngredientPickerRowContent,
   resolveIngredientPickerRequestedLimit,
@@ -2269,5 +2271,59 @@ describe("Б5 — группировка одноимённых записей �
     expect(fullSetHtml).not.toContain("EBC");
     // раскрыто — chevron развёрнут (rotate-180)
     expect(fullSetHtml).toContain("rotate-180");
+  });
+});
+
+// С4 — rescue-выдача: ключ строки, перед которой рендерится разделитель
+// «Возможно, вы имели в виду:» (см. resolveFirstIngredientPickerRescueRowKey
+// в ingredient-picker.tsx).
+describe("С4 — resolveFirstIngredientPickerRescueRowKey", () => {
+  const buildItem = (overrides: Record<string, unknown> = {}) => buildSuggestionItem({
+    id: "item-1",
+    ...overrides
+  });
+
+  it("null, если ни у одной строки нет matchRescue", () => {
+    const rows = [
+      { kind: "single" as const, item: buildItem({ id: "a" }) },
+      { kind: "single" as const, item: buildItem({ id: "b" }) }
+    ];
+
+    expect(resolveFirstIngredientPickerRescueRowKey(rows)).toBeNull();
+  });
+
+  it("ключ первой одиночной строки с matchRescue", () => {
+    const exactItem = buildItem({ id: "a" });
+    const rescueItem = buildItem({ id: "b", matchRescue: "fuzzy" });
+    const rows = [
+      { kind: "single" as const, item: exactItem },
+      { kind: "single" as const, item: rescueItem }
+    ];
+
+    expect(resolveFirstIngredientPickerRescueRowKey(rows)).toBe(resolveIngredientPickerRowKey(rows[1]!));
+    expect(resolveFirstIngredientPickerRescueRowKey(rows)).toBe("catalog:b");
+  });
+
+  it("для строки-группы признак берётся с representative, не с рядовых членов", () => {
+    const representative = buildItem({ id: "rep", matchRescue: "scatter" });
+    const member = buildItem({ id: "member" });
+    const groupRow = {
+      kind: "group" as const,
+      key: resolveIngredientPickerGroupKey(representative),
+      items: [representative, member],
+      representative
+    };
+
+    expect(resolveFirstIngredientPickerRescueRowKey([groupRow])).toBe(resolveIngredientPickerRowKey(groupRow));
+  });
+
+  it("останавливается на ПЕРВОЙ rescue-строке — не на второй", () => {
+    const rows = [
+      { kind: "single" as const, item: buildItem({ id: "a" }) },
+      { kind: "single" as const, item: buildItem({ id: "b", matchRescue: "layout" }) },
+      { kind: "single" as const, item: buildItem({ id: "c", matchRescue: "layout" }) }
+    ];
+
+    expect(resolveFirstIngredientPickerRescueRowKey(rows)).toBe("catalog:b");
   });
 });

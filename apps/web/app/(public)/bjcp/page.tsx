@@ -4,6 +4,8 @@ import { getBjcpCatalogData } from "@nb/content";
 
 import { BjcpCatalog } from "@/components/content/bjcp-catalog";
 import { BjcpStyleIndex } from "@/components/content/bjcp-style-index";
+import { getSectionOgImage } from "@/features/og/section";
+import { getServerEnv } from "@/lib/env";
 
 const title = "Стили пива — справочник BJCP 2021";
 const description = "Поиск по стилям BJCP, режим семейной навигации для обычного пользователя и строгий просмотр по официальным категориям BJCP 2021.";
@@ -20,7 +22,8 @@ export const metadata: Metadata = {
     title,
     description,
     url: "/bjcp",
-    siteName: "NB"
+    siteName: getServerEnv().SITE_NAME,
+    images: [getSectionOgImage("bjcp")]
   }
 };
 

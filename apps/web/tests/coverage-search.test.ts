@@ -131,6 +131,12 @@ vi.mock("@nb/db", () => {
     return ["sql", out.trim()];
   };
   (sql as unknown as { raw: (value: unknown) => unknown }).raw = (value: unknown) => ({ raw: String(value) });
+  // buildInventorySearchWhere (С2) joins per-variant OR-clauses через sql.join —
+  // реальный drizzle-тег экспортирует его как статический метод.
+  (sql as unknown as { join: (chunks: unknown[], separator: unknown) => unknown }).join = (
+    chunks: unknown[],
+    separator: unknown
+  ) => ["sql", (chunks as Array<[string, string]>).map((chunk) => chunk[1]).join((separator as [string, string])[1])];
 
   const result: Record<string, unknown> = {
     db,

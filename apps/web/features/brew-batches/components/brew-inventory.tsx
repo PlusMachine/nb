@@ -45,15 +45,20 @@ export function BrewInventory({
   brewBatchId,
   view,
   status,
-  prepShortage
+  stockCoverage
 }: {
   brewBatchId: string;
   view: BrewBatchInventoryView;
   status: BrewBatchStatus;
-  // Нехватка по рецепту этой партии — считается только в акте «Подготовка»
-  // (см. brew-batches/[id]/page.tsx, S3 docs/shopping-list-redesign.md D13).
-  // undefined/null — строку не рендерим (остальные акты её не передают).
-  prepShortage?: { missingCount: number } | null;
+  // Покрытие склада по рецепту этой партии (Ф5, docs/brew-start-flow-redesign.md):
+  // считается на странице во всех неархивных актах, пока партия не списана сама
+  // (см. brew-batches/[id]/page.tsx). undefined/null — коверидж-строки не рендерим
+  // (терминальная партия, рецепт удалён, ошибка матча).
+  // presentCount (!== "missing", partial включён) — гейтит доступность кнопки:
+  // списывать можно, даже если часть строк неполные. coveredCount (covered+
+  // substitute, БЕЗ partial) — честный счёт для подписи «N из M»: partial-строка
+  // всё ещё «не хватает», presentCount её бы молча посчитал закрытой.
+  stockCoverage?: { totalLines: number; presentCount: number; coveredCount: number; fullyCovered: boolean } | null;
 }) {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
@@ -66,6 +71,14 @@ export function BrewInventory({
   const recipeAvailable = Boolean(view.recipeId);
   const isTerminal = status === "cancelled" || status === "completed";
   const canConsume = !view.batchAlreadyConsumed && recipeAvailable && !isTerminal;
+
+  // Ф5 (docs/brew-start-flow-redesign.md): показываем покрытие склада, только
+  // когда кнопка вообще может появиться (canConsume) и странице было что
+  // посчитать (totalLines > 0 — рецепт без строк коверидж не даёт). Пустой склад
+  // (presentCount === 0) — особый случай: там нет призыва списать, есть кнопка,
+  // есть только объяснение и ссылка в покупки (см. рендер ниже).
+  const coverage = canConsume && stockCoverage && stockCoverage.totalLines > 0 ? stockCoverage : null;
+  const coverageEmpty = coverage ? coverage.presentCount === 0 : false;
 
   const run = async (action: () => Promise<{ ok: boolean; message: string }>) => {
     if (inFlight.current) {
@@ -95,21 +108,6 @@ export function BrewInventory({
           </span>
         ) : null}
       </div>
-
-      {/* Вход в «Чего не хватает» из акта «Подготовка» (S3/D19): нехватка по
-          рецепту именно этой партии, тем же предикатом, что даёт строки списка.
-          Ссылкой становится весь текст — отдельный лейбл раздела не нужен. */}
-      {prepShortage ? (
-        prepShortage.missingCount > 0 ? (
-          <p className="text-sm">
-            <Link href="/app/shopping" className="font-medium text-primary underline-offset-2 hover:underline">
-              Не хватает {prepShortage.missingCount} {pluralize(prepShortage.missingCount, ["позиция", "позиции", "позиций"])}
-            </Link>
-          </p>
-        ) : (
-          <p className="text-sm text-success">Ингредиенты на складе есть</p>
-        )
-      ) : null}
 
       {view.hasConsumed ? (
         <ul className="divide-y divide-border">
@@ -146,7 +144,14 @@ export function BrewInventory({
         </ul>
       ) : (
         <p className="text-sm text-muted-foreground">
-          {canConsume
+          {coverageEmpty ? (
+            <>
+              Ингредиентов этого рецепта нет на складе{" · "}
+              <Link href="/app/shopping" className="font-medium text-primary underline-offset-2 hover:underline">
+                Чего не хватает
+              </Link>
+            </>
+          ) : canConsume
             ? "Спишем со склада ингредиенты рецепта — в объёме этой варки."
             : !recipeAvailable
               ? "Рецепт этой варки удалён — списывать нечего."
@@ -163,8 +168,31 @@ export function BrewInventory({
         </p>
       ) : null}
 
+      {/* Призыв/честная подпись над кнопкой (Ф5): полное покрытие — заметный
+          призыв списать; неполное с реальной нехваткой (coveredCount < totalLines)
+          — сколько закрыто из скольки нужно + ссылка в покупки (тот же вход, что
+          был раньше отдельной строкой «Не хватает N», не дублируем). Пустой склад
+          коверидж-строку не показывает вовсе — там уже сказано всё нужное во
+          вводном абзаце выше. Отдельный случай — coveredCount === totalLines при
+          !fullyCovered: все строки закрыты, но частью заменами (partial среди них
+          нет) — покупать нечего, замены покажет диалог списания, подписи не даём. */}
+      {coverage && !coverageEmpty ? (
+        coverage.fullyCovered ? (
+          <p className="text-sm font-medium text-success">Все ингредиенты есть на складе — списать?</p>
+        ) : coverage.coveredCount < coverage.totalLines ? (
+          <p className="text-sm text-muted-foreground">
+            На складе {coverage.coveredCount} из {coverage.totalLines}{" "}
+            {pluralize(coverage.totalLines, ["позиция", "позиции", "позиций"])}
+            {" · "}
+            <Link href="/app/shopping" className="font-medium text-primary underline-offset-2 hover:underline">
+              Чего не хватает
+            </Link>
+          </p>
+        ) : null
+      ) : null}
+
       <div className="flex flex-wrap gap-2">
-        {canConsume ? (
+        {canConsume && !coverageEmpty ? (
           <>
             <Button type="button" size="sm" onClick={() => setConsumeDialogOpen(true)} disabled={busy}>
               <PackageMinus className="h-4 w-4" aria-hidden />

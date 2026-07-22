@@ -1,501 +1,501 @@
 {
-  "source": {
-    "document": "BJCP 2021 Beer Style Guidelines",
-    "file_name": "2021_Guidelines_Beer_1.25.pdf",
-    "language": "ru",
-    "translation_scope": "detailed",
-    "notes": "Подробный русский перевод второй части корпуса BJCP: категории 4-5 с сохранением короткого описания, полных секций и оригинальных английских секций для сверки."
-  },
-  "progress": {
-    "styles_total_in_guideline": 128,
-    "styles_translated_in_this_file": 7,
-    "translated_style_ids": [
-      "4A",
-      "4B",
-      "4C",
-      "5A",
-      "5B",
-      "5C",
-      "5D"
-    ],
-    "translated_categories": [
-      "4",
-      "5"
-    ],
-    "next_recommended_batch": [
-      "6A",
-      "6B",
-      "6C",
-      "7A",
-      "7B"
-    ]
-  },
-  "categories": [
-    {
-      "category_id": "4",
-      "category_en": "PALE MALTY EUROPEAN LAGER",
-      "category_ru": "Светлый солодовый европейский лагер",
-      "overview_ru": "В эту категорию входят светлые немецкие лагеры крепости от vollbier до starkbier, в которых в балансе подчёркнут характер пилснерного солода, но при этом пиво остаётся хорошо выброженным."
-    },
-    {
-      "category_id": "5",
-      "category_en": "PALE BITTER EUROPEAN BEER",
-      "category_ru": "Светлое горькое европейское пиво",
-      "overview_ru": "Категория описывает пиво немецкого происхождения светлого цвета, с балансом от ровного до горького и с мягко либо умеренно выраженным традиционным немецким хмелем. Обычно это либо лагеры, либо сорта с лагерной выдержкой, хорошо выброженные и с гладким профилем."
-    }
+ "source": {
+  "document": "BJCP 2021 Beer Style Guidelines",
+  "file_name": "2021_Guidelines_Beer_1.25.pdf",
+  "language": "ru",
+  "translation_scope": "detailed",
+  "notes": "Подробный русский перевод второй части корпуса BJCP: категории 4-5 с сохранением короткого описания, полных секций и оригинальных английских секций для сверки."
+ },
+ "progress": {
+  "styles_total_in_guideline": 128,
+  "styles_translated_in_this_file": 7,
+  "translated_style_ids": [
+   "4A",
+   "4B",
+   "4C",
+   "5A",
+   "5B",
+   "5C",
+   "5D"
   ],
-  "styles": [
-    {
-      "bjcp_id": "4A",
-      "bjcp_heading": "4A. Munich Helles",
-      "category_id": "4",
-      "category_en": "PALE MALTY EUROPEAN LAGER",
-      "category_ru": "Светлый солодовый европейский лагер",
-      "name_en": "Munich Helles",
-      "name_ru": "Мюнхенский хеллес",
-      "description_short_ru": "Золотистый немецкий лагер с мягким солодовым вкусом и мягким сухим финишем. Деликатный пряный, цветочный или травянистый хмель и сдержанная горечь удерживают баланс в солодовую сторону, но не дают пиву уйти в сладость.",
-      "sections_ru": {
-        "overall_impression": "Золотистый немецкий лагер с мягким солодовым вкусом и мягким сухим финишем. Деликатные пряные, цветочные или травянистые хмелевые оттенки и сдержанная горечь удерживают баланс в солодовую сторону, но не делают пиво сладким. За счёт этого стиль остаётся очень освежающим и пригодным для повседневного пития.",
-        "aroma": "Умеренный зерново-сладковатый солодовый аромат. Хмелевой аромат от слабого до умеренно слабого, обычно пряный, цветочный или травянистый. Профиль брожения приятный и чистый, при этом в балансе доминирует солод. В наиболее свежих образцах солодовая сладковатость в аромате выражена заметнее.",
-        "appearance": "Цвет от бледно-жёлтого до светло-золотистого. Пиво прозрачное. Пена стойкая, кремово-белая.",
-        "flavor": "Во вкусе сначала ощущается умеренная солодовость с намёком на сладость; далее проявляется умеренный зерново-сладковатый солодовый профиль с мягким, округлым ощущением на нёбе, который поддержан низкой или умеренно низкой горечью. Финиш мягкий и сухой, но не хрустко-резкий. Хмелевой вкус от слабого до умеренно слабого, пряный, цветочный или травянистый. Вкус солода доминирует над хмелем во вкусовом центре, финише и послевкусии, однако хмель должен быть заметен. Остаточной сладости быть не должно — допустимо лишь общее впечатление солодовости на фоне сдержанной горечи. Брожение чистое.",
-        "mouthfeel": "Среднее тело. Средняя карбонизация. Ощущение гладкое, хорошо лагеризованное.",
-        "comments": "Очень свежие образцы могут показывать более выразительный солодовый и хмелевой характер, который со временем ослабевает; это особенно заметно в экспортных версиях. В самом Мюнхене хеллес обычно легче, чем версии, сваренные за пределами города. Стиль также может называться Helles Lagerbier.",
-        "history": "Стиль появился в Мюнхене в 1894 году как ответ на популярность светлых пилснероподобных лагеров; чаще всего первенство приписывают Spaten. Наибольшую популярность он получил в Южной Германии.",
-        "characteristic_ingredients": "Континентальный пилснерный солод, традиционные немецкие хмели и чистые немецкие лагерные дрожжи.",
-        "style_comparison": "По балансу солода и горечи близок к Munich Dunkel, но менее сладковато-солодовый по характеру и светлый, а не тёмный и насыщенный. По телу и солодовой наполненности превосходит German Pils, но менее хрусткий и с более сдержанным хмелевым характером. Сходен по солодовому профилю с German Helles Exportbier, однако в нём меньше хмеля и немного ниже крепость. Также он легче по телу и алкоголю, чем Festbier."
-      },
-      "sections_en": {
-        "overall_impression": "A gold-colored German lager with a smooth, malty flavor and a soft, dry finish. Subtle spicy, floral, or herbal hops and restrained bitterness help keep the balance malty but not sweet, which helps make this beer a refreshing, everyday drink.",
-        "aroma": "Moderate grainy-sweet malt aroma. Low to moderately-low spicy, floral, or herbal hop aroma. Pleasant, clean fermentation profile, with malt dominating the balance. The freshest examples will have more of a malty-sweet aroma.",
-        "appearance": "Pale yellow to pale gold. Clear. Persistent creamy white head.",
-        "flavor": "Moderately malty start with the suggestion of sweetness, moderate grainy-sweet malt flavor with a soft, rounded palate impression, supported by a low to medium-low bitterness. Soft and dry finish, not crisp and biting. Low to moderately-low spicy, floral, or herbal hop flavor. Malt dominates hops in the palate, finish, and aftertaste, but hops should be noticeable. No residual sweetness, simply the impression of maltiness with restrained bitterness. Clean fermentation profile.",
-        "mouthfeel": "Medium body. Medium carbonation. Smooth, well-lagered character.",
-        "comments": "Very fresh examples can have a more prominent malt and hop character that fades over time, as is often noticed in exported beers. Helles in Munich tends to be a lighter version than those outside the city. May be called Helles Lagerbier.",
-        "history": "Created in Munich in 1894 to compete with pale Pilsner-type beers, often first credited to Spaten. More popular in Southern Germany.",
-        "characteristic_ingredients": "Continental Pilsner malt. Traditional German hops. Clean German lager yeast.",
-        "style_comparison": "Similar in malt balance and bitterness to Munich Dunkel, but less malty-sweet in nature and pale rather than dark and rich. More body and malt presence than a German Pils, but less crisp and with less hop character throughout. Similar malt profile as a German Helles Exportbier, but with fewer hops in the balance and slightly less alcohol. Less body and alcohol than a Festbier."
-      },
-      "vital_statistics_text": "OG: 1.044 - 1.048 IBUs: 16 - 22 FG: 1.006 - 1.012 SRM: 3 - 5 ABV: 4.7 - 5.4%",
-      "vital_statistics": {
-        "og": "1.044 - 1.048",
-        "fg": "1.006 - 1.012",
-        "ibu": "16 - 22",
-        "srm": "3 - 5",
-        "abv": "4.7 - 5.4%"
-      },
-      "commercial_examples_text": "Augustiner Lagerbier Hell, Hacker- Pschorr Münchner Gold, Löwenbraü Original, Paulaner Münchner Lager, Schönramer Hell, Spaten Münchner Hell, Weihenstephaner Original Helles",
-      "tags_en": [
-        "standard-strength",
-        "pale-color",
-        "bottom-fermented",
-        "lagered",
-        "central-europe",
-        "traditional-style",
-        "pale-lager-family",
-        "malty"
-      ],
-      "tags_ru": [
-        "стандартная крепость",
-        "светлый цвет",
-        "низовое брожение",
-        "лагеризация",
-        "Центральная Европа",
-        "традиционный стиль",
-        "семейство pale lager",
-        "солодовый"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1",
-      "source_pdf_page_start": 23,
-      "source_guideline_page_start": 7
-    },
-    {
-      "bjcp_id": "4B",
-      "bjcp_heading": "4B. Festbier",
-      "category_id": "4",
-      "category_en": "PALE MALTY EUROPEAN LAGER",
-      "category_ru": "Светлый солодовый европейский лагер",
-      "name_en": "Festbier",
-      "name_ru": "Фестбир",
-      "description_short_ru": "Гладкий, чистый, светлый немецкий лагер с умеренно выраженным солодовым вкусом и лёгким хмелевым характером. Удачно сочетает питкость и крепость, показывая благородный немецкий солод без лишней тяжеловесности.",
-      "sections_ru": {
-        "overall_impression": "Гладкий, чистый, светлый немецкий лагер с умеренно выраженным солодовым вкусом и лёгким хмелевым характером. Очень удачно балансирует между крепостью и питкостью: и первое впечатление, и финиш буквально подталкивают сделать ещё глоток. Стиль демонстрирует элегантный характер немецкого солода, не становясь тяжёлым или чрезмерно насыщающим.",
-        "aroma": "Умеренная солодовая насыщенность, с акцентом на слегка поджаристые, тестовые тона и общим впечатлением мягкой сладости. Хмель — от слабого до умеренно слабого, обычно цветочный, травянистый или пряный. В солодовом профиле не должно быть глубокой поджаренности, карамели или бисквитности. Профиль лагерного брожения чистый.",
-        "appearance": "Цвет от насыщенно-жёлтого до глубокого золотистого; янтарные оттенки нежелательны. Прозрачность яркая. Пена стойкая, от белой до слегка кремовой. Большинство коммерческих образцов имеют бледно-золотистый цвет.",
-        "flavor": "Во вкусе сначала проявляется солод от умеренного до умеренно высокого уровня — с лёгкой поджаренностью, оттенками хлебного теста и мягкой солодовой насыщенности. Горечь от умеренной до умеренно низкой; баланс однозначно смещён в солодовую сторону. Пиво хорошо выброжено и ощущается хрустким, но не сухим. Хмелевой вкус — от умеренно слабого до умеренного, цветочный, травянистый или пряный. Брожение чистое. Основу вкуса составляет пилснерный солод, дополненный лёгкими поджаристыми нюансами. Горечь поддерживает профиль, но финиш всё равно должен оставаться солодовым и выразительным.",
-        "mouthfeel": "Среднее тело, гладкая, слегка кремовая текстура. Карбонизация средняя. Алкоголь, если и даёт согревание, то едва заметное.",
-        "comments": "Этот стиль описывает современное немецкое пиво, которое подают на Октоберфесте, хотя им не ограничиваются и его можно встретить и на других праздниках. Иногда его называют Wiesn — по местному названию площадки и самого фестиваля. Название Festbier выбрано потому, что по немецким и общеевропейским правилам Oktoberfestbier — защищённое обозначение для пива крупных мюнхенских пивоварен, предназначенного именно для потребления на Октоберфесте. В других странах таких ограничений нет, поэтому многие крафтовые пивоварни в США варят пиво под названием Oktoberfest, но по сути опираются на традиционный Märzen. Возможное альтернативное название — Helles Märzen.",
-        "history": "С 1990 года именно этот стиль стал основным пивом Октоберфеста в Мюнхене. Экспортные версии, особенно для США, по-прежнему чаще тяготеют к традиционному янтарному варианту, как и американские интерпретации. Золотистую версию впервые создала Paulaner в середине 1970-х, решив, что классический Oktoberfest слишком тяжёл и быстро насыщает. Поэтому пивоварня разработала более лёгкий, более питкий, но всё ещё солодовый вариант, который, по словам главного пивовара, должен был быть «более пригодным для больших кружек». При этом окончательное решение о том, какое именно пиво подают на Октоберфесте, принимает городской комитет Мюнхена.",
-        "characteristic_ingredients": "Основа засыпи — преимущественно пилснерный солод, с добавлением части венского или мюнхенского солода для усиления солодовой насыщенности. Различия между коммерческими образцами чаще связаны с конкретным солодовенным сырьём и дрожжами, а не с радикально разным составом засыпи.",
-        "style_comparison": "Менее интенсивен и менее богато поджарист, чем Märzen. Крепче, чем Munich Helles, с чуть большим телом и чуть более заметными солодом и хмелем. По солодовой насыщенности уступает Helles Bock. По сложности солодового профиля напоминает более плотный Czech Premium Pale Lager, но без характерного для него хмелевого сопровождения."
-      },
-      "sections_en": {
-        "overall_impression": "A smooth, clean, pale German lager with a moderately strong malty flavor and a light hop character. Deftly balances strength and drinkability, with a palate impression and finish that encourages drinking. Showcases elegant German malt flavors without becoming too heavy or filling.",
-        "aroma": "Moderate malty richness, with an emphasis on toasty-doughy aromatics and an impression of sweetness. Low to medium-low floral, herbal, or spicy hops. The malt should not have a deeply toasted, caramel, or biscuity quality. Clean lager fermentation profile.",
-        "appearance": "Deep yellow to deep gold color; should not have amber hues. Bright clarity. Persistent white to off-white foam stand. Most commercial examples are pale gold in color.",
-        "flavor": "Medium to medium-high malty flavor initially, with a lightly toasty, bread dough quality and an impression of soft malty richness. Medium to medium-low bitterness, definitely malty in the balance. Well-attenuated and crisp, but not dry. Medium-low to medium floral, herbal, or spicy hop flavor. Clean fermentation profile. The taste is mostly of Pils malt, but with slightly toasty hints. The bitterness is supportive, but still should yield a malty, flavorful finish.",
-        "mouthfeel": "Medium body, with a smooth, somewhat creamy texture. Medium carbonation. Alcohol strength barely noticeable as warming, if at all.",
-        "comments": "This style represents the modern German beer served at Oktoberfest (although it is not solely reserved for Oktoberfest; it can be found at many other “fests”), and is sometimes called Wiesn (“the meadow” or local name for the Oktoberfest festival). We chose to call this style Festbier since by German and EU regulations, Oktoberfestbier is a protected appellation for beer produced at large breweries within the Munich city limits for consumption at Oktoberfest. Other countries are not bound by these rules, so many craft breweries in the US produce beer called Oktoberfest, but based on the traditional style described in these guidelines as Märzen. May be called Helles Märzen.",
-        "history": "Since 1990, the majority of beer served at Oktoberfest in Munich has been this style. Export beer specifically made for the United States is still mainly of the traditional amber style, as are US-produced interpretations. Paulaner first created the golden version in the mid-1970s because they thought the traditional Oktoberfest was too filling. So they developed a lighter, more drinkable but still malty version that they wanted to be “more poundable” (according to the head brewer at Paulaner). But the actual type of beer served at Oktoberfest is set by a Munich city committee.",
-        "characteristic_ingredients": "Majority Pils malt, but with some Vienna or Munich malt to increase maltiness. Differences in commercial examples are mostly due to different maltsters and yeast, not major grist differences.",
-        "style_comparison": "Less intense and less richly toasted than a Märzen. Stronger than a Munich Helles, with a bit more body, and hop and malt flavor. Less rich in malt intensity than a Helles Bock. The malt complexity is similar to a higher-gravity Czech Premium Pale Lager, although without the associated hops."
-      },
-      "vital_statistics_text": "OG: 1.054 - 1.057 IBUs: 18 - 25 FG: 1.010 - 1.012 SRM: 4 - 6 ABV: 5.8 - 6.3%",
-      "vital_statistics": {
-        "og": "1.054 - 1.057",
-        "fg": "1.010 - 1.012",
-        "ibu": "18 - 25",
-        "srm": "4 - 6",
-        "abv": "5.8 - 6.3%"
-      },
-      "commercial_examples_text": "Augustiner Oktoberfest, Hacker- Pschorr Superior Festbier, Hofbräu Oktoberfestbier, Löwenbräu Oktoberfestbier, Paulaner Oktoberfest Bier, Weihenstephaner Festbier",
-      "tags_en": [
-        "standard-strength",
-        "pale-color",
-        "bottom-fermented",
-        "lagered",
-        "central-europe",
-        "traditional-style",
-        "pale-lager-family",
-        "malty"
-      ],
-      "tags_ru": [
-        "стандартная крепость",
-        "светлый цвет",
-        "низовое брожение",
-        "лагеризация",
-        "Центральная Европа",
-        "традиционный стиль",
-        "семейство pale lager",
-        "солодовый"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1",
-      "source_pdf_page_start": 23,
-      "source_guideline_page_start": 7
-    },
-    {
-      "bjcp_id": "4C",
-      "bjcp_heading": "4C. Helles Bock",
-      "category_id": "4",
-      "category_en": "PALE MALTY EUROPEAN LAGER",
-      "category_ru": "Светлый солодовый европейский лагер",
-      "name_en": "Helles Bock",
-      "name_ru": "Хеллес бок",
-      "description_short_ru": "Относительно светлый, крепкий и солодовый немецкий лагер с хорошо выброженным финишем, который сохраняет питкость. По сравнению с другими боками хмель заметнее, а солодовый профиль не столь глубоко насыщенный.",
-      "sections_ru": {
-        "overall_impression": "Относительно светлый, крепкий и солодовый немецкий лагер с хорошо выброженным финишем, благодаря которому пиво остаётся питким. По сравнению с другими представителями семейства Bock хмелевой характер здесь обычно заметнее, а солодовый профиль — менее тёмный и менее глубоко насыщенный.",
-        "aroma": "Солодовый аромат от умеренного до сильного, зерново-сладковатый, часто с лёгкой поджаренностью и умеренными продуктами Майяра. Допустим умеренно слабый пряный, травянистый или цветочный хмелевой аромат. Профиль брожения чистый. Допустимы слабые фруктовые эфиры. Очень лёгкий алкогольный тон тоже допустим.",
-        "appearance": "Цвет от насыщенно-золотистого до светло-янтарного. Прозрачность от яркой до прозрачной. Пена крупная, кремовая, стойкая, белая.",
-        "flavor": "Доминирует солодовый вкус от умеренного до умеренно сильного: зерново-сладковатый, тестовый, хлебный или слегка поджаристый, дополненный богатыми продуктами Майяра, которые делают профиль интереснее. Возможны лёгкие карамельные оттенки. Хмелевой вкус от слабого до умеренного, пряный, травянистый, цветочный либо перечный; в лучших образцах он должен ощущаться. Горечь умеренная и в балансе заметнее, чем у других боков. Брожение чистое. Пиво хорошо выброжено, не приторно и не тяжеловесно, с умеренно сухим финишем, в котором могут ощущаться и солод, и хмель.",
-        "mouthfeel": "Среднее тело. Карбонизация от умеренной до умеренно высокой. Текстура гладкая и чистая, без жёсткости и вяжущести, несмотря на более заметную горечь. Допустимо лёгкое алкогольное согревание.",
-        "comments": "Стиль также известен как Maibock. По сравнению с более тёмными боками более заметный хмель компенсирует здесь меньший уровень продуктов Майяра в общем балансе.",
-        "history": "По меркам семейства Bock это относительно поздняя разработка. Maibock традиционно ассоциируется с весной и месяцем маем; под этим названием могут встречаться версии с несколько более широким диапазоном цвета и охмеления, чем у экспортных образцов.",
-        "characteristic_ingredients": "Смесь пилснерного, венского и мюнхенского солодов. Несоложёные добавки не используются. Возможно лёгкое применение светлых кристаллических солодов. Хмель — традиционный немецкий. Дрожжи — чистые лагерные. Декокционный затор традиционен, но кипячение здесь менее интенсивное, чем у Dunkles Bock, чтобы не набирать лишний цвет. Вода мягкая.",
-        "style_comparison": "Его можно воспринимать либо как светлую версию Dunkles Bock, либо как Munich Helles или Festbier, сваренный до боковой плотности. Несмотря на заметную солодовость, в нём обычно меньше тёмных и глубоко насыщенных солодовых тонов; при этом он может быть суше, хмелевее и горче, чем Dunkles Bock. Он слабее, чем светлый Doppelbock, но в целом движется в схожем вкусовом направлении."
-      },
-      "sections_en": {
-        "overall_impression": "A relatively pale, strong, malty German lager with a nicely attenuated finish that enhances drinkability. The hop character is generally more apparent and the malt character less deeply rich than in other Bocks.",
-        "aroma": "Moderate to strong grainy-sweet malt aroma, often with a lightly toasted quality and low Maillard products. Moderately-low spicy, herbal, or floral hop aroma optional. Clean fermentation profile. Low fruity esters optional. Very light alcohol optional.",
-        "appearance": "Deep gold to light amber in color. Bright to clear clarity. Large, creamy, persistent, white head.",
-        "flavor": "Moderately to moderately strong grainy-sweet, doughy, bready, or lightly toasty malt flavor dominates with some rich Maillard products providing added interest. Few caramel flavors optional. Low to moderate spicy, herbal, floral, peppery hop flavor optional, but present in the best examples. Moderate hop bitterness, more so in the balance than in other Bocks. Clean fermentation profile. Well-attenuated, not cloying, with a moderately-dry finish that may taste of both malt and hops.",
-        "mouthfeel": "Medium-bodied. Moderate to moderately-high carbonation. Smooth and clean with no harshness or astringency, despite the increased hop bitterness. Light alcohol warming optional.",
-        "comments": "Also known as Maibock. Compared to darker Bock beers, the hops compensate for the lower level of Maillard products in the balance.",
-        "history": "A fairly recent development in comparison to the other members of the bock family. The serving of Maibock is a seasonal offering associated with springtime and the month of May, and may include a wider color and hopping range than is seen in exported products.",
-        "characteristic_ingredients": "A mix of Pils, Vienna, and Munich malts. No adjuncts. Light use of pale crystal type malts possible. Traditional German hops. Clean lager yeast. Decoction mash is traditional, but boiling is less than in Dunkles Bock to restrain color development. Soft water.",
-        "style_comparison": "Can be thought of as either a pale version of a Dunkles Bock, or a Munich Helles or Festbier brewed to bock strength. While quite malty, this beer typically has less dark and rich malt flavors, and can be drier, hoppier, and more bitter than a Dunkles Bock. Less strong than a pale Doppelbock, but with similar flavors."
-      },
-      "vital_statistics_text": "OG: 1.064 - 1.072 IBUs: 23 - 35 FG: 1.011 - 1.018 SRM: 6 - 9 ABV: 6.3 - 7.4%",
-      "vital_statistics": {
-        "og": "1.064 - 1.072",
-        "fg": "1.011 - 1.018",
-        "ibu": "23 - 35",
-        "srm": "6 - 9",
-        "abv": "6.3 - 7.4%"
-      },
-      "commercial_examples_text": "Altenmünster Maibock, Ayinger Maibock, Chuckanut Maibock, Einbecker Mai-Ur-Bock, Hofbräu Maibock, Mahr’s Heller Bock",
-      "tags_en": [
-        "high-strength",
-        "pale-color",
-        "bottom-fermented",
-        "lagered",
-        "central-europe",
-        "traditional-style",
-        "bock-family",
-        "malty"
-      ],
-      "tags_ru": [
-        "повышенная крепость",
-        "светлый цвет",
-        "низовое брожение",
-        "лагеризация",
-        "Центральная Европа",
-        "традиционный стиль",
-        "семейство bock",
-        "солодовый"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1",
-      "source_pdf_page_start": 24,
-      "source_guideline_page_start": 8
-    },
-    {
-      "bjcp_id": "5A",
-      "bjcp_heading": "5A. German Leichtbier",
-      "category_id": "5",
-      "category_en": "PALE BITTER EUROPEAN BEER",
-      "category_ru": "Светлое горькое европейское пиво",
-      "name_en": "German Leichtbier",
-      "name_ru": "Немецкий ляйхтбир",
-      "description_short_ru": "Светлый, хорошо выброженный и лёгкий по телу немецкий лагер с пониженной крепостью и калорийностью. Несмотря на облегчённость, в нём остаются заметные солодовые и хмелевые оттенки и умеренная горечь.",
-      "sections_ru": {
-        "overall_impression": "Светлый, хорошо выброженный и лёгкий по телу немецкий лагер с пониженной крепостью и калорийностью по сравнению со стандартными сортами. Горечь умеренная, солод и хмель заметны, поэтому даже при своей лёгкости пиво остаётся не скучным.",
-        "aroma": "Хмелевой аромат от слабого до умеренного, обычно пряный, травянистый или цветочный. Солодовый аромат от слабого до умеренно слабого, зерново-сладковатый или слегка крекерный. Профиль брожения чистый.",
-        "appearance": "Цвет от бледно-соломенного до насыщенно-жёлтого. Блеск очень высокий, прозрачность практически безупречная. Белая пена умеренная, стойкость средняя или ниже средней.",
-        "flavor": "Во вкусе сначала проявляется солод от слабого до умеренного уровня, зерново-сладковатый. Горечь умеренная. Хмелевой вкус — от слабого до умеренного, с пряными, травянистыми или цветочными оттенками. Профиль брожения чистый, лагеризация хорошая. Финиш сухой, с лёгким солодово-хмелевым послевкусием.",
-        "mouthfeel": "Тело от лёгкого до очень лёгкого. Карбонизация от средней до высокой. Ощущение гладкое, пиво хорошо выброжено.",
-        "comments": "Стиль продвигается прежде всего как более «диетическое» пиво — с меньшим количеством углеводов, алкоголя и калорий. Произносится примерно как «ляйхт-бир». Также может встречаться под названиями Diat Pils или Helles; по немецкой классификации относится к гравитационному классу schankbier. Другие облегчённые варианты на базе Weissbier, Kölsch или Altbier BJCP рекомендует подавать в категорию 34B Mixed-Style Beer.",
-        "history": "Исторически такие версии существовали как повседневное пиво для рабочих в полях и на фабриках. Современные же образцы в большей степени ориентированы на популярные американские лёгкие сорта и на аудиторию, следящую за здоровьем и физической формой. Сегодня стиль всё чаще вытесняется безалкогольным пивом и радлерами.",
-        "characteristic_ingredients": "Континентальный пилснерный солод, немецкие лагерные дрожжи и традиционные немецкие хмели.",
-        "style_comparison": "Похоже на менее крепкую и более лёгкую по телу, чуть менее напористую версию German Pils или Munich Helles. При этом оно заметно горче и выразительнее, чем American Light Lager."
-      },
-      "sections_en": {
-        "overall_impression": "A pale, highly-attenuated, light-bodied German lager with lower alcohol and calories than standard-strength beers. Moderately bitter with noticeable malt and hop flavors, the beer is still interesting to drink.",
-        "aroma": "Low to medium hop aroma, with a spicy, herbal, or floral character. Low to medium-low grainy-sweet or slightly crackery malt aroma. Clean fermentation profile.",
-        "appearance": "Pale straw to deep yellow in color. Brilliant clarity. Moderate white head with average to below average persistence.",
-        "flavor": "Low to medium grainy-sweet malt flavor initially. Medium hop bitterness. Low to medium hop flavor, with a spicy, herbal, or floral quality. Clean fermentation character, well-lagered. Dry finish with a light malty and hoppy aftertaste.",
-        "mouthfeel": "Light to very light body. Medium to high carbonation. Smooth, well-attenuated.",
-        "comments": "Marketed primarily as a diet-oriented beer with lower carbohydrates, alcohol, and calories. Pronounced “LYESHT-beer.” May also be known as a Diat Pils or Helles, this style is in the schankbier gravity class. Other variations of Leicht class beers can be made from Weissbier, Kölsch, and Altbier; those beers are best entered as 34B Mixed-Style Beer.",
-        "history": "Traditional versions existed as drinks for physical laborers in factories or fields, but modern versions are more based on popular American products in the same class and targeted towards health or fitness conscious consumers. Increasingly supplanted in the current market by non-alcoholic beers and radlers.",
-        "characteristic_ingredients": "Continental Pils malt. German lager yeast. Traditional German hops.",
-        "style_comparison": "Like a lower-alcohol, lighter-bodied, slightly less aggressive German Pils or Munich Helles. More bitter and flavorful than an American Light Lager."
-      },
-      "vital_statistics_text": "OG: 1.026 - 1.034 IBUs: 15 - 28 FG: 1.006 - 1.010 SRM: 1.5 - 4 ABV: 2.4 - 3.6%",
-      "vital_statistics": {
-        "og": "1.026 - 1.034",
-        "fg": "1.006 - 1.010",
-        "ibu": "15 - 28",
-        "srm": "1.5 - 4",
-        "abv": "2.4 - 3.6%"
-      },
-      "commercial_examples_text": "Autenrieder Schlossbräu Leicht, Greif Bräu Leicht, Hohenthanner Tannen Hell Leicht, Müllerbrau Heimer Leicht, Schönramer Surtaler Schankbier, Waldhaus Sommer Bier",
-      "tags_en": [
-        "session-strength",
-        "pale-color",
-        "bottom-fermented",
-        "lagered",
-        "central-europe",
-        "traditional-style",
-        "pale-lager-family",
-        "bitter",
-        "hoppy"
-      ],
-      "tags_ru": [
-        "сессионная крепость",
-        "светлый цвет",
-        "низовое брожение",
-        "лагеризация",
-        "Центральная Европа",
-        "традиционный стиль",
-        "семейство pale lager",
-        "горький",
-        "хмелевой"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1",
-      "source_pdf_page_start": 25,
-      "source_guideline_page_start": 9
-    },
-    {
-      "bjcp_id": "5B",
-      "bjcp_heading": "5B. Kölsch",
-      "category_id": "5",
-      "category_en": "PALE BITTER EUROPEAN BEER",
-      "category_ru": "Светлое горькое европейское пиво",
-      "name_en": "Kölsch",
-      "name_ru": "Кёльш",
-      "description_short_ru": "Деликатное, блестяще прозрачное светлое пиво с тонким балансом солода, фруктовости и хмеля, умеренной горечью и хорошо выброженным, но мягким финишем. Для этого стиля свежесть критически важна.",
-      "sections_ru": {
-        "overall_impression": "Деликатное, блестяще прозрачное светлое пиво с тонким балансом солода, фруктовости и хмеля, умеренной горечью и хорошо выброженным, но мягким финишем. Для этого стиля свежесть имеет решающее значение: его тонкий характер довольно быстро тускнеет с возрастом.",
-        "aroma": "Солодовый аромат очень слабый или слабый, зерново-сладковатый. Допустим тонкий фруктовый аромат — яблоко, груша, иногда вишня, — и он даже приветствуется. Также допустим слабый цветочный, пряный или травянистый хмелевой аромат. В целом аромат должен быть сдержанным, но при этом сбалансированным, чистым, свежим и приятным.",
-        "appearance": "Цвет от средне-жёлтого до светло-золотистого. Прозрачность блестящая. Пена белая, нежная, может быть нестойкой.",
-        "flavor": "Во вкусе — тонкий баланс солода, лёгкой фруктовости, горечи и хмеля при чистом, хорошо выброженном финише. Солодовость от умеренно низкой до умеренной, зерновая, иногда с очень лёгкими хлебными или медовыми оттенками. Фруктовость может создавать почти неуловимое ощущение сладости. Горечь — от умеренно низкой до умеренной. Хмелевой вкус — от слабого до умеренно высокого, чаще всего от умеренно слабого до умеренного; характер цветочный, пряный или травянистый. В начале может ощущаться нейтрально-зерновой или слегка сладковато-солодовый тон. Ощущение на нёбе мягкое и округлое. Финиш мягкий, сухой и слегка хрусткий, но не резкий и не колющий. Заметной остаточной сладости быть не должно. Соотношение компонентов может немного варьировать, однако ни один из них не должен выходить вперёд слишком сильно.",
-        "mouthfeel": "Тело от средне-лёгкого до среднего, чаще всего средне-лёгкое. Карбонизация от средней до умеренно высокой. Текстура гладкая и мягкая; пиво хорошо выброжено, но не кажется тяжёлым. Жёсткость неуместна.",
-        "comments": "Традиционное верховое пиво из Кёльна (Köln), которое затем выдерживается как лагер. Кёльнские пивоварни различаются именно нюансами баланса, поэтому при оценке допустим определённый диапазон вариаций внутри стиля. Более сухие версии могут казаться более хмелевыми или горькими, чем предполагают численные значения IBU. Деликатный профиль плохо переносит возраст, поэтому стоит внимательно отслеживать признаки окисления. В Кёльне его подают в высоком узком стакане объёмом 20 cl, который называется Stange.",
-        "history": "Традиция верхового пивоварения существует в Кёльне со Средних веков, однако пиво, которое сегодня известно как Kölsch, сформировалось лишь в конце XIX века как альтернатива светлым лагерам. Низовое брожение в Кёльне в то время вообще было запрещено. Название Kölsch защищено соглашением Kölsch Konvention (1986), и использовать его могут только пивоварни Кёльна и ближайших окрестностей. В самой конвенции стиль определяется как «светлое, сильно выброженное, подчёркнуто охмелённое, прозрачное пиво верхового брожения класса Vollbier».",
-        "characteristic_ingredients": "Традиционные немецкие хмели. Немецкий пилснерный, pale или венский солод. Чистые, хорошо выбраживающие немецкие элевые дрожжи. Допустимо небольшое количество пшеничного солода. Современная коммерческая практика — брожение примерно при 15 °C, затем холодная выдержка около точки замерзания до месяца и подача максимально свежим.",
-        "style_comparison": "Стиль можно спутать с Cream Ale или с особенно деликатной интерпретацией German Pils."
-      },
-      "sections_en": {
-        "overall_impression": "A subtle, brilliantly clear, pale beer with a delicate balance of malt, fruit, and hop character, moderate bitterness, and a well-attenuated but soft finish. Freshness makes a huge difference with this beer, as the delicate character can fade quickly with age.",
-        "aroma": "Low to very low grainy-sweet malt aroma. A subtle fruit aroma (apple, pear, or sometimes cherry) is optional, but welcome. Low floral, spicy, or herbal hop aroma optional. The intensity of aromatics is fairly subtle but generally balanced, clean, fresh, and pleasant.",
-        "appearance": "Medium yellow to light gold. Brilliant clarity. Has a delicate white head that may not persist.",
-        "flavor": "A delicate flavor balance between malt, fruitiness, bitterness, and hops, with a clean, well-attenuated finish. The medium to medium-low grainy maltiness may have very light bready or honey notes. The fruitiness can have an almost imperceptible sweetness. Medium-low to medium bitterness. Low to moderately-high floral, spicy, or herbal hop flavor; most are medium-low to medium. May have a neutral-grainy to light malty sweet impression at the start. Soft, rounded palate. Finish is soft, dry, and slightly crisp, not sharp or biting. No noticeable residual sweetness. While the balance between the flavor components can vary, none are ever strong.",
-        "mouthfeel": "Medium-light to medium body; most are medium-light. Medium to medium-high carbonation. Smooth and soft, but well-attenuated and not heavy. Not harsh.",
-        "comments": "A traditional top-fermented, lagered beer from Cologne, Germany (Köln). Köln breweries differentiate themselves through balance, so allow for a range of variation within the style when judging. Drier versions may seem hoppier or more bitter than the IBU levels might suggest. The delicate flavor profile does not age well, so be alert for oxidation defects. Served in Köln in a tall, narrow 20cl glass called a Stange.",
-        "history": "Köln has a top-fermenting brewing tradition since the Middle Ages, but the beer now known as Kölsch was developed in the late 1800s as an alternative to pale lagers. Bottom fermentation was actually prohibited in Cologne. Kölsch is an appellation protected by the Kölsch Konvention (1986), and is restricted to breweries in and around Köln. The Konvention simply defines the beer as a “light, highly attenuated, hop-accentuated, clear, top-fermenting Vollbier.”",
-        "characteristic_ingredients": "Traditional German hops. German Pils, Pale, or Vienna malt. Attenuative, clean German ale yeast. Occasional small use of wheat malt. Current commercial practice is to ferment around 15 °C, cold condition near freezing for up to a month, and serve fresh.",
-        "style_comparison": "Can be mistaken for a Cream Ale or somewhat subtle German Pils."
-      },
-      "vital_statistics_text": "OG: 1.044 - 1.050 IBUs: 18 - 30 FG: 1.007 - 1.011 SRM: 3.5 - 5 ABV: 4.4 - 5.2%",
-      "vital_statistics": {
-        "og": "1.044 - 1.050",
-        "fg": "1.007 - 1.011",
-        "ibu": "18 - 30",
-        "srm": "3.5 - 5",
-        "abv": "4.4 - 5.2%"
-      },
-      "commercial_examples_text": "Früh Kölsch, Gaffel Kölsch, Mühlen Kölsch, Päffgen Kolsch, Reissdorf Kölsch, Sion Kölsch, Sünner Kölsch",
-      "tags_en": [
-        "standard-strength",
-        "pale-color",
-        "top-fermented",
-        "lagered",
-        "central-europe",
-        "traditional-style",
-        "pale-ale-family",
-        "balanced"
-      ],
-      "tags_ru": [
-        "стандартная крепость",
-        "светлый цвет",
-        "верховое брожение",
-        "лагеризация",
-        "Центральная Европа",
-        "традиционный стиль",
-        "семейство pale ale",
-        "сбалансированный"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1",
-      "source_pdf_page_start": 25,
-      "source_guideline_page_start": 9
-    },
-    {
-      "bjcp_id": "5C",
-      "bjcp_heading": "5C. German Helles Exportbier",
-      "category_id": "5",
-      "category_en": "PALE BITTER EUROPEAN BEER",
-      "category_ru": "Светлое горькое европейское пиво",
-      "name_en": "German Helles Exportbier",
-      "name_ru": "Немецкий хеллес экспортбир",
-      "description_short_ru": "Золотистый немецкий лагер, сочетающий мягкий солодовый профиль с заметной горечью и хмелем, при немного повышенных теле и крепости. Это промежуточный вариант между Munich Helles и German Pils.",
-      "sections_ru": {
-        "overall_impression": "Золотистый немецкий лагер, в котором мягкий солодовый профиль сочетается с ощутимой горечью и хмелевым характером. Тело и крепость здесь немного выше среднего, но пиво всё равно сохраняет гармоничность и питкость.",
-        "aroma": "Хмелевой аромат от умеренно слабого до умеренного, обычно цветочный, пряный или травянистый. Солодовый аромат умеренный, зерново-сладковатый, возможны лёгкие поджаристые, хлебные или тестовые оттенки. Профиль брожения чистый. И солод, и хмель должны ощущаться отчётливо, но в целом оставаться в балансе.",
-        "appearance": "Цвет от средне-жёлтого до глубокого золотистого. Пиво прозрачное. Пена белая, стойкая.",
-        "flavor": "Во вкусе солод и хмель выражены умеренно и сбалансированно, при поддерживающей, заметной горечи. Вкусовые дескрипторы и интенсивность солода и хмеля соответствуют аромату. Горечь средняя, ощутимая; вкус полнее на нёбе, финиш умеренно сухой. Брожение чистое. В послевкусии и солод, и хмель обычно ощущаются примерно поровну. Минеральность обычно воспринимается не как отдельный «минеральный» вкус, а скорее как округлость и полнота вкуса, а также суховатая кремнистая острота в финише. Допустим фоновый сульфатный акцент.",
-        "mouthfeel": "Тело от среднего до средне-полного. Карбонизация средняя. Ощущение на нёбе гладкое и мягкое. В более крепких версиях допустимо едва заметное согревание.",
-        "comments": "Стиль также известен как Dortmunder Export, Dortmunder, Export или просто Dort. Внутри Германии чаще говорят просто Export, а за её пределами — Dortmunder. При этом Export в немецкой традиции — ещё и обозначение уровня крепости, поэтому термин может применяться и к другим стилям. По нескольким параметрам — цвету, хмелево-солодовому балансу, финишу и горечи — стиль занимает промежуточное положение между German Pils и Munich Helles.",
-        "history": "Стиль возник в Дортмунде, в промышленном регионе Рур, в 1870-х как ответ на распространение светлых пилснероподобных лагеров. После Второй мировой войны он был очень популярен, но в 1970-х пошёл на спад. Другие сорта класса Export развивались самостоятельно и представляли собой чуть более крепкие версии уже существующих типов пива.",
-        "characteristic_ingredients": "Вода с заметной минерализацией и высоким содержанием сульфатов, карбонатов и хлоридов. Традиционные немецкие или чешские хмели. Пилснерный солод. Немецкие лагерные дрожжи. Декокционный затор традиционен.",
-        "style_comparison": "В сравнении с German Pils здесь меньше хмеля в финише и больше тела. По отношению к Munich Helles стиль горче и суше. Он крепче и суше, но менее хмелевой, чем Czech Premium Pale Lager."
-      },
-      "sections_en": {
-        "overall_impression": "A golden German lager balancing a smooth malty profile with a bitter, hoppy character in a slightly above-average body and strength beer.",
-        "aroma": "Medium-low to medium floral, spicy, or herbal hop aroma. Moderate grainy-sweet malt aroma, possibly with light toasty, bready, or doughy notes. Clean fermentation profile. Hops and malt both noticeable, and generally balanced.",
-        "appearance": "Medium yellow to deep gold. Clear. Persistent white head.",
-        "flavor": "Moderate, balanced malt and hops with supporting bitterness. Malt and hop flavors similar to aroma (same descriptors and intensities). Medium, noticeable bitterness, full on the palate, with a medium-dry finish. Clean fermentation character. Aftertaste of both malt and hops, generally in balance. Mineral character typically perceived more as a roundness and fullness of flavor, and a dry, flinty sharpness in the finish rather than overt mineral flavors. Background sulfate optional.",
-        "mouthfeel": "Medium to medium-full body. Medium carbonation. Smooth and mellow on the palate. Very slight warmth may be noted in stronger versions.",
-        "comments": "Also known Dortmunder Export, Dortmunder, Export, or simply a Dort. Called Export within Germany, and often Dortmunder elsewhere, Export is also a beer strength descriptor under German brewing tradition, and could be applied to other styles. Splits the difference between a German Pils and a Munich Helles in several aspects: color, hop-malt balance, finish, bitterness.",
-        "history": "Developed in Dortmund in the Ruhr industrial region in the 1870s in response to pale Pilsner-type beers. It became very popular after World War II but declined in the 1970s. Other Export-class beers developed independently, and reflected a slightly stronger version of existing beers.",
-        "characteristic_ingredients": "Minerally water with high levels of sulfates, carbonates, and chlorides. Traditional German or Czech hops. Pilsner malt. German lager yeast. Decoction mash traditional.",
-        "style_comparison": "Less finishing hops and more body than a German Pils. More bitter and drier than a Munich Helles. Stronger, drier, but less hoppy than a Czech Premium Pale Lager."
-      },
-      "vital_statistics_text": "OG: 1.050 - 1.058 IBUs: 20 - 30 FG: 1.008 - 1.015 SRM: 4 - 6 ABV: 5.0 - 6.0%",
-      "vital_statistics": {
-        "og": "1.050 - 1.058",
-        "fg": "1.008 - 1.015",
-        "ibu": "20 - 30",
-        "srm": "4 - 6",
-        "abv": "5.0 - 6.0%"
-      },
-      "commercial_examples_text": "Chuckanut Export Dortmunder Lager, DAB Dortmunder Export, Dortmunder Kronen, Landshuter Edel Hell, Müllerbräu Export Gold, Schönramer Gold",
-      "tags_en": [
-        "standard-strength",
-        "pale-color",
-        "bottom-fermented",
-        "lagered",
-        "central-europe",
-        "traditional-style",
-        "pale-lager-family",
-        "balanced"
-      ],
-      "tags_ru": [
-        "стандартная крепость",
-        "светлый цвет",
-        "низовое брожение",
-        "лагеризация",
-        "Центральная Европа",
-        "традиционный стиль",
-        "семейство pale lager",
-        "сбалансированный"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1",
-      "source_pdf_page_start": 26,
-      "source_guideline_page_start": 10
-    },
-    {
-      "bjcp_id": "5D",
-      "bjcp_heading": "5D. German Pils",
-      "category_id": "5",
-      "category_en": "PALE BITTER EUROPEAN BEER",
-      "category_ru": "Светлое горькое европейское пиво",
-      "name_en": "German Pils",
-      "name_ru": "Немецкий пилс",
-      "description_short_ru": "Светлый, сухой и горький немецкий лагер с отчётливым хмелевым ароматом. Хрусткий, чистый и освежающий стиль с ярким золотистым цветом и отличной стойкостью пены.",
-      "sections_ru": {
-        "overall_impression": "Светлый, сухой и горький немецкий лагер с отчётливым хмелевым ароматом. Хрусткий, чистый и освежающий стиль с ярким золотистым цветом и превосходной стойкостью пены.",
-        "aroma": "Хмель от умеренного до умеренно высокого уровня, цветочный, пряный или травянистый. Солодовый характер от слабого до умеренного, зерновой, сладковатый или тестовый, нередко с лёгкими нотами мёда и поджаренного крекера. Профиль брожения чистый. Хмель должен быть ведущим, но не обязан полностью подавлять солод в общем балансе.",
-        "appearance": "Цвет от соломенного до насыщенно-жёлтого. Прозрачность от блестящей до очень высокой. Пена белая, кремовая, стойкая и долговечная.",
-        "flavor": "Начальная солодовая нота быстро уступает место хмелевому вкусу и горечи, переходящим в сухой, хрусткий финиш. Вкусовые оттенки солода и хмеля соответствуют аромату по характеру и интенсивности. Горечь от умеренной до высокой и задерживается в послевкусии вместе с лёгкими следами солода и хмеля. Профиль брожения чистый. Минеральная вода может усиливать сухость финиша и делать его более продолжительным. С возрастом солод и хмель способны поблекнуть, но баланс всё равно должен оставаться горьким.",
-        "mouthfeel": "Тело средне-лёгкое. Карбонизация от средней до высокой. Пиво не должно ощущаться тяжёлым. Жёсткость нежелательна, однако в некоторых примерах допустима кремнисто-минеральная острота.",
-        "comments": "Современные версии Pils по мере движения с юга на север Германии обычно становятся светлее, суше, резче по финишу и заметно горче — часто это связано и с ростом доли сульфатов в воде. Баварские версии Pils обычно мягче по горечи, с чуть более заметным солодовым вкусом и поздним хмелем, но всё равно должны сохранять достаточную охмелённость и хрусткий финиш, чтобы отчётливо отличаться от Munich Helles. В Германии термин Pils используется чаще, чем Pilsner, чтобы отделить стиль от чешского варианта и, как некоторые считают, проявить уважение к его происхождению.",
-        "history": "Стиль представляет собой адаптацию чешского Pilsner к немецким условиям пивоварения — прежде всего к более минерализованной воде и местным сортам хмеля. Впервые его сварили в Германии в начале 1870-х. После Второй мировой войны стиль получил дополнительный импульс благодаря тому, что немецкие пивоваренные школы делали акцент на современных технологиях. Вместе со своим родственником Czech Pilsner он стал предком самых массово производимых пивных стилей современности.",
-        "characteristic_ingredients": "Континентальный пилснерный солод, традиционные немецкие хмели и чистые немецкие лагерные дрожжи.",
-        "style_comparison": "По сравнению с Czech Premium Pale Lager стиль легче по телу и цвету, суше, хрустче, полнее выброжен, дольше держит горечь в послевкусии и обычно сильнее газирован. По хмелевому характеру, солодовому вкусу и горечи он выразительнее, чем International Pale Lager. В сравнении с Munich Helles здесь больше хмеля и горечи, а финиш суше и хрустче; у Helles солод интенсивнее, но по характеру он очень близок к солоду German Pils."
-      },
-      "sections_en": {
-        "overall_impression": "A pale, dry, bitter German lager featuring a prominent hop aroma. Crisp, clean, and refreshing, showing a brilliant gold color with excellent head retention.",
-        "aroma": "Moderate to moderately-high flowery, spicy, or herbal hops. Low to medium grainy, sweet, or doughy malt character, often with a light honey and toasted cracker quality. Clean fermentation profile. The hops should be forward, but not totally dominate the malt in the balance.",
-        "appearance": "Straw to deep yellow, brilliant to very clear, with a creamy, long-lasting white head.",
-        "flavor": "Initial malt flavor quickly overcome with hop flavor and bitterness, leading into a dry, crisp finish. Malt and hop flavors similar to aroma (same descriptors and intensities). Medium to high bitterness, lingering into the aftertaste along with a touch of malt and hops. Clean fermentation profile. Minerally water can accentuate and lengthen the dry finish. Hops and malt can fade with age, but the beer should always have a bitter balance.",
-        "mouthfeel": "Medium-light body. Medium to high carbonation. Should not feel heavy. Not harsh, but may have a flinty, minerally, sharpness in some examples.",
-        "comments": "Modern examples of Pils tend to become paler in color, drier and sharper in finish, and more bitter moving from South to North in Germany, often mirroring increasing sulfates in the water. Pils found in Bavaria tend to be a bit softer in bitterness with more malt flavor and late hop character, yet still with sufficient hops and crispness of finish to differentiate itself from Munich Helles. The use of the term “Pils” is more common in Germany than “Pilsner” to differentiate it from the Czech style, and (some say) to show respect.",
-        "history": "Adapted from Czech Pilsner to suit brewing conditions in Germany, particularly water with higher mineral content and domestic hop varieties. First brewed in Germany in the early 1870s. Became more popular after WWII as German brewing schools emphasized modern techniques. Along with its cousin Czech Pilsner, it is the ancestor of the most widely produced beer styles today.",
-        "characteristic_ingredients": "Continental Pilsner malt. Traditional German hops. Clean German lager yeast.",
-        "style_comparison": "Lighter in body and color, drier, crisper, more fully attenuated, more lingering bitterness, and higher carbonation than a Czech Premium Pale Lager. More hop character, malt flavor, and bitterness than International Pale Lager. More hop character and bitterness with a drier, crisper finish than a Munich Helles; the Helles has more malt intensity, but of the same character as the German Pils."
-      },
-      "vital_statistics_text": "OG: 1.044 - 1.050 IBUs: 22 - 40 FG: 1.008 - 1.013 SRM: 2 - 4 ABV: 4.4 - 5.2%",
-      "vital_statistics": {
-        "og": "1.044 - 1.050",
-        "fg": "1.008 - 1.013",
-        "ibu": "22 - 40",
-        "srm": "2 - 4",
-        "abv": "4.4 - 5.2%"
-      },
-      "commercial_examples_text": "ABK Pils Anno 1907, Jever Pilsener, König Pilsener, Paulaner Pils, Bierstadt Slow-Pour Pils, Rothaus Pils, Schönramer Pils, Trumer Pils",
-      "tags_en": [
-        "standard-strength",
-        "pale-color",
-        "bottom-fermented",
-        "lagered",
-        "central-europe",
-        "traditional-style",
-        "pilsner-family",
-        "bitter",
-        "hoppy"
-      ],
-      "tags_ru": [
-        "стандартная крепость",
-        "светлый цвет",
-        "низовое брожение",
-        "лагеризация",
-        "Центральная Европа",
-        "традиционный стиль",
-        "семейство pilsner",
-        "горький",
-        "хмелевой"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1",
-      "source_pdf_page_start": 26,
-      "source_guideline_page_start": 10
-    }
+  "translated_categories": [
+   "4",
+   "5"
+  ],
+  "next_recommended_batch": [
+   "6A",
+   "6B",
+   "6C",
+   "7A",
+   "7B"
   ]
+ },
+ "categories": [
+  {
+   "category_id": "4",
+   "category_en": "PALE MALTY EUROPEAN LAGER",
+   "category_ru": "Светлый солодовый европейский лагер",
+   "overview_ru": "В эту категорию входят светлые немецкие лагеры крепости от vollbier до starkbier, в которых в балансе подчёркнут характер пилснерского солода, но при этом пиво остаётся хорошо выброженным."
+  },
+  {
+   "category_id": "5",
+   "category_en": "PALE BITTER EUROPEAN BEER",
+   "category_ru": "Светлое горькое европейское пиво",
+   "overview_ru": "Категория описывает пиво немецкого происхождения светлого цвета, с балансом от ровного до горького и с мягко либо умеренно выраженным традиционным немецким хмелем. Обычно это либо лагеры, либо сорта с лагерной выдержкой, хорошо выброженные и с гладким профилем."
+  }
+ ],
+ "styles": [
+  {
+   "bjcp_id": "4A",
+   "bjcp_heading": "4A. Munich Helles",
+   "category_id": "4",
+   "category_en": "PALE MALTY EUROPEAN LAGER",
+   "category_ru": "Светлый солодовый европейский лагер",
+   "name_en": "Munich Helles",
+   "name_ru": "Мюнхенский хеллес",
+   "description_short_ru": "Золотистый немецкий лагер с мягким солодовым вкусом и мягким сухим финишем. Деликатный пряный, цветочный или травянистый хмель и сдержанная горечь удерживают баланс в солодовую сторону, но не дают пиву уйти в сладость.",
+   "sections_ru": {
+    "overall_impression": "Золотистый немецкий лагер с мягким солодовым вкусом и мягким сухим финишем. Деликатные пряные, цветочные или травянистые хмелевые оттенки и сдержанная горечь удерживают баланс в солодовую сторону, но не делают пиво сладким. За счёт этого стиль остаётся очень освежающим и служит настоящим пивом на каждый день.",
+    "aroma": "Умеренный зерново-сладковатый солодовый аромат. Хмелевой аромат от слабого до умеренно слабого, обычно пряный, цветочный или травянистый. Профиль брожения приятный и чистый, при этом в балансе доминирует солод. В наиболее свежих образцах солодовая сладковатость в аромате выражена заметнее.",
+    "appearance": "Цвет от бледно-жёлтого до светло-золотистого. Пиво прозрачное. Пена стойкая, кремово-белая.",
+    "flavor": "Во вкусе сначала ощущается умеренная солодовость с намёком на сладость; далее проявляется умеренный зерново-сладковатый солодовый профиль с мягким, округлым ощущением на нёбе, который поддержан низкой или умеренно низкой горечью. Финиш мягкий и сухой, но не резкий и не колючий. Хмелевой вкус от слабого до умеренно слабого, пряный, цветочный или травянистый. Вкус солода доминирует над хмелем во вкусовом центре, финише и послевкусии, однако хмель должен быть заметен. Остаточной сладости быть не должно — допустимо лишь общее впечатление солодовости на фоне сдержанной горечи. Брожение чистое.",
+    "mouthfeel": "Среднее тело. Средняя карбонизация. Ощущение гладкое, хорошо лагеризованное.",
+    "comments": "Очень свежие образцы могут показывать более выразительный солодовый и хмелевой характер, который со временем ослабевает; это особенно заметно в экспортных версиях. В самом Мюнхене хеллес обычно легче, чем версии, сваренные за пределами города. Стиль также может называться Helles Lagerbier.",
+    "history": "Стиль появился в Мюнхене в 1894 году как ответ на популярность светлых пилснероподобных лагеров; чаще всего первенство приписывают Spaten. Наибольшую популярность он получил в Южной Германии.",
+    "characteristic_ingredients": "Континентальный пилснерский солод, традиционные немецкие хмели и чистые немецкие лагерные дрожжи.",
+    "style_comparison": "По балансу солода и горечи близок к Munich Dunkel, но менее сладковато-солодовый по характеру и светлый, а не тёмный и насыщенный. По телу и солодовой наполненности превосходит German Pils, но менее резкий в финише и с более сдержанным хмелевым характером. Сходен по солодовому профилю с German Helles Exportbier, однако в нём меньше хмеля и немного ниже крепость. Также он легче по телу и алкоголю, чем Festbier."
+   },
+   "sections_en": {
+    "overall_impression": "A gold-colored German lager with a smooth, malty flavor and a soft, dry finish. Subtle spicy, floral, or herbal hops and restrained bitterness help keep the balance malty but not sweet, which helps make this beer a refreshing, everyday drink.",
+    "aroma": "Moderate grainy-sweet malt aroma. Low to moderately-low spicy, floral, or herbal hop aroma. Pleasant, clean fermentation profile, with malt dominating the balance. The freshest examples will have more of a malty-sweet aroma.",
+    "appearance": "Pale yellow to pale gold. Clear. Persistent creamy white head.",
+    "flavor": "Moderately malty start with the suggestion of sweetness, moderate grainy-sweet malt flavor with a soft, rounded palate impression, supported by a low to medium-low bitterness. Soft and dry finish, not crisp and biting. Low to moderately-low spicy, floral, or herbal hop flavor. Malt dominates hops in the palate, finish, and aftertaste, but hops should be noticeable. No residual sweetness, simply the impression of maltiness with restrained bitterness. Clean fermentation profile.",
+    "mouthfeel": "Medium body. Medium carbonation. Smooth, well-lagered character.",
+    "comments": "Very fresh examples can have a more prominent malt and hop character that fades over time, as is often noticed in exported beers. Helles in Munich tends to be a lighter version than those outside the city. May be called Helles Lagerbier.",
+    "history": "Created in Munich in 1894 to compete with pale Pilsner-type beers, often first credited to Spaten. More popular in Southern Germany.",
+    "characteristic_ingredients": "Continental Pilsner malt. Traditional German hops. Clean German lager yeast.",
+    "style_comparison": "Similar in malt balance and bitterness to Munich Dunkel, but less malty-sweet in nature and pale rather than dark and rich. More body and malt presence than a German Pils, but less crisp and with less hop character throughout. Similar malt profile as a German Helles Exportbier, but with fewer hops in the balance and slightly less alcohol. Less body and alcohol than a Festbier."
+   },
+   "vital_statistics_text": "OG: 1.044 - 1.048 IBUs: 16 - 22 FG: 1.006 - 1.012 SRM: 3 - 5 ABV: 4.7 - 5.4%",
+   "vital_statistics": {
+    "og": "1.044 - 1.048",
+    "fg": "1.006 - 1.012",
+    "ibu": "16 - 22",
+    "srm": "3 - 5",
+    "abv": "4.7 - 5.4%"
+   },
+   "commercial_examples_text": "Augustiner Lagerbier Hell, Hacker- Pschorr Münchner Gold, Löwenbraü Original, Paulaner Münchner Lager, Schönramer Hell, Spaten Münchner Hell, Weihenstephaner Original Helles",
+   "tags_en": [
+    "standard-strength",
+    "pale-color",
+    "bottom-fermented",
+    "lagered",
+    "central-europe",
+    "traditional-style",
+    "pale-lager-family",
+    "malty"
+   ],
+   "tags_ru": [
+    "стандартная крепость",
+    "светлый цвет",
+    "низовое брожение",
+    "лагеризация",
+    "Центральная Европа",
+    "традиционный стиль",
+    "семейство светлых лагеров",
+    "солодовый"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1",
+   "source_pdf_page_start": 23,
+   "source_guideline_page_start": 7
+  },
+  {
+   "bjcp_id": "4B",
+   "bjcp_heading": "4B. Festbier",
+   "category_id": "4",
+   "category_en": "PALE MALTY EUROPEAN LAGER",
+   "category_ru": "Светлый солодовый европейский лагер",
+   "name_en": "Festbier",
+   "name_ru": "Фестбир",
+   "description_short_ru": "Гладкий, чистый, светлый немецкий лагер с умеренно выраженным солодовым вкусом и лёгким хмелевым характером. Удачно сочетает питкость и крепость, показывая благородный немецкий солод без лишней тяжеловесности.",
+   "sections_ru": {
+    "overall_impression": "Гладкий, чистый, светлый немецкий лагер с умеренно выраженным солодовым вкусом и лёгким хмелевым характером. Очень удачно балансирует между крепостью и питкостью: и первое впечатление, и финиш буквально подталкивают сделать ещё глоток. Стиль демонстрирует элегантный характер немецкого солода, не становясь тяжёлым или чрезмерно насыщающим.",
+    "aroma": "Умеренная солодовая насыщенность, с акцентом на оттенки поджаренного хлеба и теста и общим впечатлением мягкой сладости. Хмель — от слабого до умеренно слабого, обычно цветочный, травянистый или пряный. В солодовом профиле не должно быть глубокой поджаренности, карамели или бисквитности. Профиль лагерного брожения чистый.",
+    "appearance": "Цвет от насыщенно-жёлтого до глубокого золотистого; янтарные оттенки нежелательны. Прозрачность яркая. Пена стойкая, от белой до почти белой. Большинство коммерческих образцов имеют бледно-золотистый цвет.",
+    "flavor": "Во вкусе сначала проявляется солод от умеренного до умеренно высокого уровня — с лёгкой поджаренностью, оттенками хлебного теста и мягкой солодовой насыщенности. Горечь от умеренной до умеренно низкой; баланс однозначно смещён в солодовую сторону. Пиво хорошо выброжено и ощущается освежающе-чётким, но не сухим. Хмелевой вкус — от умеренно слабого до умеренного, цветочный, травянистый или пряный. Брожение чистое. Основу вкуса составляет пилснерский солод, дополненный лёгкими поджаристыми нюансами. Горечь поддерживает профиль, но финиш всё равно должен оставаться солодовым и выразительным.",
+    "mouthfeel": "Среднее тело, гладкая, слегка кремовая текстура. Карбонизация средняя. Алкоголь, если и даёт согревание, то едва заметное.",
+    "comments": "Этот стиль описывает современное немецкое пиво, которое подают на Октоберфесте, хотя им не ограничиваются и его можно встретить и на других праздниках. Иногда его называют Wiesn — по местному названию площадки и самого фестиваля. Название Festbier выбрано потому, что по немецким и общеевропейским правилам Oktoberfestbier — защищённое обозначение для пива крупных мюнхенских пивоварен, предназначенного именно для потребления на Октоберфесте. В других странах таких ограничений нет, поэтому многие крафтовые пивоварни в США варят пиво под названием Oktoberfest, но по сути опираются на традиционный Märzen. Возможное альтернативное название — Helles Märzen.",
+    "history": "С 1990 года именно этот стиль стал основным пивом Октоберфеста в Мюнхене. Экспортные версии, особенно для США, по-прежнему чаще тяготеют к традиционному янтарному варианту, как и американские интерпретации. Золотистую версию впервые создала Paulaner в середине 1970-х, решив, что классический Oktoberfest слишком тяжёл и быстро насыщает. Поэтому пивоварня разработала более лёгкий, более питкий, но всё ещё солодовый вариант, который, по словам главного пивовара, должен был «легко питься кружка за кружкой». При этом окончательное решение о том, какое именно пиво подают на Октоберфесте, принимает городской комитет Мюнхена.",
+    "characteristic_ingredients": "Основа засыпи — преимущественно пилснерский солод, с добавлением части венского или мюнхенского солода для усиления солодовой насыщенности. Различия между коммерческими образцами чаще связаны с конкретным солодовенным сырьём и дрожжами, а не с радикально разным составом засыпи.",
+    "style_comparison": "Менее интенсивен и менее богато поджарен, чем Märzen. Крепче, чем Munich Helles, с чуть большим телом и чуть более заметными солодом и хмелем. По солодовой насыщенности уступает Helles Bock. По сложности солодового профиля напоминает более плотный Czech Premium Pale Lager, но без характерного для него хмелевого сопровождения."
+   },
+   "sections_en": {
+    "overall_impression": "A smooth, clean, pale German lager with a moderately strong malty flavor and a light hop character. Deftly balances strength and drinkability, with a palate impression and finish that encourages drinking. Showcases elegant German malt flavors without becoming too heavy or filling.",
+    "aroma": "Moderate malty richness, with an emphasis on toasty-doughy aromatics and an impression of sweetness. Low to medium-low floral, herbal, or spicy hops. The malt should not have a deeply toasted, caramel, or biscuity quality. Clean lager fermentation profile.",
+    "appearance": "Deep yellow to deep gold color; should not have amber hues. Bright clarity. Persistent white to off-white foam stand. Most commercial examples are pale gold in color.",
+    "flavor": "Medium to medium-high malty flavor initially, with a lightly toasty, bread dough quality and an impression of soft malty richness. Medium to medium-low bitterness, definitely malty in the balance. Well-attenuated and crisp, but not dry. Medium-low to medium floral, herbal, or spicy hop flavor. Clean fermentation profile. The taste is mostly of Pils malt, but with slightly toasty hints. The bitterness is supportive, but still should yield a malty, flavorful finish.",
+    "mouthfeel": "Medium body, with a smooth, somewhat creamy texture. Medium carbonation. Alcohol strength barely noticeable as warming, if at all.",
+    "comments": "This style represents the modern German beer served at Oktoberfest (although it is not solely reserved for Oktoberfest; it can be found at many other “fests”), and is sometimes called Wiesn (“the meadow” or local name for the Oktoberfest festival). We chose to call this style Festbier since by German and EU regulations, Oktoberfestbier is a protected appellation for beer produced at large breweries within the Munich city limits for consumption at Oktoberfest. Other countries are not bound by these rules, so many craft breweries in the US produce beer called Oktoberfest, but based on the traditional style described in these guidelines as Märzen. May be called Helles Märzen.",
+    "history": "Since 1990, the majority of beer served at Oktoberfest in Munich has been this style. Export beer specifically made for the United States is still mainly of the traditional amber style, as are US-produced interpretations. Paulaner first created the golden version in the mid-1970s because they thought the traditional Oktoberfest was too filling. So they developed a lighter, more drinkable but still malty version that they wanted to be “more poundable” (according to the head brewer at Paulaner). But the actual type of beer served at Oktoberfest is set by a Munich city committee.",
+    "characteristic_ingredients": "Majority Pils malt, but with some Vienna or Munich malt to increase maltiness. Differences in commercial examples are mostly due to different maltsters and yeast, not major grist differences.",
+    "style_comparison": "Less intense and less richly toasted than a Märzen. Stronger than a Munich Helles, with a bit more body, and hop and malt flavor. Less rich in malt intensity than a Helles Bock. The malt complexity is similar to a higher-gravity Czech Premium Pale Lager, although without the associated hops."
+   },
+   "vital_statistics_text": "OG: 1.054 - 1.057 IBUs: 18 - 25 FG: 1.010 - 1.012 SRM: 4 - 6 ABV: 5.8 - 6.3%",
+   "vital_statistics": {
+    "og": "1.054 - 1.057",
+    "fg": "1.010 - 1.012",
+    "ibu": "18 - 25",
+    "srm": "4 - 6",
+    "abv": "5.8 - 6.3%"
+   },
+   "commercial_examples_text": "Augustiner Oktoberfest, Hacker- Pschorr Superior Festbier, Hofbräu Oktoberfestbier, Löwenbräu Oktoberfestbier, Paulaner Oktoberfest Bier, Weihenstephaner Festbier",
+   "tags_en": [
+    "standard-strength",
+    "pale-color",
+    "bottom-fermented",
+    "lagered",
+    "central-europe",
+    "traditional-style",
+    "pale-lager-family",
+    "malty"
+   ],
+   "tags_ru": [
+    "стандартная крепость",
+    "светлый цвет",
+    "низовое брожение",
+    "лагеризация",
+    "Центральная Европа",
+    "традиционный стиль",
+    "семейство светлых лагеров",
+    "солодовый"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1",
+   "source_pdf_page_start": 23,
+   "source_guideline_page_start": 7
+  },
+  {
+   "bjcp_id": "4C",
+   "bjcp_heading": "4C. Helles Bock",
+   "category_id": "4",
+   "category_en": "PALE MALTY EUROPEAN LAGER",
+   "category_ru": "Светлый солодовый европейский лагер",
+   "name_en": "Helles Bock",
+   "name_ru": "Хеллес бок",
+   "description_short_ru": "Относительно светлый, крепкий и солодовый немецкий лагер с хорошо выброженным финишем, который сохраняет питкость. По сравнению с другими боками хмель заметнее, а солодовый профиль не столь глубоко насыщенный.",
+   "sections_ru": {
+    "overall_impression": "Относительно светлый, крепкий и солодовый немецкий лагер с хорошо выброженным финишем, благодаря которому пиво остаётся питким. По сравнению с другими представителями семейства Bock хмелевой характер здесь обычно заметнее, а солодовый профиль — менее тёмный и менее глубоко насыщенный.",
+    "aroma": "Солодовый аромат от умеренного до сильного, зерново-сладковатый, часто с лёгкой поджаренностью и слабыми продуктами Майяра. Допустим умеренно слабый пряный, травянистый или цветочный хмелевой аромат. Профиль брожения чистый. Допустимы слабые фруктовые эфиры. Очень лёгкий алкогольный тон тоже допустим.",
+    "appearance": "Цвет от насыщенно-золотистого до светло-янтарного. Прозрачность от яркой до прозрачной. Пена крупная, кремовая, стойкая, белая.",
+    "flavor": "Доминирует солодовый вкус от умеренного до умеренно сильного: зерново-сладковатый, тестяной, хлебный или слегка поджаристый, дополненный богатыми продуктами Майяра, которые делают профиль интереснее. Возможны лёгкие карамельные оттенки. Хмелевой вкус от слабого до умеренного, пряный, травянистый, цветочный либо перечный; в лучших образцах он должен ощущаться. Горечь умеренная и в балансе заметнее, чем у других боков. Брожение чистое. Пиво хорошо выброжено, не приторно и не тяжеловесно, с умеренно сухим финишем, в котором могут ощущаться и солод, и хмель.",
+    "mouthfeel": "Среднее тело. Карбонизация от умеренной до умеренно высокой. Текстура гладкая и чистая, без жёсткости и вяжущести, несмотря на более заметную горечь. Допустимо лёгкое алкогольное согревание.",
+    "comments": "Стиль также известен как Maibock. По сравнению с более тёмными боками более заметный хмель компенсирует здесь меньший уровень продуктов Майяра в общем балансе.",
+    "history": "По меркам семейства Bock это относительно поздняя разработка. Maibock традиционно ассоциируется с весной и месяцем маем; под этим названием могут встречаться версии с несколько более широким диапазоном цвета и охмеления, чем у экспортных образцов.",
+    "characteristic_ingredients": "Смесь пилснерского, венского и мюнхенского солодов. Несоложёные добавки не используются. Возможно лёгкое применение светлых кристаллических солодов. Хмель — традиционный немецкий. Дрожжи — чистые лагерные. Декокционный затор традиционен, но кипячение здесь менее интенсивное, чем у Dunkles Bock, чтобы не набирать лишний цвет. Вода мягкая.",
+    "style_comparison": "Его можно воспринимать либо как светлую версию Dunkles Bock, либо как Munich Helles или Festbier, сваренный до плотности, типичной для бока. Несмотря на заметную солодовость, в нём обычно меньше тёмных и глубоко насыщенных солодовых тонов; при этом он может быть суше, хмелевее и горче, чем Dunkles Bock. Он слабее, чем светлый Doppelbock, но в целом движется в схожем вкусовом направлении."
+   },
+   "sections_en": {
+    "overall_impression": "A relatively pale, strong, malty German lager with a nicely attenuated finish that enhances drinkability. The hop character is generally more apparent and the malt character less deeply rich than in other Bocks.",
+    "aroma": "Moderate to strong grainy-sweet malt aroma, often with a lightly toasted quality and low Maillard products. Moderately-low spicy, herbal, or floral hop aroma optional. Clean fermentation profile. Low fruity esters optional. Very light alcohol optional.",
+    "appearance": "Deep gold to light amber in color. Bright to clear clarity. Large, creamy, persistent, white head.",
+    "flavor": "Moderately to moderately strong grainy-sweet, doughy, bready, or lightly toasty malt flavor dominates with some rich Maillard products providing added interest. Few caramel flavors optional. Low to moderate spicy, herbal, floral, peppery hop flavor optional, but present in the best examples. Moderate hop bitterness, more so in the balance than in other Bocks. Clean fermentation profile. Well-attenuated, not cloying, with a moderately-dry finish that may taste of both malt and hops.",
+    "mouthfeel": "Medium-bodied. Moderate to moderately-high carbonation. Smooth and clean with no harshness or astringency, despite the increased hop bitterness. Light alcohol warming optional.",
+    "comments": "Also known as Maibock. Compared to darker Bock beers, the hops compensate for the lower level of Maillard products in the balance.",
+    "history": "A fairly recent development in comparison to the other members of the bock family. The serving of Maibock is a seasonal offering associated with springtime and the month of May, and may include a wider color and hopping range than is seen in exported products.",
+    "characteristic_ingredients": "A mix of Pils, Vienna, and Munich malts. No adjuncts. Light use of pale crystal type malts possible. Traditional German hops. Clean lager yeast. Decoction mash is traditional, but boiling is less than in Dunkles Bock to restrain color development. Soft water.",
+    "style_comparison": "Can be thought of as either a pale version of a Dunkles Bock, or a Munich Helles or Festbier brewed to bock strength. While quite malty, this beer typically has less dark and rich malt flavors, and can be drier, hoppier, and more bitter than a Dunkles Bock. Less strong than a pale Doppelbock, but with similar flavors."
+   },
+   "vital_statistics_text": "OG: 1.064 - 1.072 IBUs: 23 - 35 FG: 1.011 - 1.018 SRM: 6 - 9 ABV: 6.3 - 7.4%",
+   "vital_statistics": {
+    "og": "1.064 - 1.072",
+    "fg": "1.011 - 1.018",
+    "ibu": "23 - 35",
+    "srm": "6 - 9",
+    "abv": "6.3 - 7.4%"
+   },
+   "commercial_examples_text": "Altenmünster Maibock, Ayinger Maibock, Chuckanut Maibock, Einbecker Mai-Ur-Bock, Hofbräu Maibock, Mahr’s Heller Bock",
+   "tags_en": [
+    "high-strength",
+    "pale-color",
+    "bottom-fermented",
+    "lagered",
+    "central-europe",
+    "traditional-style",
+    "bock-family",
+    "malty"
+   ],
+   "tags_ru": [
+    "высокая крепость",
+    "светлый цвет",
+    "низовое брожение",
+    "лагеризация",
+    "Центральная Европа",
+    "традиционный стиль",
+    "семейство боков",
+    "солодовый"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1",
+   "source_pdf_page_start": 24,
+   "source_guideline_page_start": 8
+  },
+  {
+   "bjcp_id": "5A",
+   "bjcp_heading": "5A. German Leichtbier",
+   "category_id": "5",
+   "category_en": "PALE BITTER EUROPEAN BEER",
+   "category_ru": "Светлое горькое европейское пиво",
+   "name_en": "German Leichtbier",
+   "name_ru": "Немецкий ляйхтбир",
+   "description_short_ru": "Светлый, хорошо выброженный и лёгкий по телу немецкий лагер с пониженной крепостью и калорийностью. Несмотря на облегчённость, в нём остаются заметные солодовые и хмелевые оттенки и умеренная горечь.",
+   "sections_ru": {
+    "overall_impression": "Светлый, хорошо выброженный и лёгкий по телу немецкий лагер с пониженной крепостью и калорийностью по сравнению со стандартными сортами. Горечь умеренная, солод и хмель заметны, поэтому даже при своей лёгкости пиво остаётся нескучным.",
+    "aroma": "Хмелевой аромат от слабого до умеренного, обычно пряный, травянистый или цветочный. Солодовый аромат от слабого до умеренно слабого, зерново-сладковатый или слегка крекерный. Профиль брожения чистый.",
+    "appearance": "Цвет от бледно-соломенного до насыщенно-жёлтого. Блеск очень высокий, прозрачность практически безупречная. Белая пена умеренная, стойкость средняя или ниже средней.",
+    "flavor": "Во вкусе сначала проявляется солод от слабого до умеренного уровня, зерново-сладковатый. Горечь умеренная. Хмелевой вкус — от слабого до умеренного, с пряными, травянистыми или цветочными оттенками. Профиль брожения чистый, лагеризация хорошая. Финиш сухой, с лёгким солодово-хмелевым послевкусием.",
+    "mouthfeel": "Тело от лёгкого до очень лёгкого. Карбонизация от средней до высокой. Ощущение гладкое, пиво хорошо выброжено.",
+    "comments": "Стиль продвигается прежде всего как более «диетическое» пиво — с меньшим количеством углеводов, алкоголя и калорий. Произносится примерно как «ляйхт-бир». Также может встречаться под названиями Diat Pils или Helles; по немецкой классификации относится к классу плотности schankbier. Другие облегчённые варианты на базе Weissbier, Kölsch или Altbier BJCP рекомендует подавать в категорию 34B Mixed-Style Beer.",
+    "history": "Исторически такие версии существовали как повседневное пиво для рабочих в полях и на фабриках. Современные же образцы в большей степени ориентированы на популярные американские лёгкие сорта и на аудиторию, следящую за здоровьем и физической формой. Сегодня стиль всё чаще вытесняется безалкогольным пивом и радлерами.",
+    "characteristic_ingredients": "Континентальный пилснерский солод, немецкие лагерные дрожжи и традиционные немецкие хмели.",
+    "style_comparison": "Похоже на менее крепкую и более лёгкую по телу, чуть менее напористую версию German Pils или Munich Helles. При этом оно заметно горче и выразительнее, чем American Light Lager."
+   },
+   "sections_en": {
+    "overall_impression": "A pale, highly-attenuated, light-bodied German lager with lower alcohol and calories than standard-strength beers. Moderately bitter with noticeable malt and hop flavors, the beer is still interesting to drink.",
+    "aroma": "Low to medium hop aroma, with a spicy, herbal, or floral character. Low to medium-low grainy-sweet or slightly crackery malt aroma. Clean fermentation profile.",
+    "appearance": "Pale straw to deep yellow in color. Brilliant clarity. Moderate white head with average to below average persistence.",
+    "flavor": "Low to medium grainy-sweet malt flavor initially. Medium hop bitterness. Low to medium hop flavor, with a spicy, herbal, or floral quality. Clean fermentation character, well-lagered. Dry finish with a light malty and hoppy aftertaste.",
+    "mouthfeel": "Light to very light body. Medium to high carbonation. Smooth, well-attenuated.",
+    "comments": "Marketed primarily as a diet-oriented beer with lower carbohydrates, alcohol, and calories. Pronounced “LYESHT-beer.” May also be known as a Diat Pils or Helles, this style is in the schankbier gravity class. Other variations of Leicht class beers can be made from Weissbier, Kölsch, and Altbier; those beers are best entered as 34B Mixed-Style Beer.",
+    "history": "Traditional versions existed as drinks for physical laborers in factories or fields, but modern versions are more based on popular American products in the same class and targeted towards health or fitness conscious consumers. Increasingly supplanted in the current market by non-alcoholic beers and radlers.",
+    "characteristic_ingredients": "Continental Pils malt. German lager yeast. Traditional German hops.",
+    "style_comparison": "Like a lower-alcohol, lighter-bodied, slightly less aggressive German Pils or Munich Helles. More bitter and flavorful than an American Light Lager."
+   },
+   "vital_statistics_text": "OG: 1.026 - 1.034 IBUs: 15 - 28 FG: 1.006 - 1.010 SRM: 1.5 - 4 ABV: 2.4 - 3.6%",
+   "vital_statistics": {
+    "og": "1.026 - 1.034",
+    "fg": "1.006 - 1.010",
+    "ibu": "15 - 28",
+    "srm": "1.5 - 4",
+    "abv": "2.4 - 3.6%"
+   },
+   "commercial_examples_text": "Autenrieder Schlossbräu Leicht, Greif Bräu Leicht, Hohenthanner Tannen Hell Leicht, Müllerbrau Heimer Leicht, Schönramer Surtaler Schankbier, Waldhaus Sommer Bier",
+   "tags_en": [
+    "session-strength",
+    "pale-color",
+    "bottom-fermented",
+    "lagered",
+    "central-europe",
+    "traditional-style",
+    "pale-lager-family",
+    "bitter",
+    "hoppy"
+   ],
+   "tags_ru": [
+    "сессионная крепость",
+    "светлый цвет",
+    "низовое брожение",
+    "лагеризация",
+    "Центральная Европа",
+    "традиционный стиль",
+    "семейство светлых лагеров",
+    "горький",
+    "хмелевой"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1",
+   "source_pdf_page_start": 25,
+   "source_guideline_page_start": 9
+  },
+  {
+   "bjcp_id": "5B",
+   "bjcp_heading": "5B. Kölsch",
+   "category_id": "5",
+   "category_en": "PALE BITTER EUROPEAN BEER",
+   "category_ru": "Светлое горькое европейское пиво",
+   "name_en": "Kölsch",
+   "name_ru": "Кёльш",
+   "description_short_ru": "Деликатное, блестяще прозрачное светлое пиво с тонким балансом солода, фруктовости и хмеля, умеренной горечью и хорошо выброженным, но мягким финишем. Для этого стиля свежесть критически важна.",
+   "sections_ru": {
+    "overall_impression": "Деликатное, блестяще прозрачное светлое пиво с тонким балансом солода, фруктовости и хмеля, умеренной горечью и хорошо выброженным, но мягким финишем. Для этого стиля свежесть имеет решающее значение: его тонкий характер довольно быстро тускнеет с возрастом.",
+    "aroma": "Солодовый аромат очень слабый или слабый, зерново-сладковатый. Допустим тонкий фруктовый аромат — яблоко, груша, иногда вишня, — и он даже приветствуется. Также допустим слабый цветочный, пряный или травянистый хмелевой аромат. В целом аромат должен быть сдержанным, но при этом сбалансированным, чистым, свежим и приятным.",
+    "appearance": "Цвет от средне-жёлтого до светло-золотистого. Прозрачность блестящая. Пена белая, нежная, может быть нестойкой.",
+    "flavor": "Во вкусе — тонкий баланс солода, лёгкой фруктовости, горечи и хмеля при чистом, хорошо выброженном финише. Солодовость от умеренно низкой до умеренной, зерновая, иногда с очень лёгкими хлебными или медовыми оттенками. Фруктовость может создавать почти неуловимое ощущение сладости. Горечь — от умеренно низкой до умеренной. Хмелевой вкус — от слабого до умеренно высокого, чаще всего от умеренно слабого до умеренного; характер цветочный, пряный или травянистый. В начале может ощущаться нейтрально-зерновой или слегка сладковато-солодовый тон. Ощущение на нёбе мягкое и округлое. Финиш мягкий, чуть суховато-освежающий, но не резкий и не колючий. Заметной остаточной сладости быть не должно. Соотношение компонентов может немного варьировать, однако ни один из них не должен выходить вперёд слишком сильно.",
+    "mouthfeel": "Тело от средне-лёгкого до среднего, чаще всего средне-лёгкое. Карбонизация от средней до умеренно высокой. Текстура гладкая и мягкая; пиво хорошо выброжено, но не кажется тяжёлым. Жёсткость неуместна.",
+    "comments": "Традиционное верховое пиво из Кёльна (Köln), которое затем выдерживается как лагер. Кёльнские пивоварни различаются именно нюансами баланса, поэтому при оценке допустим определённый диапазон вариаций внутри стиля. Более сухие версии могут казаться более хмелевыми или горькими, чем предполагают численные значения IBU. Деликатный профиль плохо переносит возраст, поэтому стоит внимательно отслеживать признаки окисления. В Кёльне его подают в высоком узком стакане 0,2 л, который называется Stange.",
+    "history": "Традиция верхового пивоварения существует в Кёльне со Средних веков, однако пиво, которое сегодня известно как Kölsch, сформировалось лишь в конце XIX века как альтернатива светлым лагерам. Низовое брожение в Кёльне в то время вообще было запрещено. Название Kölsch защищено соглашением Kölsch Konvention (1986), и использовать его могут только пивоварни Кёльна и ближайших окрестностей. В самой конвенции стиль определяется как «светлое, сильно выброженное, подчёркнуто охмелённое, прозрачное пиво верхового брожения класса Vollbier».",
+    "characteristic_ingredients": "Традиционные немецкие хмели. Немецкий пилснерский, светлый (пейл) или венский солод. Чистые, хорошо выбраживающие немецкие элевые дрожжи. Допустимо небольшое количество пшеничного солода. Современная коммерческая практика — брожение примерно при 15 °C, затем холодная выдержка около точки замерзания до месяца и подача максимально свежим.",
+    "style_comparison": "Стиль можно спутать с Cream Ale или с особенно деликатной интерпретацией German Pils."
+   },
+   "sections_en": {
+    "overall_impression": "A subtle, brilliantly clear, pale beer with a delicate balance of malt, fruit, and hop character, moderate bitterness, and a well-attenuated but soft finish. Freshness makes a huge difference with this beer, as the delicate character can fade quickly with age.",
+    "aroma": "Low to very low grainy-sweet malt aroma. A subtle fruit aroma (apple, pear, or sometimes cherry) is optional, but welcome. Low floral, spicy, or herbal hop aroma optional. The intensity of aromatics is fairly subtle but generally balanced, clean, fresh, and pleasant.",
+    "appearance": "Medium yellow to light gold. Brilliant clarity. Has a delicate white head that may not persist.",
+    "flavor": "A delicate flavor balance between malt, fruitiness, bitterness, and hops, with a clean, well-attenuated finish. The medium to medium-low grainy maltiness may have very light bready or honey notes. The fruitiness can have an almost imperceptible sweetness. Medium-low to medium bitterness. Low to moderately-high floral, spicy, or herbal hop flavor; most are medium-low to medium. May have a neutral-grainy to light malty sweet impression at the start. Soft, rounded palate. Finish is soft, dry, and slightly crisp, not sharp or biting. No noticeable residual sweetness. While the balance between the flavor components can vary, none are ever strong.",
+    "mouthfeel": "Medium-light to medium body; most are medium-light. Medium to medium-high carbonation. Smooth and soft, but well-attenuated and not heavy. Not harsh.",
+    "comments": "A traditional top-fermented, lagered beer from Cologne, Germany (Köln). Köln breweries differentiate themselves through balance, so allow for a range of variation within the style when judging. Drier versions may seem hoppier or more bitter than the IBU levels might suggest. The delicate flavor profile does not age well, so be alert for oxidation defects. Served in Köln in a tall, narrow 20cl glass called a Stange.",
+    "history": "Köln has a top-fermenting brewing tradition since the Middle Ages, but the beer now known as Kölsch was developed in the late 1800s as an alternative to pale lagers. Bottom fermentation was actually prohibited in Cologne. Kölsch is an appellation protected by the Kölsch Konvention (1986), and is restricted to breweries in and around Köln. The Konvention simply defines the beer as a “light, highly attenuated, hop-accentuated, clear, top-fermenting Vollbier.”",
+    "characteristic_ingredients": "Traditional German hops. German Pils, Pale, or Vienna malt. Attenuative, clean German ale yeast. Occasional small use of wheat malt. Current commercial practice is to ferment around 15 °C, cold condition near freezing for up to a month, and serve fresh.",
+    "style_comparison": "Can be mistaken for a Cream Ale or somewhat subtle German Pils."
+   },
+   "vital_statistics_text": "OG: 1.044 - 1.050 IBUs: 18 - 30 FG: 1.007 - 1.011 SRM: 3.5 - 5 ABV: 4.4 - 5.2%",
+   "vital_statistics": {
+    "og": "1.044 - 1.050",
+    "fg": "1.007 - 1.011",
+    "ibu": "18 - 30",
+    "srm": "3.5 - 5",
+    "abv": "4.4 - 5.2%"
+   },
+   "commercial_examples_text": "Früh Kölsch, Gaffel Kölsch, Mühlen Kölsch, Päffgen Kolsch, Reissdorf Kölsch, Sion Kölsch, Sünner Kölsch",
+   "tags_en": [
+    "standard-strength",
+    "pale-color",
+    "top-fermented",
+    "lagered",
+    "central-europe",
+    "traditional-style",
+    "pale-ale-family",
+    "balanced"
+   ],
+   "tags_ru": [
+    "стандартная крепость",
+    "светлый цвет",
+    "верховое брожение",
+    "лагеризация",
+    "Центральная Европа",
+    "традиционный стиль",
+    "семейство пейл-элей",
+    "сбалансированный"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1",
+   "source_pdf_page_start": 25,
+   "source_guideline_page_start": 9
+  },
+  {
+   "bjcp_id": "5C",
+   "bjcp_heading": "5C. German Helles Exportbier",
+   "category_id": "5",
+   "category_en": "PALE BITTER EUROPEAN BEER",
+   "category_ru": "Светлое горькое европейское пиво",
+   "name_en": "German Helles Exportbier",
+   "name_ru": "Немецкий хеллес экспортбир",
+   "description_short_ru": "Золотистый немецкий лагер, сочетающий мягкий солодовый профиль с заметной горечью и хмелем, при немного повышенных теле и крепости. Это промежуточный вариант между Munich Helles и German Pils.",
+   "sections_ru": {
+    "overall_impression": "Золотистый немецкий лагер, в котором мягкий солодовый профиль сочетается с ощутимой горечью и хмелевым характером. Тело и крепость здесь немного выше среднего, но пиво всё равно сохраняет гармоничность и питкость.",
+    "aroma": "Хмелевой аромат от умеренно слабого до умеренного, обычно цветочный, пряный или травянистый. Солодовый аромат умеренный, зерново-сладковатый, возможны лёгкие поджаристые, хлебные или тестяные оттенки. Профиль брожения чистый. И солод, и хмель должны ощущаться отчётливо, но в целом оставаться в балансе.",
+    "appearance": "Цвет от средне-жёлтого до глубокого золотистого. Пиво прозрачное. Пена белая, стойкая.",
+    "flavor": "Во вкусе солод и хмель выражены умеренно и сбалансированно, при поддерживающей, заметной горечи. Вкусовые дескрипторы и интенсивность солода и хмеля соответствуют аромату. Горечь средняя, ощутимая; вкус полнее на нёбе, финиш умеренно сухой. Брожение чистое. В послевкусии и солод, и хмель обычно ощущаются примерно поровну. Минеральность обычно воспринимается не как отдельный «минеральный» вкус, а скорее как округлость и полнота вкуса, а также минеральная сухость в финише. Допустим фоновый сульфатный акцент.",
+    "mouthfeel": "Тело от среднего до средне-полного. Карбонизация средняя. Ощущение на нёбе гладкое и мягкое. В более крепких версиях допустимо едва заметное согревание.",
+    "comments": "Стиль также известен как Dortmunder Export, Dortmunder, Export или просто Dort. Внутри Германии чаще говорят просто Export, а за её пределами — Dortmunder. При этом Export в немецкой традиции — ещё и обозначение уровня крепости, поэтому термин может применяться и к другим стилям. По нескольким параметрам — цвету, хмелево-солодовому балансу, финишу и горечи — стиль занимает промежуточное положение между German Pils и Munich Helles.",
+    "history": "Стиль возник в Дортмунде, в промышленном регионе Рур, в 1870-х как ответ на распространение светлых пилснероподобных лагеров. После Второй мировой войны он был очень популярен, но в 1970-х пошёл на спад. Другие сорта класса Export развивались самостоятельно и представляли собой чуть более крепкие версии уже существующих типов пива.",
+    "characteristic_ingredients": "Вода с заметной минерализацией и высоким содержанием сульфатов, карбонатов и хлоридов. Традиционные немецкие или чешские хмели. Пилснерский солод. Немецкие лагерные дрожжи. Декокционный затор традиционен.",
+    "style_comparison": "В сравнении с German Pils здесь меньше хмеля в финише и больше тела. По отношению к Munich Helles стиль горче и суше. Он крепче и суше, но менее хмелевой, чем Czech Premium Pale Lager."
+   },
+   "sections_en": {
+    "overall_impression": "A golden German lager balancing a smooth malty profile with a bitter, hoppy character in a slightly above-average body and strength beer.",
+    "aroma": "Medium-low to medium floral, spicy, or herbal hop aroma. Moderate grainy-sweet malt aroma, possibly with light toasty, bready, or doughy notes. Clean fermentation profile. Hops and malt both noticeable, and generally balanced.",
+    "appearance": "Medium yellow to deep gold. Clear. Persistent white head.",
+    "flavor": "Moderate, balanced malt and hops with supporting bitterness. Malt and hop flavors similar to aroma (same descriptors and intensities). Medium, noticeable bitterness, full on the palate, with a medium-dry finish. Clean fermentation character. Aftertaste of both malt and hops, generally in balance. Mineral character typically perceived more as a roundness and fullness of flavor, and a dry, flinty sharpness in the finish rather than overt mineral flavors. Background sulfate optional.",
+    "mouthfeel": "Medium to medium-full body. Medium carbonation. Smooth and mellow on the palate. Very slight warmth may be noted in stronger versions.",
+    "comments": "Also known Dortmunder Export, Dortmunder, Export, or simply a Dort. Called Export within Germany, and often Dortmunder elsewhere, Export is also a beer strength descriptor under German brewing tradition, and could be applied to other styles. Splits the difference between a German Pils and a Munich Helles in several aspects: color, hop-malt balance, finish, bitterness.",
+    "history": "Developed in Dortmund in the Ruhr industrial region in the 1870s in response to pale Pilsner-type beers. It became very popular after World War II but declined in the 1970s. Other Export-class beers developed independently, and reflected a slightly stronger version of existing beers.",
+    "characteristic_ingredients": "Minerally water with high levels of sulfates, carbonates, and chlorides. Traditional German or Czech hops. Pilsner malt. German lager yeast. Decoction mash traditional.",
+    "style_comparison": "Less finishing hops and more body than a German Pils. More bitter and drier than a Munich Helles. Stronger, drier, but less hoppy than a Czech Premium Pale Lager."
+   },
+   "vital_statistics_text": "OG: 1.050 - 1.058 IBUs: 20 - 30 FG: 1.008 - 1.015 SRM: 4 - 6 ABV: 5.0 - 6.0%",
+   "vital_statistics": {
+    "og": "1.050 - 1.058",
+    "fg": "1.008 - 1.015",
+    "ibu": "20 - 30",
+    "srm": "4 - 6",
+    "abv": "5.0 - 6.0%"
+   },
+   "commercial_examples_text": "Chuckanut Export Dortmunder Lager, DAB Dortmunder Export, Dortmunder Kronen, Landshuter Edel Hell, Müllerbräu Export Gold, Schönramer Gold",
+   "tags_en": [
+    "standard-strength",
+    "pale-color",
+    "bottom-fermented",
+    "lagered",
+    "central-europe",
+    "traditional-style",
+    "pale-lager-family",
+    "balanced"
+   ],
+   "tags_ru": [
+    "стандартная крепость",
+    "светлый цвет",
+    "низовое брожение",
+    "лагеризация",
+    "Центральная Европа",
+    "традиционный стиль",
+    "семейство светлых лагеров",
+    "сбалансированный"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1",
+   "source_pdf_page_start": 26,
+   "source_guideline_page_start": 10
+  },
+  {
+   "bjcp_id": "5D",
+   "bjcp_heading": "5D. German Pils",
+   "category_id": "5",
+   "category_en": "PALE BITTER EUROPEAN BEER",
+   "category_ru": "Светлое горькое европейское пиво",
+   "name_en": "German Pils",
+   "name_ru": "Немецкий пилс",
+   "description_short_ru": "Светлый, сухой и горький немецкий лагер с отчётливым хмелевым ароматом. Резкий, чистый и освежающий стиль с ярким золотистым цветом и отличной стойкостью пены.",
+   "sections_ru": {
+    "overall_impression": "Светлый, сухой и горький немецкий лагер с отчётливым хмелевым ароматом. Резкий, чистый и освежающий стиль с ярким золотистым цветом и превосходной стойкостью пены.",
+    "aroma": "Хмель от умеренного до умеренно высокого уровня, цветочный, пряный или травянистый. Солодовый характер от слабого до умеренного, зерновой, сладковатый или тестяной, нередко с лёгкими нотами мёда и поджаренного крекера. Профиль брожения чистый. Хмель должен быть ведущим, но не обязан полностью подавлять солод в общем балансе.",
+    "appearance": "Цвет от соломенного до насыщенно-жёлтого. Прозрачность от блестящей до очень высокой. Пена белая, кремовая, стойкая и долговечная.",
+    "flavor": "Начальная солодовая нота быстро уступает место хмелевому вкусу и горечи, переходящим в сухой, резкий финиш. Вкусовые оттенки солода и хмеля соответствуют аромату по характеру и интенсивности. Горечь от умеренной до высокой и задерживается в послевкусии вместе с лёгкими следами солода и хмеля. Профиль брожения чистый. Минеральная вода может усиливать сухость финиша и делать его более продолжительным. С возрастом солод и хмель способны поблекнуть, но баланс всё равно должен оставаться горьким.",
+    "mouthfeel": "Тело средне-лёгкое. Карбонизация от средней до высокой. Пиво не должно ощущаться тяжёлым. Жёсткость нежелательна, однако в некоторых примерах допустима кремнисто-минеральная острота.",
+    "comments": "Современные версии Pils по мере движения с юга на север Германии обычно становятся светлее, суше, резче по финишу и заметно горче — часто это связано и с ростом доли сульфатов в воде. Баварские версии Pils обычно мягче по горечи, с чуть более заметным солодовым вкусом и поздним хмелем, но всё равно должны сохранять достаточную охмелённость и резкий финиш, чтобы отчётливо отличаться от Munich Helles. В Германии термин Pils используется чаще, чем Pilsner, чтобы отделить стиль от чешского варианта и, как некоторые считают, проявить уважение к его происхождению.",
+    "history": "Стиль представляет собой адаптацию чешского Pilsner к немецким условиям пивоварения — прежде всего к более минерализованной воде и местным сортам хмеля. Впервые его сварили в Германии в начале 1870-х. После Второй мировой войны стиль получил дополнительный импульс благодаря тому, что немецкие пивоваренные школы делали акцент на современных технологиях. Вместе со своим родственником Czech Pilsner он стал предком самых массово производимых пивных стилей современности.",
+    "characteristic_ingredients": "Континентальный пилснерский солод, традиционные немецкие хмели и чистые немецкие лагерные дрожжи.",
+    "style_comparison": "По сравнению с Czech Premium Pale Lager стиль легче по телу и цвету, суше и резче, полнее выброжен, дольше держит горечь в послевкусии и обычно сильнее газирован. По хмелевому характеру, солодовому вкусу и горечи он выразительнее, чем International Pale Lager. В сравнении с Munich Helles здесь больше хмеля и горечи, а финиш суше и резче; у Helles солод интенсивнее, но по характеру он очень близок к солоду German Pils."
+   },
+   "sections_en": {
+    "overall_impression": "A pale, dry, bitter German lager featuring a prominent hop aroma. Crisp, clean, and refreshing, showing a brilliant gold color with excellent head retention.",
+    "aroma": "Moderate to moderately-high flowery, spicy, or herbal hops. Low to medium grainy, sweet, or doughy malt character, often with a light honey and toasted cracker quality. Clean fermentation profile. The hops should be forward, but not totally dominate the malt in the balance.",
+    "appearance": "Straw to deep yellow, brilliant to very clear, with a creamy, long-lasting white head.",
+    "flavor": "Initial malt flavor quickly overcome with hop flavor and bitterness, leading into a dry, crisp finish. Malt and hop flavors similar to aroma (same descriptors and intensities). Medium to high bitterness, lingering into the aftertaste along with a touch of malt and hops. Clean fermentation profile. Minerally water can accentuate and lengthen the dry finish. Hops and malt can fade with age, but the beer should always have a bitter balance.",
+    "mouthfeel": "Medium-light body. Medium to high carbonation. Should not feel heavy. Not harsh, but may have a flinty, minerally, sharpness in some examples.",
+    "comments": "Modern examples of Pils tend to become paler in color, drier and sharper in finish, and more bitter moving from South to North in Germany, often mirroring increasing sulfates in the water. Pils found in Bavaria tend to be a bit softer in bitterness with more malt flavor and late hop character, yet still with sufficient hops and crispness of finish to differentiate itself from Munich Helles. The use of the term “Pils” is more common in Germany than “Pilsner” to differentiate it from the Czech style, and (some say) to show respect.",
+    "history": "Adapted from Czech Pilsner to suit brewing conditions in Germany, particularly water with higher mineral content and domestic hop varieties. First brewed in Germany in the early 1870s. Became more popular after WWII as German brewing schools emphasized modern techniques. Along with its cousin Czech Pilsner, it is the ancestor of the most widely produced beer styles today.",
+    "characteristic_ingredients": "Continental Pilsner malt. Traditional German hops. Clean German lager yeast.",
+    "style_comparison": "Lighter in body and color, drier, crisper, more fully attenuated, more lingering bitterness, and higher carbonation than a Czech Premium Pale Lager. More hop character, malt flavor, and bitterness than International Pale Lager. More hop character and bitterness with a drier, crisper finish than a Munich Helles; the Helles has more malt intensity, but of the same character as the German Pils."
+   },
+   "vital_statistics_text": "OG: 1.044 - 1.050 IBUs: 22 - 40 FG: 1.008 - 1.013 SRM: 2 - 4 ABV: 4.4 - 5.2%",
+   "vital_statistics": {
+    "og": "1.044 - 1.050",
+    "fg": "1.008 - 1.013",
+    "ibu": "22 - 40",
+    "srm": "2 - 4",
+    "abv": "4.4 - 5.2%"
+   },
+   "commercial_examples_text": "ABK Pils Anno 1907, Jever Pilsener, König Pilsener, Paulaner Pils, Bierstadt Slow-Pour Pils, Rothaus Pils, Schönramer Pils, Trumer Pils",
+   "tags_en": [
+    "standard-strength",
+    "pale-color",
+    "bottom-fermented",
+    "lagered",
+    "central-europe",
+    "traditional-style",
+    "pilsner-family",
+    "bitter",
+    "hoppy"
+   ],
+   "tags_ru": [
+    "стандартная крепость",
+    "светлый цвет",
+    "низовое брожение",
+    "лагеризация",
+    "Центральная Европа",
+    "традиционный стиль",
+    "семейство пилснеров",
+    "горький",
+    "хмелевой"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1",
+   "source_pdf_page_start": 26,
+   "source_guideline_page_start": 10
+  }
+ ]
 }

@@ -22,10 +22,11 @@ import {
   correctHydrometer,
   correctRefractometer,
   gravityPointsFromSg,
+  hopStorageTemperatureFactor,
   residualCo2VolumesAtTempC,
   sgToBrix
 } from "./calculator-tools";
-import { calculateBitterness } from "./ibu";
+import { calculateBitterness, IBU_SOLUBILITY_CEILING } from "./ibu";
 
 const testWaterProfile = { ca: 50, mg: 10, na: 15, cl: 40, so4: 60, hco3: 80 };
 
@@ -222,6 +223,43 @@ describe("brewing calculator tools", () => {
     expect(boil.warnings).toEqual([]);
   });
 
+  it("К17: currentVolumeMeasuredHot off is bit-for-bit the same as before, on applies the ~4% cooling shrinkage before any other math", () => {
+    const cold = calculateDilutionBoiloff({
+      mode: "dilute_to_gravity",
+      currentVolumeL: 20,
+      currentGravity: 1.06,
+      targetGravity: 1.05
+    });
+    expect(cold.effectiveCurrentVolumeL).toBe(20);
+    expect(cold.warnings).toEqual([]);
+
+    // Explicit false must match the omitted-flag case exactly — no accidental behavior change
+    // for callers that pass the field through as a plain boolean.
+    const explicitlyCold = calculateDilutionBoiloff({
+      mode: "dilute_to_gravity",
+      currentVolumeL: 20,
+      currentGravity: 1.06,
+      targetGravity: 1.05,
+      currentVolumeMeasuredHot: false
+    });
+    expect(explicitlyCold).toEqual(cold);
+
+    const hot = calculateDilutionBoiloff({
+      mode: "dilute_to_gravity",
+      currentVolumeL: 20,
+      currentGravity: 1.06,
+      targetGravity: 1.05,
+      currentVolumeMeasuredHot: true
+    });
+    // 20 L measured hot → 19.2 L once cooled — the water/gravity math runs from THAT volume.
+    expect(hot.effectiveCurrentVolumeL).toBe(19.2);
+    expect(hot.warnings).toContain("hot_wort_volume_shrinkage_applied");
+    expect(hot.resultingGravity).toBe(1.05);
+    // Same target gravity from a smaller true starting volume needs less added water.
+    expect(hot.waterToAddL).toBeLessThan(cold.waterToAddL);
+    expect(hot.waterToAddL).toBeCloseTo(19.2 * (1.06 - 1.05) / 0.05, 1);
+  });
+
   it("actually applies an extract/sugar addition to gravity and volume", () => {
     const result = calculateDilutionBoiloff({
       mode: "add_extract_to_gravity",
@@ -317,6 +355,9 @@ describe("brewing calculator tools", () => {
     });
     expect(boilDown.volumeToBoilOffL).toBe(0);
     expect(boilDown.warnings).toContain("target_gravity_below_current");
+    // "Целевой объём" is hidden in boil_to_gravity mode — a second warning pointing at it
+    // would be noise on top of the (correctly scoped) gravity warning above.
+    expect(boilDown.warnings).not.toContain("target_volume_above_current");
   });
 
   it("calculates Tinseth and Rager bitterness", () => {
@@ -404,6 +445,26 @@ describe("brewing calculator tools", () => {
     const v2 = calculateBitterness({ formula: "tinseth_whirlpool_v2", og: 1.05, batchVolumeL: 20, hopAdditions: additions });
     expect(v2.contributions.some((c) => c.use === "whirlpool")).toBe(true);
     expect(v2.ibu).toBeGreaterThan(classic.ibu);
+  });
+
+  // К19 (аудит калькуляторов 2026-07-17): выше ~100 IBU растворимость изо-альфа-кислот
+  // в сусле ограничена — модель Тинсета продолжает расти линейно, а реальная утилизация
+  // выходит на плато. Предупреждаем, а не молчим про завышение.
+  it("warns when total IBU exceeds the solubility ceiling, stays quiet below it", () => {
+    const massiveAdditions = [
+      { id: "hop-1", name: "Warrior", alphaAcidPercent: 16, weightG: 80, boilTimeMinutes: 60, use: "boil" as const }
+    ];
+    const modestAdditions = [
+      { id: "hop-1", name: "Citra", alphaAcidPercent: 12, weightG: 20, boilTimeMinutes: 60, use: "boil" as const }
+    ];
+
+    const massive = calculateBitterness({ formula: "tinseth_classic", og: 1.06, batchVolumeL: 20, hopAdditions: massiveAdditions });
+    expect(massive.ibu).toBeGreaterThan(IBU_SOLUBILITY_CEILING);
+    expect(massive.warnings).toContain("ibu_above_solubility_ceiling");
+
+    const modest = calculateBitterness({ formula: "tinseth_classic", og: 1.06, batchVolumeL: 20, hopAdditions: modestAdditions });
+    expect(modest.ibu).toBeLessThan(IBU_SOLUBILITY_CEILING);
+    expect(modest.warnings).not.toContain("ibu_above_solubility_ceiling");
   });
 
   it("calculates Morey color", () => {
@@ -501,7 +562,7 @@ describe("brewing calculator tools", () => {
     });
     expect(gyle.speiseVolumeToAddL).toBe(withExplicitResidual.speiseVolumeToAddL);
 
-    // "Кройцен" частично выброжен — ему нужно больше объёма на тот же CO2.
+    // "Краузен" частично выброжен — ему нужно больше объёма на тот же CO2.
     const krausen = calculateSpeiseKrausen({
       beerVolumeL: 20,
       targetCo2: 2.4,
@@ -511,6 +572,82 @@ describe("brewing calculator tools", () => {
       mode: "krausen"
     });
     expect(krausen.speiseVolumeToAddL).toBeGreaterThan(withExplicitResidual.speiseVolumeToAddL);
+  });
+
+  // К4 (аудит калькуляторов 2026-07-17): цель CO2 не выше остаточного — деление даёт 0 л
+  // добавки молча, как будто это нормальный результат, а не "добавка не нужна".
+  it("warns instead of silently returning 0 L when the speise target CO2 is already reached", () => {
+    const alreadyCarbonated = calculateSpeiseKrausen({
+      beerVolumeL: 20,
+      targetCo2: 0.8,
+      residualCo2: 0.86,
+      speiseGravity: 1.05,
+      temperatureC: 20
+    });
+    expect(alreadyCarbonated.speiseVolumeToAddL).toBe(0);
+    expect(alreadyCarbonated.warnings).toContain("speise_target_already_reached");
+
+    const exactMatch = calculateSpeiseKrausen({
+      beerVolumeL: 20,
+      targetCo2: 0.86,
+      residualCo2: 0.86,
+      speiseGravity: 1.05,
+      temperatureC: 20
+    });
+    expect(exactMatch.warnings).toContain("speise_target_already_reached");
+
+    const stillNeedsSpeise = calculateSpeiseKrausen({
+      beerVolumeL: 20,
+      targetCo2: 2.4,
+      residualCo2: 0.86,
+      speiseGravity: 1.05,
+      temperatureC: 20
+    });
+    expect(stillNeedsSpeise.warnings).not.toContain("speise_target_already_reached");
+  });
+
+  // К4: потери при розливе, покрывающие весь объём, раньше молча давали "0 бутылок" —
+  // неотличимо от честного расчёта на маленький объём.
+  it("warns instead of silently returning 0 bottles when packaging loss consumes the whole volume", () => {
+    const allLost = calculateBottling({ beerVolumeL: 5, packagingLossL: 5, bottleSizesL: [0.5] });
+    expect(allLost.bottlesNeeded).toBe(0);
+    expect(allLost.warnings).toContain("bottling_loss_exceeds_volume");
+
+    const overLost = calculateBottling({ beerVolumeL: 5, packagingLossL: 6, bottleSizesL: [0.5] });
+    expect(overLost.warnings).toContain("bottling_loss_exceeds_volume");
+
+    const normal = calculateBottling({ beerVolumeL: 20, packagingLossL: 0.5, bottleSizesL: [0.5] });
+    expect(normal.warnings).not.toContain("bottling_loss_exceeds_volume");
+  });
+
+  // К16 (аудит калькуляторов 2026-07-17): смешанная тара — второй размер забирает остаток
+  // после основного, финальный неполный остаток предлагается округлить вверх до бутылки
+  // МЕНЬШЕГО из двух размеров (доказательство в calculateBottling: это всегда достаточно).
+  it("distributes bottling across two bottle sizes and advises rounding up the remainder", () => {
+    const mixed = calculateBottling({ beerVolumeL: 20.4, bottleSizesL: [0.5, 0.33] });
+
+    expect(mixed.breakdown).toEqual([
+      { sizeL: 0.5, bottlesNeeded: 40 },
+      { sizeL: 0.33, bottlesNeeded: 1 }
+    ]);
+    expect(mixed.bottlesNeeded).toBe(41);
+    expect(mixed.remainingVolumeL).toBeCloseTo(0.07, 2);
+    expect(mixed.roundUpBottleSizeL).toBe(0.33);
+
+    // Порядок размеров не подразумевает "основной ≥ второй" — совет всё равно указывает
+    // на физически меньшую тару, даже если она передана первой.
+    const reversedOrder = calculateBottling({ beerVolumeL: 20.4, bottleSizesL: [0.33, 0.5] });
+    expect(reversedOrder.roundUpBottleSizeL).toBe(0.33);
+
+    // Ровное деление на оба размера — округлять нечего, совет молчит (0, не "0 л").
+    const evenSplit = calculateBottling({ beerVolumeL: 20, bottleSizesL: [0.5, 0.33] });
+    expect(evenSplit.remainingVolumeL).toBe(0);
+    expect(evenSplit.roundUpBottleSizeL).toBe(0);
+
+    // Второй размер пуст/отсутствует — поведение как с одним размером (без регрессии).
+    const singleSize = calculateBottling({ beerVolumeL: 20.4, bottleSizesL: [0.5] });
+    expect(singleSize.breakdown).toEqual([{ sizeL: 0.5, bottlesNeeded: 40 }]);
+    expect(singleSize.roundUpBottleSizeL).toBe(0.5);
   });
 
   it("guards yeast starter against zero viable cells and hop freshness against double-counting opened age", () => {
@@ -594,9 +731,12 @@ describe("brewing calculator tools", () => {
     });
     expect(fresh.warnings).toEqual([]);
 
+    // К14: с непрерывной температурной экспонентой при 25°C множитель (~1.23) мягче
+    // прежней плоской "ступеньки" 1.8 для всего, что выше 20°C, — поэтому те же 3 года
+    // из старого теста уже не пробивают пол 0.05. Взяли 4 года, чтобы сохранить запас.
     const wayTooOld = calculateHopFreshness({
       originalAlphaAcidPercent: 10,
-      packageDate: new Date("2022-01-01"),
+      packageDate: new Date("2021-01-01"),
       storageTemperatureC: 25,
       packaging: "loose",
       form: "leaf",
@@ -604,6 +744,52 @@ describe("brewing calculator tools", () => {
     });
     expect(wayTooOld.freshnessFactor).toBe(0.05);
     expect(wayTooOld.warnings).toContain("hops_too_old");
+  });
+
+  // К14 (аудит калькуляторов, notes/calculators-fixes.md): tempFactor раньше был
+  // ступенькой (0.25/0.55/1/1.8 с порогами -10/4/20°C) — сдвиг всего на 1°C через порог
+  // почти удваивал модельную деградацию. Заменили на непрерывную экспоненту
+  // f(T) = exp(0.042 · (T − 20)); эти тесты фиксируют форму кривой и близость к старым
+  // характерным точкам, а не точное совпадение (степенька и экспонента принципиально
+  // разные формы — совпадение возможно только в единичных точках).
+  it("hopStorageTemperatureFactor is a continuous, monotonically increasing curve anchored at f(20)=1", () => {
+    expect(hopStorageTemperatureFactor(20)).toBeCloseTo(1, 6);
+
+    const samples = [-30, -18, -10, -5, 0, 4, 5, 12, 20, 25, 30, 40];
+    for (let i = 1; i < samples.length; i += 1) {
+      expect(hopStorageTemperatureFactor(samples[i])).toBeGreaterThan(hopStorageTemperatureFactor(samples[i - 1]));
+    }
+  });
+
+  it("hopStorageTemperatureFactor stays close to the old step values at the characteristic temperatures", () => {
+    // Допуски широкие там, где старая ступенька была плоской в середине диапазона
+    // (0°C и 12°C приходились на плато 0.55/1 — непрерывная кривая там неизбежно
+    // расходится сильнее, это и есть цель замены "ступеньки" на плавный переход).
+    expect(hopStorageTemperatureFactor(-18)).toBeCloseTo(0.25, 1); // было 0.25 (T<=-10)
+    expect(hopStorageTemperatureFactor(-10)).toBeCloseTo(0.28, 1); // было 0.25 (T<=-10)
+    expect(hopStorageTemperatureFactor(0)).toBeGreaterThan(0.3);
+    expect(hopStorageTemperatureFactor(0)).toBeLessThan(0.6); // было 0.55 (T<=4)
+    expect(hopStorageTemperatureFactor(4)).toBeCloseTo(0.51, 1); // было 0.55 (T<=4)
+    expect(hopStorageTemperatureFactor(12)).toBeGreaterThan(0.6);
+    expect(hopStorageTemperatureFactor(12)).toBeLessThan(1); // было 1 (T<=20)
+    expect(hopStorageTemperatureFactor(20)).toBeCloseTo(1, 6); // якорь f(20)=1
+    expect(hopStorageTemperatureFactor(25)).toBeGreaterThan(1);
+    expect(hopStorageTemperatureFactor(25)).toBeLessThan(1.8); // было 1.8 (T>20)
+    expect(hopStorageTemperatureFactor(30)).toBeCloseTo(1.5, 1); // было 1.8 (T>20)
+  });
+
+  it("has no cliff around the old 4°C/20°C thresholds — a 1°C shift barely moves the factor", () => {
+    const f4 = hopStorageTemperatureFactor(4);
+    const f5 = hopStorageTemperatureFactor(5);
+    expect(f5 / f4).toBeLessThan(1.1);
+
+    const f20 = hopStorageTemperatureFactor(20);
+    const f21 = hopStorageTemperatureFactor(21);
+    expect(f21 / f20).toBeLessThan(1.1);
+
+    const fMinus11 = hopStorageTemperatureFactor(-11);
+    const fMinus10 = hopStorageTemperatureFactor(-10);
+    expect(fMinus10 / fMinus11).toBeLessThan(1.1);
   });
 
   it("does not let opening improve freshness when packaging is looser than 'opened' (loose)", () => {

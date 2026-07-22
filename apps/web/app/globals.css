@@ -129,6 +129,101 @@
   --chart-fault-bg: 0 55% 13%;
 }
 
+/*
+  Скин «hop» (класс skin-hop на <html>, cookie nb_skin=hop): альтернативная
+  айдентика «лупулин» — тёмно-хвойные «чернила» вместо чёрного, лайм/шартрез
+  как единственный акцент, бумага с зелёным подтоном. Переопределяет только
+  значения токенов и шрифтовые переменные; раскладка/компоненты общие с
+  классическим скином. Селекторы идут ПОСЛЕ :root/.dark — при равной
+  специфичности побеждает порядок в файле; html.skin-hop для шрифтов бьёт
+  классы next/font.
+*/
+html.skin-hop {
+  --font-sans: var(--font-sans-hop);
+  --font-display: var(--font-display-hop);
+}
+
+.skin-hop {
+  --background: 80 14% 96%;
+  --foreground: 152 30% 12%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 152 30% 12%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 152 30% 12%;
+
+  --muted: 90 12% 94%;
+  --muted-foreground: 140 8% 40%;
+
+  --accent: 88 20% 93%;
+  --accent-foreground: 150 20% 12%;
+
+  --border: 90 10% 87%;
+  --input: 90 10% 87%;
+  --ring: 78 60% 40%;
+
+  --primary: 76 75% 45%;
+  --primary-foreground: 150 35% 8%;
+
+  --success: 160 84% 28%;
+  --success-subtle: 150 55% 95%;
+  --success-subtle-foreground: 160 88% 19%;
+
+  --link: 160 80% 25%;
+}
+
+.skin-hop.dark {
+  --background: 150 14% 6%;
+  --foreground: 90 12% 95%;
+
+  --card: 150 10% 10%;
+  --card-foreground: 90 12% 95%;
+
+  --popover: 150 9% 12%;
+  --popover-foreground: 90 12% 95%;
+
+  --muted: 145 8% 15%;
+  --muted-foreground: 130 8% 62%;
+
+  --accent: 145 8% 17%;
+  --accent-foreground: 90 12% 95%;
+
+  --border: 145 8% 18%;
+  --input: 145 8% 20%;
+  --ring: 78 50% 50%;
+
+  --primary: 78 70% 50%;
+  --primary-foreground: 150 35% 8%;
+
+  --success: 160 70% 42%;
+  --success-subtle: 160 55% 12%;
+  --success-subtle-foreground: 150 65% 72%;
+
+  --link: 84 60% 62%;
+}
+
+/*
+  Зерно (плёночный шум) для декоративных поверхностей скина hop: элемент с
+  классом nb-grain получает ::after-слой с SVG-турбулентностью. Вне скина hop
+  класс инертен, поэтому разметку можно держать в обоих оформлениях.
+  border-radius: inherit — зерно не вылезает за скругление карточки.
+  ⚠ Сам элемент обязан быть позиционирован СВОИМИ классами (relative/absolute):
+  правило намеренно не ставит position, чтобы не перебивать .absolute у слоёв
+  (селектор .skin-hop .nb-grain специфичнее одиночной утилиты).
+*/
+.skin-hop .nb-grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  opacity: 0.3;
+  mix-blend-mode: soft-light;
+}
+
 body {
   background: hsl(var(--background));
   color: hsl(var(--foreground));

@@ -136,24 +136,31 @@ const shoppingWithItems = {
           quantityLabel: "100 г",
           catalogHref: null,
           addToStockHref: null,
-          neededBy: []
+          neededBy: [],
+          checked: false,
+          hasStockLinkage: false,
+          packSuggestion: null
         }
       ]
     }
   ],
   totalItems: 1,
+  checkedCount: 0,
   plannedBrews: [],
   opportunities: [],
   collapsedOpportunityCount: 0,
+  manualItems: [],
   emptyReason: null
 };
 
 const emptyShopping = {
   groups: [],
   totalItems: 0,
+  checkedCount: 0,
   plannedBrews: [],
   opportunities: [],
   collapsedOpportunityCount: 0,
+  manualItems: [],
   emptyReason: "nothing_to_do" as const
 };
 
@@ -307,6 +314,112 @@ describe("App dashboard", () => {
     expect(html).toContain('href="/app/shopping"');
     expect(html).toContain("Citra");
     expect(html).toContain("100 г");
+  });
+
+  it("shows manual item names in the shopping widget preview when there are no derived groups", async () => {
+    mocks.buildShoppingListForUser.mockResolvedValue({
+      groups: [],
+      totalItems: 1,
+      checkedCount: 0,
+      plannedBrews: [],
+      opportunities: [],
+      collapsedOpportunityCount: 0,
+      manualItems: [
+        {
+          id: "mi-1",
+          name: "Дезинфектант Star San",
+          quantity: null,
+          unit: null,
+          quantityLabel: null,
+          category: null,
+          catalogHref: null,
+          addToStockHref: null,
+          checked: false,
+          hasStockLinkage: false
+        }
+      ],
+      emptyReason: null
+    });
+
+    const html = renderToStaticMarkup(await AppZonePage());
+
+    expect(html).toContain("Дезинфектант Star San");
+  });
+
+  it("nudges to transfer to stock when everything is checked but nothing is left to buy", async () => {
+    // totalItems===0 with checkedCount>0 is a different state than "nothing to
+    // shop for": the shopper marked everything bought but hasn't transferred
+    // it to stock yet — the plain dashed empty-state card would hide that.
+    mocks.buildShoppingListForUser.mockResolvedValue({
+      ...emptyShopping,
+      checkedCount: 3
+    });
+
+    const html = renderToStaticMarkup(await AppZonePage());
+
+    expect(html).toContain('href="/app/shopping"');
+    expect(html).toContain("Куплено: 3");
+    expect(html).toContain("перенесите на склад");
+  });
+
+  it("keeps the old empty-state card when nothing is checked either", async () => {
+    const html = renderToStaticMarkup(await AppZonePage());
+
+    expect(html).toContain("Считается по запланированным партиям");
+    expect(html).not.toContain("Куплено:");
+  });
+
+  it("filters a checked derived line out of the shopping widget preview", async () => {
+    mocks.buildShoppingListForUser.mockResolvedValue({
+      groups: [
+        {
+          category: "hop" as const,
+          label: "Хмель",
+          items: [
+            {
+              key: "hop-checked",
+              ingredientDisplayName: "Citra",
+              category: "hop" as const,
+              quantityToBuy: 100,
+              unit: "g" as const,
+              quantityLabel: "100 г",
+              catalogHref: null,
+              addToStockHref: null,
+              neededBy: [],
+              checked: true,
+              hasStockLinkage: false,
+              packSuggestion: null
+            },
+            {
+              key: "hop-unchecked",
+              ingredientDisplayName: "Mosaic",
+              category: "hop" as const,
+              quantityToBuy: 50,
+              unit: "g" as const,
+              quantityLabel: "50 г",
+              catalogHref: null,
+              addToStockHref: null,
+              neededBy: [],
+              checked: false,
+              hasStockLinkage: false,
+              packSuggestion: null
+            }
+          ]
+        }
+      ],
+      totalItems: 1,
+      checkedCount: 1,
+      plannedBrews: [],
+      opportunities: [],
+      collapsedOpportunityCount: 0,
+      manualItems: [],
+      emptyReason: null
+    });
+
+    const html = renderToStaticMarkup(await AppZonePage());
+
+    expect(html).toContain("Mosaic");
+    expect(html).not.toContain("Citra");
   });
 
   it("surfaces recipes matched against the user's stock", async () => {

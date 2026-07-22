@@ -224,6 +224,9 @@ importers:
 
   packages/brewing-core:
     dependencies:
+      '@nb/search':
+        specifier: workspace:*
+        version: link:../search
       zod:
         specifier: ^3.23.8
         version: 3.25.76

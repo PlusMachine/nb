@@ -15,6 +15,18 @@ import { OG_COLORS, resolveTitleFontSize, stripUnsupportedGlyphs, truncateForCar
 export type OgStat = { label: string; value: string };
 
 /**
+ * Фото-врезка (Ф5, docs/specs/og-images.md §5.1/§5.4): готовый к вставке в
+ * Satori `<img>` результат `preparePhotoInset` (features/og/photo.ts) — ВСЕГДА
+ * JPEG data URI (Satori не ест webp/avif) и ВСЕГДА с явными width/height
+ * (без них Satori не может определить размер картинки и падает).
+ */
+export type OgPhoto = {
+  dataUri: string;
+  width: number;
+  height: number;
+};
+
+/**
  * Фирменная вертикальная полоса слева: либо сплошной цвет (SRM сущности), либо
  * вертикальный градиент (диапазон цвета стиля BJCP или SRM-спектр раздела).
  */
@@ -43,10 +55,27 @@ export type OgCardView = {
   subtitle?: string | null;
   stats?: OgStat[];
   factsLine?: string | null;
+  /**
+   * Ф5-полировка: кегль строки фактов, когда фото-врезка сужает контентную
+   * колонку (~640px) настолько, что дефолтный кегль ломает строку посреди
+   * токена (см. features/og/bjcp.ts:resolveFactsLineFontSize). Не задано →
+   * card.tsx берёт дефолт из factsLineStyle — карточки без этого поля
+   * (ингредиенты/статьи/мастера/пиво/калькуляторы) не меняются ни на байт.
+   */
+  factsLineFontSize?: number;
   secondaryLine?: OgSecondaryLine | null;
+  /**
+   * Ф3: вертикально центрировать блок eyebrow+title в свободном пространстве
+   * над футером — у обложки раздела нет строки статов, и заголовок иначе
+   * прижимается к верху, оставляя половину холста пустой. По умолчанию
+   * отсутствует (false-y) — карточки сущностей (Ф1/Ф2) раскладку не меняют.
+   */
+  centered?: boolean;
   strip: OgStrip;
   domain: string;
   wordmark: string;
+  /** Ф5: фото-врезка справа (рецепт с фото, стиль BJCP с иллюстрацией). */
+  photo?: OgPhoto | null;
 };
 
 export type RecipeOgView = {
@@ -62,6 +91,7 @@ export type RecipeOgView = {
   stripColor: string;
   domain: string;
   wordmark: string;
+  photo?: OgPhoto | null;
 };
 
 const EYEBROW_MAX_LENGTH = 62;
@@ -150,6 +180,10 @@ const sanitizeSecondaryLine = (line: OgSecondaryLine): OgSecondaryLine | null =>
  * free-text одним чоук-пойнтом, чтобы будущий билдер не мог переоткрыть дыру.
  * Опустевшие после стрипа необязательные поля обнуляем (не рисуем пустую строку).
  */
+// photo (Ф5) намеренно НЕ проходит через stripUnsupportedGlyphs — это не
+// пользовательский текст, а готовый data URI (base64 JPEG); гонять его через
+// текстовый фильтр бессмысленно (десятки КБ строки) и рискованно (регэксп
+// теоретически мог бы задеть символы base64-алфавита).
 export const sanitizeOgCardView = (view: OgCardView): OgCardView => ({
   ...view,
   eyebrow: stripUnsupportedGlyphs(view.eyebrow),
@@ -166,7 +200,7 @@ export const sanitizeOgCardView = (view: OgCardView): OgCardView => ({
 export const buildRecipeOgView = (
   recipe: RecipeOgData,
   style: BeerStyle | null,
-  opts: { domain: string; wordmark: string }
+  opts: { domain: string; wordmark: string; photo?: OgPhoto | null }
 ): RecipeOgView => {
   const styleName = resolveStyleName(style);
   const bjcpCode = resolveBjcpCode(style);
@@ -204,15 +238,55 @@ export const buildRecipeOgView = (
 
   const stripColor = recipe.color != null ? resolveStripColor(recipe.color) : OG_COLORS.neutralStrip;
 
+  // Ф5: с фото-врезкой контентная колонка сужается (~1050 → ~650px) — капаем
+  // кегль, иначе крупный заголовок наезжает на врезку. Без фото раскладка не
+  // меняется ни на байт (существующие карточки пиксель-в-пиксель как раньше).
+  const titleFontSize = opts.photo
+    ? Math.min(resolveTitleFontSize(title), 50)
+    : resolveTitleFontSize(title);
+
   return {
     eyebrow,
     title,
-    titleFontSize: resolveTitleFontSize(title),
+    titleFontSize,
     stats,
     rating,
     brewedText,
     stripColor,
     domain: opts.domain,
-    wordmark: opts.wordmark
+    wordmark: opts.wordmark,
+    photo: opts.photo ?? null
+  };
+};
+
+/**
+ * Конверсия сущность-специфичного RecipeOgView в универсальный OgCardView (Ф1
+ * → общий движок Ф2). Вынесена сюда из card.tsx, чтобы роут рецепта мог отдать
+ * готовый OgCardView в общий `renderOgCardResponse` (весовой гейт Ф5), а не
+ * собственный inline ImageResponse.
+ */
+export const recipeCardViewFromRecipeView = (view: RecipeOgView): OgCardView => {
+  let secondaryLine: OgSecondaryLine | null = null;
+  if (view.rating) {
+    secondaryLine = {
+      kind: "rating",
+      value: view.rating.value,
+      count: view.rating.count,
+      extra: view.brewedText
+    };
+  } else if (view.brewedText) {
+    secondaryLine = { kind: "text", text: view.brewedText };
+  }
+
+  return {
+    eyebrow: view.eyebrow,
+    title: view.title,
+    titleFontSize: view.titleFontSize,
+    stats: view.stats,
+    secondaryLine,
+    strip: { kind: "solid", color: view.stripColor },
+    domain: view.domain,
+    wordmark: view.wordmark,
+    photo: view.photo ?? null
   };
 };

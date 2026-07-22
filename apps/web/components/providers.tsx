@@ -5,7 +5,7 @@ import { ToastProvider } from "@nb/ui";
 import { ConsentProvider } from "@/components/legal/consent-provider";
 import { FeedbackProvider } from "@/components/feedback/feedback-provider";
 import { ThemeProvider } from "@/components/theme/theme-provider";
-import type { ThemePreference } from "@/features/theme/theme";
+import type { SkinPreference, ThemePreference } from "@/features/theme/theme";
 import { useServiceWorkerRegistration } from "@/features/pwa/use-service-worker";
 
 const shouldAutoSelectNumberInput = (target: EventTarget | null): target is HTMLInputElement => {
@@ -35,10 +35,12 @@ const selectFocusedNumberInput = (input: HTMLInputElement) => {
 export function Providers({
   children,
   initialThemePreference,
+  initialSkinPreference,
   isAuthenticated
 }: {
   children: React.ReactNode;
   initialThemePreference: ThemePreference;
+  initialSkinPreference: SkinPreference;
   isAuthenticated: boolean;
 }) {
   useServiceWorkerRegistration();
@@ -88,7 +90,7 @@ export function Providers({
   }, []);
 
   return (
-    <ThemeProvider initialPreference={initialThemePreference}>
+    <ThemeProvider initialPreference={initialThemePreference} initialSkin={initialSkinPreference}>
       <ToastProvider>
         <ConsentProvider>
           <FeedbackProvider isAuthenticated={isAuthenticated}>{children}</FeedbackProvider>

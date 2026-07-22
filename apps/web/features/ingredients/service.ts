@@ -40,7 +40,7 @@ import {
   resolveIngredientDisplayNames,
   resolveIngredientPrimaryDisplayName
 } from "./presentation";
-import { rankIngredientCandidate } from "./ranking";
+import { rankIngredientCandidate, rankQueryTwoPass } from "./ranking";
 import { extractIngredientTechnicalData, extractIngredientTechnicalFields } from "./technical-fields";
 import {
   resolveIngredientCategory,
@@ -438,21 +438,27 @@ const rankCatalogItems = (
   query: string,
   limit?: number
 ): IngredientSuggestionItem[] => {
-  const ranked = items
+  // Раскладка — фолбэк: второй проход только при нуле результатов первого
+  // (тот же двухпроходный паттерн, что в catalog-service.ts).
+  const { results: ranked } = rankQueryTwoPass(query, (includeLayoutVariants) => items
     .map((item) => {
-      const match = scoreCandidate(item, query);
+      const match = scoreCandidate(item, query, { includeLayoutVariants });
       return match ? toSuggestionItem(item, match) : null;
     })
     .filter((item): item is IngredientSuggestionItem => item !== null)
     .sort((left, right) => (
       (right.score ?? 0) - (left.score ?? 0)
       || (left.primaryLabelRu ?? left.displayName).localeCompare(right.primaryLabelRu ?? right.displayName, "ru")
-    ));
+    )));
 
   return typeof limit === "number" ? ranked.slice(0, limit) : ranked;
 };
 
-const scoreCandidate = (item: IngredientCatalogItemDto, query: string): MatchResult | null => {
+const scoreCandidate = (
+  item: IngredientCatalogItemDto,
+  query: string,
+  options: { includeLayoutVariants?: boolean } = {}
+): MatchResult | null => {
   const rank = rankIngredientCandidate(query, {
     displayName: item.primaryLabelRu,
     displayNameRu: item.nameRu,
@@ -485,7 +491,7 @@ const scoreCandidate = (item: IngredientCatalogItemDto, query: string): MatchRes
       stockContentAmount: variant.stockContentAmount,
       stockContentUnit: variant.stockContentUnit
     }))
-  });
+  }, { includeLayoutVariants: options.includeLayoutVariants ?? false });
 
   if (!rank) {
     return null;

@@ -512,6 +512,10 @@ export type IngredientSuggestionItem = {
   matchedAlias?: string | null;
   matchedPackageVariantId?: string | null;
   matchedPackageVariantName?: string | null;
+  // Rescue-выдача (С4): совпадение нашлось только через раскладку/token-scatter/
+  // фаззи-фолбэк — внешне неотличимо от точного, помечаем явно. Алиасы и
+  // familyFallback rescue НЕ считаются — только layout/scatter/fuzzy.
+  matchRescue?: "layout" | "fuzzy" | "scatter";
   score?: number;
   derivedFromIngredientId?: string | null;
   derivedFromDisplayName?: string | null;
@@ -683,6 +687,10 @@ export type UserCatalogListResult = {
     customCount: number;
     catalogCount: number;
   };
+  // Rescue-выдача (С4): вся выборка нашлась только через раскладку/token-scatter/
+  // фаззи-фолбэк (лучший результат по tier — уже rescue, см. resolveCatalogRescueKind
+  // в catalog-ranking.ts) — null при точном поиске или без q.
+  searchRescue: "layout" | "fuzzy" | "scatter" | null;
 };
 
 // Слаги категорийных лендингов каталога (/catalog/{slug}). Источник правды по
@@ -708,6 +716,8 @@ export type CatalogHubResult = {
   sections: CatalogHubSection[];
   facets: UserCatalogListResult["facets"];
   total: number;
+  // Rescue-выдача (С4) — см. UserCatalogListResult["searchRescue"].
+  searchRescue: "layout" | "fuzzy" | "scatter" | null;
 };
 
 export type IngredientProposalDto = {

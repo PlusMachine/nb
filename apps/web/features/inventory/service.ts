@@ -44,8 +44,11 @@ import {
   updateInventoryItemSchema,
   updateInventoryQuantitySchema
 } from "./contracts";
+import { escapeLikePattern } from "@nb/search";
+
 import type { IngredientCategory, IngredientTechnicalData } from "../ingredients/contracts";
-import { normalizeIngredientName } from "../ingredients/normalization";
+import { buildLayoutQueryVariants, buildQueryVariants, normalizeIngredientName } from "../ingredients/normalization";
+import { rankIngredientCandidate, type RankedCandidate } from "../ingredients/ranking";
 import {
   resolveIngredientTechnicalDataColorRangeEbc,
   resolveIngredientTechnicalDataHopAlphaAcidPct
@@ -105,8 +108,22 @@ import {
   resolveCustomIngredientUnitProfile
 } from "./custom-ingredient";
 
+// db или открытая транзакция. Пакетные add-пути (напр. перенос позиций из
+// списка покупок в склад) должны создавать несколько строк user_ingredients в
+// одном транзакционном периметре — либо все, либо ни одна, — а не звать db
+// напрямую внутри чужой транзакции (другое соединение пула, не видит
+// незакоммиченного и может встать в очередь за блокировкой).
+type DbTransactionClient = Parameters<Parameters<typeof db.transaction>[0]>[0];
+type InventoryDbClient = typeof db | DbTransactionClient;
+
 type InventoryWriteContext = {
   preferredCurrency?: SystemCurrency | null;
+  /**
+   * Пакетный перенос из списка покупок прогоняет общий барьер
+   * (rate limit + квота) на всю пачку сам, до цикла по позициям — здесь его
+   * повторять на каждой позиции не нужно.
+   */
+  skipCreationGate?: boolean;
 };
 
 type InventoryRow = {
@@ -258,13 +275,41 @@ const buildInventoryWhere = (userId: string, includeArchived: boolean) => and(
   includeArchived ? undefined : isNull(userIngredients.archivedAt)
 );
 
-const buildInventorySearchWhere = (search: string) => {
+/**
+ * Варианты поискового запроса по складу: честные (транслит/семейства ингредиентов,
+ * см. buildQueryVariants) + отдельный раскладочный rescue-набор. Раскладка — строго
+ * фолбэк (ТЗ С1/С2): вызывающая сторона гоняет layoutVariants вторым проходом
+ * только при нуле результатов первого.
+ */
+export const buildInventorySearchScope = (search: string): { variants: string[]; layoutVariants: string[] } => {
   if (!search) {
+    return { variants: [], layoutVariants: [] };
+  }
+
+  const variants = buildQueryVariants(search);
+
+  return {
+    // Фолбэк на «сырую» строку: запрос, целиком состоящий из символов, которые
+    // normalizeSearchText вырезает (пунктуация/сепараторы — «!!!», «...», «-»),
+    // даёт buildQueryVariants=[] → buildInventorySearchWhere([]) вернёт undefined
+    // → SQL-условие поиска пропадёт целиком, и склад отдастся ПОЛНОСТЬЮ
+    // неотфильтрованным вместо честного «ничего не найдено». Держим исходную
+    // строку как единственный вариант, чтобы фильтр не исчезал молча.
+    variants: variants.length > 0 ? variants : [search],
+    layoutVariants: buildLayoutQueryVariants(search)
+  };
+};
+
+// Экспортируется только ради юнит-теста на форму SQL-условия (эскейпинг/OR по
+// вариантам) — вызывающий код (listInventoryForUserWithMeta) остаётся единственным
+// продуктовым потребителем.
+export const buildInventorySearchWhere = (variants: string[]) => {
+  if (!variants.length) {
     return undefined;
   }
 
-  const term = `%${search}%`;
-  return sql<boolean>`(
+  const terms = variants.map((variant) => `%${escapeLikePattern(variant)}%`);
+  const clauses = terms.map((term) => sql<boolean>`(
     ${userIngredients.ingredientDisplayNameSnapshot} ilike ${term}
     or ${ingredients.nameRu} ilike ${term}
     or ${ingredients.nameEn} ilike ${term}
@@ -278,7 +323,9 @@ const buildInventorySearchWhere = (search: string) => {
         and ${ingredientAliases.isEnabled}
         and ${ingredientAliases.alias} ilike ${term}
     )
-  )`;
+  )`);
+
+  return clauses.length === 1 ? clauses[0] : sql<boolean>`(${sql.join(clauses, sql` or `)})`;
 };
 
 const buildLiveInventoryLinkage = (
@@ -671,8 +718,11 @@ const applyInventoryReservationsToItems = async (
   });
 };
 
-const ensureCatalogIngredientExists = async (ingredientCatalogItemId: string) => {
-  const catalogItem = await db.query.ingredients.findFirst({
+const ensureCatalogIngredientExists = async (
+  ingredientCatalogItemId: string,
+  client: InventoryDbClient = db
+) => {
+  const catalogItem = await client.query.ingredients.findFirst({
     where: and(
       eq(ingredients.id, ingredientCatalogItemId),
       eq(ingredients.isActive, true)
@@ -686,12 +736,16 @@ const ensureCatalogIngredientExists = async (ingredientCatalogItemId: string) =>
   return catalogItem;
 };
 
-const ensureCatalogPackageVariant = async (ingredientId: string, packageVariantId?: string | null) => {
+const ensureCatalogPackageVariant = async (
+  ingredientId: string,
+  packageVariantId?: string | null,
+  client: InventoryDbClient = db
+) => {
   if (!packageVariantId) {
     return null;
   }
 
-  const variant = await db.query.ingredientPackageVariants.findFirst({
+  const variant = await client.query.ingredientPackageVariants.findFirst({
     where: and(
       eq(ingredientPackageVariants.id, packageVariantId),
       eq(ingredientPackageVariants.ingredientId, ingredientId)
@@ -705,8 +759,12 @@ const ensureCatalogPackageVariant = async (ingredientId: string, packageVariantI
   return variant;
 };
 
-const ensureOwnedCustomIngredient = async (userId: string, userCustomIngredientId: string) => {
-  const customIngredient = await db.query.userCustomIngredients.findFirst({
+const ensureOwnedCustomIngredient = async (
+  userId: string,
+  userCustomIngredientId: string,
+  client: InventoryDbClient = db
+) => {
+  const customIngredient = await client.query.userCustomIngredients.findFirst({
     where: and(
       eq(userCustomIngredients.id, userCustomIngredientId),
       eq(userCustomIngredients.userId, userId)
@@ -1375,10 +1433,22 @@ export const deleteUserCustomIngredient = async (userId: string, userCustomIngre
  * (каталог и кастом), оба пишут в user_ingredients. Rate limit режет скрипт-флуд,
  * квота — засорение базы. Бросает RATE_LIMITED / INVENTORY_ITEM_QUOTA_REACHED.
  */
-const assertInventoryItemCreationAllowed = async (userId: string): Promise<void> => {
-  await assertRateLimit(userId, "inventory_item_add", INVENTORY_ITEM_CREATE_RATE_LIMIT, INVENTORY_ITEM_CREATE_RATE_WINDOW_SECONDS);
+/**
+ * itemsToCreate — размер пачки, если несколько позиций создаются одним
+ * действием (напр. массовый перенос из списка покупок): rate limit списывается
+ * на всю пачку разом, а квота проверяется так, будто все itemsToCreate уже
+ * добавлены.
+ */
+export const assertInventoryItemCreationAllowed = async (userId: string, itemsToCreate = 1): Promise<void> => {
+  await assertRateLimit(
+    userId,
+    "inventory_item_add",
+    INVENTORY_ITEM_CREATE_RATE_LIMIT,
+    INVENTORY_ITEM_CREATE_RATE_WINDOW_SECONDS,
+    itemsToCreate
+  );
   const [row] = await db.select({ value: count() }).from(userIngredients).where(eq(userIngredients.userId, userId));
-  if ((row?.value ?? 0) >= INVENTORY_ITEM_MAX_COUNT_PER_USER) {
+  if ((row?.value ?? 0) + itemsToCreate > INVENTORY_ITEM_MAX_COUNT_PER_USER) {
     throw new Error("INVENTORY_ITEM_QUOTA_REACHED");
   }
 };
@@ -1386,15 +1456,22 @@ const assertInventoryItemCreationAllowed = async (userId: string): Promise<void>
 export const addCatalogIngredientToInventory = async (
   userId: string,
   payload: unknown,
-  context: InventoryWriteContext = {}
+  context: InventoryWriteContext = {},
+  client: InventoryDbClient = db
 ) => {
-  await assertInventoryItemCreationAllowed(userId);
+  // Пакетный перенос из списка покупок прогоняет общий барьер на всю пачку сам.
+  if (!context.skipCreationGate) {
+    await assertInventoryItemCreationAllowed(userId);
+  }
   const parsed = addCatalogInventoryItemSchema.parse(payload);
   const [catalogItem, rates] = await Promise.all([
-    ensureCatalogIngredientExists(parsed.ingredientCatalogItemId),
-    listSystemCurrencyRates()
+    ensureCatalogIngredientExists(parsed.ingredientCatalogItemId, client),
+    // client, а не глобальный db — внутри переданной транзакции переноса
+    // (transferCheckedToStock) поход мимо client в пул при исчерпанном пуле
+    // самодедлочит (см. комментарий в features/system/currency-rates.ts).
+    listSystemCurrencyRates(client)
   ]);
-  const packageVariant = await ensureCatalogPackageVariant(catalogItem.id, parsed.packageVariantId ?? null);
+  const packageVariant = await ensureCatalogPackageVariant(catalogItem.id, parsed.packageVariantId ?? null, client);
   const linkage = buildCatalogIngredientLinkage(catalogItem);
   const { profile, category, subtype } = buildCatalogProfile(catalogItem);
   const properties = buildWaterTreatmentConcentrationInventoryProperties({
@@ -1426,7 +1503,7 @@ export const addCatalogIngredientToInventory = async (
     }
   });
 
-  const [created] = await db.insert(userIngredients).values({
+  const [created] = await client.insert(userIngredients).values({
     userId,
     ingredientCatalogItemId: catalogItem.id,
     userCustomIngredientId: null,
@@ -1464,13 +1541,19 @@ export const addCatalogIngredientToInventory = async (
 export const addCustomIngredientToInventory = async (
   userId: string,
   payload: unknown,
-  context: InventoryWriteContext = {}
+  context: InventoryWriteContext = {},
+  client: InventoryDbClient = db
 ) => {
-  await assertInventoryItemCreationAllowed(userId);
+  // Пакетный перенос из списка покупок прогоняет общий барьер на всю пачку сам.
+  if (!context.skipCreationGate) {
+    await assertInventoryItemCreationAllowed(userId);
+  }
   const parsed = addCustomInventoryItemSchema.parse(payload);
   const [customIngredient, rates] = await Promise.all([
-    ensureOwnedCustomIngredient(userId, parsed.userCustomIngredientId),
-    listSystemCurrencyRates()
+    ensureOwnedCustomIngredient(userId, parsed.userCustomIngredientId, client),
+    // client, а не глобальный db — см. комментарий у addCatalogIngredientToInventory
+    // выше и в features/system/currency-rates.ts (самодедлок пула в транзакции).
+    listSystemCurrencyRates(client)
   ]);
   const linkage = buildCustomIngredientLinkage(customIngredient);
   const profile = resolveHumanFacingInventoryUnitProfile({
@@ -1497,7 +1580,7 @@ export const addCustomIngredientToInventory = async (
     }
   });
 
-  const [created] = await db.insert(userIngredients).values({
+  const [created] = await client.insert(userIngredients).values({
     userId,
     ingredientCatalogItemId: null,
     userCustomIngredientId: customIngredient.id,
@@ -1878,10 +1961,80 @@ export const deleteInventoryItem = async (userId: string, inventoryItemId: strin
   await db.delete(userIngredients).where(eq(userIngredients.id, inventoryItemId));
 };
 
-export const listInventoryForUser = async (userId: string, query: unknown = {}) => {
-  const parsed = inventoryListQuerySchema.parse(query);
+const compareInventoryItemsByPrimaryLabel = (left: InventoryListItemDto, right: InventoryListItemDto) => (
+  left.source.primaryLabelRu.localeCompare(right.source.primaryLabelRu, "ru")
+);
 
-  const rows = await db.select({
+// Сортировка вне поиска (и явные sort=quantity/updated/best_before/price даже
+// при непустом search — явный выбор пользователя важнее релевантности).
+const sortInventoryItemsDefault = (items: InventoryListItemDto[], sort: z.infer<typeof inventoryListQuerySchema>["sort"]) => (
+  [...items].sort((left, right) => {
+    if (sort === "quantity") {
+      return right.normalizedQuantity - left.normalizedQuantity;
+    }
+
+    if (sort === "updated") {
+      return right.updatedAt.getTime() - left.updatedAt.getTime();
+    }
+
+    if (sort === "best_before") {
+      return (left.freshnessDate?.getTime() ?? Number.MAX_SAFE_INTEGER) - (right.freshnessDate?.getTime() ?? Number.MAX_SAFE_INTEGER);
+    }
+
+    if (sort === "price") {
+      return (right.normalizedUnitCostMinorRub ?? -1) - (left.normalizedUnitCostMinorRub ?? -1);
+    }
+
+    return compareInventoryItemsByPrimaryLabel(left, right);
+  })
+);
+
+const buildInventoryRankedCandidate = (item: InventoryListItemDto): RankedCandidate => ({
+  displayName: item.source.displayName,
+  displayNameRu: item.source.displayNameRu,
+  displayNameEn: item.source.displayNameEn,
+  nameRu: item.source.nameRu,
+  nameEn: item.source.nameEn,
+  category: item.source.category,
+  brandName: item.source.brandName,
+  manufacturer: item.source.manufacturer
+});
+
+// Ранжирование склада по поисковому запросу (С2): tier asc → score desc, как в
+// каталоге (rankIngredientCandidate). Позиции без ранга (rank === null — не должно
+// случаться, раз SQL уже отфильтровал по вариантам, но на всякий случай) уходят в
+// хвост в прежнем localeCompare-порядке, а не выпадают из выдачи.
+const rankInventorySearchItems = (
+  search: string,
+  items: InventoryListItemDto[],
+  includeLayoutVariants: boolean
+) => {
+  const ranked: Array<{ item: InventoryListItemDto; tier: number; score: number }> = [];
+  const unranked: InventoryListItemDto[] = [];
+
+  for (const item of items) {
+    const rank = rankIngredientCandidate(search, buildInventoryRankedCandidate(item), { includeLayoutVariants });
+    if (rank) {
+      ranked.push({ item, tier: rank.tier, score: rank.score });
+    } else {
+      unranked.push(item);
+    }
+  }
+
+  ranked.sort((left, right) => (left.tier - right.tier) || (right.score - left.score));
+  unranked.sort(compareInventoryItemsByPrimaryLabel);
+
+  return [...ranked.map((entry) => entry.item), ...unranked];
+};
+
+export const listInventoryForUserWithMeta = async (
+  userId: string,
+  query: unknown = {}
+): Promise<{ items: InventoryListItemDto[]; searchRescue: "layout" | null }> => {
+  const parsed = inventoryListQuerySchema.parse(query);
+  const scope = buildInventorySearchScope(parsed.search);
+
+  const selectInventoryRows = (variants: string[]) => db.select({
     inventory: userIngredients,
     catalog: ingredients,
     custom: userCustomIngredients,
@@ -1893,8 +2046,17 @@ export const listInventoryForUser = async (userId: string, query: unknown = {}) 
     .where(and(
       buildInventoryWhere(userId, parsed.includeArchived),
       parsed.category ? eq(userIngredients.ingredientCategory, parsed.category) : undefined,
-      buildInventorySearchWhere(parsed.search)
+      buildInventorySearchWhere(variants)
     ));
+
+  let rows = await selectInventoryRows(scope.variants);
+  // Раскладка — строго фолбэк (ТЗ С1/С2): второй проход только при нуле строк
+  // первого и когда действительно есть раскладочные варианты.
+  let usedLayoutFallback = false;
+  if (parsed.search && rows.length === 0 && scope.layoutVariants.length > 0) {
+    rows = await selectInventoryRows(scope.layoutVariants);
+    usedLayoutFallback = rows.length > 0;
+  }
 
   let items = rows.map((row) => mapInventoryRow(row));
 
@@ -1922,29 +2084,20 @@ export const listInventoryForUser = async (userId: string, query: unknown = {}) 
     items = items.filter((item) => item.normalizedQuantity > 0);
   }
 
-  items = items.sort((left, right) => {
-    if (parsed.sort === "quantity") {
-      return right.normalizedQuantity - left.normalizedQuantity;
-    }
-
-    if (parsed.sort === "updated") {
-      return right.updatedAt.getTime() - left.updatedAt.getTime();
-    }
-
-    if (parsed.sort === "best_before") {
-      return (left.freshnessDate?.getTime() ?? Number.MAX_SAFE_INTEGER) - (right.freshnessDate?.getTime() ?? Number.MAX_SAFE_INTEGER);
-    }
-
-    if (parsed.sort === "price") {
-      return (right.normalizedUnitCostMinorRub ?? -1) - (left.normalizedUnitCostMinorRub ?? -1);
-    }
-
-    return left.source.primaryLabelRu.localeCompare(right.source.primaryLabelRu, "ru");
-  });
+  const shouldRankByRelevance = Boolean(parsed.search) && (parsed.sort === "default" || parsed.sort === "name");
+  items = shouldRankByRelevance
+    ? rankInventorySearchItems(parsed.search, items, usedLayoutFallback)
+    : sortInventoryItemsDefault(items, parsed.sort);
 
   const withPurchaseLinks = await applyPurchaseLinkSummariesToInventoryItems(userId, items);
-  return applyInventoryReservationsToItems(userId, withPurchaseLinks);
+  const withReservations = await applyInventoryReservationsToItems(userId, withPurchaseLinks);
+
+  return { items: withReservations, searchRescue: usedLayoutFallback ? "layout" : null };
 };
+
+export const listInventoryForUser = async (userId: string, query: unknown = {}) => (
+  await listInventoryForUserWithMeta(userId, query)
+).items;
 
 export const searchInventorySuggestions = async (
   userId: string,

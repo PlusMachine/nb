@@ -1,94 +1,13 @@
+import {
+  buildLayoutQueryVariants as buildSearchLayoutQueryVariants,
+  buildSearchQueryVariants,
+  normalizeSearchText as normalizeSearchTextEngine,
+  swapKeyboardLayout as swapKeyboardLayoutEngine,
+  transliterateLatToRu as transliterateLatToRuEngine,
+  transliterateRuToLat as transliterateRuToLatEngine
+} from "@nb/search";
+
 const whitespaceRegex = /\s+/g;
-const punctuationRegex = /[.,;:!?()[\]{}"“”«»'`´]+/g;
-const separatorRegex = /[-_/\\|]+/g;
-
-const ruToLatMap: Record<string, string> = {
-  а: "a",
-  б: "b",
-  в: "v",
-  г: "g",
-  д: "d",
-  е: "e",
-  ё: "e",
-  ж: "zh",
-  з: "z",
-  и: "i",
-  й: "y",
-  к: "k",
-  л: "l",
-  м: "m",
-  н: "n",
-  о: "o",
-  п: "p",
-  р: "r",
-  с: "s",
-  т: "t",
-  у: "u",
-  ф: "f",
-  х: "kh",
-  ц: "ts",
-  ч: "ch",
-  ш: "sh",
-  щ: "shch",
-  ъ: "",
-  ы: "y",
-  ь: "",
-  э: "e",
-  ю: "yu",
-  я: "ya"
-};
-
-const latToRuTokens: Array<[string, string]> = [
-  ["shch", "щ"],
-  ["sch", "щ"],
-  ["yo", "е"],
-  ["jo", "е"],
-  ["zh", "ж"],
-  ["kh", "х"],
-  ["ts", "ц"],
-  ["ch", "ч"],
-  ["sh", "ш"],
-  ["yu", "ю"],
-  ["ya", "я"],
-  ["ye", "е"],
-  ["yi", "и"],
-  ["a", "а"],
-  ["b", "б"],
-  ["c", "к"],
-  ["d", "д"],
-  ["e", "е"],
-  ["f", "ф"],
-  ["g", "г"],
-  ["h", "х"],
-  ["i", "и"],
-  ["j", "й"],
-  ["k", "к"],
-  ["l", "л"],
-  ["m", "м"],
-  ["n", "н"],
-  ["o", "о"],
-  ["p", "п"],
-  ["q", "к"],
-  ["r", "р"],
-  ["s", "с"],
-  ["t", "т"],
-  ["u", "у"],
-  ["v", "в"],
-  ["w", "в"],
-  ["x", "кс"],
-  ["y", "и"],
-  ["z", "з"]
-];
-
-const keyboardMapPairs = [
-  ["q", "й"], ["w", "ц"], ["e", "у"], ["r", "к"], ["t", "е"], ["y", "н"], ["u", "г"], ["i", "ш"], ["o", "щ"], ["p", "з"],
-  ["[", "х"], ["]", "ъ"], ["a", "ф"], ["s", "ы"], ["d", "в"], ["f", "а"], ["g", "п"], ["h", "р"], ["j", "о"], ["k", "л"],
-  ["l", "д"], [";", "ж"], ["'", "э"], ["z", "я"], ["x", "ч"], ["c", "с"], ["v", "м"], ["b", "и"], ["n", "т"], ["m", "ь"],
-  [",", "б"], [".", "ю"]
-] as const;
-
-const engToRuKeyboardMap = new Map<string, string>(keyboardMapPairs);
-const ruToEngKeyboardMap = new Map<string, string>(keyboardMapPairs.map(([eng, ru]) => [ru, eng]));
 
 export const canonicalIngredientFamilyGroups = [
   {
@@ -143,70 +62,18 @@ export const canonicalIngredientFamilyGroups = [
 
 const tokenVariantGroups = canonicalIngredientFamilyGroups.map((group) => group.terms);
 
-const normalizeAndCollapse = (value: string) => value
-  .normalize("NFKC")
-  .toLowerCase()
-  .replaceAll("ё", "е")
-  .replace(punctuationRegex, " ")
-  .replace(separatorRegex, " ")
-  .replace(whitespaceRegex, " ")
-  .trim();
-
-const applyTokenVariants = (value: string) => {
-  const normalized = normalizeAndCollapse(value);
-  if (!normalized) {
-    return [];
-  }
-
-  const variants = new Set<string>([normalized]);
-  const words = normalized.split(" ");
-
-  for (const group of tokenVariantGroups) {
-    for (let index = 0; index < words.length; index += 1) {
-      const token = words[index];
-      const matchesGroup = group.some((entry) => (
-        entry === token
-        || (token.length >= 3 && entry.startsWith(token))
-        || (entry.length >= 4 && token.startsWith(entry))
-      ));
-
-      if (!matchesGroup) {
-        continue;
-      }
-
-      for (const replacement of group) {
-        const next = [...words];
-        next[index] = replacement;
-        variants.add(normalizeAndCollapse(next.join(" ")));
-      }
-    }
-
-    for (const phrase of group.filter((item) => item.includes(" "))) {
-      if (!normalized.includes(phrase)) {
-        continue;
-      }
-
-      for (const replacement of group) {
-        variants.add(normalizeAndCollapse(normalized.replaceAll(phrase, replacement)));
-      }
-    }
-  }
-
-  return [...variants].filter(Boolean);
-};
-
 const tokenizeSearchTextPreservingRaw = (value: string) => value
   .normalize("NFKC")
   .replaceAll("ё", "е")
-  .replace(punctuationRegex, " ")
-  .replace(separatorRegex, " ")
+  .replace(/[.,;:!?()[\]{}"“”«»'`´]+/g, " ")
+  .replace(/[-_/\\|]+/g, " ")
   .replace(whitespaceRegex, " ")
   .trim()
   .split(" ")
   .map((token) => token.trim())
   .filter(Boolean);
 
-export const normalizeSearchText = (input: string) => normalizeAndCollapse(input);
+export const normalizeSearchText = (input: string) => normalizeSearchTextEngine(input);
 
 export const normalizeIngredientName = normalizeSearchText;
 
@@ -235,95 +102,28 @@ export const dedupeSearchAliases = (aliases: string[]) => {
 export const normalizeAliasList = (aliases: string[]) => dedupeSearchAliases(aliases)
   .map((alias) => normalizeSearchText(alias));
 
-export const transliterateRuToLat = (input: string) => normalizeSearchText(input)
-  .split("")
-  .map((char) => ruToLatMap[char] ?? char)
-  .join("");
+export const transliterateRuToLat = (input: string) => transliterateRuToLatEngine(input);
 
-export const transliterateLatToRu = (input: string) => {
-  const source = normalizeSearchText(input);
-  let index = 0;
-  let out = "";
+export const transliterateLatToRu = (input: string) => transliterateLatToRuEngine(input);
 
-  while (index < source.length) {
-    let matched = false;
+export const swapKeyboardLayout = (input: string) => swapKeyboardLayoutEngine(input);
 
-    for (const [token, replacement] of latToRuTokens) {
-      if (!source.startsWith(token, index)) {
-        continue;
-      }
+/**
+ * Раскладка выключена по умолчанию — это фолбэк, а не первоклассный вариант
+ * (см. ТЗ С1). Вызывающая сторона гоняет её вторым проходом только при нуле
+ * результатов первого, см. {@link buildLayoutQueryVariants}.
+ */
+export const buildQueryVariants = (query: string, options: { includeLayoutVariants?: boolean } = {}) => (
+  buildSearchQueryVariants(query, {
+    tokenVariantGroups,
+    includeLayoutVariants: options.includeLayoutVariants ?? false
+  })
+);
 
-      out += replacement;
-      index += token.length;
-      matched = true;
-      break;
-    }
-
-    if (!matched) {
-      out += source[index];
-      index += 1;
-    }
-  }
-
-  return normalizeSearchText(out);
-};
-
-export const swapKeyboardLayout = (input: string) => {
-  const source = normalizeSearchText(input);
-  const looksRussian = /[а-я]/.test(source);
-  const directMap = looksRussian ? ruToEngKeyboardMap : engToRuKeyboardMap;
-
-  return normalizeSearchText(
-    source
-      .split("")
-      .map((char) => directMap.get(char) ?? char)
-      .join("")
-  );
-};
-
-export const buildQueryVariants = (query: string) => {
-  const variants = new Set<string>();
-  const add = (value: string) => {
-    const normalized = normalizeSearchText(value);
-    if (!normalized || variants.has(normalized) || variants.size >= 16) {
-      return;
-    }
-
-    variants.add(normalized);
-  };
-
-  const base = normalizeSearchText(query);
-  if (!base) {
-    return [];
-  }
-
-  for (const variant of applyTokenVariants(base)) {
-    add(variant);
-  }
-
-  const layoutSwap = swapKeyboardLayout(query);
-  if (layoutSwap !== base) {
-    for (const variant of applyTokenVariants(layoutSwap)) {
-      add(variant);
-    }
-  }
-
-  const ruToLat = transliterateRuToLat(base);
-  if (ruToLat !== base) {
-    for (const variant of applyTokenVariants(ruToLat)) {
-      add(variant);
-    }
-  }
-
-  const latToRu = transliterateLatToRu(base);
-  if (latToRu !== base) {
-    for (const variant of applyTokenVariants(latToRu)) {
-      add(variant);
-    }
-  }
-
-  return [...variants];
-};
+/** Раскладочный rescue-builder (см. buildBjcpLayoutQueryVariants в @nb/brewing-core) — только для двухпроходного фолбэка. */
+export const buildLayoutQueryVariants = (query: string) => buildSearchLayoutQueryVariants(query, {
+  tokenVariantGroups
+});
 
 const isCoveredByManufacturerPhrase = (queryVariant: string, manufacturerVariant: string) => {
   if (!queryVariant || !manufacturerVariant) {
@@ -336,7 +136,10 @@ const isCoveredByManufacturerPhrase = (queryVariant: string, manufacturerVariant
 };
 
 const isManufacturerLikeToken = (token: string, manufacturerTokens: string[]) => {
-  const tokenVariants = buildQueryVariants(token);
+  // Поведение сохраняется бит-в-бит: раскладка здесь всегда учитывается (не фолбэк) —
+  // токен манифеста может быть набран в другой раскладке независимо от результата
+  // основного поиска.
+  const tokenVariants = buildQueryVariants(token, { includeLayoutVariants: true });
 
   return tokenVariants.some((tokenVariant) => manufacturerTokens.some((manufacturerToken) => (
     tokenVariant === manufacturerToken
@@ -362,8 +165,8 @@ export const rewriteIngredientQueryForManufacturer = ({
     return "";
   }
 
-  const queryVariants = buildQueryVariants(query);
-  const manufacturerVariants = buildQueryVariants(manufacturer);
+  const queryVariants = buildQueryVariants(query, { includeLayoutVariants: true });
+  const manufacturerVariants = buildQueryVariants(manufacturer, { includeLayoutVariants: true });
 
   if (queryVariants.some((queryVariant) => manufacturerVariants.some((manufacturerVariant) => (
     isCoveredByManufacturerPhrase(queryVariant, manufacturerVariant)

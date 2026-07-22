@@ -2,32 +2,22 @@ import React from "react";
 import Link from "next/link";
 import { Beer } from "lucide-react";
 
-import { resolveBrewabilityBadge, type BrewabilityBadge } from "@/features/recipes/brewability-badge";
+import { srmToHex } from "@/features/recipes/beer-color";
+import { resolveBrewabilityBadge } from "@/features/recipes/brewability-badge";
 import type { BrewableRecipeDto } from "@/features/recipes/contracts";
 
 import { BrewabilityBadgePill } from "./brewability-badge-pill";
 import { BrewFromStockButton } from "./brew-from-stock-button";
-import { RecipeThumb, StatCell, StyleChip } from "./recipe-card-parts";
-
-// «Светофор» процента завязан на тот же бейдж, что и плашка внизу карточки:
-// иначе 100 % + qtyShort дало бы зелёный процент рядом с салатовым «Почти
-// хватает» (ровно эта рассинхронизация и подсветила враньё бейджа).
-const percentColor = (matchPercent: number, badge: BrewabilityBadge) => {
-  if (badge.tier === "ready" && !badge.qtyShort) {
-    return "bg-success-subtle text-success-subtle-foreground ring-success/30";
-  }
-  if (matchPercent >= 70) return "bg-lime-50 text-lime-700 ring-lime-200 dark:bg-lime-500/15 dark:text-lime-300 dark:ring-lime-500/30";
-  if (matchPercent >= 1) return "bg-warning-subtle text-warning-subtle-foreground ring-warning/30";
-  return "bg-muted text-muted-foreground ring-border";
-};
+import { RecipeThumb } from "./recipe-card-parts";
 
 /**
- * Карточка «рецепт под ваш склад» в визуальном языке витрины `/recipes`
- * ({@link RecipeCard}): та же обложка (фото → фото BJCP-стиля → заливка по SRM),
- * чип стиля, компактные числовые ячейки и stretched-link. Отличается наполнением —
- * вместо параметров рецепта (ABV/IBU/OG) показывает метрики матча со складом:
- * процент совпадения (цветной пилл-«светофор» на месте бейджа рейтинга/готовности)
- * и покрытие ингредиентов.
+ * Карточка «рецепт под ваш склад» — облегчённая строка для вспомогательных
+ * поверхностей (rail «Моего склада», секция дашборда), а не витринная карточка:
+ * название во всю ширину (обложка не отжимает текст в узкой колонке, вместо неё —
+ * точка цвета по SRM), чип стиля отдельной строкой, внизу статус матча.
+ * Процент совпадения не показываем — он без подписи нечитаем и дублирует
+ * покрытие «N из M»; семантику статуса по-прежнему решает только
+ * resolveBrewabilityBadge (тот же резолвер, что у витрины и /app/recipes).
  */
 export function BrewableRecipeCard({ recipe, href }: { recipe: BrewableRecipeDto; href?: string }) {
   const style =
@@ -37,10 +27,6 @@ export function BrewableRecipeCard({ recipe, href }: { recipe: BrewableRecipeDto
   // ссылку в редактор.
   const targetHref = href ?? `/recipes/${recipe.slug}`;
 
-  // Единственный источник семантики бейджа — тот же резолвер, что у витрины и
-  // /app/recipes. Раньше карточка судила по одному лишь missingCount ("нет строк
-  // со статусом missing") и показывала зелёное «Хватает всего» рецепту, где солода
-  // 1 кг из 4.
   const badge = resolveBrewabilityBadge(recipe);
   // Кратко перечисляем чего не хватает: до двух названий, остальное — «+N».
   // Фолбэк на число, если у недостающих строк нет отображаемых имён.
@@ -55,48 +41,66 @@ export function BrewableRecipeCard({ recipe, href }: { recipe: BrewableRecipeDto
   })();
 
   return (
-    <article className="group relative overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-sm transition hover:border-border hover:shadow-md">
+    <article className="group relative overflow-hidden rounded-xl border border-border bg-card p-3 shadow-sm transition hover:shadow-md">
       <Link
         href={targetHref}
         aria-label={recipe.title}
-        className="absolute inset-0 z-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+        className="absolute inset-0 z-0 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
       />
 
-      <div className="pointer-events-none flex h-full flex-col gap-3">
-        <div className="flex items-start gap-3">
+      {/* Ховер-обложка (аналог растущей миниатюры list-вида витрины, но без
+          изменения геометрии — карточки в колонке не должны прыгать под курсором):
+          фото проявляется фоном под градиентной подложкой слева-направо, текст
+          остаётся на читаемом фоне. Только для устройств с мышью. */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 [@media(hover:hover)]:group-hover:opacity-100"
+      >
+        {/* Кадр сдвинут вправо: контейнер шириной с карточку начинается на 40%
+            и вылезает за правый край (article его обрезает overflow-hidden), так
+            что ЦЕНТР фото — где обычно кружка/банка — оказывается у правой
+            границы карточки, в самой прозрачной зоне подложки, а не под ней. */}
+        <span className="absolute inset-y-0 left-[40%] w-full">
           <RecipeThumb
             heroImage={recipe.heroImage}
             styleImageUrl={recipe.styleImageUrl}
             colorSrm={recipe.colorSrm}
             showColorMarker={false}
-            className="h-16 w-16 shrink-0 rounded-xl ring-1 ring-inset ring-black/5"
-            sizes="64px"
+            sharpenOnHover
+            className="h-full w-full"
+            sizes="200px"
           />
-          <div className="min-w-0 flex-1 space-y-1">
-            <div className="flex flex-wrap items-center gap-1.5">
-              <StyleChip style={style} styleHref={recipe.styleHref} className="min-w-0 truncate" />
-              <span
-                className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-0.5 text-xs font-semibold tabular-nums ring-1 ${percentColor(recipe.matchPercent, badge)}`}
-              >
-                {recipe.matchPercent}%
-              </span>
-            </div>
-            <h2 className="line-clamp-2 text-base font-semibold leading-snug text-foreground group-hover:text-muted-foreground">
-              {recipe.title}
-            </h2>
-          </div>
-        </div>
+        </span>
+        <span className="absolute inset-0 bg-gradient-to-r from-card from-45% via-card/70 via-75% to-card/10" />
+      </span>
+
+      <div className="pointer-events-none relative space-y-1.5">
+        <h2 className="line-clamp-2 text-sm font-semibold leading-snug text-foreground">
+          {recipe.colorSrm != null && Number.isFinite(recipe.colorSrm) ? (
+            <span
+              aria-hidden
+              className="mr-1.5 inline-block h-3 w-3 rounded-full align-[-1px] ring-1 ring-inset ring-black/10"
+              style={{ backgroundColor: srmToHex(recipe.colorSrm) }}
+            />
+          ) : null}
+          {recipe.title}
+        </h2>
+        {style ? (
+          <p className="max-w-full truncate text-xs font-medium text-foreground/70">
+            {style.name} · {style.code}
+          </p>
+        ) : null}
 
         {badge.tier === "ready" ? (
-          <div className="flex items-center justify-between gap-3 rounded-xl bg-muted p-2.5">
-            <BrewabilityBadgePill badge={badge} size="md" />
+          <div className="flex items-center justify-between gap-3 pt-1">
+            <BrewabilityBadgePill badge={badge} />
             <BrewFromStockButton recipeId={recipe.recipeId} slug={recipe.slug} recipeTitle={recipe.title} />
           </div>
         ) : (
-          <div className="grid grid-cols-[auto_1fr] gap-4 rounded-xl bg-muted p-2.5">
-            <StatCell label="Ингредиенты" value={`${recipe.coveredLines} из ${recipe.totalLines}`} />
-            <StatCell label="Не хватает" value={missingLabel} />
-          </div>
+          <p className="pt-0.5 text-xs text-muted-foreground">
+            есть: <span className="font-medium tabular-nums text-foreground">{recipe.coveredLines} из {recipe.totalLines}</span>
+            {" · "}не хватает: {missingLabel}
+          </p>
         )}
       </div>
     </article>

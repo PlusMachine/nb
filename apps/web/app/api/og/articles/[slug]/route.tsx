@@ -25,11 +25,11 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
     if (!article) {
       return ogStaticFallback();
     }
-    return renderOgCardResponse(buildArticleOgView(article, { domain, wordmark: SITE_NAME }));
+    return await renderOgCardResponse(buildArticleOgView(article, { domain, wordmark: SITE_NAME }));
   } catch (error) {
     console.error("og article card render failed", { slug, error });
     try {
-      return renderOgFallbackResponse(SITE_NAME);
+      return await renderOgFallbackResponse(SITE_NAME);
     } catch {
       return ogStaticFallback();
     }

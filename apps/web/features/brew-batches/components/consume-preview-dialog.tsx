@@ -2,18 +2,21 @@
 
 // =============================================================================
 //  features/brew-batches/components/consume-preview-dialog.tsx
-//  Предпросмотр списания со склада на партию (Ф2): точное совпадение по
-//  позиции склада vs кандидаты на замену той же match-group (см. отчёт
-//  серверного исполнителя — previewBrewBatchInventoryAction/
-//  consumeBrewBatchInventoryAction). Замена — всегда opt-in (чекбокс снят по
-//  умолчанию), кроме дрожжей, которым замен не бывает вовсе (exact_only).
+//  Предпросмотр списания со склада на партию (Ф2/Ф4) — единственная точка
+//  списания на странице партии: точное совпадение по позиции склада vs
+//  кандидаты на замену той же match-group (см. отчёт серверного исполнителя —
+//  previewBrewBatchInventoryAction/consumeBrewBatchInventoryAction). Замена —
+//  всегда opt-in (чекбокс снят по умолчанию), кроме дрожжей, которым замен не
+//  бывает вовсе (exact_only).
 //
-//  exact_short делится по exactClamps (см. contracts.ts, тот же предикат, что
-//  и у consumeRecipeInventoryAllocations): true — кламп легален (спишем
-//  остаток), false — сервер уронит ВСЮ транзакцию INSUFFICIENT_STOCK, поэтому
-//  такой строке ОБЯЗАНА быть доступна та же замена, что и substitute_available
-//  (см. ConsumeLineRow), а подтверждение блокируется, пока строка не разрешена
-//  (getBlockingShortLines).
+//  Списание ВСЕГДА частичное (Ф4, allowPartial: true) — короткие строки
+//  клампятся до остатка, строки вовсе без позиции на складе (missing и
+//  substitute_available без отмеченной замены) пропускаются, ничего не блокируя:
+//  владелец жаловался, что нехватка одной позиции (рисовая лузга не забита на
+//  складе) не давала списать вообще ничего. Пропущенные строки видны прямо в
+//  превью («будет пропущено») и фиксируются сервером в результате
+//  (skippedLineCount/skippedLineNames) — сообщение после списания честно
+//  называет и клампнутые, и пропущенные строки.
 // =============================================================================
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
@@ -47,22 +50,6 @@ const lineOffersSubstitution = (line: BrewBatchConsumePlanLine): boolean => (
 // см. features/brew-batches/inventory.ts: CONSUME_EPSILON).
 const OVERBOOK_EPSILON = 0.000001;
 
-/**
- * Ф1: строки exact_short с exactClamps=false БЕЗ отмеченной замены — список
- * блокирует подтверждение (сервер всё равно уронит всю транзакцию
- * INSUFFICIENT_STOCK, честнее не пускать до сабмита вовсе).
- */
-export const getBlockingShortLines = (
-  lines: BrewBatchConsumePlanLine[],
-  selections: SubstitutionSelections
-): BrewBatchConsumePlanLine[] => (
-  lines.filter((line) => (
-    line.kind === "exact_short"
-    && !line.exactClamps
-    && !(selections[line.recipeIngredientId]?.checked ?? false)
-  ))
-);
-
 export type OverbookedInventoryItem = {
   inventoryItemId: string;
   name: string;
@@ -71,13 +58,19 @@ export type OverbookedInventoryItem = {
 };
 
 /**
- * Ф3: гард двойного бронирования одной позиции склада. Считает спрос по
- * inventoryItemId среди строк, которые РЕАЛЬНО спишутся при текущем выборе
- * (exact/exact_short-без-клампа — по exact.inventoryItemId; отмеченные замены —
- * по выбранному кандидату), и сравнивает с остатком позиции. Presence-based
- * строки (exactClamps=true, дрожжи) в гард не входят — у них кламп легален и
- * единицы могут не совпадать с граммами. Чистая функция — тестируется без DOM,
- * сервер остаётся атомарным бэкстопом (изменений на сервере под этот гард не
+ * Ф3: гард двойного бронирования одной позиции склада — ловит ТОЛЬКО когда
+ * НЕСКОЛЬКО строк рецепта ссылаются на одну и ту же складскую позицию, и сумма
+ * их клампованных потребностей превышает остаток этой позиции. Спрос каждой
+ * строки берётся клампованным остатком ЭТОЙ ЖЕ позиции (Math.min(required,
+ * available)), а не полной потребностью рецепта — списание всегда частичное
+ * (Ф4), сервер сам ужимает короткую строку до остатка. Если бы гард считал
+ * спрос полным, одиночная короткая строка без замены (на складе меньше нужного)
+ * сама себя объявляла бы overbooked и намертво блокировала подтверждение —
+ * П0-регрессия: до Ф4 такой кейс перехватывал отдельный getBlockingShortLines,
+ * снесённый вместе с блокирующим списанием. Presence-based строки
+ * (exactClamps=true, дрожжи) в гард не входят — у них кламп легален и единицы
+ * могут не совпадать с граммами. Чистая функция — тестируется без DOM, сервер
+ * остаётся атомарным бэкстопом (изменений на сервере под этот гард не
  * требуется).
  */
 export const computeOverbookedInventoryItems = (
@@ -101,13 +94,28 @@ export const computeOverbookedInventoryItems = (
     if (selection?.checked) {
       const candidate = line.substitutes.find((item) => item.inventoryItemId === selection.inventoryItemId);
       if (candidate) {
-        addDemand(candidate.inventoryItemId, candidate.name, candidate.availableQuantity, line.requiredQuantityNormalized);
+        // Клампуем спрос остатком кандидата — иначе строка с одной лишь короткой
+        // заменой сама себя объявляла бы overbooked (см. JSDoc выше).
+        addDemand(
+          candidate.inventoryItemId,
+          candidate.name,
+          candidate.availableQuantity,
+          Math.min(line.requiredQuantityNormalized, candidate.availableQuantity)
+        );
       }
       continue;
     }
 
     if ((line.kind === "exact" || line.kind === "exact_short") && line.exact) {
-      addDemand(line.exact.inventoryItemId, line.exact.name, line.exact.availableQuantity, line.requiredQuantityNormalized);
+      // Клампуем спрос остатком exact-позиции: короткая строка (exact_short) сама
+      // по себе легальна (сервер её ужмёт, allowPartial всегда true) — overbooked
+      // здесь должно ловить только сумму НЕСКОЛЬКИХ строк на одну позицию.
+      addDemand(
+        line.exact.inventoryItemId,
+        line.exact.name,
+        line.exact.availableQuantity,
+        Math.min(line.requiredQuantityNormalized, line.exact.availableQuantity)
+      );
     }
     // substitute_available без отмеченной замены и missing — не спишутся, в спрос не входят.
   }
@@ -214,11 +222,9 @@ export function ConsumeInventoryDialog({
     : 0;
   const selectedCount = (plan?.exactCount ?? 0) + checkedSubstituteOnlyCount;
 
-  const blockingShortLines = plan ? getBlockingShortLines(plan.lines, selections) : [];
   const overbookedItems = plan ? computeOverbookedInventoryItems(plan.lines, selections) : [];
   const confirmDisabled = submitting
     || selectedCount === 0
-    || blockingShortLines.length > 0
     || overbookedItems.length > 0;
 
   const confirm = async () => {
@@ -229,7 +235,9 @@ export function ConsumeInventoryDialog({
       const substitutions: BrewBatchConsumeSubstitution[] = Object.entries(selections)
         .filter(([, selection]) => selection.checked)
         .map(([recipeIngredientId, selection]) => ({ recipeIngredientId, inventoryItemId: selection.inventoryItemId }));
-      const result = await consumeBrewBatchInventoryAction(brewBatchId, substitutions);
+      // Ф4: списание всегда частичное — короткие строки клампятся, строки без
+      // позиции на складе пропускаются, ничего не блокируя (см. шапку файла).
+      const result = await consumeBrewBatchInventoryAction(brewBatchId, substitutions, { allowPartial: true });
       if (!result.ok) {
         setSubmitError(result.message);
         return;
@@ -284,12 +292,6 @@ export function ConsumeInventoryDialog({
               />
             ))}
           </ul>
-        ) : null}
-
-        {plan && !plan.alreadyConsumed && blockingShortLines.length > 0 ? (
-          <p role="alert" className="text-sm text-destructive">
-            Не хватает: {blockingShortLines.map((line) => line.displayName).join(", ")} — пополните склад или выберите замену.
-          </p>
         ) : null}
 
         {plan && !plan.alreadyConsumed && overbookedItems.length > 0 ? (
@@ -349,10 +351,10 @@ export function ConsumeLineRow({
   }
 
   if (line.kind === "exact_short") {
-    // exactClamps=true (дрожжи) — кламп легален, сервер спишет остаток; замены у
-    // presence-based категорий не бывает вовсе. exactClamps=false — короткий exact
-    // роняет ВСЮ транзакцию, строке ОБЯЗАНА быть доступна та же замена, что и
-    // substitute_available (см. lineOffersSubstitution/getBlockingShortLines).
+    // Списание всегда частичное (Ф4) — короткий exact клампится до остатка
+    // независимо от exactClamps (это поле теперь только про presence-based
+    // категорию — дрожжам замена недоступна вовсе, см. lineOffersSubstitution).
+    // Замену не-presence-based строке всё равно можно выбрать вместо клампа.
     const offersSubstitution = !line.exactClamps && line.substitutes.length > 0;
     return (
       <li className="space-y-2 py-2.5">
@@ -364,7 +366,7 @@ export function ConsumeLineRow({
           <span className="shrink-0 text-sm font-medium tabular-nums text-warning">−{line.requiredLabel}</span>
           {line.exact ? (
             <p className="w-full pl-6 text-xs text-muted-foreground">
-              На складе {line.exact.availableLabel} — {line.exactClamps ? "спишем остаток." : "не хватит."}
+              На складе {line.exact.availableLabel} — спишем остаток.
             </p>
           ) : null}
         </div>
@@ -398,7 +400,7 @@ export function ConsumeLineRow({
           <X className="h-4 w-4 shrink-0 text-destructive" aria-hidden />
           <span className="truncate">{line.displayName}</span>
         </span>
-        <span className="shrink-0 text-xs text-muted-foreground">Нет на складе</span>
+        <span className="shrink-0 text-xs text-muted-foreground">Нет на складе — будет пропущено</span>
       </div>
       <p className="pl-6 text-xs">
         {line.catalogSearchHref ? (

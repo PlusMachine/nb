@@ -1,574 +1,574 @@
 {
-  "source": {
-    "document": "BJCP 2021 Beer Style Guidelines",
-    "file_name": "2021_Guidelines_Beer_1.25.pdf",
-    "language": "ru",
-    "translation_scope": "detailed",
-    "notes": "Подробный русский перевод двенадцатой части корпуса BJCP: завершение категории 23 и категория 24, с короткими описаниями, полными секциями и оригинальными английскими секциями для сверки."
-  },
-  "progress": {
-    "styles_total_in_guideline": 128,
-    "styles_translated_in_this_file": 8,
-    "translated_style_ids": [
-      "23C",
-      "23D",
-      "23E",
-      "23F",
-      "23G",
-      "24A",
-      "24B",
-      "24C"
-    ],
-    "translated_categories": [
-      "23",
-      "24"
-    ],
-    "next_recommended_batch": [
-      "25A",
-      "25B",
-      "25C",
-      "26A",
-      "26B",
-      "26C",
-      "26D"
-    ]
-  },
-  "categories": [
-    {
-      "category_id": "23",
-      "category_en": "EUROPEAN SOUR ALE",
-      "category_ru": "Европейский кислый эль",
-      "overview_ru": "Категория объединяет традиционные кислые стили Европы, которые продолжают варить и сегодня. Многие из них, хотя и не все, содержат пшеницу. Обычно у них низкая горечь, а баланс задаёт именно кислотность, а не хмель. Некоторые версии могут быть подслащены или ароматизированы — либо на пивоварне, либо уже при подаче."
-    },
-    {
-      "category_id": "24",
-      "category_en": "BELGIAN ALE",
-      "category_ru": "Бельгийский эль",
-      "overview_ru": "В эту категорию входят более солодовые или сбалансированные бельгийские и французские эли с более выраженным вкусом."
-    }
+ "source": {
+  "document": "BJCP 2021 Beer Style Guidelines",
+  "file_name": "2021_Guidelines_Beer_1.25.pdf",
+  "language": "ru",
+  "translation_scope": "detailed",
+  "notes": "Подробный русский перевод двенадцатой части корпуса BJCP: завершение категории 23 и категория 24, с короткими описаниями, полными секциями и оригинальными английскими секциями для сверки."
+ },
+ "progress": {
+  "styles_total_in_guideline": 128,
+  "styles_translated_in_this_file": 8,
+  "translated_style_ids": [
+   "23C",
+   "23D",
+   "23E",
+   "23F",
+   "23G",
+   "24A",
+   "24B",
+   "24C"
   ],
-  "styles": [
-    {
-      "bjcp_id": "23C",
-      "name_en": "Oud Bruin",
-      "name_ru": "Оуд браун",
-      "category_id": "23",
-      "category_en": "EUROPEAN SOUR ALE",
-      "category_ru": "Европейский кислый эль",
-      "bjcp_heading": "23C. Oud Bruin",
-      "description_short_ru": "Мальтовый, фруктовый и выдержанный бельгийский коричневый эль с умеренной кислотностью, карамельно-шоколадным солодовым профилем и возможной заметной крепостью.",
-      "sections_en": {
-        "overall_impression": "A malty, fruity, aged, somewhat sour Belgian-style brown ale with a caramel-chocolate malt flavor, and often substantial alcohol.",
-        "aroma": "Richly malty with fruity esters and an aged sourness. Medium to medium-high esters commonly reminiscent of raisins, plums, figs, dates, oranges, black cherries, or prunes. Medium-low to medium-high malt with caramel, toffee, treacle, or chocolate character. Low spicy-peppery phenols optional. A low sour aroma may be present, and can modestly increase with age but should not grow to a strongly acetic, vinegary character. Hop aroma absent. Aged examples can show a lightly nutty, sherry-like oxidation character.",
-        "appearance": "Dark reddish-brown to brown in color. Good clarity. Average to good head retention. Ivory to light tan head color.",
-        "flavor": "Malty with fruity complexity and typically some dark caramel or burnt sugar flavor. Medium-low to medium-high malt, same descriptors as aroma. Medium to medium-high fruitiness, same descriptors as aroma. Low spicy-peppery phenols optional. A slight sourness often becomes more pronounced in well-aged examples, along with some sherry-like character, producing a “sweet-and-sour” profile and aftertaste. The sourness should not grow to a strongly acetic, vinegary character. Hop flavor absent. Restrained hop bitterness. Balance is malty, but with fruitiness and sourness present. Blending and sweetening may produce a range of finishes, and balances.",
-        "mouthfeel": "Medium to medium-full body. Low to moderate carbonation. No astringency. Stronger versions can be noticeably warming.",
-        "comments": "Long aging and blending of young and aged beer may occur, adding smoothness and complexity and balancing any harsh, sour character. Traditionally, this style was designed to lay down so examples with a moderate aged character are considered superior to younger examples. Fruited versions should be entered as a 29A Fruit Beer.",
-        "history": "An indigenous beer of East Flanders, typified by the products of the Liefman brewery with roots back to the 1600s. Belgian brewers consider Flanders Red and Oud Bruin to be of the same style family, but the distinction was first made when Michael Jackson first defined beer styles, since the flavor profiles are distinctly different. Many modern examples are influenced by the popularity of Liefmans Goudenband. Unrelated to the dark, sweet Dutch lager of the same name.",
-        "characteristic_ingredients": "Pils malt, dark crystal malts, maize, small amounts of color malt. Low alpha acid continental hops. Sacch and Lacto. Aged. Water with carbonates and magnesium typical of its home region.",
-        "style_comparison": "A deeper malt character with more caramel, toffee, and chocolate flavors and darker color distinguishes these beers from Flanders Red Ale. The Oud Bruin is less acetic and maltier than a Flanders Red, and the fruity flavors are more malt-oriented. In modern times, Oud Bruin also tends to be higher in alcohol than is typically seen in Flanders Red Ales. Differs from Lambic in that they are not spontaneously fermented, and don’t contain wheat.",
-        "entry_instructions": ""
-      },
-      "sections_ru": {
-        "overall_impression": "Солодовый, фруктовый, выдержанный бельгийский коричневый эль с умеренной кислотностью, карамельно-шоколадным солодовым профилем и нередко довольно ощутимой крепостью.",
-        "aroma": "Богатый солодовый аромат сочетается с фруктовыми эфирами и выдержанной кислинкой. Эфиры — от средних до умеренно высоких; часто напоминают изюм, сливу, инжир, финики, апельсин, чёрную вишню или чернослив. Солодовый тон — от умеренно слабого до умеренно высокого, с карамелью, тоффи, патокой или шоколадом. Лёгкие перечные фенолы допустимы. Может присутствовать слабая кислинка в аромате, которая с возрастом способна немного усиливаться, но не должна превращаться в выраженно уксусный профиль. Хмелевой аромат отсутствует. У выдержанных образцов возможен лёгкий ореховый, чуть хересный оксидативный штрих.",
-        "appearance": "Цвет от тёмного красновато-коричневого до коричневого. Прозрачность хорошая. Пена держится от средне до хорошо; её цвет — от слоновой кости до светло-бежевого.",
-        "flavor": "Вкус солодовый, со сложной фруктовостью и обычно с оттенками тёмной карамели или жжёного сахара. Солодовость — от умеренно слабой до умеренно высокой, с теми же дескрипторами, что и в аромате. Фруктовость — от средней до умеренно высокой, также перекликается с ароматом. Лёгкие перечные фенолы допустимы. Небольшая кислотность у хорошо выдержанных версий нередко становится заметнее; вместе с лёгким хересным тоном она формирует характерный «сладко-кислый» профиль и послевкусие. Кислотность не должна переходить в явную уксусность. Хмелевой вкус отсутствует. Горечь сдержанная. Баланс в целом солодовый, но фруктовость и кислинка обязательно присутствуют. Смешивание партий и подслащивание могут давать заметно разные финиши и варианты баланса.",
-        "mouthfeel": "Тело от среднего до умеренно полного. Карбонизация — от низкой до умеренной. Терпкость отсутствует. Более крепкие версии могут ощутимо согревать.",
-        "comments": "Долгая выдержка и купажирование молодого и зрелого пива возможны и обычно добавляют гладкости и сложности, одновременно смягчая резкую кислотность. Исторически стиль задумывался как пиво для выдержки, поэтому образцы с умеренным зрелым характером обычно ценятся выше совсем молодых. Фруктовые версии следует относить к 29A Fruit Beer.",
-        "history": "Местный стиль Восточной Фландрии, классическим представителем которого считается пиво пивоварни Liefmans, чьи корни уходят в XVII век. Бельгийские пивовары рассматривают Flanders Red и Oud Bruin как родственные стили, но их развели по отдельным категориям после того, как Майкл Джексон впервые описал стили пива именно так — из-за заметной разницы во вкусовом профиле. Многие современные версии находятся под влиянием популярности Liefmans Goudenband. Со сладким тёмным голландским лагером с тем же названием этот стиль не связан.",
-        "characteristic_ingredients": "Пилс-солод, тёмные карамельные солода, кукуруза, небольшие количества окрашенного солода. Низкоальфа-континентальный хмель. Sacch и Lacto. Выдержка обязательна для типичного характера. Вода домашнего региона обычно богата карбонатами и магнием.",
-        "style_comparison": "От Flanders Red Ale этот стиль отличается более глубокой солодовой основой, более выраженными карамельными, тоффи- и шоколадными оттенками и более тёмным цветом. В сравнении с Flanders Red он менее уксусный и более солодовый, а его фруктовость сильнее завязана на солодовый профиль. В наше время Oud Bruin часто бывает и крепче, чем типичный Flanders Red Ale. От ламбика отличается тем, что не является спонтанно ферментированным и не содержит пшеницу.",
-        "entry_instructions": ""
-      },
-      "vital_statistics": {
-        "og": "1.040 – 1.074",
-        "ibu": "20 – 25",
-        "fg": "1.008 – 1.012",
-        "srm": "17 – 22",
-        "abv": "4.0 – 8.0%"
-      },
-      "vital_statistics_text": "OG: 1.040 – 1.074 | IBUs: 20 – 25 | FG: 1.008 – 1.012 | SRM: 17 – 22 | ABV: 4.0 – 8.0%",
-      "commercial_examples_text": "Ichtegem Oud Bruin, Liefmans Goudenband, Liefmans Oud Bruin, Petrus Roodbruin, pFriem Oud Bruin, VanderGhinste Roodbruin",
-      "tags_en": [
-        "standard-strength",
-        "dark-color",
-        "top-fermented",
-        "western-europe",
-        "traditional-style",
-        "malty",
-        "sour"
-      ],
-      "source_guideline_page_start": 46,
-      "source_pdf_page_start": 62,
-      "translation_status": "completed",
-      "tags_ru": [
-        "стандартная крепость",
-        "тёмный цвет",
-        "верховое брожение",
-        "Западная Европа",
-        "традиционный стиль",
-        "солодовый",
-        "кислый"
-      ]
-    },
-    {
-      "bjcp_id": "23D",
-      "name_en": "Lambic",
-      "name_ru": "Ламбик",
-      "category_id": "23",
-      "category_en": "EUROPEAN SOUR ALE",
-      "category_ru": "Европейский кислый эль",
-      "bjcp_heading": "23D. Lambic",
-      "description_short_ru": "Довольно кислое бельгийское пшеничное пиво дикого брожения, нередко с умеренной «фанковой» сложностью, где кислотность заменяет хмелевую горечь в балансе.",
-      "sections_en": {
-        "overall_impression": "A fairly sour, often moderately funky, wild Belgian wheat beer with sourness taking the place of hop bitterness in the balance. Traditionally served uncarbonated as a café drink.",
-        "aroma": "Young versions can be quite sour and fruity, but can develop barnyard, earthy, goaty, hay, horsey, or horse blanket funkiness with age. The fruit character can take on a light citrus fruit, citrus rind, pome fruit, or rhubarb quality, getting more complex with age. Malt can have a light bready, grainy, honey, or wheat-like quality, if noticeable. Should not have enteric, smoky, cigar-like, or cheesy faults. No hops.",
-        "appearance": "Pale yellow to deep golden in color; age tends to darken the beer. Clarity is hazy to good. Younger versions are often cloudy, while older ones are generally clear. White colored head generally has poor retention.",
-        "flavor": "Young versions often have a strong lactic sourness with fruity flavors (same descriptors as aroma), while aged versions are more balanced and complex. Funky notes can develop over time, same descriptors as aroma. Low bready, grainy malt. Bitterness generally below sensory threshold; sourness provides the balance. No hop flavor. Dry finish, increasing with age. Should not have enteric, smoky, cigar-like, or cheesy faults.",
-        "mouthfeel": "Light to medium-light body; should not be watery. Has a medium to high tart, puckering quality without being sharply astringent. Traditional versions are virtually to completely uncarbonated, but bottled examples can pick up moderate carbonation with age.",
-        "comments": "A single-batch, unblended beer, reflecting the house character of the brewery. Generally served young (6 months) from the cask. Younger versions tend to be one-dimensionally sour since a complex Brett character takes a year or more to develop. A noticeable vinegary or cidery character is considered a fault by Belgian brewers. Typically bottled only when completely fermented. Lambic sweetened with raw sugar at service time is known as Faro.",
-        "history": "Spontaneously-fermented ‘wild’ ales from the area in and around Brussels (also known as the Senne Valley and the Pajottenland) stem from a farmhouse brewing tradition several centuries old.",
-        "characteristic_ingredients": "Pilsner malt, unmalted wheat. Aged hops (3+ years) used more as a preservative than for bitterness. Spontaneously fermented with naturally occurring yeast and bacteria in well-used, neutral oak barrels.",
-        "style_comparison": "Often has a simpler sourness and less complexity than a Gueuze, but more variability from batch to batch. Traditionally served uncarbonated from pitchers, while Gueuze is bottled and very highly carbonated.",
-        "entry_instructions": ""
-      },
-      "sections_ru": {
-        "overall_impression": "Довольно кислое бельгийское пшеничное пиво дикого брожения, часто с умеренной фанковой сложностью. Баланс строится не на хмелевой горечи, а на кислотности. Традиционно подаётся почти без газа, как кафе-пиво.",
-        "aroma": "Молодые версии могут быть весьма кислыми и фруктовыми, а с возрастом развивают «дикий» профиль с оттенками скотного двора, земли, козьей шерсти, сена, лошадиных и «horse blanket» тонов. Фруктовый характер может напоминать лёгкий цитрус, цитрусовую цедру, семечковые фрукты или ревень; с возрастом он становится сложнее. Если солод заметен, он даёт лёгкие хлебные, зерновые, медовые или пшеничные оттенки. Недопустимы фекальные, дымные, сигарные или сырные дефекты. Хмель не ощущается.",
-        "appearance": "Цвет от бледно-жёлтого до насыщенно золотого; с возрастом пиво обычно темнеет. Прозрачность — от мутноватой до хорошей. Молодые версии часто заметно мутные, старые обычно более прозрачные. Белая пена, как правило, держится плохо.",
-        "flavor": "Молодые версии часто демонстрируют сильную молочнокислую кислотность и фруктовость с теми же дескрипторами, что и в аромате. Выдержанные версии становятся более сбалансированными и сложными. Фанковые ноты развиваются со временем; их описание совпадает с ароматом. Солодовость низкая, хлебно-зерновая. Горечь обычно ниже порога восприятия; баланс обеспечивает именно кислотность. Хмелевой вкус отсутствует. Финиш сухой и с возрастом становится ещё суше. Недопустимы фекальные, дымные, сигарные или сырные дефекты.",
-        "mouthfeel": "Тело от лёгкого до умеренно лёгкого; водянистость недопустима. Кислотность даёт ощущение от умеренного до сильного стягивания, но без резкой вяжущести. Традиционные версии почти совсем негазированные, хотя бутылочные образцы с возрастом могут набрать умеренную карбонизацию.",
-        "comments": "Это пиво одной варки, без купажирования, поэтому в нём особенно заметен «домашний» характер конкретной пивоварни. Обычно его подают молодым, примерно в шестимесячном возрасте, прямо из бочки. Молодые версии нередко кажутся однопланово кислыми, потому что сложный Brett-характер развивается только через год и более. Заметная уксусность или сидровый тон бельгийские пивовары считают дефектом. В бутылки ламбик обычно разливают только после полного завершения брожения. Ламбик, подслащённый при подаче сырым сахаром, называется Faro.",
-        "history": "Спонтанно ферментированные «дикие» эли из района Брюсселя и его окрестностей — долины Сенны и Пайоттенланда — восходят к фермерской пивоваренной традиции возрастом в несколько столетий.",
-        "characteristic_ingredients": "Пилс-солод и несоложёная пшеница. Выдержанный хмель возрастом от трёх лет используют скорее как консервирующий компонент, чем как источник горечи. Брожение происходит спонтанно, за счёт естественной микрофлоры, в хорошо использованных нейтральных дубовых бочках.",
-        "style_comparison": "Обычно обладает более простой кислотностью и меньшей сложностью, чем Gueuze, но при этом сильнее варьируется от партии к партии. Традиционно ламбик подают почти без газа из кувшинов, тогда как Gueuze бутилируют и насыщают очень высокой карбонизацией.",
-        "entry_instructions": ""
-      },
-      "vital_statistics": {
-        "og": "1.040 – 1.054",
-        "ibu": "0 – 10",
-        "fg": "1.001 – 1.010",
-        "srm": "3 – 6",
-        "abv": "5.0 – 6.5%"
-      },
-      "vital_statistics_text": "OG: 1.040 – 1.054 | IBUs: 0 – 10 | FG: 1.001 – 1.010 | SRM: 3 – 6 | ABV: 5.0 – 6.5%",
-      "commercial_examples_text": "Cantillon Grand Cru Bruocsella. In the Brussels area, many specialty cafés have draught lambic from Boon, De Cam, Cantillon, Drie Fonteinen, Lindemans, Timmermans, Girardin and others.",
-      "tags_en": [
-        "standard-strength",
-        "pale-color",
-        "wild-fermented",
-        "western-europe",
-        "traditional-style",
-        "wheat-beer-family",
-        "sour"
-      ],
-      "source_guideline_page_start": 46,
-      "source_pdf_page_start": 62,
-      "translation_status": "completed",
-      "tags_ru": [
-        "стандартная крепость",
-        "светлый цвет",
-        "дикое брожение",
-        "Западная Европа",
-        "традиционный стиль",
-        "семейство пшеничного пива",
-        "кислый"
-      ]
-    },
-    {
-      "bjcp_id": "23E",
-      "name_en": "Gueuze",
-      "name_ru": "Гёз",
-      "category_id": "23",
-      "category_en": "EUROPEAN SOUR ALE",
-      "category_ru": "Европейский кислый эль",
-      "bjcp_heading": "23E. Gueuze",
-      "description_short_ru": "Очень освежающее, сильно газированное бельгийское пшеничное пиво дикого брожения с приятной кислотностью, фанковой сложностью и фруктовыми нотами.",
-      "sections_en": {
-        "overall_impression": "A very refreshing, highly carbonated, pleasantly sour but balanced wild Belgian wheat beer. The wild beer character can be complex and varied, combining sour, funky, and fruity flavors.",
-        "aroma": "Moderately sour with complex but balanced funkiness accented by fruity notes. The funkiness can be moderate to strong, and can be described as barnyard, leather, earthy, goaty, hay, horsey, or horse blanket. Fruitiness is light to moderate, with a citrus fruit, citrus rind, pome fruit, or rhubarb quality. Malt is supportive, and can be lightly bready, grainy, honey, or wheat-like, if noticeable. Should not have enteric, smoky, cigar-like, or cheesy faults. No hops. Light oak acceptable. Complexity of aroma is valued more than intensity, but a balanced sour presentation is desirable.",
-        "appearance": "Golden color, with excellent clarity and a thick, rocky, mousse-like, white head that seems to last forever. Effervescent.",
-        "flavor": "Sour and funky on the palate, with a similar character as the aroma (same descriptors and intensities apply for funk and fruit). Low bready, grainy malt. Bitterness low to none; sourness provides most of the balance. No hop flavor. Crisp, dry finish, with a tart and funky aftertaste. Light oak, vanilla, and honey are acceptable. Should not have enteric, smoky, cigar-like, or cheesy faults. The beer should not be one dimensionally sour; a balanced, moderately sour presentation is classic, with the funky and fruity notes providing complexity. May be aged.",
-        "mouthfeel": "Light to medium-light body; should not be watery. Has a low to high tart, puckering quality without being sharply astringent. Some versions have a very light warming character. Highly carbonated.",
-        "comments": "Blending young and aged lambic creates a more complex product, and often reflects the personal taste of the blender. A noticeable vinegary or cidery character is considered a fault by Belgian brewers. A good Gueuze is not the most pungent, but possesses a full and tantalizing bouquet, a sharp aroma, and a soft, velvety texture. Lambic is served uncarbonated, while Gueuze is served sparkling. Products marked oude or vieille (“old”) are considered most traditional.",
-        "history": "Same basic history as Lambic, but involves blending, which may be performed outside the brewery. Some of the best examples are produced by blenders, who ferment, age, blend, and package the final product. Some modern producers are sweetening their products post-fermentation to make them more palatable to a wider audience. These guidelines describe the traditional dry product.",
-        "characteristic_ingredients": "Same as Lambic, except that one-, two-, and three-year old Lambics are blended, then cellared.",
-        "style_comparison": "More complex and carbonated than a Lambic. The sourness isn’t necessarily stronger, but it tends to have more of a well-developed wild character.",
-        "entry_instructions": ""
-      },
-      "sections_ru": {
-        "overall_impression": "Очень освежающее, сильно газированное бельгийское пшеничное пиво дикого брожения: приятно кислое, но сбалансированное. Дикий характер здесь может быть сложным и многослойным, объединяя кислотность, фанковые и фруктовые оттенки.",
-        "aroma": "Кислотность в аромате умеренная; её дополняет сложная, но сбалансированная фанковость и фруктовые ноты. Фанковый профиль — от умеренного до сильного, с оттенками скотного двора, кожи, земли, козьей шерсти, сена, лошадиных и «horse blanket» тонов. Фруктовость — от лёгкой до умеренной: цитрус, цедра, семечковые фрукты, ревень. Солод играет поддерживающую роль и, если заметен, даёт лёгкие хлебные, зерновые, медовые или пшеничные штрихи. Недопустимы фекальные, дымные, сигарные и сырные дефекты. Хмель отсутствует. Допустим лёгкий дубовый тон. Для аромата важнее сложность, чем просто мощность; желателен именно гармоничный кислый профиль.",
-        "appearance": "Цвет золотой. Прозрачность отличная. Пена густая, каменистая, муссовая, белая и кажется почти бесконечно стойкой. Пиво очень игристое.",
-        "flavor": "Во вкусе — кислотность и фанковость с теми же дескрипторами и интенсивностью, что и в аромате. Солодовость низкая, хлебно-зерновая. Горечь низкая либо отсутствует; баланс в основном задаёт кислотность. Хмелевой вкус отсутствует. Финиш хрустко-сухой, с терпко-кислым и фанковым послевкусием. Допустимы лёгкие дубовые, ванильные и медовые оттенки. Недопустимы фекальные, дымные, сигарные и сырные дефекты. Пиво не должно быть однопланово кислым: классика — это умеренная, сбалансированная кислотность, а сложность формируют именно фанковые и фруктовые ноты. Допускается выдержка.",
-        "mouthfeel": "Тело от лёгкого до умеренно лёгкого; водянистость недопустима. Кислотность может давать ощущение стягивания от слабого до сильного, но без резкой вяжущести. У некоторых версий возможен очень лёгкий согревающий тон. Карбонизация высокая.",
-        "comments": "Купаж молодого и выдержанного ламбика создаёт более сложный продукт и часто отражает личный вкус блендера. Заметная уксусность или сидровый характер бельгийские пивовары считают дефектом. Хороший гёз ценят не за максимальную резкость, а за полный, интригующий букет, яркий аромат и мягкую, почти бархатистую текстуру. Ламбик подают негазированным, а гёз — игристым. Надписи oude или vieille («старый») обычно указывают на наиболее традиционный характер.",
-        "history": "История у стиля та же базовая, что и у ламбика, но здесь ключевую роль играет купажирование, причём оно может происходить и вне самой пивоварни. Некоторые из лучших образцов делают именно блендеры: они ферментируют, выдерживают, купажируют и упаковывают готовый продукт. Часть современных производителей после брожения подслащивает пиво, чтобы сделать его более доступным широкой аудитории. В данных рекомендациях описана традиционная сухая версия.",
-        "characteristic_ingredients": "Та же база, что и у ламбика, но здесь смешивают одно-, двух- и трёхлетние ламбики, после чего купаж дополнительно выдерживают.",
-        "style_comparison": "Сложнее и заметно более газированный, чем Lambic. Кислотность не обязательно сильнее, но дикий характер обычно более развит и оформлен.",
-        "entry_instructions": ""
-      },
-      "vital_statistics": {
-        "og": "1.040 – 1.054",
-        "ibu": "0 – 10",
-        "fg": "1.000 – 1.006",
-        "srm": "5 – 6",
-        "abv": "5.0 – 8.0%"
-      },
-      "vital_statistics_text": "OG: 1.040 – 1.054 | IBUs: 0 – 10 | FG: 1.000 – 1.006 | SRM: 5 – 6 | ABV: 5.0 – 8.0%",
-      "commercial_examples_text": "3 Fonteinen Oud Gueuze, Cantillon Classic Gueuze 100% Lambic, Girardin Gueuze 1882 (Black label), Hanssens Oude Gueuze, Lindemans Gueuze Cuvée René, Oude Gueuze Boon",
-      "tags_en": [
-        "high-strength",
-        "pale-color",
-        "wild-fermented",
-        "western-europe",
-        "traditional-style",
-        "wheat-beer-family",
-        "aged",
-        "sour"
-      ],
-      "source_guideline_page_start": 47,
-      "source_pdf_page_start": 63,
-      "translation_status": "completed",
-      "tags_ru": [
-        "высокая крепость",
-        "светлый цвет",
-        "дикое брожение",
-        "Западная Европа",
-        "традиционный стиль",
-        "семейство пшеничного пива",
-        "выдержанный",
-        "кислый"
-      ]
-    },
-    {
-      "bjcp_id": "23F",
-      "name_en": "Fruit Lambic",
-      "name_ru": "Фруктовый ламбик",
-      "category_id": "23",
-      "category_en": "EUROPEAN SOUR ALE",
-      "category_ru": "Европейский кислый эль",
-      "bjcp_heading": "23F. Fruit Lambic",
-      "description_short_ru": "Сложное, освежающее и приятно кислое бельгийское пшеничное пиво, в котором ферментированный фруктовый характер дополняет кислый и фанковый профиль гёза.",
-      "sections_en": {
-        "overall_impression": "A complex, refreshing, pleasantly sour Belgian wheat beer blending a complementary fermented fruit character with a sour, funky Gueuze.",
-        "aroma": "The specified fruit should be the dominant aroma, blending well with similar aromatics as Gueuze (same description applies, but with the addition of a fermented fruit character).",
-        "appearance": "Like Gueuze, but modified by the color of the fruit used, fading in intensity with age. Clarity is often good, although some fruit will not drop bright. If highly carbonated in the traditional manner, will have a thick rocky, generally long-lasting, mousse-like head, sometimes with a hue reflecting the added fruit.",
-        "flavor": "Combines the flavor profile of a Gueuze (same description applies) with noticeable flavor contributions from the added fruit. Traditional versions are dry and tart, with an added fermented fruit flavor. Modern versions may have a variable sweetness, which can offset the acidity. Fruit flavors also fade with age, and lose their vibrancy, so can be low to high in intensity.",
-        "mouthfeel": "Light to medium-light body; should not be watery. Has a low to high tart, puckering quality without being sharply astringent. Some versions have a light warming character. Carbonation can vary from sparkling to nearly still.",
-        "comments": "Produced like Gueuze, with the fruit commonly added halfway through aging, so the yeast and bacteria can ferment all sugars from the fruit; or less commonly by adding fruit to a Lambic. The variety of fruit can sometimes be hard to identify since fermented and aged fruit is often perceived differently than the more recognizable fresh fruit. Fruit can bring acidity and tannins, in addition to flavor and aroma; understanding the fermented character of added fruit helps with judging the style.",
-        "history": "Same basic history as Gueuze, including the recent sweetening trend but with fruit in addition to sugar. Fruit was traditionally added by the blender or publican to increase the variety of beers available in local cafés.",
-        "characteristic_ingredients": "Same base as Gueuze. Fruit added to barrels during fermentation and blending. Traditional fruit include tart cherries, raspberries; modern fruit include peaches, apricots, grapes, and others. May use natural or artificial sweeteners.",
-        "style_comparison": "A Gueuze with fruit, not just a sour Fruit Beer; the wild character must be evident.",
-        "entry_instructions": "The type of fruit used must be specified. The brewer must declare a carbonation level (low, medium, high) and a sweetness level (low/none, medium, high)."
-      },
-      "sections_ru": {
-        "overall_impression": "Сложное, освежающее и приятно кислое бельгийское пшеничное пиво, где ферментированный фруктовый характер органично соединяется с кислым и фанковым профилем гёза.",
-        "aroma": "Заявленный фрукт должен доминировать в аромате, но гармонично сочетаться с теми же ароматическими элементами, что свойственны Gueuze. По сути, описание гёза сохраняется, но к нему добавляется характер ферментированного фрукта.",
-        "appearance": "Похоже на Gueuze, но цвет меняется в зависимости от использованного фрукта и с возрастом постепенно тускнеет. Прозрачность часто хорошая, хотя некоторые фрукты не дают пиву полностью осветлиться. При высокой традиционной карбонизации образуется густая, каменистая, обычно стойкая муссовая пена, иногда с оттенком, отражающим цвет добавленного фрукта.",
-        "flavor": "Соединяет вкусовой профиль Gueuze с заметным вкладом добавленного фрукта. Традиционные версии сухие и терпко-кислые, с характером ферментированного фрукта. Современные версии могут иметь различную степень сладости, которая смягчает кислотность. Со временем фруктовые оттенки тоже ослабевают и теряют яркость, поэтому их интенсивность может быть как низкой, так и высокой в зависимости от возраста и исполнения.",
-        "mouthfeel": "Тело от лёгкого до умеренно лёгкого; водянистость недопустима. Кислотность даёт ощущение стягивания от слабого до сильного, но без резкой вяжущести. У некоторых версий возможен лёгкий согревающий тон. Карбонизация варьируется от игристой до почти отсутствующей.",
-        "comments": "Обычно варится по логике Gueuze: фрукт часто добавляют примерно в середине выдержки, чтобы дрожжи и бактерии успели сбродить все фруктовые сахара; реже фрукт добавляют прямо в Lambic. Разновидность фрукта иногда трудно определить на вкус, потому что ферментированный и выдержанный фрукт воспринимается иначе, чем свежий. Фрукт может приносить не только аромат и вкус, но и дополнительную кислотность с танинностью; понимание именно ферментированного фруктового характера важно для корректной оценки стиля.",
-        "history": "Базовая история та же, что у Gueuze, включая современную тенденцию к подслащиванию, только здесь к сахару добавляется ещё и фрукт. Исторически фрукт добавляли блендеры или хозяева питейных заведений, чтобы расширить ассортимент пива в местных кафе.",
-        "characteristic_ingredients": "Та же база, что у Gueuze. Фрукты добавляют в бочки во время брожения и купажирования. Традиционно используют кислую вишню и малину; среди современных фруктов встречаются персики, абрикосы, виноград и другие. Возможны натуральные или искусственные подсластители.",
-        "style_comparison": "Это именно Gueuze с фруктом, а не просто кислое фруктовое пиво; дикий характер должен быть отчётливо заметен.",
-        "entry_instructions": "Нужно обязательно указать вид использованного фрукта. Пивовар также должен заявить уровень карбонизации (низкий, средний, высокий) и уровень сладости (низкий/отсутствует, средний, высокий)."
-      },
-      "vital_statistics": {
-        "og": "1.040 – 1.060",
-        "ibu": "0 – 10",
-        "fg": "1.000 – 1.010",
-        "srm": "3 – 7 (varies w/ fruit)",
-        "abv": "5.0 – 7.0%"
-      },
-      "vital_statistics_text": "OG: 1.040 – 1.060 | IBUs: 0 – 10 | FG: 1.000 – 1.010 | SRM: 3 – 7 (varies w/ fruit) | ABV: 5.0 – 7.0%",
-      "commercial_examples_text": "3 Fonteinen Schaerbeekse Kriek, Cantillon Fou’ Foune, Cantillon Lou Pepe Framboise, Cantillon Vigneronne, Hanssens Oude Kriek, Oude Kriek Boon",
-      "tags_en": [
-        "standard-strength",
-        "pale-color",
-        "wild-fermented",
-        "western-europe",
-        "traditional-style",
-        "wheat-beer-family",
-        "sour",
-        "fruit"
-      ],
-      "source_guideline_page_start": 47,
-      "source_pdf_page_start": 63,
-      "translation_status": "completed",
-      "tags_ru": [
-        "стандартная крепость",
-        "светлый цвет",
-        "дикое брожение",
-        "Западная Европа",
-        "традиционный стиль",
-        "семейство пшеничного пива",
-        "кислый",
-        "фруктовый"
-      ]
-    },
-    {
-      "bjcp_id": "23G",
-      "name_en": "Gose",
-      "name_ru": "Гозе",
-      "category_id": "23",
-      "category_en": "EUROPEAN SOUR ALE",
-      "category_ru": "Европейский кислый эль",
-      "bjcp_heading": "23G. Gose",
-      "description_short_ru": "Терпко-кислое историческое центральноевропейское пшеничное пиво с заметными, но сдержанными солью и кориандром, очень освежающее и сухое в финише.",
-      "sections_en": {
-        "overall_impression": "A tart, lightly-bittered historical central European wheat beer with a distinctive but restrained salt and coriander character. Very refreshing, with a dry finish, high carbonation, and bright flavors.",
-        "aroma": "Light to moderately fruity aroma of pome fruit. Light sourness, slightly sharp. Noticeable coriander, which can have an aromatic lemony quality, and an intensity up to moderate. Light bready, doughy, yeasty character like uncooked sourdough bread. The acidity and coriander can give a bright, lively impression. The salt may be perceived as a very light, clean sea breeze character or just a general freshness, if noticeable at all.",
-        "appearance": "Unfiltered, with a moderate to full haze. Moderate to tall white head with tight bubbles and good retention. Effervescent. Yellow color.",
-        "flavor": "Noticeable sourness, medium-low to medium-high. Moderate bready or doughy malt flavor. Light to moderate fruity character of pome fruit, stone fruit, or lemons. Light to moderate salt character, up to the threshold of taste; the salt should be noticeable (particularly in the initial taste) but not taste overtly salty. Very low bitterness. No hop flavor. Dry, fully-attenuated finish, with acidity not hops balancing the malt. Acidity can be more noticeable in the finish, and enhance the refreshing quality of the beer. The acidity should be balanced, not forward (although historical versions could be very sour). No THP.",
-        "mouthfeel": "High to very high carbonation. Effervescent. Medium-light to medium-full body. Salt may give a slightly tingly, mouthwatering quality and a rounder, thicker mouthfeel. Yeast and wheat can also add a little body, but shouldn’t feel heavy due to the thinning effects of acidity.",
-        "comments": "Historical versions may have been more sour than modern examples due to spontaneous fermentation, and may be blended with syrups as is done with Berliner Weisse, or with caraway liqueur. Modern examples are inoculated with Lacto, and are more balanced and generally don’t need sweetening. Pronounced GOH-zeh.",
-        "history": "Minor style associated with Leipzig but originating in the Middle Ages in the town of Goslar on the Gose River. Documented to have been in Leipzig by 1740. Leipzig was said to have 80 Gose houses in 1900. Production declined significantly after WWII, and ceased entirely in 1966. Modern production was revived in the 1980s in Germany, but the beer was not widely available. Became popular outside of Germany recently as a revival style, and is often used as a base style for fruited sour beers and other Specialty-Type beers.",
-        "characteristic_ingredients": "Pilsner and wheat malt, restrained use of salt and coriander seed, Lacto. The coriander should have a fresh, citrusy (lemon or bitter orange), bright note, and not be vegetal, celery-like, or ham-like. The salt should have a sea salt or fresh salt character, not a metallic, iodine note.",
-        "style_comparison": "Perceived acidity is not as intense as Berliner Weisse or Gueuze. Restrained use of salt, coriander, and Lacto – should not taste overtly salty. Coriander aroma can be similar to a Witbier. Haziness similar to a Weissbier.",
-        "entry_instructions": ""
-      },
-      "sections_ru": {
-        "overall_impression": "Терпко-кислое историческое центральноевропейское пшеничное пиво с характерными, но сдержанными нотами соли и кориандра. Очень освежающее, с сухим финишем, высокой карбонизацией и ярким вкусовым профилем.",
-        "aroma": "Аромат от лёгко до умеренно фруктового, чаще с оттенками семечковых фруктов. Кислотность лёгкая, чуть резкая. Кориандр заметен и может давать ароматный лимонный оттенок интенсивностью до умеренной. Есть лёгкий хлебный, тестяной, дрожжевой характер, напоминающий сырое хлебное тесто на закваске. Кислотность и кориандр создают живое, яркое впечатление. Соль, если вообще ощущается в аромате, проявляется скорее как очень лёгкий свежий морской бриз или общее чувство свежести.",
-        "appearance": "Пиво нефильтрованное, с умеренной или сильной мутностью. Пена белая, от средней до высокой, с мелкими плотными пузырьками и хорошей стойкостью. Пиво игристое. Цвет жёлтый.",
-        "flavor": "Кислотность заметная — от умеренно слабой до умеренно высокой. Солодовый профиль умеренный, хлебный или тестяной. Фруктовость — от лёгкой до умеренной, с оттенками семечковых и косточковых фруктов либо лимона. Соль — от лёгкой до умеренной, примерно до порога вкусовой заметности: она должна ощущаться, особенно в первом глотке, но пиво не должно казаться откровенно солёным. Горечь очень низкая. Хмелевой вкус отсутствует. Финиш сухой, полностью выброженный; баланс солода строится за счёт кислотности, а не хмеля. В послевкусии кислотность может ощущаться сильнее и усиливать освежающий эффект. Кислотность должна быть уравновешенной, а не доминирующей, хотя исторические версии могли быть очень кислыми. THP недопустим.",
-        "mouthfeel": "Карбонизация высокая или очень высокая. Пиво игристое. Тело от умеренно лёгкого до умеренно полного. Соль может давать лёгкое покалывание, слюноотделение и делать текстуру чуть более округлой и плотной. Дрожжи и пшеница тоже могут добавлять немного тела, но пиво не должно казаться тяжёлым, поскольку кислотность его подсушивает и облегчает.",
-        "comments": "Исторические версии из-за спонтанного брожения могли быть кислее современных и, как Berliner Weisse, иногда смешивались с сиропами или с тминным ликёром. Современные примеры обычно закисляют при помощи Lacto; они более сбалансированы и, как правило, не нуждаются в подслащивании. Произносится как «ГО-зе».",
-        "history": "Небольшой по распространённости стиль, обычно ассоциируемый с Лейпцигом, хотя возник он ещё в Средние века в городе Гослар на реке Гозе. Документально известно, что к 1740 году стиль уже был в Лейпциге. Говорят, что в 1900 году в Лейпциге насчитывалось около 80 заведений Gose. После Второй мировой войны производство резко сократилось и к 1966 году полностью прекратилось. В 1980-х стиль возродили в Германии, но долгое время он оставался редкостью. Вне Германии Gose сравнительно недавно стал популярен как возрождённый стиль и теперь часто служит базой для фруктовых кислых сортов и других specialty-стилей.",
-        "characteristic_ingredients": "Пилс- и пшеничный солод, сдержанное использование соли и семян кориандра, Lacto. Кориандр должен давать свежий, яркий цитрусовый характер — лимонный или с оттенком горького апельсина, без овощных, сельдерейных или «ветчинных» нот. Соль должна напоминать морскую или просто свежую соль, без металлических и йодистых оттенков.",
-        "style_comparison": "По воспринимаемой кислотности мягче, чем Berliner Weisse или Gueuze. Соль, кориандр и Lacto должны использоваться сдержанно — пиво не должно казаться откровенно солёным. Аромат кориандра может отчасти напоминать Witbier. Мутность близка к Weissbier.",
-        "entry_instructions": ""
-      },
-      "vital_statistics": {
-        "og": "1.036 – 1.056",
-        "ibu": "5 – 12",
-        "fg": "1.006 – 1.010",
-        "srm": "3 – 4",
-        "abv": "4.2 – 4.8%"
-      },
-      "vital_statistics_text": "OG: 1.036 – 1.056 | IBUs: 5 – 12 | FG: 1.006 – 1.010 | SRM: 3 – 4 | ABV: 4.2 – 4.8%",
-      "commercial_examples_text": "Anderson Valley Gose, Bayerisch Bahnhof Leipziger Gose, Original Ritterguts Gose, Westbrook Gose",
-      "tags_en": [
-        "standard-strength",
-        "pale-color",
-        "top-fermented",
-        "central-europe",
-        "historical-style",
-        "wheat-beer-family",
-        "sour",
-        "spice"
-      ],
-      "source_guideline_page_start": 48,
-      "source_pdf_page_start": 64,
-      "translation_status": "completed",
-      "tags_ru": [
-        "стандартная крепость",
-        "светлый цвет",
-        "верховое брожение",
-        "Центральная Европа",
-        "исторический стиль",
-        "семейство пшеничного пива",
-        "кислый",
-        "пряный"
-      ]
-    },
-    {
-      "bjcp_id": "24A",
-      "name_en": "Witbier",
-      "name_ru": "Витбир",
-      "category_id": "24",
-      "category_en": "BELGIAN ALE",
-      "category_ru": "Бельгийский эль",
-      "bjcp_heading": "24A. Witbier",
-      "description_short_ru": "Светлое, мутное бельгийское пшеничное пиво, где специи подчёркивают дрожжевой характер; лёгкое, сухое и очень освежающее.",
-      "sections_en": {
-        "overall_impression": "A pale, hazy Belgian wheat beer with spices accentuating the yeast character. A delicate, lightly spiced, moderate-strength ale that is a refreshing summer drink with its high carbonation, dry finish, and light hopping.",
-        "aroma": "Moderate bready maltiness, often with light notes of honey or vanilla. Light grainy, spicy wheat aromatics. Moderate perfumy-lemony coriander, often with a complex herbal, spicy, or peppery note in the background. Moderate zesty, citrusy-orangey fruitiness. A low spicy-herbal hop aroma is optional, but typically absent. Spices should blend in with fruity, floral, and sweet aromas and should not be overly strong.",
-        "appearance": "Very pale straw to deep yellow in color. The beer will be very cloudy from starch haze or yeast, which gives it a milky, whitish-yellow shine. Dense, white, moussy head. Head retention should be quite good.",
-        "flavor": "Pleasant bready, grainy malt flavor, often with a honey or vanilla character. Moderate zesty, orange-citrusy fruitiness. Herbal-spicy flavors, which may include lemony coriander and other spices, are common should be subtle and balanced, not overpowering. A spicy-earthy hop flavor can be low to none, and never overshadows the spices. Hop bitterness is low to medium-low, and supports the refreshing flavors of fruit and spice. Refreshingly crisp with a dry finish, and no bitter or harsh aftertaste.",
-        "mouthfeel": "Medium-light to medium body, often having a smoothness and light creaminess. Effervescent character from high carbonation. Refreshing, from carbonation, dryness, and lack of bitterness in finish. No harshness or astringency. Should not be overly dry and thin, nor should it be thick and heavy.",
-        "comments": "Historical versions may have had some lactic sourness but this is absent in fresh modern versions. Spicing has some variety, but should not be overdone. Coriander of certain origin or age might give an inappropriate ham or celery character. The beer tends to be perishable, so younger, fresher, properly-handled examples are most desirable. An impression of sweetness is often due to low bitterness, not residual sugar. Most examples seem to be approximately 5% ABV.",
-        "history": "One of a group of medieval Belgian white beers from the Leuven area, it died out in 1957 and was later revived in 1966 by Pierre Celis at what became Hoegaarden. After Hoegaarden was acquired by Interbrew, the style grew rapidly and inspired many similar products that are traceable to the Celis recreation of the style, not those from past centuries.",
-        "characteristic_ingredients": "Unmalted wheat (30-60%), the remainder low color barley malt. Some versions use up to 5-10% raw oats or other unmalted cereal grains. Traditionally uses coriander seed and dried Curaçao orange peel. Other secret spices are rumored to be used in some versions, as are sweet orange peels. Mild fruity-spicy Belgian ale yeast.",
-        "style_comparison": "Low bitterness level with a balance similar to a Weissbier, but with spice and citrus character coming from additions more so than the yeast.",
-        "entry_instructions": ""
-      },
-      "sections_ru": {
-        "overall_impression": "Светлое, мутное бельгийское пшеничное пиво, где специи подчёркивают дрожжевой характер. Деликатный, слегка пряный эль умеренной крепости, который отлично освежает благодаря высокой карбонизации, сухому финишу и лёгкой охмелённости.",
-        "aroma": "Солодовость умеренная, хлебная, часто с лёгкими нотами мёда или ванили. Пшеница даёт лёгкие зерновые и пряные оттенки. Кориандр — умеренный, парфюмерно-лимонный, нередко с более сложным травянистым, пряным или перечным фоном. Фруктовость умеренная, яркая, с цитрусово-апельсиновым уклоном. Хмелевой аромат, если есть, слабый, пряно-травянистый, но чаще отсутствует. Специи должны быть вплетены в фруктовые, цветочные и сладковатые тона, а не доминировать над ними.",
-        "appearance": "Цвет от очень бледно-соломенного до насыщенно-жёлтого. Пиво заметно мутное из-за крахмальной дымки или дрожжей, что создаёт молочно-белёсое сияние. Пена плотная, белая, муссовая. Стойкость пены должна быть хорошей.",
-        "flavor": "Вкус приятный, хлебно-зерновой, часто с мёдово-ванильным оттенком. Фруктовость умеренная, яркая, с апельсиново-цитрусовым характером. Травянисто-пряные ноты, включая лимонный кориандр и другие специи, обычны, но должны быть тонкими и сбалансированными, не подавляющими. Хмелевой вкус может отсутствовать либо быть слабым, пряно-землистым, но он никогда не должен перекрывать специи. Горечь низкая или умеренно низкая и лишь поддерживает освежающий союз фрукта и специй. Финиш сухой и освежающий, без грубой горечи и жёсткого послевкусия.",
-        "mouthfeel": "Тело от умеренно лёгкого до среднего, нередко с гладкой, слегка сливочной текстурой. Высокая карбонизация даёт игристое ощущение. Освежающий эффект создают газ, сухость и отсутствие заметной горечи в финише. Недопустимы грубость и терпкость. Пиво не должно быть ни излишне сухим и пустым, ни тяжёлым и плотным.",
-        "comments": "Исторические версии могли иметь некоторую молочнокислую кислинку, но в свежих современных образцах её быть не должно. Состав специй допускает вариации, однако их нельзя делать чрезмерными. Кориандр определённого происхождения или возраста способен дать неуместные «ветчинные» или сельдерейные ноты. Стиль довольно деликатен и плохо переносит плохое хранение, поэтому предпочтительны молодые, свежие и корректно обращавшиеся образцы. Ощущение сладости здесь часто связано не с остаточным сахаром, а с низкой горечью. Большинство примеров имеют крепость около 5% ABV.",
-        "history": "Один из средневековых бельгийских «белых» стилей из района Лёвена. Стиль исчез к 1957 году и был возрождён в 1966 году Пьером Селисом на пивоварне, ставшей впоследствии Hoegaarden. После покупки Hoegaarden компанией Interbrew стиль начал быстро расти в популярности и породил множество похожих сортов, восходящих именно к реконструкции Селиса, а не к прямой непрерывной традиции прошлых веков.",
-        "characteristic_ingredients": "Несоложёная пшеница (30–60%), остальное — светлый ячменный солод. В некоторых версиях используют до 5–10% сырого овса или других несоложёных зерновых. Традиционно применяют семена кориандра и сушёную цедру кюрасао-апельсина. По слухам, в отдельных версиях есть и другие «секретные» специи, а также цедра сладкого апельсина. Дрожжи — мягкие бельгийские эльные, фруктово-пряные.",
-        "style_comparison": "Горечь низкая, и баланс в чём-то напоминает Weissbier, но пряный и цитрусовый характер здесь приходит в первую очередь от добавок, а не от работы дрожжей.",
-        "entry_instructions": ""
-      },
-      "vital_statistics": {
-        "og": "1.044 – 1.052",
-        "ibu": "8 – 20",
-        "fg": "1.008 – 1.012",
-        "srm": "2 – 4",
-        "abv": "4.5 – 5.5%"
-      },
-      "vital_statistics_text": "OG: 1.044 – 1.052 | IBUs: 8 – 20 | FG: 1.008 – 1.012 | SRM: 2 – 4 | ABV: 4.5 – 5.5%",
-      "commercial_examples_text": "Allagash White, Blanche de Bruxelles, Celis White, Hoegaarden White, Ommegang Witte, St. Bernardus Wit",
-      "tags_en": [
-        "standard-strength",
-        "pale-color",
-        "top-fermented",
-        "western-europe",
-        "traditional-style",
-        "wheat-beer-family",
-        "spice"
-      ],
-      "source_guideline_page_start": 49,
-      "source_pdf_page_start": 65,
-      "translation_status": "completed",
-      "tags_ru": [
-        "стандартная крепость",
-        "светлый цвет",
-        "верховое брожение",
-        "Западная Европа",
-        "традиционный стиль",
-        "семейство пшеничного пива",
-        "пряный"
-      ]
-    },
-    {
-      "bjcp_id": "24B",
-      "name_en": "Belgian Pale Ale",
-      "name_ru": "Бельгийский светлый эль",
-      "category_id": "24",
-      "category_en": "BELGIAN ALE",
-      "category_ru": "Бельгийский эль",
-      "bjcp_heading": "24B. Belgian Pale Ale",
-      "description_short_ru": "Бельгийский эль средней крепости медно-янтарного цвета с умеренной горечью, мягким солодовым профилем, фруктовостью и аккуратной хлебно-тостовой глубиной без агрессивного дрожжевого характера.",
-      "sections_en": {
-        "overall_impression": "A top-fermented, all malt, average strength Belgian ale that is moderately bitter, not dry-hopped, and without strong flavors. The copper-colored beer lacks the aggressive yeast character or sourness of many Belgian beers, but has a well-balanced, malty, fruity, and often bready and toasty profile.",
-        "aroma": "Moderate bready malt aroma, which can include toasty, biscuity, or nutty notes, possibly with a touch of light caramel or honey. Moderate to moderately high fruitiness complements the malt, and is suggestive of pear, orange, apple, or lemon, and sometimes of darker stone fruit like plums. Low to moderate spicy, herbal, or floral hop character. Low peppery, spicy phenols optional. The hop character is lower in balance than the malt and fruitiness.",
-        "appearance": "Amber to copper in color. Clarity is very good. Creamy, rocky, white head. Well carbonated.",
-        "flavor": "Has an initial soft, smooth, moderately malty flavor with a variable profile of toasty, biscuity, nutty, light caramel, or honey notes. Moderate to moderately high fruitiness, with a pear, orange, apple, or lemon character. Medium-low to low spicy, herbal, or floral hop character. Medium-high to medium-low bitterness, enhanced by optional low to very low peppery phenols. Dry to balanced finish, with hops becoming more pronounced in the aftertaste of those with a drier finish. Fairly well balanced overall, with no single component being high in intensity; malt and fruitiness are more forward initially with a supportive bitterness and drying character coming on late.",
-        "mouthfeel": "Medium to medium-light body. Smooth palate. Alcohol level is restrained, and any warming character should be low if present. Medium to medium-high carbonation.",
-        "comments": "Most commonly found in the Flemish provinces of Antwerp, Brabant, Hainaut, and East Flanders. A Spéciale Belge Ale (Belgian Special Ale) in Belgium.",
-        "history": "Created after a competition in 1904 to create a regional specialty beer to compete with imported British ales and continental lagers. De Koninck of Antwerp is the best-known modern example, making the beer since 1913.",
-        "characteristic_ingredients": "Variable grist with pale, character, and caramel malts. No adjuncts. English or continental hops. Fruity yeast with low phenols.",
-        "style_comparison": "Fairly similar to pale ales from England (11C Strong Bitter), typically with a slightly different yeast character and a more varied malt profile. Less yeast character than many other Belgian beers, though.",
-        "entry_instructions": ""
-      },
-      "sections_ru": {
-        "overall_impression": "Бельгийский полностью солодовый эль средней крепости, умеренно горький, без dry hop и без экстремально ярких вкусов. Медно-янтарное пиво, лишённое агрессивного дрожжевого характера или кислинки, свойственных многим бельгийским стилям, зато хорошо сбалансированное — солодовое, фруктовое и часто с хлебно-тостовыми оттенками.",
-        "aroma": "Солодовый аромат умеренный, хлебный; возможны тостовые, бисквитные или ореховые ноты, иногда с лёгким намёком на карамель или мёд. Фруктовость — от умеренной до умеренно высокой — поддерживает солод и напоминает грушу, апельсин, яблоко, лимон, а иногда и более тёмные косточковые фрукты вроде сливы. Хмелевой характер слабый или умеренный, пряный, травянистый либо цветочный. Допустимы лёгкие перечные фенолы. В балансе хмель явно ниже солода и фруктовости.",
-        "appearance": "Цвет от янтарного до медного. Прозрачность очень хорошая. Пена белая, кремовая, каменистая. Карбонизация хорошая.",
-        "flavor": "Во вкусе сначала проявляется мягкая, гладкая, умеренно солодовая основа с вариативными оттенками тоста, бисквита, орехов, лёгкой карамели или мёда. Фруктовость — от умеренной до умеренно высокой, с тонами груши, апельсина, яблока или лимона. Хмелевой характер слабый или умеренно слабый, пряный, травянистый или цветочный. Горечь варьируется от умеренно высокой до умеренно низкой и может дополнительно подчёркиваться лёгкими либо очень лёгкими перечными фенолами. Финиш — от сухого до сбалансированного; в более сухих версиях хмель становится заметнее уже в послевкусии. В целом пиво хорошо уравновешено, без единственного доминирующего компонента: в начале впереди солод и фруктовость, а поддерживающая горечь и подсушивающий эффект проявляются ближе к концу.",
-        "mouthfeel": "Тело от среднего до умеренно лёгкого. Палитра ощущений гладкая. Алкоголь сдержанный; если согревающий тон есть, он должен быть слабым. Карбонизация — от средней до умеренно высокой.",
-        "comments": "Чаще всего стиль встречается во фламандских провинциях Антверпен, Брабант, Эно и Восточная Фландрия. В самой Бельгии его относят к Spéciale Belge Ale — бельгийскому специальному элю.",
-        "history": "Стиль появился после конкурса 1904 года, целью которого было создать региональное специальное пиво, способное соперничать с импортными британскими элями и континентальными лагерами. Самый известный современный пример — De Koninck из Антверпена, который варит это пиво с 1913 года.",
-        "characteristic_ingredients": "Засыпь варьируется, но обычно включает светлый базовый солод, character malts и карамельные солода. Без адъюнктов. Хмель английский или континентальный. Дрожжи фруктовые, с низким фенольным профилем.",
-        "style_comparison": "Во многом похож на английские pale ale, прежде всего на 11C Strong Bitter, но отличается несколько иным дрожжевым характером и более разнообразной солодовой палитрой. При этом дрожжевой профиль всё же заметно спокойнее, чем у многих других бельгийских стилей.",
-        "entry_instructions": ""
-      },
-      "vital_statistics": {
-        "og": "1.048 – 1.054",
-        "ibu": "20 – 30",
-        "fg": "1.010 – 1.014",
-        "srm": "8 – 14",
-        "abv": "4.8 – 5.5%"
-      },
-      "vital_statistics_text": "OG: 1.048 – 1.054 | IBUs: 20 – 30 | FG: 1.010 – 1.014 | SRM: 8 – 14 | ABV: 4.8 – 5.5%",
-      "commercial_examples_text": "De Koninck Bolleke, De Ryck Special, Palm, Palm Dobble",
-      "tags_en": [
-        "standard-strength",
-        "amber-color",
-        "top-fermented",
-        "western-europe",
-        "traditional-style",
-        "pale-ale-family",
-        "balanced"
-      ],
-      "source_guideline_page_start": 49,
-      "source_pdf_page_start": 65,
-      "translation_status": "completed",
-      "tags_ru": [
-        "стандартная крепость",
-        "янтарный цвет",
-        "верховое брожение",
-        "Западная Европа",
-        "традиционный стиль",
-        "семейство pale ale",
-        "сбалансированный"
-      ]
-    },
-    {
-      "bjcp_id": "24C",
-      "name_en": "Bière de Garde",
-      "name_ru": "Бьер де гард",
-      "category_id": "24",
-      "category_en": "BELGIAN ALE",
-      "category_ru": "Бельгийский эль",
-      "bjcp_heading": "24C. Bière de Garde",
-      "description_short_ru": "Семейство гладких, довольно крепких, солодовых и лагерированных французских элей, где палитра солода зависит от цвета — blond, amber или brown — но все версии остаются сухими и чистыми.",
-      "sections_en": {
-        "overall_impression": "A family of smooth, fairly strong, malty, lagered artisanal French beer with a range of malt flavors appropriate for the blond, amber, or brown color. All are malty yet dry, with clean flavors. Darker versions have more malt character, while paler versions can have more hops while still remaining malt-focused beers.",
-        "aroma": "Prominent malty richness, often with a complex, light-to-moderate intensity, toasty and bready character. Low to moderate esters. Low spicy, peppery, or herbal hops optional. Generally quite clean, although stronger versions may have a light, spicy alcohol note as it warms. Paler versions are still malty but lack richer, deeper aromatics and may have a bit more hops.",
-        "appearance": "Blond, amber, and brown variations exist, with the color varying accordingly: golden-blonde to reddish-bronze to chestnut brown. Clarity is brilliant to fair, but some haze is allowable. Well-formed head, generally white to off-white (varying with beer color), average persistence.",
-        "flavor": "Medium to high malty richness, often with a toasty, biscuity, toffee, or light caramel character. Low to moderate esters and alcohol flavors. Medium-low hop bitterness, giving a malty balance to the palate and aftertaste. Medium-dry to dry finish, not sweet, cloying, or heavy. Low spicy, peppery, or herbal hop flavor optional. Malt flavor, depth, richness, intensity, and complexity increases with beer color. Darker versions will have more of an initial rich malty impression than paler versions but should not seem roasted. Paler versions can have slightly greater hop flavor.",
-        "mouthfeel": "Medium to medium-light body, often with a smooth, creamy-silky character. Moderate to high carbonation. Moderate alcohol warming, but should never be hot.",
-        "comments": "Cellar, musty, moldy, or rustic character often mentioned in literature are signs of mishandled imports, not fresh, authentic products. Age and oxidation can also increase fruitiness and caramel flavors, but increase harshness. While caramel and fruit can be part of the style, do not confuse the oxidation character for the proper base beer.",
-        "history": "Name roughly means beer for keeping. A traditional farmhouse artisanal ale from the area around Lille in Northern France, historically brewed in early spring and kept in cold cellars for consumption in warmer weather. Although documented to exist in the 1800s, Jenlain is the prototypical modern amber lager version first bottled in the 1940s.",
-        "characteristic_ingredients": "Base malts vary by beer color, but usually include pale, Vienna, and Munich types. Crystal-type malts of varying color. Sugar adjuncts may be used. Lager or ale yeast fermented at cool ale temperatures, followed by long cold conditioning. Continental hops.",
-        "style_comparison": "Calling this a farmhouse beer invites comparisons to Saison, which has a completely different balance – Bière de Garde is malty and smooth, while Saison is hoppy and bitter. Actually has more of a similarity in malt profile to a Bock.",
-        "entry_instructions": "Entrant must specify blond, amber, or brown Bière de Garde. If no color is specified, the judge should attempt to judge based on initial observation, expecting a malt flavor and balance that matches the color."
-      },
-      "sections_ru": {
-        "overall_impression": "Семейство гладких, довольно крепких, солодовых и лагерированных французских крафтово-фермерских сортов с палитрой солодовых оттенков, соответствующей цветовой версии — blond, amber или brown. Все варианты солодовые, но при этом сухие и чистые по профилю. Более тёмные версии дают больше солодовой глубины, а более светлые могут быть немного хмелевее, хотя акцент всё равно остаётся на солоде.",
-        "aroma": "Солодовая насыщенность заметная, часто сложная, с лёгкими или умеренными тостовыми и хлебными оттенками. Эфиры — от слабых до умеренных. Хмель, если присутствует, слабый: пряный, перечный или травянистый. Профиль в целом довольно чистый, хотя у более крепких версий при согревании может появляться лёгкий пряный алкогольный тон. Светлые версии тоже остаются солодовыми, но им не хватает той глубокой насыщенности, что есть у более тёмных образцов, и они могут иметь чуть более заметный хмель.",
-        "appearance": "Существуют blond, amber и brown варианты, соответственно цвет варьируется от золотисто-светлого через красновато-бронзовый до каштаново-коричневого. Прозрачность — от блестящей до просто хорошей, хотя лёгкая дымка допустима. Пена сформированная, обычно от белой до кремовой, в зависимости от цвета пива, средней стойкости.",
-        "flavor": "Солодовая насыщенность — от средней до высокой, часто с оттенками тоста, бисквита, тоффи или лёгкой карамели. Эфиры и алкогольные тона — от слабых до умеренных. Горечь умеренно низкая и поддерживает солодовый баланс как во вкусе, так и в послевкусии. Финиш от умеренно сухого до сухого, без приторности, тяжести и липкости. Хмелевой вкус, если есть, слабый: пряный, перечный или травянистый. По мере потемнения версии растут глубина, насыщенность, интенсивность и сложность солодового профиля. Тёмные варианты производят более богатое солодовое первое впечатление, но не должны казаться обжаренными. Светлые версии могут иметь чуть более заметный вкус хмеля.",
-        "mouthfeel": "Тело от среднего до умеренно лёгкого, часто с гладкой, шелковисто-сливочной текстурой. Карбонизация умеренная или умеренно высокая. Алкогольное тепло умеренное, но никогда не должно быть жгучим.",
-        "comments": "Погребные, затхлые, плесневые или излишне «rustic» ноты, о которых иногда пишут в литературе, чаще говорят о плохо обращавшемся импорте, а не о свежем и аутентичном пиве. Возраст и окисление могут усиливать фруктовые и карамельные оттенки, но одновременно добавляют грубость. Хотя карамель и фруктовость допустимы в самом стиле, не стоит принимать оксидативный характер за норму.",
-        "history": "Название примерно означает «пиво для хранения». Это традиционный фермерский ремесленный эль из окрестностей Лилля на севере Франции, который исторически варили ранней весной и выдерживали в холодных погребах для употребления в тёплое время года. Хотя стиль документально известен с XIX века, прототипом современной янтарной версии считается Jenlain, впервые разлитый в бутылки в 1940-х.",
-        "characteristic_ingredients": "Базовые солода зависят от цвета пива, но обычно включают светлый, Vienna и Munich. Используются и карамельные солода разных оттенков. Возможны сахарные адъюнкты. Дрожжи лагерные или эльные, но брожение часто ведут при прохладных эльных температурах, после чего следует долгая холодная выдержка. Хмель — континентальный.",
-        "style_comparison": "Когда стиль называют farmhouse beer, его часто начинают сравнивать с Saison, но баланс у них принципиально разный: Bière de Garde солодовый и гладкий, тогда как Saison хмелевой и горький. По солодовому профилю он на самом деле ближе к Bock.",
-        "entry_instructions": "Участник должен указать, какая именно версия заявляется: blond, amber или brown Bière de Garde. Если цвет не указан, судья должен опираться на первоначальное визуальное впечатление и ожидать солодовый профиль и баланс, соответствующие наблюдаемому цвету."
-      },
-      "vital_statistics": {
-        "og": "1.060 – 1.080",
-        "ibu": "18 – 28",
-        "fg": "1.008 – 1.016",
-        "srm": "6 – 19",
-        "abv": "6.0 – 8.5%"
-      },
-      "vital_statistics_text": "OG: 1.060 – 1.080 | IBUs: 18 – 28 | FG: 1.008 – 1.016 | SRM: 6 – 19 | ABV: 6.0 – 8.5%",
-      "commercial_examples_text": "Ch’Ti Blonde, Jenlain Ambrée, La Choulette Brune, Russian River Perdition, Saint Sylvestre 3 Monts Blonde, Two Brothers Domaine Dupage",
-      "tags_en": [
-        "high-strength",
-        "pale-color",
-        "amber-color",
-        "any-fermentation",
-        "lagered",
-        "western-europe",
-        "traditional-style",
-        "amber-ale-family",
-        "malty"
-      ],
-      "source_guideline_page_start": 50,
-      "source_pdf_page_start": 66,
-      "translation_status": "completed",
-      "tags_ru": [
-        "высокая крепость",
-        "светлый цвет",
-        "янтарный цвет",
-        "любое брожение",
-        "лагерирование",
-        "Западная Европа",
-        "традиционный стиль",
-        "семейство amber ale",
-        "солодовый"
-      ]
-    }
+  "translated_categories": [
+   "23",
+   "24"
+  ],
+  "next_recommended_batch": [
+   "25A",
+   "25B",
+   "25C",
+   "26A",
+   "26B",
+   "26C",
+   "26D"
   ]
+ },
+ "categories": [
+  {
+   "category_id": "23",
+   "category_en": "EUROPEAN SOUR ALE",
+   "category_ru": "Европейский кислый эль",
+   "overview_ru": "Категория объединяет традиционные кислые стили Европы, которые продолжают варить и сегодня. Многие из них, хотя и не все, содержат пшеницу. Обычно у них низкая горечь, а баланс задаёт именно кислотность, а не хмель. Некоторые версии могут быть подслащены или ароматизированы — либо на пивоварне, либо уже при подаче."
+  },
+  {
+   "category_id": "24",
+   "category_en": "BELGIAN ALE",
+   "category_ru": "Бельгийский эль",
+   "overview_ru": "В эту категорию входят более солодовые или сбалансированные бельгийские и французские эли с более выраженным вкусом."
+  }
+ ],
+ "styles": [
+  {
+   "bjcp_id": "23C",
+   "name_en": "Oud Bruin",
+   "name_ru": "Оуд браун",
+   "category_id": "23",
+   "category_en": "EUROPEAN SOUR ALE",
+   "category_ru": "Европейский кислый эль",
+   "bjcp_heading": "23C. Oud Bruin",
+   "description_short_ru": "Солодовый, фруктовый и выдержанный бельгийский коричневый эль с умеренной кислотностью, карамельно-шоколадным солодовым профилем и возможной заметной крепостью.",
+   "sections_en": {
+    "overall_impression": "A malty, fruity, aged, somewhat sour Belgian-style brown ale with a caramel-chocolate malt flavor, and often substantial alcohol.",
+    "aroma": "Richly malty with fruity esters and an aged sourness. Medium to medium-high esters commonly reminiscent of raisins, plums, figs, dates, oranges, black cherries, or prunes. Medium-low to medium-high malt with caramel, toffee, treacle, or chocolate character. Low spicy-peppery phenols optional. A low sour aroma may be present, and can modestly increase with age but should not grow to a strongly acetic, vinegary character. Hop aroma absent. Aged examples can show a lightly nutty, sherry-like oxidation character.",
+    "appearance": "Dark reddish-brown to brown in color. Good clarity. Average to good head retention. Ivory to light tan head color.",
+    "flavor": "Malty with fruity complexity and typically some dark caramel or burnt sugar flavor. Medium-low to medium-high malt, same descriptors as aroma. Medium to medium-high fruitiness, same descriptors as aroma. Low spicy-peppery phenols optional. A slight sourness often becomes more pronounced in well-aged examples, along with some sherry-like character, producing a “sweet-and-sour” profile and aftertaste. The sourness should not grow to a strongly acetic, vinegary character. Hop flavor absent. Restrained hop bitterness. Balance is malty, but with fruitiness and sourness present. Blending and sweetening may produce a range of finishes, and balances.",
+    "mouthfeel": "Medium to medium-full body. Low to moderate carbonation. No astringency. Stronger versions can be noticeably warming.",
+    "comments": "Long aging and blending of young and aged beer may occur, adding smoothness and complexity and balancing any harsh, sour character. Traditionally, this style was designed to lay down so examples with a moderate aged character are considered superior to younger examples. Fruited versions should be entered as a 29A Fruit Beer.",
+    "history": "An indigenous beer of East Flanders, typified by the products of the Liefman brewery with roots back to the 1600s. Belgian brewers consider Flanders Red and Oud Bruin to be of the same style family, but the distinction was first made when Michael Jackson first defined beer styles, since the flavor profiles are distinctly different. Many modern examples are influenced by the popularity of Liefmans Goudenband. Unrelated to the dark, sweet Dutch lager of the same name.",
+    "characteristic_ingredients": "Pils malt, dark crystal malts, maize, small amounts of color malt. Low alpha acid continental hops. Sacch and Lacto. Aged. Water with carbonates and magnesium typical of its home region.",
+    "style_comparison": "A deeper malt character with more caramel, toffee, and chocolate flavors and darker color distinguishes these beers from Flanders Red Ale. The Oud Bruin is less acetic and maltier than a Flanders Red, and the fruity flavors are more malt-oriented. In modern times, Oud Bruin also tends to be higher in alcohol than is typically seen in Flanders Red Ales. Differs from Lambic in that they are not spontaneously fermented, and don’t contain wheat.",
+    "entry_instructions": ""
+   },
+   "sections_ru": {
+    "overall_impression": "Солодовый, фруктовый, выдержанный бельгийский коричневый эль с умеренной кислотностью, карамельно-шоколадным солодовым профилем и нередко довольно ощутимой крепостью.",
+    "aroma": "Богатый солодовый аромат сочетается с фруктовыми эфирами и выдержанной кислинкой. Эфиры — от средних до умеренно высоких; часто напоминают изюм, сливу, инжир, финики, апельсин, чёрную вишню или чернослив. Солодовый тон — от умеренно слабого до умеренно высокого, с карамелью, ирисом, патокой или шоколадом. Лёгкие перечные фенолы допустимы. Может присутствовать слабая кислинка в аромате, которая с возрастом способна немного усиливаться, но не должна превращаться в выраженно уксусный профиль. Хмелевой аромат отсутствует. У выдержанных образцов возможен лёгкий ореховый, чуть хересный оксидативный штрих.",
+    "appearance": "Цвет от тёмного красновато-коричневого до коричневого. Прозрачность хорошая. Пена держится от средне до хорошо; её цвет — от слоновой кости до светло-бежевого.",
+    "flavor": "Вкус солодовый, со сложной фруктовостью и обычно с оттенками тёмной карамели или жжёного сахара. Солодовость — от умеренно слабой до умеренно высокой, с теми же дескрипторами, что и в аромате. Фруктовость — от средней до умеренно высокой, также перекликается с ароматом. Лёгкие перечные фенолы допустимы. Небольшая кислотность у хорошо выдержанных версий нередко становится заметнее; вместе с лёгким хересным тоном она формирует характерный «сладко-кислый» профиль и послевкусие. Кислотность не должна переходить в явную уксусность. Хмелевой вкус отсутствует. Горечь сдержанная. Баланс в целом солодовый, но фруктовость и кислинка обязательно присутствуют. Смешивание партий и подслащивание могут давать заметно разные финиши и варианты баланса.",
+    "mouthfeel": "Тело от среднего до умеренно полного. Карбонизация — от низкой до умеренной. Терпкость отсутствует. Более крепкие версии могут ощутимо согревать.",
+    "comments": "Долгая выдержка и купажирование молодого и зрелого пива возможны и обычно добавляют гладкости и сложности, одновременно смягчая резкую кислотность. Исторически стиль задумывался как пиво для выдержки, поэтому образцы с умеренным зрелым характером обычно ценятся выше совсем молодых. Фруктовые версии следует относить к 29A Fruit Beer.",
+    "history": "Местный стиль Восточной Фландрии, классическим представителем которого считается пиво пивоварни Liefmans, чьи корни уходят в XVII век. Бельгийские пивовары рассматривают Flanders Red и Oud Bruin как родственные стили, но их развели по отдельным категориям после того, как Майкл Джексон впервые описал стили пива именно так — из-за заметной разницы во вкусовом профиле. Многие современные версии находятся под влиянием популярности Liefmans Goudenband. Со сладким тёмным голландским лагером с тем же названием этот стиль не связан.",
+    "characteristic_ingredients": "Пилс-солод, тёмные карамельные солода, кукуруза, небольшое количество красящего солода. Низкоальфа-континентальный хмель. Sacch и Lacto. Выдержка обязательна для типичного характера. Вода домашнего региона обычно богата карбонатами и магнием.",
+    "style_comparison": "От Flanders Red Ale этот стиль отличается более глубокой солодовой основой, более выраженными карамельными, ирисовыми и шоколадными оттенками и более тёмным цветом. В сравнении с Flanders Red он менее уксусный и более солодовый, а его фруктовость сильнее завязана на солодовый профиль. В наше время Oud Bruin часто бывает и крепче, чем типичный Flanders Red Ale. От ламбика отличается тем, что не является спонтанно ферментированным и не содержит пшеницу.",
+    "entry_instructions": ""
+   },
+   "vital_statistics": {
+    "og": "1.040 – 1.074",
+    "ibu": "20 – 25",
+    "fg": "1.008 – 1.012",
+    "srm": "17 – 22",
+    "abv": "4.0 – 8.0%"
+   },
+   "vital_statistics_text": "OG: 1.040 – 1.074 | IBUs: 20 – 25 | FG: 1.008 – 1.012 | SRM: 17 – 22 | ABV: 4.0 – 8.0%",
+   "commercial_examples_text": "Ichtegem Oud Bruin, Liefmans Goudenband, Liefmans Oud Bruin, Petrus Roodbruin, pFriem Oud Bruin, VanderGhinste Roodbruin",
+   "tags_en": [
+    "standard-strength",
+    "dark-color",
+    "top-fermented",
+    "western-europe",
+    "traditional-style",
+    "malty",
+    "sour"
+   ],
+   "source_guideline_page_start": 46,
+   "source_pdf_page_start": 62,
+   "translation_status": "completed",
+   "tags_ru": [
+    "стандартная крепость",
+    "тёмный цвет",
+    "верховое брожение",
+    "Западная Европа",
+    "традиционный стиль",
+    "солодовый",
+    "кислый"
+   ]
+  },
+  {
+   "bjcp_id": "23D",
+   "name_en": "Lambic",
+   "name_ru": "Ламбик",
+   "category_id": "23",
+   "category_en": "EUROPEAN SOUR ALE",
+   "category_ru": "Европейский кислый эль",
+   "bjcp_heading": "23D. Lambic",
+   "description_short_ru": "Довольно кислое бельгийское пшеничное пиво дикого брожения, нередко с умеренной «фанковой» сложностью, где кислотность заменяет хмелевую горечь в балансе.",
+   "sections_en": {
+    "overall_impression": "A fairly sour, often moderately funky, wild Belgian wheat beer with sourness taking the place of hop bitterness in the balance. Traditionally served uncarbonated as a café drink.",
+    "aroma": "Young versions can be quite sour and fruity, but can develop barnyard, earthy, goaty, hay, horsey, or horse blanket funkiness with age. The fruit character can take on a light citrus fruit, citrus rind, pome fruit, or rhubarb quality, getting more complex with age. Malt can have a light bready, grainy, honey, or wheat-like quality, if noticeable. Should not have enteric, smoky, cigar-like, or cheesy faults. No hops.",
+    "appearance": "Pale yellow to deep golden in color; age tends to darken the beer. Clarity is hazy to good. Younger versions are often cloudy, while older ones are generally clear. White colored head generally has poor retention.",
+    "flavor": "Young versions often have a strong lactic sourness with fruity flavors (same descriptors as aroma), while aged versions are more balanced and complex. Funky notes can develop over time, same descriptors as aroma. Low bready, grainy malt. Bitterness generally below sensory threshold; sourness provides the balance. No hop flavor. Dry finish, increasing with age. Should not have enteric, smoky, cigar-like, or cheesy faults.",
+    "mouthfeel": "Light to medium-light body; should not be watery. Has a medium to high tart, puckering quality without being sharply astringent. Traditional versions are virtually to completely uncarbonated, but bottled examples can pick up moderate carbonation with age.",
+    "comments": "A single-batch, unblended beer, reflecting the house character of the brewery. Generally served young (6 months) from the cask. Younger versions tend to be one-dimensionally sour since a complex Brett character takes a year or more to develop. A noticeable vinegary or cidery character is considered a fault by Belgian brewers. Typically bottled only when completely fermented. Lambic sweetened with raw sugar at service time is known as Faro.",
+    "history": "Spontaneously-fermented ‘wild’ ales from the area in and around Brussels (also known as the Senne Valley and the Pajottenland) stem from a farmhouse brewing tradition several centuries old.",
+    "characteristic_ingredients": "Pilsner malt, unmalted wheat. Aged hops (3+ years) used more as a preservative than for bitterness. Spontaneously fermented with naturally occurring yeast and bacteria in well-used, neutral oak barrels.",
+    "style_comparison": "Often has a simpler sourness and less complexity than a Gueuze, but more variability from batch to batch. Traditionally served uncarbonated from pitchers, while Gueuze is bottled and very highly carbonated.",
+    "entry_instructions": ""
+   },
+   "sections_ru": {
+    "overall_impression": "Довольно кислое бельгийское пшеничное пиво дикого брожения, часто с умеренной фанковой сложностью. Баланс строится не на хмелевой горечи, а на кислотности. Традиционно подаётся негазированным в кафе.",
+    "aroma": "Молодые версии могут быть весьма кислыми и фруктовыми, а с возрастом развивают «дикий» профиль с оттенками скотного двора, земли, козьей шерсти, сена, лошадиных и «horse blanket» тонов. Фруктовый характер может напоминать лёгкий цитрус, цитрусовую цедру, семечковые фрукты или ревень; с возрастом он становится сложнее. Если солод заметен, он даёт лёгкие хлебные, зерновые, медовые или пшеничные оттенки. Недопустимы фекальные, дымные, сигарные или сырные дефекты. Хмель не ощущается.",
+    "appearance": "Цвет от бледно-жёлтого до насыщенно золотого; с возрастом пиво обычно темнеет. Прозрачность — от мутноватой до хорошей. Молодые версии часто заметно мутные, старые обычно более прозрачные. Белая пена, как правило, держится плохо.",
+    "flavor": "Молодые версии часто демонстрируют сильную молочнокислую кислотность и фруктовость с теми же дескрипторами, что и в аромате. Выдержанные версии становятся более сбалансированными и сложными. Фанковые ноты развиваются со временем; их описание совпадает с ароматом. Солодовость низкая, хлебно-зерновая. Горечь обычно ниже порога восприятия; баланс обеспечивает именно кислотность. Хмелевой вкус отсутствует. Финиш сухой и с возрастом становится ещё суше. Недопустимы фекальные, дымные, сигарные или сырные дефекты.",
+    "mouthfeel": "Тело от лёгкого до умеренно лёгкого; водянистость недопустима. Кислотность даёт ощущение от умеренного до сильного стягивания, но без резкой вяжущести. Традиционные версии почти совсем негазированные, хотя бутылочные образцы с возрастом могут набрать умеренную карбонизацию.",
+    "comments": "Это пиво одной варки, без купажирования, поэтому в нём особенно заметен фирменный характер конкретной пивоварни. Обычно его подают молодым, примерно в шестимесячном возрасте, прямо из бочки. Молодые версии нередко кажутся однопланово кислыми, потому что сложный Brett-характер развивается только через год и более. Заметная уксусность или сидровый тон бельгийские пивовары считают дефектом. В бутылки ламбик обычно разливают только после полного завершения брожения. Ламбик, подслащённый при подаче сырым сахаром, называется Faro.",
+    "history": "Спонтанно ферментированные «дикие» эли из района Брюсселя и его окрестностей — долины Сенны и Пайоттенланда — восходят к фермерской пивоваренной традиции возрастом в несколько столетий.",
+    "characteristic_ingredients": "Пилс-солод и несоложёная пшеница. Выдержанный хмель возрастом от трёх лет используют скорее как консервирующий компонент, чем как источник горечи. Брожение происходит спонтанно, за счёт естественной микрофлоры, в хорошо использованных нейтральных дубовых бочках.",
+    "style_comparison": "Обычно обладает более простой кислотностью и меньшей сложностью, чем Gueuze, но при этом сильнее варьируется от партии к партии. Традиционно ламбик подают почти без газа из кувшинов, тогда как Gueuze бутилируют и насыщают очень высокой карбонизацией.",
+    "entry_instructions": ""
+   },
+   "vital_statistics": {
+    "og": "1.040 – 1.054",
+    "ibu": "0 – 10",
+    "fg": "1.001 – 1.010",
+    "srm": "3 – 6",
+    "abv": "5.0 – 6.5%"
+   },
+   "vital_statistics_text": "OG: 1.040 – 1.054 | IBUs: 0 – 10 | FG: 1.001 – 1.010 | SRM: 3 – 6 | ABV: 5.0 – 6.5%",
+   "commercial_examples_text": "Cantillon Grand Cru Bruocsella. In the Brussels area, many specialty cafés have draught lambic from Boon, De Cam, Cantillon, Drie Fonteinen, Lindemans, Timmermans, Girardin and others.",
+   "tags_en": [
+    "standard-strength",
+    "pale-color",
+    "wild-fermented",
+    "western-europe",
+    "traditional-style",
+    "wheat-beer-family",
+    "sour"
+   ],
+   "source_guideline_page_start": 46,
+   "source_pdf_page_start": 62,
+   "translation_status": "completed",
+   "tags_ru": [
+    "стандартная крепость",
+    "светлый цвет",
+    "дикое брожение",
+    "Западная Европа",
+    "традиционный стиль",
+    "семейство пшеничного пива",
+    "кислый"
+   ]
+  },
+  {
+   "bjcp_id": "23E",
+   "name_en": "Gueuze",
+   "name_ru": "Гёз",
+   "category_id": "23",
+   "category_en": "EUROPEAN SOUR ALE",
+   "category_ru": "Европейский кислый эль",
+   "bjcp_heading": "23E. Gueuze",
+   "description_short_ru": "Очень освежающее, сильно газированное бельгийское пшеничное пиво дикого брожения с приятной кислотностью, фанковой сложностью и фруктовыми нотами.",
+   "sections_en": {
+    "overall_impression": "A very refreshing, highly carbonated, pleasantly sour but balanced wild Belgian wheat beer. The wild beer character can be complex and varied, combining sour, funky, and fruity flavors.",
+    "aroma": "Moderately sour with complex but balanced funkiness accented by fruity notes. The funkiness can be moderate to strong, and can be described as barnyard, leather, earthy, goaty, hay, horsey, or horse blanket. Fruitiness is light to moderate, with a citrus fruit, citrus rind, pome fruit, or rhubarb quality. Malt is supportive, and can be lightly bready, grainy, honey, or wheat-like, if noticeable. Should not have enteric, smoky, cigar-like, or cheesy faults. No hops. Light oak acceptable. Complexity of aroma is valued more than intensity, but a balanced sour presentation is desirable.",
+    "appearance": "Golden color, with excellent clarity and a thick, rocky, mousse-like, white head that seems to last forever. Effervescent.",
+    "flavor": "Sour and funky on the palate, with a similar character as the aroma (same descriptors and intensities apply for funk and fruit). Low bready, grainy malt. Bitterness low to none; sourness provides most of the balance. No hop flavor. Crisp, dry finish, with a tart and funky aftertaste. Light oak, vanilla, and honey are acceptable. Should not have enteric, smoky, cigar-like, or cheesy faults. The beer should not be one dimensionally sour; a balanced, moderately sour presentation is classic, with the funky and fruity notes providing complexity. May be aged.",
+    "mouthfeel": "Light to medium-light body; should not be watery. Has a low to high tart, puckering quality without being sharply astringent. Some versions have a very light warming character. Highly carbonated.",
+    "comments": "Blending young and aged lambic creates a more complex product, and often reflects the personal taste of the blender. A noticeable vinegary or cidery character is considered a fault by Belgian brewers. A good Gueuze is not the most pungent, but possesses a full and tantalizing bouquet, a sharp aroma, and a soft, velvety texture. Lambic is served uncarbonated, while Gueuze is served sparkling. Products marked oude or vieille (“old”) are considered most traditional.",
+    "history": "Same basic history as Lambic, but involves blending, which may be performed outside the brewery. Some of the best examples are produced by blenders, who ferment, age, blend, and package the final product. Some modern producers are sweetening their products post-fermentation to make them more palatable to a wider audience. These guidelines describe the traditional dry product.",
+    "characteristic_ingredients": "Same as Lambic, except that one-, two-, and three-year old Lambics are blended, then cellared.",
+    "style_comparison": "More complex and carbonated than a Lambic. The sourness isn’t necessarily stronger, but it tends to have more of a well-developed wild character.",
+    "entry_instructions": ""
+   },
+   "sections_ru": {
+    "overall_impression": "Очень освежающее, сильно газированное бельгийское пшеничное пиво дикого брожения: приятно кислое, но сбалансированное. Дикий характер здесь может быть сложным и многослойным, объединяя кислотность, фанковые и фруктовые оттенки.",
+    "aroma": "Кислотность в аромате умеренная; её дополняет сложная, но сбалансированная фанковость и фруктовые ноты. Фанковый профиль — от умеренного до сильного, с оттенками скотного двора, кожи, земли, козьей шерсти, сена, лошадиных и «horse blanket» тонов. Фруктовость — от лёгкой до умеренной: цитрус, цедра, семечковые фрукты, ревень. Солод играет поддерживающую роль и, если заметен, даёт лёгкие хлебные, зерновые, медовые или пшеничные штрихи. Недопустимы фекальные, дымные, сигарные и сырные дефекты. Хмель отсутствует. Допустим лёгкий дубовый тон. Для аромата важнее сложность, чем просто мощность; желателен именно гармоничный кислый профиль.",
+    "appearance": "Цвет золотой. Прозрачность отличная. Пена густая, каменистая, муссовая, белая и кажется почти бесконечно стойкой. Пиво очень игристое.",
+    "flavor": "Во вкусе — кислотность и фанковость с теми же дескрипторами и интенсивностью, что и в аромате. Солодовость низкая, хлебно-зерновая. Горечь низкая либо отсутствует; баланс в основном задаёт кислотность. Хмелевой вкус отсутствует. Финиш чёткий, сухой, с терпко-кислым и фанковым послевкусием. Допустимы лёгкие дубовые, ванильные и медовые оттенки. Недопустимы фекальные, дымные, сигарные и сырные дефекты. Пиво не должно быть однопланово кислым: классика — это умеренная, сбалансированная кислотность, а сложность формируют именно фанковые и фруктовые ноты. Допускается выдержка.",
+    "mouthfeel": "Тело от лёгкого до умеренно лёгкого; водянистость недопустима. Кислотность может давать ощущение стягивания от слабого до сильного, но без резкой вяжущести. У некоторых версий возможен очень лёгкий согревающий тон. Карбонизация высокая.",
+    "comments": "Купаж молодого и выдержанного ламбика создаёт более сложный продукт и часто отражает личный вкус блендера. Заметная уксусность или сидровый характер бельгийские пивовары считают дефектом. Хороший гёз ценят не за максимальную резкость, а за полный, интригующий букет, яркий аромат и мягкую, почти бархатистую текстуру. Ламбик подают негазированным, а гёз — игристым. Надписи oude или vieille («старый») обычно указывают на наиболее традиционный характер.",
+    "history": "История у стиля та же базовая, что и у ламбика, но здесь ключевую роль играет купажирование, причём оно может происходить и вне самой пивоварни. Некоторые из лучших образцов делают именно блендеры: они ферментируют, выдерживают, купажируют и упаковывают готовый продукт. Часть современных производителей после брожения подслащивает пиво, чтобы сделать его более доступным широкой аудитории. В данных рекомендациях описана традиционная сухая версия.",
+    "characteristic_ingredients": "Та же база, что и у ламбика, но здесь смешивают одно-, двух- и трёхлетние ламбики, после чего купаж дополнительно выдерживают.",
+    "style_comparison": "Сложнее и заметно более газированный, чем Lambic. Кислотность не обязательно сильнее, но дикий характер обычно более развит и оформлен.",
+    "entry_instructions": ""
+   },
+   "vital_statistics": {
+    "og": "1.040 – 1.054",
+    "ibu": "0 – 10",
+    "fg": "1.000 – 1.006",
+    "srm": "5 – 6",
+    "abv": "5.0 – 8.0%"
+   },
+   "vital_statistics_text": "OG: 1.040 – 1.054 | IBUs: 0 – 10 | FG: 1.000 – 1.006 | SRM: 5 – 6 | ABV: 5.0 – 8.0%",
+   "commercial_examples_text": "3 Fonteinen Oud Gueuze, Cantillon Classic Gueuze 100% Lambic, Girardin Gueuze 1882 (Black label), Hanssens Oude Gueuze, Lindemans Gueuze Cuvée René, Oude Gueuze Boon",
+   "tags_en": [
+    "high-strength",
+    "pale-color",
+    "wild-fermented",
+    "western-europe",
+    "traditional-style",
+    "wheat-beer-family",
+    "aged",
+    "sour"
+   ],
+   "source_guideline_page_start": 47,
+   "source_pdf_page_start": 63,
+   "translation_status": "completed",
+   "tags_ru": [
+    "высокая крепость",
+    "светлый цвет",
+    "дикое брожение",
+    "Западная Европа",
+    "традиционный стиль",
+    "семейство пшеничного пива",
+    "выдержанный",
+    "кислый"
+   ]
+  },
+  {
+   "bjcp_id": "23F",
+   "name_en": "Fruit Lambic",
+   "name_ru": "Фруктовый ламбик",
+   "category_id": "23",
+   "category_en": "EUROPEAN SOUR ALE",
+   "category_ru": "Европейский кислый эль",
+   "bjcp_heading": "23F. Fruit Lambic",
+   "description_short_ru": "Сложное, освежающее и приятно кислое бельгийское пшеничное пиво, в котором ферментированный фруктовый характер дополняет кислый и фанковый профиль гёза.",
+   "sections_en": {
+    "overall_impression": "A complex, refreshing, pleasantly sour Belgian wheat beer blending a complementary fermented fruit character with a sour, funky Gueuze.",
+    "aroma": "The specified fruit should be the dominant aroma, blending well with similar aromatics as Gueuze (same description applies, but with the addition of a fermented fruit character).",
+    "appearance": "Like Gueuze, but modified by the color of the fruit used, fading in intensity with age. Clarity is often good, although some fruit will not drop bright. If highly carbonated in the traditional manner, will have a thick rocky, generally long-lasting, mousse-like head, sometimes with a hue reflecting the added fruit.",
+    "flavor": "Combines the flavor profile of a Gueuze (same description applies) with noticeable flavor contributions from the added fruit. Traditional versions are dry and tart, with an added fermented fruit flavor. Modern versions may have a variable sweetness, which can offset the acidity. Fruit flavors also fade with age, and lose their vibrancy, so can be low to high in intensity.",
+    "mouthfeel": "Light to medium-light body; should not be watery. Has a low to high tart, puckering quality without being sharply astringent. Some versions have a light warming character. Carbonation can vary from sparkling to nearly still.",
+    "comments": "Produced like Gueuze, with the fruit commonly added halfway through aging, so the yeast and bacteria can ferment all sugars from the fruit; or less commonly by adding fruit to a Lambic. The variety of fruit can sometimes be hard to identify since fermented and aged fruit is often perceived differently than the more recognizable fresh fruit. Fruit can bring acidity and tannins, in addition to flavor and aroma; understanding the fermented character of added fruit helps with judging the style.",
+    "history": "Same basic history as Gueuze, including the recent sweetening trend but with fruit in addition to sugar. Fruit was traditionally added by the blender or publican to increase the variety of beers available in local cafés.",
+    "characteristic_ingredients": "Same base as Gueuze. Fruit added to barrels during fermentation and blending. Traditional fruit include tart cherries, raspberries; modern fruit include peaches, apricots, grapes, and others. May use natural or artificial sweeteners.",
+    "style_comparison": "A Gueuze with fruit, not just a sour Fruit Beer; the wild character must be evident.",
+    "entry_instructions": "The type of fruit used must be specified. The brewer must declare a carbonation level (low, medium, high) and a sweetness level (low/none, medium, high)."
+   },
+   "sections_ru": {
+    "overall_impression": "Сложное, освежающее и приятно кислое бельгийское пшеничное пиво, где ферментированный фруктовый характер органично соединяется с кислым и фанковым профилем гёза.",
+    "aroma": "Заявленный фрукт должен доминировать в аромате, но гармонично сочетаться с теми же ароматическими элементами, что свойственны Gueuze. По сути, описание гёза сохраняется, но к нему добавляется характер ферментированного фрукта.",
+    "appearance": "Похоже на Gueuze, но цвет меняется в зависимости от использованного фрукта и с возрастом постепенно тускнеет. Прозрачность часто хорошая, хотя некоторые фрукты не дают пиву полностью осветлиться. При высокой традиционной карбонизации образуется густая, каменистая, обычно стойкая муссовая пена, иногда с оттенком, отражающим цвет добавленного фрукта.",
+    "flavor": "Соединяет вкусовой профиль Gueuze с заметным вкладом добавленного фрукта. Традиционные версии сухие и терпко-кислые, с характером ферментированного фрукта. Современные версии могут иметь различную степень сладости, которая смягчает кислотность. Со временем фруктовые оттенки тоже ослабевают и теряют яркость, поэтому их интенсивность может быть как низкой, так и высокой в зависимости от возраста и исполнения.",
+    "mouthfeel": "Тело от лёгкого до умеренно лёгкого; водянистость недопустима. Кислотность даёт ощущение стягивания от слабого до сильного, но без резкой вяжущести. У некоторых версий возможен лёгкий согревающий тон. Карбонизация варьируется от игристой до почти отсутствующей.",
+    "comments": "Обычно варится по логике Gueuze: фрукт часто добавляют примерно в середине выдержки, чтобы дрожжи и бактерии успели сбродить все фруктовые сахара; реже фрукт добавляют прямо в Lambic. Разновидность фрукта иногда трудно определить на вкус, потому что ферментированный и выдержанный фрукт воспринимается иначе, чем свежий. Фрукт может приносить не только аромат и вкус, но и дополнительную кислотность с танинностью; понимание именно ферментированного фруктового характера важно для корректной оценки стиля.",
+    "history": "Базовая история та же, что у Gueuze, включая современную тенденцию к подслащиванию, только здесь к сахару добавляется ещё и фрукт. Исторически фрукт добавляли блендеры или хозяева питейных заведений, чтобы расширить ассортимент пива в местных кафе.",
+    "characteristic_ingredients": "Та же база, что у Gueuze. Фрукты добавляют в бочки во время брожения и купажирования. Традиционно используют кислую вишню и малину; среди современных фруктов встречаются персики, абрикосы, виноград и другие. Возможны натуральные или искусственные подсластители.",
+    "style_comparison": "Это именно Gueuze с фруктом, а не просто кислое фруктовое пиво; дикий характер должен быть отчётливо заметен.",
+    "entry_instructions": "Нужно обязательно указать вид использованного фрукта. Пивовар также должен заявить уровень карбонизации (низкий, средний, высокий) и уровень сладости (низкий/отсутствует, средний, высокий)."
+   },
+   "vital_statistics": {
+    "og": "1.040 – 1.060",
+    "ibu": "0 – 10",
+    "fg": "1.000 – 1.010",
+    "srm": "3 – 7 (varies w/ fruit)",
+    "abv": "5.0 – 7.0%"
+   },
+   "vital_statistics_text": "OG: 1.040 – 1.060 | IBUs: 0 – 10 | FG: 1.000 – 1.010 | SRM: 3 – 7 (varies w/ fruit) | ABV: 5.0 – 7.0%",
+   "commercial_examples_text": "3 Fonteinen Schaerbeekse Kriek, Cantillon Fou’ Foune, Cantillon Lou Pepe Framboise, Cantillon Vigneronne, Hanssens Oude Kriek, Oude Kriek Boon",
+   "tags_en": [
+    "standard-strength",
+    "pale-color",
+    "wild-fermented",
+    "western-europe",
+    "traditional-style",
+    "wheat-beer-family",
+    "sour",
+    "fruit"
+   ],
+   "source_guideline_page_start": 47,
+   "source_pdf_page_start": 63,
+   "translation_status": "completed",
+   "tags_ru": [
+    "стандартная крепость",
+    "светлый цвет",
+    "дикое брожение",
+    "Западная Европа",
+    "традиционный стиль",
+    "семейство пшеничного пива",
+    "кислый",
+    "фруктовый"
+   ]
+  },
+  {
+   "bjcp_id": "23G",
+   "name_en": "Gose",
+   "name_ru": "Гозе",
+   "category_id": "23",
+   "category_en": "EUROPEAN SOUR ALE",
+   "category_ru": "Европейский кислый эль",
+   "bjcp_heading": "23G. Gose",
+   "description_short_ru": "Терпко-кислое историческое центральноевропейское пшеничное пиво с заметными, но сдержанными солью и кориандром, очень освежающее и сухое в финише.",
+   "sections_en": {
+    "overall_impression": "A tart, lightly-bittered historical central European wheat beer with a distinctive but restrained salt and coriander character. Very refreshing, with a dry finish, high carbonation, and bright flavors.",
+    "aroma": "Light to moderately fruity aroma of pome fruit. Light sourness, slightly sharp. Noticeable coriander, which can have an aromatic lemony quality, and an intensity up to moderate. Light bready, doughy, yeasty character like uncooked sourdough bread. The acidity and coriander can give a bright, lively impression. The salt may be perceived as a very light, clean sea breeze character or just a general freshness, if noticeable at all.",
+    "appearance": "Unfiltered, with a moderate to full haze. Moderate to tall white head with tight bubbles and good retention. Effervescent. Yellow color.",
+    "flavor": "Noticeable sourness, medium-low to medium-high. Moderate bready or doughy malt flavor. Light to moderate fruity character of pome fruit, stone fruit, or lemons. Light to moderate salt character, up to the threshold of taste; the salt should be noticeable (particularly in the initial taste) but not taste overtly salty. Very low bitterness. No hop flavor. Dry, fully-attenuated finish, with acidity not hops balancing the malt. Acidity can be more noticeable in the finish, and enhance the refreshing quality of the beer. The acidity should be balanced, not forward (although historical versions could be very sour). No THP.",
+    "mouthfeel": "High to very high carbonation. Effervescent. Medium-light to medium-full body. Salt may give a slightly tingly, mouthwatering quality and a rounder, thicker mouthfeel. Yeast and wheat can also add a little body, but shouldn’t feel heavy due to the thinning effects of acidity.",
+    "comments": "Historical versions may have been more sour than modern examples due to spontaneous fermentation, and may be blended with syrups as is done with Berliner Weisse, or with caraway liqueur. Modern examples are inoculated with Lacto, and are more balanced and generally don’t need sweetening. Pronounced GOH-zeh.",
+    "history": "Minor style associated with Leipzig but originating in the Middle Ages in the town of Goslar on the Gose River. Documented to have been in Leipzig by 1740. Leipzig was said to have 80 Gose houses in 1900. Production declined significantly after WWII, and ceased entirely in 1966. Modern production was revived in the 1980s in Germany, but the beer was not widely available. Became popular outside of Germany recently as a revival style, and is often used as a base style for fruited sour beers and other Specialty-Type beers.",
+    "characteristic_ingredients": "Pilsner and wheat malt, restrained use of salt and coriander seed, Lacto. The coriander should have a fresh, citrusy (lemon or bitter orange), bright note, and not be vegetal, celery-like, or ham-like. The salt should have a sea salt or fresh salt character, not a metallic, iodine note.",
+    "style_comparison": "Perceived acidity is not as intense as Berliner Weisse or Gueuze. Restrained use of salt, coriander, and Lacto – should not taste overtly salty. Coriander aroma can be similar to a Witbier. Haziness similar to a Weissbier.",
+    "entry_instructions": ""
+   },
+   "sections_ru": {
+    "overall_impression": "Кисловатое, слабо охмелённое историческое центральноевропейское пшеничное пиво с характерными, но сдержанными нотами соли и кориандра. Очень освежающее, с сухим финишем, высокой карбонизацией и ярким вкусовым профилем.",
+    "aroma": "Фруктовость семечковых фруктов от лёгкой до умеренной. Кислотность лёгкая, чуть резкая. Кориандр заметен и может давать ароматный лимонный оттенок интенсивностью до умеренной. Есть лёгкий хлебный, тестяной, дрожжевой характер, напоминающий сырое хлебное тесто на закваске. Кислотность и кориандр создают живое, яркое впечатление. Соль, если вообще ощущается в аромате, проявляется скорее как очень лёгкий свежий морской бриз или общее чувство свежести.",
+    "appearance": "Пиво нефильтрованное, с умеренной или сильной мутностью. Пена белая, от средней до высокой, с мелкими плотными пузырьками и хорошей стойкостью. Пиво игристое. Цвет жёлтый.",
+    "flavor": "Кислотность заметная — от умеренно слабой до умеренно высокой. Солодовый профиль умеренный, хлебный или тестяной. Фруктовость — от лёгкой до умеренной, с оттенками семечковых и косточковых фруктов либо лимона. Соль — от лёгкой до умеренной, примерно до порога вкусовой заметности: она должна ощущаться, особенно в первом глотке, но пиво не должно казаться откровенно солёным. Горечь очень низкая. Хмелевой вкус отсутствует. Финиш сухой, полностью выброженный; баланс солода строится за счёт кислотности, а не хмеля. В послевкусии кислотность может ощущаться сильнее и усиливать освежающий эффект. Кислотность должна быть уравновешенной, а не доминирующей, хотя исторические версии могли быть очень кислыми. THP недопустим.",
+    "mouthfeel": "Карбонизация высокая или очень высокая. Пиво игристое. Тело от умеренно лёгкого до умеренно полного. Соль может давать лёгкое покалывание, слюноотделение и делать текстуру чуть более округлой и плотной. Дрожжи и пшеница тоже могут добавлять немного тела, но пиво не должно казаться тяжёлым, поскольку кислотность его подсушивает и облегчает.",
+    "comments": "Исторические версии из-за спонтанного брожения могли быть кислее современных и, как Berliner Weisse, иногда смешивались с сиропами или с тминным ликёром. Современные примеры обычно закисляют при помощи Lacto; они более сбалансированы и, как правило, не нуждаются в подслащивании. Произносится как «ГО-зе».",
+    "history": "Небольшой по распространённости стиль, обычно ассоциируемый с Лейпцигом, хотя возник он ещё в Средние века в городе Гослар на реке Гозе. Документально известно, что к 1740 году стиль уже был в Лейпциге. Говорят, что в 1900 году в Лейпциге насчитывалось около 80 заведений Gose. После Второй мировой войны производство резко сократилось и к 1966 году полностью прекратилось. В 1980-х стиль возродили в Германии, но долгое время он оставался редкостью. Вне Германии Gose сравнительно недавно стал популярен как возрождённый стиль и теперь часто служит базой для фруктовых кислых сортов и других specialty-стилей.",
+    "characteristic_ingredients": "Пилс- и пшеничный солод, сдержанное использование соли и семян кориандра, Lacto. Кориандр должен давать свежий, яркий цитрусовый характер — лимонный или с оттенком горького апельсина, без овощных, сельдерейных или «ветчинных» нот. Соль должна напоминать морскую или просто свежую соль, без металлических и йодистых оттенков.",
+    "style_comparison": "По воспринимаемой кислотности мягче, чем Berliner Weisse или Gueuze. Соль, кориандр и Lacto должны использоваться сдержанно — пиво не должно казаться откровенно солёным. Аромат кориандра может отчасти напоминать Witbier. Мутность близка к Weissbier.",
+    "entry_instructions": ""
+   },
+   "vital_statistics": {
+    "og": "1.036 – 1.056",
+    "ibu": "5 – 12",
+    "fg": "1.006 – 1.010",
+    "srm": "3 – 4",
+    "abv": "4.2 – 4.8%"
+   },
+   "vital_statistics_text": "OG: 1.036 – 1.056 | IBUs: 5 – 12 | FG: 1.006 – 1.010 | SRM: 3 – 4 | ABV: 4.2 – 4.8%",
+   "commercial_examples_text": "Anderson Valley Gose, Bayerisch Bahnhof Leipziger Gose, Original Ritterguts Gose, Westbrook Gose",
+   "tags_en": [
+    "standard-strength",
+    "pale-color",
+    "top-fermented",
+    "central-europe",
+    "historical-style",
+    "wheat-beer-family",
+    "sour",
+    "spice"
+   ],
+   "source_guideline_page_start": 48,
+   "source_pdf_page_start": 64,
+   "translation_status": "completed",
+   "tags_ru": [
+    "стандартная крепость",
+    "светлый цвет",
+    "верховое брожение",
+    "Центральная Европа",
+    "исторический стиль",
+    "семейство пшеничного пива",
+    "кислый",
+    "пряный"
+   ]
+  },
+  {
+   "bjcp_id": "24A",
+   "name_en": "Witbier",
+   "name_ru": "Витбир",
+   "category_id": "24",
+   "category_en": "BELGIAN ALE",
+   "category_ru": "Бельгийский эль",
+   "bjcp_heading": "24A. Witbier",
+   "description_short_ru": "Светлое, мутное бельгийское пшеничное пиво, где специи подчёркивают дрожжевой характер; лёгкое, сухое и очень освежающее.",
+   "sections_en": {
+    "overall_impression": "A pale, hazy Belgian wheat beer with spices accentuating the yeast character. A delicate, lightly spiced, moderate-strength ale that is a refreshing summer drink with its high carbonation, dry finish, and light hopping.",
+    "aroma": "Moderate bready maltiness, often with light notes of honey or vanilla. Light grainy, spicy wheat aromatics. Moderate perfumy-lemony coriander, often with a complex herbal, spicy, or peppery note in the background. Moderate zesty, citrusy-orangey fruitiness. A low spicy-herbal hop aroma is optional, but typically absent. Spices should blend in with fruity, floral, and sweet aromas and should not be overly strong.",
+    "appearance": "Very pale straw to deep yellow in color. The beer will be very cloudy from starch haze or yeast, which gives it a milky, whitish-yellow shine. Dense, white, moussy head. Head retention should be quite good.",
+    "flavor": "Pleasant bready, grainy malt flavor, often with a honey or vanilla character. Moderate zesty, orange-citrusy fruitiness. Herbal-spicy flavors, which may include lemony coriander and other spices, are common should be subtle and balanced, not overpowering. A spicy-earthy hop flavor can be low to none, and never overshadows the spices. Hop bitterness is low to medium-low, and supports the refreshing flavors of fruit and spice. Refreshingly crisp with a dry finish, and no bitter or harsh aftertaste.",
+    "mouthfeel": "Medium-light to medium body, often having a smoothness and light creaminess. Effervescent character from high carbonation. Refreshing, from carbonation, dryness, and lack of bitterness in finish. No harshness or astringency. Should not be overly dry and thin, nor should it be thick and heavy.",
+    "comments": "Historical versions may have had some lactic sourness but this is absent in fresh modern versions. Spicing has some variety, but should not be overdone. Coriander of certain origin or age might give an inappropriate ham or celery character. The beer tends to be perishable, so younger, fresher, properly-handled examples are most desirable. An impression of sweetness is often due to low bitterness, not residual sugar. Most examples seem to be approximately 5% ABV.",
+    "history": "One of a group of medieval Belgian white beers from the Leuven area, it died out in 1957 and was later revived in 1966 by Pierre Celis at what became Hoegaarden. After Hoegaarden was acquired by Interbrew, the style grew rapidly and inspired many similar products that are traceable to the Celis recreation of the style, not those from past centuries.",
+    "characteristic_ingredients": "Unmalted wheat (30-60%), the remainder low color barley malt. Some versions use up to 5-10% raw oats or other unmalted cereal grains. Traditionally uses coriander seed and dried Curaçao orange peel. Other secret spices are rumored to be used in some versions, as are sweet orange peels. Mild fruity-spicy Belgian ale yeast.",
+    "style_comparison": "Low bitterness level with a balance similar to a Weissbier, but with spice and citrus character coming from additions more so than the yeast.",
+    "entry_instructions": ""
+   },
+   "sections_ru": {
+    "overall_impression": "Светлое, мутное бельгийское пшеничное пиво, где специи подчёркивают дрожжевой характер. Деликатный, слегка пряный эль умеренной крепости, который отлично освежает благодаря высокой карбонизации, сухому финишу и лёгкой охмелённости.",
+    "aroma": "Солодовость умеренная, хлебная, часто с лёгкими нотами мёда или ванили. Пшеница даёт лёгкие зерновые и пряные оттенки. Кориандр — умеренный, парфюмерно-лимонный, нередко с более сложным травянистым, пряным или перечным фоном. Фруктовость умеренная, яркая, с цитрусово-апельсиновым уклоном. Хмелевой аромат, если есть, слабый, пряно-травянистый, но чаще отсутствует. Специи должны быть вплетены в фруктовые, цветочные и сладковатые тона, а не доминировать над ними.",
+    "appearance": "Цвет от очень бледно-соломенного до насыщенно-жёлтого. Пиво заметно мутное из-за крахмальной дымки или дрожжей, что создаёт молочно-белёсое сияние. Пена плотная, белая, муссовая. Стойкость пены должна быть хорошей.",
+    "flavor": "Вкус приятный, хлебно-зерновой, часто с мёдово-ванильным оттенком. Фруктовость умеренная, яркая, с апельсиново-цитрусовым характером. Травянисто-пряные ноты, включая лимонный кориандр и другие специи, обычны, но должны быть тонкими и сбалансированными, не подавляющими. Хмелевой вкус может отсутствовать либо быть слабым, пряно-землистым, но он никогда не должен перекрывать специи. Горечь низкая или умеренно низкая и лишь поддерживает освежающий союз фрукта и специй. Финиш сухой и освежающий, без грубой горечи и жёсткого послевкусия.",
+    "mouthfeel": "Тело от умеренно лёгкого до среднего, нередко с гладкой, слегка сливочной текстурой. Высокая карбонизация даёт игристое ощущение. Освежающий эффект создают газ, сухость и отсутствие заметной горечи в финише. Недопустимы грубость и терпкость. Пиво не должно быть ни излишне сухим и пустым, ни тяжёлым и плотным.",
+    "comments": "Исторические версии могли иметь некоторую молочнокислую кислинку, но в свежих современных образцах её быть не должно. Состав специй допускает вариации, однако их нельзя делать чрезмерными. Кориандр определённого происхождения или возраста способен дать неуместные «ветчинные» или сельдерейные ноты. Стиль довольно деликатен и чувствителен к условиям хранения, поэтому предпочтительны молодые, свежие образцы, с которыми правильно обращались. Ощущение сладости здесь часто связано не с остаточным сахаром, а с низкой горечью. Большинство примеров имеют крепость около 5% ABV.",
+    "history": "Один из средневековых бельгийских «белых» стилей из района Лёвена. Стиль исчез к 1957 году и был возрождён в 1966 году Пьером Селисом на пивоварне, ставшей впоследствии Hoegaarden. После покупки Hoegaarden компанией Interbrew стиль начал быстро расти в популярности и породил множество похожих сортов, восходящих именно к реконструкции Селиса, а не к прямой непрерывной традиции прошлых веков.",
+    "characteristic_ingredients": "Несоложёная пшеница (30–60%), остальное — светлый ячменный солод. В некоторых версиях используют до 5–10% сырого овса или других несоложёных зерновых. Традиционно применяют семена кориандра и сушёную цедру апельсина кюрасао. По слухам, в отдельных версиях есть и другие «секретные» специи, а также цедра сладкого апельсина. Дрожжи — мягкие бельгийские элевые, фруктово-пряные.",
+    "style_comparison": "Горечь низкая, и баланс в чём-то напоминает Weissbier, но пряный и цитрусовый характер здесь приходит в первую очередь от добавок, а не от работы дрожжей.",
+    "entry_instructions": ""
+   },
+   "vital_statistics": {
+    "og": "1.044 – 1.052",
+    "ibu": "8 – 20",
+    "fg": "1.008 – 1.012",
+    "srm": "2 – 4",
+    "abv": "4.5 – 5.5%"
+   },
+   "vital_statistics_text": "OG: 1.044 – 1.052 | IBUs: 8 – 20 | FG: 1.008 – 1.012 | SRM: 2 – 4 | ABV: 4.5 – 5.5%",
+   "commercial_examples_text": "Allagash White, Blanche de Bruxelles, Celis White, Hoegaarden White, Ommegang Witte, St. Bernardus Wit",
+   "tags_en": [
+    "standard-strength",
+    "pale-color",
+    "top-fermented",
+    "western-europe",
+    "traditional-style",
+    "wheat-beer-family",
+    "spice"
+   ],
+   "source_guideline_page_start": 49,
+   "source_pdf_page_start": 65,
+   "translation_status": "completed",
+   "tags_ru": [
+    "стандартная крепость",
+    "светлый цвет",
+    "верховое брожение",
+    "Западная Европа",
+    "традиционный стиль",
+    "семейство пшеничного пива",
+    "пряный"
+   ]
+  },
+  {
+   "bjcp_id": "24B",
+   "name_en": "Belgian Pale Ale",
+   "name_ru": "Бельгийский светлый эль",
+   "category_id": "24",
+   "category_en": "BELGIAN ALE",
+   "category_ru": "Бельгийский эль",
+   "bjcp_heading": "24B. Belgian Pale Ale",
+   "description_short_ru": "Бельгийский эль средней крепости медно-янтарного цвета с умеренной горечью, мягким солодовым профилем, фруктовостью и аккуратной хлебно-тостовой глубиной без агрессивного дрожжевого характера.",
+   "sections_en": {
+    "overall_impression": "A top-fermented, all malt, average strength Belgian ale that is moderately bitter, not dry-hopped, and without strong flavors. The copper-colored beer lacks the aggressive yeast character or sourness of many Belgian beers, but has a well-balanced, malty, fruity, and often bready and toasty profile.",
+    "aroma": "Moderate bready malt aroma, which can include toasty, biscuity, or nutty notes, possibly with a touch of light caramel or honey. Moderate to moderately high fruitiness complements the malt, and is suggestive of pear, orange, apple, or lemon, and sometimes of darker stone fruit like plums. Low to moderate spicy, herbal, or floral hop character. Low peppery, spicy phenols optional. The hop character is lower in balance than the malt and fruitiness.",
+    "appearance": "Amber to copper in color. Clarity is very good. Creamy, rocky, white head. Well carbonated.",
+    "flavor": "Has an initial soft, smooth, moderately malty flavor with a variable profile of toasty, biscuity, nutty, light caramel, or honey notes. Moderate to moderately high fruitiness, with a pear, orange, apple, or lemon character. Medium-low to low spicy, herbal, or floral hop character. Medium-high to medium-low bitterness, enhanced by optional low to very low peppery phenols. Dry to balanced finish, with hops becoming more pronounced in the aftertaste of those with a drier finish. Fairly well balanced overall, with no single component being high in intensity; malt and fruitiness are more forward initially with a supportive bitterness and drying character coming on late.",
+    "mouthfeel": "Medium to medium-light body. Smooth palate. Alcohol level is restrained, and any warming character should be low if present. Medium to medium-high carbonation.",
+    "comments": "Most commonly found in the Flemish provinces of Antwerp, Brabant, Hainaut, and East Flanders. A Spéciale Belge Ale (Belgian Special Ale) in Belgium.",
+    "history": "Created after a competition in 1904 to create a regional specialty beer to compete with imported British ales and continental lagers. De Koninck of Antwerp is the best-known modern example, making the beer since 1913.",
+    "characteristic_ingredients": "Variable grist with pale, character, and caramel malts. No adjuncts. English or continental hops. Fruity yeast with low phenols.",
+    "style_comparison": "Fairly similar to pale ales from England (11C Strong Bitter), typically with a slightly different yeast character and a more varied malt profile. Less yeast character than many other Belgian beers, though.",
+    "entry_instructions": ""
+   },
+   "sections_ru": {
+    "overall_impression": "Бельгийский полностью солодовый эль средней крепости, умеренно горький, без сухого охмеления и без экстремально ярких вкусов. Медно-янтарное пиво, лишённое агрессивного дрожжевого характера или кислинки, свойственных многим бельгийским стилям, зато хорошо сбалансированное — солодовое, фруктовое и часто с хлебно-тостовыми оттенками.",
+    "aroma": "Солодовый аромат умеренный, хлебный; возможны тостовые, бисквитные или ореховые ноты, иногда с лёгким намёком на карамель или мёд. Фруктовость — от умеренной до умеренно высокой — поддерживает солод и напоминает грушу, апельсин, яблоко, лимон, а иногда и более тёмные косточковые фрукты вроде сливы. Хмелевой характер слабый или умеренный, пряный, травянистый либо цветочный. Допустимы лёгкие перечные фенолы. В балансе хмель явно ниже солода и фруктовости.",
+    "appearance": "Цвет от янтарного до медного. Прозрачность очень хорошая. Пена белая, кремовая, каменистая. Карбонизация хорошая.",
+    "flavor": "Во вкусе сначала проявляется мягкая, гладкая, умеренно солодовая основа с вариативными оттенками тоста, бисквита, орехов, лёгкой карамели или мёда. Фруктовость — от умеренной до умеренно высокой, с тонами груши, апельсина, яблока или лимона. Хмелевой характер слабый или умеренно слабый, пряный, травянистый или цветочный. Горечь варьируется от умеренно высокой до умеренно низкой и может дополнительно подчёркиваться лёгкими либо очень лёгкими перечными фенолами. Финиш — от сухого до сбалансированного; в более сухих версиях хмель становится заметнее уже в послевкусии. В целом пиво хорошо уравновешено, без единственного доминирующего компонента: в начале впереди солод и фруктовость, а поддерживающая горечь и подсушивающий эффект проявляются ближе к концу.",
+    "mouthfeel": "Тело от среднего до умеренно лёгкого. Ощущение во рту гладкое. Алкоголь сдержанный; если согревающий тон есть, он должен быть слабым. Карбонизация — от средней до умеренно высокой.",
+    "comments": "Чаще всего стиль встречается во фламандских провинциях Антверпен, Брабант, Эно и Восточная Фландрия. В самой Бельгии его относят к Spéciale Belge Ale — бельгийскому специальному элю.",
+    "history": "Стиль появился после конкурса 1904 года, целью которого было создать региональное специальное пиво, способное соперничать с импортными британскими элями и континентальными лагерами. Самый известный современный пример — De Koninck из Антверпена, который варит это пиво с 1913 года.",
+    "characteristic_ingredients": "Засыпь варьируется, но обычно включает светлый базовый солод, специальные солода и карамельные солода. Без несоложёных добавок. Хмель английский или континентальный. Дрожжи фруктовые, с низким фенольным профилем.",
+    "style_comparison": "Во многом похож на английские pale ale, прежде всего на 11C Strong Bitter, но отличается несколько иным дрожжевым характером и более разнообразной солодовой палитрой. При этом дрожжевой профиль всё же заметно спокойнее, чем у многих других бельгийских стилей.",
+    "entry_instructions": ""
+   },
+   "vital_statistics": {
+    "og": "1.048 – 1.054",
+    "ibu": "20 – 30",
+    "fg": "1.010 – 1.014",
+    "srm": "8 – 14",
+    "abv": "4.8 – 5.5%"
+   },
+   "vital_statistics_text": "OG: 1.048 – 1.054 | IBUs: 20 – 30 | FG: 1.010 – 1.014 | SRM: 8 – 14 | ABV: 4.8 – 5.5%",
+   "commercial_examples_text": "De Koninck Bolleke, De Ryck Special, Palm, Palm Dobble",
+   "tags_en": [
+    "standard-strength",
+    "amber-color",
+    "top-fermented",
+    "western-europe",
+    "traditional-style",
+    "pale-ale-family",
+    "balanced"
+   ],
+   "source_guideline_page_start": 49,
+   "source_pdf_page_start": 65,
+   "translation_status": "completed",
+   "tags_ru": [
+    "стандартная крепость",
+    "янтарный цвет",
+    "верховое брожение",
+    "Западная Европа",
+    "традиционный стиль",
+    "семейство пейл-элей",
+    "сбалансированный"
+   ]
+  },
+  {
+   "bjcp_id": "24C",
+   "name_en": "Bière de Garde",
+   "name_ru": "Бьер де гард",
+   "category_id": "24",
+   "category_en": "BELGIAN ALE",
+   "category_ru": "Бельгийский эль",
+   "bjcp_heading": "24C. Bière de Garde",
+   "description_short_ru": "Семейство гладких, довольно крепких, солодовых и лагерированных французских элей, где палитра солода зависит от цвета — blond, amber или brown — но все версии остаются сухими и чистыми.",
+   "sections_en": {
+    "overall_impression": "A family of smooth, fairly strong, malty, lagered artisanal French beer with a range of malt flavors appropriate for the blond, amber, or brown color. All are malty yet dry, with clean flavors. Darker versions have more malt character, while paler versions can have more hops while still remaining malt-focused beers.",
+    "aroma": "Prominent malty richness, often with a complex, light-to-moderate intensity, toasty and bready character. Low to moderate esters. Low spicy, peppery, or herbal hops optional. Generally quite clean, although stronger versions may have a light, spicy alcohol note as it warms. Paler versions are still malty but lack richer, deeper aromatics and may have a bit more hops.",
+    "appearance": "Blond, amber, and brown variations exist, with the color varying accordingly: golden-blonde to reddish-bronze to chestnut brown. Clarity is brilliant to fair, but some haze is allowable. Well-formed head, generally white to off-white (varying with beer color), average persistence.",
+    "flavor": "Medium to high malty richness, often with a toasty, biscuity, toffee, or light caramel character. Low to moderate esters and alcohol flavors. Medium-low hop bitterness, giving a malty balance to the palate and aftertaste. Medium-dry to dry finish, not sweet, cloying, or heavy. Low spicy, peppery, or herbal hop flavor optional. Malt flavor, depth, richness, intensity, and complexity increases with beer color. Darker versions will have more of an initial rich malty impression than paler versions but should not seem roasted. Paler versions can have slightly greater hop flavor.",
+    "mouthfeel": "Medium to medium-light body, often with a smooth, creamy-silky character. Moderate to high carbonation. Moderate alcohol warming, but should never be hot.",
+    "comments": "Cellar, musty, moldy, or rustic character often mentioned in literature are signs of mishandled imports, not fresh, authentic products. Age and oxidation can also increase fruitiness and caramel flavors, but increase harshness. While caramel and fruit can be part of the style, do not confuse the oxidation character for the proper base beer.",
+    "history": "Name roughly means beer for keeping. A traditional farmhouse artisanal ale from the area around Lille in Northern France, historically brewed in early spring and kept in cold cellars for consumption in warmer weather. Although documented to exist in the 1800s, Jenlain is the prototypical modern amber lager version first bottled in the 1940s.",
+    "characteristic_ingredients": "Base malts vary by beer color, but usually include pale, Vienna, and Munich types. Crystal-type malts of varying color. Sugar adjuncts may be used. Lager or ale yeast fermented at cool ale temperatures, followed by long cold conditioning. Continental hops.",
+    "style_comparison": "Calling this a farmhouse beer invites comparisons to Saison, which has a completely different balance – Bière de Garde is malty and smooth, while Saison is hoppy and bitter. Actually has more of a similarity in malt profile to a Bock.",
+    "entry_instructions": "Entrant must specify blond, amber, or brown Bière de Garde. If no color is specified, the judge should attempt to judge based on initial observation, expecting a malt flavor and balance that matches the color."
+   },
+   "sections_ru": {
+    "overall_impression": "Семейство гладких, довольно крепких, солодовых и лагерированных французских крафтово-фермерских сортов с палитрой солодовых оттенков, соответствующей цветовой версии — blond, amber или brown. Все варианты солодовые, но при этом сухие и чистые по профилю. Более тёмные версии дают больше солодовой глубины, а более светлые могут быть немного хмелевее, хотя акцент всё равно остаётся на солоде.",
+    "aroma": "Солодовая насыщенность заметная, часто сложная, с лёгкими или умеренными тостовыми и хлебными оттенками. Эфиры — от слабых до умеренных. Хмель, если присутствует, слабый: пряный, перечный или травянистый. Профиль в целом довольно чистый, хотя у более крепких версий при согревании может появляться лёгкий пряный алкогольный тон. Светлые версии тоже остаются солодовыми, но им не хватает той глубокой насыщенности, что есть у более тёмных образцов, и они могут иметь чуть более заметный хмель.",
+    "appearance": "Существуют blond, amber и brown варианты, соответственно цвет варьируется от золотисто-светлого через красновато-бронзовый до каштаново-коричневого. Прозрачность — от блестящей до просто хорошей, хотя лёгкая дымка допустима. Пена сформированная, обычно от белой до кремовой, в зависимости от цвета пива, средней стойкости.",
+    "flavor": "Солодовая насыщенность — от средней до высокой, часто с оттенками тоста, бисквита, ириса или лёгкой карамели. Эфиры и алкогольные тона — от слабых до умеренных. Горечь умеренно низкая и поддерживает солодовый баланс как во вкусе, так и в послевкусии. Финиш от умеренно сухого до сухого, без приторности, тяжести и липкости. Хмелевой вкус, если есть, слабый: пряный, перечный или травянистый. По мере потемнения версии растут глубина, насыщенность, интенсивность и сложность солодового профиля. Тёмные варианты производят более богатое солодовое первое впечатление, но не должны казаться обжаренными. Светлые версии могут иметь чуть более заметный вкус хмеля.",
+    "mouthfeel": "Тело от среднего до умеренно лёгкого, часто с гладкой, шелковисто-сливочной текстурой. Карбонизация умеренная или умеренно высокая. Алкогольное тепло умеренное, но никогда не должно быть жгучим.",
+    "comments": "Погребные, затхлые, плесневые или излишне «rustic» ноты, о которых иногда пишут в литературе, чаще говорят о плохо обращавшемся импорте, а не о свежем и аутентичном пиве. Возраст и окисление могут усиливать фруктовые и карамельные оттенки, но одновременно добавляют грубость. Хотя карамель и фруктовость допустимы в самом стиле, не стоит принимать оксидативный характер за норму.",
+    "history": "Название примерно означает «пиво для хранения». Это традиционный фермерский ремесленный эль из окрестностей Лилля на севере Франции, который исторически варили ранней весной и выдерживали в холодных погребах для употребления в тёплое время года. Хотя стиль документально известен с XIX века, прототипом современной янтарной версии считается Jenlain, впервые разлитый в бутылки в 1940-х.",
+    "characteristic_ingredients": "Базовые солода зависят от цвета пива, но обычно включают светлый, Vienna и Munich. Используются и карамельные солода разных оттенков. Возможны сахарные несоложёные добавки. Дрожжи лагерные или элевые, но брожение ведут при прохладных эльных температурах, после чего следует долгая холодная выдержка. Хмель — континентальный.",
+    "style_comparison": "Когда стиль называют farmhouse beer, его часто начинают сравнивать с Saison, но баланс у них принципиально разный: Bière de Garde солодовый и гладкий, тогда как Saison хмелевой и горький. По солодовому профилю он на самом деле ближе к Bock.",
+    "entry_instructions": "Участник должен указать, какая именно версия заявляется: blond, amber или brown Bière de Garde. Если цвет не указан, судья должен опираться на первоначальное визуальное впечатление и ожидать солодовый профиль и баланс, соответствующие наблюдаемому цвету."
+   },
+   "vital_statistics": {
+    "og": "1.060 – 1.080",
+    "ibu": "18 – 28",
+    "fg": "1.008 – 1.016",
+    "srm": "6 – 19",
+    "abv": "6.0 – 8.5%"
+   },
+   "vital_statistics_text": "OG: 1.060 – 1.080 | IBUs: 18 – 28 | FG: 1.008 – 1.016 | SRM: 6 – 19 | ABV: 6.0 – 8.5%",
+   "commercial_examples_text": "Ch’Ti Blonde, Jenlain Ambrée, La Choulette Brune, Russian River Perdition, Saint Sylvestre 3 Monts Blonde, Two Brothers Domaine Dupage",
+   "tags_en": [
+    "high-strength",
+    "pale-color",
+    "amber-color",
+    "any-fermentation",
+    "lagered",
+    "western-europe",
+    "traditional-style",
+    "amber-ale-family",
+    "malty"
+   ],
+   "source_guideline_page_start": 50,
+   "source_pdf_page_start": 66,
+   "translation_status": "completed",
+   "tags_ru": [
+    "высокая крепость",
+    "светлый цвет",
+    "янтарный цвет",
+    "любой тип брожения",
+    "лагеризация",
+    "Западная Европа",
+    "традиционный стиль",
+    "семейство янтарных элей",
+    "солодовый"
+   ]
+  }
+ ]
 }

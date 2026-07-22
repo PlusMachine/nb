@@ -803,3 +803,174 @@ describe("consumeBrewBatchInventory — недостаточно остатка 
     })).rejects.toThrow("INSUFFICIENT_STOCK");
   });
 });
+
+// П3: exact-позиция существует в БД, но остаток == 0 (запись не удалена — просто
+// выгребли всё раньше). Раньше такая строка молча исчезала из результата: превью
+// показывало exact_short «спишем остаток», а ядро на consumedQuantity<=0 делает
+// continue — строка не попадала ни в consumed (транзакции нет), ни в skipped
+// (предикат требовал exactItem == null, а он был не null, просто пуст).
+describe("П3: exact-позиция с нулевым остатком — не молчаливая пропажа, а честный missing/skipped", () => {
+  it("превью классифицирует как missing (кандидатов на замену нет), а не exact_short «спишем остаток»", async () => {
+    mockState.catalogItems = [
+      catalog("beerex--pilsner", "malt", "Пилснер", "Pilsner", { malt_type: "base", color_ebc_min: 3, color_ebc_max: 4 })
+    ];
+    const lPilsner = line({ ingredientCatalogItemId: "beerex--pilsner", ingredientCategory: "fermentable", type: "malt", ingredientDisplayNameSnapshot: "Beerex Pilsner", amountNormalizedQuantity: 5000, amountNormalizedUnit: "g" });
+    mockState.lines = [lPilsner];
+
+    // Позиция та же самая (exactKey совпадает), но остаток — 0. Запись не удалена.
+    const pilsnerEmpty = shelfItem({ ingredientCatalogItemId: "beerex--pilsner", normalizedQuantity: 0, normalizedUnit: "g", ingredientDisplayNameSnapshot: "Beerex Pilsner (пустой лот)" });
+    mockState.inventory = [pilsnerEmpty];
+    mockState.enrichedInventory = [
+      enrichedItem(pilsnerEmpty, { category: "fermentable", type: "malt", displayName: "Beerex Pilsner" })
+    ];
+
+    const batch = makeBatch(uuid(509));
+    mockState.brewBatches = [batch];
+
+    const plan = await previewBrewBatchConsumption(USER_ID, batch.id);
+    const planLine = plan!.lines[0]!;
+    expect(planLine.kind).toBe("missing");
+    expect(planLine.exact).toBeNull();
+    expect(planLine.substitutes).toEqual([]);
+    // catalogSearchHref для missing строится как обычно (привязка к каталогу есть).
+    expect(planLine.catalogSearchHref).toBe("/catalog/system/beerex--pilsner");
+  });
+
+  it("consume с allowPartial: строка не консьюмится (0 к списанию) и честно попадает в skippedLineNames", async () => {
+    mockState.catalogItems = [
+      catalog("beerex--pilsner", "malt", "Пилснер", "Pilsner", { malt_type: "base", color_ebc_min: 3, color_ebc_max: 4 })
+    ];
+    const lPilsner = line({ ingredientCatalogItemId: "beerex--pilsner", ingredientCategory: "fermentable", type: "malt", ingredientDisplayNameSnapshot: "Beerex Pilsner", amountNormalizedQuantity: 5000, amountNormalizedUnit: "g" });
+    mockState.lines = [lPilsner];
+
+    const pilsnerEmpty = shelfItem({ ingredientCatalogItemId: "beerex--pilsner", normalizedQuantity: 0, normalizedUnit: "g", ingredientDisplayNameSnapshot: "Beerex Pilsner (пустой лот)" });
+    mockState.inventory = [pilsnerEmpty];
+    mockState.enrichedInventory = [
+      enrichedItem(pilsnerEmpty, { category: "fermentable", type: "malt", displayName: "Beerex Pilsner" })
+    ];
+
+    const batch = makeBatch(uuid(5090));
+    mockState.brewBatches = [batch];
+
+    const result = await consumeBrewBatchInventory(USER_ID, batch.id, { allowPartial: true });
+
+    // Списывать было нечего (остаток 0) — ни одной транзакции/consumed-строки.
+    expect(result.consumed).toEqual([]);
+    expect(mockState.transactions).toHaveLength(0);
+    // Строка честно фигурирует как пропущенная, а не молча исчезает из результата.
+    expect(result.skippedLineCount).toBe(1);
+    expect(result.skippedLineNames).toEqual(["Beerex Pilsner"]);
+  });
+});
+
+// Ф4б: диалог списания на странице партии зовёт ядро с opts.allowPartial=true —
+// пропущенные/клампнутые строки не роняют операцию целиком (владелец видел превью
+// с нехваткой и явно согласился «списать что есть»).
+describe("consumeBrewBatchInventory({ allowPartial: true })", () => {
+  it("строка вовсе без складской позиции не мешает списанию остальных; повторный вызов после успеха → ALREADY_CONSUMED", async () => {
+    mockState.catalogItems = [
+      catalog("brandx--cascade", "hop", "Каскад", "Cascade", { alpha_acid_pct_typical: 6 }),
+      catalog("rice-husk", "consumable", "Рисовая лузга", "Rice husk", {})
+    ];
+    // Строка, которую есть чем закрыть — списывается как обычно.
+    const lCascade = line({ ingredientCatalogItemId: "brandx--cascade", ingredientCategory: "hop", type: "hop", ingredientDisplayNameSnapshot: "Cascade", amountNormalizedQuantity: 50, amountNormalizedUnit: "g" });
+    // Строка БЕЗ единой позиции на складе (ни exact, ни замены) — ровно жалоба
+    // владельца («рисовая лузга не забита на складе — а мне не даёт списать ничего»).
+    const lRiceHusk = line({ ingredientCatalogItemId: "rice-husk", ingredientCategory: "consumable", type: "consumable", ingredientDisplayNameSnapshot: "Рисовая лузга", amountNormalizedQuantity: 300, amountNormalizedUnit: "g" });
+    mockState.lines = [lCascade, lRiceHusk];
+
+    const cascadeExact = shelfItem({ ingredientCatalogItemId: "brandx--cascade", normalizedQuantity: 200, normalizedUnit: "g", ingredientDisplayNameSnapshot: "Cascade (складская)" });
+    mockState.inventory = [cascadeExact];
+    mockState.enrichedInventory = [
+      enrichedItem(cascadeExact, { category: "hop", type: "hop", displayName: "Cascade", technicalData: { type: "hop", alphaAcidPctTypical: 6 } })
+    ];
+
+    const batch = makeBatch(uuid(506));
+    mockState.brewBatches = [batch];
+
+    const result = await consumeBrewBatchInventory(USER_ID, batch.id, { allowPartial: true });
+
+    // Списалась только строка с позицией на складе — рисовая лузга без позиции не
+    // создала аллокацию вовсе и операцию не заблокировала.
+    expect(result.consumed).toHaveLength(1);
+    expect(result.consumed[0]!.inventoryItemId).toBe(cascadeExact.id);
+    expect(result.consumed[0]!.quantityNormalized).toBe(50);
+    expect(mockState.inventory.find((item) => item.id === cascadeExact.id)!.normalizedQuantity).toBe(150);
+    expect(mockState.allocations.some((allocation) => allocation.recipeIngredientId === lRiceHusk.id)).toBe(false);
+    // Ф4: рисовая лузга (missing, без единой позиции на складе) фиксируется в
+    // результате как пропущенная строка — панель склада может честно сказать,
+    // что списано частично.
+    expect(result.skippedLineCount).toBe(1);
+    expect(result.skippedLineNames).toEqual(["Рисовая лузга"]);
+
+    // Повторное нажатие после успешного (пусть и частичного) списания — та же
+    // идемпотентность, что и у обычного списания.
+    await expect(consumeBrewBatchInventory(USER_ID, batch.id, { allowPartial: true }))
+      .rejects.toThrow("ALREADY_CONSUMED");
+  });
+
+  it("короткая не-presence-based строка клампится до остатка вместо INSUFFICIENT_STOCK", async () => {
+    mockState.catalogItems = [
+      catalog("munich--brandA", "malt", "Мюнхенский", "Munich", { malt_type: "base", color_ebc_min: 15, color_ebc_max: 18 })
+    ];
+    const lMunich = line({ ingredientCatalogItemId: "munich--brandA", ingredientCategory: "fermentable", type: "malt", ingredientDisplayNameSnapshot: "Munich BrandA", amountNormalizedQuantity: 2000, amountNormalizedUnit: "g" });
+    mockState.lines = [lMunich];
+
+    const munichShort = shelfItem({ ingredientCatalogItemId: "munich--brandA", normalizedQuantity: 500, normalizedUnit: "g", ingredientDisplayNameSnapshot: "Munich BrandA (складская)" });
+    mockState.inventory = [munichShort];
+    mockState.enrichedInventory = [
+      enrichedItem(munichShort, { category: "fermentable", type: "malt", displayName: "Munich", technicalData: { type: "malt", maltType: "base", colorEbcMin: 15, colorEbcMax: 18 } })
+    ];
+
+    const batch = makeBatch(uuid(507));
+    mockState.brewBatches = [batch];
+
+    const result = await consumeBrewBatchInventory(USER_ID, batch.id, { allowPartial: true });
+
+    expect(result.consumed).toHaveLength(1);
+    expect(result.consumed[0]!.quantityNormalized).toBe(500);
+    // requiredQuantityNormalized виден отдельно от списанного — панель склада честно
+    // показывает "списали меньше, чем нужно" (см. buildRequirementsByItem).
+    expect(result.consumed[0]!.requiredQuantityNormalized).toBe(2000);
+    expect(mockState.inventory.find((item) => item.id === munichShort.id)!.normalizedQuantity).toBe(0);
+    // Строка клампнулась (exactItem найден, просто короткий) — это НЕ пропущенная
+    // строка: пропущены только те, у кого exact-позиции нет вовсе.
+    expect(result.skippedLineCount).toBe(0);
+    expect(result.skippedLineNames).toEqual([]);
+  });
+
+  it("строка с утверждённой заменой не попадает в пропущенные, даже если exact-позиции нет", async () => {
+    mockState.catalogItems = [
+      catalog("beerex--pilsner", "malt", "Пилснер", "Pilsner", { malt_type: "base", color_ebc_min: 3, color_ebc_max: 4 }),
+      catalog("kursk--pilsner", "malt", "Пилснер", "Pilsner", { malt_type: "base", color_ebc_min: 3, color_ebc_max: 5 }),
+      catalog("rice-husk", "consumable", "Рисовая лузга", "Rice husk", {})
+    ];
+    // Строка без exact-позиции, но с заменой, которую владелец утвердил в
+    // предпросмотре — списывается с замены, в skipped попадать не должна.
+    const lPilsner = line({ ingredientCatalogItemId: "beerex--pilsner", ingredientCategory: "fermentable", type: "malt", ingredientDisplayNameSnapshot: "Beerex Pilsner", amountNormalizedQuantity: 5000, amountNormalizedUnit: "g" });
+    // Строка вовсе без позиции на складе и без утверждённой замены — попадает в skipped.
+    const lRiceHusk = line({ ingredientCatalogItemId: "rice-husk", ingredientCategory: "consumable", type: "consumable", ingredientDisplayNameSnapshot: "Рисовая лузга", amountNormalizedQuantity: 300, amountNormalizedUnit: "g" });
+    mockState.lines = [lPilsner, lRiceHusk];
+
+    const pilsnerSub = shelfItem({ ingredientCatalogItemId: "kursk--pilsner", normalizedQuantity: 6000, normalizedUnit: "g", ingredientDisplayNameSnapshot: "Курский пилс (складская)" });
+    mockState.inventory = [pilsnerSub];
+    mockState.enrichedInventory = [
+      enrichedItem(pilsnerSub, { category: "fermentable", type: "malt", displayName: "Pilsner" })
+    ];
+
+    const batch = makeBatch(uuid(508));
+    mockState.brewBatches = [batch];
+
+    const result = await consumeBrewBatchInventory(USER_ID, batch.id, {
+      allowPartial: true,
+      substitutions: [{ recipeIngredientId: lPilsner.id, inventoryItemId: pilsnerSub.id }]
+    });
+
+    expect(result.consumed).toHaveLength(1);
+    expect(result.consumed[0]!.inventoryItemId).toBe(pilsnerSub.id);
+    expect(result.consumed[0]!.substitutedFor).toBe("Beerex Pilsner");
+    // Только рисовая лузга (без замены) — пропущена; строка с заменой не в списке.
+    expect(result.skippedLineCount).toBe(1);
+    expect(result.skippedLineNames).toEqual(["Рисовая лузга"]);
+  });
+});

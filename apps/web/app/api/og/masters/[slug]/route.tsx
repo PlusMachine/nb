@@ -25,11 +25,11 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
     if (!master) {
       return ogStaticFallback();
     }
-    return renderOgCardResponse(buildMasterOgView(master.snapshot, { domain, wordmark: SITE_NAME }));
+    return await renderOgCardResponse(buildMasterOgView(master.snapshot, { domain, wordmark: SITE_NAME }));
   } catch (error) {
     console.error("og master card render failed", { slug, error });
     try {
-      return renderOgFallbackResponse(SITE_NAME);
+      return await renderOgFallbackResponse(SITE_NAME);
     } catch {
       return ogStaticFallback();
     }

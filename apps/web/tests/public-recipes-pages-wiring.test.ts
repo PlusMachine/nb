@@ -147,8 +147,10 @@ describe("public recipe pages wiring", () => {
     expect(metadata.title).toContain("рецепт");
     expect(metadata.title).toContain("Американский IPA");
     expect(metadata.description).toContain("ABV");
+    // Ф5: og:image всегда генерённая карточка, даже когда у рецепта есть
+    // heroImageId — фото встраивается врезкой внутри api/og/recipes/[slug].
     expect(metadata.openGraph?.images).toEqual([
-      { url: "/api/recipe-images/img-42/large", alt: expect.stringContaining("Public IPA") }
+      { url: "/api/og/recipes/public-ipa", width: 1200, height: 630, alt: expect.stringContaining("Public IPA") }
     ]);
   });
 

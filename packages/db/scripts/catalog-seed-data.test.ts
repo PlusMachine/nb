@@ -36,17 +36,55 @@ describe("catalog seed data", () => {
     expect(prepared.filter((item) => item.ingredient.type === "water_treatment")).toHaveLength(28);
   });
 
-  it("seeds package variants only for additive/consumable split items", () => {
+  it("seeds package variants for additive/consumable split items, every hop, and branded dry yeast", () => {
     const prepared = catalogSeedManifest.flatMap((spec) => prepareCatalogSeedFile(spec));
     const withPackageVariants = prepared.filter((item) => item.packageVariants.length > 0);
-    const withoutConsumables = prepared.filter((item) => (
+    const withoutConsumablesHopsYeasts = prepared.filter((item) => (
       item.ingredient.type !== "consumable"
+      && item.ingredient.type !== "hop"
+      && item.ingredient.type !== "yeast"
       && item.packageVariants.length > 0
     ));
 
-    expect(withPackageVariants).toHaveLength(57);
-    expect(withPackageVariants.flatMap((item) => item.packageVariants)).toHaveLength(125);
-    expect(withoutConsumables).toHaveLength(0);
+    const consumableVariants = withPackageVariants
+      .filter((item) => item.ingredient.type === "consumable")
+      .flatMap((item) => item.packageVariants);
+    const hopItems = prepared.filter((item) => item.ingredient.type === "hop");
+    const brandedDryYeastItems = withPackageVariants.filter((item) => item.ingredient.type === "yeast");
+
+    // 125 расходники/добавки (не менялось) + 248 хмелей * 2 фасовки + 83 брендованных сухих дрожжей
+    // (Fermentis 28 * 11.5 г, Lallemand 27 * 11 г, Mangrove Jack's 28 * 10 г).
+    expect(withPackageVariants.flatMap((item) => item.packageVariants)).toHaveLength(125 + 248 * 2 + 83);
+    expect(consumableVariants).toHaveLength(125);
+    expect(withoutConsumablesHopsYeasts).toHaveLength(0);
+
+    expect(hopItems).toHaveLength(248);
+    for (const hop of hopItems) {
+      expect(hop.packageVariants).toHaveLength(2);
+      const defaults = hop.packageVariants.filter((variant) => variant.isDefaultForStock);
+      expect(defaults).toHaveLength(1);
+      expect(defaults[0]?.stockContentAmount).toBe(50);
+      expect(defaults[0]?.stockContentUnit).toBe("g");
+    }
+
+    expect(brandedDryYeastItems).toHaveLength(83);
+    const gramsByBrand: Record<string, number> = {
+      Fermentis: 11.5,
+      Lallemand: 11,
+      "Mangrove Jack's": 10
+    };
+    const brandedCounts: Record<string, number> = { Fermentis: 0, Lallemand: 0, "Mangrove Jack's": 0 };
+    for (const yeast of brandedDryYeastItems) {
+      expect(yeast.packageVariants).toHaveLength(1);
+      const brand = yeast.ingredient.brand as string;
+      expect(gramsByBrand).toHaveProperty(brand);
+      brandedCounts[brand] += 1;
+      const [variant] = yeast.packageVariants;
+      expect(variant.stockContentAmount).toBe(gramsByBrand[brand]);
+      expect(variant.stockContentUnit).toBe("g");
+      expect(variant.isDefaultForStock).toBe(true);
+    }
+    expect(brandedCounts).toEqual({ Fermentis: 28, Lallemand: 27, "Mangrove Jack's": 28 });
   });
 
   it("preserves runtime/search fields when split manifests resolve legacy consumable data", () => {

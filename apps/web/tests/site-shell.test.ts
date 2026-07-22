@@ -18,6 +18,7 @@ const renderHeader = () =>
   renderToStaticMarkup(
     React.createElement(ThemeProvider, {
       initialPreference: "system",
+      initialSkin: "classic",
       children: React.createElement(SiteHeader, {})
     })
   );

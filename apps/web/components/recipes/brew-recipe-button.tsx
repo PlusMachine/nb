@@ -50,7 +50,7 @@ export function BrewRecipeButton({
 
   return (
     <>
-      <Button type="button" size="md" onClick={() => setOpen(true)}>
+      <Button type="button" variant="brand" size="md" onClick={() => setOpen(true)}>
         <Timer className="h-4 w-4" aria-hidden />
         Сварить
       </Button>

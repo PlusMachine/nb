@@ -98,7 +98,7 @@ export const resolveInventoryItemPackEquivalent = ({
   return resolveInventoryPackEquivalent(technicalData ?? null);
 };
 
-const convertWithinDimension = (
+export const convertWithinDimension = (
   quantity: number,
   fromUnit: InventoryUnit,
   toUnit: InventoryUnit

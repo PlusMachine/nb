@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { LayoutGrid, List, Search } from "lucide-react";
 
 import { Input } from "@nb/ui";
+import { buildLayoutQueryVariants, buildSearchQueryVariants, normalizeSearchText } from "@nb/search";
 
 import type { OwnerRecipeCardDto, RecipeMatchDto, RecipePublicationState } from "@/features/recipes/contracts";
 import { resolveBrewabilityBadge } from "@/features/recipes/brewability-badge";
@@ -43,13 +44,15 @@ import { BrewPickerDialog } from "./brew-picker-dialog";
  * тулбар — 2 строки (поиск; затем сортировка + вид), на `sm` и шире — снова
  * одна строка.
  *
- * Режим `intent="brew"` — вход «Сварить» с дашборда/списка варок: карточки
- * становятся селекторами (клик открывает {@link BrewPickerDialog} по рецепту),
- * дефолтная сортировка — «сначала можно сварить» (доступна и в режиме
- * управления — просто не по умолчанию), фильтр статуса публикации скрыт
- * (варить можно и черновик). Пункт меню «Сварить» есть у карточки в обоих
- * режимах — {@link BrewPickerDialog} рендерится, когда выбран рецепт, вне
- * зависимости от `intent`.
+ * Режим `intent="brew"` — вход «Сварить» с дашборда/списка варок: клик по телу
+ * карточки ведёт себя так же, как в управлении (открывает рецепт) — единая
+ * страница выбора без скрытой смены поведения по `?intent=brew` (Ф1). Варка
+ * стартует отдельной primary-кнопкой «Сварить» на карточке ({@link
+ * OwnerRecipeCard}/{@link OwnerRecipeRow}), которая открывает {@link
+ * BrewPickerDialog} по этому рецепту; в manage-режиме то же действие — пункт
+ * кебаб-меню. Дефолтная сортировка в brew — «сначала можно сварить» (доступна
+ * и в управлении — просто не по умолчанию), фильтр статуса публикации скрыт
+ * (варить можно и черновик).
  */
 
 type GalleryIntent = "manage" | "brew";
@@ -358,25 +361,76 @@ function RecipesGalleryInner({
     setView(next);
   };
 
+  // Нормализованный «стог» для поиска по каждому рецепту (название + стиль +
+  // код BJCP) — считается один раз на список рецептов, а не на каждый ввод.
+  const haystackById = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const recipe of recipes) {
+      const parts = [recipe.title, recipe.styleName, recipe.styleCode].filter(Boolean).join(" ");
+      map.set(recipe.id, normalizeSearchText(parts));
+    }
+    return map;
+  }, [recipes]);
+
+  // Сырой (ненормализованный) «стог» — нужен только для легаси-фолбэка ниже:
+  // normalizeSearchText вырезает пунктуацию/сепараторы, так что запрос вроде
+  // «-» или «...» в нормализованном стоге искать бесполезно.
+  const rawHaystackById = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const recipe of recipes) {
+      const parts = [recipe.title, recipe.styleName, recipe.styleCode].filter(Boolean).join(" ");
+      map.set(recipe.id, parts.toLowerCase());
+    }
+    return map;
+  }, [recipes]);
+
   const visible = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    const filtered = recipes.filter((recipe) => {
+    const trimmedQuery = query.trim();
+    // Раскладка — только фолбэк при нуле честной выдачи (см. ТЗ С1), поэтому
+    // варианты запроса считаются заранее и один раз на рендер, а не на карточку.
+    const variants = trimmedQuery === "" ? [] : buildSearchQueryVariants(trimmedQuery);
+    const matchesVariants = (haystack: string) => variants.some((variant) => haystack.includes(variant));
+
+    // Запрос целиком из пунктуации/сепараторов («-», «...», «!!!») нормализуется
+    // в пустую строку → buildSearchQueryVariants даёт [], а значит честного
+    // поиска по нормализованному стогу нет. Фолбэк на литеральный substring по
+    // СЫРЫМ полям — тот же случай уже чинили на складе, см.
+    // features/inventory/service.ts buildInventorySearchScope. Раскладочный
+    // проход для такого запроса смысла не имеет — пропускаем его ниже.
+    const literalFallbackQuery = trimmedQuery !== "" && variants.length === 0 ? trimmedQuery.toLowerCase() : null;
+
+    let filtered = recipes.filter((recipe) => {
       // Статус публикации фильтруем только в режиме управления — варить можно и черновик.
       if (!brewMode && !matchesStatus(recipe.publicationState, status)) {
         return false;
       }
-      if (needle === "") {
+      if (trimmedQuery === "") {
         return true;
       }
-      return (
-        recipe.title.toLowerCase().includes(needle) ||
-        (recipe.styleName?.toLowerCase().includes(needle) ?? false)
-      );
+      if (literalFallbackQuery !== null) {
+        return (rawHaystackById.get(recipe.id) ?? "").includes(literalFallbackQuery);
+      }
+      return matchesVariants(haystackById.get(recipe.id) ?? "");
     });
+
+    // Нуль совпадений по честным вариантам при непустом запросе — второй проход
+    // с раскладочным фолбэком (например «cnfen» → «стаут»).
+    if (trimmedQuery !== "" && filtered.length === 0 && literalFallbackQuery === null) {
+      const layoutVariants = buildLayoutQueryVariants(trimmedQuery);
+      if (layoutVariants.length > 0) {
+        const matchesLayout = (haystack: string) => layoutVariants.some((variant) => haystack.includes(variant));
+        filtered = recipes.filter((recipe) => {
+          if (!brewMode && !matchesStatus(recipe.publicationState, status)) {
+            return false;
+          }
+          return matchesLayout(haystackById.get(recipe.id) ?? "");
+        });
+      }
+    }
 
     return sortOwnerRecipeCards(filtered, sort, (id) => getMatch?.(id) ?? null);
     // matchReady в зависимостях: пересортировать, когда матч склад↔рецепт догрузился.
-  }, [recipes, query, status, sort, brewMode, getMatch, matchReady]);
+  }, [recipes, query, status, sort, brewMode, getMatch, matchReady, haystackById, rawHaystackById]);
 
   // Смена поиска/статуса/сортировки меняет набор результатов — начинаем
   // подгрузку заново, иначе кнопка «Показать ещё» могла бы остаться в

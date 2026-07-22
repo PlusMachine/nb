@@ -35,6 +35,11 @@ const copyText = async (text: string): Promise<boolean> => {
   }
 };
 
+// Переиспользуется вне этого файла (П3 «Скопировать список» в /app/shopping) —
+// копирование произвольного плоского текста тем же приёмом (Clipboard API +
+// textarea/execCommand фолбэк), а не только href.
+export const copyPlainText = copyText;
+
 export type CopyLinkButtonProps = {
   /** Строит актуальный href в момент клика — читает состояние по требованию. */
   buildHref: () => string;

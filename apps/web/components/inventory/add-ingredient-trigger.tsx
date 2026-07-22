@@ -53,6 +53,7 @@ export function AddIngredientTrigger({
     <>
       <Button
         type="button"
+        variant="brand"
         size="md"
         onClick={() => setOpen(true)}
         className={`${fullWidth ? "w-full justify-center" : ""} ${className ?? ""}`.trim()}

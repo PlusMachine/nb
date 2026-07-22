@@ -1,7 +1,14 @@
 import type { CSSProperties, ReactElement } from "react";
 
 import { OG_COLORS, OG_FONT_FAMILY, OG_SIZE, OG_STRIP_WIDTH } from "./theme";
-import { sanitizeOgCardView, type OgCardView, type OgSecondaryLine, type OgStrip, type RecipeOgView } from "./models";
+import {
+  recipeCardViewFromRecipeView,
+  sanitizeOgCardView,
+  type OgCardView,
+  type OgSecondaryLine,
+  type OgStrip,
+  type RecipeOgView
+} from "./models";
 
 // Раскладка OG-карточек под Satori (next/og). ВАЖНО про ограничения движка
 // (docs/specs/og-images.md §6): это НЕ полный CSS — только flexbox (Yoga).
@@ -36,6 +43,21 @@ const contentStyle: CSSProperties = {
 const topGroupStyle: CSSProperties = {
   display: "flex",
   flexDirection: "column"
+};
+
+/**
+ * Ф3 (centered): оборачивает topGroup, когда нужно вертикально центрировать
+ * eyebrow+title в свободном пространстве (обложки разделов без статов). flex:1
+ * съедает всё, что contentStyle оставляет между паддингом и футером, а
+ * justifyContent центрирует topGroup внутри — footer при этом остаётся ниже,
+ * на своей естественной высоте, т.е. прижат к низу. Без флага эта обёртка не
+ * рендерится вовсе — раскладка сущностных карточек не меняется ни на байт.
+ */
+const centeredTopGroupWrapperStyle: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  flex: 1,
+  justifyContent: "center"
 };
 
 const eyebrowStyle: CSSProperties = {
@@ -80,8 +102,11 @@ const statValueStyle: CSSProperties = {
   marginTop: 2
 };
 
+/** Дефолтный кегль factsLine — используется, если у view нет factsLineFontSize. */
+const FACTS_LINE_DEFAULT_FONT_SIZE = 34;
+
 const factsLineStyle: CSSProperties = {
-  fontSize: 34,
+  fontSize: FACTS_LINE_DEFAULT_FONT_SIZE,
   fontWeight: 500,
   lineHeight: 1.25,
   marginTop: 40,
@@ -161,70 +186,69 @@ export function renderOgCard(view: OgCardView): ReactElement {
   // Чистим эмодзи/пиктограммы из всех free-text полей ДО Satori (иначе он тянет
   // twemoji с CDN и роняет рендер посреди стрима — route try/catch это не ловит).
   const v = sanitizeOgCardView(view);
+  const topGroup = (
+    <div style={topGroupStyle}>
+      {v.eyebrow ? <div style={eyebrowStyle}>{v.eyebrow}</div> : null}
+      <div
+        style={{
+          fontSize: v.titleFontSize,
+          fontWeight: 700,
+          lineHeight: 1.1,
+          marginTop: 24,
+          color: OG_COLORS.foreground,
+          // Название без пробелов (юзерский ввод) Satori не переносит по
+          // умолчанию → уезжает за холст. Ломаем по символам как страховку.
+          wordBreak: "break-word"
+        }}
+      >
+        {v.title}
+      </div>
+      {v.subtitle ? <div style={subtitleStyle}>{v.subtitle}</div> : null}
+      {v.stats && v.stats.length > 0 ? (
+        <div style={statsRowStyle}>
+          {v.stats.map((stat) => (
+            <div key={stat.label} style={statCellStyle}>
+              <div style={statLabelStyle}>{stat.label}</div>
+              <div style={statValueStyle}>{stat.value}</div>
+            </div>
+          ))}
+        </div>
+      ) : null}
+      {v.factsLine ? (
+        <div style={{ ...factsLineStyle, fontSize: v.factsLineFontSize ?? FACTS_LINE_DEFAULT_FONT_SIZE }}>
+          {v.factsLine}
+        </div>
+      ) : null}
+      {v.secondaryLine ? renderSecondaryLine(v.secondaryLine) : null}
+    </div>
+  );
   return (
     <div style={rootStyle}>
       <div style={stripStyle(v.strip)} />
       <div style={contentStyle}>
-        <div style={topGroupStyle}>
-          <div style={eyebrowStyle}>{v.eyebrow}</div>
-          <div
-            style={{
-              fontSize: v.titleFontSize,
-              fontWeight: 700,
-              lineHeight: 1.1,
-              marginTop: 24,
-              color: OG_COLORS.foreground,
-              // Название без пробелов (юзерский ввод) Satori не переносит по
-              // умолчанию → уезжает за холст. Ломаем по символам как страховку.
-              wordBreak: "break-word"
-            }}
-          >
-            {v.title}
-          </div>
-          {v.subtitle ? <div style={subtitleStyle}>{v.subtitle}</div> : null}
-          {v.stats && v.stats.length > 0 ? (
-            <div style={statsRowStyle}>
-              {v.stats.map((stat) => (
-                <div key={stat.label} style={statCellStyle}>
-                  <div style={statLabelStyle}>{stat.label}</div>
-                  <div style={statValueStyle}>{stat.value}</div>
-                </div>
-              ))}
-            </div>
-          ) : null}
-          {v.factsLine ? <div style={factsLineStyle}>{v.factsLine}</div> : null}
-          {v.secondaryLine ? renderSecondaryLine(v.secondaryLine) : null}
-        </div>
+        {v.centered ? <div style={centeredTopGroupWrapperStyle}>{topGroup}</div> : topGroup}
         {renderFooter(v.wordmark, v.domain)}
       </div>
+      {v.photo ? (
+        <img
+          src={v.photo.dataUri}
+          width={v.photo.width}
+          height={v.photo.height}
+          style={{ width: v.photo.width, height: v.photo.height, objectFit: "cover" }}
+        />
+      ) : null}
     </div>
   );
 }
 
-/** Карточка рецепта (Ф1) — тонкий адаптер над renderOgCard; вид не менялся. */
+/**
+ * Карточка рецепта (Ф1) — тонкий адаптер над renderOgCard; вид без фото не
+ * менялся (recipeCardViewFromRecipeView сохранён и переиспользуется здесь ради
+ * обратной совместимости экспорта — потребители/тесты зовут renderRecipeOgCard
+ * напрямую).
+ */
 export function renderRecipeOgCard(view: RecipeOgView): ReactElement {
-  let secondaryLine: OgSecondaryLine | null = null;
-  if (view.rating) {
-    secondaryLine = {
-      kind: "rating",
-      value: view.rating.value,
-      count: view.rating.count,
-      extra: view.brewedText
-    };
-  } else if (view.brewedText) {
-    secondaryLine = { kind: "text", text: view.brewedText };
-  }
-
-  return renderOgCard({
-    eyebrow: view.eyebrow,
-    title: view.title,
-    titleFontSize: view.titleFontSize,
-    stats: view.stats,
-    secondaryLine,
-    strip: { kind: "solid", color: view.stripColor },
-    domain: view.domain,
-    wordmark: view.wordmark
-  });
+  return renderOgCard(recipeCardViewFromRecipeView(view));
 }
 
 /**

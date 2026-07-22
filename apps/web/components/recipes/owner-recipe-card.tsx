@@ -14,7 +14,7 @@ import {
 } from "@/features/recipes/format";
 import { formatGravity, type PreferredGravityUnit } from "@/features/system/gravity-units";
 import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
-import { DropdownMenu, type DropdownMenuItem } from "@nb/ui";
+import { Button, DropdownMenu, type DropdownMenuItem } from "@nb/ui";
 
 import { ColorStatCell, StatCell, StyleChip, RecipeThumb } from "./recipe-card-parts";
 import { RecipeMatchBadge } from "./recipe-match-badge";
@@ -28,9 +28,11 @@ import { RecipeMatchBadge } from "./recipe-match-badge";
  * - `"manage"` (по умолчанию) — stretched-элемент ведёт в редактор, под статами —
  *   ссылка на публичную страницу, поверх обложки — кнопка-меню действий («Удалить»,
  *   а если передан `onBrew` — ещё и «Сварить»).
- * - `"brew"` — режим выбора рецепта для варки: stretched-элемент становится кнопкой,
- *   вызывающей `onBrew`, аффорданс — «Сварить» с иконкой; меню действий и ссылка на
- *   публичную страницу скрыты.
+ * - `"brew"` — режим выбора рецепта для варки: stretched-элемент ведёт в редактор,
+ *   как и в `"manage"` (клик по телу карточки не должен вести себя иначе от режима
+ *   к режиму) — варка стартует отдельной primary-кнопкой «Сварить» вне ссылки,
+ *   которая в футере карточки занимает место ссылки на публичную страницу; меню
+ *   действий скрыто.
  * - `"preview"` — обзорная карточка без владельческих действий (виджет дашборда,
  *   демо-выставка): stretched-элемент ведёт в редактор и ссылка на публичную
  *   страницу остаются как в `"manage"`, но меню действий не рендерится и
@@ -227,20 +229,14 @@ export function OwnerRecipeCard({
 
   return (
     <article className="group relative overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-sm transition hover:border-border hover:shadow-md">
-      {brewMode ? (
-        <button
-          type="button"
-          onClick={() => onBrew?.(recipe)}
-          aria-label={`Сварить «${recipe.title}»`}
-          className="absolute inset-0 z-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
-        />
-      ) : (
-        <Link
-          href={editHref}
-          aria-label={recipe.title}
-          className="absolute inset-0 z-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
-        />
-      )}
+      {/* Клик по телу карточки одинаков во всех режимах — открывает рецепт;
+          в brew-режиме варка стартует отдельной кнопкой «Сварить» ниже, а не
+          подменой этой ссылки (Ф1: без скрытой смены поведения по intent). */}
+      <Link
+        href={editHref}
+        aria-label={recipe.title}
+        className="absolute inset-0 z-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+      />
 
       <div className="pointer-events-none flex h-full flex-col gap-3">
         <div className="flex items-start gap-3">
@@ -277,10 +273,24 @@ export function OwnerRecipeCard({
         <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-1 text-xs text-muted-foreground">
           <UpdatedAgo value={recipe.updatedAt} className="truncate" />
           {brewMode ? (
-            <span className="inline-flex items-center gap-1 font-semibold text-primary">
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              aria-label={`Сварить «${recipe.title}»`}
+              onClick={(event) => {
+                // stopPropagation — как у соседней ссылки «Публичная страница»
+                // и триггера кебаб-меню: кнопка не вложена в stretched-link
+                // (сидит рядом с ним, поверх — через z-10), но защитно гасим
+                // всплытие на случай обработчика клика выше по дереву карточки.
+                event.stopPropagation();
+                onBrew?.(recipe);
+              }}
+              className="pointer-events-auto relative z-10"
+            >
               <Timer className="h-3.5 w-3.5" aria-hidden />
               Сварить
-            </span>
+            </Button>
           ) : publicPage ? (
             <Link
               href={publicPage}
@@ -329,20 +339,13 @@ export function OwnerRecipeRow({
 
   return (
     <article className={`group relative flex items-center gap-4 overflow-hidden rounded-2xl border border-border bg-card p-3 shadow-sm transition hover:border-border hover:shadow-md ${showActionsMenu ? "pr-14" : "pr-4"}`}>
-      {brewMode ? (
-        <button
-          type="button"
-          onClick={() => onBrew?.(recipe)}
-          aria-label={`Сварить «${recipe.title}»`}
-          className="absolute inset-0 z-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
-        />
-      ) : (
-        <Link
-          href={editHref}
-          aria-label={recipe.title}
-          className="absolute inset-0 z-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
-        />
-      )}
+      {/* Клик по телу строки одинаков во всех режимах — открывает рецепт;
+          в brew-режиме варка стартует отдельной кнопкой «Сварить» справа. */}
+      <Link
+        href={editHref}
+        aria-label={recipe.title}
+        className="absolute inset-0 z-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+      />
 
       <RecipeThumb
         heroImage={recipe.heroImage}
@@ -387,10 +390,20 @@ export function OwnerRecipeRow({
       </div>
 
       {brewMode ? (
-        <span className="pointer-events-none inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-primary">
+        <Button
+          type="button"
+          variant="primary"
+          size="sm"
+          aria-label={`Сварить «${recipe.title}»`}
+          onClick={(event) => {
+            event.stopPropagation();
+            onBrew?.(recipe);
+          }}
+          className="pointer-events-auto relative z-10 shrink-0"
+        >
           <Timer className="h-4 w-4" aria-hidden />
           Сварить
-        </span>
+        </Button>
       ) : showActionsMenu ? (
         <div className="pointer-events-auto absolute right-3 top-1/2 z-10 -translate-y-1/2">
           <OwnerActionsMenu

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z, ZodError } from "zod";
 
 import { requireUser } from "@/lib/auth";
+import { pluralize } from "@/lib/pluralize";
 import {
   addBrewMeasurement,
   deleteBrewMeasurement,
@@ -261,11 +262,15 @@ export const previewBrewBatchInventoryAction = async (
 
 export const consumeBrewBatchInventoryAction = async (
   brewBatchId: string,
-  substitutions?: BrewBatchConsumeSubstitution[]
+  substitutions?: BrewBatchConsumeSubstitution[],
+  opts?: { allowPartial?: boolean }
 ): Promise<BrewInventoryResult> => {
   try {
     const user = await requireUser();
-    const result = await consumeBrewBatchInventory(user.id, brewBatchId, { substitutions });
+    const result = await consumeBrewBatchInventory(user.id, brewBatchId, {
+      substitutions,
+      allowPartial: opts?.allowPartial
+    });
     revalidateBatch(brewBatchId);
     if (!result.hasConsumed) {
       return {
@@ -277,15 +282,39 @@ export const consumeBrewBatchInventoryAction = async (
         substituteAvailableCount: result.substituteAvailableCount
       };
     }
-    // Дрожжей на складе меньше, чем требует рецепт: списание не падает, а ужимается
-    // до остатка (см. inventory.ts). Молчать об этом нельзя — «Списано» без оговорки
-    // читается как «всё по рецепту».
+    // Дрожжей (и клампнутых не-presence-based строк в partial-режиме) на складе
+    // меньше, чем требует рецепт: списание не падает, а ужимается до остатка
+    // (см. inventory.ts). Молчать об этом нельзя — «Списано» без оговорки читается
+    // как «всё по рецепту».
     const short = result.consumed.filter((line) => line.requiredQuantityNormalized != null);
-    if (short.length > 0) {
-      const names = short.map((line) => line.ingredientDisplayName?.trim() || "ингредиент").join(", ");
+    const shortNames = short.map((line) => line.ingredientDisplayName?.trim() || "ингредиент").join(", ");
+    const skippedCount = result.skippedLineCount;
+    const skippedNames = result.skippedLineNames.map((name) => name.trim() || "ингредиент").join(", ");
+    // Родительный падеж («не было чего?») во всех формах — не именительный
+    // («1 позиция не было» согласовать нельзя): «1 позиции», «2 позиций», «5 позиций».
+    const skippedWord = pluralize(skippedCount, ["позиции", "позиций", "позиций"]);
+
+    if (skippedCount > 0 && short.length > 0) {
       return {
         ok: true,
-        message: `Ингредиенты списаны. На складе не хватило: ${names} — списали остаток.`,
+        message: `Ингредиенты списаны частично. На складе не хватило: ${shortNames} — списали остаток. `
+          + `Ещё ${skippedCount} ${skippedWord} не было на складе: ${skippedNames}.`,
+        view: result,
+        substituteAvailableCount: result.substituteAvailableCount
+      };
+    }
+    if (skippedCount > 0) {
+      return {
+        ok: true,
+        message: `Списано частично — ${skippedCount} ${skippedWord} не было на складе: ${skippedNames}.`,
+        view: result,
+        substituteAvailableCount: result.substituteAvailableCount
+      };
+    }
+    if (short.length > 0) {
+      return {
+        ok: true,
+        message: `Ингредиенты списаны. На складе не хватило: ${shortNames} — списали остаток.`,
         view: result,
         substituteAvailableCount: result.substituteAvailableCount
       };

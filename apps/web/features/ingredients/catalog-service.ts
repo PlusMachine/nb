@@ -43,7 +43,12 @@ import {
   ingredientSearchQuerySchema
 } from "./contracts";
 import { ingredientSearchSimpleModeThreshold } from "./contracts";
-import { filterRankedCatalogNoise, filterRankedFamilyFallback, sortRankedCatalogItems } from "./catalog-ranking";
+import {
+  filterRankedCatalogNoise,
+  filterRankedFamilyFallback,
+  resolveCatalogRescueKind,
+  sortRankedCatalogItems
+} from "./catalog-ranking";
 import { readCustomIngredientMetadata } from "./custom-metadata";
 import { resolveCanonicalFamilyBucket, resolveIngredientMatchKey } from "./match-group";
 import { normalizeSearchText } from "./normalization";
@@ -95,7 +100,7 @@ import {
   resolveIngredientSubtype,
   type IngredientSubtype
 } from "./taxonomy";
-import { matchesIngredientFamilyScope, rankIngredientCandidate } from "./ranking";
+import { matchesIngredientFamilyScope, rankIngredientCandidate, rankQueryTwoPass } from "./ranking";
 import {
   applyFavoriteStateToCatalogItems,
   listIngredientPurchaseLinksByReference
@@ -333,7 +338,8 @@ const buildSearchText = (item: UserCatalogIngredientDto) => {
 
 export const toIngredientSuggestionItem = (
   item: UserCatalogIngredientDto,
-  score?: number
+  score?: number,
+  matchRescue?: "layout" | "fuzzy" | "scatter"
 ): IngredientSuggestionItem => ({
   id: item.id,
   type: item.type,
@@ -383,6 +389,7 @@ export const toIngredientSuggestionItem = (
   familyDisplayName: null,
   familyCanonicalName: null,
   score,
+  matchRescue,
   derivedFromIngredientId: item.derivedFromIngredientId,
   derivedFromDisplayName: item.derivedFromDisplayName,
   isFavorite: item.isFavorite ?? false,
@@ -717,7 +724,8 @@ const buildBrandMarketCountMap = (items: UserCatalogIngredientDto[]) => {
 const buildRankedItem = (
   item: UserCatalogIngredientDto,
   query: string,
-  brandMarketCounts?: Map<string, number>
+  brandMarketCounts?: Map<string, number>,
+  options?: { includeLayoutVariants?: boolean }
 ): RankedCatalogItem | null => {
   const normalizedBrand = normalizeSearchText(resolveManufacturerLabel(item) ?? "");
   const rank = rankIngredientCandidate(query, {
@@ -755,7 +763,7 @@ const buildRankedItem = (
       stockContentAmount: variant.stockContentAmount,
       stockContentUnit: variant.stockContentUnit
     }))
-  });
+  }, { includeLayoutVariants: options?.includeLayoutVariants ?? false });
 
   if (!rank || rank.score <= 0) {
     return null;
@@ -1636,16 +1644,17 @@ export const searchUserCatalogIngredients = async (
   // названию. Обрезка здесь молча ломает такие пикер-сценарии (см.
   // тест "uses manufacturer refinements as a secondary layer inside a
   // selected consumable group" в user-catalog-ingredient-search.test.ts).
-  const rankedItems = rankingQuery
+  const { rankedItems, usedLayoutFallback } = rankingQuery
     ? (() => {
       const brandMarketCounts = buildBrandMarketCountMap(favoriteScopedItems);
-
-      return favoriteScopedItems
-        .map((item) => buildRankedItem(item, rankingQuery, brandMarketCounts))
+      const { results, usedLayoutFallback: layoutFallback } = rankQueryTwoPass(rankingQuery, (includeLayoutVariants) => favoriteScopedItems
+        .map((item) => buildRankedItem(item, rankingQuery, brandMarketCounts, { includeLayoutVariants }))
         .filter((item): item is RankedCatalogItem => item !== null)
-        .sort(sortRankedCatalogItems);
+        .sort(sortRankedCatalogItems));
+
+      return { rankedItems: results, usedLayoutFallback: layoutFallback };
     })()
-    : buildScopeOnlyRankedItems(favoriteScopedItems);
+    : { rankedItems: buildScopeOnlyRankedItems(favoriteScopedItems), usedLayoutFallback: false };
   const refinements: IngredientSearchRefinement[] = query.category === "consumable" && !query.group
     ? buildConsumableGroupRefinements(rankedItems, query.group)
     : query.category === "water_treatment" && !query.group
@@ -1656,7 +1665,11 @@ export const searchUserCatalogIngredients = async (
   const total = rankedItems.length;
   const items = rankedItems
     .slice(0, query.limit)
-    .map(({ item, score }) => toIngredientSuggestionItem(item, score));
+    .map(({ item, score, tier }) => toIngredientSuggestionItem(
+      item,
+      score,
+      usedLayoutFallback ? "layout" : resolveCatalogRescueKind(tier) ?? undefined
+    ));
   const resolvedGroupValue = query.category === "fermentable"
     ? canonicalizeFermentableQuickStartGroup(query.group)
     : query.category === "consumable"
@@ -1749,23 +1762,36 @@ export const listUserCatalogIngredients = async (
   const view = params.view === "mine" ? "mine" : "all";
   const { catalogItems, customItems, allItems } = await loadUnifiedCatalogItems(userId);
 
-  const rankItems = (items: UserCatalogIngredientDto[]) => (
-    params.q?.trim()
-      ? (() => {
-        const brandMarketCounts = buildBrandMarketCountMap(items);
+  // Rescue-выдача (С4): rankItems возвращает вместе со списком признак того, что
+  // вся выдача — рескью (раскладка ИЛИ лучший (первый после фильтров tier→score)
+  // результат — token-scatter/fuzzy). Без q рескью невозможен (нет ранжирования).
+  const rankItems = (
+    items: UserCatalogIngredientDto[]
+  ): { items: UserCatalogIngredientDto[]; rescue: "layout" | "fuzzy" | "scatter" | null } => {
+    const q = params.q?.trim();
+    if (!q) {
+      return { items: sortCatalogItems(items, sort), rescue: null };
+    }
 
-        return filterRankedFamilyFallback(filterRankedCatalogNoise(items
-          .map((item) => buildRankedItem(item, params.q ?? "", brandMarketCounts))
-          .filter((item): item is RankedCatalogItem => item !== null)
-          .sort(sortRankedCatalogItems)))
-          .map(({ item }) => item);
-      })()
-      : sortCatalogItems(items, sort)
-  );
+    const brandMarketCounts = buildBrandMarketCountMap(items);
 
-  const rankedAllItems = rankItems(allItems);
-  const rankedCustomItems = rankItems(customItems);
+    const { results, usedLayoutFallback } = rankQueryTwoPass(q, (includeLayoutVariants) => filterRankedFamilyFallback(filterRankedCatalogNoise(items
+      .map((item) => buildRankedItem(item, q, brandMarketCounts, { includeLayoutVariants }))
+      .filter((item): item is RankedCatalogItem => item !== null)
+      .sort(sortRankedCatalogItems))));
+
+    return {
+      items: results.map(({ item }) => item),
+      rescue: usedLayoutFallback ? "layout" : resolveCatalogRescueKind(results[0]?.tier)
+    };
+  };
+
+  const rankedAll = rankItems(allItems);
+  const rankedCustom = rankItems(customItems);
+  const rankedAllItems = rankedAll.items;
+  const rankedCustomItems = rankedCustom.items;
   const baseItems = view === "mine" ? rankedCustomItems : rankedAllItems;
+  const searchRescue = view === "mine" ? rankedCustom.rescue : rankedAll.rescue;
   const filteredByCategory = params.category
     ? baseItems.filter((item) => item.category === params.category)
     : baseItems;
@@ -1808,7 +1834,8 @@ export const listUserCatalogIngredients = async (
       byConsumableGroup: countConsumableGroups(baseItems),
       customCount: rankedAllItems.filter((item) => item.source === "custom").length,
       catalogCount: rankedAllItems.filter((item) => item.source === "catalog").length
-    }
+    },
+    searchRescue
   };
 };
 
@@ -1821,22 +1848,28 @@ export const CATALOG_HUB_SEARCH_GROUP_LIMIT = 10;
 // Дублирует rankItems из listUserCatalogIngredients намеренно: ту функцию
 // трогать нельзя (контракт listUserCatalogIngredients зафиксирован), а сортов
 // у хаба нет — только "name" без q. См. notes/catalog-hub-redesign.md, S1.
+// Возвращает вместе со списком признак rescue-выдачи (С4) — см. rankItems выше.
 const rankHubItems = (
   items: UserCatalogIngredientDto[],
   q: string | undefined
-): UserCatalogIngredientDto[] => (
-  q?.trim()
-    ? (() => {
-      const brandMarketCounts = buildBrandMarketCountMap(items);
+): { items: UserCatalogIngredientDto[]; rescue: "layout" | "fuzzy" | "scatter" | null } => {
+  const trimmedQuery = q?.trim();
+  if (!trimmedQuery) {
+    return { items: sortCatalogItems(items, "name"), rescue: null };
+  }
 
-      return filterRankedFamilyFallback(filterRankedCatalogNoise(items
-        .map((item) => buildRankedItem(item, q ?? "", brandMarketCounts))
-        .filter((item): item is RankedCatalogItem => item !== null)
-        .sort(sortRankedCatalogItems)))
-        .map(({ item }) => item);
-    })()
-    : sortCatalogItems(items, "name")
-);
+  const brandMarketCounts = buildBrandMarketCountMap(items);
+
+  const { results, usedLayoutFallback } = rankQueryTwoPass(trimmedQuery, (includeLayoutVariants) => filterRankedFamilyFallback(filterRankedCatalogNoise(items
+    .map((item) => buildRankedItem(item, trimmedQuery, brandMarketCounts, { includeLayoutVariants }))
+    .filter((item): item is RankedCatalogItem => item !== null)
+    .sort(sortRankedCatalogItems))));
+
+  return {
+    items: results.map(({ item }) => item),
+    rescue: usedLayoutFallback ? "layout" : resolveCatalogRescueKind(results[0]?.tier)
+  };
+};
 
 // Лендинг-секция, которой принадлежит элемент каталога (совпадение по
 // категории и, для fermentable, по subtype) — как resolveCatalogLandingForFilter
@@ -1866,9 +1899,12 @@ export const listCatalogHubSections = async (
   const hasQuery = Boolean(params.q?.trim());
   const { customItems, allItems } = await loadUnifiedCatalogItems(userId);
 
-  const rankedAllItems = rankHubItems(allItems, params.q);
-  const rankedCustomItems = rankHubItems(customItems, params.q);
+  const rankedAll = rankHubItems(allItems, params.q);
+  const rankedCustom = rankHubItems(customItems, params.q);
+  const rankedAllItems = rankedAll.items;
+  const rankedCustomItems = rankedCustom.items;
   const baseItems = view === "mine" ? rankedCustomItems : rankedAllItems;
+  const searchRescue = view === "mine" ? rankedCustom.rescue : rankedAll.rescue;
 
   const countByCategory = (items: UserCatalogIngredientDto[]) => ({
     fermentable: items.filter((item) => item.category === "fermentable").length,
@@ -1956,7 +1992,8 @@ export const listCatalogHubSections = async (
       customCount: rankedAllItems.filter((item) => item.source === "custom").length,
       catalogCount: rankedAllItems.filter((item) => item.source === "catalog").length
     },
-    total: sections.reduce((sum, section) => sum + section.total, 0)
+    total: sections.reduce((sum, section) => sum + section.total, 0),
+    searchRescue
   };
 };
 

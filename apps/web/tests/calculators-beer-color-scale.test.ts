@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { calculatorDefinitionBySlug, type ScalarCalculatorField } from "../features/calculators/definitions";
+import { calculatorDefinitionBySlug, type ArrayCalculatorField, type ScalarCalculatorField } from "../features/calculators/definitions";
 
 // beer-color: смена шкалы цвета (EBC ↔ °L) раньше не пересчитывала введённый цвет солода —
 // modeHint честно предупреждал об этом. Теперь colorUnit несёт transformOnChange (по образцу
@@ -74,5 +74,22 @@ describe("beer-color: пересчёт цвета солода при смене
 
   it("modeHint больше не предупреждает, что цвет не пересчитывается (property убрана)", () => {
     expect(definition.modeHint).toBeUndefined();
+  });
+
+  // Статичная подпись "EBC | °L" маскировала разницу шкал ×2 — единица поля цвета должна
+  // следовать за выбранной шкалой (colorUnit), как у dynamicUnit в других калькуляторах.
+  describe("подпись единицы у поля «Цвет» следует за выбранной шкалой", () => {
+    const fermentablesField = definition.fields.find(
+      (field): field is ArrayCalculatorField => field.kind === "array" && field.name === "fermentables"
+    );
+    const colorField = fermentablesField?.fields.find((field) => field.name === "colorLovibond");
+
+    it("colorUnit=EBC → подпись «EBC»", () => {
+      expect(colorField?.dynamicUnit?.({ colorUnit: "EBC" })).toBe("EBC");
+    });
+
+    it("colorUnit=Lovibond → подпись «°L»", () => {
+      expect(colorField?.dynamicUnit?.({ colorUnit: "Lovibond" })).toBe("°L");
+    });
   });
 });

@@ -34,11 +34,11 @@ export async function GET(request: Request, context: { params: Promise<{ source:
     if (!item) {
       return ogStaticFallback();
     }
-    return renderOgCardResponse(buildIngredientOgView(item, { domain, wordmark: SITE_NAME }));
+    return await renderOgCardResponse(buildIngredientOgView(item, { domain, wordmark: SITE_NAME }));
   } catch (error) {
     console.error("og ingredient card render failed", { source, id, error });
     try {
-      return renderOgFallbackResponse(SITE_NAME);
+      return await renderOgFallbackResponse(SITE_NAME);
     } catch {
       return ogStaticFallback();
     }

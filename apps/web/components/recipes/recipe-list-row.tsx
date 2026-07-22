@@ -61,7 +61,7 @@ export function RecipeListRow({
         heroImage={recipe.heroImage}
         styleImageUrl={recipe.styleImageUrl}
         colorSrm={recipe.colorSrm}
-        sharpenStyleOnHover
+        sharpenOnHover
         showColorMarker={false}
         className="aspect-[4/3] w-16 shrink-0 rounded-lg transition-all duration-300 sm:w-20 [@media(hover:hover)]:group-hover:w-32"
         sizes="(max-width: 640px) 90px, 130px"

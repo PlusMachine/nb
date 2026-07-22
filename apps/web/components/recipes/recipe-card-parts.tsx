@@ -249,7 +249,7 @@ export function RecipeThumb({
   colorSrm,
   className,
   sizes,
-  sharpenStyleOnHover = false,
+  sharpenOnHover = false,
   showColorMarker = true
 }: {
   heroImage: PublicRecipeListItem["heroImage"];
@@ -257,15 +257,15 @@ export function RecipeThumb({
   colorSrm: PublicRecipeListItem["colorSrm"];
   className: string;
   sizes: string;
-  /** list-вид (вариант B): размытое фото стиля резчеет на ховере (только мышь). */
-  sharpenStyleOnHover?: boolean;
+  /** list-вид (вариант B): любая обложка (и фото рецепта, и фото стиля) размыта, резчеет на ховере (только мышь). */
+  sharpenOnHover?: boolean;
   /** Метка цвета снизу. Выкл для крошечных миниатюр списка (цвет там — пиллом в тексте). */
   showColorMarker?: boolean;
 }) {
   return (
     <div className={`relative overflow-hidden ${className}`}>
-      {/* Фоновый слой: фото рецепта (резко, с лёгким зумом на ховере) → фото стиля
-          (мягкий блюр-бэкдроп) → заливка-градиент по SRM. */}
+      {/* Фоновый слой: фото рецепта → фото стиля (оба под мягким блюром, резчеют
+          на ховере в list-виде) → заливка-градиент по SRM. */}
       {heroImage ? (
         <Image
           src={heroImage.thumbUrl}
@@ -274,7 +274,9 @@ export function RecipeThumb({
           fill
           unoptimized
           sizes={sizes}
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          className={`scale-105 object-cover blur-[2px] transition duration-500 ${
+            sharpenOnHover ? "[@media(hover:hover)]:group-hover:scale-100 [@media(hover:hover)]:group-hover:blur-0" : ""
+          }`}
           placeholder={heroImage.blurDataUrl ? "blur" : "empty"}
           blurDataURL={heroImage.blurDataUrl ?? undefined}
         />
@@ -287,7 +289,7 @@ export function RecipeThumb({
           unoptimized
           sizes={sizes}
           className={`scale-105 object-cover blur-[2px] transition duration-300 ${
-            sharpenStyleOnHover ? "[@media(hover:hover)]:group-hover:scale-100 [@media(hover:hover)]:group-hover:blur-0" : ""
+            sharpenOnHover ? "[@media(hover:hover)]:group-hover:scale-100 [@media(hover:hover)]:group-hover:blur-0" : ""
           }`}
         />
       ) : colorSrm != null && Number.isFinite(colorSrm) ? (

@@ -60,3 +60,19 @@ export const filterRankedFamilyFallback = <T extends { familyFallback?: boolean 
     ? ranked.filter((match) => match.familyFallback !== true)
     : ranked;
 };
+
+/**
+ * Помечает rescue-совпадение по числовому tier (см. CATALOG_SEARCH_NOISE_TIER_MIN):
+ * tier 8 — token-scatter, tier 9 — fuzzy/левенштейн, иначе — не rescue (null).
+ * Раскладочный rescue ("layout") сюда не входит — он приходит отдельно из
+ * rankQueryTwoPass.usedLayoutFallback (см. С4).
+ */
+export const resolveCatalogRescueKind = (tier: number | undefined): "scatter" | "fuzzy" | null => {
+  if (tier === 8) {
+    return "scatter";
+  }
+  if (tier === 9) {
+    return "fuzzy";
+  }
+  return null;
+};

@@ -118,15 +118,16 @@ describe("bjcp style page — legacy alias redirect", () => {
 });
 
 describe("bjcp style page — OG/twitter image", () => {
-  it("includes an absolute openGraph/twitter image for a style with a real hero photo", async () => {
+  it("uses the generated OG card even for a style with a real hero photo (Ф5: иллюстрация встраивается врезкой внутри карточки, не отдаётся сырым og:image)", async () => {
     const { generateMetadata } = await import("../app/(public)/bjcp/[slug]/page");
 
     const metadata = await generateMetadata({ params: Promise.resolve({ slug: "bjcp-1a-american-light-lager" }) });
+    const cardUrl = "http://localhost:3000/api/og/bjcp/bjcp-1a-american-light-lager";
     expect(metadata.openGraph?.images).toEqual([
-      { url: "http://localhost:3000/images/bjcp/1A%20%E2%80%94%20American%20Light%20Lager.png", alt: expect.any(String) }
+      { url: cardUrl, width: 1200, height: 630, alt: expect.any(String) }
     ]);
     expect(metadata.twitter).toMatchObject({ card: "summary_large_image" });
-    expect((metadata.twitter as any)?.images).toEqual(["http://localhost:3000/images/bjcp/1A%20%E2%80%94%20American%20Light%20Lager.png"]);
+    expect((metadata.twitter as any)?.images).toEqual([cardUrl]);
   });
 
   // Реальный контент: сейчас у всех 128 стилей есть свой синхронизированный hero

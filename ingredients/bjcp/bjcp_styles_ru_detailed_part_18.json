@@ -1,421 +1,421 @@
 {
-  "source": {
-    "document": "2021_Guidelines_Beer_1.25.pdf",
-    "guideline_edition": "BJCP 2021",
-    "translation_notes_ru": "Подробный перевод выполнен по оригинальному гайду BJCP 2021 с редакторской вычиткой на русском языке. Формулировки сохранены близко к оригиналу, но сглажены там, где это нужно для естественного профессионального русского текста и корректной пивоварной терминологии."
-  },
-  "progress": {
-    "styles_total_in_guideline": 128,
-    "styles_translated_in_this_file": 7,
-    "translated_style_ids": [
-      "32A",
-      "32B",
-      "33A",
-      "33B",
-      "34A",
-      "34B",
-      "34C"
-    ],
-    "translated_categories": [
-      "32",
-      "33",
-      "34"
-    ],
-    "next_recommended_batch": [
-      "X1",
-      "X2",
-      "X3",
-      "X4",
-      "X5"
-    ],
-    "counting_note_ru": "Общий счётчик 128 включает 5 локальных стилей Appendix B и 7 подтипов Specialty IPA. Подтипы Specialty IPA уже вложены в part_10 внутри 21B, но пока не вынесены в отдельные standalone-объекты для подсчёта."
-  },
-  "categories": [
-    {
-      "category_id": "32",
-      "category_en": "SMOKED BEER",
-      "category_ru": "Копчёное пиво",
-      "overview_ru": "Категория охватывает specialty-сорта с дымным характером. Ключевой критерий — не сама по себе интенсивность дыма, а то, насколько органично он встроен в пиво и поддерживает базовый стиль, а не подавляет его."
-    },
-    {
-      "category_id": "33",
-      "category_en": "WOOD BEER",
-      "category_ru": "Пиво с древесной выдержкой",
-      "overview_ru": "Сюда входят specialty-сорта, в которых важен характер выдержки в дереве или в бочке: древесные, тостовые, танинные и, при необходимости, баррельные оттенки. Оценка строится вокруг баланса между базовым стилем и вкладом дерева или бочки."
-    },
-    {
-      "category_id": "34",
-      "category_en": "SPECIALTY BEER",
-      "category_ru": "Специальное пиво",
-      "overview_ru": "Это резервная категория для тех сортов, которые не укладываются ни в один другой описанный стиль. Перед тем как отправлять пиво сюда, BJCP рекомендует проверить все предыдущие Specialty-Type категории: 34-я должна оставаться именно последним, а не удобным первым вариантом."
-    }
+ "source": {
+  "document": "2021_Guidelines_Beer_1.25.pdf",
+  "guideline_edition": "BJCP 2021",
+  "translation_notes_ru": "Подробный перевод выполнен по оригинальному гайду BJCP 2021 с редакторской вычиткой на русском языке. Формулировки сохранены близко к оригиналу, но сглажены там, где это нужно для естественного профессионального русского текста и корректной пивоварной терминологии."
+ },
+ "progress": {
+  "styles_total_in_guideline": 128,
+  "styles_translated_in_this_file": 7,
+  "translated_style_ids": [
+   "32A",
+   "32B",
+   "33A",
+   "33B",
+   "34A",
+   "34B",
+   "34C"
   ],
-  "styles": [
-    {
-      "bjcp_id": "32A",
-      "name_en": "Classic Style Smoked Beer",
-      "name_ru": "Копчёная версия классического стиля",
-      "category_id": "32",
-      "category_en": "SMOKED BEER",
-      "category_ru": "Копчёное пиво",
-      "bjcp_heading": "32A. Classic Style Smoked Beer",
-      "description_short_ru": "Классический стиль пива, в котором дымный характер ощутим и приятен, но остаётся в балансе с базовым стилем и не перетягивает всё внимание на себя.",
-      "sections_en": {
-        "overall_impression": "A well-balanced fusion of the malt and hops of the base beer style with a pleasant and agreeable smoke character.",
-        "aroma": "A pleasant balance between the expected aroma of the base beer and smoked malt. The smoke character ranges from low to assertive, and may show varietal wood smoke character (e.g., alder, oak, beechwood). The balance between the smoke and beer can vary – they do not need to be equal in intensity. However, the resulting mix should be appealing. Sharp, phenolic, harsh, rubbery, or burnt smoke-derived aromatics are inappropriate.",
-        "appearance": "Variable. The appearance should reflect the base beer style, although the color is often a bit darker than expected for the plain base style.",
-        "flavor": "Similar to the aroma, with a balance between the base beer and low to assertive smoked malt. Varietal woods can produce different flavor profiles. The balance between smoke and beer can vary, but the resulting blend should be enjoyable. Smoke can add some additional dryness to the finish. Harsh, bitter, burnt, charred, rubbery, sulfury, medicinal, or phenolic smoke-derived flavors are inappropriate.",
-        "mouthfeel": "Varies with the base beer style. Significant astringent, phenolic, smoke-derived harshness is a fault.",
-        "comments": "Use this style for beers other than Bamberg-style Rauchbier (i.e., beechwood-smoked Märzen), which has its own style. Judges should evaluate these beers mostly on the overall balance, and how well the smoke character enhances the base beer.",
-        "history": "The process of using smoked malts has been adapted by craft brewers to many styles. German brewers have traditionally used smoked malts in Bock, Doppelbock, Weissbier, Munich Dunkel, Schwarzbier, Munich Helles, Pils, and other specialty styles.",
-        "characteristic_ingredients": "Different materials used to smoke malt result in unique flavor and aroma characteristics. Beechwood, or other hardwood (e.g., oak, maple, mesquite, alder, pecan, apple, cherry, other fruitwoods) smoked malts may be used. These may be reminiscent of certain smoked foods (e.g., hickory with ribs, maple with bacon or sausage, and alder with salmon). Evergreen wood should never be used since it adds a medicinal, piney flavor to the malt. Noticeable peat-smoked malt is universally undesirable due to its sharp, piercing phenols and dirt-like earthiness. The remaining ingredients vary with the base style. If smoked malts are combined with other unusual ingredients (e.g., fruits, vegetables, spices, honey) in noticeable quantities, the resulting beer should be entered in the 32B Specialty Smoked Beer.",
-        "style_comparison": "",
-        "entry_instructions": "The entrant must specify a Base Style. The entrant must specify the type of wood or smoke if a varietal smoke character is noticeable."
-      },
-      "sections_ru": {
-        "overall_impression": "Хорошо сбалансированное сочетание солодово-хмелевого профиля базового стиля с приятным и уместным дымным характером.",
-        "aroma": "Аромат должен представлять собой приятный баланс между ожидаемым ароматическим профилем базового пива и копчёного солода. Дымный характер может быть от слабого до выраженного и иногда демонстрирует особенности конкретной древесины — например, ольхи, дуба или бука. Баланс между дымом и самим пивом может смещаться в ту или иную сторону: одинаковая интенсивность не обязательна. Главное, чтобы итоговое сочетание оставалось привлекательным. Резкие фенольные, грубые, жжёно-резиновые или просто пережжённые дымные ноты здесь неуместны.",
-        "appearance": "Внешний вид вариативен. Он должен в целом соответствовать базовому стилю, хотя цвет нередко оказывается немного темнее, чем у обычной версии этого пива.",
-        "flavor": "Во вкусе, как и в аромате, важен баланс между базовым пивом и дымным солодом, который может проявляться от слабо до довольно заметно. Разные породы древесины дают разный вкусовой профиль. Соотношение дымности и пивной основы может варьироваться, но итог должен быть гармоничным и приятным. Дым нередко добавляет финишу дополнительную сухость. Жёсткие, горькие, пережжённые, обугленные, резиновые, сернистые, лекарственные или фенольные дымные оттенки недопустимы.",
-        "mouthfeel": "Зависит от базового стиля. Выраженная вяжущая, фенольная и просто грубая жёсткость, происходящая от дыма, считается дефектом.",
-        "comments": "Этот стиль предназначен для всех копчёных версий классических стилей, кроме бамбергского Rauchbier, то есть Märzen на буково-копчёном солоде: для него в гайде есть собственный стиль. Судье здесь прежде всего стоит смотреть на общий баланс и на то, насколько удачно дымность усиливает базовое пиво.",
-        "history": "Техника использования копчёного солода была адаптирована крафтовыми пивоварами для самых разных стилей. В Германии копчёный солод традиционно применяли для Bock, Doppelbock, Weissbier, Munich Dunkel, Schwarzbier, Munich Helles, Pils и других специальных сортов.",
-        "characteristic_ingredients": "Разные способы и материалы для копчения солода дают собственные ароматические и вкусовые оттенки. Можно использовать бук или другую лиственную древесину — например, дуб, клён, мескит, ольху, пекан, яблоню, вишню и прочие фруктовые породы. Такие солода могут напоминать разные копчёные продукты: скажем, гикори — рёбра, клён — бекон или колбасу, ольха — лосося. Хвойную древесину использовать не следует: она даёт лекарственный, смолисто-хвойный тон. Заметный торфяной дым тоже повсеместно считается нежелательным из-за резких, пронзительных фенолов и землистой грязноватой ноты. Все остальные ингредиенты зависят от базового стиля. Если копчёный солод сочетается с заметными количествами других необычных ингредиентов — фруктов, овощей, специй, мёда, — такое пиво следует относить уже к 32B Specialty Smoked Beer.",
-        "style_comparison": "",
-        "entry_instructions": "Участник должен указать базовый стиль. Если в дымном характере заметно читается конкретная порода древесины или тип дыма, это тоже необходимо указать."
-      },
-      "vital_statistics": {
-        "note": "Varies with the base beer style."
-      },
-      "vital_statistics_text": "Varies with the base beer style.",
-      "commercial_examples_text": "Alaskan Smoked Porter, Schlenkerla Oak Smoke Doppelbock, Schlenkerla Rauchbier Weizen, Schlenkerla Rauchbier Ur-Bock, O’Fallon Smoked Porter, Spezial Rauchbier Lagerbier",
-      "tags_en": [
-        "specialty-beer",
-        "smoke"
-      ],
-      "source_guideline_page_start": 72,
-      "source_pdf_page_start": 88,
-      "tags_ru": [
-        "специальное пиво",
-        "дымное"
-      ],
-      "translation_status": "completed",
-      "general_notes_en": "Intended for smoked versions of Classic Style beers, except if the Classic Style beer has smoke as an inherent part of its definition (of course, that beer should be entered in its base style, such as Rauchbier).",
-      "general_notes_ru": "Стиль предназначен для копчёных версий классических стилей пива, за исключением тех случаев, когда дымный характер уже является неотъемлемой частью самого базового стиля. В таком случае пиво нужно заявлять в исходный стиль — например, как Rauchbier."
-    },
-    {
-      "bjcp_id": "32B",
-      "name_en": "Specialty Smoked Beer",
-      "name_ru": "Специальное копчёное пиво",
-      "category_id": "32",
-      "category_en": "SMOKED BEER",
-      "category_ru": "Копчёное пиво",
-      "bjcp_heading": "32B. Specialty Smoked Beer",
-      "description_short_ru": "Копчёное specialty-пиво, где дым соединяется не только с базовой пивной основой, но и с дополнительными ингредиентами или технологическими приёмами, образуя более сложный и уникальный профиль.",
-      "sections_en": {
-        "overall_impression": "A well-balanced fusion of the malt and hops of the base specialty beer style with a pleasant and agreeable smoke character.",
-        "aroma": "A pleasant balance between the expected aroma of the base beer, smoked malt, and any specialty ingredients. The smoke character ranges from low to assertive, and may show varietal wood smoke character (e.g., alder, oak, beechwood). The balance between the smoke, the beer, and any specialty ingredients can vary – they do not need to be equal in intensity. However, the resulting mix should be appealing. Sharp, phenolic, harsh, rubbery, or burnt smoke-derived aromatics are inappropriate.",
-        "appearance": "Variable. The appearance should reflect the base beer style, although the color is often a bit darker than expected for the plain base style. The use of certain fruits and spices may affect the color and hue of the beer as well.",
-        "flavor": "Similar to the aroma, with a balance between the base beer, any specialty ingredients, and low to assertive smoked malt. Varietal woods can produce different flavor profiles. The balance between smoke, beer, and any specialty ingredients can vary, but the resulting blend should be enjoyable. Smoke can add some additional dryness to the finish. Harsh, bitter, burnt, charred, rubbery, sulfury, medicinal, or phenolic smoke-derived flavors are inappropriate.",
-        "mouthfeel": "Varies with the base beer style. Significant astringent, phenolic, smoke-derived harshness is a fault.",
-        "comments": "Judges should evaluate these beers mostly on the overall balance, and how well the smoke character enhances the base beer and any specialty ingredients.",
-        "history": "",
-        "characteristic_ingredients": "Same as 32A Classic Style Smoked Beer with the possible addition of specialty ingredients (e.g., fruits, spices, vegetables, honey) in noticeable quantities.",
-        "style_comparison": "",
-        "entry_instructions": "The entrant must specify the type of wood or smoke if a varietal smoke character is noticeable. The entrant must specify the additional ingredients or processes that make this a specialty smoked beer. Entrant must specify a description of the beer, identifying either a base style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
-      },
-      "sections_ru": {
-        "overall_impression": "Хорошо сбалансированное сочетание солодово-хмелевой основы специального пива с приятным и уместным дымным характером.",
-        "aroma": "В аромате нужен приятный баланс между ожидаемым профилем базового пива, копчёным солодом и любыми дополнительными specialty-ингредиентами. Дымный характер может быть от слабого до выразительного и иногда показывает особенности конкретной древесины — например, ольхи, дуба или бука. Баланс между дымом, пивной основой и добавками может быть разным: одинаковая интенсивность не обязательна. Главное, чтобы сочетание в целом оставалось привлекательным. Резкие фенольные, грубые, резиновые или пережжённые дымные ноты здесь недопустимы.",
-        "appearance": "Внешний вид вариативен. Он должен в целом отражать базовый стиль, хотя цвет часто оказывается немного темнее, чем у обычной версии без копчения. Некоторые фрукты и специи также способны заметно влиять на оттенок и общую окраску пива.",
-        "flavor": "Во вкусе, как и в аромате, важен баланс между базовым пивом, дополнительными specialty-ингредиентами и дымным солодом, который может проявляться от слабого до выразительного уровня. Разные породы древесины формируют разные вкусовые оттенки. Соотношение дыма, пивной основы и добавок может быть разным, но итоговая композиция должна оставаться гармоничной и приятной. Дымность может придавать финишу дополнительную сухость. Жёсткие, горькие, пережжённые, обугленные, резиновые, сернистые, лекарственные или фенольные дымные ноты здесь неуместны.",
-        "mouthfeel": "Зависит от базового стиля. Выраженная вяжущая, фенольная и просто грубая жёсткость, происходящая от дыма, считается дефектом.",
-        "comments": "Судьям стоит в первую очередь оценивать общий баланс и то, насколько удачно дымный характер поддерживает базовое пиво и дополнительные ингредиенты, а не спорить о самой по себе интенсивности дыма.",
-        "history": "",
-        "characteristic_ingredients": "То же, что и для 32A Classic Style Smoked Beer, но с возможным добавлением заметных количеств specialty-ингредиентов — например, фруктов, специй, овощей или мёда.",
-        "style_comparison": "",
-        "entry_instructions": "Если в дымном профиле заметно читается конкретная порода древесины или тип дыма, это нужно указать. Также участник должен назвать дополнительные ингредиенты или процессы, которые делают это пиво именно specialty smoked beer. Необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Общее описание особой природы пива может закрывать все обязательные пункты."
-      },
-      "vital_statistics": {
-        "note": "Varies with the base beer style."
-      },
-      "vital_statistics_text": "Varies with the base beer style.",
-      "commercial_examples_text": "Fat Head’s Up in Smoke, Ommegang Bourbon Barrel Vanilla Smoked Porter",
-      "tags_en": [
-        "specialty-beer",
-        "smoke"
-      ],
-      "source_guideline_page_start": 72,
-      "source_pdf_page_start": 88,
-      "tags_ru": [
-        "специальное пиво",
-        "дымное"
-      ],
-      "translation_status": "completed",
-      "general_notes_en": "A Specialty Smoked Beer is either a smoked beer based on something other than a Classic Style (a Specialty-Type style, or a broad style family such as Porter rather than a specific style), OR any type of smoked beer with additional specialty ingredients (fruits, vegetables, spices) or processes employed that transform the beer into something more unique.",
-      "general_notes_ru": "Specialty Smoked Beer — это либо копчёное пиво, основанное не на классическом стиле, а на более широком семействе или на другом specialty-типе, либо любое копчёное пиво с дополнительными ингредиентами — фруктами, овощами, специями — или с особыми процессами, которые превращают его в более самобытный и уникальный продукт."
-    },
-    {
-      "bjcp_id": "33A",
-      "name_en": "Wood-Aged Beer",
-      "name_ru": "Пиво с древесной выдержкой",
-      "category_id": "33",
-      "category_en": "WOOD BEER",
-      "category_ru": "Пиво с древесной выдержкой",
-      "bjcp_heading": "33A. Wood-Aged Beer",
-      "description_short_ru": "Пиво, в котором выдержка в дереве добавляет древесные, тостовые или танинные оттенки, но не вносит отдельного алкогольного баррельного характера от предыдущего содержимого бочки.",
-      "sections_en": {
-        "overall_impression": "A pleasant enhancement of the base beer style with the characteristics from aging in contact with wood. The best examples will be smooth, flavorful, well-balanced, and well-aged.",
-        "aroma": "Varies with base style. A low to moderate woody aroma is usually present; some varietals may have a stronger, or distinctive character. Fresh wood can occasionally impart raw, fresh-cut wood smell, although this character should never be too strong. If the wood is toasted or charred, there may be low to moderate vanilla, caramel, toffee, toast, or cocoa character present.",
-        "appearance": "Varies with base style. Often darker than the unadulterated base beer style, particularly if toasted or charred barrels are used.",
-        "flavor": "Varies with base style. Wood usually contributes a woody flavor, and possibly a distinctive varietal character. New wood may add a raw, fresh-cut wood impression. Toasted or charred wood can add vanilla, caramel, butterscotch, toasted bread, toasted nuts, coffee, chocolate, or cocoa, depending on the wood varietal and level of toast or char. Wood-derived flavors should be balanced, supportive, and noticeable, while not overpowering the base beer style.",
-        "mouthfeel": "Varies with base style. Tannins from the wood may increase the perception of body, as well as enhancing the dryness of the finish; some astringency from wood tannins is allowable. Tart or acidic characteristics should be low to none, and never distracting.",
-        "comments": "Much of the character depends on the type of wood used, and how well it complements and enhances the base style. Age character is allowable, but excessive oxidation or sourness is a fault. Noticeable alcohol is not a fault in stronger base styles. This category should not be used for base styles where wood-aging is a fundamental requirement for the style (e.g., Flanders Red, Lambic). Beers made using either limited wood aging or products that only provide a subtle background character may be entered in the base beer style categories as long as the wood character isn’t prominently featured.",
-        "history": "A traditional production method that is rarely used by major breweries, and usually only with specialty products. More popular with modern craft breweries looking for new, distinctive products. Oak cask and barrels are traditional, although other woods are becoming more popular.",
-        "characteristic_ingredients": "Varies with base style. Aged in wooden casks or barrels, or using wood-based additives (e.g., chips, staves, spirals, cubes). Fuller-bodied, higher-gravity base styles often are used since they can best stand up to the additional flavors, although experimentation is encouraged.",
-        "style_comparison": "",
-        "entry_instructions": "The entrant must specify the type of wood used and the toast or char level (if used). If an unusual varietal wood is used, the entrant must supply a brief description of the sensory aspects the wood adds to beer. Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
-      },
-      "sections_ru": {
-        "overall_impression": "Приятное развитие базового стиля за счёт выдержки в контакте с деревом. Лучшие образцы — гладкие, выразительные по вкусу, сбалансированные и хорошо выдержанные.",
-        "aroma": "Аромат зависит от базового стиля. Обычно присутствует слабая или умеренная древесная нота; некоторые породы могут давать более сильный или более узнаваемый характер. Свежая древесина иногда добавляет сырое впечатление свежего спила, но такой тон не должен быть чрезмерным. Если дерево было обожжено или подтостовано, возможны слабые или умеренные оттенки ванили, карамели, ириски, тоста или какао.",
-        "appearance": "Внешний вид зависит от базового стиля. Пиво нередко оказывается темнее исходной, не выдержанной версии, особенно если использовались подтостованные или обожжённые бочки.",
-        "flavor": "Вкус зависит от базового стиля. Дерево обычно даёт древесные оттенки и иногда узнаваемый характер конкретной породы. Новая древесина может вносить сыроватое ощущение свежего спила. Подтостованное или обожжённое дерево способно добавить ваниль, карамель, сливочную ириску, тост, поджаренный хлеб, жареные орехи, кофе, шоколад или какао — в зависимости от породы и степени тоста либо обжига. Древесные оттенки должны быть заметными, поддерживающими и гармоничными, но не должны подавлять базовый стиль.",
-        "mouthfeel": "Зависит от базового стиля. Дубильные вещества дерева могут усиливать ощущение полноты тела и одновременно подчёркивать сухость финиша; некоторая древесная вяжущесть допустима. Кисловатые или просто кислые тона должны быть минимальными или вовсе отсутствовать и ни в коем случае не отвлекать.",
-        "comments": "Очень многое зависит от выбранной древесины и от того, насколько удачно она дополняет и усиливает базовый стиль. Следы выдержки допустимы, но чрезмерная окисленность или излишняя кислотность считаются дефектом. Для крепких базовых стилей заметный алкоголь сам по себе дефектом не является. Эту категорию не следует использовать для стилей, где выдержка в дереве принципиально заложена в самом стиле, например Flanders Red или Lambic. Если выдержка была минимальной и дерево даёт лишь едва уловимый фон, такое пиво можно заявлять и в базовый стиль — при условии, что древесный характер не выступает на первый план.",
-        "history": "Это традиционный производственный приём, который крупные пивоварни сегодня используют редко и в основном только для специальных релизов. Зато он особенно популярен у современных крафтовых пивоваров, которые ищут новые и узнаваемые продукты. Традиционно применялись дубовые бочки и чаны, но сейчас всё чаще используют и другие породы древесины.",
-        "characteristic_ingredients": "Зависят от базового стиля. Пиво выдерживают в деревянных чанах или бочках либо используют древесные добавки — щепу, клёпки, спирали, кубики. Чаще всего выбирают более плотные и более крепкие базовые стили, потому что они лучше выдерживают дополнительный вклад дерева, хотя пространство для эксперимента здесь полностью сохраняется.",
-        "style_comparison": "",
-        "entry_instructions": "Участник должен указать породу древесины, а также степень тоста или обжига, если она имеет значение. Если используется необычная порода, нужно кратко описать, какие именно сенсорные оттенки она привносит в пиво. Также необходимо описать сам напиток, указав либо базовый стиль, либо состав, параметры или целевой характер. Общее описание особой природы пива может закрывать все обязательные пункты."
-      },
-      "vital_statistics": {
-        "og": "varies with base style, typically above-average",
-        "fg": "varies with base style",
-        "abv": "varies with base style, typically above-average",
-        "ibu": "varies with base style",
-        "srm": "varies with base style, often darker than the unadulterated base style"
-      },
-      "vital_statistics_text": "OG: varies with base style, typically above-average | FG: varies with base style | ABV: varies with base style, typically above-average | IBUs: varies with base style | SRM: varies with base style, often darker than the unadulterated base style",
-      "commercial_examples_text": "Bush Prestige, Cigar City Spanish Cedar Jai Alai, Firestone Walker Double Barrel Ale, Midnight Sun Arctic Devil, Petrus Aged Pale, Samuel Smith Yorkshire Stingo",
-      "tags_en": [
-        "specialty-beer",
-        "wood"
-      ],
-      "source_guideline_page_start": 73,
-      "source_pdf_page_start": 89,
-      "tags_ru": [
-        "специальное пиво",
-        "древесная выдержка"
-      ],
-      "translation_status": "completed",
-      "general_notes_en": "This style is intended for beer aged in wood without added alcohol character from previous use of the barrel. Bourbon-barrel or other beers with an added alcohol character should be entered as 33B Specialty Wood-Aged Beer.",
-      "general_notes_ru": "Этот стиль предназначен для пива, выдержанного в дереве без дополнительного алкогольного характера, пришедшего от предыдущего содержимого бочки. Bourbon barrel и другие подобные версии с заметным баррельным алкогольным вкладом следует заявлять как 33B Specialty Wood-Aged Beer."
-    },
-    {
-      "bjcp_id": "33B",
-      "name_en": "Specialty Wood-Aged Beer",
-      "name_ru": "Специальное пиво с древесной выдержкой",
-      "category_id": "33",
-      "category_en": "WOOD BEER",
-      "category_ru": "Пиво с древесной выдержкой",
-      "bjcp_heading": "33B. Specialty Wood-Aged Beer",
-      "description_short_ru": "Пиво, где выдержка в дереве сопровождается заметным баррельным вкладом от алкоголя, который раньше находился в бочке: бурбона, рома, вина, хереса и других напитков.",
-      "sections_en": {
-        "overall_impression": "An elevation of the base beer style with characteristics from aging in contact with wood, including alcoholic products previously in contact with the wood. The best examples will be smooth, flavorful, well-balanced, and well-aged.",
-        "aroma": "Varies with base style. A low to moderate woody aroma is usually present; some varietals may have a stronger, or distinctive character. If the wood is toasted or charred, there may be low to moderate vanilla, caramel, toffee, toast, or cocoa character present. Aromatics associated with alcohol (e.g., distilled spirits, wine) previously stored in the wood should be noticeable, but balanced.",
-        "appearance": "Varies with base style. Often darker than the unadulterated base beer style, particularly if charred barrels are used. Beers aged in wine barrels or other products with distinctive colors may also impart a color to the finished beer.",
-        "flavor": "Varies with base style. Wood usually contributes a woody flavor, and possibly a distinctive varietal character. Toasted or charred wood can add vanilla, caramel, butterscotch, toasted bread, toasted nuts, coffee, chocolate, or cocoa, depending on the wood varietal and level of toast or char. Wood-derived flavors and added alcohol flavors should be balanced, mutually supportive, and noticeable, while not overpowering the base beer style or each other.",
-        "mouthfeel": "Varies with base style. Tannins from the wood may increase the perception of body, as well as enhancing the dryness of the finish; some astringency from wood tannins is allowable. Usually exhibits additional alcohol warming, but should not be hot or harsh. Tart or acidic characteristics should be low to none, and never distracting.",
-        "comments": "Success in this style depends on how well the wood and alcohol character supports and enhances the base beer, and how well integrated they are with the overall flavor profile. Age character is allowable, but excessive oxidation or sourness is a fault.",
-        "history": "Same as 33A Wood-Aged Beer.",
-        "characteristic_ingredients": "Varies with base style. Aged in wooden casks or barrels previously used to store alcohol (e.g., whiskey, bourbon, rum, gin, tequila, port, sherry, Madeira, wine). Fuller-bodied, higher-gravity base styles often are used since they can best stand up to the additional flavors, although experimentation is encouraged.",
-        "style_comparison": "",
-        "entry_instructions": "The entrant must specify the additional alcohol character, with information about the barrel if relevant to the finished flavor profile. If an unusual wood or ingredient has been used, the entrant must supply a brief description of the sensory aspects the ingredients add to the beer. Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
-      },
-      "sections_ru": {
-        "overall_impression": "Развитие базового стиля за счёт выдержки в контакте с деревом, причём вместе с древесными оттенками сюда входит и характер алкогольного напитка, который раньше находился в этой бочке. Лучшие образцы — гладкие, выразительные, сбалансированные и хорошо выдержанные.",
-        "aroma": "Аромат зависит от базового стиля. Обычно присутствует слабая или умеренная древесная нота; некоторые породы дерева могут давать более сильный или более узнаваемый характер. Если дерево было подтостовано или обожжено, возможны слабые или умеренные оттенки ванили, карамели, ириски, тоста или какао. Ароматика алкоголя, который прежде находился в бочке — крепкий дистиллят, вино и т.п., — должна читаться, но оставаться в балансе.",
-        "appearance": "Внешний вид зависит от базового стиля. Пиво нередко оказывается темнее обычной невыдержанной версии, особенно если использовались сильно обожжённые бочки. Бочки из-под вина или других напитков с ярким цветом также могут передавать свой оттенок готовому пиву.",
-        "flavor": "Вкус зависит от базового стиля. Дерево обычно даёт древесные оттенки и иногда узнаваемый характер конкретной породы. Подтостованное или обожжённое дерево может привносить ваниль, карамель, сливочную ириску, тост, поджаренный хлеб, жареные орехи, кофе, шоколад или какао — в зависимости от породы и степени тоста либо обжига. Древесные и алкогольные оттенки должны быть заметными, взаимно поддерживающими и гармоничными, не подавляя ни базовый стиль, ни друг друга.",
-        "mouthfeel": "Зависит от базового стиля. Дубильные вещества дерева могут усиливать ощущение полноты тела и подчёркивать сухость финиша; некоторая древесная вяжущесть допустима. Обычно ощущается дополнительное алкогольное тепло, но оно не должно быть жгучим или грубым. Кисловатые и кислые оттенки должны быть минимальными или отсутствовать вовсе и не отвлекать от основного профиля.",
-        "comments": "Успех этого стиля определяется тем, насколько удачно древесный и алкогольный характер поддерживают и усиливают базовое пиво и насколько цельно они встроены в общий вкусовой профиль. Следы выдержки допустимы, но чрезмерная окисленность или лишняя кислотность считаются дефектом.",
-        "history": "История та же, что и у 33A Wood-Aged Beer.",
-        "characteristic_ingredients": "Зависят от базового стиля. Пиво выдерживают в деревянных чанах или бочках, в которых раньше хранился алкоголь: виски, бурбон, ром, джин, текила, портвейн, херес, мадера, вино и т.д. Чаще всего используют более плотные и более крепкие базовые стили, потому что они лучше выдерживают дополнительную вкусовую нагрузку, хотя пространство для эксперимента остаётся открытым.",
-        "style_comparison": "",
-        "entry_instructions": "Участник должен указать, какой именно дополнительный алкогольный характер ожидается, а при необходимости — и детали по бочке. Если использовалась необычная древесина или какой-либо особый ингредиент, нужно кратко описать, какие сенсорные оттенки он привносит. Также необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер. Общее описание особой природы напитка может закрывать все обязательные пункты."
-      },
-      "vital_statistics": {
-        "og": "varies with base style, typically above-average",
-        "fg": "varies with base style",
-        "abv": "varies with base style, typically above-average",
-        "ibu": "varies with base style",
-        "srm": "varies with base style, often darker than the unadulterated base style"
-      },
-      "vital_statistics_text": "OG: varies with base style, typically above-average | FG: varies with base style | ABV: varies with base style, typically above-average | IBUs: varies with base style | SRM: varies with base style, often darker than the unadulterated base style",
-      "commercial_examples_text": "AleSmith Barrel-Aged Old Numbskull, Founders Kentucky Breakfast Stout, Firestone Walker Parabola, Goose Island Bourbon County Stout, Great Divide Barrel Aged Yeti, The Lost Abbey Angel’s Share Ale",
-      "tags_en": [
-        "specialty-beer",
-        "wood"
-      ],
-      "source_guideline_page_start": 73,
-      "source_pdf_page_start": 89,
-      "tags_ru": [
-        "специальное пиво",
-        "древесная выдержка"
-      ],
-      "translation_status": "completed",
-      "general_notes_en": "This style is intended for beer aged in wood with added alcohol character from previous use of the barrel. Bourbon-barrel or other similar beers should be entered here.",
-      "general_notes_ru": "Этот стиль предназначен для пива, выдержанного в дереве с дополнительным алкогольным характером от предыдущего содержимого бочки. Bourbon barrel и другие схожие баррельные версии следует заявлять именно сюда."
-    },
-    {
-      "bjcp_id": "34A",
-      "name_en": "Commercial Specialty Beer",
-      "name_ru": "Специальное пиво по коммерческому образцу",
-      "category_id": "34",
-      "category_en": "SPECIALTY BEER",
-      "category_ru": "Специальное пиво",
-      "bjcp_heading": "34A. Commercial Specialty Beer",
-      "description_short_ru": "Категория для интерпретаций конкретных коммерческих сортов, которые не вписываются в уже определённые стили BJCP и поэтому требуют опоры на заявленный оригинальный образец.",
-      "sections_en": {
-        "overall_impression": "Based on declared beer.",
-        "aroma": "Based on declared beer.",
-        "appearance": "Based on declared beer.",
-        "flavor": "Based on declared beer.",
-        "mouthfeel": "Based on declared beer.",
-        "comments": "Intended as a catch-all location for specific beers that are based on unique commercial examples that don’t fit existing styles. Past versions of the Style Guidelines included a Belgian Specialty Ale style; this style fits that general purpose, as well as allowing non-Belgian entries of similar intent.",
-        "history": "",
-        "characteristic_ingredients": "",
-        "style_comparison": "",
-        "entry_instructions": "The entrant must specify the name of the commercial beer, specifications (vital statistics) for the beer, and either a brief sensory description or a list of ingredients used in making the beer. Without this information, judges who are unfamiliar with the beer will have no basis for comparison."
-      },
-      "sections_ru": {
-        "overall_impression": "Оценивается исходя из заявленного коммерческого образца.",
-        "aroma": "Определяется заявленным коммерческим образцом.",
-        "appearance": "Определяется заявленным коммерческим образцом.",
-        "flavor": "Определяется заявленным коммерческим образцом.",
-        "mouthfeel": "Определяется заявленным коммерческим образцом.",
-        "comments": "Это универсальная резервная категория для конкретных сортов, основанных на уникальных коммерческих примерах, которые не укладываются в уже существующие стили. В старых версиях руководства BJCP существовал стиль Belgian Specialty Ale; нынешняя категория во многом закрывает ту же задачу, но уже не ограничивается только бельгийским пивом.",
-        "history": "",
-        "characteristic_ingredients": "",
-        "style_comparison": "",
-        "entry_instructions": "Участник должен указать название коммерческого сорта, его основные параметры — vital statistics — и либо краткое сенсорное описание, либо список использованных ингредиентов. Без этой информации судьи, не знакомые с заявленным образцом, попросту не получат базы для сравнения."
-      },
-      "vital_statistics": {
-        "note": "OG, FG, IBUs, SRM, and ABV will vary depending on the declared beer."
-      },
-      "vital_statistics_text": "OG, FG, IBUs, SRM, and ABV will vary depending on the declared beer.",
-      "commercial_examples_text": "Orval, La Chouffe",
-      "tags_en": [
-        "specialty-beer"
-      ],
-      "source_guideline_page_start": 75,
-      "source_pdf_page_start": 91,
-      "tags_ru": [
-        "специальное пиво"
-      ],
-      "translation_status": "completed",
-      "general_notes_en": "This style is intended for reproductions or interpretations of specific commercial beers that don’t fit within defined styles. Beers entered here do not need to be exact copies. The beer should be judged as to how well it fits the broader style represented by the example beer, not how well it is an exact copy of a specific commercial product. If a Commercial Specialty Beer fits another defined style, do not enter it here.",
-      "general_notes_ru": "Категория предназначена для воспроизведений и интерпретаций конкретных коммерческих сортов, которые не вписываются в уже определённые стили. Пиво здесь не обязано быть буквальной копией оригинала: его следует судить по тому, насколько убедительно оно передаёт более широкий стиль или идею, стоящую за указанным коммерческим образцом, а не по точности посекундного копирования. Если такой сорт можно корректно отнести к уже существующему стилю, заявлять его сюда не нужно."
-    },
-    {
-      "bjcp_id": "34B",
-      "name_en": "Mixed-Style Beer",
-      "name_ru": "Пиво смешанного стилевого типа",
-      "category_id": "34",
-      "category_en": "SPECIALTY BEER",
-      "category_ru": "Специальное пиво",
-      "bjcp_heading": "34B. Mixed-Style Beer",
-      "description_short_ru": "Пиво, построенное на смешении существующих стилей или на нетрадиционном изменении уже известного стиля — по ингредиентам, технологии, крепости или общему профилю.",
-      "sections_en": {
-        "overall_impression": "Based on the declared Base Styles, methods, and ingredients. As with all Specialty-Type Beers, the resulting combination of beer styles needs to be harmonious and balanced, and be pleasant to drink.",
-        "aroma": "Based on the declared Base Styles.",
-        "appearance": "Based on the declared Base Styles.",
-        "flavor": "Based on the declared Base Styles.",
-        "mouthfeel": "Based on the declared Base Styles.",
-        "comments": "See preamble for intent.",
-        "history": "",
-        "characteristic_ingredients": "",
-        "style_comparison": "",
-        "entry_instructions": "The entrant must specify the Base Style or Styles being used, and any special ingredients, processes, or variations involved. The entrant may provide an additional description of the sensory profile of the beer or the vital statistics of the resulting beer."
-      },
-      "sections_ru": {
-        "overall_impression": "Оценка строится на заявленных базовых стилях, применённых методах и ингредиентах. Как и в любом другом Specialty-Type beer, итоговая комбинация должна быть гармоничной, сбалансированной и приятной для питья.",
-        "aroma": "Определяется заявленными базовыми стилями.",
-        "appearance": "Определяется заявленными базовыми стилями.",
-        "flavor": "Определяется заявленными базовыми стилями.",
-        "mouthfeel": "Определяется заявленными базовыми стилями.",
-        "comments": "Смысл этой категории раскрыт в предварительном пояснении к стилю.",
-        "history": "",
-        "characteristic_ingredients": "",
-        "style_comparison": "",
-        "entry_instructions": "Участник должен указать базовый стиль или стили, а также любые специальные ингредиенты, процессы и отклонения от нормы, использованные в этом пиве. Дополнительно можно дать краткое описание сенсорного профиля или привести vital statistics получившегося сорта."
-      },
-      "vital_statistics": {
-        "note": "OG, FG, IBUs, SRM, and ABV will vary depending on the declared beer."
-      },
-      "vital_statistics_text": "OG, FG, IBUs, SRM, and ABV will vary depending on the declared beer.",
-      "commercial_examples_text": "Birrificio Italiano Tipopils, Firestone Walker Pivo Pils, Jack’s Abby Hoponius Union, Ommegang Helles Superior",
-      "tags_en": [
-        "specialty-beer"
-      ],
-      "source_guideline_page_start": 75,
-      "source_pdf_page_start": 91,
-      "tags_ru": [
-        "специальное пиво"
-      ],
-      "translation_status": "completed",
-      "general_notes_en": "This style is intended for beers in Existing Styles (previously-defined Classic Style beers or Specialty-Type Beers) that are either: a combination of Existing Styles that are not defined previously in the guidelines, including combination of Specialty-Type Beers not otherwise allowable elsewhere; a variation of an Existing Style using a non-traditional method or process (e.g., dry-hopping, ‘eis’-ing, stein bier) for that style; a variation of an Existing Style using a non-traditional ingredient (e.g., yeast with a non-traditional profile, hops with a different character than described in the Base Style); or out-of-spec variations of an Existing Style (e.g., ‘imperial’ versions, ‘session’ versions, overly-sweet versions, etc.). This style is intended for beers that can’t be entered in previously-listed styles first, including (and especially) the declared Base Style of beer. However, if the unusual method, process, or ingredient results in a beer that now fits within another defined style, the beer should be entered there. Note that some styles already allow for different strengths (e.g., IPAs, Saisons), so those variations should be entered as the appropriate Base Style. Bear in mind that a poorly-made, faulted beer should not be used to define a new style. Drinkability should always be maintained, while allowing for creative new concepts.",
-      "general_notes_ru": "Категория предназначена для пива, которое строится на уже существующих стилях — как классических, так и specialty — и при этом представляет собой одно из четырёх: сочетание нескольких уже существующих стилей, не описанное ранее в гайде; вариацию известного стиля с нетрадиционным методом или процессом, например dry hopping, eising или stein bier; вариацию известного стиля с нетрадиционным ингредиентом, например дрожжами необычного профиля или хмелем с иным характером, чем предполагает базовый стиль; либо заметный выход за рамки спецификации — условный imperial, session или чрезмерно сладкий вариант. Использовать эту категорию нужно только тогда, когда пиво действительно нельзя корректно заявить ни в один из ранее описанных стилей, включая сам базовый стиль. Если же необычный ингредиент или метод в итоге привёл сорт к другому уже существующему стилю, заявлять его следует туда. Важно и другое: плохо сделанное или просто дефектное пиво нельзя оправдывать тем, что оно якобы создаёт новый стиль. Креативность допустима, но питьебельность должна сохраняться."
-    },
-    {
-      "bjcp_id": "34C",
-      "name_en": "Experimental Beer",
-      "name_ru": "Экспериментальное пиво",
-      "category_id": "34",
-      "category_en": "SPECIALTY BEER",
-      "category_ru": "Специальное пиво",
-      "bjcp_heading": "34C. Experimental Beer",
-      "description_short_ru": "Крайняя резервная категория для пива, которое не подходит ни под один существующий стиль и требует отдельного объяснения своей экспериментальной природы.",
-      "sections_en": {
-        "overall_impression": "Varies, but should be a unique experience.",
-        "aroma": "Varies.",
-        "appearance": "Varies.",
-        "flavor": "Varies.",
-        "mouthfeel": "Varies.",
-        "comments": "This style cannot represent a well-known commercial beer (otherwise it would be a Commercial Specialty Beer) and cannot fit into any other existing Specialty-Type Beer style (including those within this major category).",
-        "history": "",
-        "characteristic_ingredients": "",
-        "style_comparison": "",
-        "entry_instructions": "The entrant must specify the special nature of the experimental beer, including the special ingredients or processes that make it not fit elsewhere in the guidelines. The entrant must provide vital statistics for the beer, and either a brief sensory description or a list of ingredients used in making the beer. Without this information, judges will have no basis for evaluation."
-      },
-      "sections_ru": {
-        "overall_impression": "Характер может быть любым, но пиво должно давать действительно необычный, самобытный опыт.",
-        "aroma": "Вариативен.",
-        "appearance": "Вариативен.",
-        "flavor": "Вариативен.",
-        "mouthfeel": "Вариативен.",
-        "comments": "Этот стиль не должен описывать известный коммерческий сорт — иначе его следовало бы относить к Commercial Specialty Beer — и не должен подходить ни под одну другую existing Specialty-Type категорию, включая прочие стили внутри самой 34-й категории.",
-        "history": "",
-        "characteristic_ingredients": "",
-        "style_comparison": "",
-        "entry_instructions": "Участник должен объяснить экспериментальную природу пива: указать особые ингредиенты или процессы, из-за которых сорт не укладывается в другие пункты гайда. Также необходимо привести vital statistics и дать либо краткое сенсорное описание, либо список использованных ингредиентов. Без этой информации у судей не будет базы для осмысленной оценки."
-      },
-      "vital_statistics": {
-        "note": "OG, FG, IBUs, SRM, and ABV will vary depending on the declared beer."
-      },
-      "vital_statistics_text": "OG, FG, IBUs, SRM, and ABV will vary depending on the declared beer.",
-      "commercial_examples_text": "None",
-      "tags_en": [
-        "specialty-beer"
-      ],
-      "source_guideline_page_start": 75,
-      "source_pdf_page_start": 91,
-      "tags_ru": [
-        "специальное пиво"
-      ],
-      "translation_status": "completed",
-      "general_notes_en": "This is explicitly a catch-all category for any beer that does not fit into an Existing Style description. No beer is ever “out of style” in this style, unless it can be entered in another beer style first. This is the last resort for any beer entered into a competition. With the broad definition for previous styles, this style should be rarely used.",
-      "general_notes_ru": "Это сознательно сделанная универсальная категория для любого пива, которое не подходит ни под одно существующее стилевое описание. Внутри самой этой категории пиво формально не может быть «вне стиля», если только его всё же нельзя сначала корректно отправить в другой стиль. Для конкурсной заявки это именно последний, крайний вариант. При нынешней широте предыдущих категорий использовать его следует редко."
-    }
-  ]
+  "translated_categories": [
+   "32",
+   "33",
+   "34"
+  ],
+  "next_recommended_batch": [
+   "X1",
+   "X2",
+   "X3",
+   "X4",
+   "X5"
+  ],
+  "counting_note_ru": "Общий счётчик 128 включает 5 локальных стилей Appendix B и 7 подтипов Specialty IPA. Подтипы Specialty IPA уже вложены в part_10 внутри 21B, но пока не вынесены в отдельные standalone-объекты для подсчёта."
+ },
+ "categories": [
+  {
+   "category_id": "32",
+   "category_en": "SMOKED BEER",
+   "category_ru": "Копчёное пиво",
+   "overview_ru": "Категория охватывает specialty-сорта с дымным характером. Ключевой критерий — не сама по себе интенсивность дыма, а то, насколько органично он встроен в пиво и поддерживает базовый стиль, а не подавляет его."
+  },
+  {
+   "category_id": "33",
+   "category_en": "WOOD BEER",
+   "category_ru": "Пиво с древесной выдержкой",
+   "overview_ru": "Сюда входят specialty-сорта, в которых важен характер выдержки в дереве или в бочке: древесные, тостовые, танинные и, при необходимости, баррельные оттенки. Оценка строится вокруг баланса между базовым стилем и вкладом дерева или бочки."
+  },
+  {
+   "category_id": "34",
+   "category_en": "SPECIALTY BEER",
+   "category_ru": "Специальное пиво",
+   "overview_ru": "Это резервная категория для тех сортов, которые не укладываются ни в один другой описанный стиль. Перед тем как отправлять пиво сюда, BJCP рекомендует проверить все предыдущие Specialty-Type категории: 34-я должна оставаться именно последним, а не удобным первым вариантом."
+  }
+ ],
+ "styles": [
+  {
+   "bjcp_id": "32A",
+   "name_en": "Classic Style Smoked Beer",
+   "name_ru": "Копчёная версия классического стиля",
+   "category_id": "32",
+   "category_en": "SMOKED BEER",
+   "category_ru": "Копчёное пиво",
+   "bjcp_heading": "32A. Classic Style Smoked Beer",
+   "description_short_ru": "Классический стиль пива, в котором дымный характер ощутим и приятен, но остаётся в балансе с базовым стилем и не перетягивает всё внимание на себя.",
+   "sections_en": {
+    "overall_impression": "A well-balanced fusion of the malt and hops of the base beer style with a pleasant and agreeable smoke character.",
+    "aroma": "A pleasant balance between the expected aroma of the base beer and smoked malt. The smoke character ranges from low to assertive, and may show varietal wood smoke character (e.g., alder, oak, beechwood). The balance between the smoke and beer can vary – they do not need to be equal in intensity. However, the resulting mix should be appealing. Sharp, phenolic, harsh, rubbery, or burnt smoke-derived aromatics are inappropriate.",
+    "appearance": "Variable. The appearance should reflect the base beer style, although the color is often a bit darker than expected for the plain base style.",
+    "flavor": "Similar to the aroma, with a balance between the base beer and low to assertive smoked malt. Varietal woods can produce different flavor profiles. The balance between smoke and beer can vary, but the resulting blend should be enjoyable. Smoke can add some additional dryness to the finish. Harsh, bitter, burnt, charred, rubbery, sulfury, medicinal, or phenolic smoke-derived flavors are inappropriate.",
+    "mouthfeel": "Varies with the base beer style. Significant astringent, phenolic, smoke-derived harshness is a fault.",
+    "comments": "Use this style for beers other than Bamberg-style Rauchbier (i.e., beechwood-smoked Märzen), which has its own style. Judges should evaluate these beers mostly on the overall balance, and how well the smoke character enhances the base beer.",
+    "history": "The process of using smoked malts has been adapted by craft brewers to many styles. German brewers have traditionally used smoked malts in Bock, Doppelbock, Weissbier, Munich Dunkel, Schwarzbier, Munich Helles, Pils, and other specialty styles.",
+    "characteristic_ingredients": "Different materials used to smoke malt result in unique flavor and aroma characteristics. Beechwood, or other hardwood (e.g., oak, maple, mesquite, alder, pecan, apple, cherry, other fruitwoods) smoked malts may be used. These may be reminiscent of certain smoked foods (e.g., hickory with ribs, maple with bacon or sausage, and alder with salmon). Evergreen wood should never be used since it adds a medicinal, piney flavor to the malt. Noticeable peat-smoked malt is universally undesirable due to its sharp, piercing phenols and dirt-like earthiness. The remaining ingredients vary with the base style. If smoked malts are combined with other unusual ingredients (e.g., fruits, vegetables, spices, honey) in noticeable quantities, the resulting beer should be entered in the 32B Specialty Smoked Beer.",
+    "style_comparison": "",
+    "entry_instructions": "The entrant must specify a Base Style. The entrant must specify the type of wood or smoke if a varietal smoke character is noticeable."
+   },
+   "sections_ru": {
+    "overall_impression": "Хорошо сбалансированное сочетание солодово-хмелевого профиля базового стиля с приятным и уместным дымным характером.",
+    "aroma": "Аромат должен представлять собой приятный баланс между ожидаемым ароматическим профилем базового пива и копчёного солода. Дымный характер может быть от слабого до выраженного и иногда демонстрирует особенности конкретной древесины — например, ольхи, дуба или бука. Баланс между дымом и самим пивом может смещаться в ту или иную сторону: одинаковая интенсивность не обязательна. Главное, чтобы итоговое сочетание оставалось привлекательным. Резкие фенольные, грубые, жжёно-резиновые или просто пережжённые дымные ноты здесь неуместны.",
+    "appearance": "Внешний вид вариативен. Он должен в целом соответствовать базовому стилю, хотя цвет нередко оказывается немного темнее, чем у обычной версии этого пива.",
+    "flavor": "Во вкусе, как и в аромате, важен баланс между базовым пивом и дымным солодом, который может проявляться от слабо до довольно заметно. Разные породы древесины дают разный вкусовой профиль. Соотношение дымности и пивной основы может варьироваться, но итог должен быть гармоничным и приятным. Дым нередко добавляет финишу дополнительную сухость. Жёсткие, горькие, пережжённые, обугленные, резиновые, сернистые, лекарственные или фенольные дымные оттенки недопустимы.",
+    "mouthfeel": "Зависит от базового стиля. Выраженная вяжущая, фенольная и просто грубая жёсткость, происходящая от дыма, считается дефектом.",
+    "comments": "Этот стиль предназначен для всех копчёных версий классических стилей, кроме бамбергского Rauchbier, то есть Märzen на буково-копчёном солоде: для него в гайде есть собственный стиль. Судье здесь прежде всего стоит смотреть на общий баланс и на то, насколько удачно дымность усиливает базовое пиво.",
+    "history": "Техника использования копчёного солода была адаптирована крафтовыми пивоварами для самых разных стилей. В Германии копчёный солод традиционно применяли для Bock, Doppelbock, Weissbier, Munich Dunkel, Schwarzbier, Munich Helles, Pils и других специальных сортов.",
+    "characteristic_ingredients": "Разные способы и материалы для копчения солода дают собственные ароматические и вкусовые оттенки. Можно использовать бук или другую лиственную древесину — например, дуб, клён, мескит, ольху, пекан, яблоню, вишню и прочие фруктовые породы. Такие солода могут напоминать разные копчёные продукты: скажем, гикори — рёбра, клён — бекон или колбасу, ольха — лосося. Хвойную древесину использовать не следует: она даёт лекарственный, смолисто-хвойный тон. Заметный торфяной дым тоже повсеместно считается нежелательным из-за резких, пронзительных фенолов и землистой грязноватой ноты. Все остальные ингредиенты зависят от базового стиля. Если копчёный солод сочетается с заметными количествами других необычных ингредиентов — фруктов, овощей, специй, мёда, — такое пиво следует относить уже к 32B Specialty Smoked Beer.",
+    "style_comparison": "",
+    "entry_instructions": "Участник должен указать базовый стиль. Если в дымном характере заметно читается конкретная порода древесины или тип дыма, это тоже необходимо указать."
+   },
+   "vital_statistics": {
+    "note": "Varies with the base beer style."
+   },
+   "vital_statistics_text": "Varies with the base beer style.",
+   "commercial_examples_text": "Alaskan Smoked Porter, Schlenkerla Oak Smoke Doppelbock, Schlenkerla Rauchbier Weizen, Schlenkerla Rauchbier Ur-Bock, O’Fallon Smoked Porter, Spezial Rauchbier Lagerbier",
+   "tags_en": [
+    "specialty-beer",
+    "smoke"
+   ],
+   "source_guideline_page_start": 72,
+   "source_pdf_page_start": 88,
+   "tags_ru": [
+    "специальное пиво",
+    "дымный"
+   ],
+   "translation_status": "completed",
+   "general_notes_en": "Intended for smoked versions of Classic Style beers, except if the Classic Style beer has smoke as an inherent part of its definition (of course, that beer should be entered in its base style, such as Rauchbier).",
+   "general_notes_ru": "Стиль предназначен для копчёных версий классических стилей пива, за исключением тех случаев, когда дымный характер уже является неотъемлемой частью самого базового стиля. В таком случае пиво нужно заявлять в исходный стиль — например, как Rauchbier."
+  },
+  {
+   "bjcp_id": "32B",
+   "name_en": "Specialty Smoked Beer",
+   "name_ru": "Специальное копчёное пиво",
+   "category_id": "32",
+   "category_en": "SMOKED BEER",
+   "category_ru": "Копчёное пиво",
+   "bjcp_heading": "32B. Specialty Smoked Beer",
+   "description_short_ru": "Копчёное specialty-пиво, где дым соединяется не только с базовой пивной основой, но и с дополнительными ингредиентами или технологическими приёмами, образуя более сложный и уникальный профиль.",
+   "sections_en": {
+    "overall_impression": "A well-balanced fusion of the malt and hops of the base specialty beer style with a pleasant and agreeable smoke character.",
+    "aroma": "A pleasant balance between the expected aroma of the base beer, smoked malt, and any specialty ingredients. The smoke character ranges from low to assertive, and may show varietal wood smoke character (e.g., alder, oak, beechwood). The balance between the smoke, the beer, and any specialty ingredients can vary – they do not need to be equal in intensity. However, the resulting mix should be appealing. Sharp, phenolic, harsh, rubbery, or burnt smoke-derived aromatics are inappropriate.",
+    "appearance": "Variable. The appearance should reflect the base beer style, although the color is often a bit darker than expected for the plain base style. The use of certain fruits and spices may affect the color and hue of the beer as well.",
+    "flavor": "Similar to the aroma, with a balance between the base beer, any specialty ingredients, and low to assertive smoked malt. Varietal woods can produce different flavor profiles. The balance between smoke, beer, and any specialty ingredients can vary, but the resulting blend should be enjoyable. Smoke can add some additional dryness to the finish. Harsh, bitter, burnt, charred, rubbery, sulfury, medicinal, or phenolic smoke-derived flavors are inappropriate.",
+    "mouthfeel": "Varies with the base beer style. Significant astringent, phenolic, smoke-derived harshness is a fault.",
+    "comments": "Judges should evaluate these beers mostly on the overall balance, and how well the smoke character enhances the base beer and any specialty ingredients.",
+    "history": "",
+    "characteristic_ingredients": "Same as 32A Classic Style Smoked Beer with the possible addition of specialty ingredients (e.g., fruits, spices, vegetables, honey) in noticeable quantities.",
+    "style_comparison": "",
+    "entry_instructions": "The entrant must specify the type of wood or smoke if a varietal smoke character is noticeable. The entrant must specify the additional ingredients or processes that make this a specialty smoked beer. Entrant must specify a description of the beer, identifying either a base style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+   },
+   "sections_ru": {
+    "overall_impression": "Хорошо сбалансированное сочетание солодово-хмелевой основы специального пива с приятным и уместным дымным характером.",
+    "aroma": "В аромате нужен приятный баланс между ожидаемым профилем базового пива, копчёным солодом и любыми дополнительными specialty-ингредиентами. Дымный характер может быть от слабого до выразительного и иногда показывает особенности конкретной древесины — например, ольхи, дуба или бука. Баланс между дымом, пивной основой и добавками может быть разным: одинаковая интенсивность не обязательна. Главное, чтобы сочетание в целом оставалось привлекательным. Резкие фенольные, грубые, резиновые или пережжённые дымные ноты здесь недопустимы.",
+    "appearance": "Внешний вид вариативен. Он должен в целом отражать базовый стиль, хотя цвет часто оказывается немного темнее, чем у обычной версии без копчения. Некоторые фрукты и специи также способны заметно влиять на оттенок и общую окраску пива.",
+    "flavor": "Во вкусе, как и в аромате, важен баланс между базовым пивом, дополнительными specialty-ингредиентами и дымным солодом, который может проявляться от слабого до выразительного уровня. Разные породы древесины формируют разные вкусовые оттенки. Соотношение дыма, пивной основы и добавок может быть разным, но итоговая композиция должна оставаться гармоничной и приятной. Дымность может придавать финишу дополнительную сухость. Жёсткие, горькие, пережжённые, обугленные, резиновые, сернистые, лекарственные или фенольные дымные ноты здесь неуместны.",
+    "mouthfeel": "Зависит от базового стиля. Выраженная вяжущая, фенольная и просто грубая жёсткость, происходящая от дыма, считается дефектом.",
+    "comments": "Судьям стоит в первую очередь оценивать общий баланс и то, насколько удачно дымный характер поддерживает базовое пиво и дополнительные ингредиенты.",
+    "history": "",
+    "characteristic_ingredients": "То же, что и для 32A Classic Style Smoked Beer, но с возможным добавлением заметных количеств specialty-ингредиентов — например, фруктов, специй, овощей или мёда.",
+    "style_comparison": "",
+    "entry_instructions": "Если в дымном профиле заметно читается конкретная порода древесины или тип дыма, это нужно указать. Также участник должен назвать дополнительные ингредиенты или процессы, которые делают это пиво именно specialty smoked beer. Необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Общее описание особой природы пива может закрывать все обязательные пункты."
+   },
+   "vital_statistics": {
+    "note": "Varies with the base beer style."
+   },
+   "vital_statistics_text": "Varies with the base beer style.",
+   "commercial_examples_text": "Fat Head’s Up in Smoke, Ommegang Bourbon Barrel Vanilla Smoked Porter",
+   "tags_en": [
+    "specialty-beer",
+    "smoke"
+   ],
+   "source_guideline_page_start": 72,
+   "source_pdf_page_start": 88,
+   "tags_ru": [
+    "специальное пиво",
+    "дымный"
+   ],
+   "translation_status": "completed",
+   "general_notes_en": "A Specialty Smoked Beer is either a smoked beer based on something other than a Classic Style (a Specialty-Type style, or a broad style family such as Porter rather than a specific style), OR any type of smoked beer with additional specialty ingredients (fruits, vegetables, spices) or processes employed that transform the beer into something more unique.",
+   "general_notes_ru": "Specialty Smoked Beer — это либо копчёное пиво, основанное не на классическом стиле, а на более широком семействе или на другом specialty-типе, либо любое копчёное пиво с дополнительными ингредиентами — фруктами, овощами, специями — или с особыми процессами, которые превращают его в более самобытный и уникальный продукт."
+  },
+  {
+   "bjcp_id": "33A",
+   "name_en": "Wood-Aged Beer",
+   "name_ru": "Пиво с древесной выдержкой",
+   "category_id": "33",
+   "category_en": "WOOD BEER",
+   "category_ru": "Пиво с древесной выдержкой",
+   "bjcp_heading": "33A. Wood-Aged Beer",
+   "description_short_ru": "Пиво, в котором выдержка в дереве добавляет древесные, тостовые или танинные оттенки, но не вносит отдельного алкогольного баррельного характера от предыдущего содержимого бочки.",
+   "sections_en": {
+    "overall_impression": "A pleasant enhancement of the base beer style with the characteristics from aging in contact with wood. The best examples will be smooth, flavorful, well-balanced, and well-aged.",
+    "aroma": "Varies with base style. A low to moderate woody aroma is usually present; some varietals may have a stronger, or distinctive character. Fresh wood can occasionally impart raw, fresh-cut wood smell, although this character should never be too strong. If the wood is toasted or charred, there may be low to moderate vanilla, caramel, toffee, toast, or cocoa character present.",
+    "appearance": "Varies with base style. Often darker than the unadulterated base beer style, particularly if toasted or charred barrels are used.",
+    "flavor": "Varies with base style. Wood usually contributes a woody flavor, and possibly a distinctive varietal character. New wood may add a raw, fresh-cut wood impression. Toasted or charred wood can add vanilla, caramel, butterscotch, toasted bread, toasted nuts, coffee, chocolate, or cocoa, depending on the wood varietal and level of toast or char. Wood-derived flavors should be balanced, supportive, and noticeable, while not overpowering the base beer style.",
+    "mouthfeel": "Varies with base style. Tannins from the wood may increase the perception of body, as well as enhancing the dryness of the finish; some astringency from wood tannins is allowable. Tart or acidic characteristics should be low to none, and never distracting.",
+    "comments": "Much of the character depends on the type of wood used, and how well it complements and enhances the base style. Age character is allowable, but excessive oxidation or sourness is a fault. Noticeable alcohol is not a fault in stronger base styles. This category should not be used for base styles where wood-aging is a fundamental requirement for the style (e.g., Flanders Red, Lambic). Beers made using either limited wood aging or products that only provide a subtle background character may be entered in the base beer style categories as long as the wood character isn’t prominently featured.",
+    "history": "A traditional production method that is rarely used by major breweries, and usually only with specialty products. More popular with modern craft breweries looking for new, distinctive products. Oak cask and barrels are traditional, although other woods are becoming more popular.",
+    "characteristic_ingredients": "Varies with base style. Aged in wooden casks or barrels, or using wood-based additives (e.g., chips, staves, spirals, cubes). Fuller-bodied, higher-gravity base styles often are used since they can best stand up to the additional flavors, although experimentation is encouraged.",
+    "style_comparison": "",
+    "entry_instructions": "The entrant must specify the type of wood used and the toast or char level (if used). If an unusual varietal wood is used, the entrant must supply a brief description of the sensory aspects the wood adds to beer. Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+   },
+   "sections_ru": {
+    "overall_impression": "Приятное развитие базового стиля за счёт выдержки в контакте с деревом. Лучшие образцы — гладкие, выразительные по вкусу, сбалансированные и хорошо выдержанные.",
+    "aroma": "Аромат зависит от базового стиля. Обычно присутствует слабая или умеренная древесная нота; некоторые породы могут давать более сильный или более узнаваемый характер. Свежая древесина иногда добавляет сырое впечатление свежего спила, но такой тон не должен быть чрезмерным. Если дерево было обожжено или тостировано, возможны слабые или умеренные оттенки ванили, карамели, ириса, поджаренного хлеба или какао.",
+    "appearance": "Внешний вид зависит от базового стиля. Пиво нередко оказывается темнее исходной, не выдержанной версии, особенно если использовались тостированные или обожжённые бочки.",
+    "flavor": "Вкус зависит от базового стиля. Дерево обычно даёт древесные оттенки и иногда узнаваемый характер конкретной породы. Новая древесина может вносить сыроватое ощущение свежего спила. Тостированное или обожжённое дерево способно добавить ваниль, карамель, сливочную ириску, поджаренный хлеб, жареные орехи, кофе, шоколад или какао — в зависимости от породы и степени тоста либо обжига. Древесные оттенки должны быть заметными, поддерживающими и гармоничными, но не должны подавлять базовый стиль.",
+    "mouthfeel": "Зависит от базового стиля. Дубильные вещества дерева могут усиливать ощущение полноты тела и одновременно подчёркивать сухость финиша; некоторая древесная вяжущесть допустима. Кисловатые или просто кислые тона должны быть минимальными или вовсе отсутствовать и ни в коем случае не отвлекать.",
+    "comments": "Очень многое зависит от выбранной древесины и от того, насколько удачно она дополняет и усиливает базовый стиль. Следы выдержки допустимы, но чрезмерная окисленность или излишняя кислотность считаются дефектом. Для крепких базовых стилей заметный алкоголь сам по себе дефектом не является. Эту категорию не следует использовать для стилей, где выдержка в дереве принципиально заложена в самом стиле, например Flanders Red или Lambic. Если выдержка была минимальной и дерево даёт лишь едва уловимый фон, такое пиво можно заявлять и в базовый стиль — при условии, что древесный характер не выступает на первый план.",
+    "history": "Это традиционный производственный приём, который крупные пивоварни сегодня используют редко и в основном только для специальных релизов. Зато он особенно популярен у современных крафтовых пивоваров, которые ищут новые и узнаваемые продукты. Традиционно применялись дубовые бочки и чаны, но сейчас всё чаще используют и другие породы древесины.",
+    "characteristic_ingredients": "Зависят от базового стиля. Пиво выдерживают в деревянных чанах или бочках либо используют древесные добавки — щепу, клёпки, спирали, кубики. Чаще всего выбирают более плотные и более крепкие базовые стили, потому что они лучше выдерживают дополнительный вклад дерева, хотя пространство для эксперимента здесь полностью сохраняется.",
+    "style_comparison": "",
+    "entry_instructions": "Участник должен указать породу древесины, а также степень тоста или обжига, если она имеет значение. Если используется необычная порода, нужно кратко описать, какие именно сенсорные оттенки она привносит в пиво. Также необходимо описать сам напиток, указав либо базовый стиль, либо состав, параметры или целевой характер. Общее описание особой природы пива может закрывать все обязательные пункты."
+   },
+   "vital_statistics": {
+    "og": "varies with base style, typically above-average",
+    "fg": "varies with base style",
+    "abv": "varies with base style, typically above-average",
+    "ibu": "varies with base style",
+    "srm": "varies with base style, often darker than the unadulterated base style"
+   },
+   "vital_statistics_text": "OG: varies with base style, typically above-average | FG: varies with base style | ABV: varies with base style, typically above-average | IBUs: varies with base style | SRM: varies with base style, often darker than the unadulterated base style",
+   "commercial_examples_text": "Bush Prestige, Cigar City Spanish Cedar Jai Alai, Firestone Walker Double Barrel Ale, Midnight Sun Arctic Devil, Petrus Aged Pale, Samuel Smith Yorkshire Stingo",
+   "tags_en": [
+    "specialty-beer",
+    "wood"
+   ],
+   "source_guideline_page_start": 73,
+   "source_pdf_page_start": 89,
+   "tags_ru": [
+    "специальное пиво",
+    "древесная выдержка"
+   ],
+   "translation_status": "completed",
+   "general_notes_en": "This style is intended for beer aged in wood without added alcohol character from previous use of the barrel. Bourbon-barrel or other beers with an added alcohol character should be entered as 33B Specialty Wood-Aged Beer.",
+   "general_notes_ru": "Этот стиль предназначен для пива, выдержанного в дереве без дополнительного алкогольного характера, пришедшего от предыдущего содержимого бочки. Bourbon barrel и другие подобные версии с заметным баррельным алкогольным вкладом следует заявлять как 33B Specialty Wood-Aged Beer."
+  },
+  {
+   "bjcp_id": "33B",
+   "name_en": "Specialty Wood-Aged Beer",
+   "name_ru": "Специальное пиво с древесной выдержкой",
+   "category_id": "33",
+   "category_en": "WOOD BEER",
+   "category_ru": "Пиво с древесной выдержкой",
+   "bjcp_heading": "33B. Specialty Wood-Aged Beer",
+   "description_short_ru": "Пиво, где выдержка в дереве сопровождается заметным баррельным вкладом от алкоголя, который раньше находился в бочке: бурбона, рома, вина, хереса и других напитков.",
+   "sections_en": {
+    "overall_impression": "An elevation of the base beer style with characteristics from aging in contact with wood, including alcoholic products previously in contact with the wood. The best examples will be smooth, flavorful, well-balanced, and well-aged.",
+    "aroma": "Varies with base style. A low to moderate woody aroma is usually present; some varietals may have a stronger, or distinctive character. If the wood is toasted or charred, there may be low to moderate vanilla, caramel, toffee, toast, or cocoa character present. Aromatics associated with alcohol (e.g., distilled spirits, wine) previously stored in the wood should be noticeable, but balanced.",
+    "appearance": "Varies with base style. Often darker than the unadulterated base beer style, particularly if charred barrels are used. Beers aged in wine barrels or other products with distinctive colors may also impart a color to the finished beer.",
+    "flavor": "Varies with base style. Wood usually contributes a woody flavor, and possibly a distinctive varietal character. Toasted or charred wood can add vanilla, caramel, butterscotch, toasted bread, toasted nuts, coffee, chocolate, or cocoa, depending on the wood varietal and level of toast or char. Wood-derived flavors and added alcohol flavors should be balanced, mutually supportive, and noticeable, while not overpowering the base beer style or each other.",
+    "mouthfeel": "Varies with base style. Tannins from the wood may increase the perception of body, as well as enhancing the dryness of the finish; some astringency from wood tannins is allowable. Usually exhibits additional alcohol warming, but should not be hot or harsh. Tart or acidic characteristics should be low to none, and never distracting.",
+    "comments": "Success in this style depends on how well the wood and alcohol character supports and enhances the base beer, and how well integrated they are with the overall flavor profile. Age character is allowable, but excessive oxidation or sourness is a fault.",
+    "history": "Same as 33A Wood-Aged Beer.",
+    "characteristic_ingredients": "Varies with base style. Aged in wooden casks or barrels previously used to store alcohol (e.g., whiskey, bourbon, rum, gin, tequila, port, sherry, Madeira, wine). Fuller-bodied, higher-gravity base styles often are used since they can best stand up to the additional flavors, although experimentation is encouraged.",
+    "style_comparison": "",
+    "entry_instructions": "The entrant must specify the additional alcohol character, with information about the barrel if relevant to the finished flavor profile. If an unusual wood or ingredient has been used, the entrant must supply a brief description of the sensory aspects the ingredients add to the beer. Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+   },
+   "sections_ru": {
+    "overall_impression": "Развитие базового стиля за счёт выдержки в контакте с деревом, причём вместе с древесными оттенками сюда входит и характер алкогольного напитка, который раньше находился в этой бочке. Лучшие образцы — гладкие, выразительные, сбалансированные и хорошо выдержанные.",
+    "aroma": "Аромат зависит от базового стиля. Обычно присутствует слабая или умеренная древесная нота; некоторые породы дерева могут давать более сильный или более узнаваемый характер. Если дерево было тостировано или обожжено, возможны слабые или умеренные оттенки ванили, карамели, ириса, поджаренного хлеба или какао. Ароматика алкоголя, который прежде находился в бочке — крепкий дистиллят, вино и т.п., — должна читаться, но оставаться в балансе.",
+    "appearance": "Внешний вид зависит от базового стиля. Пиво нередко оказывается темнее обычной невыдержанной версии, особенно если использовались сильно обожжённые бочки. Бочки из-под вина или других напитков с ярким цветом также могут передавать свой оттенок готовому пиву.",
+    "flavor": "Вкус зависит от базового стиля. Дерево обычно даёт древесные оттенки и иногда узнаваемый характер конкретной породы. Тостированное или обожжённое дерево может привносить ваниль, карамель, сливочную ириску, поджаренный хлеб, жареные орехи, кофе, шоколад или какао — в зависимости от породы и степени тоста либо обжига. Древесные и алкогольные оттенки должны быть заметными, взаимно поддерживающими и гармоничными, не подавляя ни базовый стиль, ни друг друга.",
+    "mouthfeel": "Зависит от базового стиля. Дубильные вещества дерева могут усиливать ощущение полноты тела и подчёркивать сухость финиша; некоторая древесная вяжущесть допустима. Обычно ощущается дополнительное алкогольное тепло, но оно не должно быть жгучим или грубым. Кисловатые и кислые оттенки должны быть минимальными или отсутствовать вовсе и не отвлекать от основного профиля.",
+    "comments": "Успех этого стиля определяется тем, насколько удачно древесный и алкогольный характер поддерживают и усиливают базовое пиво и насколько цельно они встроены в общий вкусовой профиль. Следы выдержки допустимы, но чрезмерная окисленность или лишняя кислотность считаются дефектом.",
+    "history": "История та же, что и у 33A Wood-Aged Beer.",
+    "characteristic_ingredients": "Зависят от базового стиля. Пиво выдерживают в деревянных чанах или бочках, в которых раньше хранился алкоголь: виски, бурбон, ром, джин, текила, портвейн, херес, мадера, вино и т.д. Чаще всего используют более плотные и более крепкие базовые стили, потому что они лучше выдерживают дополнительную вкусовую нагрузку, хотя пространство для эксперимента остаётся открытым.",
+    "style_comparison": "",
+    "entry_instructions": "Участник должен указать, какой именно дополнительный алкогольный характер ожидается, а при необходимости — и детали по бочке. Если использовалась необычная древесина или какой-либо особый ингредиент, нужно кратко описать, какие сенсорные оттенки он привносит. Также необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер. Общее описание особой природы напитка может закрывать все обязательные пункты."
+   },
+   "vital_statistics": {
+    "og": "varies with base style, typically above-average",
+    "fg": "varies with base style",
+    "abv": "varies with base style, typically above-average",
+    "ibu": "varies with base style",
+    "srm": "varies with base style, often darker than the unadulterated base style"
+   },
+   "vital_statistics_text": "OG: varies with base style, typically above-average | FG: varies with base style | ABV: varies with base style, typically above-average | IBUs: varies with base style | SRM: varies with base style, often darker than the unadulterated base style",
+   "commercial_examples_text": "AleSmith Barrel-Aged Old Numbskull, Founders Kentucky Breakfast Stout, Firestone Walker Parabola, Goose Island Bourbon County Stout, Great Divide Barrel Aged Yeti, The Lost Abbey Angel’s Share Ale",
+   "tags_en": [
+    "specialty-beer",
+    "wood"
+   ],
+   "source_guideline_page_start": 73,
+   "source_pdf_page_start": 89,
+   "tags_ru": [
+    "специальное пиво",
+    "древесная выдержка"
+   ],
+   "translation_status": "completed",
+   "general_notes_en": "This style is intended for beer aged in wood with added alcohol character from previous use of the barrel. Bourbon-barrel or other similar beers should be entered here.",
+   "general_notes_ru": "Этот стиль предназначен для пива, выдержанного в дереве с дополнительным алкогольным характером от предыдущего содержимого бочки. Bourbon barrel и другие схожие баррельные версии следует заявлять именно сюда."
+  },
+  {
+   "bjcp_id": "34A",
+   "name_en": "Commercial Specialty Beer",
+   "name_ru": "Специальное пиво по коммерческому образцу",
+   "category_id": "34",
+   "category_en": "SPECIALTY BEER",
+   "category_ru": "Специальное пиво",
+   "bjcp_heading": "34A. Commercial Specialty Beer",
+   "description_short_ru": "Категория для интерпретаций конкретных коммерческих сортов, которые не вписываются в уже определённые стили BJCP и поэтому требуют опоры на заявленный оригинальный образец.",
+   "sections_en": {
+    "overall_impression": "Based on declared beer.",
+    "aroma": "Based on declared beer.",
+    "appearance": "Based on declared beer.",
+    "flavor": "Based on declared beer.",
+    "mouthfeel": "Based on declared beer.",
+    "comments": "Intended as a catch-all location for specific beers that are based on unique commercial examples that don’t fit existing styles. Past versions of the Style Guidelines included a Belgian Specialty Ale style; this style fits that general purpose, as well as allowing non-Belgian entries of similar intent.",
+    "history": "",
+    "characteristic_ingredients": "",
+    "style_comparison": "",
+    "entry_instructions": "The entrant must specify the name of the commercial beer, specifications (vital statistics) for the beer, and either a brief sensory description or a list of ingredients used in making the beer. Without this information, judges who are unfamiliar with the beer will have no basis for comparison."
+   },
+   "sections_ru": {
+    "overall_impression": "Оценивается исходя из заявленного коммерческого образца.",
+    "aroma": "Определяется заявленным коммерческим образцом.",
+    "appearance": "Определяется заявленным коммерческим образцом.",
+    "flavor": "Определяется заявленным коммерческим образцом.",
+    "mouthfeel": "Определяется заявленным коммерческим образцом.",
+    "comments": "Это универсальная резервная категория для конкретных сортов, основанных на уникальных коммерческих примерах, которые не укладываются в уже существующие стили. В старых версиях руководства BJCP существовал стиль Belgian Specialty Ale; нынешняя категория во многом закрывает ту же задачу, но уже не ограничивается только бельгийским пивом.",
+    "history": "",
+    "characteristic_ingredients": "",
+    "style_comparison": "",
+    "entry_instructions": "Участник должен указать название коммерческого сорта, его основные параметры — vital statistics — и либо краткое сенсорное описание, либо список использованных ингредиентов. Без этой информации судьи, не знакомые с заявленным образцом, попросту не получат базы для сравнения."
+   },
+   "vital_statistics": {
+    "note": "OG, FG, IBUs, SRM, and ABV will vary depending on the declared beer."
+   },
+   "vital_statistics_text": "OG, FG, IBUs, SRM, and ABV will vary depending on the declared beer.",
+   "commercial_examples_text": "Orval, La Chouffe",
+   "tags_en": [
+    "specialty-beer"
+   ],
+   "source_guideline_page_start": 75,
+   "source_pdf_page_start": 91,
+   "tags_ru": [
+    "специальное пиво"
+   ],
+   "translation_status": "completed",
+   "general_notes_en": "This style is intended for reproductions or interpretations of specific commercial beers that don’t fit within defined styles. Beers entered here do not need to be exact copies. The beer should be judged as to how well it fits the broader style represented by the example beer, not how well it is an exact copy of a specific commercial product. If a Commercial Specialty Beer fits another defined style, do not enter it here.",
+   "general_notes_ru": "Категория предназначена для воспроизведений и интерпретаций конкретных коммерческих сортов, которые не вписываются в уже определённые стили. Пиво здесь не обязано быть буквальной копией оригинала: его следует судить по тому, насколько убедительно оно передаёт более широкий стиль или идею, стоящую за указанным коммерческим образцом, а не по точности буквального копирования. Если такой сорт можно корректно отнести к уже существующему стилю, заявлять его сюда не нужно."
+  },
+  {
+   "bjcp_id": "34B",
+   "name_en": "Mixed-Style Beer",
+   "name_ru": "Пиво смешанного стилевого типа",
+   "category_id": "34",
+   "category_en": "SPECIALTY BEER",
+   "category_ru": "Специальное пиво",
+   "bjcp_heading": "34B. Mixed-Style Beer",
+   "description_short_ru": "Пиво, построенное на смешении существующих стилей или на нетрадиционном изменении уже известного стиля — по ингредиентам, технологии, крепости или общему профилю.",
+   "sections_en": {
+    "overall_impression": "Based on the declared Base Styles, methods, and ingredients. As with all Specialty-Type Beers, the resulting combination of beer styles needs to be harmonious and balanced, and be pleasant to drink.",
+    "aroma": "Based on the declared Base Styles.",
+    "appearance": "Based on the declared Base Styles.",
+    "flavor": "Based on the declared Base Styles.",
+    "mouthfeel": "Based on the declared Base Styles.",
+    "comments": "See preamble for intent.",
+    "history": "",
+    "characteristic_ingredients": "",
+    "style_comparison": "",
+    "entry_instructions": "The entrant must specify the Base Style or Styles being used, and any special ingredients, processes, or variations involved. The entrant may provide an additional description of the sensory profile of the beer or the vital statistics of the resulting beer."
+   },
+   "sections_ru": {
+    "overall_impression": "Оценка строится на заявленных базовых стилях, применённых методах и ингредиентах. Как и в любом другом Specialty-Type beer, итоговая комбинация должна быть гармоничной, сбалансированной и приятной для питья.",
+    "aroma": "Определяется заявленными базовыми стилями.",
+    "appearance": "Определяется заявленными базовыми стилями.",
+    "flavor": "Определяется заявленными базовыми стилями.",
+    "mouthfeel": "Определяется заявленными базовыми стилями.",
+    "comments": "Смысл этой категории раскрыт в предварительном пояснении к стилю.",
+    "history": "",
+    "characteristic_ingredients": "",
+    "style_comparison": "",
+    "entry_instructions": "Участник должен указать базовый стиль или стили, а также любые специальные ингредиенты, процессы и отклонения от нормы, использованные в этом пиве. Дополнительно можно дать краткое описание сенсорного профиля или привести vital statistics получившегося сорта."
+   },
+   "vital_statistics": {
+    "note": "OG, FG, IBUs, SRM, and ABV will vary depending on the declared beer."
+   },
+   "vital_statistics_text": "OG, FG, IBUs, SRM, and ABV will vary depending on the declared beer.",
+   "commercial_examples_text": "Birrificio Italiano Tipopils, Firestone Walker Pivo Pils, Jack’s Abby Hoponius Union, Ommegang Helles Superior",
+   "tags_en": [
+    "specialty-beer"
+   ],
+   "source_guideline_page_start": 75,
+   "source_pdf_page_start": 91,
+   "tags_ru": [
+    "специальное пиво"
+   ],
+   "translation_status": "completed",
+   "general_notes_en": "This style is intended for beers in Existing Styles (previously-defined Classic Style beers or Specialty-Type Beers) that are either: a combination of Existing Styles that are not defined previously in the guidelines, including combination of Specialty-Type Beers not otherwise allowable elsewhere; a variation of an Existing Style using a non-traditional method or process (e.g., dry-hopping, ‘eis’-ing, stein bier) for that style; a variation of an Existing Style using a non-traditional ingredient (e.g., yeast with a non-traditional profile, hops with a different character than described in the Base Style); or out-of-spec variations of an Existing Style (e.g., ‘imperial’ versions, ‘session’ versions, overly-sweet versions, etc.). This style is intended for beers that can’t be entered in previously-listed styles first, including (and especially) the declared Base Style of beer. However, if the unusual method, process, or ingredient results in a beer that now fits within another defined style, the beer should be entered there. Note that some styles already allow for different strengths (e.g., IPAs, Saisons), so those variations should be entered as the appropriate Base Style. Bear in mind that a poorly-made, faulted beer should not be used to define a new style. Drinkability should always be maintained, while allowing for creative new concepts.",
+   "general_notes_ru": "Категория предназначена для пива, которое строится на уже существующих стилях — как классических, так и specialty — и при этом представляет собой одно из четырёх: сочетание нескольких уже существующих стилей, не описанное ранее в гайде; вариацию известного стиля с нетрадиционным методом или процессом, например сухое охмеление, вымораживание (eisbier) или варка на камнях (steinbier); вариацию известного стиля с нетрадиционным ингредиентом, например дрожжами необычного профиля или хмелем с иным характером, чем предполагает базовый стиль; либо заметный выход за рамки спецификации — условный imperial, session или чрезмерно сладкий вариант. Использовать эту категорию нужно только тогда, когда пиво действительно нельзя корректно заявить ни в один из ранее описанных стилей, включая сам базовый стиль. Если же необычный ингредиент или метод в итоге привёл сорт к другому уже существующему стилю, заявлять его следует туда. Важно и другое: плохо сделанное или просто дефектное пиво нельзя оправдывать тем, что оно якобы создаёт новый стиль. Креативность допустима, но питкость должна сохраняться."
+  },
+  {
+   "bjcp_id": "34C",
+   "name_en": "Experimental Beer",
+   "name_ru": "Экспериментальное пиво",
+   "category_id": "34",
+   "category_en": "SPECIALTY BEER",
+   "category_ru": "Специальное пиво",
+   "bjcp_heading": "34C. Experimental Beer",
+   "description_short_ru": "Крайняя резервная категория для пива, которое не подходит ни под один существующий стиль и требует отдельного объяснения своей экспериментальной природы.",
+   "sections_en": {
+    "overall_impression": "Varies, but should be a unique experience.",
+    "aroma": "Varies.",
+    "appearance": "Varies.",
+    "flavor": "Varies.",
+    "mouthfeel": "Varies.",
+    "comments": "This style cannot represent a well-known commercial beer (otherwise it would be a Commercial Specialty Beer) and cannot fit into any other existing Specialty-Type Beer style (including those within this major category).",
+    "history": "",
+    "characteristic_ingredients": "",
+    "style_comparison": "",
+    "entry_instructions": "The entrant must specify the special nature of the experimental beer, including the special ingredients or processes that make it not fit elsewhere in the guidelines. The entrant must provide vital statistics for the beer, and either a brief sensory description or a list of ingredients used in making the beer. Without this information, judges will have no basis for evaluation."
+   },
+   "sections_ru": {
+    "overall_impression": "Характер может быть любым, но пиво должно давать действительно необычный, самобытный опыт.",
+    "aroma": "Вариативен.",
+    "appearance": "Вариативен.",
+    "flavor": "Вариативен.",
+    "mouthfeel": "Вариативен.",
+    "comments": "Этот стиль не должен описывать известный коммерческий сорт — иначе его следовало бы относить к Commercial Specialty Beer — и не должен подходить ни под одну другую existing Specialty-Type категорию, включая прочие стили внутри самой 34-й категории.",
+    "history": "",
+    "characteristic_ingredients": "",
+    "style_comparison": "",
+    "entry_instructions": "Участник должен объяснить экспериментальную природу пива: указать особые ингредиенты или процессы, из-за которых сорт не укладывается в другие пункты гайда. Также необходимо привести vital statistics и дать либо краткое сенсорное описание, либо список использованных ингредиентов. Без этой информации у судей не будет базы для осмысленной оценки."
+   },
+   "vital_statistics": {
+    "note": "OG, FG, IBUs, SRM, and ABV will vary depending on the declared beer."
+   },
+   "vital_statistics_text": "OG, FG, IBUs, SRM, and ABV will vary depending on the declared beer.",
+   "commercial_examples_text": "None",
+   "tags_en": [
+    "specialty-beer"
+   ],
+   "source_guideline_page_start": 75,
+   "source_pdf_page_start": 91,
+   "tags_ru": [
+    "специальное пиво"
+   ],
+   "translation_status": "completed",
+   "general_notes_en": "This is explicitly a catch-all category for any beer that does not fit into an Existing Style description. No beer is ever “out of style” in this style, unless it can be entered in another beer style first. This is the last resort for any beer entered into a competition. With the broad definition for previous styles, this style should be rarely used.",
+   "general_notes_ru": "Это сознательно сделанная универсальная категория для любого пива, которое не подходит ни под одно существующее стилевое описание. Внутри самой этой категории пиво формально не может быть «вне стиля», если только его всё же нельзя сначала корректно отправить в другой стиль. Для конкурсной заявки это именно последний, крайний вариант. При нынешней широте предыдущих категорий использовать его следует редко."
+  }
+ ]
 }

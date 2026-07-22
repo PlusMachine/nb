@@ -430,6 +430,42 @@ export const userIngredients = pgTable("user_ingredients", {
   )
 }));
 
+export const shoppingManualItems = pgTable("shopping_manual_items", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  name: varchar("name", { length: 180 }).notNull(),
+  quantity: doublePrecision("quantity"),
+  unit: varchar("unit", { length: 32 }),
+  category: ingredientCategoryEnum("category"),
+  ingredientCatalogItemId: text("ingredient_catalog_item_id").references(() => ingredients.id, { onDelete: "set null" }),
+  userCustomIngredientId: uuid("user_custom_ingredient_id").references(() => userCustomIngredients.id, { onDelete: "set null" }),
+  checkedAt: timestamp("checked_at", { withTimezone: true }),
+  // Ручной порядок в v1 не используется — сортировка по createdAt; колонка задел под будущий reorder.
+  position: integer("position").default(0).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  userIdIdx: index("shopping_manual_items_user_id_idx").on(table.userId),
+  userCheckedAtIdx: index("shopping_manual_items_user_checked_at_idx").on(table.userId, table.checkedAt),
+  quantityUnitPairCheck: check(
+    "shopping_manual_items_quantity_unit_pair_chk",
+    sql`((quantity is null and unit is null) or (quantity is not null and unit is not null))`
+  ),
+  sourceLinkageCheck: check(
+    "shopping_manual_items_source_linkage_chk",
+    sql`(ingredient_catalog_item_id is null or user_custom_ingredient_id is null)`
+  )
+}));
+
+export const shoppingLineChecks = pgTable("shopping_line_checks", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  lineKey: text("line_key").notNull(),
+  checkedAt: timestamp("checked_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  userLineKeyUidx: uniqueIndex("shopping_line_checks_user_line_key_uidx").on(table.userId, table.lineKey)
+}));
+
 export const equipmentProfiles = pgTable("equipment_profiles", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),

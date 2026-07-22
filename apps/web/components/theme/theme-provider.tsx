@@ -3,9 +3,11 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import {
+  SKIN_COOKIE,
   THEME_COLOR,
   THEME_COOKIE,
   THEME_COOKIE_MAX_AGE,
+  type SkinPreference,
   type ThemePreference
 } from "@/features/theme/theme";
 
@@ -17,6 +19,9 @@ type ThemeContextValue = {
   /** Фактически применённая тема (system → light/dark по системе). */
   resolvedTheme: ResolvedTheme;
   setPreference: (preference: ThemePreference) => void;
+  /** Скин оформления (набор токенов+шрифтов): classic | hop. */
+  skin: SkinPreference;
+  setSkin: (skin: SkinPreference) => void;
 };
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
@@ -42,13 +47,16 @@ const applyResolvedTheme = (resolved: ResolvedTheme) => {
 
 export function ThemeProvider({
   initialPreference,
+  initialSkin,
   children
 }: {
   initialPreference: ThemePreference;
+  initialSkin: SkinPreference;
   children: React.ReactNode;
 }) {
   const [preference, setPreferenceState] = useState<ThemePreference>(initialPreference);
   const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>(() => resolvePreference(initialPreference));
+  const [skin, setSkinState] = useState<SkinPreference>(initialSkin);
 
   // Держим DOM в согласии с выбранным режимом. Инлайн-скрипт уже проставил класс
   // до пейнта — здесь только поддерживаем синхронизацию при смене выбора.
@@ -76,9 +84,17 @@ export function ThemeProvider({
     document.cookie = `${THEME_COOKIE}=${next}; path=/; max-age=${THEME_COOKIE_MAX_AGE}; samesite=lax`;
   }, []);
 
+  // Скин применяется на лету: токены и шрифты — CSS-переменные под классом
+  // skin-hop, перезагрузка не нужна; cookie фиксирует выбор для SSR.
+  const setSkin = useCallback((next: SkinPreference) => {
+    setSkinState(next);
+    document.documentElement.classList.toggle("skin-hop", next === "hop");
+    document.cookie = `${SKIN_COOKIE}=${next}; path=/; max-age=${THEME_COOKIE_MAX_AGE}; samesite=lax`;
+  }, []);
+
   const value = useMemo<ThemeContextValue>(
-    () => ({ preference, resolvedTheme, setPreference }),
-    [preference, resolvedTheme, setPreference]
+    () => ({ preference, resolvedTheme, setPreference, skin, setSkin }),
+    [preference, resolvedTheme, setPreference, skin, setSkin]
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

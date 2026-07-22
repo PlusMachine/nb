@@ -1,13 +1,16 @@
-import { getArticleBySlug } from "@nb/content";
+import { DEFAULT_BJCP_HERO_IMAGE_URL, getArticleBySlug } from "@nb/content";
 
 import { buildBjcpStyleOgView } from "@/features/og/bjcp";
+import { loadBjcpOgPhoto } from "@/features/og/photo";
 import { assertOgRateLimit, ogStaticFallback, renderOgCardResponse, renderOgFallbackResponse } from "@/features/og/render";
 import { getServerEnv } from "@/lib/env";
 
-// Динамическая OG-карточка стиля BJCP (docs/specs/og-images.md §5.4). Отдаётся,
-// когда у стиля нет собственной иллюстрации (плейсхолдер) — URL проставляет
-// generateMetadata в app/(public)/bjcp/[slug]/page.tsx. Данные — из @nb/content
-// (файловый индекс, кэш на уровне модуля), отдельная тонкая выборка не нужна.
+// Динамическая OG-карточка стиля BJCP (docs/specs/og-images.md §5.4). URL
+// проставляет generateMetadata в app/(public)/bjcp/[slug]/page.tsx — теперь для
+// ВСЕХ стилей (Ф5): без иллюстрации карточка как раньше, с иллюстрацией —
+// та же карточка с фото-врезкой (loadBjcpOgPhoto), вместо сырого PNG в og:image.
+// Данные — из @nb/content (файловый индекс, кэш на уровне модуля), отдельная
+// тонкая выборка не нужна.
 export const runtime = "nodejs";
 
 export async function GET(request: Request, context: { params: Promise<{ slug: string }> }) {
@@ -27,11 +30,14 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
     if (!article) {
       return ogStaticFallback();
     }
-    return renderOgCardResponse(buildBjcpStyleOgView(article, { domain, wordmark: SITE_NAME }));
+    const photo = article.heroImageUrl && article.heroImageUrl !== DEFAULT_BJCP_HERO_IMAGE_URL
+      ? await loadBjcpOgPhoto(article.heroImageUrl)
+      : null;
+    return await renderOgCardResponse(buildBjcpStyleOgView(article, { domain, wordmark: SITE_NAME, photo }));
   } catch (error) {
     console.error("og bjcp card render failed", { slug, error });
     try {
-      return renderOgFallbackResponse(SITE_NAME);
+      return await renderOgFallbackResponse(SITE_NAME);
     } catch {
       return ogStaticFallback();
     }

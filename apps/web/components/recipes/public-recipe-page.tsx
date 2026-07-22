@@ -5,7 +5,6 @@ import { Star } from "lucide-react";
 import type { PublicRecipeListItem, RecipeDetailDto } from "@/features/recipes/contracts";
 
 import { PublicRecipeHeader } from "./public-recipe-header";
-import { RecipeColorBand } from "./recipe-color-band";
 import { SimilarRecipesSection } from "./similar-recipes-section";
 import { RecipePhotoHero } from "./recipe-photo-hero";
 import { RecipeCloneAttribution } from "./recipe-clone-attribution";
@@ -62,7 +61,6 @@ export function PublicRecipePage({
   return (
     <RecipeMatchProvider recipeId={recipe.id}>
       <main className="relative space-y-6 pt-6">
-        <RecipeColorBand colorSrm={recipe.color} />
         <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
           <ol className="flex flex-wrap items-center gap-2">
             <li><Link href="/" className="transition hover:text-foreground">Главная</Link></li>

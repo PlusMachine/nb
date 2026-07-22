@@ -1498,7 +1498,7 @@ export function RecipeDesigner({
               type="button"
               onClick={handlePublishClick}
               disabled={pendingSave}
-              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-foreground bg-foreground px-3 text-xs font-medium text-background transition-colors hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-60 sm:px-4 sm:text-sm"
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-foreground bg-foreground px-3 text-xs font-medium text-background transition-colors hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-60 sm:px-4 sm:text-sm skin-hop:border-primary skin-hop:bg-primary skin-hop:text-primary-foreground skin-hop:hover:bg-primary/90"
             >
               <Globe className="h-3.5 w-3.5" />
               Опубликовать

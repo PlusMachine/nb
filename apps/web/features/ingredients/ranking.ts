@@ -1,7 +1,8 @@
 import {
   buildQueryVariants,
   canonicalIngredientFamilyGroups,
-  normalizeSearchText
+  normalizeSearchText,
+  swapKeyboardLayout
 } from "./normalization";
 import { buildConsumablePackageSearchLabels } from "./consumables";
 
@@ -528,13 +529,18 @@ const scoreTextMatch = (
   return best;
 };
 
-const resolveQueryVariants = (query: string): QueryVariants | null => {
+type RankingOptions = {
+  /** Раскладка — фолбэк: включается только вторым проходом при нуле результатов первого. */
+  includeLayoutVariants?: boolean;
+};
+
+const resolveQueryVariants = (query: string, options: RankingOptions = {}): QueryVariants | null => {
   const base = normalizeSearchText(query);
   if (!base) {
     return null;
   }
 
-  const allVariants = buildQueryVariants(query);
+  const allVariants = buildQueryVariants(query, { includeLayoutVariants: options.includeLayoutVariants });
   if (!allVariants.length) {
     return null;
   }
@@ -601,8 +607,8 @@ const isCodeLikeToken = (token: string) => (
   && /\d/.test(token)
 );
 
-const analyzeQuery = (query: string): QueryAnalysis | null => {
-  const variants = resolveQueryVariants(query);
+const analyzeQuery = (query: string, options: RankingOptions = {}): QueryAnalysis | null => {
+  const variants = resolveQueryVariants(query, options);
   if (!variants) {
     return null;
   }
@@ -1485,10 +1491,11 @@ const buildConsumableRank = (
 
 export const rankIngredientCandidate = (
   query: string | string[],
-  candidate: RankedCandidate
+  candidate: RankedCandidate,
+  options: RankingOptions = {}
 ): IngredientCandidateRank | null => {
   const queryText = Array.isArray(query) ? query[0] ?? "" : query;
-  const queryInfo = analyzeQuery(queryText);
+  const queryInfo = analyzeQuery(queryText, options);
   if (!queryInfo) {
     return null;
   }
@@ -1515,7 +1522,9 @@ export const matchesIngredientFamilyScope = (
   familyQuery: string,
   candidate: RankedCandidate
 ) => {
-  const queryInfo = analyzeQuery(familyQuery);
+  // Скоуп-фильтр quick-start НЕ двухпроходный — раскладка тут всегда учтена
+  // (прежнее поведение buildQueryVariants до вынесения раскладки в фолбэк).
+  const queryInfo = analyzeQuery(familyQuery, { includeLayoutVariants: true });
   if (!queryInfo?.family) {
     return false;
   }
@@ -1526,5 +1535,31 @@ export const matchesIngredientFamilyScope = (
 
 export const scoreIngredientCandidate = (
   query: string | string[],
-  candidate: RankedCandidate
-) => rankIngredientCandidate(query, candidate)?.score ?? 0;
+  candidate: RankedCandidate,
+  options: RankingOptions = {}
+) => rankIngredientCandidate(query, candidate, options)?.score ?? 0;
+
+/**
+ * Раскладка — строго фолбэк (см. ТЗ С1): второй проход запускаем только
+ * когда первый (без раскладочных вариантов) не дал ни одного результата и
+ * swapKeyboardLayout реально меняет запрос. Признак usedLayoutFallback пока
+ * не идёт наружу в DTO (см. С4), но уже доступен во внутреннем возврате.
+ */
+export const rankQueryTwoPass = <T>(
+  query: string,
+  rankOnce: (includeLayoutVariants: boolean) => T[]
+): { results: T[]; usedLayoutFallback: boolean } => {
+  const base = rankOnce(false);
+  if (base.length > 0) {
+    return { results: base, usedLayoutFallback: false };
+  }
+
+  const normalizedQuery = normalizeSearchText(query);
+  const layoutSwap = swapKeyboardLayout(query);
+  if (!layoutSwap || layoutSwap === normalizedQuery) {
+    return { results: base, usedLayoutFallback: false };
+  }
+
+  const layoutResults = rankOnce(true);
+  return { results: layoutResults, usedLayoutFallback: layoutResults.length > 0 };
+};

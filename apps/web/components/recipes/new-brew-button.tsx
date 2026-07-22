@@ -15,7 +15,7 @@ import { buttonVariants } from "@nb/ui";
 
 export function NewBrewButton({ size = "md" }: { size?: "sm" | "md" }) {
   return (
-    <Link href="/app/recipes?intent=brew" className={buttonVariants({ size })}>
+    <Link href="/app/recipes?intent=brew" className={buttonVariants({ variant: "brand", size })}>
       <Timer className="h-4 w-4" aria-hidden />
       Сварить
     </Link>

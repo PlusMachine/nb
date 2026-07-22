@@ -1,13 +1,42 @@
 import React from "react";
 import { renderToString } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { ToastProvider } from "@nb/ui";
+import { describe, expect, it, vi } from "vitest";
+
+// П1: ManualItemRow/ManualItemForm (рендерятся внутри ShoppingListView через
+// ManualItemsGroup) импортируют серверные экшены напрямую — их модуль тянет
+// за собой реальный features/shopping/service.ts -> .../recipes/match-service.ts
+// -> .../inventory/service.ts -> "server-only" (пакет не резолвится вне
+// Next/webpack). Тест — чисто презентационный (рендер по готовому DTO), сервис
+// звать не должен: мокаем экшены заглушками, паттерн — tests/inventory-page-foundation.test.ts.
+vi.mock("../features/shopping/actions", () => ({
+  addManualShoppingItemAction: vi.fn(),
+  updateManualShoppingItemAction: vi.fn(),
+  deleteManualShoppingItemAction: vi.fn(),
+  toggleManualShoppingItemAction: vi.fn(),
+  // П2: ShoppingLineRow/TransferDialog зовут те же серверные экшены — тот же
+  // мок-периметр, чтобы рендер не тянул реальный service.ts (→ inventory/service
+  // → "@nb/db").
+  toggleShoppingLineCheckedAction: vi.fn(),
+  transferCheckedToStockAction: vi.fn()
+}));
+// ManualItemRow зовёт useRouter().refresh() после мутаций — голый renderToString
+// не монтирует app router (паттерн tests/recipe-clone-bridge.test.ts). П2:
+// TransferDialog зовёт useRouter().push() из action-кнопки тоста — сам рендер
+// (кнопка ещё не нажата) её не вызывает, но модуль должен резолвиться.
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ refresh: () => undefined, push: () => undefined })
+}));
 
 import { ShoppingListView } from "../components/shopping/shopping-list-view";
 import { InventoryTabs } from "../components/inventory/inventory-tabs";
+import { TransferLineRow, UnresolvedLineRow } from "../components/shopping/transfer-dialog";
+import { formatInventoryUnitLabel } from "../features/inventory/units";
 import type {
   ShoppingListDto,
   ShoppingListGroupDto,
   ShoppingListSourceBrew,
+  ShoppingManualItemDto,
   ShoppingOpportunityDto
 } from "../features/shopping/contracts";
 
@@ -15,7 +44,7 @@ import type {
 
 const emptyGroups: ShoppingListGroupDto[] = [];
 
-const oneGroup = (): ShoppingListGroupDto[] => [
+const oneGroup = (overrides: Partial<ShoppingListGroupDto["items"][number]> = {}): ShoppingListGroupDto[] => [
   {
     category: "hop",
     label: "Хмель",
@@ -29,7 +58,21 @@ const oneGroup = (): ShoppingListGroupDto[] => [
         quantityLabel: "50 г",
         catalogHref: "/catalog/system/cat-citra",
         addToStockHref: "/app/ingredients?addSource=catalog&addId=cat-citra&addQty=50&addUnit=g",
-        neededBy: [{ recipeTitle: "IPA рецепт", brewName: "Кухонная варка" }]
+        neededBy: [{
+          brewBatchId: "bb-1",
+          recipeTitle: "IPA рецепт",
+          brewName: "Кухонная варка",
+          quantityToBuy: 50,
+          unit: "g",
+          quantityLabel: "50 г",
+          packSuggestion: null
+        }],
+        checked: false,
+        hasStockLinkage: true,
+        packSuggestion: null,
+        brand: null,
+        countryName: null,
+        ...overrides
       }
     ]
   }
@@ -144,12 +187,28 @@ const collapsedOpportunity = (id: string, title: string): ShoppingOpportunityDto
   collapsed: true
 });
 
+const manualItem = (overrides: Partial<ShoppingManualItemDto> = {}): ShoppingManualItemDto => ({
+  id: "mi-1",
+  name: "Дезинфектант Star San",
+  quantity: null,
+  unit: null,
+  quantityLabel: null,
+  category: null,
+  catalogHref: null,
+  addToStockHref: null,
+  checked: false,
+  hasStockLinkage: false,
+  ...overrides
+});
+
 const baseDto = (overrides: Partial<ShoppingListDto> = {}): ShoppingListDto => ({
   groups: emptyGroups,
   totalItems: 0,
+  checkedCount: 0,
   plannedBrews: [],
   opportunities: [],
   collapsedOpportunityCount: 0,
+  manualItems: [],
   emptyReason: "nothing_to_do",
   ...overrides
 });
@@ -160,8 +219,13 @@ const baseDto = (overrides: Partial<ShoppingListDto> = {}): ShoppingListDto => (
 // на children.
 const stripHydrationComments = (html: string) => html.replace(/<!--[\s\S]*?-->/g, "");
 
+// ToastProvider — строка ручной позиции (П1) зовёт useToast (провайдер в
+// приложении смонтирован в components/providers.tsx, при голом SSR его надо
+// дать руками — паттерн tests/brew-batches-page-wiring.test.ts).
 const render = (list: ShoppingListDto) =>
-  stripHydrationComments(renderToString(React.createElement(ShoppingListView, { list })));
+  stripHydrationComments(
+    renderToString(React.createElement(ToastProvider, null, React.createElement(ShoppingListView, { list })))
+  );
 
 // --- тесты ---------------------------------------------------------------
 
@@ -341,6 +405,274 @@ describe("ShoppingListView", () => {
     expect(html).toContain("Всё нужное уже на складе");
     expect(html).toContain("Почти хватает на:");
     expect(html).not.toContain("Нехваток пока нет");
+  });
+});
+
+describe("ShoppingListView — П1: ручные позиции («Своё»)", () => {
+  it("группа «Своё» рендерится после категорийных групп", () => {
+    const html = render(
+      baseDto({
+        groups: oneGroup(),
+        totalItems: 2,
+        plannedBrews: [plannedBrew()],
+        manualItems: [manualItem()],
+        emptyReason: null
+      })
+    );
+
+    const hopIndex = html.indexOf("Хмель");
+    const ownIndex = html.indexOf("Своё");
+    expect(hopIndex).toBeGreaterThan(-1);
+    expect(ownIndex).toBeGreaterThan(hopIndex);
+    expect(html).toContain("Дезинфектант Star San");
+  });
+
+  it("блок «Добавить на склад» виден без запланированных партий, если есть ручные позиции — без строки «Для запланированных партий:»", () => {
+    const html = render(
+      baseDto({
+        manualItems: [manualItem()],
+        emptyReason: null
+      })
+    );
+
+    expect(html).toContain("Добавить на склад");
+    expect(html).not.toContain("Для запланированных партий:");
+    expect(html).toContain("Своё");
+    expect(html).toContain("Дезинфектант Star San");
+  });
+
+  it("при all_in_stock группа «Своё» сосуществует с success-строкой", () => {
+    const html = render(
+      baseDto({
+        plannedBrews: [plannedBrew({ missingCount: 0 })],
+        manualItems: [manualItem({ name: "Каскад про запас" })],
+        emptyReason: "all_in_stock"
+      })
+    );
+
+    expect(html).toContain("Всё нужное уже на складе");
+    expect(html).toContain("Своё");
+    expect(html).toContain("Каскад про запас");
+  });
+
+  it("EmptyState (nothing_to_do) содержит кнопку «Добавить позицию»", () => {
+    const html = render(baseDto({ emptyReason: "nothing_to_do" }));
+
+    expect(html).toContain("Нехваток пока нет");
+    expect(html).toContain("Добавить позицию");
+  });
+
+  it("отмеченная («куплено») ручная позиция — имя зачёркнуто", () => {
+    const html = render(
+      baseDto({
+        manualItems: [manualItem({ name: "Кроненпробки", checked: true })],
+        emptyReason: null
+      })
+    );
+
+    const nameMatch = html.match(/<p class="([^"]*)">Кроненпробки<\/p>/);
+    expect(nameMatch).not.toBeNull();
+    expect(nameMatch?.[1]).toContain("line-through");
+  });
+
+  it("неотмеченная ручная позиция — имя без зачёркивания", () => {
+    const html = render(
+      baseDto({
+        manualItems: [manualItem({ name: "Кроненпробки", checked: false })],
+        emptyReason: null
+      })
+    );
+
+    const nameMatch = html.match(/<p class="([^"]*)">Кроненпробки<\/p>/);
+    expect(nameMatch).not.toBeNull();
+    expect(nameMatch?.[1]).not.toContain("line-through");
+  });
+
+  it("строка ручной позиции содержит нативный чекбокс с aria-label по имени", () => {
+    const html = render(
+      baseDto({
+        manualItems: [manualItem({ name: "Кроненпробки" })],
+        emptyReason: null
+      })
+    );
+
+    expect(html).toContain('type="checkbox"');
+    expect(html).toContain('aria-label="Отметить купленным: Кроненпробки"');
+  });
+});
+
+describe("ShoppingListView — П2: отметка «куплено» + «Пополнить склад»", () => {
+  it("отмеченная производная строка — line-through у имени, но НЕ у количества и ссылки «На склад»", () => {
+    const html = render(
+      baseDto({
+        groups: oneGroup({ checked: true }),
+        totalItems: 0,
+        checkedCount: 1,
+        plannedBrews: [plannedBrew()],
+        emptyReason: null
+      })
+    );
+
+    const nameMatch = html.match(/<p class="([^"]*)"><a[^>]*>Citra<\/a><\/p>/);
+    expect(nameMatch).not.toBeNull();
+    expect(nameMatch?.[1]).toContain("line-through");
+
+    // Количество и «На склад» остаются как есть — не приглушены, не зачёркнуты.
+    expect(html).toContain(">50 г<");
+    expect(html).toContain("На склад");
+    expect(html).not.toMatch(/line-through[^>]*>50 г/);
+  });
+
+  it("«Пополнить склад (3)» видна при checkedCount 3 и отсутствует при checkedCount 0", () => {
+    const withChecked = render(
+      baseDto({
+        groups: oneGroup(),
+        checkedCount: 3,
+        plannedBrews: [plannedBrew()],
+        emptyReason: null
+      })
+    );
+    expect(withChecked).toContain("Пополнить склад (3)");
+    expect(withChecked).toContain("куплено 3");
+
+    const withoutChecked = render(
+      baseDto({
+        groups: oneGroup(),
+        checkedCount: 0,
+        plannedBrews: [plannedBrew()],
+        emptyReason: null
+      })
+    );
+    expect(withoutChecked).not.toContain("Пополнить склад");
+    expect(withoutChecked).not.toContain("куплено");
+  });
+
+  it("строка производной нехватки содержит нативный чекбокс с aria-label по имени", () => {
+    const html = render(
+      baseDto({
+        groups: oneGroup(),
+        totalItems: 1,
+        plannedBrews: [plannedBrew()],
+        emptyReason: null
+      })
+    );
+
+    expect(html).toContain('type="checkbox"');
+    expect(html).toContain('aria-label="Отметить купленным: Citra"');
+  });
+});
+
+describe("ShoppingListView — П3: «Скопировать список»", () => {
+  it("кнопка «Скопировать список» видна, когда есть неотмеченные строки", () => {
+    const html = render(
+      baseDto({
+        groups: oneGroup(),
+        plannedBrews: [plannedBrew()],
+        emptyReason: null
+      })
+    );
+
+    expect(html).toContain('aria-label="Скопировать список"');
+  });
+
+  it("кнопка отсутствует, когда все строки (производные и ручные) отмечены", () => {
+    const html = render(
+      baseDto({
+        groups: oneGroup({ checked: true }),
+        manualItems: [manualItem({ checked: true })],
+        plannedBrews: [plannedBrew()],
+        emptyReason: null
+      })
+    );
+
+    expect(html).not.toContain('aria-label="Скопировать список"');
+  });
+});
+
+describe("ShoppingListView — П4: округление до покупабельных фасовок", () => {
+  it("строка с packSuggestion: фасовка — основным числом, исходная нехватка — вторичной подписью «нужно …»", () => {
+    const html = render(
+      baseDto({
+        groups: oneGroup({
+          packSuggestion: { label: "пачка 50 г", totalQuantity: 50, totalUnit: "g" },
+          quantityToBuy: 37,
+          quantityLabel: "37 г"
+        }),
+        totalItems: 1,
+        plannedBrews: [plannedBrew()],
+        emptyReason: null
+      })
+    );
+
+    expect(html).toContain("пачка 50 г");
+    expect(html).toContain("нужно 37 г");
+  });
+
+  it("строка без packSuggestion — количество как раньше, без подписи «нужно»", () => {
+    const html = render(
+      baseDto({
+        groups: oneGroup(),
+        totalItems: 1,
+        plannedBrews: [plannedBrew()],
+        emptyReason: null
+      })
+    );
+
+    expect(html).toContain(">50 г<");
+    expect(html).not.toContain("нужно");
+  });
+});
+
+// Radix Dialog/Portal вне jsdom не рендерит содержимое (см. паттерн
+// tests/consume-preview-dialog.test.tsx) — строки диалога переноса
+// тестируются напрямую на экспортированных подкомпонентах, без прохода через
+// TransferDialog/Dialog целиком.
+describe("TransferLineRow / UnresolvedLineRow — рендер-контракт", () => {
+  it("TransferLineRow: имя, значение количества в поле, подпись единицы", () => {
+    const html = renderToString(
+      React.createElement(
+        "ul",
+        null,
+        React.createElement(TransferLineRow, {
+          row: { key: "derived:catalog:cat-citra|g", kind: "derived", lineKey: "catalog:cat-citra|g", name: "Citra", unit: "g", defaultQuantity: 50 },
+          value: "50",
+          onChange: () => {}
+        })
+      )
+    );
+
+    expect(html).toContain("Citra");
+    expect(html).toContain('value="50"');
+    expect(html).toContain(formatInventoryUnitLabel("g", 50));
+  });
+
+  it("UnresolvedLineRow: имя + ссылка «Добавить свой» на addToStockHref", () => {
+    const html = renderToString(
+      React.createElement(
+        "ul",
+        null,
+        React.createElement(UnresolvedLineRow, {
+          row: { key: "derived:name:кориандр|g", name: "Кориандр", addToStockHref: "/app/ingredients?addName=%D0%9A%D0%BE%D1%80%D0%B8%D0%B0%D0%BD%D0%B4%D1%80" }
+        })
+      )
+    );
+
+    expect(html).toContain("Кориандр");
+    expect(html).toContain("Добавить свой");
+    expect(html).toContain('href="/app/ingredients?addName=');
+  });
+
+  it("UnresolvedLineRow без addToStockHref — только имя, без битой ссылки", () => {
+    const html = renderToString(
+      React.createElement(
+        "ul",
+        null,
+        React.createElement(UnresolvedLineRow, { row: { key: "x", name: "Без ссылки", addToStockHref: null } })
+      )
+    );
+
+    expect(html).toContain("Без ссылки");
+    expect(html).not.toContain("Добавить свой");
   });
 });
 

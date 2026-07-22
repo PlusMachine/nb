@@ -12,14 +12,10 @@ import { AlertTriangle } from "lucide-react";
 
 export function RemoteDisabledNotice({
   message,
-  brewBatchId,
-  query
+  brewBatchId
 }: {
   message: string;
   brewBatchId: string;
-  /** Query-строка (без «?») — фидбэк списания склада довозится до страницы
-   *  партии тем же способом, что и у виртуальной ветки (см. brew-picker-dialog.tsx). */
-  query?: string;
 }) {
   return (
     <div className="space-y-3 rounded-lg border border-warning/30 bg-warning-subtle px-3 py-3 text-sm text-warning-subtle-foreground" role="status">
@@ -28,7 +24,7 @@ export function RemoteDisabledNotice({
         <p>{message}</p>
       </div>
       <a
-        href={`/app/brew-batches/${brewBatchId}${query ? `?${query}` : ""}`}
+        href={`/app/brew-batches/${brewBatchId}`}
         className="inline-flex items-center justify-center rounded-md bg-foreground px-3 py-2 text-xs font-medium text-background hover:bg-foreground/90"
       >
         Перейти к варке

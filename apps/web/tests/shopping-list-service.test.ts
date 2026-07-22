@@ -6,11 +6,44 @@ vi.mock("../features/recipes/match-service", () => ({
   computeRecipeMatchesForBrewBatches: vi.fn()
 }));
 vi.mock("../features/recipes/service", () => ({ listSavedRecipes: vi.fn(), listOwnRecipeRefs: vi.fn() }));
+vi.mock("../features/shopping/data", () => ({
+  loadManualItems: vi.fn(),
+  // П2: buildShoppingListForUser join'ит отметки и лениво чистит осиротевшие —
+  // обе функции нужны как моки, даже когда конкретный тест их не проверяет.
+  loadLineChecks: vi.fn(),
+  pruneOrphanLineChecks: vi.fn(async () => {}),
+  deleteLineCheck: vi.fn(),
+  setLineChecked: vi.fn(),
+  // П4: варианты фасовки батчем — дефолт [] (строка без catalogId/вариантов
+  // ведёт себя как раньше, без packSuggestion).
+  loadPackVariantsByCatalogIds: vi.fn(),
+  // v4: мета каталога (бренд/страна) — дефолт [] (строка без catalogId или без
+  // заполненных полей в БД ведёт себя как раньше, brand/countryName null).
+  loadIngredientMetaByCatalogIds: vi.fn()
+}));
+// buildShoppingListForUser (через computeAggregatedShoppingLines) не зовёт
+// ничего из inventory/service — но модуль импортирует его типы/функции на
+// уровне файла (нужны transferCheckedToStock), поэтому тут его стабим:
+// реальный features/inventory/service.ts тянет "@nb/db" и кучу доменной
+// логики, не нужной этому сьюту (паттерн — любой другой тест сервисного слоя,
+// не трогающий инвентарь напрямую).
+vi.mock("../features/inventory/service", () => ({
+  addCatalogIngredientToInventory: vi.fn(),
+  addCustomIngredientToInventory: vi.fn(),
+  assertInventoryItemCreationAllowed: vi.fn()
+}));
 
 import { buildShoppingListForUser } from "../features/shopping/service";
 import { listBrewBatchesForUser } from "../features/brew-batches/service";
 import { computeRecipeMatchesForBrewBatches, computeRecipeMatchesForUser } from "../features/recipes/match-service";
 import { listSavedRecipes, listOwnRecipeRefs } from "../features/recipes/service";
+import {
+  loadIngredientMetaByCatalogIds,
+  loadLineChecks,
+  loadManualItems,
+  loadPackVariantsByCatalogIds,
+  pruneOrphanLineChecks
+} from "../features/shopping/data";
 import type { RecipeMatchDto, RecipeMatchLineDto } from "../features/recipes/contracts";
 
 // --- фикстуры --------------------------------------------------------------
@@ -110,12 +143,57 @@ const nearMissMatch = (recipeId: string, missingCount: number, coveredCount = 8)
   return matchDto(recipeId, lines, { missingCount, totalLines: lines.length });
 };
 
+// Строка БД ручной позиции (П1) — форма, в которой её отдаёт loadManualItems
+// (ManualItemRow = typeof shoppingManualItems.$inferSelect).
+const manualItemRow = (overrides: Record<string, unknown> = {}) => ({
+  id: "mi-1",
+  userId: "u-1",
+  name: "Дезинфектант Star San",
+  quantity: null,
+  unit: null,
+  category: null,
+  ingredientCatalogItemId: null,
+  userCustomIngredientId: null,
+  checkedAt: null,
+  position: 0,
+  createdAt: new Date("2026-01-01"),
+  updatedAt: new Date("2026-01-01"),
+  ...overrides
+});
+
 beforeEach(() => {
   vi.clearAllMocks();
   (listSavedRecipes as Mock).mockResolvedValue([]);
   (listOwnRecipeRefs as Mock).mockResolvedValue({ refs: [], familyIdByVersionId: new Map<string, string>() });
   (computeRecipeMatchesForUser as Mock).mockResolvedValue({});
   (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({});
+  (loadManualItems as Mock).mockResolvedValue([]);
+  (loadLineChecks as Mock).mockResolvedValue(new Set<string>());
+  (pruneOrphanLineChecks as Mock).mockResolvedValue(undefined);
+  (loadPackVariantsByCatalogIds as Mock).mockResolvedValue([]);
+  (loadIngredientMetaByCatalogIds as Mock).mockResolvedValue([]);
+});
+
+// Строка БД варианта фасовки (П4) — форма, в которой её отдаёт
+// loadPackVariantsByCatalogIds (PackVariantRow = typeof ingredientPackageVariants.$inferSelect).
+const packVariantRow = (overrides: Record<string, unknown> = {}) => ({
+  id: "pv-1",
+  ingredientId: "cat-citra",
+  brand: null,
+  productNameEn: null,
+  productNameRu: null,
+  countryNameRu: null,
+  packageAmount: 50,
+  packageUnit: "g",
+  stockContentAmount: 50,
+  stockContentUnit: "g",
+  sourceGroup: null,
+  sourceUrl: null,
+  isDefaultForStock: true,
+  position: 0,
+  createdAt: new Date("2026-01-01"),
+  updatedAt: new Date("2026-01-01"),
+  ...overrides
 });
 
 // §3.2 матчит ЗАПЛАНИРОВАННЫЕ партии через computeRecipeMatchesForBrewBatches:
@@ -143,9 +221,11 @@ describe("buildShoppingListForUser — §3.2 агрегация и фикс ба
     // 30 г) и не пересобирался при досуммировании второй — здесь должна быть сумма.
     expect(line.addToStockHref).toContain("addQty=50");
     expect(line.addToStockHref).toContain("addUnit=g");
+    // v4: neededBy несёт per-brew остаток каждой варки (не только имена) —
+    // сумма per-brew quantityToBuy равна общему line.quantityToBuy.
     expect(line.neededBy).toEqual([
-      { recipeTitle: "IPA", brewName: "Варка 1" },
-      { recipeTitle: "Stout", brewName: "Варка 2" }
+      { brewBatchId: "bb-1", recipeTitle: "IPA", brewName: "Варка 1", quantityToBuy: 30, unit: "g", quantityLabel: "30 г", packSuggestion: null },
+      { brewBatchId: "bb-2", recipeTitle: "Stout", brewName: "Варка 2", quantityToBuy: 20, unit: "g", quantityLabel: "20 г", packSuggestion: null }
     ]);
   });
 
@@ -225,6 +305,104 @@ describe("buildShoppingListForUser — §3.2 агрегация и фикс ба
   });
 });
 
+describe("buildShoppingListForUser — v4: per-brew neededBy (лаборатория, чипы-фильтр по варкам)", () => {
+  it("строка, нужная двум варкам, несёт оба brewBatchId с корректными per-brew количествами — сумма равна quantityToBuy", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([
+      plannedBatch({ id: "bb-1", recipeId: "r-1", recipeTitle: "IPA", name: "Варка 1" }),
+      plannedBatch({ id: "bb-2", recipeId: "r-2", recipeTitle: "Stout", name: "Варка 2" })
+    ]);
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [missingLine({ suggestedAddQuantity: 30 })]),
+      "bb-2": matchDto("r-2", [missingLine({ recipeIngredientId: "ri-1b", suggestedAddQuantity: 20 })])
+    });
+
+    const dto = await buildShoppingListForUser("u-1");
+
+    const line = dto.groups.flatMap((group) => group.items)[0];
+    expect(line.quantityToBuy).toBe(50);
+    expect(line.neededBy).toHaveLength(2);
+    const brew1Need = line.neededBy.find((need) => need.brewBatchId === "bb-1");
+    const brew2Need = line.neededBy.find((need) => need.brewBatchId === "bb-2");
+    expect(brew1Need?.quantityToBuy).toBe(30);
+    expect(brew2Need?.quantityToBuy).toBe(20);
+    const sum = line.neededBy.reduce((acc, need) => acc + need.quantityToBuy, 0);
+    expect(sum).toBe(line.quantityToBuy);
+  });
+
+  it("два лота одного ингредиента в ОДНОЙ варке суммируются в один per-brew остаток, а не в две записи neededBy", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([
+      plannedBatch({ id: "bb-1", recipeId: "r-1", recipeTitle: "IPA", name: "Варка 1" })
+    ]);
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [
+        missingLine({ suggestedAddQuantity: 30 }),
+        missingLine({ recipeIngredientId: "ri-1-dupe", suggestedAddQuantity: 15 })
+      ])
+    });
+
+    const dto = await buildShoppingListForUser("u-1");
+
+    const line = dto.groups.flatMap((group) => group.items)[0];
+    expect(line.quantityToBuy).toBe(45);
+    expect(line.neededBy).toHaveLength(1);
+    expect(line.neededBy[0]).toMatchObject({ brewBatchId: "bb-1", quantityToBuy: 45, quantityLabel: "45 г" });
+  });
+
+  it("brand/countryName приходят из loadIngredientMetaByCatalogIds по catalogId строки; producer — фолбэк, если brand пуст", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([plannedBatch({ id: "bb-1", recipeId: "r-1" })]);
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [
+        missingLine({ ingredientCatalogItemId: "cat-citra" }),
+        missingLine({
+          recipeIngredientId: "ri-yeast",
+          ingredientCatalogItemId: "cat-us05",
+          ingredientDisplayName: "US-05",
+          category: "yeast",
+          suggestedAddQuantity: 1,
+          suggestedAddUnit: "pack"
+        })
+      ])
+    });
+    (loadIngredientMetaByCatalogIds as Mock).mockResolvedValue([
+      { id: "cat-citra", brand: "YCH Hops", producer: null, countryName: "США" },
+      { id: "cat-us05", brand: null, producer: "Fermentis", countryName: null }
+    ]);
+
+    const dto = await buildShoppingListForUser("u-1");
+
+    const lines = dto.groups.flatMap((group) => group.items);
+    const citra = lines.find((line) => line.ingredientDisplayName === "Citra");
+    const us05 = lines.find((line) => line.ingredientDisplayName === "US-05");
+    expect(citra?.brand).toBe("YCH Hops");
+    expect(citra?.countryName).toBe("США");
+    // producer — фолбэк, когда brand не заполнен.
+    expect(us05?.brand).toBe("Fermentis");
+    expect(us05?.countryName).toBeNull();
+    expect(loadIngredientMetaByCatalogIds).toHaveBeenCalledWith(expect.arrayContaining(["cat-citra", "cat-us05"]));
+  });
+
+  it("строка без каталожной привязки — brand/countryName всегда null", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([plannedBatch({ id: "bb-1", recipeId: "r-1" })]);
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [
+        missingLine({
+          ingredientDisplayName: "Кориандр молотый",
+          ingredientCatalogItemId: null,
+          userCustomIngredientId: null,
+          suggestedAddQuantity: 10,
+          suggestedAddUnit: "g"
+        })
+      ])
+    });
+
+    const dto = await buildShoppingListForUser("u-1");
+
+    const line = dto.groups.flatMap((group) => group.items)[0];
+    expect(line.brand).toBeNull();
+    expect(line.countryName).toBeNull();
+  });
+});
+
 describe("buildShoppingListForUser — A2: списанное под партию не просится в покупки", () => {
   it("состав партии уже списан → §3.2 пустая, чип варки без нехваток", async () => {
     (listBrewBatchesForUser as Mock).mockResolvedValue([
@@ -261,7 +439,9 @@ describe("buildShoppingListForUser — A2: списанное под парти�
     expect(dto.totalItems).toBe(1);
     const line = dto.groups.flatMap((group) => group.items)[0];
     expect(line.quantityToBuy).toBe(50);
-    expect(line.neededBy).toEqual([{ recipeTitle: "IPA", brewName: "Вторая" }]);
+    expect(line.neededBy).toEqual([
+      { brewBatchId: "bb-2", recipeTitle: "IPA", brewName: "Вторая", quantityToBuy: 50, unit: "g", quantityLabel: "50 г", packSuggestion: null }
+    ]);
     expect(dto.plannedBrews.find((brew) => brew.brewBatchId === "bb-1")?.missingCount).toBe(0);
     expect(dto.plannedBrews.find((brew) => brew.brewBatchId === "bb-2")?.missingCount).toBe(1);
     // Обе партии уходят в матч по отдельности, несмотря на общий рецепт.
@@ -664,5 +844,327 @@ describe("buildShoppingListForUser — пустые состояния (§3.4)",
 
     expect(dto.emptyReason).toBeNull();
     expect(dto.totalItems).toBe(1);
+  });
+});
+
+describe("buildShoppingListForUser — П1: ручные позиции («Своё»)", () => {
+  it("позиция, привязанная к каталогу, получает hrefs каталога и quantityLabel", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([]);
+    (loadManualItems as Mock).mockResolvedValue([
+      manualItemRow({
+        id: "mi-1",
+        name: "Cascade",
+        quantity: 100,
+        unit: "g",
+        category: "hop",
+        ingredientCatalogItemId: "cat-cascade"
+      })
+    ]);
+
+    const dto = await buildShoppingListForUser("u-1");
+
+    expect(dto.manualItems).toHaveLength(1);
+    const item = dto.manualItems[0];
+    expect(item.catalogHref).toBe("/catalog/system/cat-cascade");
+    expect(item.addToStockHref).toBe("/app/ingredients?addSource=catalog&addId=cat-cascade&addQty=100&addUnit=g");
+    expect(item.quantityLabel).toBe("100 г");
+    expect(item.hasStockLinkage).toBe(true);
+    expect(item.checked).toBe(false);
+  });
+
+  it("позиция без привязки — name-фолбэк на поиск/добавление и quantityLabel null без количества", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([]);
+    (loadManualItems as Mock).mockResolvedValue([
+      manualItemRow({ id: "mi-2", name: "Кроненпробки" })
+    ]);
+
+    const dto = await buildShoppingListForUser("u-1");
+
+    const item = dto.manualItems[0];
+    expect(item.catalogHref).toBe("/catalog?q=%D0%9A%D1%80%D0%BE%D0%BD%D0%B5%D0%BD%D0%BF%D1%80%D0%BE%D0%B1%D0%BA%D0%B8");
+    expect(item.addToStockHref).toBe("/app/ingredients?addName=%D0%9A%D1%80%D0%BE%D0%BD%D0%B5%D0%BD%D0%BF%D1%80%D0%BE%D0%B1%D0%BA%D0%B8");
+    expect(item.quantityLabel).toBeNull();
+    expect(item.hasStockLinkage).toBe(false);
+  });
+
+  it("mapManualItemToDto: битая единица в БД (не входит в inventoryUnits) — пара количество/единица трактуется как отсутствующая", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([]);
+    (loadManualItems as Mock).mockResolvedValue([
+      // "коробка" — устаревший/ручной алиас в БД, не входит в inventoryUnits.
+      manualItemRow({ id: "mi-3", name: "Солод про запас", quantity: 5, unit: "коробка" })
+    ]);
+
+    const dto = await buildShoppingListForUser("u-1");
+
+    const item = dto.manualItems[0];
+    expect(item.quantity).toBeNull();
+    expect(item.unit).toBeNull();
+    expect(item.quantityLabel).toBeNull();
+  });
+
+  it("totalItems учитывает неотмеченные ручные позиции — отмеченная («куплено») в счётчик не входит", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([]);
+    (loadManualItems as Mock).mockResolvedValue([
+      manualItemRow({ id: "mi-1", name: "A" }),
+      manualItemRow({ id: "mi-2", name: "B", checkedAt: new Date("2026-01-02") })
+    ]);
+
+    const dto = await buildShoppingListForUser("u-1");
+
+    expect(dto.totalItems).toBe(1);
+    expect(dto.manualItems.find((item) => item.id === "mi-1")?.checked).toBe(false);
+    expect(dto.manualItems.find((item) => item.id === "mi-2")?.checked).toBe(true);
+  });
+
+  it("nothing_to_do не ставится, если есть хотя бы одна ручная позиция (даже без варок и возможностей)", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([]);
+    (loadManualItems as Mock).mockResolvedValue([manualItemRow()]);
+
+    const dto = await buildShoppingListForUser("u-1");
+
+    expect(dto.emptyReason).toBeNull();
+    expect(dto.manualItems).toHaveLength(1);
+  });
+
+  it("all_in_stock не ломается ручными позициями — статус сохраняется, manualItems приложены рядом", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([plannedBatch({ recipeId: "r-1" })]);
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [coveredLine()], { missingCount: 0 })
+    });
+    (loadManualItems as Mock).mockResolvedValue([manualItemRow({ id: "mi-1", name: "Star San" })]);
+
+    const dto = await buildShoppingListForUser("u-1");
+
+    expect(dto.emptyReason).toBe("all_in_stock");
+    expect(dto.groups).toEqual([]);
+    expect(dto.manualItems).toHaveLength(1);
+    // отмеченная не в счету totalItems, а тут позиция неотмеченная -> считается
+    expect(dto.totalItems).toBe(1);
+  });
+
+  it("дашборд-вызов (без options, includeOpportunities не передан) тоже получает ручные позиции", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([]);
+    (loadManualItems as Mock).mockResolvedValue([manualItemRow({ id: "mi-1", name: "Star San" })]);
+
+    const dto = await buildShoppingListForUser("u-1");
+
+    expect(loadManualItems).toHaveBeenCalledWith("u-1");
+    expect(dto.manualItems).toHaveLength(1);
+    expect(dto.manualItems[0].name).toBe("Star San");
+  });
+});
+
+describe("buildShoppingListForUser — П2: отметка «куплено» + checkedCount", () => {
+  it("join по ключу: отмеченная в shopping_line_checks строка приходит с checked=true, hasStockLinkage=true при привязке", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([plannedBatch({ id: "bb-1", recipeId: "r-1" })]);
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [missingLine({ ingredientCatalogItemId: "cat-citra", suggestedAddUnit: "g" })])
+    });
+    // Ключ строки — resolveLineKey: "catalog:<id>|<unit>".
+    (loadLineChecks as Mock).mockResolvedValue(new Set(["catalog:cat-citra|g"]));
+
+    const dto = await buildShoppingListForUser("u-1");
+
+    const line = dto.groups.flatMap((group) => group.items)[0];
+    expect(line.checked).toBe(true);
+    expect(line.hasStockLinkage).toBe(true);
+  });
+
+  it("строка без каталожной/кастомной привязки — hasStockLinkage=false даже если отмечена", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([plannedBatch({ id: "bb-1", recipeId: "r-1" })]);
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [
+        missingLine({
+          ingredientDisplayName: "Ирландский мох",
+          ingredientCatalogItemId: null,
+          userCustomIngredientId: null,
+          suggestedAddUnit: "g"
+        })
+      ])
+    });
+    (loadLineChecks as Mock).mockResolvedValue(new Set(["name:ирландский мох|g"]));
+
+    const dto = await buildShoppingListForUser("u-1");
+
+    const line = dto.groups.flatMap((group) => group.items)[0];
+    expect(line.checked).toBe(true);
+    expect(line.hasStockLinkage).toBe(false);
+  });
+
+  it("непустые отметки → ленивая чистка вызывается с текущими живыми ключами", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([plannedBatch({ id: "bb-1", recipeId: "r-1" })]);
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [missingLine({ ingredientCatalogItemId: "cat-citra", suggestedAddUnit: "g" })])
+    });
+    // Отметка на ключ, который в текущей агрегации уже не существует (сирота) —
+    // pruneOrphanLineChecks должен получить только живые ключи.
+    (loadLineChecks as Mock).mockResolvedValue(new Set(["catalog:cat-stale|g"]));
+
+    await buildShoppingListForUser("u-1");
+
+    expect(pruneOrphanLineChecks).toHaveBeenCalledTimes(1);
+    expect(pruneOrphanLineChecks).toHaveBeenCalledWith("u-1", ["catalog:cat-citra|g"]);
+  });
+
+  it("пустые отметки → ленивая чистка НЕ вызывается (нечего чистить)", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([plannedBatch({ id: "bb-1", recipeId: "r-1" })]);
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [missingLine()])
+    });
+    (loadLineChecks as Mock).mockResolvedValue(new Set());
+
+    await buildShoppingListForUser("u-1");
+
+    expect(pruneOrphanLineChecks).not.toHaveBeenCalled();
+  });
+
+  it("отметки есть, но агрегация пустая (нет запланированных варок) → ленивая чистка вызывается с пустым списком живых ключей", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([]);
+    (loadLineChecks as Mock).mockResolvedValue(new Set(["catalog:cat-old|g"]));
+
+    await buildShoppingListForUser("u-1");
+
+    expect(pruneOrphanLineChecks).toHaveBeenCalledTimes(1);
+    expect(pruneOrphanLineChecks).toHaveBeenCalledWith("u-1", []);
+  });
+
+  it("totalItems/checkedCount на смешанной фикстуре: 2 производные (1 отмечена) + 2 ручные (1 отмечена) → totalItems 2, checkedCount 2", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([plannedBatch({ id: "bb-1", recipeId: "r-1" })]);
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [
+        missingLine({
+          recipeIngredientId: "ri-hop",
+          ingredientDisplayName: "Citra",
+          ingredientCatalogItemId: "cat-citra",
+          suggestedAddUnit: "g"
+        }),
+        missingLine({
+          recipeIngredientId: "ri-yeast",
+          ingredientDisplayName: "US-05",
+          ingredientCatalogItemId: "cat-us05",
+          userCustomIngredientId: null,
+          category: "yeast",
+          suggestedAddQuantity: 1,
+          suggestedAddUnit: "pack"
+        })
+      ])
+    });
+    // Только строка Citra отмечена «куплено».
+    (loadLineChecks as Mock).mockResolvedValue(new Set(["catalog:cat-citra|g"]));
+    (loadManualItems as Mock).mockResolvedValue([
+      manualItemRow({ id: "mi-1", name: "Дезинфектант" }),
+      manualItemRow({ id: "mi-2", name: "Кроненпробки", checkedAt: new Date("2026-01-02") })
+    ]);
+
+    const dto = await buildShoppingListForUser("u-1");
+
+    expect(dto.totalItems).toBe(2);
+    expect(dto.checkedCount).toBe(2);
+  });
+});
+
+describe("buildShoppingListForUser — П4: округление до покупабельных фасовок", () => {
+  it("нехватка 37 г при вариантах 50/100 г (default 50) → packSuggestion «пачка 50 г», addToStockHref предзаполнен 50 г (не 37)", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([plannedBatch({ id: "bb-1", recipeId: "r-1" })]);
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [
+        missingLine({ ingredientCatalogItemId: "cat-citra", suggestedAddQuantity: 37, suggestedAddUnit: "g" })
+      ])
+    });
+    (loadPackVariantsByCatalogIds as Mock).mockResolvedValue([
+      packVariantRow({ id: "pv-50", stockContentAmount: 50, isDefaultForStock: true, position: 0 }),
+      packVariantRow({ id: "pv-100", stockContentAmount: 100, isDefaultForStock: false, position: 1 })
+    ]);
+
+    const dto = await buildShoppingListForUser("u-1");
+
+    const line = dto.groups.flatMap((group) => group.items)[0];
+    // Исходная нехватка не меняется — это отдельное от фасовки поле.
+    expect(line.quantityToBuy).toBe(37);
+    expect(line.quantityLabel).toBe("37 г");
+    expect(line.packSuggestion).toEqual({ label: "пачка 50 г", totalQuantity: 50, totalUnit: "g" });
+    expect(line.addToStockHref).toContain("addQty=50");
+    expect(line.addToStockHref).not.toContain("addQty=37");
+    expect(loadPackVariantsByCatalogIds).toHaveBeenCalledWith(["cat-citra"]);
+  });
+
+  it("строка без каталожной привязки: её id не попадает в батч-запрос вариантов, packSuggestion null", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([plannedBatch({ id: "bb-1", recipeId: "r-1" })]);
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [
+        missingLine({
+          ingredientDisplayName: "Кориандр молотый",
+          ingredientCatalogItemId: null,
+          userCustomIngredientId: null,
+          suggestedAddQuantity: 10,
+          suggestedAddUnit: "g"
+        })
+      ])
+    });
+
+    const dto = await buildShoppingListForUser("u-1");
+
+    const line = dto.groups.flatMap((group) => group.items)[0];
+    expect(line.packSuggestion).toBeNull();
+    expect(loadPackVariantsByCatalogIds).toHaveBeenCalledWith([]);
+    // href остаётся расчётной нехваткой, как раньше (без П4).
+    expect(line.addToStockHref).toContain("addQty=10");
+  });
+
+  it("каталожная строка без вариантов фасовки в БД — packSuggestion null, href как сегодня (исходная нехватка)", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([plannedBatch({ id: "bb-1", recipeId: "r-1" })]);
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [
+        missingLine({ ingredientCatalogItemId: "cat-no-variants", suggestedAddQuantity: 37, suggestedAddUnit: "g" })
+      ])
+    });
+    (loadPackVariantsByCatalogIds as Mock).mockResolvedValue([]);
+
+    const dto = await buildShoppingListForUser("u-1");
+
+    const line = dto.groups.flatMap((group) => group.items)[0];
+    expect(line.packSuggestion).toBeNull();
+    expect(line.addToStockHref).toContain("addQty=37");
+  });
+
+  it("нехватка 120 г при default-фасовке 100 г → «2 пачки по 100 г», href предзаполнен 200 г", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([plannedBatch({ id: "bb-1", recipeId: "r-1" })]);
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [
+        missingLine({ ingredientCatalogItemId: "cat-citra", suggestedAddQuantity: 120, suggestedAddUnit: "g" })
+      ])
+    });
+    (loadPackVariantsByCatalogIds as Mock).mockResolvedValue([
+      packVariantRow({ id: "pv-100", stockContentAmount: 100, isDefaultForStock: true, position: 0 })
+    ]);
+
+    const dto = await buildShoppingListForUser("u-1");
+
+    const line = dto.groups.flatMap((group) => group.items)[0];
+    expect(line.packSuggestion).toEqual({ label: "2 пачки по 100 г", totalQuantity: 200, totalUnit: "g" });
+    expect(line.addToStockHref).toContain("addQty=200");
+  });
+
+  it("дрожжи «1 пачка» (count-размерность) не задеты П4 — packSuggestion всегда null", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([plannedBatch({ id: "bb-1", recipeId: "r-1" })]);
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [
+        missingLine({
+          ingredientDisplayName: "US-05",
+          category: "yeast",
+          ingredientCatalogItemId: "cat-us05",
+          suggestedAddQuantity: 1,
+          suggestedAddUnit: "pack"
+        })
+      ])
+    });
+    (loadPackVariantsByCatalogIds as Mock).mockResolvedValue([
+      packVariantRow({ id: "pv-pack", ingredientId: "cat-us05", stockContentAmount: 1, stockContentUnit: "pack", isDefaultForStock: true })
+    ]);
+
+    const dto = await buildShoppingListForUser("u-1");
+
+    const line = dto.groups.flatMap((group) => group.items)[0];
+    expect(line.packSuggestion).toBeNull();
   });
 });

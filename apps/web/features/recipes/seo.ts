@@ -5,6 +5,9 @@ import { resolveIngredientDisplayNames } from "../ingredients/presentation";
 import { resolveIngredientCategory } from "../ingredients/taxonomy";
 import { formatInventoryQuantityInputValue } from "../inventory/display";
 import { formatInventoryUnitLabel } from "../inventory/units";
+import { getSectionOgImage } from "../og/section";
+
+import { getServerEnv } from "@/lib/env";
 
 import type { PublicRecipeListItem, RecipeDetailDto, RecipeIngredientDto } from "./contracts";
 import { formatAbvShort, formatBatchVolume, formatIbuShort } from "./format";
@@ -163,18 +166,14 @@ export const buildPublicRecipeMetadata = (recipe: RecipeDetailDto, style: BeerSt
   const styleName = resolveStyleName(style);
   const title = styleName ? `${recipe.title} — рецепт ${styleName}` : `${recipe.title} — рецепт`;
   const description = buildRecipeFactDescription(recipe, style);
-  const heroImagePath = resolveHeroImagePath(recipe.heroImageId);
-  // Своё фото приоритетно; иначе — динамическая OG-карточка (стиль+статы+цвет),
-  // docs/specs/og-images.md §5.1. Картинка теперь есть ВСЕГДА → twitter-card
-  // всегда summary_large_image (большое превью в Telegram).
-  //
-  // width/height 1200×630 объявляем ТОЛЬКО для генерённой карточки (она точно
-  // такого размера). Фото рецепта — WebP произвольного аспекта (часто портрет),
-  // жёсткие 1200×630 на нём врут строгим потребителям (WhatsApp/VK) → на ветке
-  // фото размеры не указываем, площадки определят сами.
-  const ogImage = heroImagePath
-    ? { url: heroImagePath, alt: title }
-    : { url: `/api/og/recipes/${recipe.slug}`, width: 1200, height: 630, alt: title };
+  // Всегда генерённая карточка (docs/specs/og-images.md §5.1, Ф5): своё фото
+  // (heroImageId) больше не отдаётся сырым в og:image — оно встраивается
+  // фото-врезкой внутрь той же брендовой карточки (см. features/og/photo.ts),
+  // поэтому URL и 1200×630 одни для всех рецептов. Раньше ветвление на сырое
+  // WebP-фото ловило строгих потребителей (WhatsApp/VK): произвольный аспект
+  // портретных фото при жёстких 1200×630 врал размером — теперь эта дыра
+  // закрыта самим фактом единой генерируемой карточки.
+  const ogImage = { url: `/api/og/recipes/${recipe.slug}`, width: 1200, height: 630, alt: title };
 
   // S2: клон без существенных правок канонизируется на источник вместо себя —
   // см. isUnmodifiedClone выше.
@@ -323,6 +322,12 @@ const RECIPES_LIST_TITLE = "Рецепты сообщества";
 const RECIPES_LIST_DESCRIPTION =
   "Готовые рецепты от домашних пивоваров — выберите идею под свой стиль и оборудование. Фильтры по стилю, цвету, крепости и горечи.";
 
+// "recipes" — ключ реестра обложек разделов (features/og/section.ts,
+// SECTION_HUBS.recipes), типизирован SectionOgKey — getSectionOgImage
+// резолвит его без null. Цикла с og/section.ts здесь нет (в отличие от
+// features/ingredients/seo.ts) — модуль можно дёрнуть на module scope.
+const RECIPES_LIST_OG_IMAGE = getSectionOgImage("recipes");
+
 export type PublicRecipeListRawSearchParams = Record<string, string | string[] | undefined>;
 
 const hasNonEmptyValue = (value: string | string[] | undefined): boolean => {
@@ -349,6 +354,10 @@ export const buildPublicRecipeListMetadata = (rawSearchParams: PublicRecipeListR
   const title = page ? `${RECIPES_LIST_TITLE} — страница ${page}` : RECIPES_LIST_TITLE;
   const canonicalPath = page ? `/recipes?page=${page}` : "/recipes";
 
+  // Страница ЗАМЕЩАЕТ openGraph родительского layout целиком (не мёржится) —
+  // locale/siteName повторяем сами (см. app/(public)/page.tsx).
+  const { SITE_NAME } = getServerEnv();
+
   return {
     title,
     description: RECIPES_LIST_DESCRIPTION,
@@ -358,15 +367,18 @@ export const buildPublicRecipeListMetadata = (rawSearchParams: PublicRecipeListR
     openGraph: {
       title,
       description: RECIPES_LIST_DESCRIPTION,
-      type: "website"
+      type: "website",
+      locale: "ru_RU",
+      siteName: SITE_NAME,
+      images: [RECIPES_LIST_OG_IMAGE]
     },
     twitter: {
-      // Своей картинки у витрины нет (сайтовый дефолт не наследуется при своём
-      // openGraph без images) → summary, иначе пустая большая карточка. Брендовая
-      // обложка /recipes — Ф3 (docs/specs/og-images.md §5.8).
-      card: "summary",
+      // Брендовая обложка /recipes подключена (Ф3, docs/specs/og-images.md
+      // §5.8) → summary_large_image, как у остальных страниц с картинкой.
+      card: "summary_large_image",
       title,
-      description: RECIPES_LIST_DESCRIPTION
+      description: RECIPES_LIST_DESCRIPTION,
+      images: [RECIPES_LIST_OG_IMAGE.url]
     }
   };
 };

@@ -114,6 +114,13 @@ export type DilutionBoiloffMode =
 
 export type GravityAdditionType = "water" | "dme" | "sugar";
 
+// Горячее сусло/пиво при остывании до комнатной температуры сжимается примерно на 4%
+// (тепловое сжатие воды) — тот же порядок величины, что задан по умолчанию в
+// coolingShrinkagePercent у calculateBrewingWaterVolume ниже. Именованная константа —
+// чтобы 0.96 не превращалось в необъяснённое магическое число там, где применяется
+// поправка на объём, замеренный сразу после кипячения (см. currentVolumeMeasuredHot).
+export const HOT_WORT_COOLING_SHRINKAGE = 0.96;
+
 // Shared by calculateExtractAdditionGrams and the add_extract_to_gravity branch of
 // calculateDilutionBoiloff — both need "how many gravity points, over what volume, must
 // the addition supply" and previously duplicated this arithmetic.
@@ -157,13 +164,25 @@ export const calculateDilutionBoiloff = (input: {
   targetVolumeL?: number;
   boilOffRateLPerHour?: number;
   additionType?: GravityAdditionType;
+  // "Частая ошибка" из карточки калькулятора: горячее сусло сразу после кипячения ещё не
+  // усело, а замер в этот момент выше настоящего холодного объёма. Если true, currentVolumeL
+  // ниже трактуется как ГОРЯЧИЙ замер и приводится к холодному через HOT_WORT_COOLING_SHRINKAGE
+  // ДО того, как попасть в пропорцию точек плотности — иначе вода/выкипание/экстракт считались
+  // бы от объёма, которого по факту не будет.
+  currentVolumeMeasuredHot?: boolean;
 }) => {
   assertPositive(input.currentVolumeL, "currentVolumeL");
   const warnings: string[] = [];
+  const currentVolumeL = input.currentVolumeMeasuredHot
+    ? roundTo(input.currentVolumeL * HOT_WORT_COOLING_SHRINKAGE, 2)
+    : input.currentVolumeL;
+  if (input.currentVolumeMeasuredHot) {
+    warnings.push("hot_wort_volume_shrinkage_applied");
+  }
   const currentPoints = gravityPointsFromSg(input.currentGravity);
-  const currentPointLiters = input.currentVolumeL * currentPoints;
+  const currentPointLiters = currentVolumeL * currentPoints;
   const targetPoints = input.targetGravity ? gravityPointsFromSg(input.targetGravity) : currentPoints;
-  const targetVolumeFromGravity = targetPoints > 0 ? currentPointLiters / targetPoints : input.currentVolumeL;
+  const targetVolumeFromGravity = targetPoints > 0 ? currentPointLiters / targetPoints : currentVolumeL;
   const requestedTargetVolume = input.targetVolumeL && input.targetVolumeL > 0 ? input.targetVolumeL : targetVolumeFromGravity;
 
   // Diluting can only lower gravity, boiling can only raise it — a target on the wrong
@@ -179,36 +198,40 @@ export const calculateDilutionBoiloff = (input: {
   // physically impossible; treat it as "no boiloff" instead of manufacturing a fake result.
   const boilRequestedVolume = input.mode === "boil_to_gravity" ? targetVolumeFromGravity : requestedTargetVolume;
   const boilModeImpossible = (input.mode === "boil_to_gravity" || input.mode === "gravity_after_boiloff" || input.mode === "extra_boil_time")
-    && boilRequestedVolume > input.currentVolumeL;
-  if (boilModeImpossible) {
+    && boilRequestedVolume > currentVolumeL;
+  // In boil_to_gravity this is mathematically the same case as target_gravity_below_current
+  // above (whenever the gravity warning fires here, this volume condition fires too) and the
+  // form hides "Целевой объём" for that mode entirely — a second warning pointing at a
+  // nonexistent field would just be noise on top of the more specific gravity warning.
+  if (boilModeImpossible && !(input.mode === "boil_to_gravity" && warnings.includes("target_gravity_below_current"))) {
     warnings.push("target_volume_above_current");
   }
 
   // Adding water only increases volume, so a requested volume below current is impossible.
-  const waterModeImpossible = input.mode === "gravity_after_water" && requestedTargetVolume < input.currentVolumeL;
+  const waterModeImpossible = input.mode === "gravity_after_water" && requestedTargetVolume < currentVolumeL;
   if (waterModeImpossible) {
     warnings.push("target_volume_below_current");
   }
 
   const waterToAdd = input.mode === "dilute_to_gravity"
-    ? Math.max(0, targetVolumeFromGravity - input.currentVolumeL)
+    ? Math.max(0, targetVolumeFromGravity - currentVolumeL)
     : input.mode === "gravity_after_water"
-      ? Math.max(0, requestedTargetVolume - input.currentVolumeL)
+      ? Math.max(0, requestedTargetVolume - currentVolumeL)
       : 0;
   const volumeToBoilOff = input.mode === "boil_to_gravity"
-    ? Math.max(0, input.currentVolumeL - targetVolumeFromGravity)
+    ? Math.max(0, currentVolumeL - targetVolumeFromGravity)
     : input.mode === "gravity_after_boiloff" || input.mode === "extra_boil_time"
-      ? Math.max(0, input.currentVolumeL - requestedTargetVolume)
+      ? Math.max(0, currentVolumeL - requestedTargetVolume)
       : 0;
 
-  let resultingVolume = input.currentVolumeL;
+  let resultingVolume = currentVolumeL;
   let resultingGravity = input.currentGravity;
 
   if (input.mode === "dilute_to_gravity") {
-    resultingVolume = input.currentVolumeL + waterToAdd;
+    resultingVolume = currentVolumeL + waterToAdd;
     resultingGravity = sgFromGravityPoints(currentPointLiters / resultingVolume);
   } else if (input.mode === "boil_to_gravity") {
-    resultingVolume = input.currentVolumeL - volumeToBoilOff;
+    resultingVolume = currentVolumeL - volumeToBoilOff;
     resultingGravity = resultingVolume > 0 ? sgFromGravityPoints(currentPointLiters / resultingVolume) : input.currentGravity;
   } else if (input.mode === "gravity_after_water" && !waterModeImpossible) {
     resultingVolume = requestedTargetVolume;
@@ -221,7 +244,7 @@ export const calculateDilutionBoiloff = (input: {
     // mode, so a stale/default value must not silently expand the batch — the extract is
     // dosed into the CURRENT volume, which is why resultingVolume ends up ≈ currentVolumeL.
     const { targetVolumeL, pointLitersNeeded } = resolveGravityPointDelta({
-      currentVolumeL: input.currentVolumeL,
+      currentVolumeL,
       currentGravity: input.currentGravity,
       targetGravity: input.targetGravity
     });
@@ -236,7 +259,7 @@ export const calculateDilutionBoiloff = (input: {
   const extractGrams = input.mode === "add_extract_to_gravity" && input.targetGravity
     // Same targetVolumeL-ignoring rule as above: grams are dosed for the current volume.
     ? calculateExtractAdditionGrams({
-      currentVolumeL: input.currentVolumeL,
+      currentVolumeL,
       currentGravity: input.currentGravity,
       targetGravity: input.targetGravity,
       additionType
@@ -251,6 +274,9 @@ export const calculateDilutionBoiloff = (input: {
     resultingGravity,
     dmeToAddG: additionType === "dme" ? extractGrams : 0,
     sugarToAddG: additionType === "sugar" ? extractGrams : 0,
+    // Холодный объём, реально участвовавший в расчёте (после поправки на усадку, если она
+    // применена) — для UI, которому нужно показать «из скольки литров на самом деле считаем».
+    effectiveCurrentVolumeL: roundTo(currentVolumeL, 2),
     warnings
   };
 };
@@ -547,22 +573,57 @@ export const calculateBeerColorSimple = (input: {
   };
 };
 
+export type BottlingBreakdownItem = {
+  sizeL: number;
+  bottlesNeeded: number;
+};
+
+// К16 (аудит калькуляторов 2026-07-17): смешанная тара — bottleSizesL несёт РАЗМЕРЫ по
+// порядку заполнения (первый элемент — основная тара, второй — куда льётся остаток после
+// неё), а не список "на выбор". Один размер (как раньше) — просто массив из одного элемента.
 export const calculateBottling = (input: {
   beerVolumeL: number;
   packagingLossL?: number;
   bottleSizesL: number[];
   sugarPerLiter?: number;
 }) => {
-  const packageVolumeL = Math.max(0, input.beerVolumeL - (input.packagingLossL ?? 0));
-  const bottleSizeL = input.bottleSizesL.find((size) => size > 0) ?? 0.5;
-  const bottlesNeeded = Math.floor(packageVolumeL / bottleSizeL);
-  const remainingVolumeL = packageVolumeL - bottlesNeeded * bottleSizeL;
+  const packagingLossL = input.packagingLossL ?? 0;
+  const packageVolumeL = Math.max(0, input.beerVolumeL - packagingLossL);
+  const sizesInOrder = input.bottleSizesL.filter((size) => Number.isFinite(size) && size > 0);
+  const primarySizeL = sizesInOrder[0] ?? 0.5;
+  const sizesToFill = sizesInOrder.length > 0 ? sizesInOrder : [primarySizeL];
+
+  // Жадно заполняем размеры по порядку: сколько целых бутылок текущего размера влезет
+  // в оставшийся объём, остаток идёт дальше (во второй размер, если он есть).
+  let remainingVolumeL = packageVolumeL;
+  const breakdown: BottlingBreakdownItem[] = sizesToFill.map((sizeL) => {
+    const bottlesForSize = Math.floor(remainingVolumeL / sizeL);
+    // roundTo между шагами режет накопление FP-погрешности (иначе на некоторых объёмах
+    // финальный остаток отличался бы от ожидаемого на долю 1e-13 л).
+    remainingVolumeL = roundTo(remainingVolumeL - bottlesForSize * sizeL, 6);
+    return { sizeL, bottlesNeeded: bottlesForSize };
+  });
+  const bottlesNeeded = breakdown.reduce((sum, item) => sum + item.bottlesNeeded, 0);
+
+  // Финальный остаток всегда меньше меньшего из использованных размеров тары: жадное
+  // заполнение floor'ом по каждому размеру по очереди гарантирует это независимо от того,
+  // какой из двух размеров крупнее — поэтому "+1 бутылка меньшего размера" всегда забирает
+  // остаток целиком, вторая бутылка не нужна.
+  const smallestSizeL = Math.min(...sizesToFill);
+  const roundUpBottleSizeL = remainingVolumeL > 0 ? smallestSizeL : 0;
+
+  // "0 бутылок" молча выглядел бы как обычный (пусть и скучный) результат — а не как
+  // «потери проглотили весь объём», которое и есть настоящая причина.
+  const warnings = input.beerVolumeL > 0 && packagingLossL >= input.beerVolumeL ? ["bottling_loss_exceeds_volume"] : [];
 
   return {
     packageVolumeL: roundTo(packageVolumeL, 2),
     bottlesNeeded,
     remainingVolumeL: roundTo(remainingVolumeL, 2),
-    sugarPerBottleG: input.sugarPerLiter ? roundTo(input.sugarPerLiter * bottleSizeL, 2) : 0
+    breakdown,
+    roundUpBottleSizeL,
+    sugarPerBottleG: input.sugarPerLiter ? roundTo(input.sugarPerLiter * primarySizeL, 2) : 0,
+    warnings
   };
 };
 
@@ -589,6 +650,10 @@ export const calculateSpeiseKrausen = (input: {
   mode?: SpeiseMode;
 }) => {
   const residualCo2 = input.residualCo2 ?? residualCo2VolumesAtTempC(input.temperatureC);
+  const warnings: string[] = [];
+  if (input.targetCo2 <= residualCo2) {
+    warnings.push("speise_target_already_reached");
+  }
   const deltaVolumes = Math.max(0, input.targetCo2 - residualCo2);
   const co2GramsNeeded = input.beerVolumeL * deltaVolumes * 1.96;
   const extractKgPerL = (sgToPlato(input.speiseGravity, 3) / 100) * input.speiseGravity;
@@ -607,7 +672,8 @@ export const calculateSpeiseKrausen = (input: {
     speiseVolumeToAddL: roundTo(speiseVolumeToAddL, 2),
     finalVolumeL: roundTo(finalVolumeL, 2),
     approximateAbvChange: roundTo(approximateAbvChange, 2),
-    residualCo2: roundTo(residualCo2, 2)
+    residualCo2: roundTo(residualCo2, 2),
+    warnings
   };
 };
 
@@ -620,6 +686,18 @@ const pitchRatesMillionCellsPerMlPlato: Record<FermentationType, number> = {
   lager: 1.5,
   hybrid: 1.0
 };
+
+// К21 (аудит калькуляторов 2026-07-17): классическая пропорция самодельного стартера —
+// 100 г сухого солодового экстракта (DME) на 1 л воды. Не зависит от режима (простой/
+// мешалка) — это про приготовление сусла стартера, а не про итоговый выход клеток.
+const STARTER_DME_G_PER_LITER = 100;
+// Потенциал DME — 44 PPG (см. FERMENTABLE_PPG_PRESETS в efficiency.ts, key "dme").
+const STARTER_DME_POTENTIAL_PPG = 44;
+// Плотность сусла стартера при этой пропорции: гравити-поинты = вес(lb) × PPG / объём(gal),
+// не зависит от общего объёма стартера (интенсивное свойство раствора) — даёт ~1.037 SG,
+// тот же порядок цифр, что советуют руководства вроде Mr. Malty/White Labs (обычно называют
+// диапазон 1.035–1.040).
+const STARTER_WORT_GRAVITY_SG = 1 + (((STARTER_DME_G_PER_LITER / 1000) * KG_TO_LB * STARTER_DME_POTENTIAL_PPG) / L_TO_GAL) / 1000;
 
 export const estimateYeastViability = (input: {
   yeastType: YeastType;
@@ -684,7 +762,11 @@ export const calculateYeastStarter = (input: {
         ? "overpitch"
         : "ok",
     starterVolumeL: roundTo(starterVolumeL, 2),
-    dmeForStarterG: roundTo(starterVolumeL * 100, 0),
+    dmeForStarterG: roundTo(starterVolumeL * STARTER_DME_G_PER_LITER, 0),
+    // К21: плотность сусла стартера и пропорция вода:DME — раньше жили только текстом в
+    // подсказках next-steps калькулятора, теперь отдаются числом для стат результата.
+    starterGravitySg: roundTo(STARTER_WORT_GRAVITY_SG, 3),
+    dmeGPerLiterWater: STARTER_DME_G_PER_LITER,
     viabilityPercent: viability,
     warnings
   };
@@ -761,6 +843,28 @@ export const calculateWaterPh = (input: {
 export type HopStoragePackaging = "vacuum" | "nitrogen" | "opened" | "loose";
 export type HopForm = "pellet" | "leaf";
 
+// К14 (аудит калькуляторов, notes/calculators-fixes.md): раньше температурный множитель
+// был ступенькой (0.25 / 0.55 / 1 / 1.8 с порогами -10 / 4 / 20°C) — сдвиг всего на 1°C
+// через порог (например 4→5°C) почти удваивал модельную скорость деградации, хотя
+// физически при этом ничего резко не меняется.
+//
+// Заменили на непрерывную экспоненту в духе модели Гареца (Garetz hop storage index):
+//   f(T) = exp(k · (T − 20))
+// 20°C — точка привязки f(20)=1 ("как есть на полке при комнатной температуре").
+// k=0.042 подобран численно (не выведен аналитически из одной точки), чтобы три
+// характерные точки старой ступеньки остались примерно в силе одновременно:
+//   f(-10°C, морозилка)  ≈ 0.28  (было 0.25)
+//   f(4°C, холодильник)  ≈ 0.51  (было 0.55)
+//   f(30°C, жаркий чулан) ≈ 1.52  (было плоских 1.8 для всего, что выше 20°C)
+// Ниже -10 и выше 30 экспонента продолжает расти/падать монотонно и без плато —
+// это осознанное отличие от старой модели, где температура сильно за порогом
+// (например 40°C) даёт тот же множитель 1.8, что и 21°C.
+const HOP_STORAGE_TEMPERATURE_K = 0.042;
+
+export const hopStorageTemperatureFactor = (temperatureC: number): number => (
+  Math.exp(HOP_STORAGE_TEMPERATURE_K * (temperatureC - 20))
+);
+
 export const calculateHopFreshness = (input: {
   originalAlphaAcidPercent: number;
   packageDate: Date;
@@ -777,7 +881,7 @@ export const calculateHopFreshness = (input: {
   const rawOpenAgeYears = input.openedDate ? Math.max(0, (today.getTime() - input.openedDate.getTime()) / 31_557_600_000) : 0;
   const openAgeYears = Math.min(rawOpenAgeYears, ageYears);
   const hsi = input.hsi ?? (input.form === "pellet" ? 0.25 : 0.35);
-  const tempFactor = input.storageTemperatureC <= -10 ? 0.25 : input.storageTemperatureC <= 4 ? 0.55 : input.storageTemperatureC <= 20 ? 1 : 1.8;
+  const tempFactor = hopStorageTemperatureFactor(input.storageTemperatureC);
   const packagingFactor: Record<HopStoragePackaging, number> = {
     vacuum: 0.65,
     nitrogen: 0.5,

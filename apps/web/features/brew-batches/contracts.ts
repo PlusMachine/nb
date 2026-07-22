@@ -435,6 +435,16 @@ export type BrewBatchInventoryView = {
  *  подсказка "подтвердите списание с заменами в предпросмотре". */
 export type BrewBatchInventoryConsumeResult = BrewBatchInventoryView & {
   substituteAvailableCount: number;
+  /**
+   * Ф4: строки рецепта, которые списание НЕ тронуло вовсе — ни точной позиции на
+   * складе, ни утверждённой замены (kind "missing" и "substitute_available" без
+   * отмеченного чекбокса из предпросмотра). Свойство ОБОИХ режимов: в строгом
+   * режиме такие строки и раньше молча пропускались (аллокация под них просто не
+   * создавалась), просто раньше это нигде не фиксировалось для UI.
+   */
+  skippedLineCount: number;
+  /** Имена пропущенных строк (см. skippedLineCount) — для сообщения после списания. */
+  skippedLineNames: string[];
 };
 
 // --- Ф2: предпросмотр списания с заменами по match-group ---------------------

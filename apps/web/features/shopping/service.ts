@@ -1,4 +1,6 @@
 import { roundTo } from "@nb/brewing-core";
+import { assertRateLimit } from "@nb/auth";
+import { db } from "@nb/db";
 
 import { listBrewBatchesForUser } from "../brew-batches/service";
 import { computeRecipeMatchesForBrewBatches, computeRecipeMatchesForUser } from "../recipes/match-service";
@@ -7,17 +9,53 @@ import { resolveShoppingOpportunityTier } from "../recipes/brewability-badge";
 import type { RecipeMatchDto, RecipeMatchLineDto, PublicRecipeListItem } from "../recipes/contracts";
 import { buildIngredientCatalogActionHref, buildIngredientNameActionHref } from "../ingredients/catalog-links";
 import type { IngredientCategory } from "../ingredients/contracts";
+import {
+  addCatalogIngredientToInventory,
+  addCustomIngredientToInventory,
+  assertInventoryItemCreationAllowed
+} from "../inventory/service";
 import { formatInventoryQuantityInputValue } from "../inventory/display";
 import { inventoryCategoryLabels, inventoryCategoryOrder } from "../inventory/page-model";
-import { formatInventoryUnitLabel, type InventoryUnit } from "../inventory/units";
-import type {
-  ShoppingListDto,
-  ShoppingListGroupDto,
-  ShoppingListLineDto,
-  ShoppingListSourceBrew,
-  ShoppingOpportunityDto,
-  ShoppingOpportunityLineDto
+import { formatInventoryUnitLabel, parseInventoryUnit, type InventoryUnit } from "../inventory/units";
+import {
+  countLineChecks,
+  countManualItems,
+  deleteLineCheckStrict,
+  deleteManualItemRow,
+  ensureCatalogRefValid,
+  ensureCustomRefOwned,
+  insertManualItem,
+  loadActiveCatalogIds,
+  loadIngredientMetaByCatalogIds,
+  loadLineChecks,
+  loadManualItems,
+  loadPackVariantsByCatalogIds,
+  pruneOrphanLineChecks,
+  setLineChecked,
+  setManualItemCheckedAt,
+  updateManualItemRow,
+  type ManualItemRow
+} from "./data";
+import { resolvePackSuggestion, type PackVariantInput } from "./pack-rounding";
+import {
+  addManualShoppingItemSchema,
+  SHOPPING_LINE_CHECK_MAX_COUNT_PER_USER,
+  SHOPPING_LINE_CHECK_RATE_LIMIT,
+  SHOPPING_LINE_CHECK_RATE_WINDOW_SECONDS,
+  SHOPPING_MANUAL_ITEM_CREATE_RATE_LIMIT,
+  SHOPPING_MANUAL_ITEM_CREATE_RATE_WINDOW_SECONDS,
+  SHOPPING_MANUAL_ITEM_MAX_COUNT_PER_USER,
+  updateManualShoppingItemSchema,
+  type ShoppingListDto,
+  type ShoppingListGroupDto,
+  type ShoppingListLineDto,
+  type ShoppingListSourceBrew,
+  type ShoppingManualItemDto,
+  type ShoppingOpportunityDto,
+  type ShoppingOpportunityLineDto,
+  type TransferLineInput
 } from "./contracts";
+import { INVENTORY_ITEM_CREATE_RATE_LIMIT } from "../inventory/contracts";
 
 // Развёрнутый ярус секции «Почти хватает на:» — не больше 8 рецептов разом
 // (§3.3): остальное уходит в свёрнутый список «Ещё K рецептов», не рендерим
@@ -65,6 +103,42 @@ const resolveIngredientHrefs = (
   };
 };
 
+/**
+ * П1: строка БД → DTO ручной позиции. quantity/unit хранятся в БД как
+ * пара-или-ничего (CHECK), но unit — сырой varchar: если значение не входит
+ * в inventoryUnits (ручная правка в БД, устаревший алиас) — трактуем всю пару
+ * как отсутствующую, а не роняем сборку списка целиком.
+ */
+const mapManualItemToDto = (row: ManualItemRow): ShoppingManualItemDto => {
+  const category = (row.category as IngredientCategory | null) ?? null;
+  const parsedUnit = row.unit ? parseInventoryUnit(row.unit) : null;
+  const hasValidPair = row.quantity != null && parsedUnit != null;
+  const quantity = hasValidPair ? row.quantity : null;
+  const unit = hasValidPair ? parsedUnit : null;
+
+  const { catalogHref, addToStockHref } = resolveIngredientHrefs(
+    row.ingredientCatalogItemId,
+    row.userCustomIngredientId,
+    quantity,
+    unit,
+    row.name,
+    category
+  );
+
+  return {
+    id: row.id,
+    name: row.name,
+    quantity,
+    unit,
+    quantityLabel: quantity != null && unit != null ? formatQuantityLabel(quantity, unit) : null,
+    category,
+    catalogHref,
+    addToStockHref,
+    checked: row.checkedAt != null,
+    hasStockLinkage: row.ingredientCatalogItemId != null || row.userCustomIngredientId != null
+  };
+};
+
 // Ключ дедупликации строки §3.2: по каталожной/кастомной привязке, иначе по
 // имени (строки без привязки, доживающие только в снапшоте). Единица — часть
 // ключа: один ингредиент в разных единицах не сливаем.
@@ -93,6 +167,12 @@ export const isShoppingGapLine = (
   line.suggestedAddQuantity != null &&
   line.suggestedAddUnit != null;
 
+// v4: per-brew запись neededBy несёт СВОЙ остаток quantity (сумма нехваток
+// ЭТОЙ варки по данному ключу строки) — отдельно от общего agg.quantityToBuy,
+// который суммирует все варки разом. Единица — та же, что у agg.unit (ключ
+// строки уже включает unit, разные единицы никогда не сливаются).
+type AggregatedNeededBy = { brewBatchId: string; recipeTitle: string; brewName: string; quantity: number };
+
 type AggregatedLine = {
   ingredientDisplayName: string;
   category: IngredientCategory | null;
@@ -100,7 +180,7 @@ type AggregatedLine = {
   unit: InventoryUnit;
   catalogId: string | null;
   customId: string | null;
-  neededBy: { recipeTitle: string; brewName: string }[];
+  neededBy: AggregatedNeededBy[];
 };
 
 // Кандидат в «Почти хватает на:» до батч-матча: ссылка + презентация карточки
@@ -117,11 +197,104 @@ type OpportunityCandidateRef = {
   colorSrm: number | null;
 };
 
+type PlannedBrewBatch = Awaited<ReturnType<typeof listBrewBatchesForUser>>[number] & { recipeId: string };
+
+type AggregatedShoppingLinesResult = {
+  aggregated: Map<string, AggregatedLine>;
+  // Ключи строк, которые затронула каждая варка — для missingCount чипа §3.1.
+  keysByBrew: Map<string, Set<string>>;
+  plannedBatches: PlannedBrewBatch[];
+};
+
+/**
+ * §3.2-агрегация: недостающие ингредиенты по всем ЗАПЛАНИРОВАННЫМ варкам
+ * пользователя (status "planned" + привязанный рецепт), слитые в один Map по
+ * ключу строки (resolveLineKey) — количество суммируется по всем варкам.
+ *
+ * Вынесено отдельной функцией из buildShoppingListForUser, потому что тот же
+ * расчёт нужен и переносу купленного на склад (transferCheckedToStock, П2):
+ * сервер не доверяет клиентской привязке derived-строки (lineKey непрозрачен,
+ * не парсится) и пересобирает список ТОЙ ЖЕ логикой, а не тем, что прислал
+ * клиент — иначе подменённый lineKey мог бы перенести на склад что угодно.
+ */
+const computeAggregatedShoppingLines = async (userId: string): Promise<AggregatedShoppingLinesResult> => {
+  const allBatches = await listBrewBatchesForUser(userId);
+  const plannedBatches = allBatches.filter(
+    (batch): batch is PlannedBrewBatch =>
+      batch.status === "planned" && Boolean(batch.recipeId)
+  );
+
+  const matchByBatch = plannedBatches.length > 0
+    ? await computeRecipeMatchesForBrewBatches({
+        userId,
+        batches: plannedBatches.map((batch) => ({ brewBatchId: batch.id, recipeId: batch.recipeId }))
+      })
+    : ({} as Record<string, RecipeMatchDto>);
+
+  const aggregated = new Map<string, AggregatedLine>();
+  const keysByBrew = new Map<string, Set<string>>();
+
+  for (const batch of plannedBatches) {
+    const match = matchByBatch[batch.id];
+    if (!match) {
+      continue;
+    }
+
+    const brewKeys = keysByBrew.get(batch.id) ?? new Set<string>();
+    keysByBrew.set(batch.id, brewKeys);
+
+    for (const line of match.lines) {
+      if (!isShoppingGapLine(line)) {
+        continue;
+      }
+
+      const key = resolveLineKey(line, line.suggestedAddUnit);
+      brewKeys.add(key);
+
+      const existing = aggregated.get(key);
+      if (existing) {
+        existing.quantityToBuy = roundTo(existing.quantityToBuy + line.suggestedAddQuantity, 3);
+        // v4: если тот же ключ встретился дважды В ОДНОЙ И ТОЙ ЖЕ варке (два
+        // лота одного ингредиента в рецепте) — прибавляем к её per-brew
+        // остатку, а не заводим вторую запись neededBy на ту же варку.
+        const existingNeed = existing.neededBy.find((need) => need.brewBatchId === batch.id);
+        if (existingNeed) {
+          existingNeed.quantity = roundTo(existingNeed.quantity + line.suggestedAddQuantity, 3);
+        } else {
+          existing.neededBy.push({
+            brewBatchId: batch.id,
+            recipeTitle: batch.recipeTitle,
+            brewName: batch.name,
+            quantity: roundTo(line.suggestedAddQuantity, 3)
+          });
+        }
+        continue;
+      }
+
+      aggregated.set(key, {
+        ingredientDisplayName: line.ingredientDisplayName?.trim() || "Ингредиент",
+        category: line.category,
+        quantityToBuy: roundTo(line.suggestedAddQuantity, 3),
+        unit: line.suggestedAddUnit,
+        catalogId: line.ingredientCatalogItemId,
+        customId: line.userCustomIngredientId,
+        neededBy: [{
+          brewBatchId: batch.id,
+          recipeTitle: batch.recipeTitle,
+          brewName: batch.name,
+          quantity: roundTo(line.suggestedAddQuantity, 3)
+        }]
+      });
+    }
+  }
+
+  return { aggregated, keysByBrew, plannedBatches };
+};
+
 /**
  * «Чего не хватает»: две независимые секции на одном батч-матче по складу.
  *
- * §3.2 «Добавить на склад» — агрегирует недостающие ингредиенты по всем ЗАПЛАНИРОВАННЫМ
- * варкам пользователя (status "planned" + привязанный рецепт). Именно
+ * §3.2 «Добавить на склад» — см. computeAggregatedShoppingLines выше. Именно
  * запланированные варки — честный источник для суммирования: их все
  * собираются сварить, поэтому нехватки складываются. Один и тот же ингредиент
  * из разных варок сливается в одну строку, количество — сумма нехваток.
@@ -145,22 +318,35 @@ export const buildShoppingListForUser = async (
 ): Promise<ShoppingListDto> => {
   const includeOpportunities = options?.includeOpportunities ?? false;
 
-  // FIX-5: варки — всегда обязательный запрос; листинги для §3.3 — только
-  // когда включена секция «Почти хватает на:». Один Promise.all вместо
-  // последовательных ожиданий.
-  const [allBatches, savedRecipes, ownRefsResult] = await Promise.all([
-    listBrewBatchesForUser(userId),
+  // Листинги для §3.3 — только когда включена секция «Почти хватает на:».
+  // П1: ручные позиции читаются ВСЕГДА (в т.ч. для дашборда) — один дешёвый
+  // запрос по индексу userId, не завязан на includeOpportunities. П2:
+  // отметки «куплено» — тоже всегда (нужны и дашборду для checkedCount).
+  const [aggregationResult, savedRecipes, ownRefsResult, manualItemRows, checkedKeys] = await Promise.all([
+    computeAggregatedShoppingLines(userId),
     includeOpportunities ? listSavedRecipes(userId) : Promise.resolve([] as PublicRecipeListItem[]),
     includeOpportunities
       ? listOwnRecipeRefs(userId)
-      : Promise.resolve({ refs: [], familyIdByVersionId: new Map<string, string>() } as OwnRecipeRefsResult)
+      : Promise.resolve({ refs: [], familyIdByVersionId: new Map<string, string>() } as OwnRecipeRefsResult),
+    loadManualItems(userId),
+    loadLineChecks(userId)
   ]);
+  const { aggregated, keysByBrew, plannedBatches } = aggregationResult;
   const { refs: ownRefs, familyIdByVersionId } = ownRefsResult;
+  const manualItems: ShoppingManualItemDto[] = manualItemRows.map(mapManualItemToDto);
+  const uncheckedManualItemCount = manualItems.filter((item) => !item.checked).length;
+  const checkedManualItemCount = manualItems.filter((item) => item.checked).length;
 
-  const plannedBatches = allBatches.filter(
-    (batch): batch is typeof batch & { recipeId: string } =>
-      batch.status === "planned" && Boolean(batch.recipeId)
-  );
+  // П2: ленивая чистка осиротевших отметок — ключ, не нашедший строку в
+  // ТЕКУЩЕЙ агрегации, никогда её не найдёт снова (партию отменили/списали/
+  // оприходовали) и иначе мусорится в таблице бесконечно. Синхронный await —
+  // fire-and-forget умирает в serverless до завершения записи. Чистка идёт до
+  // маппинга строк ниже, но на checked текущих строк не влияет: они по
+  // определению живые (их ключ входит в aggregated.keys()).
+  if (checkedKeys.size > 0) {
+    await pruneOrphanLineChecks(userId, [...aggregated.keys()]);
+  }
+
   const plannedRecipeIds = new Set(plannedBatches.map((batch) => batch.recipeId));
 
   // FIX-4(а): исключаем из §3.3 не только точный recipeId запланированной
@@ -224,87 +410,111 @@ export const buildShoppingListForUser = async (
 
   const opportunityRecipeIds = [...candidateRefs.keys()];
 
-  // Два матча, а не один: §3.2 считает нехватку ПО ПАРТИЯМ (ключ brewBatchId),
+  // §3.3 матчит рецепты-кандидаты по фактическому складу (ключ recipeId) — §3.2
+  // уже посчитан в computeAggregatedShoppingLines выше (ключ brewBatchId,
   // потому что уже списанное под варку не должно всплывать в её же списке
-  // покупок, — а §3.3 матчит рецепты-кандидаты по фактическому складу (ключ
-  // recipeId), там понятия партии нет.
-  //
-  // includeEmptyInventory: иначе полностью пустой склад молча выключил бы весь
-  // список (короткий выход в computeRecipeMatchesForUser расcчитан на обратный
-  // матчинг «склад → рецепты», где это верно, но не здесь).
-  const [matchByBatch, matchByRecipe] = await Promise.all([
-    plannedBatches.length > 0
-      ? computeRecipeMatchesForBrewBatches({
-          userId,
-          batches: plannedBatches.map((batch) => ({ brewBatchId: batch.id, recipeId: batch.recipeId }))
-        })
-      : Promise.resolve({} as Record<string, RecipeMatchDto>),
-    opportunityRecipeIds.length > 0
-      ? computeRecipeMatchesForUser({ userId, recipeIds: opportunityRecipeIds, includeEmptyInventory: true })
-      : Promise.resolve({} as Record<string, RecipeMatchDto>)
-  ]);
+  // покупок). includeEmptyInventory: иначе полностью пустой склад молча
+  // выключил бы весь список (короткий выход в computeRecipeMatchesForUser
+  // расcчитан на обратный матчинг «склад → рецепты», где это верно, но не здесь).
+  const matchByRecipe = opportunityRecipeIds.length > 0
+    ? await computeRecipeMatchesForUser({ userId, recipeIds: opportunityRecipeIds, includeEmptyInventory: true })
+    : ({} as Record<string, RecipeMatchDto>);
 
   // --- §3.2: агрегированная секция по запланированным варкам ---------------
+  // (aggregated/keysByBrew уже посчитаны выше, в computeAggregatedShoppingLines.)
 
-  const aggregated = new Map<string, AggregatedLine>();
-  // Ключи строк, которые затронула каждая варка — для missingCount чипа §3.1.
-  const keysByBrew = new Map<string, Set<string>>();
-
-  for (const batch of plannedBatches) {
-    const match = matchByBatch[batch.id];
-    if (!match) {
-      continue;
-    }
-
-    const brewKeys = keysByBrew.get(batch.id) ?? new Set<string>();
-    keysByBrew.set(batch.id, brewKeys);
-
-    for (const line of match.lines) {
-      if (!isShoppingGapLine(line)) {
-        continue;
-      }
-
-      const key = resolveLineKey(line, line.suggestedAddUnit);
-      brewKeys.add(key);
-      const brewRef = { recipeTitle: batch.recipeTitle, brewName: batch.name };
-
-      const existing = aggregated.get(key);
-      if (existing) {
-        existing.quantityToBuy = roundTo(existing.quantityToBuy + line.suggestedAddQuantity, 3);
-        const alreadyListed = existing.neededBy.some(
-          (need) => need.brewName === brewRef.brewName && need.recipeTitle === brewRef.recipeTitle
-        );
-        if (!alreadyListed) {
-          existing.neededBy.push(brewRef);
-        }
-        continue;
-      }
-
-      aggregated.set(key, {
-        ingredientDisplayName: line.ingredientDisplayName?.trim() || "Ингредиент",
-        category: line.category,
-        quantityToBuy: roundTo(line.suggestedAddQuantity, 3),
-        unit: line.suggestedAddUnit,
-        catalogId: line.ingredientCatalogItemId,
-        customId: line.userCustomIngredientId,
-        neededBy: [brewRef]
-      });
+  // П4: варианты фасовки батчем по всем catalogId строк §3.2 — один запрос,
+  // а не N (по одному на строку). §3.3 (opportunities) фасовки сознательно
+  // не получает (см. notes/shopping-list-improvements.md, «Интеграция» П4) —
+  // дашборд-вызов (includeOpportunities=false) фасовки получает наравне со
+  // страницей /app/shopping, отдельного гейта нет.
+  const lineCatalogIds = [...new Set(
+    [...aggregated.values()]
+      .map((agg) => agg.catalogId)
+      .filter((catalogId): catalogId is string => catalogId != null)
+  )];
+  // v4: мета каталога (бренд/страна) — тот же батч-паттерн, что и у вариантов
+  // фасовки чуть ниже, по тому же массиву lineCatalogIds, один запрос на
+  // страницу вместо N. Нужна и дашборд-вызову (includeOpportunities=false) —
+  // отдельного гейта, как у opportunities, здесь нет (см. П4 выше — то же решение).
+  const [packVariantRows, ingredientMetaRows] = await Promise.all([
+    loadPackVariantsByCatalogIds(lineCatalogIds),
+    loadIngredientMetaByCatalogIds(lineCatalogIds)
+  ]);
+  const packVariantsByCatalogId = new Map<string, PackVariantInput[]>();
+  for (const row of packVariantRows) {
+    const variant: PackVariantInput = {
+      id: row.id,
+      stockContentAmount: row.stockContentAmount,
+      stockContentUnit: row.stockContentUnit,
+      isDefaultForStock: row.isDefaultForStock,
+      position: row.position
+    };
+    const bucket = packVariantsByCatalogId.get(row.ingredientId);
+    if (bucket) {
+      bucket.push(variant);
+    } else {
+      packVariantsByCatalogId.set(row.ingredientId, [variant]);
     }
   }
+  const ingredientMetaByCatalogId = new Map(ingredientMetaRows.map((row) => [row.id, row]));
 
   // Fix §1.1: hrefs (и label) собираются здесь, ПОСЛЕ полной агрегации — из
   // итогового quantityToBuy. Раньше addToStockHref строился один раз при
   // создании строки (на нехватке только первой варки) и не пересобирался при
   // досуммировании второй — количество в ссылке расходилось с quantityLabel.
   const finalLines: ShoppingListLineDto[] = [...aggregated.entries()].map(([key, agg]) => {
+    const packSuggestion = agg.catalogId
+      ? resolvePackSuggestion(
+          { quantity: agg.quantityToBuy, unit: agg.unit },
+          packVariantsByCatalogId.get(agg.catalogId) ?? []
+        )
+      : null;
+
+    // П4: при наличии предложения фасовки deeplink «На склад» и карточка
+    // каталога предзаполняются фасовочным итогом (totalQuantity/totalUnit),
+    // а не расчётной нехваткой — quantityLabel строки ниже НЕ меняется, это
+    // разные вещи (исходная нехватка vs то, что реально покупается).
+    const hrefQuantity = packSuggestion ? packSuggestion.totalQuantity : agg.quantityToBuy;
+    const hrefUnit = packSuggestion ? packSuggestion.totalUnit : agg.unit;
+
     const { catalogHref, addToStockHref } = resolveIngredientHrefs(
       agg.catalogId,
       agg.customId,
-      agg.quantityToBuy,
-      agg.unit,
+      hrefQuantity,
+      hrefUnit,
       agg.ingredientDisplayName,
       agg.category
     );
+
+    // v4: per-brew neededBy — своё округление до фасовки на КАЖДУЮ варку
+    // отдельно (не общий packSuggestion строки выше), чтобы чип конкретной
+    // варки в лаборатории показывал именно её долю «пачка N г», а не общий итог.
+    const neededBy = agg.neededBy.map((need) => {
+      const needPackSuggestion = agg.catalogId
+        ? resolvePackSuggestion(
+            { quantity: need.quantity, unit: agg.unit },
+            packVariantsByCatalogId.get(agg.catalogId) ?? []
+          )
+        : null;
+      return {
+        brewBatchId: need.brewBatchId,
+        recipeTitle: need.recipeTitle,
+        brewName: need.brewName,
+        quantityToBuy: need.quantity,
+        unit: agg.unit,
+        quantityLabel: formatQuantityLabel(need.quantity, agg.unit),
+        packSuggestion: needPackSuggestion
+          ? { label: needPackSuggestion.packLabel, totalQuantity: needPackSuggestion.totalQuantity, totalUnit: needPackSuggestion.totalUnit }
+          : null
+      };
+    });
+
+    const meta = agg.catalogId ? ingredientMetaByCatalogId.get(agg.catalogId) : undefined;
+    // brand приоритетнее producer при заполнении обоих (см. contracts.ts).
+    const brand = meta ? (meta.brand ?? meta.producer ?? null) : null;
+    const countryName = meta ? (meta.countryName ?? null) : null;
+
     return {
       key,
       ingredientDisplayName: agg.ingredientDisplayName,
@@ -314,7 +524,16 @@ export const buildShoppingListForUser = async (
       quantityLabel: formatQuantityLabel(agg.quantityToBuy, agg.unit),
       catalogHref,
       addToStockHref,
-      neededBy: agg.neededBy
+      neededBy,
+      // П2: join по ключу с отметками пользователя + флаг привязки (диалог
+      // переноса решает, можно ли строку отправить на склад пачкой).
+      checked: checkedKeys.has(key),
+      hasStockLinkage: agg.catalogId != null || agg.customId != null,
+      packSuggestion: packSuggestion
+        ? { label: packSuggestion.packLabel, totalQuantity: packSuggestion.totalQuantity, totalUnit: packSuggestion.totalUnit }
+        : null,
+      brand,
+      countryName
     };
   });
 
@@ -445,19 +664,347 @@ export const buildShoppingListForUser = async (
 
   // --- пустые состояния (§3.4) -----------------------------------------------
 
+  // П1: хоть одна ручная позиция (отмеченная или нет — блок «Своё» всё равно
+  // рендерится) снимает "nothing_to_do", даже без запланированных варок и
+  // возможностей. "all_in_stock" не меняется — ручные позиции сосуществуют
+  // с success-строкой (см. shopping-list-view.tsx).
   let emptyReason: ShoppingListDto["emptyReason"] = null;
-  if (plannedBatches.length === 0 && opportunities.length === 0) {
+  if (plannedBatches.length === 0 && opportunities.length === 0 && manualItems.length === 0) {
     emptyReason = "nothing_to_do";
   } else if (plannedBatches.length > 0 && finalLines.length === 0) {
     emptyReason = "all_in_stock";
   }
 
+  const checkedDerivedCount = finalLines.filter((line) => line.checked).length;
+
   return {
     groups,
-    totalItems: finalLines.length,
+    // П2: производные строки + ручные позиции считаются только НЕотмеченными —
+    // «сколько ещё купить» (было: П1 — только неотмеченные ручные; теперь то же
+    // правило распространяется и на производные строки §3.2).
+    totalItems: (finalLines.length - checkedDerivedCount) + uncheckedManualItemCount,
+    // П2: сколько отмечено «куплено» всего — управляет видимостью кнопки
+    // «Пополнить склад (K)».
+    checkedCount: checkedDerivedCount + checkedManualItemCount,
     plannedBrews,
     opportunities,
     collapsedOpportunityCount,
+    manualItems,
     emptyReason
   };
+};
+
+// --- П1: мутации ручных позиций ---------------------------------------------
+
+/**
+ * Анти-абьюз-барьер для добавления ручной позиции: rate limit + щедрая квота
+ * на пользователя — тот же паттерн, что и у assertInventoryItemCreationAllowed
+ * / assertCustomIngredientCreationAllowed (features/inventory/service.ts).
+ * Бросает RATE_LIMITED / SHOPPING_MANUAL_ITEM_QUOTA_REACHED.
+ */
+const assertManualItemCreationAllowed = async (userId: string): Promise<void> => {
+  await assertRateLimit(
+    userId,
+    "shopping_manual_item_add",
+    SHOPPING_MANUAL_ITEM_CREATE_RATE_LIMIT,
+    SHOPPING_MANUAL_ITEM_CREATE_RATE_WINDOW_SECONDS
+  );
+
+  const existingCount = await countManualItems(userId);
+  if (existingCount >= SHOPPING_MANUAL_ITEM_MAX_COUNT_PER_USER) {
+    throw new Error("SHOPPING_MANUAL_ITEM_QUOTA_REACHED");
+  }
+};
+
+export const addManualShoppingItem = async (userId: string, input: unknown): Promise<ShoppingManualItemDto> => {
+  await assertManualItemCreationAllowed(userId);
+  const parsed = addManualShoppingItemSchema.parse(input);
+
+  // Привязка приходит напрямую от клиента (не через серверную агрегацию, как
+  // у derived-строк §3.2) — сервер обязан сам проверить её валидность, иначе
+  // в БД попадёт ссылка на несуществующий/деактивированный/чужой ингредиент.
+  if (parsed.catalogId != null) {
+    await ensureCatalogRefValid(parsed.catalogId);
+  }
+  if (parsed.customId != null) {
+    await ensureCustomRefOwned(userId, parsed.customId);
+  }
+
+  const created = await insertManualItem(userId, {
+    name: parsed.name,
+    quantity: parsed.quantity ?? null,
+    unit: parsed.unit ?? null,
+    category: parsed.category ?? null,
+    ingredientCatalogItemId: parsed.catalogId ?? null,
+    userCustomIngredientId: parsed.customId ?? null
+  });
+
+  return mapManualItemToDto(created);
+};
+
+export const updateManualShoppingItem = async (
+  userId: string,
+  id: string,
+  input: unknown
+): Promise<ShoppingManualItemDto> => {
+  const parsed = updateManualShoppingItemSchema.parse(input);
+
+  const updated = await updateManualItemRow(userId, id, {
+    name: parsed.name,
+    quantity: parsed.quantity ?? null,
+    unit: parsed.unit ?? null
+  });
+
+  return mapManualItemToDto(updated);
+};
+
+export const deleteManualShoppingItem = async (userId: string, id: string): Promise<void> => {
+  await deleteManualItemRow(userId, id);
+};
+
+export const toggleManualShoppingItem = async (
+  userId: string,
+  id: string,
+  checked: boolean
+): Promise<ShoppingManualItemDto> => {
+  const updated = await setManualItemCheckedAt(userId, id, checked);
+  return mapManualItemToDto(updated);
+};
+
+// --- П2: отметка «куплено» на производных строках + перенос на склад --------
+
+/**
+ * Анти-абьюз-барьер на ПОСТАНОВКУ отметки «куплено» — только checked=true:
+ * снятие (delete) не растит таблицу и не должно блокироваться (иначе можно
+ * было бы застрять с «зависшей» отметкой). Лимиты щедрые (см. contracts.ts).
+ * Бросает RATE_LIMITED / SHOPPING_LINE_CHECK_QUOTA_REACHED.
+ */
+const assertLineCheckCreationAllowed = async (userId: string): Promise<void> => {
+  await assertRateLimit(
+    userId,
+    "shopping_line_check",
+    SHOPPING_LINE_CHECK_RATE_LIMIT,
+    SHOPPING_LINE_CHECK_RATE_WINDOW_SECONDS
+  );
+
+  const existingCount = await countLineChecks(userId);
+  if (existingCount >= SHOPPING_LINE_CHECK_MAX_COUNT_PER_USER) {
+    throw new Error("SHOPPING_LINE_CHECK_QUOTA_REACHED");
+  }
+};
+
+export const toggleShoppingLineChecked = async (
+  userId: string,
+  lineKey: string,
+  checked: boolean
+): Promise<void> => {
+  if (checked) {
+    await assertLineCheckCreationAllowed(userId);
+  }
+  await setLineChecked(userId, lineKey, checked);
+};
+
+export type TransferShoppingResult = {
+  transferredCount: number;
+  skippedCount: number;
+};
+
+// Строка входа, признанная сервером допустимой к переносу — привязка
+// (catalogId/customId) взята из СЕРВЕРНЫХ данных (актуальная агрегация /
+// строка БД ручной позиции), а не из того, что прислал клиент.
+type AcceptedTransferLine =
+  | {
+      kind: "derived";
+      lineKey: string;
+      quantity: number;
+      unit: InventoryUnit;
+      catalogId: string | null;
+      customId: string | null;
+    }
+  | {
+      kind: "manual";
+      id: string;
+      quantity: number;
+      unit: InventoryUnit;
+      catalogId: string | null;
+      customId: string | null;
+    };
+
+/**
+ * Перенос отмеченных строк списка покупок на склад (П2). Сервер не доверяет
+ * присланной строке: derived-строка несёт только непрозрачный lineKey — его
+ * привязка (catalogId/customId) читается из ТЕКУЩЕЙ агрегации
+ * (computeAggregatedShoppingLines), пересобранной здесь же, а не из клиента;
+ * manual-строка несёт id ручной позиции — привязка читается из её строки БД.
+ * Строка, не найденная сервером как «отмечена И имеет привязку» — skipped, а
+ * не ошибка целиком (name-only строки честно уходят в хвост «Добавьте вручную»
+ * диалога, это штатный путь, не баг).
+ *
+ * Дополнительные барьеры accept-фазы (устойчивость к абьюзу/гонкам):
+ * - Дубль derived-lineKey/manual-id во входе засчитывается один раз, повтор —
+ *   в skippedCount (иначе дубль derived создал бы вторую позицию склада, а
+ *   дубль manual на второй попытке удалить уже удалённую строку уронил бы всю
+ *   транзакцию NOT_FOUND).
+ * - Каталожная привязка могла деактивироваться между сборкой списка и
+ *   сабмитом переноса — батч-проверка (loadActiveCatalogIds) отсеивает такие
+ *   строки в skippedCount ДО транзакции, а не роняет всю пачку одной
+ *   невалидной строкой. Кастомные привязки не проверяются — они уже
+ *   гарантированы владением в БД (FK + userId на insert).
+ * - Пачка больше INVENTORY_ITEM_CREATE_RATE_LIMIT детерминированно провалит
+ *   assertInventoryItemCreationAllowed — эта проверка стоит ДО вызова барьера,
+ *   чтобы не сжигать rate-limit окно на заведомо обречённый запрос (лимит
+ *   инкрементируется даже отклонённым попыткам, см. @nb/auth/assertRateLimit).
+ *
+ * Барьер (rate limit + квота) прогоняется ОДИН раз на всю принятую пачку, ДО
+ * транзакции — так же, как остальные batch-пути создания (см.
+ * assertInventoryItemCreationAllowed). Сама вставка позиций склада + удаление
+ * перенесённых отметок/ручных позиций — в ОДНОЙ транзакции: либо всё, либо
+ * ничего (иначе успевшая вставиться позиция при обрыве на следующей строке
+ * осталась бы без удалённой отметки — «куплено» переживёт перенос). Отметка
+ * derived-строки удаляется deleteLineCheckStrict — если строку успел снять/
+ * перенести параллельный сабмит, транзакция откатывается вместо тихого
+ * дубля позиции склада (обычный идемпотентный deleteLineCheck это маскировал
+ * бы, засчитывая 0 удалённых строк как успех).
+ */
+export const transferCheckedToStock = async (
+  userId: string,
+  lines: TransferLineInput[]
+): Promise<TransferShoppingResult> => {
+  const [{ aggregated }, checkedKeys, manualItemRows] = await Promise.all([
+    computeAggregatedShoppingLines(userId),
+    loadLineChecks(userId),
+    loadManualItems(userId)
+  ]);
+
+  const manualById = new Map(manualItemRows.map((row) => [row.id, row]));
+
+  let accepted: AcceptedTransferLine[] = [];
+  let skippedCount = 0;
+  // Дедуп входа: повторный derived-lineKey/manual-id → второй экземпляр не
+  // должен породить второй accepted (см. докстрою выше).
+  const seenInputKeys = new Set<string>();
+
+  for (const line of lines) {
+    const dedupeKey = line.kind === "derived" ? `derived:${line.lineKey}` : `manual:${line.id}`;
+    if (seenInputKeys.has(dedupeKey)) {
+      skippedCount += 1;
+      continue;
+    }
+    seenInputKeys.add(dedupeKey);
+
+    if (line.kind === "derived") {
+      const agg = checkedKeys.has(line.lineKey) ? aggregated.get(line.lineKey) : undefined;
+      const hasLinkage = agg != null && (agg.catalogId != null || agg.customId != null);
+      if (!hasLinkage) {
+        skippedCount += 1;
+        continue;
+      }
+
+      accepted.push({
+        kind: "derived",
+        lineKey: line.lineKey,
+        quantity: line.quantity,
+        unit: line.unit,
+        catalogId: agg!.catalogId,
+        customId: agg!.customId
+      });
+      continue;
+    }
+
+    const row = manualById.get(line.id);
+    const hasLinkage = row != null
+      && row.checkedAt != null
+      && (row.ingredientCatalogItemId != null || row.userCustomIngredientId != null);
+    if (!hasLinkage) {
+      skippedCount += 1;
+      continue;
+    }
+
+    accepted.push({
+      kind: "manual",
+      id: line.id,
+      quantity: line.quantity,
+      unit: line.unit,
+      catalogId: row!.ingredientCatalogItemId,
+      customId: row!.userCustomIngredientId
+    });
+  }
+
+  // Батч-проверка активности каталожных привязок принятых строк — одним
+  // select по уникальным catalogId (см. докстрою выше).
+  const catalogIdsToVerify = [...new Set(
+    accepted.map((line) => line.catalogId).filter((catalogId): catalogId is string => catalogId != null)
+  )];
+  const activeCatalogIds = await loadActiveCatalogIds(catalogIdsToVerify);
+  accepted = accepted.filter((line) => {
+    if (line.catalogId != null && !activeCatalogIds.has(line.catalogId)) {
+      skippedCount += 1;
+      return false;
+    }
+    return true;
+  });
+
+  if (accepted.length === 0) {
+    return { transferredCount: 0, skippedCount: lines.length };
+  }
+
+  // Падаем ДО assertInventoryItemCreationAllowed — иначе пачка больше лимита
+  // детерминированно сжигает rate-limit окно на обречённый запрос (см. докстрою).
+  if (accepted.length > INVENTORY_ITEM_CREATE_RATE_LIMIT) {
+    throw new Error("TRANSFER_TOO_MANY_LINES");
+  }
+
+  // ОДИН раз на всю принятую пачку, ДО транзакции — add-пути ниже вызываются
+  // с skipCreationGate: true, чтобы не повторять барьер на каждую строку.
+  await assertInventoryItemCreationAllowed(userId, accepted.length);
+
+  await db.transaction(async (tx) => {
+    for (const line of accepted) {
+      if (line.catalogId) {
+        await addCatalogIngredientToInventory(
+          userId,
+          {
+            ingredientCatalogItemId: line.catalogId,
+            packageVariantId: null,
+            enteredQuantity: line.quantity,
+            enteredUnit: line.unit,
+            priceInputMode: null,
+            priceInputAmountMinor: null,
+            priceInputCurrency: null,
+            purchasedAt: null,
+            freshnessDate: null,
+            notes: null,
+            waterTreatmentConcentrationPct: null
+          },
+          { skipCreationGate: true },
+          tx
+        );
+      } else {
+        await addCustomIngredientToInventory(
+          userId,
+          {
+            userCustomIngredientId: line.customId,
+            enteredQuantity: line.quantity,
+            enteredUnit: line.unit,
+            priceInputMode: null,
+            priceInputAmountMinor: null,
+            priceInputCurrency: null,
+            purchasedAt: null,
+            freshnessDate: null,
+            notes: null
+          },
+          { skipCreationGate: true },
+          tx
+        );
+      }
+
+      if (line.kind === "derived") {
+        await deleteLineCheckStrict(userId, line.lineKey, tx);
+      } else {
+        await deleteManualItemRow(userId, line.id, tx);
+      }
+    }
+  });
+
+  return { transferredCount: accepted.length, skippedCount };
 };

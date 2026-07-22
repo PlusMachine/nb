@@ -14,10 +14,11 @@ import { buildBjcpStyleOgView } from "../features/og/bjcp";
 import { buildCalculatorOgView } from "../features/og/calculator";
 import { buildIngredientOgView } from "../features/og/ingredient";
 import { buildMasterOgView } from "../features/og/master";
-import { sanitizeOgCardView, type OgCardView } from "../features/og/models";
+import { sanitizeOgCardView, type OgCardView, type OgPhoto } from "../features/og/models";
 import { OG_COLORS } from "../features/og/theme";
 
 const OPTS = { domain: "hmelo.example", wordmark: "NB" };
+const FAKE_PHOTO: OgPhoto = { dataUri: "data:image/jpeg;base64,AAAA", width: 400, height: 630 };
 
 // --- Ингредиент ----------------------------------------------------------------
 
@@ -129,13 +130,20 @@ const article = (overrides: Partial<ContentArticle> = {}): ContentArticle =>
     ...overrides
   }) as unknown as ContentArticle;
 
+// Ф5-полировка: buildFactsLine схлопывает обычные пробелы ВНУТРИ каждого факта в
+// неразрывные (U+00A0) — перенос строки не должен рвать факт по границе слова/
+// дефиса, только по « · » между фактами (см. features/og/bjcp.ts:preventInternalWrap).
+const withNbsp = (fact: string): string => fact.replace(/ /g, " ");
+
 describe("buildBjcpStyleOgView", () => {
   it("eyebrow с кодом, vitals нормализованы, titleEn в subtitle, градиент цвета", () => {
     const view = buildBjcpStyleOgView(article(), OPTS);
     expect(view.eyebrow).toBe("Стиль BJCP · 3B");
     expect(view.title).toBe("Чешский премиум пилснер");
     expect(view.subtitle).toBe("Czech Premium Pale Lager");
-    expect(view.factsLine).toBe("OG 1.044–1.052 · IBU 30–45 · ABV 4.2–5.8%");
+    expect(view.factsLine).toBe(
+      [withNbsp("OG 1.044–1.052"), withNbsp("IBU 30–45"), withNbsp("ABV 4.2–5.8%")].join(" · ")
+    );
     expect(view.strip.kind).toBe("gradient");
   });
 
@@ -151,6 +159,83 @@ describe("buildBjcpStyleOgView", () => {
     );
     expect(view.strip).toEqual({ kind: "solid", color: OG_COLORS.neutralStrip });
     expect(view.factsLine).toBeNull();
+  });
+
+  it("Ф5: с иллюстрацией — photo прокидывается и кегль капается 50", () => {
+    const view = buildBjcpStyleOgView(article(), { ...OPTS, photo: FAKE_PHOTO });
+    expect(view.photo).toEqual(FAKE_PHOTO);
+    expect(view.titleFontSize).toBe(50);
+  });
+
+  it("Ф5: без иллюстрации — photo null, кегль как раньше", () => {
+    const view = buildBjcpStyleOgView(article(), OPTS);
+    expect(view.photo).toBeNull();
+    expect(view.titleFontSize).toBe(60);
+  });
+
+  // Ф5-полировка: с фото контентная колонка ~640px (1200 − 16 полоса − 2×72
+  // паддинги − 400 врезка) вместо ~1040 — дефолтный кегль factsLine (34) рвёт
+  // даже типичную строку посреди эн-дэша диапазона. Ступени в
+  // features/og/bjcp.ts:resolveFactsLineFontSize подобраны живым Satori-рендером
+  // всех 128 стилей BJCP: реальные длины строк — 39–43 (106 стилей), 99 (сезон,
+  // составной ABV с 3 диапазонами) и 133 (категория 33, описательные vitals).
+  it("Ф5: с иллюстрацией — кегль factsLine капается по длине строки (типичная строка, 41 симв.)", () => {
+    const view = buildBjcpStyleOgView(article(), { ...OPTS, photo: FAKE_PHOTO });
+    expect(view.factsLine).toHaveLength(41);
+    expect(view.factsLineFontSize).toBe(28);
+  });
+
+  it("Ф5: без иллюстрации — кегль factsLine не задан, card.tsx берёт дефолт", () => {
+    const view = buildBjcpStyleOgView(article(), OPTS);
+    expect(view.factsLineFontSize).toBeUndefined();
+  });
+
+  it("Ф5: длинная описательная строка vitals (категория 33 «Wood-Aged Beer», 133 симв.) — минимальная ступень кегля, факты неразрывны", () => {
+    const view = buildBjcpStyleOgView(
+      article({
+        vitalStatistics: {
+          og: "varies with base style, typically above-average",
+          fg: null,
+          ibu: "varies with base style",
+          srm: null,
+          abv: "varies with base style, typically above-average",
+          note: null,
+          sessionAbv: null,
+          standardAbv: null,
+          doubleAbv: null
+        }
+      }),
+      { ...OPTS, photo: FAKE_PHOTO }
+    );
+    expect(view.factsLine).toBe(
+      [
+        withNbsp("OG varies with base style, typically above–average"),
+        withNbsp("IBU varies with base style"),
+        withNbsp("ABV varies with base style, typically above–average")
+      ].join(" · ")
+    );
+    expect(view.factsLineFontSize).toBe(17);
+  });
+
+  it("Ф5: составная строка ABV из 3 диапазонов (сезон/25B, 99 симв.) — средняя ступень кегля", () => {
+    const view = buildBjcpStyleOgView(
+      article({
+        vitalStatistics: {
+          og: "1.048 – 1.065 (standard)",
+          fg: null,
+          ibu: "20 – 35",
+          srm: null,
+          abv: "3.5 – 5.0% (table); 5.0 – 7.0% (standard); 7.0 – 9.5% (super)",
+          note: null,
+          sessionAbv: null,
+          standardAbv: null,
+          doubleAbv: null
+        }
+      }),
+      { ...OPTS, photo: FAKE_PHOTO }
+    );
+    expect(view.factsLine).toHaveLength(99);
+    expect(view.factsLineFontSize).toBe(20);
   });
 });
 

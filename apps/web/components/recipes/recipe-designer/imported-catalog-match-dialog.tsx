@@ -1,11 +1,22 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { PackageSearch, Search } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
+import { PackageSearch } from "lucide-react";
 import { Button, Dialog, DialogCloseButton, DialogHeader } from "@nb/ui";
 
 import type { IngredientCategory, IngredientSuggestionItem, IngredientType } from "@/features/ingredients/contracts";
 import { isConfidentImportMatch } from "./imported-catalog-match";
+
+// ingredient-picker.tsx (~3100 строк) — тяжёлый клиентский чанк, нужный только
+// когда пользователь разворачивает ручной поиск по строке. Диалог сопоставления
+// открывается редко (импорт рецепта) — статический импорт раздувал бы чанк
+// редактора рецептов. ssr:false допустим — модуль уже "use client", а сам
+// диалог рендерится только после открытия по клику.
+const IngredientPicker = dynamic(
+  () => import("@/components/ingredients/ingredient-picker").then((m) => m.IngredientPicker),
+  { ssr: false, loading: () => null }
+);
 
 export type ImportedMatchLine = {
   localId: string;
@@ -41,8 +52,8 @@ const dedupeById = (items: IngredientSuggestionItem[]) => {
  * Пакетное сопоставление импортированных (name-only) позиций рецепта с каталогом.
  * Автоподбор предвыбирает кандидата ТОЛЬКО при уверенном совпадении имени (см.
  * `isConfidentImportMatch`); всё остальное — на ручной выбор. Если предложенное
- * не устраивает или нужного нет в подсказках — по каждой строке есть инлайн-поиск
- * по всему каталогу (тот же путь `/api/ingredients/search`, что и ручной пикер).
+ * не устраивает или нужного нет в подсказках — по каждой строке есть общий
+ * `IngredientPicker` (тот же компонент, что и ручной поиск в панели матча).
  * По «Применить» отдаёт наверх localId → выбранный элемент; применение идёт через
  * тот же `applySelection`, что и ручной пикер.
  */
@@ -63,9 +74,6 @@ export function ImportedCatalogMatchDialog({
   const [selection, setSelection] = useState<Record<string, IngredientSuggestionItem | null>>({});
   const [manualOpen, setManualOpen] = useState<Record<string, boolean>>({});
   const [manualQuery, setManualQuery] = useState<Record<string, string>>({});
-  const [manualResults, setManualResults] = useState<Record<string, IngredientSuggestionItem[]>>({});
-  const [manualLoading, setManualLoading] = useState<Record<string, boolean>>({});
-  const debounceTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
   // При каждом открытии предвыбираем уверенный матч (или «оставить») и сбрасываем ручной поиск.
   useEffect(() => {
@@ -79,38 +87,12 @@ export function ImportedCatalogMatchDialog({
     setSelection(next);
     setManualOpen({});
     setManualQuery({});
-    setManualResults({});
-    setManualLoading({});
   }, [open, lines]);
 
   const matchedCount = useMemo(
     () => lines.filter((line) => selection[line.localId]).length,
     [lines, selection]
   );
-
-  const runManualSearch = (line: ImportedMatchLine, query: string) => {
-    setManualQuery((prev) => ({ ...prev, [line.localId]: query }));
-    clearTimeout(debounceTimers.current[line.localId]);
-    if (query.trim().length < 2) {
-      setManualResults((prev) => ({ ...prev, [line.localId]: [] }));
-      setManualLoading((prev) => ({ ...prev, [line.localId]: false }));
-      return;
-    }
-    setManualLoading((prev) => ({ ...prev, [line.localId]: true }));
-    debounceTimers.current[line.localId] = setTimeout(async () => {
-      try {
-        const params = new URLSearchParams({ q: query.trim(), type: line.type, category: line.category, limit: "6" });
-        const response = await fetch(`/api/ingredients/search?${params.toString()}`);
-        const data = await response.json();
-        const items = Array.isArray(data?.items) ? (data.items as IngredientSuggestionItem[]) : [];
-        setManualResults((prev) => ({ ...prev, [line.localId]: items }));
-      } catch {
-        setManualResults((prev) => ({ ...prev, [line.localId]: [] }));
-      } finally {
-        setManualLoading((prev) => ({ ...prev, [line.localId]: false }));
-      }
-    }, 300);
-  };
 
   const handleApply = () => {
     const result: Record<string, IngredientSuggestionItem> = {};
@@ -154,11 +136,10 @@ export function ImportedCatalogMatchDialog({
         {lines.map((line) => {
           const selected = selection[line.localId] ?? null;
           const hasConfident = line.candidates.some((candidate) => isConfidentImportMatch(line.name, candidate));
-          // Список опций: авто-кандидаты + найденные вручную + сам выбранный (чтобы
-          // ручной выбор не пропал, когда результаты поиска сменятся). Без дублей.
+          // Список опций: авто-кандидаты + сам выбранный (в т.ч. найденный вручную
+          // через IngredientPicker), чтобы выбор не пропал при переоткрытии. Без дублей.
           const options = dedupeById([
             ...line.candidates,
-            ...(manualResults[line.localId] ?? []),
             ...(selected ? [selected] : [])
           ]);
           const manualIsOpen = manualOpen[line.localId] ?? false;
@@ -220,17 +201,20 @@ export function ImportedCatalogMatchDialog({
               </div>
 
               {manualIsOpen ? (
-                <div className="mt-2 flex items-center gap-2 rounded-md border border-border bg-muted/40 px-2.5 py-1.5">
-                  <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
-                  <input
-                    type="text"
-                    autoFocus
+                <div className="mt-2">
+                  <IngredientPicker
                     value={manualQuery[line.localId] ?? ""}
-                    onChange={(event) => runManualSearch(line, event.target.value)}
+                    type={line.type}
+                    category={line.category}
+                    autoFocus
+                    onValueChange={(next) => setManualQuery((prev) => ({ ...prev, [line.localId]: next }))}
+                    onSelect={(item) => {
+                      setSelection((prev) => ({ ...prev, [line.localId]: item }));
+                      setManualQuery((prev) => ({ ...prev, [line.localId]: "" }));
+                      setManualOpen((prev) => ({ ...prev, [line.localId]: false }));
+                    }}
                     placeholder="Найти ингредиент в каталоге…"
-                    className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
                   />
-                  {manualLoading[line.localId] ? <span className="shrink-0 text-xs text-muted-foreground">…</span> : null}
                 </div>
               ) : (
                 <button

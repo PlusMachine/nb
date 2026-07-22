@@ -174,6 +174,22 @@ describe("buildCatalogListMetadata", () => {
     expect(metadata.alternates).toEqual({ canonical: "/catalog/hops" });
   });
 
+  it("подключает брендовую обложку лендинга каталога (Ф3, docs/specs/og-images.md)", () => {
+    const hopsLanding = resolveCatalogLanding("hops");
+    const metadata = buildCatalogListMetadata({ landing: hopsLanding });
+    expect(metadata.openGraph?.images).toEqual([
+      expect.objectContaining({ url: "/api/og/sections/catalog-hops" })
+    ]);
+    expect(metadata.twitter).toMatchObject({ card: "summary_large_image" });
+  });
+
+  it("лендинг: openGraph несёт locale/siteName (страница замещает openGraph родительского layout целиком)", () => {
+    const hopsLanding = resolveCatalogLanding("hops");
+    const metadata = buildCatalogListMetadata({ landing: hopsLanding });
+    expect(metadata.openGraph).toMatchObject({ locale: "ru_RU" });
+    expect((metadata.openGraph as { siteName?: string } | undefined)?.siteName).toBeTruthy();
+  });
+
   it("appends a page suffix to the landing title and canonical", () => {
     const metadata = buildCatalogListMetadata({ category: "hop", page: 2 });
     expect(metadata.title).toBe("Хмель для пивоварения — каталог сортов — страница 2");
@@ -184,6 +200,20 @@ describe("buildCatalogListMetadata", () => {
     const metadata = buildCatalogListMetadata({});
     expect(metadata.title).toBe("Каталог ингредиентов для пивоварения");
     expect(metadata.alternates).toEqual({ canonical: "/catalog" });
+  });
+
+  it("подключает брендовую обложку хаба /catalog (Ф3, docs/specs/og-images.md)", () => {
+    const metadata = buildCatalogListMetadata({});
+    expect(metadata.openGraph?.images).toEqual([
+      expect.objectContaining({ url: "/api/og/sections/catalog" })
+    ]);
+    expect(metadata.twitter).toMatchObject({ card: "summary_large_image" });
+  });
+
+  it("хаб: openGraph несёт locale/siteName (страница замещает openGraph родительского layout целиком)", () => {
+    const metadata = buildCatalogListMetadata({});
+    expect(metadata.openGraph).toMatchObject({ locale: "ru_RU" });
+    expect((metadata.openGraph as { siteName?: string } | undefined)?.siteName).toBeTruthy();
   });
 
   it("keeps the base canonical clean for ?page=N — the hub has no pagination of its own", () => {

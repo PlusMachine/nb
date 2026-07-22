@@ -4,6 +4,9 @@ import type { CatalogLandingSlug, IngredientCategory, IngredientSubtype, Ingredi
 import { resolveConsumableInventoryBroadGroup } from "./consumables";
 import { resolveIngredientBrandLabel, resolveYeastFlocculationLabelRu } from "./presentation";
 import { formatHopFormLabel, resolveIngredientTechnicalDataColorRangeEbc } from "./technical-fields";
+import { getSectionOgImage } from "../og/section";
+
+import { getServerEnv } from "@/lib/env";
 
 // SEO-фундамент каталога ингредиентов: категорийные лендинги (path-урлы),
 // metadata для списка/деталки и JSON-LD (BreadcrumbList/Product/ItemList).
@@ -184,9 +187,18 @@ export const buildCatalogListMetadata = (params: {
   const landing = params.landing ?? resolveCatalogLandingForFilter(params.category, params.subtype);
   const page = params.page && params.page > 1 ? params.page : null;
 
+  // Страница ЗАМЕЩАЕТ openGraph родительского layout целиком (не мёржится) —
+  // locale/siteName повторяем сами (см. app/(public)/page.tsx).
+  const { SITE_NAME } = getServerEnv();
+
   if (landing) {
     const title = page ? `${landing.metaTitle} — страница ${page}` : landing.metaTitle;
     const canonicalPath = page ? `/catalog/${landing.slug}?page=${page}` : `/catalog/${landing.slug}`;
+    // Ключ реестра обложек разделов — "catalog-<slug>" (features/og/section.ts,
+    // getLandingRegistry строит его для каждой записи catalogCategoryLandings);
+    // landing.slug типизирован CatalogLandingSlug — getSectionOgImage резолвит
+    // ключ без null.
+    const ogImage = getSectionOgImage(`catalog-${landing.slug}`);
 
     return {
       title,
@@ -197,15 +209,18 @@ export const buildCatalogListMetadata = (params: {
       openGraph: {
         title,
         description: landing.metaDescription,
-        type: "website"
+        type: "website",
+        locale: "ru_RU",
+        siteName: SITE_NAME,
+        images: [ogImage]
       },
       twitter: {
-        // Своей картинки у лендинга нет (сайтовый дефолт не наследуется при своём
-        // openGraph без images) → summary, иначе пустая большая карточка. Брендовая
-        // обложка хаба каталога — Ф3 (docs/specs/og-images.md §5.8).
-        card: "summary",
+        // Брендовая обложка лендинга подключена (Ф3, docs/specs/og-images.md
+        // §5.8) → summary_large_image, как у деталки ингредиента.
+        card: "summary_large_image",
         title,
-        description: landing.metaDescription
+        description: landing.metaDescription,
+        images: [ogImage.url]
       }
     };
   }
@@ -217,6 +232,7 @@ export const buildCatalogListMetadata = (params: {
   // permanentRedirect'ом раньше, см. app/(public)/catalog/page.tsx) — canonical
   // всегда чистый /catalog, без ?page=N.
   const canonicalPath = "/catalog";
+  const ogImage = getSectionOgImage("catalog");
 
   return {
     title: CATALOG_BASE_TITLE,
@@ -227,14 +243,18 @@ export const buildCatalogListMetadata = (params: {
     openGraph: {
       title: CATALOG_BASE_TITLE,
       description: CATALOG_BASE_DESCRIPTION,
-      type: "website"
+      type: "website",
+      locale: "ru_RU",
+      siteName: SITE_NAME,
+      images: [ogImage]
     },
     twitter: {
-      // Своей картинки у хаба нет → summary (иначе пустая большая карточка).
-      // Брендовая обложка /catalog — Ф3 (docs/specs/og-images.md §5.8).
-      card: "summary",
+      // Брендовая обложка /catalog подключена (Ф3, docs/specs/og-images.md
+      // §5.8) → summary_large_image.
+      card: "summary_large_image",
       title: CATALOG_BASE_TITLE,
-      description: CATALOG_BASE_DESCRIPTION
+      description: CATALOG_BASE_DESCRIPTION,
+      images: [ogImage.url]
     }
   };
 };

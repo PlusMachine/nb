@@ -22,13 +22,18 @@ const nextConfig: NextConfig = {
     "/api/labels/[recipeId]": ["./features/labels/fonts/**/*"],
     "/api/og/recipes/[slug]": ["./features/labels/fonts/**/*"],
     // Ф2: остальные рантайм-роуты OG-карточек (Satori читает те же Rubik TTF).
-    // Калькуляторы/обложки разделов рендерятся на билде (file-convention, SSG) —
-    // рантайм-зависимости от шрифтов у них нет, tracing им не нужен.
     "/api/og/catalog/[source]/[id]": ["./features/labels/fonts/**/*"],
-    "/api/og/bjcp/[slug]": ["./features/labels/fonts/**/*"],
+    // Ф5: loadBjcpOgPhoto читает public/images/bjcp/*.png по динамическому
+    // имени — тот же класс ловушки, что с TTF шрифтов: fs-чтение по пути,
+    // собранному из данных в рантайме, не трассируется само.
+    "/api/og/bjcp/[slug]": ["./features/labels/fonts/**/*", "./public/images/bjcp/**/*"],
     "/api/og/articles/[slug]": ["./features/labels/fonts/**/*"],
     "/api/og/masters/[slug]": ["./features/labels/fonts/**/*"],
-    "/api/og/beer/[slug]": ["./features/labels/fonts/**/*"]
+    "/api/og/beer/[slug]": ["./features/labels/fonts/**/*"],
+    // Ф3: обложки разделов (хабы + категорийные лендинги каталога).
+    "/api/og/sections/[key]": ["./features/labels/fonts/**/*"],
+    // Ф4: карточки калькуляторов (v1 без query + v2 с результатом).
+    "/api/og/calculators/[slug]": ["./features/labels/fonts/**/*"]
   },
   async redirects() {
     // Каталог переехал из рабочей зоны в публичную: /app/catalog -> /catalog.

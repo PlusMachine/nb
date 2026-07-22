@@ -60,7 +60,7 @@ describe("BrewableRecipeCard — бейдж готовности (A3)", () => {
     );
     expect(html).not.toContain("Хватает всего");
     expect(html).not.toContain("Почти хватает");
-    expect(html).toContain("Ингредиенты");
+    expect(html).toContain("есть:");
     expect(html).toContain("2 из 3");
     expect(html).toContain("Каскад");
   });

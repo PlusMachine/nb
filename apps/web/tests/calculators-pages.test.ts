@@ -33,7 +33,7 @@ const calculatorIndexTitles = [
   "Карбонизация сахаром",
   "Карбонизация в кеге",
   "Бутылки и розлив",
-  "Шпайзе и кройцен"
+  "Шпайзе и краузен"
 ];
 
 beforeEach(() => {
@@ -113,6 +113,16 @@ describe("calculator pages", () => {
     const { metadata } = await import("../app/(public)/calculators/page");
 
     expect(metadata.alternates?.canonical).toBe("/calculators");
+  });
+
+  it("/calculators openGraph carries locale/siteName (страница замещает openGraph layout целиком) и обложку раздела", async () => {
+    const { metadata } = await import("../app/(public)/calculators/page");
+
+    expect(metadata.openGraph).toMatchObject({ locale: "ru_RU" });
+    expect((metadata.openGraph as { siteName?: string } | undefined)?.siteName).toBeTruthy();
+    expect((metadata.openGraph as { images?: { url: string }[] } | undefined)?.images?.[0]?.url).toBe(
+      "/api/og/sections/calculators"
+    );
   });
 
   it("calculator routes render through the dynamic route with seoTitle metadata, canonical and visible/JSON-LD breadcrumbs", async () => {

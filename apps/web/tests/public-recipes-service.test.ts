@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { normalizeSearchText, swapKeyboardLayout } from "@nb/search";
+
 import { parsePublicRecipeFilters } from "../features/recipes/public-recipe-query";
 
 vi.mock("server-only", () => ({}));
@@ -7,6 +9,11 @@ vi.mock("server-only", () => ({}));
 const { mockState } = vi.hoisted(() => ({
   mockState: {
     rows: [] as Record<string, unknown>[],
+    // С4 (rescue): очередь наборов строк по проходам поиска — main+count каждого
+    // прохода (searchPublicRecipes может звать runSearch дважды: обычный проход
+    // + раскладочный фолбэк) идут парой и читают один и тот же элемент очереди.
+    // null (по умолчанию) — обратная совместимость, все select'ы читают `rows`.
+    rowsQueue: null as Record<string, unknown>[][] | null,
     captured: [] as Array<{
       projection: Record<string, unknown>;
       where: unknown;
@@ -26,10 +33,18 @@ vi.mock("@nb/db", () => {
     });
 
   const resolveRows = (projection: Record<string, unknown>) => {
+    // Пара main+count делят один индекс очереди: main всегда идёт первым
+    // (captured.length становится нечётным после push), count — вторым.
+    const queuedRows = mockState.rowsQueue
+      ? mockState.rowsQueue[Math.floor((mockState.captured.length - 1) / 2)]
+        ?? mockState.rowsQueue.at(-1)
+        ?? []
+      : mockState.rows;
+
     if ("value" in projection) {
-      return [{ value: mockState.rows.length }];
+      return [{ value: queuedRows.length }];
     }
-    return mockState.rows;
+    return queuedRows;
   };
 
   const makeBuilder = (projection: Record<string, unknown>) => {
@@ -144,6 +159,7 @@ const countQuery = () => mockState.captured.find((q) => "value" in q.projection)
 
 beforeEach(() => {
   mockState.rows = [];
+  mockState.rowsQueue = null;
   mockState.captured = [];
 });
 
@@ -289,5 +305,37 @@ describe("searchPublicRecipes", () => {
     mockState.rows = [{ ...baseRow(), ratingAvg: null, ratingCount: 0 }];
     const item = (await searchPublicRecipes(parsePublicRecipeFilters({}))).items[0];
     expect(item.rating).toBeNull();
+  });
+
+  // С4 (rescue): раскладочный фолбэк — первый проход не находит ничего, второй
+  // (includeLayoutVariants) находит строки → rescue.correctedQuery заполняется.
+  it("заполняет rescue.correctedQuery при раскладочном фолбэке (второй проход находит строки)", async () => {
+    mockState.rowsQueue = [[], [baseRow()]];
+    const q = "vjpfbr";
+
+    const result = await searchPublicRecipes(parsePublicRecipeFilters({ q }));
+
+    expect(result.total).toBe(1);
+    expect(result.rescue).toEqual({
+      correctedQuery: normalizeSearchText(swapKeyboardLayout(q))
+    });
+  });
+
+  it("rescue отсутствует при обычном запросе (первый проход уже нашёл строки)", async () => {
+    mockState.rows = [baseRow()];
+
+    const result = await searchPublicRecipes(parsePublicRecipeFilters({ q: "ipa" }));
+
+    expect(result.total).toBe(1);
+    expect(result.rescue).toBeFalsy();
+  });
+
+  it("rescue отсутствует, если раскладочный фолбэк тоже не нашёл строк", async () => {
+    mockState.rowsQueue = [[], []];
+
+    const result = await searchPublicRecipes(parsePublicRecipeFilters({ q: "vjpfbr" }));
+
+    expect(result.total).toBe(0);
+    expect(result.rescue).toBeFalsy();
   });
 });

@@ -1,771 +1,772 @@
 {
-  "source": {
-    "document": "BJCP 2021 Beer Style Guidelines",
-    "file_name": "2021_Guidelines_Beer_1.25.pdf",
-    "language": "ru",
-    "translation_scope": "detailed",
-    "notes": "Подробный русский перевод первой части корпуса BJCP: категории 1-3 с сохранением короткого описания, полных секций и оригинальных английских секций для сверки."
-  },
-  "progress": {
-    "styles_total_in_guideline": 128,
-    "styles_translated_in_this_file": 11,
-    "translated_style_ids": [
-      "1A",
-      "1B",
-      "1C",
-      "1D",
-      "2A",
-      "2B",
-      "2C",
-      "3A",
-      "3B",
-      "3C",
-      "3D"
-    ],
-    "translated_categories": [
-      "1",
-      "2",
-      "3"
-    ],
-    "next_recommended_batch": [
-      "4A",
-      "4B",
-      "4C",
-      "5A",
-      "5B",
-      "5C",
-      "5D"
-    ]
-  },
-  "categories": [
-    {
-      "category_id": "1",
-      "category_en": "STANDARD AMERICAN BEER",
-      "category_ru": "Стандартное американское пиво",
-      "overview_ru": "Категория описывает повседневные американские сорта пива, рассчитанные на широкую аудиторию. В неё входят и эли, и лагеры; в целом это не самые сложные по профилю сорта, а мягкие, понятные и легко пьющиеся. Эли из этой группы нередко тяготеют к лагерной чистоте или специально спроектированы как удобный «переходный» вариант для любителей массовых лагеров. Более интернациональные массовые лагеры BJCP относит уже к категории International Lager."
-    },
-    {
-      "category_id": "2",
-      "category_en": "INTERNATIONAL LAGER",
-      "category_ru": "Международный лагер",
-      "overview_ru": "International lager — это премиальные индустриальные массовые лагеры, которые варят во многих странах мира. Независимо от того, выросли ли они из американской или европейской традиции, их профиль обычно довольно унифицирован и сильно зависит от массового маркетинга. Исторически они лишь вольно происходят от лагеров пильзнерного типа: у более тёмных вариантов появляется дополнительная солодовая выразительность, но общий характер остаётся максимально понятным и рассчитанным на самую широкую аудиторию."
-    },
-    {
-      "category_id": "3",
-      "category_en": "CZECH LAGER",
-      "category_ru": "Чешский лагер",
-      "overview_ru": "Чешские лагеры обычно делятся по экстрактивности начального сусла и по цвету. Основные цветовые группы — světlé (светлое), polotmavé (янтарное/полутёмное) и tmavé (тёмное); классы плотности — výčepní, ležák и speciální. В BJCP эти рыночные классы частично объединены для судейства. В целом чешский лагер отличается от немецкого чуть более высокой конечной плотностью, более полным телом и более богатым, округлым вкусом. Этого добиваются не только дрожжи, но и мягкая вода, холодное и длительное брожение, а также традиционные декокционные затирания, которые для Чехии исторически очень важны."
-    }
+ "source": {
+  "document": "BJCP 2021 Beer Style Guidelines",
+  "file_name": "2021_Guidelines_Beer_1.25.pdf",
+  "language": "ru",
+  "translation_scope": "detailed",
+  "notes": "Подробный русский перевод первой части корпуса BJCP: категории 1-3 с сохранением короткого описания, полных секций и оригинальных английских секций для сверки."
+ },
+ "progress": {
+  "styles_total_in_guideline": 128,
+  "styles_translated_in_this_file": 11,
+  "translated_style_ids": [
+   "1A",
+   "1B",
+   "1C",
+   "1D",
+   "2A",
+   "2B",
+   "2C",
+   "3A",
+   "3B",
+   "3C",
+   "3D"
   ],
-  "styles": [
-    {
-      "bjcp_id": "1A",
-      "bjcp_heading": "1A. American Light Lager",
-      "category_id": "1",
-      "category_en": "STANDARD AMERICAN BEER",
-      "category_ru": "Стандартное американское пиво",
-      "name_en": "American Light Lager",
-      "name_ru": "Американский лёгкий лагер",
-      "description_short_ru": "Очень сильно газированный, очень лёгкий и почти нейтральный по вкусу лагер, рассчитанный на подачу максимально холодным. Освежает и хорошо утоляет жажду.",
-      "sections_ru": {
-        "overall_impression": "Очень сильно газированный, очень лёгкий по телу и почти нейтральный по вкусу лагер, который рассчитан на максимально холодную подачу. Очень освежает и хорошо утоляет жажду.",
-        "aroma": "Слабый солодовый аромат допустим; если он заметен, то чаще напоминает зерно, лёгкую сладость или кукурузу. Также допустим очень слабый пряный, цветочный или травянистый хмелевой аромат. Чистый профиль брожения желателен, но небольшой дрожжевой оттенок не считается дефектом.",
-        "appearance": "Цвет от очень светло-соломенного до бледно-жёлтого. Пена белая, рыхлая, обычно держится недолго. Пиво очень прозрачное.",
-        "flavor": "Вкус в целом нейтральный, с хрустящим сухим финишем и слабым либо очень слабым зерновым или кукурузным оттенком, который из-за низкой горечи может восприниматься как лёгкая сладость. Хмелевой вкус — если вообще заметен — очень слабый, обычно цветочный, пряный или травянистый. Горечь низкая или очень низкая. Баланс колеблется от слегка солодового до слегка горьковатого, но чаще всего остаётся почти ровным. Высокая карбонизация подчёркивает сухость и «хрусткость» финиша. Брожение чистое.",
-        "mouthfeel": "Тело очень лёгкое, иногда водянистое. Карбонизация очень высокая, возможен лёгкий углекислотный укус на языке.",
-        "comments": "Стиль создан для максимально широкой массовой аудитории. Выраженные вкусы здесь считаются недостатком. Поскольку и солод, и хмель почти не проявляются, различия между брендами часто определяются именно нюансами дрожжевого профиля.",
-        "history": "Coors недолгое время выпускала лёгкий лагер ещё в начале 1940-х. Современная версия стиля появилась у Rheingold в 1967 году как продукт для потребителей, следящих за калориями, но по-настоящему популярной стала после 1973 года, когда Miller Brewing приобрела рецепт и агрессивно продвигала пиво среди спортивной аудитории под слоганом “tastes great, less filling”. В 1990-х этот тип пива стал крупнейшим сегментом продаж в США.",
-        "characteristic_ingredients": "Двухрядный или шестирядный ячмень с добавлением до 40% риса или кукурузы. Для ещё большего облегчения тела и снижения содержания углеводов могут использоваться дополнительные ферменты. Лагерные дрожжи. Хмель — в почти незаметном количестве.",
-        "style_comparison": "Более лёгкая по телу, крепости и калорийности версия American Lager. По хмелевому характеру и горечи слабее, чем German Leichtbier."
-      },
-      "sections_en": {
-        "overall_impression": "A highly carbonated, very light-bodied, nearly flavorless lager designed to be consumed very cold. Very refreshing and thirst-quenching.",
-        "aroma": "Low malt aroma optional, but may be perceived as grainy, sweet, or corn-like, if present. Light spicy, floral, or herbal hop aroma optional. While a clean fermentation profile is desirable, a light amount of yeast character is not a fault.",
-        "appearance": "Very pale straw to pale yellow color. White, frothy head seldom persists. Very clear.",
-        "flavor": "Relatively neutral palate with a crisp, dry finish and a low to very low grainy or corn-like flavor that might be perceived as sweetness due to the low bitterness. Low floral, spicy, or herbal hop flavor optional, but is rarely strong enough to detect. Low to very low bitterness. Balance may vary from slightly malty to slightly bitter, but is usually close to even. High carbonation may accentuate the crispness of the dry finish. Clean fermentation profile.",
-        "mouthfeel": "Very light, sometimes watery, body. Very highly carbonated with slight carbonic bite on the tongue.",
-        "comments": "Designed to appeal to as broad a range of the general public as possible. Strong flavors are a fault. With little malt or hop flavor, the yeast character often is what most differentiates brands.",
-        "history": "Coors briefly made a light lager in the early 1940s. Modern versions were first produced by Rheingold in 1967 to appeal to diet-conscious drinkers, but only became popular starting in 1973 after Miller Brewing acquired the recipe and marketed the beer heavily to sports fans with the “tastes great, less filling” campaign. Beers of this genre became the largest sellers in the United States in the 1990s.",
-        "characteristic_ingredients": "Two- or six-row barley with up to 40% rice or corn as adjuncts. Additional enzymes can further lighten the body and lower carbohydrates. Lager yeast. Negligible hops.",
-        "style_comparison": "A lighter-bodied, lower-alcohol, lower calorie version of an American Lager. Less hop character and bitterness than a German Leichtbier.",
-        "entry_instructions": null
-      },
-      "vital_statistics_text": "OG: 1.028 - 1.040 IBUs: 8 - 12 FG: 0.998 - 1.008 SRM: 2 - 3 ABV: 2.8 - 4.2%",
-      "vital_statistics": {
-        "og": "1.028 - 1.040",
-        "fg": "0.998 - 1.008",
-        "ibu": "8 - 12",
-        "srm": "2 - 3",
-        "abv": "2.8 - 4.2%"
-      },
-      "commercial_examples_text": "Bud Light, Coors Light, Grain Belt Premium Light American Lager, Michelob Light, Miller Lite, Old Milwaukee Light",
-      "tags_en": [
-        "session-strength",
-        "pale-color",
-        "bottom-fermented",
-        "lagered",
-        "north-america",
-        "traditional-style",
-        "pale-lager-family",
-        "balanced"
-      ],
-      "tags_ru": [
-        "сессионная крепость",
-        "светлый цвет",
-        "низовое брожение",
-        "лагеризация",
-        "Северная Америка",
-        "традиционный стиль",
-        "семейство pale lager",
-        "сбалансированный"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1",
-      "source_pdf_page_start": 17,
-      "source_guideline_page_start": 1
-    },
-    {
-      "bjcp_id": "1B",
-      "bjcp_heading": "1B. American Lager",
-      "category_id": "1",
-      "category_en": "STANDARD AMERICAN BEER",
-      "category_ru": "Стандартное американское пиво",
-      "name_en": "American Lager",
-      "name_ru": "Американский лагер",
-      "description_short_ru": "Очень светлый, сильно газированный, лёгкий и хорошо выброженный лагер с нейтральным вкусом и низкой горечью. В холодной подаче воспринимается как освежающее, жаждоутоляющее пиво.",
-      "sections_ru": {
-        "overall_impression": "Очень светлый, сильно газированный, лёгкотелый и хорошо выброженный лагер с очень нейтральным вкусовым профилем и невысокой горечью. При очень холодной подаче даёт освежающий, жаждоутоляющий эффект.",
-        "aroma": "Слабый солодовый аромат допустим; если он присутствует, то обычно напоминает зерно, лёгкую сладость или кукурузу. Допустим также слабый пряный либо цветочный хмелевой аромат. Чистое брожение желательно, но небольшой дрожжевой тон не считается дефектом.",
-        "appearance": "Цвет от очень светло-соломенного до средне-жёлтого. Белая рыхлая пена обычно держится недолго. Пиво очень прозрачное.",
-        "flavor": "Вкус в целом нейтральный, с сухим и освежающе хрустким финишем. Зерновой или кукурузный оттенок выражен от умеренно слабого до слабого и из-за низкой горечи может казаться лёгкой сладостью. Хмелевой вкус допустим на умеренно слабом уровне; если различим, то обычно цветочный, пряный или травянистый. Горечь низкая или умеренно низкая. Баланс может уходить в лёгкую солодовость или лёгкую горчинку, но чаще остаётся почти ровным. Высокая карбонизация усиливает сухой характер финиша. Брожение чистое.",
-        "mouthfeel": "Тело от низкого до умеренно низкого. Карбонизация очень высокая, возможен лёгкий углекислотный покалывающий укус.",
-        "comments": "Именно это пиво часто представляют себе потребители массового сегмента, когда заказывают «просто пиво» в США. За пределами Европы его нередко маркируют как Pilsner, но путать с классическими европейскими пильзнерами не стоит. Любая яркая вкусовая выразительность для стиля неуместна. Поскольку солод и хмель проявлены слабо, различия между марками чаще всего связаны с дрожжевым профилем.",
-        "history": "Стиль сформировался в США после сухого закона и Второй мировой войны как развитие Pre-Prohibition Lager (см. категорию 27). Выжившие пивоварни укрупнились, расширили дистрибуцию и активно продвигали пиво, рассчитанное на максимально широкую аудиторию. На десятилетия оно стало доминирующим стилем на рынке и породило множество международных аналогов с таким же мягким и нейтральным профилем.",
-        "characteristic_ingredients": "Двухрядный или шестирядный ячмень с добавлением до 40% риса или кукурузы. Лагерные дрожжи. Хмель используется умеренно сдержанно.",
-        "style_comparison": "Плотнее, выразительнее и крепче, чем American Light Lager. По горечи и вкусовой насыщенности слабее, чем International Pale Lager. Существенно менее хмелевой, менее горький и менее выразительный, чем традиционные европейские пильзнеры."
-      },
-      "sections_en": {
-        "overall_impression": "A very pale, highly-carbonated, lightbodied, well-attenuated lager with a very neutral flavor profile and low bitterness. Served very cold, it can be a very refreshing and thirst-quenching drink.",
-        "aroma": "Low malt aroma optional, but may be perceived as grainy, sweet, or corn-like, if present. Light spicy or floral hop aroma optional. While a clean fermentation profile is desirable, a light amount of yeast character is not a fault.",
-        "appearance": "Very pale straw to medium yellow color. White, frothy head seldom persists. Very clear.",
-        "flavor": "Relatively neutral palate with a crisp, dry finish and a moderately-low to low grainy or corn-like flavor that might be perceived as sweetness due to the low bitterness. Moderately low hop flavor optional, with a floral, spicy, or herbal quality, if strong enough to distinguish. Low to medium-low bitterness. Balance may vary from slightly malty to slightly bitter, but is usually close to even. High carbonation may accentuate the crispness of the dry finish. Clean fermentation profile.",
-        "mouthfeel": "Low to medium-low body. Very highly carbonated with slight carbonic bite on the tongue.",
-        "comments": "Often what non-craft beer drinkers expect to be served if they order beer in the United States. May be marketed as Pilsner outside Europe, but should not be confused with traditional examples. Strong flavors are a fault. With little malt or hop flavor, the yeast character is what most frequently differentiates brands.",
-        "history": "Evolved from Pre-Prohibition Lager (see Category 27) in the US after Prohibition and World War II. Surviving breweries consolidated, expanded distribution, and heavily promoted a beer style that appealed to a broad range of the population. Became the dominant beer style for many decades, and spawned many international rivals who would develop similarly bland products for the mass market supported by heavy advertising.",
-        "characteristic_ingredients": "Two- or six-row barley with up to 40% rice or corn as adjuncts. Lager yeast. Light use of hops.",
-        "style_comparison": "Stronger, more flavor and body than an American Light Lager. Less bitterness and flavor than an International Pale Lager. Significantly less flavor, hops, and bitterness than traditional European Pilsners.",
-        "entry_instructions": null
-      },
-      "vital_statistics_text": "OG: 1.040 - 1.050 IBUs: 8 - 18 FG: 1.004 - 1.010 SRM: 2 - 3.5 ABV: 4.2 - 5.3%",
-      "vital_statistics": {
-        "og": "1.040 - 1.050",
-        "fg": "1.004 - 1.010",
-        "ibu": "8 - 18",
-        "srm": "2 - 3.5",
-        "abv": "4.2 - 5.3%"
-      },
-      "commercial_examples_text": "Budweiser, Coors Original, Grain Belt Premium American Lager, Miller High Life, Old Style, Pabst Blue Ribbon, Special Export",
-      "tags_en": [
-        "standard-strength",
-        "pale-color",
-        "bottom-fermented",
-        "lagered",
-        "north-america",
-        "traditional-style",
-        "pale-lager-family",
-        "balanced"
-      ],
-      "tags_ru": [
-        "стандартная крепость",
-        "светлый цвет",
-        "низовое брожение",
-        "лагеризация",
-        "Северная Америка",
-        "традиционный стиль",
-        "семейство pale lager",
-        "сбалансированный"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1",
-      "source_pdf_page_start": 17,
-      "source_guideline_page_start": 1
-    },
-    {
-      "bjcp_id": "1C",
-      "bjcp_heading": "1C. Cream Ale",
-      "category_id": "1",
-      "category_en": "STANDARD AMERICAN BEER",
-      "category_ru": "Стандартное американское пиво",
-      "name_en": "Cream Ale",
-      "name_ru": "Крим-эль",
-      "description_short_ru": "Чистое, хорошо выброженное и сильно газированное американское «газонокосилочное» пиво. Питкое, гладкое и освежающее, с чуть большим характером, чем у массовых американских лагеров, но всё ещё сдержанное.",
-      "sections_ru": {
-        "overall_impression": "Чистое, хорошо выброженное, сильно газированное и при этом достаточно вкусовое американское «газонокосилочное» пиво. Пьётся очень легко, ощущается гладким и освежающим; характер здесь заметнее, чем у типичного американского лагера, но всё равно остаётся деликатным и сдержанным.",
-        "aroma": "Солодовые ноты от низких до умеренно слабых, нередко со сладковато-кукурузным оттенком. Лёгкий DMS допустим. Хмелевой аромат на умеренно слабом уровне тоже допустим; сорт хмеля может быть любым, но чаще встречаются цветочные, пряные и травянистые тона. В целом аромат тонкий и сбалансированный. Небольшая фруктовость эфирного происхождения допустима.",
-        "appearance": "Цвет от бледно-соломенного до светло-золотистого, чаще ближе к самой светлой части диапазона. Пена от низкой до средней, карбонизация от средней до высокой. Стойкость пены средняя. Прозрачность блестящая, искристая; пиво выглядит очень живым и шипучим.",
-        "flavor": "Горечь от низкой до умеренно слабой. Солодовая сладость — от слабой до умеренной, в зависимости от начальной плотности и степени выброженности. Солод обычно нейтральный, иногда слегка зерновой или крекерный. Пиво, как правило, хорошо выброжено. Баланс ровный: хмеля ровно столько, чтобы поддержать солод. Лёгкий или умеренный кукурузный оттенок встречается часто; слабый DMS тоже допустим. Финиш может быть относительно лёгким, сухим и хрустким либо едва сладковатым. Профиль брожения чистый, но небольшие эфиры допускаются. Хмелевой вкус — от слабого до умеренно слабого, любого происхождения, хотя обычно это цветочные, пряные или травянистые оттенки. Всё должно оставаться деликатным.",
-        "mouthfeel": "Обычно тело лёгкое и хрусткое, хотя может доходить до среднего. Ощущение во рту гладкое; хорошая степень выброженности усиливает жаждоутоляющий характер. Карбонизация высокая.",
-        "comments": "Большинство коммерческих примеров лежит в диапазоне OG 1.050–1.053, а горечь редко поднимается выше 20 IBU.",
-        "history": "Изначально это был sparkling ale или present-use ale второй половины XIX века, переживший сухой закон. Стиль возник как эль, способный конкурировать с лагерами, которые варили в Канаде и в северо-восточных, среднеатлантических и среднезападных штатах США.",
-        "characteristic_ingredients": "Американский шестирядный солод либо смесь шестирядного и североамериканского двухрядного. До 20% кукурузы в заторе и до 20% сахара в кипе. Хмель может быть любым, часто используются «деревенские» американские или континентальные сорта. Дрожжи — чистые эльные или смесь эльных и лагерных.",
-        "style_comparison": "Похож на Standard American Lager, но обладает более заметным характером. Легче по телу, мягче и более газирован, чем Blonde Ale. В отдельных версиях может напоминать деликатный Kölsch."
-      },
-      "sections_en": {
-        "overall_impression": "A clean, well-attenuated, highly carbonated, flavorful American “lawnmower” beer. Easily drinkable, smooth, and refreshing, with more character than typical American lagers, yet still subtle and restrained.",
-        "aroma": "Medium-low to low malt notes, with a sweet, cornlike aroma. Low DMS optional. Medium-low hop aroma optional, using any variety but floral, spicy, or herbal notes are most common. Overall, has a subtle, balanced aroma. Low fruity esters optional.",
-        "appearance": "Pale straw to light gold color, although usually on the pale side. Low to medium head with medium to high carbonation. Fair head retention. Brilliant, sparkling clarity. Effervescent.",
-        "flavor": "Low to medium-low hop bitterness. Low to moderate malty sweetness, varying with gravity and attenuation. The malt is generally neutral, possibly grainy or crackery. Usually well-attenuated. Balanced palate, with hops only enough to support the malt. A low to moderate corny flavor is commonly found, but light DMS is optional. Finish can vary from somewhat light, dry, and crisp to faintly sweet. Clean fermentation profile, but low fruity esters are optional. Low to medium-low hop flavor of any variety, but typically floral, spicy, or herbal. Subtle.",
-        "mouthfeel": "Generally light and crisp, although body can reach medium. Smooth mouthfeel with medium to high attenuation; higher attenuation levels can lend a “thirst quenching” quality. High carbonation.",
-        "comments": "Most commercial examples are in the 1.050– 1.053 OG range, and bitterness rarely rises above 20 IBUs.",
-        "history": "A sparkling or present-use ale from the second half of the 1800s that survived prohibition. An ale brewed to compete with lagers brewed in Canada and the US Northeast, Mid-Atlantic, and Midwest states.",
-        "characteristic_ingredients": "American six-row malt, or a combination of six-row and North American two-row. Up to 20% maize in the mash, and up to 20% sugar in the boil. Any variety of hops, often rustic American or Continental. Clean ale yeast, or a mix of ale and lager beer.",
-        "style_comparison": "Similar to a Standard American Lager, but with more character. Lighter body, smoother, and more carbonated than a Blonde Ale. May seem like a somewhat subtle Kölsch.",
-        "entry_instructions": null
-      },
-      "vital_statistics_text": "OG: 1.042 - 1.055 IBUs: 8 - 20 FG: 1.006 - 1.012 SRM: 2 - 5 ABV: 4.2 - 5.6%",
-      "vital_statistics": {
-        "og": "1.042 - 1.055",
-        "fg": "1.006 - 1.012",
-        "ibu": "8 - 20",
-        "srm": "2 - 5",
-        "abv": "4.2 - 5.6%"
-      },
-      "commercial_examples_text": "Genesee Cream Ale, Liebotschaner Cream Ale, Kiwanda Pre-Prohibition Cream Ale, Little Kings Cream Ale, Sleeman Cream Ale, Sun King Sunlight Cream Ale",
-      "tags_en": [
-        "standard-strength",
-        "pale-color",
-        "any-fermentation",
-        "north-america",
-        "traditional-style",
-        "pale-ale-family",
-        "balanced"
-      ],
-      "tags_ru": [
-        "стандартная крепость",
-        "светлый цвет",
-        "любой тип брожения",
-        "Северная Америка",
-        "традиционный стиль",
-        "семейство pale ale",
-        "сбалансированный"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1",
-      "source_pdf_page_start": 18,
-      "source_guideline_page_start": 2
-    },
-    {
-      "bjcp_id": "1D",
-      "bjcp_heading": "1D. American Wheat Beer",
-      "category_id": "1",
-      "category_en": "STANDARD AMERICAN BEER",
-      "category_ru": "Стандартное американское пиво",
-      "name_en": "American Wheat Beer",
-      "name_ru": "Американское пшеничное пиво",
-      "description_short_ru": "Светлое освежающее пшеничное пиво с зерновым, тестяным или хлебным профилем, чистым брожением и переменной хмелевой выразительностью. Лёгкое тело и высокая карбонизация делают стиль очень питким.",
-      "sections_ru": {
-        "overall_impression": "Светлое, освежающее пшеничное пиво с зерновым, тестяным или хлебным характером, чистым профилем брожения и переменной, но заметной хмелевой составляющей. Более лёгкое тело и повышенная карбонизация делают его очень питким.",
-        "aroma": "Пшеничный характер от слабого до умеренного: зерновой, хлебный, тестяной. Допустима лёгкая или умеренная солодовая сладость. Эфиры допустимы на умеренном уровне, но профиль обычно нейтральный; банановые тона неуместны. Хмелевой аромат может быть слабым или умеренным, с цитрусовыми, пряными, цветочными или фруктовыми оттенками. Обычно не сухо охмелённым. Гвоздичные фенолы не допускаются.",
-        "appearance": "Обычно цвет от бледно-жёлтого до золотистого. Прозрачность — от блестящей до мутной, особенно если дрожжи создают сходство с Weissbier. Пена крупная, белая, стойкая.",
-        "flavor": "Пшеничный вкус — от лёгкого до умеренно выраженного, хлебный, тестяной или зерновой; он может тянуться в послевкусие. Возможна умеренная солодовая сладость, но пиво может и заканчиваться довольно сухо и хрустко. Горечь от слабой до умеренной и иногда заметна в финише. Баланс чаще ровный, но может слегка смещаться в сторону горечи. Хмелевой вкус — от слабого до умеренного, с цитрусовыми, пряными, цветочными или фруктовыми оттенками. Эфиры допустимы в умеренном количестве. Банан и гвоздика недопустимы.",
-        "mouthfeel": "Тело от умеренно лёгкого до среднего. Карбонизация от умеренно высокой до высокой. Допустима лёгкая сливочность; иногда пшеничное пиво даёт мягкое, чуть «пушистое» ощущение.",
-        "comments": "Внутри стиля встречаются разные варианты: от легко пьющегося и довольно сладкого пива до сухих, заметно охмелённых версий с ярко выраженным пшеничным вкусом. Американское ржаное пиво следует отправлять в 31A Alternative Grain Beer.",
-        "history": "Американская крафтовая адаптация Weissbier, но с более чистыми дрожжами и более заметным хмелем. Впервые такой вариант выпустила Anchor в 1984 году, а позже стиль широко популяризировала Widmer.",
-        "characteristic_ingredients": "Чистые американские эльные или лагерные дрожжи. Немецкие дрожжи Weissbier здесь неуместны. Пшеничный солод, обычно 30–50%, то есть меньше, чем принято для Weissbier. Хмель может быть американским, немецким или из категории New World.",
-        "style_comparison": "Более хмелевое и менее дрожжевое, чем Weissbier. Никогда не должно иметь бананово-гвоздичного профиля немецкого пшеничного пива. По диапазону и балансу часто близко к Blonde Ale, но ведущий солодовый акцент здесь именно пшеничный."
-      },
-      "sections_en": {
-        "overall_impression": "A pale, refreshing grainy, doughy, or bready wheat beer with a clean fermentation profile and a variable hop character and bitterness. Its lighter body and higher carbonation contribute to its easy-drinking nature.",
-        "aroma": "Low to moderate grainy, bready, or doughy wheat character. A light to moderate malty sweetness is acceptable. Moderate esters optional, usually a neutral profile; banana is inappropriate. Low to moderate citrusy, spicy, floral, or fruity hop aroma. Not typically dry-hopped. No clove phenols.",
-        "appearance": "Usually pale yellow to gold. Clarity may range from brilliant to hazy with yeast approximating a Weissbier. Big, long-lasting white head.",
-        "flavor": "Light to moderately-strong bready, doughy, or grainy wheat flavor, which can linger into the finish. May have a moderate malty sweetness or can finish quite dry and crisp. Low to moderate hop bitterness, sometimes lasting into the finish. Balance is usually even, but may be slightly bitter. Low to moderate citrusy, spicy, floral, or fruity hop flavor. Moderate esters optional. No banana. No clove phenols.",
-        "mouthfeel": "Medium-light to medium body. Medium-high to high carbonation. Slight creaminess is optional; wheat beers sometimes have a soft, ‘fluffy’ impression.",
-        "comments": "Different variations exist, from an easy-drinking fairly sweet beer to a dry, aggressively-hopped beer with a strong wheat flavor. American Rye beers should be entered as 31A Alternative Grain Beer.",
-        "history": "An American craft beer adaptation of the Weissbier style using a cleaner yeast and more hops, first produced by Anchor in 1984 and later widely popularized by Widmer.",
-        "characteristic_ingredients": "Clean American ale or lager yeast. German Weissbier yeast is inappropriate. Wheat malt (often 30–50%, lower than is typical in Weissbier). American, German, or New World hops.",
-        "style_comparison": "More hop character and less yeast character than Weissbier. Never with the banana and clove character of Weissbier. Generally has the same range and balance as Blonde Ales, but with a wheat character as the primary malt flavor.",
-        "entry_instructions": null
-      },
-      "vital_statistics_text": "OG: 1.040 - 1.055 IBUs: 15 - 30 FG: 1.008 - 1.013 SRM: 3 - 6 ABV: 4.0 - 5.5%",
-      "vital_statistics": {
-        "og": "1.040 - 1.055",
-        "fg": "1.008 - 1.013",
-        "ibu": "15 - 30",
-        "srm": "3 - 6",
-        "abv": "4.0 - 5.5%"
-      },
-      "commercial_examples_text": "Bell’s Oberon, Boulevard Unfiltered Wheat Beer, GoodLife Sweet As! Pacific Ale, Goose Island 312 Urban Wheat Ale, Widmer Hefeweizen",
-      "tags_en": [
-        "standard-strength",
-        "pale-color",
-        "any-fermentation",
-        "north-america",
-        "craft-style",
-        "wheat-beer-family",
-        "balanced"
-      ],
-      "tags_ru": [
-        "стандартная крепость",
-        "светлый цвет",
-        "любой тип брожения",
-        "Северная Америка",
-        "крафтовый стиль",
-        "семейство пшеничного пива",
-        "сбалансированный"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1",
-      "source_pdf_page_start": 18,
-      "source_guideline_page_start": 2
-    },
-    {
-      "bjcp_id": "2A",
-      "bjcp_heading": "2A. International Pale Lager",
-      "category_id": "2",
-      "category_en": "INTERNATIONAL LAGER",
-      "category_ru": "Международный лагер",
-      "name_en": "International Pale Lager",
-      "name_ru": "Международный светлый лагер",
-      "description_short_ru": "Хорошо выброженный светлый лагер без ярко выраженных вкусов, обычно ровный по балансу и сильно газированный. В холодной подаче освежает и утоляет жажду.",
-      "sections_ru": {
-        "overall_impression": "Хорошо выброженный светлый лагер без ярких вкусовых акцентов, обычно сбалансированный и сильно газированный. В холодной подаче очень освежает и утоляет жажду.",
-        "aroma": "Солодовый аромат от слабого до умеренно слабого, зерновой или слегка кукурузно-сладковатый. Хмелевой аромат — от очень слабого до умеренного, обычно пряный, цветочный или травянистый. Брожение чистое.",
-        "appearance": "Цвет от бледно-соломенного до золотистого. Пена белая, рыхлая, может быть нестойкой. Пиво очень прозрачное.",
-        "flavor": "Зерново-солодовый вкус от слабого до умеренного, горечь — от умеренно слабой до умеренной; финиш хрусткий, сухой, хорошо выброженный. Зерновой характер может быть довольно нейтральным либо отдавать лёгкой хлебностью и крекерностью. Допустима умеренная кукурузная или солодовая сладость. Хмелевой вкус может быть умеренным, с цветочными, пряными или травянистыми оттенками. Баланс варьирует от слегка солодового до слегка горьковатого, но чаще остаётся близким к ровному. Послевкусие нейтральное, с лёгкими следами солода и иногда хмеля.",
-        "mouthfeel": "Тело от лёгкого до среднего. Карбонизация от умеренно высокой до высокой. Допустим лёгкий углекислотный укус на языке.",
-        "comments": "Обычно содержит меньше несоложёных добавок, чем American Lager. Некоторые версии могут быть полностью солодовыми, хотя любые яркие вкусы для стиля всё равно считаются лишними. Это широкая категория международных массовых лагеров — от «премиальных» американских лагеров до типичных импортных лагеров из зелёной бутылки, которые встречаются в США и на экспортных рынках. Нередко их путано называют пилснером. Любая «сканковый» тон в коммерческом образце — следствие обращения и света, а не характеристика стиля.",
-        "history": "В США стиль развился как более премиальная версия стандартного American Lager и в историческом смысле тесно с ним связан. За пределами США он возник либо как подражание американскому лагерному профилю, либо как более доступная и обычно более сухая и менее горькая версия пива пильзнерного типа. Такие лагеры часто активно продвигаются и экспортируются крупными промышленными и транснациональными пивоварнями.",
-        "characteristic_ingredients": "Двухрядный или шестирядный ячмень. Возможны рис, кукуруза или сахар, но многие версии всё же варятся полностью на солоде.",
-        "style_comparison": "Обычно горче и чуть плотнее, чем American Lager. По хмелю и горечи слабее, чем German Pils. Уступает Czech Premium Pale Lager по телу, солодовому вкусу и хмелевому характеру. Более насыщенные версии могут отдалённо напоминать Munich Helles, но с более ощутимым характером несоложёных добавок.",
-        "entry_instructions": "При желании участник может указать региональную вариацию, например Mexican lager или Dutch lager."
-      },
-      "sections_en": {
-        "overall_impression": "A highly-attenuated pale lager without strong flavors, typically well-balanced and highly carbonated. Served cold, it is refreshing and thirst-quenching.",
-        "aroma": "Low to medium-low grainy-malty or slightly cornysweet malt aroma. Very low to medium spicy, floral, or herbal hop aroma. Clean fermentation profile.",
-        "appearance": "Pale straw to gold color. White, frothy head may not be long lasting. Very clear.",
-        "flavor": "Low to moderate levels of grainy-malt flavor, medium-low to medium bitterness, with a crisp, dry, wellattenuated finish. The grain character can be somewhat neutral, or show a light bready-crackery quality. Moderate corny or malty sweetness optional. Medium floral, spicy, or herbal hop flavor optional. Balance may vary from slightly malty to slightly bitter, but is usually relatively close to even. Neutral aftertaste with light malt and sometimes hop flavors.",
-        "mouthfeel": "Light to medium body. Moderately high to highly carbonated. Can have a slight carbonic bite on the tongue.",
-        "comments": "Tends to have fewer adjuncts than American Lagers. They may be all-malt, although strong flavors are still a fault. A broad category of international mass-market lagers ranging from up-scale American lagers to the typical “import” or “green bottle” international beers found in America and many export markets. Often confusingly labeled as a “Pilsner.” Any skunkiness in commercial beers is a handling fault, not a characteristic of the style.",
-        "history": "In the United States, developed as a premium version of the standard American lager, with a similar history. Outside the US, developed either as an imitation of Americanstyle lagers, or as a more accessible (and often drier and less bitter) version of a Pilsner-type beer. Often heavily marketed and exported by large industrial or multi-national breweries.",
-        "characteristic_ingredients": "Two- or six-row barley. May use rice, corn, or sugar as adjuncts, but are generally all malt.",
-        "style_comparison": "Generally more bitter and filling than American Lager. Less hoppy and bitter than a German Pils. Less body, malt flavor, and hop character than a Czech Premium Pale Lager. More robust versions can approach a Munich Helles in flavor, but with more of an adjunct quality.",
-        "entry_instructions": "Entrant may specify regional variations, if desired (Mexican lager, Dutch lager, etc.)."
-      },
-      "vital_statistics_text": "OG: 1.042 - 1.050 IBUs: 18 - 25 FG: 1.008 - 1.012 SRM: 2 - 6 ABV: 4.5 - 6.0%",
-      "vital_statistics": {
-        "og": "1.042 - 1.050",
-        "fg": "1.008 - 1.012",
-        "ibu": "18 - 25",
-        "srm": "2 - 6",
-        "abv": "4.5 - 6.0%"
-      },
-      "commercial_examples_text": "Asahi Super Dry, Birra Moretti, Corona Extra, Devils Backbone Gold Leaf Lager, Full Sail Session Premium Lager, Heineken, Red Stripe, Singha",
-      "tags_en": [
-        "standard-strength",
-        "pale-color",
-        "bottom-fermented",
-        "lagered",
-        "traditional-style",
-        "pale-lager-family",
-        "balanced"
-      ],
-      "tags_ru": [
-        "стандартная крепость",
-        "светлый цвет",
-        "низовое брожение",
-        "лагеризация",
-        "традиционный стиль",
-        "семейство pale lager",
-        "сбалансированный"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1",
-      "source_pdf_page_start": 19,
-      "source_guideline_page_start": 3
-    },
-    {
-      "bjcp_id": "2B",
-      "bjcp_heading": "2B. International Amber Lager",
-      "category_id": "2",
-      "category_en": "INTERNATIONAL LAGER",
-      "category_ru": "Международный лагер",
-      "name_en": "International Amber Lager",
-      "name_ru": "Международный янтарный лагер",
-      "description_short_ru": "Мягкий, легко пьющийся янтарный лагер с солодовой основой и заметными карамельными или тостовыми оттенками. Обычно довольно хорошо выброжен, с умеренной горечью и возможным оттенком несоложёных добавок.",
-      "sections_ru": {
-        "overall_impression": "Гладкий, легко пьющийся, солодовый янтарный лагер с выразительными карамельными или тостовыми оттенками. Обычно хорошо выброжен, нередко с лёгким ощущением использования добавок и сдержанной горечью.",
-        "aroma": "Зерновой солодовый аромат от слабого до умеренного, часто с очень слабыми или умеренными карамельными либо тостовыми штрихами. Иногда возможны ореховые или бисквитные ноты, но не жжёные. Хмелевой аромат низкий и ненавязчивый, обычно цветочный или пряный. Брожение чистое.",
-        "appearance": "Цвет от золотисто-янтарного до красновато-медного. Прозрачность яркая. Пена белая или слегка кремовая, может держаться недолго.",
-        "flavor": "Солодовый вкус от слабого до умеренного, часто с карамельными или тостово-хлебными оттенками. Допустима слабая или умеренно слабая кукурузная сладость. Горечь — от слабой до умеренной, поэтому баланс колеблется от солодового до почти ровного. Хмелевой вкус от слабого до умеренного, обычно пряный, травянистый или цветочный. Брожение чистое. Финиш умеренно сухой, послевкусие умеренно солодовое. Если горечь низкая, пиво может показаться слегка сладковатым.",
-        "mouthfeel": "Тело от лёгкого до среднего. Карбонизация от средней до высокой. Текстура гладкая. Некоторые версии бывают слегка кремовыми.",
-        "comments": "Это широкий спектр массовых янтарных лагеров: одни развивались самостоятельно в разных странах, другие происходят от локальных исторически значимых сортов, которые со временем превратились в более унифицированный продукт.",
-        "history": "История варьируется от страны к стране, но в целом это либо адаптация массового International Pale Lager, либо эволюция местных стилей в сторону более общих, «универсальных» лагерных версий.",
-        "characteristic_ingredients": "Двухрядный или шестирядный базовый солод. Для цвета и вкуса могут использоваться солода типа Victory, amber и лёгкие жжёные солода. Основа может быть как полностью солодовой, так и с добавками. Возможны сахара и красители. Карамельный солод. Хмель — европейский или американский.",
-        "style_comparison": "Солодовый профиль развит слабее, чем у Vienna Lager, и нередко даёт ощущение характера несоложёных добавок. По насыщенности и горечи уступает Altbier."
-      },
-      "sections_en": {
-        "overall_impression": "A smooth, easily-drinkable, malty amber lager with a flavorful caramel or toast character. Usually fairly well-attenuated, often with an adjunct quality and restrained bitterness.",
-        "aroma": "Low to moderate grainy malt aroma often with very low to moderate caramel or toasty malt accents. Occasionally, nutty or biscuity, but never roasty. Low, unobtrusive floral or spicy hop aroma. Clean fermentation profile.",
-        "appearance": "Golden-amber to reddish-copper color. Bright clarity. White to off-white foam stand which may not last.",
-        "flavor": "Low to moderate malt flavor, often with caramel or toasty-bready flavors. Low to medium-low corny sweetness optional. Low to moderate bitterness, giving the beer a malty to fairly even balance. Low to moderate spicy, herbal, or floral hop flavor. Clean fermentation profile. The finish is moderately dry with a moderately malty aftertaste. The beer may seem a touch sweet if the bitterness level is low.",
-        "mouthfeel": "Light to medium body. Medium to high carbonation. Smooth. Some examples can be slightly creamy.",
-        "comments": "A wide spectrum of mass-market amber lagers either developed independently in various countries, or describing rather generic amber beers with more historical relevance that eventually changed into indistinguishable products in modern times.",
-        "history": "Varies by country, but generally represents either an adaptation of the mass-market International Pale Lager, or an evolution of indigenous styles into more generic products.",
-        "characteristic_ingredients": "Two-row or six-row base malt. Color malts such as Victory, amber, or roast. May be all malt or use adjuncts. Sugars or coloring agents possible. Caramel malt. European or American hops.",
-        "style_comparison": "Less well-developed malt flavor than a Vienna Lager, often with an adjunct taste. Less robust flavor and bitterness than Altbier.",
-        "entry_instructions": null
-      },
-      "vital_statistics_text": "OG: 1.042 - 1.055 IBUs: 8 - 25 FG: 1.008 - 1.014 SRM: 6 - 14 ABV: 4.5 - 6.0%",
-      "vital_statistics": {
-        "og": "1.042 - 1.055",
-        "fg": "1.008 - 1.014",
-        "ibu": "8 - 25",
-        "srm": "6 - 14",
-        "abv": "4.5 - 6.0%"
-      },
-      "commercial_examples_text": "Abita Amber Lager, Brooklyn Lager, Capital Wisconsin Amber Lager, Dos Equis Amber, Grain Belt NordEast, Yuengling Lager",
-      "tags_en": [
-        "standard-strength",
-        "amber-color",
-        "bottom-fermented",
-        "lagered",
-        "traditional-style",
-        "amber-lager-family",
-        "malty"
-      ],
-      "tags_ru": [
-        "стандартная крепость",
-        "янтарный цвет",
-        "низовое брожение",
-        "лагеризация",
-        "традиционный стиль",
-        "семейство amber lager",
-        "солодовый"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1",
-      "source_pdf_page_start": 19,
-      "source_guideline_page_start": 3
-    },
-    {
-      "bjcp_id": "2C",
-      "bjcp_heading": "2C. International Dark Lager",
-      "category_id": "2",
-      "category_en": "INTERNATIONAL LAGER",
-      "category_ru": "Международный лагер",
-      "name_en": "International Dark Lager",
-      "name_ru": "Международный тёмный лагер",
-      "description_short_ru": "Более тёмная, насыщенная и слегка сладковатая версия международного светлого лагера, с чуть большим телом и вкусом, но всё так же сдержанной горечью. Основу профиля здесь задаёт солод.",
-      "sections_ru": {
-        "overall_impression": "Более тёмная, более насыщенная и чуть более сладкая версия International Pale Lager: тела и вкуса здесь немного больше, но горечь остаётся столь же сдержанной. Из-за низкой горечи солод выходит на первый план, а хмель почти не служит балансиром.",
-        "aroma": "Солодовый аромат слабый. Допустимы умеренно слабые жареные и карамельные ноты. Хмелевой аромат, если присутствует, слабый — пряный, травянистый или цветочный. Брожение чистое.",
-        "appearance": "Цвет от глубокого янтарного до очень тёмно-коричневого, с хорошей прозрачностью и рубиновыми отблесками. Пена может быть нестойкой; цвет — от бежевого до светло-коричневого.",
-        "flavor": "Солодовая сладость от слабой до умеренной. Допустимы умеренно слабые карамельные или поджаренные солода, иногда с оттенками кофе, мелассы, коричневого сахара или какао. Хмелевой вкус, если есть, слабый и обычно цветочный, пряный или травянистый. Горечь от слабой до умеренной. Возможна очень лёгкая фруктовость. Финиш умеренно хрусткий. Баланс обычно слегка солодовый. Подгорелые или заметно жжёные вкусы для стиля неуместны.",
-        "mouthfeel": "Тело от лёгкого до умеренно лёгкого. Текстура гладкая, с лёгкой сливочностью. Карбонизация от средней до высокой.",
-        "comments": "Широкая категория международных лагеров темнее светлого, но без выраженной горечи и без ярко жареного характера.",
-        "history": "Тёмные версии International Pale Lager обычно создавались теми же крупными промышленными пивоварнями и были рассчитаны на широкую аудиторию. Нередко это просто окрашенная или слегка подслащённая вариация стандартного светлого индустриального лагера либо более доступная и дешёвая версия традиционных тёмных лагеров.",
-        "characteristic_ingredients": "Двухрядный или шестирядный ячмень с кукурузой, рисом или сахаристыми добавками. В небольшом количестве используются карамельные и более тёмные жареные солода. В коммерческих версиях возможны красители.",
-        "style_comparison": "Менее насыщенный и менее богатый по вкусу, чем Munich Dunkel, Schwarzbier и другие тёмные лагеры. Как и прочие International Lagers, часто опирается на несоложёные добавки."
-      },
-      "sections_en": {
-        "overall_impression": "A darker, richer, and somewhat sweeter version of international pale lager with a little more body and flavor, but equally restrained in bitterness. The low bitterness leaves the malt as the primary flavor element, and the low hop levels provide very little in the way of balance.",
-        "aroma": "Faint malt aroma. Medium-low roast and caramel malt aroma optional. Light spicy, herbal, or floral hop aroma optional. Clean fermentation profile.",
-        "appearance": "Deep amber to very dark brown with bright clarity and ruby highlights. Foam stand may not be long lasting, and is beige to light tan in color.",
-        "flavor": "Low to medium sweet maltiness. Medium-low caramel or roasted malt flavors optional, possibly with hints of coffee, molasses, brown sugar, or cocoa. Low floral, spicy, or herbal hop flavor optional. Low to medium bitterness. May have a very light fruitiness. Moderately crisp finish. The balance is typically somewhat malty. Burnt or moderately strong roasted malt flavors are inappropriate.",
-        "mouthfeel": "Light to medium-light body. Smooth with a light creaminess. Medium to high carbonation.",
-        "comments": "A broad range of international lagers that are darker than pale, and not assertively bitter or roasted.",
-        "history": "Darker versions of International Pale Lagers often created by the same large, industrial breweries and meant to appeal to a broad audience. Often either a colored or sweetened adaptation of the standard pale industrial lager, or a more broadly accessible (and inexpensive) version of more traditional dark lagers.",
-        "characteristic_ingredients": "Two- or six-row barley with corn, rice, or sugars adjuncts. Light use of caramel and darker roasted malts. Commercial versions may use coloring agents.",
-        "style_comparison": "Less flavor and richness than Munich Dunkel, Schwarzbier, or other dark lagers. Frequently uses adjuncts, as is typical of other International Lagers.",
-        "entry_instructions": null
-      },
-      "vital_statistics_text": "OG: 1.044 - 1.056 IBUs: 8 - 20 FG: 1.008 - 1.012 SRM: 14 - 30 ABV: 4.2 - 6.0%",
-      "vital_statistics": {
-        "og": "1.044 - 1.056",
-        "fg": "1.008 - 1.012",
-        "ibu": "8 - 20",
-        "srm": "14 - 30",
-        "abv": "4.2 - 6.0%"
-      },
-      "commercial_examples_text": "Baltika #4 Original, Dixie Blackened Voodoo, Heineken Dark Lager, Saint Pauli Girl Special Dark, San Miguel Dark, Shiner Bock",
-      "tags_en": [
-        "standard-strength",
-        "dark-color",
-        "bottom-fermented",
-        "lagered",
-        "traditional-style",
-        "dark-lager-family",
-        "malty"
-      ],
-      "tags_ru": [
-        "стандартная крепость",
-        "тёмный цвет",
-        "низовое брожение",
-        "лагеризация",
-        "традиционный стиль",
-        "семейство dark lager",
-        "солодовый"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1",
-      "source_pdf_page_start": 20,
-      "source_guideline_page_start": 4
-    },
-    {
-      "bjcp_id": "3A",
-      "bjcp_heading": "3A. Czech Pale Lager",
-      "category_id": "3",
-      "category_en": "CZECH LAGER",
-      "category_ru": "Чешский лагер",
-      "name_en": "Czech Pale Lager",
-      "name_ru": "Чешский светлый лагер",
-      "description_short_ru": "Более лёгкий по телу, но богатый, освежающий, хмелевой и горьковатый светлый чешский лагер. По профилю напоминает более крепкий Czech Premium Pale Lager, но легче, слабее и менее интенсивен.",
-      "sections_ru": {
-        "overall_impression": "Более лёгкий по телу, но при этом насыщенный, освежающий, хмелевой и горьковатый светлый чешский лагер. Он сохраняет знакомый характер более крепкого Czech Premium Pale Lager, то есть пива пильзнерного типа, но подаёт его в менее алкогольной, более лёгкой и чуть менее интенсивной форме.",
-        "aroma": "Солодовый аромат от слабого до умеренного, хлебный и насыщенный, в сочетании со слабым или умеренным пряным либо травянистым хмелевым букетом; баланс между солодом и хмелем может варьироваться. Допустим едва заметный карамельный намёк. Лёгкий, но не навязчивый диацетил и лёгкие фруктовые эфиры допустимы. Сернистые ноты неуместны.",
-        "appearance": "Цвет от светло-жёлтого до насыщенно-золотого. Прозрачность блестящая или очень высокая. Пена белая, кремовая, стойкая.",
-        "flavor": "Солодовый вкус от умеренно слабого до умеренного, с богатой хлебной основой и округлым, хмелевым финишем. Хмелевой вкус — от слабого до умеренно высокого, обычно пряный или травянистый. Горечь заметная, но не грубая. Пиво вкусное и освежающее. Небольшой диацетил и лёгкие фруктовые эфиры допустимы, но никогда не должны выходить вперёд.",
-        "mouthfeel": "Тело от умеренно лёгкого до среднего. Карбонизация умеренная.",
-        "comments": "Чешское название стиля — světlé výčepní pivo.",
-        "history": "Изначально Йозеф Гролл в 1842–1843 годах варил два типа светлого пива: výčepní и ležák, причём более слабое производилось примерно вдвое большими объёмами. Исследователь Evan Rail предполагает, что это были, вероятно, 10 °P и 12 °P, хотя výčepní мог быть и слабее. Сегодня это самый массово потребляемый тип пива в Чехии.",
-        "characteristic_ingredients": "Мягкая вода с низким содержанием сульфатов и карбонатов. Традиционный чешский хмель. Чешский пильзенский солод. Чешские лагерные дрожжи. Низкая минерализация воды даёт характерную мягкую, округлую хмелевую выразительность даже при высокой норме охмеления.",
-        "style_comparison": "Более лёгкая по телу и менее интенсивная повседневная версия Czech Premium Pale Lager."
-      },
-      "sections_en": {
-        "overall_impression": "A lighter-bodied, rich, refreshing, hoppy, bitter pale Czech lager having the familiar flavors of the stronger Czech Premium Pale Lager (Pilsner-type) beer but in a lower alcohol, lighter-bodied, and slightly less intense format.",
-        "aroma": "Light to moderate bready-rich malt combined with light to moderate spicy or herbal hop bouquet; the balance between the malt and hops may vary. Faint hint of caramel is acceptable. Light (but never intrusive) diacetyl and light, fruity esters are optional. No sulfur.",
-        "appearance": "Light yellow to deep gold color. Brilliant to very clear, with a long-lasting, creamy white head.",
-        "flavor": "Medium-low to medium bready-rich malt flavor with a rounded, hoppy finish. Low to medium-high spicy or herbal hop flavor. Bitterness is prominent but never harsh. Flavorful and refreshing. Low diacetyl or fruity esters are optional, but should never be overbearing.",
-        "mouthfeel": "Medium-light to medium body. Moderate carbonation.",
-        "comments": "The Czech name of the style is světlé výčepní pivo.",
-        "history": "Josef Groll initially brewed two types of pale beer in 1842–3, a výčepní and a ležák, with the smaller beer having twice the production; Evan Rail speculates that these were probably 10 °P and 12 °P beers, but that the výčepní could have been weaker. This is the most consumed type of beer in the Czech Republic at present.",
-        "characteristic_ingredients": "Soft water with low sulfate and carbonate content. Traditional Czech hops. Czech Pilsner malt. Czech lager yeast. Low ion water provides a distinctively soft, rounded hop profile despite high hopping rates.",
-        "style_comparison": "A lighter-bodied, lower-intensity, refreshing, everyday version of Czech Premium Pale Lager.",
-        "entry_instructions": null
-      },
-      "vital_statistics_text": "OG: 1.028 - 1.044 IBUs: 20 - 35 FG: 1.008 - 1.014 SRM: 3 - 6 ABV: 3.0 - 4.1%",
-      "vital_statistics": {
-        "og": "1.028 - 1.044",
-        "fg": "1.008 - 1.014",
-        "ibu": "20 - 35",
-        "srm": "3 - 6",
-        "abv": "3.0 - 4.1%"
-      },
-      "commercial_examples_text": "Bernard světlé pivo 10, Březňák světlé výčepní pivo, Notch Session Pils, Primátor Antonín světlé výčepní, Radegast Rázna 10, Únětické pivo 10°",
-      "tags_en": [
-        "session-strength",
-        "pale-color",
-        "bottom-fermented",
-        "lagered",
-        "central-europe",
-        "traditional-style",
-        "pale-lager-family",
-        "bitter",
-        "hoppy"
-      ],
-      "tags_ru": [
-        "сессионная крепость",
-        "светлый цвет",
-        "низовое брожение",
-        "лагеризация",
-        "Центральная Европа",
-        "традиционный стиль",
-        "семейство pale lager",
-        "горький",
-        "хмелевой"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1",
-      "source_pdf_page_start": 20,
-      "source_guideline_page_start": 4
-    },
-    {
-      "bjcp_id": "3B",
-      "bjcp_heading": "3B. Czech Premium Pale Lager",
-      "category_id": "3",
-      "category_en": "CZECH LAGER",
-      "category_ru": "Чешский лагер",
-      "name_en": "Czech Premium Pale Lager",
-      "name_ru": "Чешский премиальный светлый лагер",
-      "description_short_ru": "Освежающий светлый чешский лагер с заметным солодовым и хмелевым характером и длинным послевкусием. Для пива пилснерного типа он обладает сложным солодовым профилем и выраженной, чистой, но не жёсткой горечью.",
-      "sections_ru": {
-        "overall_impression": "Освежающий светлый чешский лагер с заметным солодовым и хмелевым характером и длинным финишем. Для пива пильзнерного типа солодовая часть здесь заметно сложнее обычного: горечь сильная и чистая, но без жёсткости, поэтому общее впечатление остаётся округлым, сбалансированным и очень питким.",
-        "aroma": "Солодовый букет от среднего до умеренно высокого — богатый, хлебный; хмелевой — от умеренно слабого до умеренно высокого, с пряными, цветочными или травянистыми тонами. Соотношение солода и хмеля может меняться, но их взаимодействие должно быть богатым и сложным. Допустимы лёгкий диацетил и очень слабые фруктовые эфиры. С увеличением плотности уровень эфиров может возрастать.",
-        "appearance": "Цвет от средне-жёлтого до глубокого золотого. Прозрачность блестящая или очень высокая. Пена плотная, кремовая, стойкая, белая.",
-        "flavor": "Богатая, сложная хлебная солодовость сочетается с выраженной, но мягкой и округлой горечью, а также с цветочно-пряным хмелевым вкусом. И солод, и хмель находятся в диапазоне от среднего до умеренно высокого; в солоде может ощущаться лёгкий карамельный намёк. Горечь заметная, но не грубая. Длинный финиш может склоняться как в сторону хмеля, так и в сторону солода, но никогда не должен быть резко перекошенным. Лёгкий или умеренно слабый диацетил и слабые эфиры хмелевого происхождения допустимы, хотя и не обязательны.",
-        "mouthfeel": "Тело среднее. Карбонизация от умеренной до низкой.",
-        "comments": "Обычно это группа pivo Plzeňského typu, то есть пива пильзнерного типа. Стиль объединяет чешские категории světlý ležák (11–12.9 °P) и světlé speciální pivo (13–14.9 °P). В самой Чехии словом Pilsner официально называют только Pilsner Urquell и Gambrinus, несмотря на то, насколько широко это имя распространилось по миру. За пределами Чехии для разграничения с другими пильзнерами часто используют названия Czech Pilsner или Bohemian Pilsner. В Чехии популярны и квасницовые версии — kvasnicové, то есть «дрожжевое пиво»: их либо краузенят свежим суслом с дрожжами, либо вносят новую порцию чистой культуры после брожения. Такие версии могут быть слегка мутными, с деликатной дрожжевой нотой и усиленным хмелевым характером. Современные образцы различаются по соотношению солода и хмеля, и многие из них уже не так ярко охмелены, как Pilsner Urquell.",
-        "history": "Стиль чаще всего ассоциируют с Pilsner Urquell, впервые сваренным в 1842 году после строительства новой пивоварни жителями Пльзеня, недовольными качеством местного пива. Авторство первого варочного процесса обычно приписывают баварскому пивовару Йозефу Гроллу, хотя более ранние светлые лагеры в Богемии тоже могли существовать. Не меньшее значение, чем лагерные дрожжи, имело использование английских технологий соложения.",
-        "characteristic_ingredients": "Традиционный чешский хмель. Чешский солод. Чешские лагерные дрожжи. Вода с низким содержанием сульфатов и карбонатов обеспечивает мягкий, округлый хмелевой профиль даже при высокой горечи. У некоторых крупных коммерческих версий уровень горечи в последние годы снизился, но не так сильно, как у многих современных немецких аналогов.",
-        "style_comparison": "По сравнению с German Pils здесь больше цвета, солодовой насыщенности и тела, финиш полнее, а общее впечатление мягче и чище. Крепче, чем Czech Pale Lager."
-      },
-      "sections_en": {
-        "overall_impression": "A refreshing pale Czech lager with considerable malt and hop character and a long finish. The malt flavors are complex for a Pilsner-type beer. The bitterness is strong and clean but lacks harshness, which gives a wellbalanced, rounded flavor impression that enhances drinkability.",
-        "aroma": "Medium to medium-high bready-rich malt and medium-low to medium-high spicy, floral, or herbal hop bouquet; though the balance between the malt and hops may vary, the interplay is rich and complex. Light diacetyl, or very low fruity esters are optional. Esters tend to increase with gravity.",
-        "appearance": "Medium yellow to deep gold color. Brilliant to very clear clarity. Dense, long-lasting, creamy white head.",
-        "flavor": "Rich, complex, bready maltiness combined with a pronounced yet soft and rounded bitterness and floral and spicy hop flavor. Malt and hop flavors are medium to mediumhigh, and the malt may contain a slight impression of caramel. Bitterness is prominent but never harsh. The long finish can be balanced towards hops or malt but is never aggressively tilted either way. Light to moderately-low diacetyl and low hopderived esters are acceptable, but need not be present.",
-        "mouthfeel": "Medium body. Moderate to low carbonation.",
-        "comments": "Generally a group of pivo Plzeňského typu, or Pilsner-type beers. This style is a combination of the Czech styles světlý ležák (11–12.9 °P) and světlé speciální pivo (13– 14.9 °P). In the Czech Republic, only Pilsner Urquell and Gambrinus are called Pilsner, despite how widely adopted this name is worldwide. Outside the Czech Republic, Czech Pilsner or Bohemian Pilsner are sometimes used to differentiate the beer from other Pilsner-type beers. Kvasnicové (“yeast beer”) versions are popular in the Czech Republic, and may be either kräusened with yeasted wort or given a fresh dose of pure yeast after fermentation. These beers are sometimes cloudy, with subtle yeastiness and enhanced hop character. Modern examples vary in their malt to hop balance and many are not as hop-forward as Pilsner Urquell.",
-        "history": "Commonly associated with Pilsner Urquell, which was first brewed in 1842 after construction of a new brewhouse by burghers dissatisfied with the standard of beer brewed in Plzeň. Bavarian brewer Josef Groll is credited with first brewing the beer, although there may have been earlier pale lagers in Bohemia. Just as important as the lager yeast was the use of English malting techniques.",
-        "characteristic_ingredients": "Traditional Czech hops. Czech malt. Czech lager yeast. Water low in sulfate and carbonate provides a distinctively soft, rounded hop profile despite high hopping rates. The bitterness level of some larger commercial examples has dropped in recent years, although not as much as in many contemporary German examples.",
-        "style_comparison": "More color, malt richness, and body than a German Pils, with a fuller finish and a cleaner, softer impression. Stronger than a Czech Pale Lager.",
-        "entry_instructions": null
-      },
-      "vital_statistics_text": "OG: 1.044 - 1.060 IBUs: 30 - 45 FG: 1.013 - 1.017 SRM: 3.5 - 6 ABV: 4.2 - 5.8%",
-      "vital_statistics": {
-        "og": "1.044 - 1.060",
-        "fg": "1.013 - 1.017",
-        "ibu": "30 - 45",
-        "srm": "3.5 - 6",
-        "abv": "4.2 - 5.8%"
-      },
-      "commercial_examples_text": "Bernard světlé ležák 12°, Budvar 33 světlý ležák, Pilsner Urquell, Pivovar Jihlava Ježek 11%, Primátor Premium lager, Radegast Ryze hořká 12, Únětická pivo 12°",
-      "tags_en": [
-        "standard-strength",
-        "pale-color",
-        "bottom-fermented",
-        "lagered",
-        "central-europe",
-        "traditional-style",
-        "pilsner-family",
-        "balanced",
-        "hoppy"
-      ],
-      "tags_ru": [
-        "стандартная крепость",
-        "светлый цвет",
-        "низовое брожение",
-        "лагеризация",
-        "Центральная Европа",
-        "традиционный стиль",
-        "семейство pilsner",
-        "сбалансированный",
-        "хмелевой"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1",
-      "source_pdf_page_start": 21,
-      "source_guideline_page_start": 5
-    },
-    {
-      "bjcp_id": "3C",
-      "bjcp_heading": "3C. Czech Amber Lager",
-      "category_id": "3",
-      "category_en": "CZECH LAGER",
-      "category_ru": "Чешский лагер",
-      "name_en": "Czech Amber Lager",
-      "name_ru": "Чешский янтарный лагер",
-      "description_short_ru": "Солодовый янтарный чешский лагер, в котором хмелевой характер может быть от слабого до весьма заметного. Солодовая часть тоже варьируется: от более сухой, хлебной и слегка бисквитной до более сладкой и карамельной.",
-      "sections_ru": {
-        "overall_impression": "Солодовый янтарный чешский лагер, в котором хмелевой характер может быть как довольно сдержанным, так и весьма заметным. Солодовая часть тоже варьируется, поэтому возможны разные интерпретации: от более сухих, хлебных и слегка бисквитных до более сладких, частично карамельных.",
-        "aroma": "Аромат умеренной интенсивности, насыщенно-солодовый: либо хлебный с преобладанием продуктов Майяра, либо слегка карамельно-сладкий. Хмелевой характер — пряный, цветочный или травянистый — может отсутствовать или быть умеренным. Лагерное брожение чистое, но допустимы слабые фруктовые эфиры, например косточковые или ягодные. Небольшой диацетил допустим.",
-        "appearance": "Цвет от глубокого янтарного до медного. Прозрачность от чистой до яркой. Пена крупная, стойкая, кремоватая.",
-        "flavor": "Доминирует сложный солодовый вкус от среднего до умеренно высокого, но его характер может меняться: от сухого, с акцентом на продукты Майяра, до карамельного и почти сладкого. В некоторых версиях встречается конфетный или похожий на крекер graham солодовый тон. Хмелевой вкус — от слабого до умеренного, обычно пряный. Горечь заметная, но чистая; именно она собирает финиш и удерживает баланс. Допустимы тонкие сливовые или ягодные эфиры. Небольшой диацетил допустим. Жжёный солодовый вкус неуместен. Финиш может быть как сухим и хмелевым, так и сравнительно сладким.",
-        "mouthfeel": "Тело от среднего до умеренно полного. Текстура мягкая, округлая, нередко с лёгкой сливочностью. Карбонизация от умеренной до низкой.",
-        "comments": "Чешское название стиля — polotmavé pivo, буквально «полутёмное пиво». Стиль объединяет чешские категории polotmavý ležák (11–12.9 °P) и polotmavé speciální pivo (13–14.9 °P). Некоторые версии могут представлять собой смесь светлого и тёмного лагера.",
-        "history": "По сути это продолжение венского лагерного направления, которое сохранилось в Чехии. Возрождение малых пивоварен в стране заметно увеличило число современных образцов этого стиля.",
-        "characteristic_ingredients": "Пильзенский и карамельный солод; при необходимости также венский и мюнхенский солод. Вода с низкой минерализацией. Традиционный чешский хмель. Чешские лагерные дрожжи.",
-        "style_comparison": "Стиль может напоминать Vienna Lager, но с более выраженным поздним чешским хмелем, либо British Bitter, но гораздо более насыщенный и с более глубоким карамельным профилем. Версии крупных заводов обычно близки к Czech Premium Pale Lager, только с более тёмным солодом и меньшим количеством хмеля; малые пивоварни нередко делают варианты с заметным хмелем, большей солодовой сложностью или остаточной сладостью."
-      },
-      "sections_en": {
-        "overall_impression": "A malty amber Czech lager with a hop character that can vary from low to quite significant. The malt flavors also can vary, leading to different interpretations and balances ranging from drier, bready, and slightly biscuity to sweeter and somewhat caramel-like.",
-        "aroma": "Moderate intensity, rich malt aroma that can be either bready and Maillard product-dominant or slightly caramelly sweet. Spicy, floral, or herbal hop character may be moderate to none. Clean lager character, though low fruity esters (stone fruit or berries) may be present. Low diacetyl optional.",
-        "appearance": "Deep amber to copper color. Clear to bright clarity. Large, off-white, persistent head.",
-        "flavor": "Complex malt flavor is dominant (medium to medium-high), though its nature may vary from dry and Maillard product-dominant to caramelly and almost sweet. Some examples have a candy-like to graham-cracker malt character. Low to moderate spicy hop flavor. Prominent but clean hop bitterness provides a balanced finish. Subtle plum or berry esters optional. Low diacetyl optional. No roasted malt flavor. Finish may vary from dry and hoppy to relatively sweet.",
-        "mouthfeel": "Medium-full to medium body. Soft and round, often with a gentle creaminess. Moderate to low carbonation.",
-        "comments": "The Czech name of the style is polotmavé pivo, which translates as half-dark beer. This style is a combination of the Czech styles polotmavý ležák (11–12.9 °P) and polotmavé speciální pivo (13–14.9 °P). Some versions may be a blend of pale and dark lagers.",
-        "history": "A Vienna-style lager which has continued to be brewed in the Czech Republic. A resurgence of small breweries opening in the Czech Republic has increased the number of examples of this style.",
-        "characteristic_ingredients": "Pilsner and caramel malts, but Vienna and Munich malts may also be used. Low mineral content water. Traditional Czech hops. Czech lager yeast.",
-        "style_comparison": "The style can be similar to a Vienna Lager but with stronger Czech late hop character, or that approaching a British Bitter but significantly richer with more of a deep caramel character. Large brewery versions are generally similar to Czech Premium Pale Lager with slightly darker malt flavors and less hop, while smaller breweries often make versions with considerable hop character, malt complexity, or residual sweetness.",
-        "entry_instructions": null
-      },
-      "vital_statistics_text": "OG: 1.044 - 1.060 IBUs: 20 - 35 FG: 1.013 - 1.017 SRM: 10 - 16 ABV: 4.4 - 5.8% 6 BJCP Beer Style Guidelines - 2021 Edition",
-      "vital_statistics": {
-        "og": "1.044 - 1.060",
-        "fg": "1.013 - 1.017",
-        "ibu": "20 - 35",
-        "srm": "10 - 16"
-      },
-      "commercial_examples_text": "Bernard Jantarový ležák 12°, Gambrinus Polotmavá 12°, Kozel Semi-Dark, Lobkowicz Démon 13, Primátor 13 polotmavé, Strakonický Dudák Klostermann polotmavý ležák",
-      "tags_en": [
-        "standard-strength",
-        "amber-color",
-        "bottom-fermented",
-        "lagered",
-        "central-europe",
-        "traditional-style",
-        "amber-lager-family",
-        "balanced"
-      ],
-      "tags_ru": [
-        "стандартная крепость",
-        "янтарный цвет",
-        "низовое брожение",
-        "лагеризация",
-        "Центральная Европа",
-        "традиционный стиль",
-        "семейство amber lager",
-        "сбалансированный"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1",
-      "source_pdf_page_start": 21,
-      "source_guideline_page_start": 5
-    },
-    {
-      "bjcp_id": "3D",
-      "bjcp_heading": "3D. Czech Dark Lager",
-      "category_id": "3",
-      "category_en": "CZECH LAGER",
-      "category_ru": "Чешский лагер",
-      "name_en": "Czech Dark Lager",
-      "name_ru": "Чешский тёмный лагер",
-      "description_short_ru": "Богатый тёмный солодовый чешский лагер с обжаренными оттенками от едва заметных до довольно выразительных. Профиль сложный и многовариантный, с разной степенью охмеления и солодовым балансом.",
-      "sections_ru": {
-        "overall_impression": "Богатый, тёмный, солодовый чешский лагер, в котором степень жареного характера может колебаться от почти незаметной до вполне ощутимой. Баланс солодовый, вкус сложный и интересный, а вариативность хмеля создаёт довольно широкий спектр допустимых интерпретаций.",
-        "aroma": "Насыщенная, глубокая, иногда сладковатая солодовость от средней до умеренно высокой. Возможны оттенки хлебной корки, тоста, орехов, колы, тёмных фруктов или карамели. Жареные тона — шоколад или сладкий кофе — могут варьироваться от умеренных до отсутствующих, но не должны перекрывать базовый солод. Хмелевой аромат, если есть, слабый или умеренный, обычно пряный. Допустимы слабый диацетил и слабые либо умеренные фруктовые эфиры, например сливовые или ягодные.",
-        "appearance": "Цвет от тёмно-медного до почти чёрного, часто с красноватым или гранатовым оттенком. Прозрачность — от чистой до яркой. Пена крупная, стойкая, от кремовой до светло-коричневой.",
-        "flavor": "Доминирует глубокая, сложная солодовость от средней до умеренно высокой, обычно с богатыми продуктами Майяра и лёгкой либо умеренной остаточной сладостью. Могут проявляться карамель, тост, орехи, лакрица, сухофрукты, шоколад и кофе; жареный характер — от очень слабого до умеренного. Хмелевой вкус — от слабого до умеренного, чаще пряный. Горечь от умеренной до умеренно слабой, но заметной. Баланс может быть солодовым, близким к ровному или даже слегка смещённым в сторону хмеля. Допустимы слабый или умеренный диацетил и лёгкие сливовые либо ягодные эфиры.",
-        "mouthfeel": "Тело от среднего до умеренно полного, ощущается весомо, но не тяжело и не приторно. Текстура умеренно кремовая. Общее ощущение гладкое. Карбонизация от умеренной до низкой. В более крепких версиях допустимо лёгкое алкогольное тепло.",
-        "comments": "Стиль объединяет чешские категории tmavý ležák (11–12.9 °P) и tmavé speciální pivo (13–14.9 °P). Современные образцы чаще суше и горче, тогда как традиционные версии нередко держались в районе 18–20 IBU и были заметно слаще по балансу.",
-        "history": "Пражская пивоварня U Fleků работает с 1499 года и производит самый известный пример этого стиля. Сегодня его также активно варят многие небольшие новые пивоварни Чехии.",
-        "characteristic_ingredients": "Чаще всего используются пильзенский и тёмный карамельный солода с добавлением дебиттерированных жареных солодов; также допустимы венский и мюнхенский солод. Вода с низкой минерализацией. Традиционный чешский хмель. Чешские лагерные дрожжи.",
-        "style_comparison": "Это чешский эквивалент тёмного лагера в диапазоне от Munich Dunkel до Schwarzbier, но обычно с более богатой солодовой основой и более заметными ароматом, вкусом и горечью хмеля."
-      },
-      "sections_en": {
-        "overall_impression": "A rich, dark, malty Czech lager with a roast character that can vary from almost absent to quite prominent. Malty balance and an interesting and complex flavor profile, with variable levels of hopping that provides a range of possible interpretations.",
-        "aroma": "Medium to medium-high rich, deep, sometimes sweet maltiness, with optional qualities such as bread crusts, toast, nuts, cola, dark fruit, or caramel. Roasted malt characters such as chocolate or sweetened coffee can vary from moderate to none but should not overwhelm the base malt character. Low to moderate spicy hop aroma optional. Low diacetyl and low to moderate fruity esters (plums or berries) may be present.",
-        "appearance": "Dark copper to almost black color, often with a red or garnet tint. Clear to bright clarity. Large, off-white to tan, persistent head.",
-        "flavor": "Medium to medium-high deep, complex maltiness dominates, typically with malty-rich Maillard products and a light to moderate residual malt sweetness. Malt flavors such as caramel, toast, nuts, licorice, dried dark fruit, chocolate, or coffee may also be present, with very low to moderate roast character. Low to moderate spicy hop flavor. Moderate to medium-low bitterness, but should be perceptible. Balance can vary from malty to relatively well-balanced to gently hopforward. Low to moderate diacetyl and light plum or berry esters may be present.",
-        "mouthfeel": "Medium to medium-full body, considerable mouthfeel without being heavy or cloying. Moderately creamy in texture. Smooth. Moderate to low carbonation. Can have a slight alcohol warmth in stronger versions.",
-        "comments": "This style is a combination of the Czech styles tmavý ležák (11–12.9 °P) and tmavé speciální pivo (13–14.9 °P). More modern examples are drier and have higher bitterness while traditional versions often have IBUs in the 18– 20 range with a sweeter balance.",
-        "history": "The U Fleků brewery has been operating in Prague since 1499, and produces the best-known version. Many small, new breweries are brewing this style.",
-        "characteristic_ingredients": "Pilsner and dark caramel malts with the addition of debittered roasted malts are most common, but additions of Vienna or Munich malt are also appropriate. Low mineral content water. Traditional Czech hops. Czech lager yeast.",
-        "style_comparison": "The beer is the Czech equivalent of a dark lager ranging in character from Munich Dunkel to Schwarzbier, but typically with greater malt richness and hop aroma, flavor, and bitterness.",
-        "entry_instructions": null
-      },
-      "vital_statistics_text": "OG: 1.044 - 1.060 IBUs: 18 - 34 FG: 1.013 - 1.017 SRM: 17 - 35 ABV: 4.4 - 5.8%",
-      "vital_statistics": {
-        "og": "1.044 - 1.060",
-        "fg": "1.013 - 1.017",
-        "ibu": "18 - 34",
-        "srm": "17 - 35",
-        "abv": "4.4 - 5.8%"
-      },
-      "commercial_examples_text": "Bernard černý ležák 12°, Budvar tmavý ležák, Herold tmavé silné pivo 13°, Kozel Dark , Krušovice černé, Primátor dark lager, U Fleků Flekovský tmavý ležák 13°",
-      "tags_en": [
-        "standard-strength",
-        "dark-color",
-        "bottom-fermented",
-        "lagered",
-        "central-europe",
-        "traditional-style",
-        "dark-lager-family",
-        "balanced"
-      ],
-      "tags_ru": [
-        "стандартная крепость",
-        "тёмный цвет",
-        "низовое брожение",
-        "лагеризация",
-        "Центральная Европа",
-        "традиционный стиль",
-        "семейство dark lager",
-        "сбалансированный"
-      ],
-      "translation_status": "detailed_ru_translated_reviewed_v1",
-      "source_pdf_page_start": 22,
-      "source_guideline_page_start": 6
-    }
+  "translated_categories": [
+   "1",
+   "2",
+   "3"
+  ],
+  "next_recommended_batch": [
+   "4A",
+   "4B",
+   "4C",
+   "5A",
+   "5B",
+   "5C",
+   "5D"
   ]
+ },
+ "categories": [
+  {
+   "category_id": "1",
+   "category_en": "STANDARD AMERICAN BEER",
+   "category_ru": "Стандартное американское пиво",
+   "overview_ru": "Категория описывает повседневные американские сорта пива, рассчитанные на широкую аудиторию. В неё входят и эли, и лагеры; в целом это не самые сложные по профилю сорта, а мягкие, понятные и легко пьющиеся. Эли из этой группы нередко тяготеют к лагерной чистоте или специально спроектированы как удобный «переходный» вариант для любителей массовых лагеров. Более интернациональные массовые лагеры BJCP относит уже к категории International Lager."
+  },
+  {
+   "category_id": "2",
+   "category_en": "INTERNATIONAL LAGER",
+   "category_ru": "Международный лагер",
+   "overview_ru": "International lager — это премиальные индустриальные массовые лагеры, которые варят во многих странах мира. Независимо от того, выросли ли они из американской или европейской традиции, их профиль обычно довольно унифицирован и сильно зависит от массового маркетинга. Исторически они лишь вольно происходят от лагеров пилснерского типа: у более тёмных вариантов появляется дополнительная солодовая выразительность, но общий характер остаётся максимально понятным и рассчитанным на самую широкую аудиторию."
+  },
+  {
+   "category_id": "3",
+   "category_en": "CZECH LAGER",
+   "category_ru": "Чешский лагер",
+   "overview_ru": "Чешские лагеры обычно делятся по экстрактивности начального сусла и по цвету. Основные цветовые группы — světlé (светлое), polotmavé (янтарное/полутёмное) и tmavé (тёмное); классы плотности — výčepní, ležák и speciální. В BJCP эти рыночные классы частично объединены для судейства. В целом чешский лагер отличается от немецкого чуть более высокой конечной плотностью, более полным телом и более богатым, округлым вкусом. Этого добиваются не только дрожжи, но и мягкая вода, холодное и длительное брожение, а также традиционные декокционные затирания, которые для Чехии исторически очень важны."
+  }
+ ],
+ "styles": [
+  {
+   "bjcp_id": "1A",
+   "bjcp_heading": "1A. American Light Lager",
+   "category_id": "1",
+   "category_en": "STANDARD AMERICAN BEER",
+   "category_ru": "Стандартное американское пиво",
+   "name_en": "American Light Lager",
+   "name_ru": "Американский лёгкий лагер",
+   "description_short_ru": "Очень сильно газированный, очень лёгкий и почти лишённый вкуса лагер, рассчитанный на подачу максимально холодным. Освежает и хорошо утоляет жажду.",
+   "sections_ru": {
+    "overall_impression": "Очень сильно газированный, очень лёгкий по телу и почти лишённый вкуса лагер, который рассчитан на максимально холодную подачу. Очень освежает и хорошо утоляет жажду.",
+    "aroma": "Слабый солодовый аромат допустим; если он заметен, то чаще напоминает зерно, лёгкую сладость или кукурузу. Также допустим очень слабый пряный, цветочный или травянистый хмелевой аромат. Чистый профиль брожения желателен, но небольшой дрожжевой оттенок не считается дефектом.",
+    "appearance": "Цвет от очень светло-соломенного до бледно-жёлтого. Пена белая, рыхлая, обычно держится недолго. Пиво очень прозрачное.",
+    "flavor": "Вкус в целом нейтральный, с сухим, освежающе-резким финишем и слабым либо очень слабым зерновым или кукурузным оттенком, который из-за низкой горечи может восприниматься как лёгкая сладость. Хмелевой вкус — если вообще заметен — очень слабый, обычно цветочный, пряный или травянистый. Горечь низкая или очень низкая. Баланс колеблется от слегка солодового до слегка горьковатого, но чаще всего остаётся почти ровным. Высокая карбонизация подчёркивает сухость финиша. Брожение чистое.",
+    "mouthfeel": "Тело очень лёгкое, иногда водянистое. Карбонизация очень высокая, возможно лёгкое покалывание углекислоты на языке.",
+    "comments": "Стиль создан для максимально широкой массовой аудитории. Выраженные вкусы здесь считаются недостатком. Поскольку и солод, и хмель почти не проявляются, различия между брендами часто определяются именно нюансами дрожжевого профиля.",
+    "history": "Coors недолгое время выпускала лёгкий лагер ещё в начале 1940-х. Современная версия стиля появилась у Rheingold в 1967 году как продукт для потребителей, следящих за калориями, но по-настоящему популярной стала после 1973 года, когда Miller Brewing приобрела рецепт и агрессивно продвигала пиво среди спортивной аудитории под слоганом «tastes great, less filling». В 1990-х этот тип пива стал крупнейшим сегментом продаж в США.",
+    "characteristic_ingredients": "Двухрядный или шестирядный ячмень с добавлением до 40% риса или кукурузы. Для ещё большего облегчения тела и снижения содержания углеводов могут использоваться дополнительные ферменты. Лагерные дрожжи. Хмель — в почти незаметном количестве.",
+    "style_comparison": "Более лёгкая по телу, крепости и калорийности версия American Lager. По хмелевому характеру и горечи слабее, чем German Leichtbier."
+   },
+   "sections_en": {
+    "overall_impression": "A highly carbonated, very light-bodied, nearly flavorless lager designed to be consumed very cold. Very refreshing and thirst-quenching.",
+    "aroma": "Low malt aroma optional, but may be perceived as grainy, sweet, or corn-like, if present. Light spicy, floral, or herbal hop aroma optional. While a clean fermentation profile is desirable, a light amount of yeast character is not a fault.",
+    "appearance": "Very pale straw to pale yellow color. White, frothy head seldom persists. Very clear.",
+    "flavor": "Relatively neutral palate with a crisp, dry finish and a low to very low grainy or corn-like flavor that might be perceived as sweetness due to the low bitterness. Low floral, spicy, or herbal hop flavor optional, but is rarely strong enough to detect. Low to very low bitterness. Balance may vary from slightly malty to slightly bitter, but is usually close to even. High carbonation may accentuate the crispness of the dry finish. Clean fermentation profile.",
+    "mouthfeel": "Very light, sometimes watery, body. Very highly carbonated with slight carbonic bite on the tongue.",
+    "comments": "Designed to appeal to as broad a range of the general public as possible. Strong flavors are a fault. With little malt or hop flavor, the yeast character often is what most differentiates brands.",
+    "history": "Coors briefly made a light lager in the early 1940s. Modern versions were first produced by Rheingold in 1967 to appeal to diet-conscious drinkers, but only became popular starting in 1973 after Miller Brewing acquired the recipe and marketed the beer heavily to sports fans with the “tastes great, less filling” campaign. Beers of this genre became the largest sellers in the United States in the 1990s.",
+    "characteristic_ingredients": "Two- or six-row barley with up to 40% rice or corn as adjuncts. Additional enzymes can further lighten the body and lower carbohydrates. Lager yeast. Negligible hops.",
+    "style_comparison": "A lighter-bodied, lower-alcohol, lower calorie version of an American Lager. Less hop character and bitterness than a German Leichtbier.",
+    "entry_instructions": null
+   },
+   "vital_statistics_text": "OG: 1.028 - 1.040 IBUs: 8 - 12 FG: 0.998 - 1.008 SRM: 2 - 3 ABV: 2.8 - 4.2%",
+   "vital_statistics": {
+    "og": "1.028 - 1.040",
+    "fg": "0.998 - 1.008",
+    "ibu": "8 - 12",
+    "srm": "2 - 3",
+    "abv": "2.8 - 4.2%"
+   },
+   "commercial_examples_text": "Bud Light, Coors Light, Grain Belt Premium Light American Lager, Michelob Light, Miller Lite, Old Milwaukee Light",
+   "tags_en": [
+    "session-strength",
+    "pale-color",
+    "bottom-fermented",
+    "lagered",
+    "north-america",
+    "traditional-style",
+    "pale-lager-family",
+    "balanced"
+   ],
+   "tags_ru": [
+    "сессионная крепость",
+    "светлый цвет",
+    "низовое брожение",
+    "лагеризация",
+    "Северная Америка",
+    "традиционный стиль",
+    "семейство светлых лагеров",
+    "сбалансированный"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1",
+   "source_pdf_page_start": 17,
+   "source_guideline_page_start": 1
+  },
+  {
+   "bjcp_id": "1B",
+   "bjcp_heading": "1B. American Lager",
+   "category_id": "1",
+   "category_en": "STANDARD AMERICAN BEER",
+   "category_ru": "Стандартное американское пиво",
+   "name_en": "American Lager",
+   "name_ru": "Американский лагер",
+   "description_short_ru": "Очень светлый, сильно газированный, лёгкий и хорошо выброженный лагер с нейтральным вкусом и низкой горечью. В холодной подаче воспринимается как освежающее, жаждоутоляющее пиво.",
+   "sections_ru": {
+    "overall_impression": "Очень светлый, сильно газированный, лёгкий по телу и хорошо выброженный лагер с очень нейтральным вкусовым профилем и невысокой горечью. При очень холодной подаче даёт освежающий, жаждоутоляющий эффект.",
+    "aroma": "Слабый солодовый аромат допустим; если он присутствует, то обычно напоминает зерно, лёгкую сладость или кукурузу. Допустим также слабый пряный либо цветочный хмелевой аромат. Чистое брожение желательно, но небольшой дрожжевой тон не считается дефектом.",
+    "appearance": "Цвет от очень светло-соломенного до средне-жёлтого. Белая рыхлая пена обычно держится недолго. Пиво очень прозрачное.",
+    "flavor": "Вкус в целом нейтральный, с сухим, освежающе-резким финишем. Зерновой или кукурузный оттенок выражен от умеренно слабого до слабого и из-за низкой горечи может казаться лёгкой сладостью. Хмелевой вкус допустим на умеренно слабом уровне; если различим, то обычно цветочный, пряный или травянистый. Горечь низкая или умеренно низкая. Баланс может уходить в лёгкую солодовость или лёгкую горчинку, но чаще остаётся почти ровным. Высокая карбонизация усиливает сухой характер финиша. Брожение чистое.",
+    "mouthfeel": "Тело от низкого до умеренно низкого. Карбонизация очень высокая, возможно лёгкое покалывание углекислоты.",
+    "comments": "Именно это пиво часто представляют себе потребители массового сегмента, когда заказывают «просто пиво» в США. За пределами Европы его нередко маркируют как Pilsner, но путать с классическими европейскими пилснерами не стоит. Любая яркая вкусовая выразительность для стиля неуместна. Поскольку солод и хмель проявлены слабо, различия между марками чаще всего связаны с дрожжевым профилем.",
+    "history": "Стиль сформировался в США после сухого закона и Второй мировой войны как развитие Pre-Prohibition Lager (см. категорию 27). Выжившие пивоварни укрупнились, расширили дистрибуцию и активно продвигали пиво, рассчитанное на максимально широкую аудиторию. На десятилетия оно стало доминирующим стилем на рынке и породило множество международных конкурентов с таким же мягким и нейтральным профилем.",
+    "characteristic_ingredients": "Двухрядный или шестирядный ячмень с добавлением до 40% риса или кукурузы. Лагерные дрожжи. Хмель используется умеренно сдержанно.",
+    "style_comparison": "Плотнее, выразительнее и крепче, чем American Light Lager. По горечи и вкусовой насыщенности слабее, чем International Pale Lager. Существенно менее хмелевой, менее горький и менее выразительный, чем традиционные европейские пилснеры."
+   },
+   "sections_en": {
+    "overall_impression": "A very pale, highly-carbonated, lightbodied, well-attenuated lager with a very neutral flavor profile and low bitterness. Served very cold, it can be a very refreshing and thirst-quenching drink.",
+    "aroma": "Low malt aroma optional, but may be perceived as grainy, sweet, or corn-like, if present. Light spicy or floral hop aroma optional. While a clean fermentation profile is desirable, a light amount of yeast character is not a fault.",
+    "appearance": "Very pale straw to medium yellow color. White, frothy head seldom persists. Very clear.",
+    "flavor": "Relatively neutral palate with a crisp, dry finish and a moderately-low to low grainy or corn-like flavor that might be perceived as sweetness due to the low bitterness. Moderately low hop flavor optional, with a floral, spicy, or herbal quality, if strong enough to distinguish. Low to medium-low bitterness. Balance may vary from slightly malty to slightly bitter, but is usually close to even. High carbonation may accentuate the crispness of the dry finish. Clean fermentation profile.",
+    "mouthfeel": "Low to medium-low body. Very highly carbonated with slight carbonic bite on the tongue.",
+    "comments": "Often what non-craft beer drinkers expect to be served if they order beer in the United States. May be marketed as Pilsner outside Europe, but should not be confused with traditional examples. Strong flavors are a fault. With little malt or hop flavor, the yeast character is what most frequently differentiates brands.",
+    "history": "Evolved from Pre-Prohibition Lager (see Category 27) in the US after Prohibition and World War II. Surviving breweries consolidated, expanded distribution, and heavily promoted a beer style that appealed to a broad range of the population. Became the dominant beer style for many decades, and spawned many international rivals who would develop similarly bland products for the mass market supported by heavy advertising.",
+    "characteristic_ingredients": "Two- or six-row barley with up to 40% rice or corn as adjuncts. Lager yeast. Light use of hops.",
+    "style_comparison": "Stronger, more flavor and body than an American Light Lager. Less bitterness and flavor than an International Pale Lager. Significantly less flavor, hops, and bitterness than traditional European Pilsners.",
+    "entry_instructions": null
+   },
+   "vital_statistics_text": "OG: 1.040 - 1.050 IBUs: 8 - 18 FG: 1.004 - 1.010 SRM: 2 - 3.5 ABV: 4.2 - 5.3%",
+   "vital_statistics": {
+    "og": "1.040 - 1.050",
+    "fg": "1.004 - 1.010",
+    "ibu": "8 - 18",
+    "srm": "2 - 3.5",
+    "abv": "4.2 - 5.3%"
+   },
+   "commercial_examples_text": "Budweiser, Coors Original, Grain Belt Premium American Lager, Miller High Life, Old Style, Pabst Blue Ribbon, Special Export",
+   "tags_en": [
+    "standard-strength",
+    "pale-color",
+    "bottom-fermented",
+    "lagered",
+    "north-america",
+    "traditional-style",
+    "pale-lager-family",
+    "balanced"
+   ],
+   "tags_ru": [
+    "стандартная крепость",
+    "светлый цвет",
+    "низовое брожение",
+    "лагеризация",
+    "Северная Америка",
+    "традиционный стиль",
+    "семейство светлых лагеров",
+    "сбалансированный"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1",
+   "source_pdf_page_start": 17,
+   "source_guideline_page_start": 1
+  },
+  {
+   "bjcp_id": "1C",
+   "bjcp_heading": "1C. Cream Ale",
+   "category_id": "1",
+   "category_en": "STANDARD AMERICAN BEER",
+   "category_ru": "Стандартное американское пиво",
+   "name_en": "Cream Ale",
+   "name_ru": "Крим-эль",
+   "description_short_ru": "Чистое, хорошо выброженное и сильно газированное американское «газонокосилочное» пиво. Питкое, гладкое и освежающее, с чуть большим характером, чем у массовых американских лагеров, но всё ещё сдержанное.",
+   "sections_ru": {
+    "overall_impression": "Чистое, хорошо выброженное, сильно газированное американское «газонокосилочное» пиво с заметным вкусом. Пьётся очень легко, ощущается гладким и освежающим; характер здесь заметнее, чем у типичного американского лагера, но всё равно остаётся деликатным и сдержанным.",
+    "aroma": "Солодовые ноты от низких до умеренно слабых, со сладковато-кукурузным оттенком. Лёгкий DMS допустим. Хмелевой аромат на умеренно слабом уровне тоже допустим; сорт хмеля может быть любым, но чаще встречаются цветочные, пряные и травянистые тона. В целом аромат тонкий и сбалансированный. Небольшая фруктовость эфирного происхождения допустима.",
+    "appearance": "Цвет от бледно-соломенного до светло-золотистого, чаще ближе к самой светлой части диапазона. Пена от низкой до средней, карбонизация от средней до высокой. Стойкость пены средняя. Прозрачность блестящая, искристая; пиво выглядит очень живым и шипучим.",
+    "flavor": "Горечь от низкой до умеренно слабой. Солодовая сладость — от слабой до умеренной, в зависимости от начальной плотности и степени выброженности. Солод обычно нейтральный, иногда слегка зерновой или крекерный. Пиво, как правило, хорошо выброжено. Баланс ровный: хмеля ровно столько, чтобы поддержать солод. Лёгкий или умеренный кукурузный оттенок встречается часто; слабый DMS тоже допустим. Финиш может быть относительно лёгким, сухим и освежающим либо едва сладковатым. Профиль брожения чистый, но небольшие эфиры допускаются. Хмелевой вкус — от слабого до умеренно слабого, любого происхождения, хотя обычно это цветочные, пряные или травянистые оттенки. Всё должно оставаться деликатным.",
+    "mouthfeel": "Обычно тело лёгкое и освежающее, хотя может доходить до среднего. Ощущение во рту гладкое; хорошая степень выброженности усиливает жаждоутоляющий характер. Карбонизация высокая.",
+    "comments": "Большинство коммерческих примеров лежит в диапазоне OG 1.050–1.053, а горечь редко поднимается выше 20 IBU.",
+    "history": "Изначально это был sparkling ale или present-use ale второй половины XIX века, переживший сухой закон. Стиль возник как эль, способный конкурировать с лагерами, которые варили в Канаде и в северо-восточных, среднеатлантических и среднезападных штатах США.",
+    "characteristic_ingredients": "Американский шестирядный солод либо смесь шестирядного и североамериканского двухрядного. До 20 % кукурузы в заторе и до 20 % сахара, вносимого при кипячении. Хмель может быть любым, часто используются «деревенские» американские или континентальные сорта. Дрожжи — чистые элевые или смесь элевых и лагерных.",
+    "style_comparison": "Похож на Standard American Lager, но обладает более заметным характером. Легче по телу, мягче и более газирован, чем Blonde Ale. В отдельных версиях может напоминать деликатный Kölsch."
+   },
+   "sections_en": {
+    "overall_impression": "A clean, well-attenuated, highly carbonated, flavorful American “lawnmower” beer. Easily drinkable, smooth, and refreshing, with more character than typical American lagers, yet still subtle and restrained.",
+    "aroma": "Medium-low to low malt notes, with a sweet, cornlike aroma. Low DMS optional. Medium-low hop aroma optional, using any variety but floral, spicy, or herbal notes are most common. Overall, has a subtle, balanced aroma. Low fruity esters optional.",
+    "appearance": "Pale straw to light gold color, although usually on the pale side. Low to medium head with medium to high carbonation. Fair head retention. Brilliant, sparkling clarity. Effervescent.",
+    "flavor": "Low to medium-low hop bitterness. Low to moderate malty sweetness, varying with gravity and attenuation. The malt is generally neutral, possibly grainy or crackery. Usually well-attenuated. Balanced palate, with hops only enough to support the malt. A low to moderate corny flavor is commonly found, but light DMS is optional. Finish can vary from somewhat light, dry, and crisp to faintly sweet. Clean fermentation profile, but low fruity esters are optional. Low to medium-low hop flavor of any variety, but typically floral, spicy, or herbal. Subtle.",
+    "mouthfeel": "Generally light and crisp, although body can reach medium. Smooth mouthfeel with medium to high attenuation; higher attenuation levels can lend a “thirst quenching” quality. High carbonation.",
+    "comments": "Most commercial examples are in the 1.050– 1.053 OG range, and bitterness rarely rises above 20 IBUs.",
+    "history": "A sparkling or present-use ale from the second half of the 1800s that survived prohibition. An ale brewed to compete with lagers brewed in Canada and the US Northeast, Mid-Atlantic, and Midwest states.",
+    "characteristic_ingredients": "American six-row malt, or a combination of six-row and North American two-row. Up to 20% maize in the mash, and up to 20% sugar in the boil. Any variety of hops, often rustic American or Continental. Clean ale yeast, or a mix of ale and lager beer.",
+    "style_comparison": "Similar to a Standard American Lager, but with more character. Lighter body, smoother, and more carbonated than a Blonde Ale. May seem like a somewhat subtle Kölsch.",
+    "entry_instructions": null
+   },
+   "vital_statistics_text": "OG: 1.042 - 1.055 IBUs: 8 - 20 FG: 1.006 - 1.012 SRM: 2 - 5 ABV: 4.2 - 5.6%",
+   "vital_statistics": {
+    "og": "1.042 - 1.055",
+    "fg": "1.006 - 1.012",
+    "ibu": "8 - 20",
+    "srm": "2 - 5",
+    "abv": "4.2 - 5.6%"
+   },
+   "commercial_examples_text": "Genesee Cream Ale, Liebotschaner Cream Ale, Kiwanda Pre-Prohibition Cream Ale, Little Kings Cream Ale, Sleeman Cream Ale, Sun King Sunlight Cream Ale",
+   "tags_en": [
+    "standard-strength",
+    "pale-color",
+    "any-fermentation",
+    "north-america",
+    "traditional-style",
+    "pale-ale-family",
+    "balanced"
+   ],
+   "tags_ru": [
+    "стандартная крепость",
+    "светлый цвет",
+    "любой тип брожения",
+    "Северная Америка",
+    "традиционный стиль",
+    "семейство пейл-элей",
+    "сбалансированный"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1",
+   "source_pdf_page_start": 18,
+   "source_guideline_page_start": 2
+  },
+  {
+   "bjcp_id": "1D",
+   "bjcp_heading": "1D. American Wheat Beer",
+   "category_id": "1",
+   "category_en": "STANDARD AMERICAN BEER",
+   "category_ru": "Стандартное американское пиво",
+   "name_en": "American Wheat Beer",
+   "name_ru": "Американское пшеничное пиво",
+   "description_short_ru": "Светлое освежающее пшеничное пиво с зерновым, тестяным или хлебным профилем, чистым брожением и переменной хмелевой выразительностью. Лёгкое тело и высокая карбонизация делают стиль очень питким.",
+   "sections_ru": {
+    "overall_impression": "Светлое, освежающее пшеничное пиво с зерновым, тестяным или хлебным характером, чистым профилем брожения и переменной, но заметной хмелевой составляющей. Более лёгкое тело и повышенная карбонизация делают его очень питким.",
+    "aroma": "Пшеничный характер от слабого до умеренного: зерновой, хлебный, тестяной. Допустима лёгкая или умеренная солодовая сладость. Эфиры допустимы на умеренном уровне, но профиль обычно нейтральный; банановые тона неуместны. Хмелевой аромат может быть слабым или умеренным, с цитрусовыми, пряными, цветочными или фруктовыми оттенками. Сухое охмеление для стиля нетипично. Гвоздичные фенолы не допускаются.",
+    "appearance": "Обычно цвет от бледно-жёлтого до золотистого. Прозрачность — от блестящей до мутной, особенно если дрожжи создают сходство с Weissbier. Пена крупная, белая, стойкая.",
+    "flavor": "Пшеничный вкус — от лёгкого до умеренно выраженного, хлебный, тестяной или зерновой; он может тянуться в послевкусие. Возможна умеренная солодовая сладость, но пиво может и заканчиваться довольно сухо и резко. Горечь от слабой до умеренной и иногда заметна в финише. Баланс чаще ровный, но может слегка смещаться в сторону горечи. Хмелевой вкус — от слабого до умеренного, с цитрусовыми, пряными, цветочными или фруктовыми оттенками. Эфиры допустимы в умеренном количестве. Банан и гвоздика недопустимы.",
+    "mouthfeel": "Тело от умеренно лёгкого до среднего. Карбонизация от умеренно высокой до высокой. Допустима лёгкая сливочность; иногда пшеничное пиво даёт мягкое, чуть «пушистое» ощущение.",
+    "comments": "Внутри стиля встречаются разные варианты: от легко пьющегося и довольно сладкого пива до сухих, заметно охмелённых версий с ярко выраженным пшеничным вкусом. Американское ржаное пиво следует заявлять как 31A Alternative Grain Beer.",
+    "history": "Американская крафтовая адаптация Weissbier, но с более чистыми дрожжами и более заметным хмелем. Впервые такой вариант выпустила Anchor в 1984 году, а позже стиль широко популяризировала Widmer.",
+    "characteristic_ingredients": "Чистые американские элевые или лагерные дрожжи. Немецкие дрожжи Weissbier здесь неуместны. Пшеничный солод, обычно 30–50 %, то есть меньше, чем принято для Weissbier. Хмель может быть американским, немецким или из категории New World.",
+    "style_comparison": "Более хмелевое и менее дрожжевое, чем Weissbier. Никогда не должно иметь бананово-гвоздичного профиля немецкого пшеничного пива. По диапазону и балансу часто близко к Blonde Ale, но ведущий солодовый акцент здесь именно пшеничный."
+   },
+   "sections_en": {
+    "overall_impression": "A pale, refreshing grainy, doughy, or bready wheat beer with a clean fermentation profile and a variable hop character and bitterness. Its lighter body and higher carbonation contribute to its easy-drinking nature.",
+    "aroma": "Low to moderate grainy, bready, or doughy wheat character. A light to moderate malty sweetness is acceptable. Moderate esters optional, usually a neutral profile; banana is inappropriate. Low to moderate citrusy, spicy, floral, or fruity hop aroma. Not typically dry-hopped. No clove phenols.",
+    "appearance": "Usually pale yellow to gold. Clarity may range from brilliant to hazy with yeast approximating a Weissbier. Big, long-lasting white head.",
+    "flavor": "Light to moderately-strong bready, doughy, or grainy wheat flavor, which can linger into the finish. May have a moderate malty sweetness or can finish quite dry and crisp. Low to moderate hop bitterness, sometimes lasting into the finish. Balance is usually even, but may be slightly bitter. Low to moderate citrusy, spicy, floral, or fruity hop flavor. Moderate esters optional. No banana. No clove phenols.",
+    "mouthfeel": "Medium-light to medium body. Medium-high to high carbonation. Slight creaminess is optional; wheat beers sometimes have a soft, ‘fluffy’ impression.",
+    "comments": "Different variations exist, from an easy-drinking fairly sweet beer to a dry, aggressively-hopped beer with a strong wheat flavor. American Rye beers should be entered as 31A Alternative Grain Beer.",
+    "history": "An American craft beer adaptation of the Weissbier style using a cleaner yeast and more hops, first produced by Anchor in 1984 and later widely popularized by Widmer.",
+    "characteristic_ingredients": "Clean American ale or lager yeast. German Weissbier yeast is inappropriate. Wheat malt (often 30–50%, lower than is typical in Weissbier). American, German, or New World hops.",
+    "style_comparison": "More hop character and less yeast character than Weissbier. Never with the banana and clove character of Weissbier. Generally has the same range and balance as Blonde Ales, but with a wheat character as the primary malt flavor.",
+    "entry_instructions": null
+   },
+   "vital_statistics_text": "OG: 1.040 - 1.055 IBUs: 15 - 30 FG: 1.008 - 1.013 SRM: 3 - 6 ABV: 4.0 - 5.5%",
+   "vital_statistics": {
+    "og": "1.040 - 1.055",
+    "fg": "1.008 - 1.013",
+    "ibu": "15 - 30",
+    "srm": "3 - 6",
+    "abv": "4.0 - 5.5%"
+   },
+   "commercial_examples_text": "Bell’s Oberon, Boulevard Unfiltered Wheat Beer, GoodLife Sweet As! Pacific Ale, Goose Island 312 Urban Wheat Ale, Widmer Hefeweizen",
+   "tags_en": [
+    "standard-strength",
+    "pale-color",
+    "any-fermentation",
+    "north-america",
+    "craft-style",
+    "wheat-beer-family",
+    "balanced"
+   ],
+   "tags_ru": [
+    "стандартная крепость",
+    "светлый цвет",
+    "любой тип брожения",
+    "Северная Америка",
+    "крафтовый стиль",
+    "семейство пшеничного пива",
+    "сбалансированный"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1",
+   "source_pdf_page_start": 18,
+   "source_guideline_page_start": 2
+  },
+  {
+   "bjcp_id": "2A",
+   "bjcp_heading": "2A. International Pale Lager",
+   "category_id": "2",
+   "category_en": "INTERNATIONAL LAGER",
+   "category_ru": "Международный лагер",
+   "name_en": "International Pale Lager",
+   "name_ru": "Международный светлый лагер",
+   "description_short_ru": "Хорошо выброженный светлый лагер без ярко выраженных вкусов, обычно ровный по балансу и сильно газированный. В холодной подаче освежает и утоляет жажду.",
+   "sections_ru": {
+    "overall_impression": "Хорошо выброженный светлый лагер без ярких вкусовых акцентов, обычно сбалансированный и сильно газированный. В холодной подаче очень освежает и утоляет жажду.",
+    "aroma": "Солодовый аромат от слабого до умеренно слабого, зерновой или слегка кукурузно-сладковатый. Хмелевой аромат — от очень слабого до умеренного, обычно пряный, цветочный или травянистый. Брожение чистое.",
+    "appearance": "Цвет от бледно-соломенного до золотистого. Пена белая, рыхлая, может быть нестойкой. Пиво очень прозрачное.",
+    "flavor": "Зерново-солодовый вкус от слабого до умеренного, горечь — от умеренно слабой до умеренной; финиш сухой, резкий, хорошо выброженный. Зерновой характер может быть довольно нейтральным либо отдавать лёгкой хлебностью и крекерностью. Допустима умеренная кукурузная или солодовая сладость. Хмелевой вкус может быть умеренным, с цветочными, пряными или травянистыми оттенками. Баланс варьирует от слегка солодового до слегка горьковатого, но чаще остаётся близким к ровному. Послевкусие нейтральное, с лёгкими следами солода и иногда хмеля.",
+    "mouthfeel": "Тело от лёгкого до среднего. Карбонизация от умеренно высокой до высокой. Допустимо лёгкое покалывание углекислоты на языке.",
+    "comments": "Обычно содержит меньше несоложёных добавок, чем American Lager. Некоторые версии могут быть полностью солодовыми, хотя любые яркие вкусы для стиля всё равно считаются лишними. Это широкая категория международных массовых лагеров — от «премиальных» американских лагеров до типичных импортных лагеров из зелёной бутылки, которые встречаются в США и на экспортных рынках. Часто его ошибочно называют пилснером. Любой «сканковый» тон в коммерческом образце — следствие обращения и света, а не характеристика стиля.",
+    "history": "В США стиль развился как более премиальная версия стандартного American Lager и в историческом смысле тесно с ним связан. За пределами США он возник либо как подражание американскому лагерному профилю, либо как более доступная и обычно более сухая и менее горькая версия пива пилснерского типа. Такие лагеры часто активно продвигаются и экспортируются крупными промышленными и транснациональными пивоварнями.",
+    "characteristic_ingredients": "Двухрядный или шестирядный ячмень. Возможны рис, кукуруза или сахар, но многие версии всё же варятся полностью на солоде.",
+    "style_comparison": "Обычно горче и чуть плотнее, чем American Lager. По хмелю и горечи слабее, чем German Pils. Уступает Czech Premium Pale Lager по телу, солодовому вкусу и хмелевому характеру. Более насыщенные версии могут отдалённо напоминать Munich Helles, но с более ощутимым характером несоложёных добавок.",
+    "entry_instructions": "При желании участник может указать региональную вариацию, например Mexican lager или Dutch lager."
+   },
+   "sections_en": {
+    "overall_impression": "A highly-attenuated pale lager without strong flavors, typically well-balanced and highly carbonated. Served cold, it is refreshing and thirst-quenching.",
+    "aroma": "Low to medium-low grainy-malty or slightly cornysweet malt aroma. Very low to medium spicy, floral, or herbal hop aroma. Clean fermentation profile.",
+    "appearance": "Pale straw to gold color. White, frothy head may not be long lasting. Very clear.",
+    "flavor": "Low to moderate levels of grainy-malt flavor, medium-low to medium bitterness, with a crisp, dry, wellattenuated finish. The grain character can be somewhat neutral, or show a light bready-crackery quality. Moderate corny or malty sweetness optional. Medium floral, spicy, or herbal hop flavor optional. Balance may vary from slightly malty to slightly bitter, but is usually relatively close to even. Neutral aftertaste with light malt and sometimes hop flavors.",
+    "mouthfeel": "Light to medium body. Moderately high to highly carbonated. Can have a slight carbonic bite on the tongue.",
+    "comments": "Tends to have fewer adjuncts than American Lagers. They may be all-malt, although strong flavors are still a fault. A broad category of international mass-market lagers ranging from up-scale American lagers to the typical “import” or “green bottle” international beers found in America and many export markets. Often confusingly labeled as a “Pilsner.” Any skunkiness in commercial beers is a handling fault, not a characteristic of the style.",
+    "history": "In the United States, developed as a premium version of the standard American lager, with a similar history. Outside the US, developed either as an imitation of Americanstyle lagers, or as a more accessible (and often drier and less bitter) version of a Pilsner-type beer. Often heavily marketed and exported by large industrial or multi-national breweries.",
+    "characteristic_ingredients": "Two- or six-row barley. May use rice, corn, or sugar as adjuncts, but are generally all malt.",
+    "style_comparison": "Generally more bitter and filling than American Lager. Less hoppy and bitter than a German Pils. Less body, malt flavor, and hop character than a Czech Premium Pale Lager. More robust versions can approach a Munich Helles in flavor, but with more of an adjunct quality.",
+    "entry_instructions": "Entrant may specify regional variations, if desired (Mexican lager, Dutch lager, etc.)."
+   },
+   "vital_statistics_text": "OG: 1.042 - 1.050 IBUs: 18 - 25 FG: 1.008 - 1.012 SRM: 2 - 6 ABV: 4.5 - 6.0%",
+   "vital_statistics": {
+    "og": "1.042 - 1.050",
+    "fg": "1.008 - 1.012",
+    "ibu": "18 - 25",
+    "srm": "2 - 6",
+    "abv": "4.5 - 6.0%"
+   },
+   "commercial_examples_text": "Asahi Super Dry, Birra Moretti, Corona Extra, Devils Backbone Gold Leaf Lager, Full Sail Session Premium Lager, Heineken, Red Stripe, Singha",
+   "tags_en": [
+    "standard-strength",
+    "pale-color",
+    "bottom-fermented",
+    "lagered",
+    "traditional-style",
+    "pale-lager-family",
+    "balanced"
+   ],
+   "tags_ru": [
+    "стандартная крепость",
+    "светлый цвет",
+    "низовое брожение",
+    "лагеризация",
+    "традиционный стиль",
+    "семейство светлых лагеров",
+    "сбалансированный"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1",
+   "source_pdf_page_start": 19,
+   "source_guideline_page_start": 3
+  },
+  {
+   "bjcp_id": "2B",
+   "bjcp_heading": "2B. International Amber Lager",
+   "category_id": "2",
+   "category_en": "INTERNATIONAL LAGER",
+   "category_ru": "Международный лагер",
+   "name_en": "International Amber Lager",
+   "name_ru": "Международный янтарный лагер",
+   "description_short_ru": "Мягкий, легко пьющийся янтарный лагер с солодовой основой и заметными карамельными или тостовыми оттенками. Обычно довольно хорошо выброжен, с умеренной горечью и возможным оттенком несоложёных добавок.",
+   "sections_ru": {
+    "overall_impression": "Гладкий, легко пьющийся, солодовый янтарный лагер с выразительными карамельными или тостовыми оттенками. Обычно хорошо выброжен, нередко с лёгким ощущением использования добавок и сдержанной горечью.",
+    "aroma": "Зерновой солодовый аромат от слабого до умеренного, часто с очень слабыми или умеренными карамельными либо тостовыми штрихами. Иногда возможны ореховые или бисквитные ноты, но не жжёные. Хмелевой аромат низкий и ненавязчивый, обычно цветочный или пряный. Брожение чистое.",
+    "appearance": "Цвет от золотисто-янтарного до красновато-медного. Прозрачность яркая. Пена от белой до почти белой, может держаться недолго.",
+    "flavor": "Солодовый вкус от слабого до умеренного, часто с карамельными или тостово-хлебными оттенками. Допустима слабая или умеренно слабая кукурузная сладость. Горечь — от слабой до умеренной, поэтому баланс колеблется от солодового до почти ровного. Хмелевой вкус от слабого до умеренного, обычно пряный, травянистый или цветочный. Брожение чистое. Финиш умеренно сухой, послевкусие умеренно солодовое. Если горечь низкая, пиво может показаться слегка сладковатым.",
+    "mouthfeel": "Тело от лёгкого до среднего. Карбонизация от средней до высокой. Текстура гладкая. Некоторые версии бывают слегка кремовыми.",
+    "comments": "Это широкий спектр массовых янтарных лагеров: одни развивались самостоятельно в разных странах, другие происходят от локальных исторически значимых сортов, которые со временем превратились в более унифицированный продукт.",
+    "history": "История варьируется от страны к стране, но в целом это либо адаптация массового International Pale Lager, либо эволюция местных стилей в сторону более общих, «универсальных» лагерных версий.",
+    "characteristic_ingredients": "Двухрядный или шестирядный базовый солод. Для цвета и вкуса могут использоваться солода типа Victory, амбер или обжаренные солода. Основа может быть как полностью солодовой, так и с добавками. Возможны сахара и красители. Карамельный солод. Хмель — европейский или американский.",
+    "style_comparison": "Солодовый профиль развит слабее, чем у Vienna Lager, и нередко даёт ощущение характера несоложёных добавок. По насыщенности и горечи уступает Altbier."
+   },
+   "sections_en": {
+    "overall_impression": "A smooth, easily-drinkable, malty amber lager with a flavorful caramel or toast character. Usually fairly well-attenuated, often with an adjunct quality and restrained bitterness.",
+    "aroma": "Low to moderate grainy malt aroma often with very low to moderate caramel or toasty malt accents. Occasionally, nutty or biscuity, but never roasty. Low, unobtrusive floral or spicy hop aroma. Clean fermentation profile.",
+    "appearance": "Golden-amber to reddish-copper color. Bright clarity. White to off-white foam stand which may not last.",
+    "flavor": "Low to moderate malt flavor, often with caramel or toasty-bready flavors. Low to medium-low corny sweetness optional. Low to moderate bitterness, giving the beer a malty to fairly even balance. Low to moderate spicy, herbal, or floral hop flavor. Clean fermentation profile. The finish is moderately dry with a moderately malty aftertaste. The beer may seem a touch sweet if the bitterness level is low.",
+    "mouthfeel": "Light to medium body. Medium to high carbonation. Smooth. Some examples can be slightly creamy.",
+    "comments": "A wide spectrum of mass-market amber lagers either developed independently in various countries, or describing rather generic amber beers with more historical relevance that eventually changed into indistinguishable products in modern times.",
+    "history": "Varies by country, but generally represents either an adaptation of the mass-market International Pale Lager, or an evolution of indigenous styles into more generic products.",
+    "characteristic_ingredients": "Two-row or six-row base malt. Color malts such as Victory, amber, or roast. May be all malt or use adjuncts. Sugars or coloring agents possible. Caramel malt. European or American hops.",
+    "style_comparison": "Less well-developed malt flavor than a Vienna Lager, often with an adjunct taste. Less robust flavor and bitterness than Altbier.",
+    "entry_instructions": null
+   },
+   "vital_statistics_text": "OG: 1.042 - 1.055 IBUs: 8 - 25 FG: 1.008 - 1.014 SRM: 6 - 14 ABV: 4.5 - 6.0%",
+   "vital_statistics": {
+    "og": "1.042 - 1.055",
+    "fg": "1.008 - 1.014",
+    "ibu": "8 - 25",
+    "srm": "6 - 14",
+    "abv": "4.5 - 6.0%"
+   },
+   "commercial_examples_text": "Abita Amber Lager, Brooklyn Lager, Capital Wisconsin Amber Lager, Dos Equis Amber, Grain Belt NordEast, Yuengling Lager",
+   "tags_en": [
+    "standard-strength",
+    "amber-color",
+    "bottom-fermented",
+    "lagered",
+    "traditional-style",
+    "amber-lager-family",
+    "malty"
+   ],
+   "tags_ru": [
+    "стандартная крепость",
+    "янтарный цвет",
+    "низовое брожение",
+    "лагеризация",
+    "традиционный стиль",
+    "семейство янтарных лагеров",
+    "солодовый"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1",
+   "source_pdf_page_start": 19,
+   "source_guideline_page_start": 3
+  },
+  {
+   "bjcp_id": "2C",
+   "bjcp_heading": "2C. International Dark Lager",
+   "category_id": "2",
+   "category_en": "INTERNATIONAL LAGER",
+   "category_ru": "Международный лагер",
+   "name_en": "International Dark Lager",
+   "name_ru": "Международный тёмный лагер",
+   "description_short_ru": "Более тёмная, насыщенная и слегка сладковатая версия международного светлого лагера, с чуть большим телом и вкусом, но всё так же сдержанной горечью. Основу профиля здесь задаёт солод.",
+   "sections_ru": {
+    "overall_impression": "Более тёмная, более насыщенная и чуть более сладкая версия International Pale Lager: тела и вкуса здесь немного больше, но горечь остаётся столь же сдержанной. Из-за низкой горечи солод выходит на первый план, а хмель почти не служит балансиром.",
+    "aroma": "Солодовый аромат слабый. Допустимы умеренно слабые обжаренные и карамельные ноты. Хмелевой аромат, если присутствует, слабый — пряный, травянистый или цветочный. Брожение чистое.",
+    "appearance": "Цвет от глубокого янтарного до очень тёмно-коричневого, с хорошей прозрачностью и рубиновыми отблесками. Пена может быть нестойкой; цвет — от бежевого до светло-коричневого.",
+    "flavor": "Солодовая сладость от слабой до умеренной. Допустимы умеренно слабые карамельные или обжаренные солода, иногда с оттенками кофе, мелассы, коричневого сахара или какао. Хмелевой вкус, если есть, слабый и обычно цветочный, пряный или травянистый. Горечь от слабой до умеренной. Возможна очень лёгкая фруктовость. Финиш умеренно резкий. Баланс обычно слегка солодовый. Подгорелые, а также умеренно сильные обжаренные вкусы для стиля неуместны.",
+    "mouthfeel": "Тело от лёгкого до умеренно лёгкого. Текстура гладкая, с лёгкой сливочностью. Карбонизация от средней до высокой.",
+    "comments": "Широкая категория международных лагеров темнее светлого, но без выраженной горечи и без ярко выраженного обжаренного характера.",
+    "history": "Тёмные версии International Pale Lager обычно создавались теми же крупными промышленными пивоварнями и были рассчитаны на широкую аудиторию. Нередко это просто окрашенная или слегка подслащённая вариация стандартного светлого индустриального лагера либо более доступная и дешёвая версия традиционных тёмных лагеров.",
+    "characteristic_ingredients": "Двухрядный или шестирядный ячмень с кукурузой, рисом или сахаристыми добавками. В небольшом количестве используются карамельные и более тёмные обжаренные солода. В коммерческих версиях возможны красители.",
+    "style_comparison": "Менее насыщенный и менее богатый по вкусу, чем Munich Dunkel, Schwarzbier и другие тёмные лагеры. Как и прочие International Lagers, часто опирается на несоложёные добавки."
+   },
+   "sections_en": {
+    "overall_impression": "A darker, richer, and somewhat sweeter version of international pale lager with a little more body and flavor, but equally restrained in bitterness. The low bitterness leaves the malt as the primary flavor element, and the low hop levels provide very little in the way of balance.",
+    "aroma": "Faint malt aroma. Medium-low roast and caramel malt aroma optional. Light spicy, herbal, or floral hop aroma optional. Clean fermentation profile.",
+    "appearance": "Deep amber to very dark brown with bright clarity and ruby highlights. Foam stand may not be long lasting, and is beige to light tan in color.",
+    "flavor": "Low to medium sweet maltiness. Medium-low caramel or roasted malt flavors optional, possibly with hints of coffee, molasses, brown sugar, or cocoa. Low floral, spicy, or herbal hop flavor optional. Low to medium bitterness. May have a very light fruitiness. Moderately crisp finish. The balance is typically somewhat malty. Burnt or moderately strong roasted malt flavors are inappropriate.",
+    "mouthfeel": "Light to medium-light body. Smooth with a light creaminess. Medium to high carbonation.",
+    "comments": "A broad range of international lagers that are darker than pale, and not assertively bitter or roasted.",
+    "history": "Darker versions of International Pale Lagers often created by the same large, industrial breweries and meant to appeal to a broad audience. Often either a colored or sweetened adaptation of the standard pale industrial lager, or a more broadly accessible (and inexpensive) version of more traditional dark lagers.",
+    "characteristic_ingredients": "Two- or six-row barley with corn, rice, or sugars adjuncts. Light use of caramel and darker roasted malts. Commercial versions may use coloring agents.",
+    "style_comparison": "Less flavor and richness than Munich Dunkel, Schwarzbier, or other dark lagers. Frequently uses adjuncts, as is typical of other International Lagers.",
+    "entry_instructions": null
+   },
+   "vital_statistics_text": "OG: 1.044 - 1.056 IBUs: 8 - 20 FG: 1.008 - 1.012 SRM: 14 - 30 ABV: 4.2 - 6.0%",
+   "vital_statistics": {
+    "og": "1.044 - 1.056",
+    "fg": "1.008 - 1.012",
+    "ibu": "8 - 20",
+    "srm": "14 - 30",
+    "abv": "4.2 - 6.0%"
+   },
+   "commercial_examples_text": "Baltika #4 Original, Dixie Blackened Voodoo, Heineken Dark Lager, Saint Pauli Girl Special Dark, San Miguel Dark, Shiner Bock",
+   "tags_en": [
+    "standard-strength",
+    "dark-color",
+    "bottom-fermented",
+    "lagered",
+    "traditional-style",
+    "dark-lager-family",
+    "malty"
+   ],
+   "tags_ru": [
+    "стандартная крепость",
+    "тёмный цвет",
+    "низовое брожение",
+    "лагеризация",
+    "традиционный стиль",
+    "семейство тёмных лагеров",
+    "солодовый"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1",
+   "source_pdf_page_start": 20,
+   "source_guideline_page_start": 4
+  },
+  {
+   "bjcp_id": "3A",
+   "bjcp_heading": "3A. Czech Pale Lager",
+   "category_id": "3",
+   "category_en": "CZECH LAGER",
+   "category_ru": "Чешский лагер",
+   "name_en": "Czech Pale Lager",
+   "name_ru": "Чешский светлый лагер",
+   "description_short_ru": "Более лёгкий по телу, но богатый, освежающий, хмелевой и горьковатый светлый чешский лагер. По профилю напоминает более крепкий Czech Premium Pale Lager, но легче, слабее и менее интенсивен.",
+   "sections_ru": {
+    "overall_impression": "Более лёгкий по телу, но при этом насыщенный, освежающий, хмелевой и горьковатый светлый чешский лагер. Он сохраняет знакомый характер более крепкого Czech Premium Pale Lager, то есть пива пилснерского типа, но подаёт его в менее алкогольной, более лёгкой и чуть менее интенсивной форме.",
+    "aroma": "Солодовый аромат от слабого до умеренного, хлебный и насыщенный, в сочетании со слабым или умеренным пряным либо травянистым хмелевым букетом; баланс между солодом и хмелем может варьироваться. Допустим едва заметный карамельный намёк. Лёгкий, но не навязчивый диацетил и лёгкие фруктовые эфиры допустимы. Сернистые ноты неуместны.",
+    "appearance": "Цвет от светло-жёлтого до насыщенно-золотого. Прозрачность блестящая или очень высокая. Пена белая, кремовая, стойкая.",
+    "flavor": "Солодовый вкус от умеренно слабого до умеренного, с богатой хлебной основой и округлым, хмелевым финишем. Хмелевой вкус — от слабого до умеренно высокого, обычно пряный или травянистый. Горечь заметная, но не грубая. Пиво вкусное и освежающее. Небольшой диацетил и лёгкие фруктовые эфиры допустимы, но никогда не должны выходить вперёд.",
+    "mouthfeel": "Тело от умеренно лёгкого до среднего. Карбонизация умеренная.",
+    "comments": "Чешское название стиля — světlé výčepní pivo.",
+    "history": "Изначально Йозеф Гролл в 1842–1843 годах варил два типа светлого пива: výčepní и ležák, причём более слабое производилось примерно вдвое большими объёмами. Эван Рэйл предполагает, что это были, вероятно, 10 °P и 12 °P, хотя výčepní мог быть и слабее. Сегодня это самый массово потребляемый тип пива в Чехии.",
+    "characteristic_ingredients": "Мягкая вода с низким содержанием сульфатов и карбонатов. Традиционный чешский хмель. Чешский пилснерский солод. Чешские лагерные дрожжи. Низкая минерализация воды даёт характерную мягкую, округлую хмелевую выразительность даже при высокой норме охмеления.",
+    "style_comparison": "Более лёгкая по телу и менее интенсивная повседневная версия Czech Premium Pale Lager."
+   },
+   "sections_en": {
+    "overall_impression": "A lighter-bodied, rich, refreshing, hoppy, bitter pale Czech lager having the familiar flavors of the stronger Czech Premium Pale Lager (Pilsner-type) beer but in a lower alcohol, lighter-bodied, and slightly less intense format.",
+    "aroma": "Light to moderate bready-rich malt combined with light to moderate spicy or herbal hop bouquet; the balance between the malt and hops may vary. Faint hint of caramel is acceptable. Light (but never intrusive) diacetyl and light, fruity esters are optional. No sulfur.",
+    "appearance": "Light yellow to deep gold color. Brilliant to very clear, with a long-lasting, creamy white head.",
+    "flavor": "Medium-low to medium bready-rich malt flavor with a rounded, hoppy finish. Low to medium-high spicy or herbal hop flavor. Bitterness is prominent but never harsh. Flavorful and refreshing. Low diacetyl or fruity esters are optional, but should never be overbearing.",
+    "mouthfeel": "Medium-light to medium body. Moderate carbonation.",
+    "comments": "The Czech name of the style is světlé výčepní pivo.",
+    "history": "Josef Groll initially brewed two types of pale beer in 1842–3, a výčepní and a ležák, with the smaller beer having twice the production; Evan Rail speculates that these were probably 10 °P and 12 °P beers, but that the výčepní could have been weaker. This is the most consumed type of beer in the Czech Republic at present.",
+    "characteristic_ingredients": "Soft water with low sulfate and carbonate content. Traditional Czech hops. Czech Pilsner malt. Czech lager yeast. Low ion water provides a distinctively soft, rounded hop profile despite high hopping rates.",
+    "style_comparison": "A lighter-bodied, lower-intensity, refreshing, everyday version of Czech Premium Pale Lager.",
+    "entry_instructions": null
+   },
+   "vital_statistics_text": "OG: 1.028 - 1.044 IBUs: 20 - 35 FG: 1.008 - 1.014 SRM: 3 - 6 ABV: 3.0 - 4.1%",
+   "vital_statistics": {
+    "og": "1.028 - 1.044",
+    "fg": "1.008 - 1.014",
+    "ibu": "20 - 35",
+    "srm": "3 - 6",
+    "abv": "3.0 - 4.1%"
+   },
+   "commercial_examples_text": "Bernard světlé pivo 10, Březňák světlé výčepní pivo, Notch Session Pils, Primátor Antonín světlé výčepní, Radegast Rázna 10, Únětické pivo 10°",
+   "tags_en": [
+    "session-strength",
+    "pale-color",
+    "bottom-fermented",
+    "lagered",
+    "central-europe",
+    "traditional-style",
+    "pale-lager-family",
+    "bitter",
+    "hoppy"
+   ],
+   "tags_ru": [
+    "сессионная крепость",
+    "светлый цвет",
+    "низовое брожение",
+    "лагеризация",
+    "Центральная Европа",
+    "традиционный стиль",
+    "семейство светлых лагеров",
+    "горький",
+    "хмелевой"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1",
+   "source_pdf_page_start": 20,
+   "source_guideline_page_start": 4
+  },
+  {
+   "bjcp_id": "3B",
+   "bjcp_heading": "3B. Czech Premium Pale Lager",
+   "category_id": "3",
+   "category_en": "CZECH LAGER",
+   "category_ru": "Чешский лагер",
+   "name_en": "Czech Premium Pale Lager",
+   "name_ru": "Чешский премиальный светлый лагер",
+   "description_short_ru": "Освежающий светлый чешский лагер с заметным солодовым и хмелевым характером и длинным послевкусием. Для пива пилснерского типа он обладает сложным солодовым профилем и выраженной, чистой, но не жёсткой горечью.",
+   "sections_ru": {
+    "overall_impression": "Освежающий светлый чешский лагер с заметным солодовым и хмелевым характером и длинным финишем. Для пива пилснерского типа солодовая часть здесь заметно сложнее обычного: горечь сильная и чистая, но без жёсткости, поэтому общее впечатление остаётся округлым, сбалансированным и очень питким.",
+    "aroma": "Солодовый букет от среднего до умеренно высокого — богатый, хлебный; хмелевой — от умеренно слабого до умеренно высокого, с пряными, цветочными или травянистыми тонами. Соотношение солода и хмеля может меняться, но их взаимодействие должно быть богатым и сложным. Допустимы лёгкий диацетил и очень слабые фруктовые эфиры. С увеличением плотности уровень эфиров может возрастать.",
+    "appearance": "Цвет от средне-жёлтого до глубокого золотого. Прозрачность блестящая или очень высокая. Пена плотная, кремовая, стойкая, белая.",
+    "flavor": "Богатая, сложная хлебная солодовость сочетается с выраженной, но мягкой и округлой горечью, а также с цветочно-пряным хмелевым вкусом. И солод, и хмель находятся в диапазоне от среднего до умеренно высокого; в солоде может ощущаться лёгкий карамельный намёк. Горечь заметная, но не грубая. Длинный финиш может склоняться как в сторону хмеля, так и в сторону солода, но никогда не должен быть резко перекошенным. Лёгкий или умеренно слабый диацетил и слабые эфиры хмелевого происхождения допустимы, хотя и не обязательны.",
+    "mouthfeel": "Тело среднее. Карбонизация от умеренной до низкой.",
+    "comments": "Обычно это группа pivo Plzeňského typu, то есть пива пилснерского типа. Стиль объединяет чешские категории světlý ležák (11–12.9 °P) и světlé speciální pivo (13–14.9 °P). В самой Чехии словом Pilsner официально называют только Pilsner Urquell и Gambrinus, несмотря на то, насколько широко это имя распространилось по миру. За пределами Чехии для разграничения с другими пилснерами часто используют названия Czech Pilsner или Bohemian Pilsner. В Чехии популярны и квасницовые версии — kvasnicové, то есть «дрожжевое пиво»: их либо краузенят свежим суслом с дрожжами, либо вносят новую порцию чистой культуры после брожения. Такие версии могут быть слегка мутными, с деликатной дрожжевой нотой и усиленным хмелевым характером. Современные образцы различаются по соотношению солода и хмеля, и многие из них уже не так ярко охмелены, как Pilsner Urquell.",
+    "history": "Стиль чаще всего ассоциируют с Pilsner Urquell, впервые сваренным в 1842 году после строительства новой пивоварни жителями Пльзеня, недовольными качеством местного пива. Авторство первого варочного процесса обычно приписывают баварскому пивовару Йозефу Гроллу, хотя более ранние светлые лагеры в Богемии тоже могли существовать. Не меньшее значение, чем лагерные дрожжи, имело использование английских технологий соложения.",
+    "characteristic_ingredients": "Традиционный чешский хмель. Чешский солод. Чешские лагерные дрожжи. Вода с низким содержанием сульфатов и карбонатов обеспечивает мягкий, округлый хмелевой профиль даже при высокой горечи. У некоторых крупных коммерческих версий уровень горечи в последние годы снизился, но не так сильно, как у многих современных немецких аналогов.",
+    "style_comparison": "По сравнению с German Pils здесь больше цвета, солодовой насыщенности и тела, финиш полнее, а общее впечатление мягче и чище. Крепче, чем Czech Pale Lager."
+   },
+   "sections_en": {
+    "overall_impression": "A refreshing pale Czech lager with considerable malt and hop character and a long finish. The malt flavors are complex for a Pilsner-type beer. The bitterness is strong and clean but lacks harshness, which gives a wellbalanced, rounded flavor impression that enhances drinkability.",
+    "aroma": "Medium to medium-high bready-rich malt and medium-low to medium-high spicy, floral, or herbal hop bouquet; though the balance between the malt and hops may vary, the interplay is rich and complex. Light diacetyl, or very low fruity esters are optional. Esters tend to increase with gravity.",
+    "appearance": "Medium yellow to deep gold color. Brilliant to very clear clarity. Dense, long-lasting, creamy white head.",
+    "flavor": "Rich, complex, bready maltiness combined with a pronounced yet soft and rounded bitterness and floral and spicy hop flavor. Malt and hop flavors are medium to mediumhigh, and the malt may contain a slight impression of caramel. Bitterness is prominent but never harsh. The long finish can be balanced towards hops or malt but is never aggressively tilted either way. Light to moderately-low diacetyl and low hopderived esters are acceptable, but need not be present.",
+    "mouthfeel": "Medium body. Moderate to low carbonation.",
+    "comments": "Generally a group of pivo Plzeňského typu, or Pilsner-type beers. This style is a combination of the Czech styles světlý ležák (11–12.9 °P) and světlé speciální pivo (13– 14.9 °P). In the Czech Republic, only Pilsner Urquell and Gambrinus are called Pilsner, despite how widely adopted this name is worldwide. Outside the Czech Republic, Czech Pilsner or Bohemian Pilsner are sometimes used to differentiate the beer from other Pilsner-type beers. Kvasnicové (“yeast beer”) versions are popular in the Czech Republic, and may be either kräusened with yeasted wort or given a fresh dose of pure yeast after fermentation. These beers are sometimes cloudy, with subtle yeastiness and enhanced hop character. Modern examples vary in their malt to hop balance and many are not as hop-forward as Pilsner Urquell.",
+    "history": "Commonly associated with Pilsner Urquell, which was first brewed in 1842 after construction of a new brewhouse by burghers dissatisfied with the standard of beer brewed in Plzeň. Bavarian brewer Josef Groll is credited with first brewing the beer, although there may have been earlier pale lagers in Bohemia. Just as important as the lager yeast was the use of English malting techniques.",
+    "characteristic_ingredients": "Traditional Czech hops. Czech malt. Czech lager yeast. Water low in sulfate and carbonate provides a distinctively soft, rounded hop profile despite high hopping rates. The bitterness level of some larger commercial examples has dropped in recent years, although not as much as in many contemporary German examples.",
+    "style_comparison": "More color, malt richness, and body than a German Pils, with a fuller finish and a cleaner, softer impression. Stronger than a Czech Pale Lager.",
+    "entry_instructions": null
+   },
+   "vital_statistics_text": "OG: 1.044 - 1.060 IBUs: 30 - 45 FG: 1.013 - 1.017 SRM: 3.5 - 6 ABV: 4.2 - 5.8%",
+   "vital_statistics": {
+    "og": "1.044 - 1.060",
+    "fg": "1.013 - 1.017",
+    "ibu": "30 - 45",
+    "srm": "3.5 - 6",
+    "abv": "4.2 - 5.8%"
+   },
+   "commercial_examples_text": "Bernard světlé ležák 12°, Budvar 33 světlý ležák, Pilsner Urquell, Pivovar Jihlava Ježek 11%, Primátor Premium lager, Radegast Ryze hořká 12, Únětická pivo 12°",
+   "tags_en": [
+    "standard-strength",
+    "pale-color",
+    "bottom-fermented",
+    "lagered",
+    "central-europe",
+    "traditional-style",
+    "pilsner-family",
+    "balanced",
+    "hoppy"
+   ],
+   "tags_ru": [
+    "стандартная крепость",
+    "светлый цвет",
+    "низовое брожение",
+    "лагеризация",
+    "Центральная Европа",
+    "традиционный стиль",
+    "семейство пилснеров",
+    "сбалансированный",
+    "хмелевой"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1",
+   "source_pdf_page_start": 21,
+   "source_guideline_page_start": 5
+  },
+  {
+   "bjcp_id": "3C",
+   "bjcp_heading": "3C. Czech Amber Lager",
+   "category_id": "3",
+   "category_en": "CZECH LAGER",
+   "category_ru": "Чешский лагер",
+   "name_en": "Czech Amber Lager",
+   "name_ru": "Чешский янтарный лагер",
+   "description_short_ru": "Солодовый янтарный чешский лагер, в котором хмелевой характер может быть от слабого до весьма заметного. Солодовая часть тоже варьируется: от более сухой, хлебной и слегка бисквитной до более сладкой и карамельной.",
+   "sections_ru": {
+    "overall_impression": "Солодовый янтарный чешский лагер, в котором хмелевой характер может быть как довольно сдержанным, так и весьма заметным. Солодовая часть тоже варьируется, поэтому возможны разные интерпретации: от более сухих, хлебных и слегка бисквитных до более сладких, частично карамельных.",
+    "aroma": "Аромат умеренной интенсивности, насыщенно-солодовый: либо хлебный с преобладанием продуктов Майяра, либо слегка карамельно-сладкий. Хмелевой характер — пряный, цветочный или травянистый — может отсутствовать или быть умеренным. Лагерное брожение чистое, но допустимы слабые фруктовые эфиры, например косточковые или ягодные. Небольшой диацетил допустим.",
+    "appearance": "Цвет от глубокого янтарного до медного. Прозрачность от чистой до яркой. Пена крупная, стойкая, почти белая.",
+    "flavor": "Доминирует сложный солодовый вкус от среднего до умеренно высокого, но его характер может меняться: от сухого, с акцентом на продукты Майяра, до карамельного и почти сладкого. В некоторых версиях встречается конфетный солодовый тон или тон грэм-крекера. Хмелевой вкус — от слабого до умеренного, обычно пряный. Горечь заметная, но чистая; именно она собирает финиш и удерживает баланс. Допустимы тонкие сливовые или ягодные эфиры. Небольшой диацетил допустим. Обжаренный солодовый вкус неуместен. Финиш может быть как сухим и хмелевым, так и сравнительно сладким.",
+    "mouthfeel": "Тело от среднего до умеренно полного. Текстура мягкая, округлая, нередко с лёгкой сливочностью. Карбонизация от умеренной до низкой.",
+    "comments": "Чешское название стиля — polotmavé pivo, буквально «полутёмное пиво». Стиль объединяет чешские категории polotmavý ležák (11–12.9 °P) и polotmavé speciální pivo (13–14.9 °P). Некоторые версии могут представлять собой смесь светлого и тёмного лагера.",
+    "history": "По сути это продолжение венского лагерного направления, которое сохранилось в Чехии. Возрождение малых пивоварен в стране заметно увеличило число современных образцов этого стиля.",
+    "characteristic_ingredients": "Пилснерский и карамельный солод; при необходимости также венский и мюнхенский солод. Вода с низкой минерализацией. Традиционный чешский хмель. Чешские лагерные дрожжи.",
+    "style_comparison": "Стиль может напоминать Vienna Lager, но с более выраженным поздним чешским хмелем, либо British Bitter, но гораздо более насыщенный и с более глубоким карамельным профилем. Версии крупных заводов обычно близки к Czech Premium Pale Lager, только с более тёмным солодом и меньшим количеством хмеля; малые пивоварни нередко делают варианты с заметным хмелем, большей солодовой сложностью или остаточной сладостью."
+   },
+   "sections_en": {
+    "overall_impression": "A malty amber Czech lager with a hop character that can vary from low to quite significant. The malt flavors also can vary, leading to different interpretations and balances ranging from drier, bready, and slightly biscuity to sweeter and somewhat caramel-like.",
+    "aroma": "Moderate intensity, rich malt aroma that can be either bready and Maillard product-dominant or slightly caramelly sweet. Spicy, floral, or herbal hop character may be moderate to none. Clean lager character, though low fruity esters (stone fruit or berries) may be present. Low diacetyl optional.",
+    "appearance": "Deep amber to copper color. Clear to bright clarity. Large, off-white, persistent head.",
+    "flavor": "Complex malt flavor is dominant (medium to medium-high), though its nature may vary from dry and Maillard product-dominant to caramelly and almost sweet. Some examples have a candy-like to graham-cracker malt character. Low to moderate spicy hop flavor. Prominent but clean hop bitterness provides a balanced finish. Subtle plum or berry esters optional. Low diacetyl optional. No roasted malt flavor. Finish may vary from dry and hoppy to relatively sweet.",
+    "mouthfeel": "Medium-full to medium body. Soft and round, often with a gentle creaminess. Moderate to low carbonation.",
+    "comments": "The Czech name of the style is polotmavé pivo, which translates as half-dark beer. This style is a combination of the Czech styles polotmavý ležák (11–12.9 °P) and polotmavé speciální pivo (13–14.9 °P). Some versions may be a blend of pale and dark lagers.",
+    "history": "A Vienna-style lager which has continued to be brewed in the Czech Republic. A resurgence of small breweries opening in the Czech Republic has increased the number of examples of this style.",
+    "characteristic_ingredients": "Pilsner and caramel malts, but Vienna and Munich malts may also be used. Low mineral content water. Traditional Czech hops. Czech lager yeast.",
+    "style_comparison": "The style can be similar to a Vienna Lager but with stronger Czech late hop character, or that approaching a British Bitter but significantly richer with more of a deep caramel character. Large brewery versions are generally similar to Czech Premium Pale Lager with slightly darker malt flavors and less hop, while smaller breweries often make versions with considerable hop character, malt complexity, or residual sweetness.",
+    "entry_instructions": null
+   },
+   "vital_statistics_text": "OG: 1.044 - 1.060 IBUs: 20 - 35 FG: 1.013 - 1.017 SRM: 10 - 16 ABV: 4.4 - 5.8%",
+   "vital_statistics": {
+    "og": "1.044 - 1.060",
+    "fg": "1.013 - 1.017",
+    "ibu": "20 - 35",
+    "srm": "10 - 16",
+    "abv": "4.4 - 5.8%"
+   },
+   "commercial_examples_text": "Bernard Jantarový ležák 12°, Gambrinus Polotmavá 12°, Kozel Semi-Dark, Lobkowicz Démon 13, Primátor 13 polotmavé, Strakonický Dudák Klostermann polotmavý ležák",
+   "tags_en": [
+    "standard-strength",
+    "amber-color",
+    "bottom-fermented",
+    "lagered",
+    "central-europe",
+    "traditional-style",
+    "amber-lager-family",
+    "balanced"
+   ],
+   "tags_ru": [
+    "стандартная крепость",
+    "янтарный цвет",
+    "низовое брожение",
+    "лагеризация",
+    "Центральная Европа",
+    "традиционный стиль",
+    "семейство янтарных лагеров",
+    "сбалансированный"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1",
+   "source_pdf_page_start": 21,
+   "source_guideline_page_start": 5
+  },
+  {
+   "bjcp_id": "3D",
+   "bjcp_heading": "3D. Czech Dark Lager",
+   "category_id": "3",
+   "category_en": "CZECH LAGER",
+   "category_ru": "Чешский лагер",
+   "name_en": "Czech Dark Lager",
+   "name_ru": "Чешский тёмный лагер",
+   "description_short_ru": "Богатый тёмный солодовый чешский лагер с обжаренными оттенками от едва заметных до довольно выразительных. Профиль сложный и многовариантный, с разной степенью охмеления и солодовым балансом.",
+   "sections_ru": {
+    "overall_impression": "Богатый, тёмный, солодовый чешский лагер, в котором степень обжаренного характера может колебаться от почти незаметной до вполне ощутимой. Баланс солодовый, вкус сложный и интересный, а вариативность хмеля создаёт довольно широкий спектр допустимых интерпретаций.",
+    "aroma": "Насыщенная, глубокая, иногда сладковатая солодовость от средней до умеренно высокой. Возможны оттенки хлебной корки, тоста, орехов, колы, тёмных фруктов или карамели. Обжаренные тона — шоколад или сладкий кофе — могут варьироваться от умеренных до отсутствующих, но не должны перекрывать базовый солод. Хмелевой аромат, если есть, слабый или умеренный, обычно пряный. Допустимы слабый диацетил и слабые либо умеренные фруктовые эфиры, например сливовые или ягодные.",
+    "appearance": "Цвет от тёмно-медного до почти чёрного, часто с красноватым или гранатовым оттенком. Прозрачность — от чистой до яркой. Пена крупная, стойкая, от почти белой до бежевой.",
+    "flavor": "Доминирует глубокая, сложная солодовость от средней до умеренно высокой, обычно с богатыми продуктами Майяра и лёгкой либо умеренной остаточной сладостью. Могут проявляться карамель, тост, орехи, лакрица, сухофрукты, шоколад и кофе; обжаренный характер — от очень слабого до умеренного. Хмелевой вкус — от слабого до умеренного, чаще пряный. Горечь от умеренной до умеренно слабой, но заметной. Баланс может быть солодовым, близким к ровному или даже слегка смещённым в сторону хмеля. Допустимы слабый или умеренный диацетил и лёгкие сливовые либо ягодные эфиры.",
+    "mouthfeel": "Тело от среднего до умеренно полного, ощущается весомо, но не тяжело и не приторно. Текстура умеренно кремовая. Общее ощущение гладкое. Карбонизация от умеренной до низкой. В более крепких версиях допустимо лёгкое алкогольное тепло.",
+    "comments": "Стиль объединяет чешские категории tmavý ležák (11–12.9 °P) и tmavé speciální pivo (13–14.9 °P). Современные образцы чаще суше и горче, тогда как традиционные версии нередко держались в районе 18–20 IBU и были заметно слаще по балансу.",
+    "history": "Пражская пивоварня U Fleků работает с 1499 года и производит самый известный пример этого стиля. Сегодня его также активно варят многие небольшие новые пивоварни Чехии.",
+    "characteristic_ingredients": "Чаще всего используются пилснерский и тёмный карамельный солода с добавлением обесгорченных обжаренных солодов; также допустимы венский и мюнхенский солод. Вода с низкой минерализацией. Традиционный чешский хмель. Чешские лагерные дрожжи.",
+    "style_comparison": "Это чешский эквивалент тёмного лагера в диапазоне от Munich Dunkel до Schwarzbier, но обычно с более богатой солодовой основой и более заметными ароматом, вкусом и горечью хмеля."
+   },
+   "sections_en": {
+    "overall_impression": "A rich, dark, malty Czech lager with a roast character that can vary from almost absent to quite prominent. Malty balance and an interesting and complex flavor profile, with variable levels of hopping that provides a range of possible interpretations.",
+    "aroma": "Medium to medium-high rich, deep, sometimes sweet maltiness, with optional qualities such as bread crusts, toast, nuts, cola, dark fruit, or caramel. Roasted malt characters such as chocolate or sweetened coffee can vary from moderate to none but should not overwhelm the base malt character. Low to moderate spicy hop aroma optional. Low diacetyl and low to moderate fruity esters (plums or berries) may be present.",
+    "appearance": "Dark copper to almost black color, often with a red or garnet tint. Clear to bright clarity. Large, off-white to tan, persistent head.",
+    "flavor": "Medium to medium-high deep, complex maltiness dominates, typically with malty-rich Maillard products and a light to moderate residual malt sweetness. Malt flavors such as caramel, toast, nuts, licorice, dried dark fruit, chocolate, or coffee may also be present, with very low to moderate roast character. Low to moderate spicy hop flavor. Moderate to medium-low bitterness, but should be perceptible. Balance can vary from malty to relatively well-balanced to gently hopforward. Low to moderate diacetyl and light plum or berry esters may be present.",
+    "mouthfeel": "Medium to medium-full body, considerable mouthfeel without being heavy or cloying. Moderately creamy in texture. Smooth. Moderate to low carbonation. Can have a slight alcohol warmth in stronger versions.",
+    "comments": "This style is a combination of the Czech styles tmavý ležák (11–12.9 °P) and tmavé speciální pivo (13–14.9 °P). More modern examples are drier and have higher bitterness while traditional versions often have IBUs in the 18– 20 range with a sweeter balance.",
+    "history": "The U Fleků brewery has been operating in Prague since 1499, and produces the best-known version. Many small, new breweries are brewing this style.",
+    "characteristic_ingredients": "Pilsner and dark caramel malts with the addition of debittered roasted malts are most common, but additions of Vienna or Munich malt are also appropriate. Low mineral content water. Traditional Czech hops. Czech lager yeast.",
+    "style_comparison": "The beer is the Czech equivalent of a dark lager ranging in character from Munich Dunkel to Schwarzbier, but typically with greater malt richness and hop aroma, flavor, and bitterness.",
+    "entry_instructions": null
+   },
+   "vital_statistics_text": "OG: 1.044 - 1.060 IBUs: 18 - 34 FG: 1.013 - 1.017 SRM: 17 - 35 ABV: 4.4 - 5.8%",
+   "vital_statistics": {
+    "og": "1.044 - 1.060",
+    "fg": "1.013 - 1.017",
+    "ibu": "18 - 34",
+    "srm": "17 - 35",
+    "abv": "4.4 - 5.8%"
+   },
+   "commercial_examples_text": "Bernard černý ležák 12°, Budvar tmavý ležák, Herold tmavé silné pivo 13°, Kozel Dark , Krušovice černé, Primátor dark lager, U Fleků Flekovský tmavý ležák 13°",
+   "tags_en": [
+    "standard-strength",
+    "dark-color",
+    "bottom-fermented",
+    "lagered",
+    "central-europe",
+    "traditional-style",
+    "dark-lager-family",
+    "balanced"
+   ],
+   "tags_ru": [
+    "стандартная крепость",
+    "тёмный цвет",
+    "низовое брожение",
+    "лагеризация",
+    "Центральная Европа",
+    "традиционный стиль",
+    "семейство тёмных лагеров",
+    "сбалансированный"
+   ],
+   "translation_status": "detailed_ru_translated_reviewed_v1",
+   "source_pdf_page_start": 22,
+   "source_guideline_page_start": 6
+  }
+ ]
 }

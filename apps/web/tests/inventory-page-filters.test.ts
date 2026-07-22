@@ -5,7 +5,10 @@ import { describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   replace: vi.fn(),
   requireUser: vi.fn(async () => ({ id: "u-1", preferredCurrency: "RUB" })),
-  listInventoryForUser: vi.fn(async () => []),
+  listInventoryForUserWithMeta: vi.fn(async (): Promise<{
+    items: Record<string, unknown>[];
+    searchRescue: "layout" | null;
+  }> => ({ items: [], searchRescue: null })),
   getInventorySummaries: vi.fn(async () => ({
     totalItems: 3,
     inStockItems: 2,
@@ -25,7 +28,7 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ replace: mocks.replace })
 }));
 vi.mock("../features/inventory/service", () => ({
-  listInventoryForUser: mocks.listInventoryForUser,
+  listInventoryForUserWithMeta: mocks.listInventoryForUserWithMeta,
   getInventorySummaries: mocks.getInventorySummaries
 }));
 vi.mock("../features/system/currency-rates", () => ({
@@ -57,7 +60,7 @@ describe("inventory page filters", () => {
     });
     const html = renderToStaticMarkup(view);
 
-    expect(mocks.listInventoryForUser).toHaveBeenCalledWith("u-1", {
+    expect(mocks.listInventoryForUserWithMeta).toHaveBeenCalledWith("u-1", {
       category: "hop",
       subtype: undefined,
       group: undefined,
@@ -74,7 +77,7 @@ describe("inventory page filters", () => {
       searchParams: Promise.resolve({ category: "hop" })
     });
 
-    expect(mocks.listInventoryForUser).toHaveBeenLastCalledWith("u-1", {
+    expect(mocks.listInventoryForUserWithMeta).toHaveBeenLastCalledWith("u-1", {
       category: "hop",
       subtype: undefined,
       group: undefined,
@@ -92,5 +95,35 @@ describe("inventory page filters", () => {
     const html = renderToStaticMarkup(view);
 
     expect(html).toContain("Ничего не найдено");
+  });
+
+  // С4 (rescue): строка «Возможно, вы имели в виду:» — только при
+  // searchRescue === "layout" и непустом списке.
+  it("показывает rescue-строку при searchRescue=\"layout\"", async () => {
+    mocks.listInventoryForUserWithMeta.mockResolvedValueOnce({
+      items: [{ id: "inv-1" }],
+      searchRescue: "layout"
+    });
+
+    const view = await MyIngredientsContent({
+      searchParams: Promise.resolve({ search: "vjpfbr" })
+    });
+    const html = renderToStaticMarkup(view);
+
+    expect(html).toContain("Возможно, вы имели в виду:");
+  });
+
+  it("не показывает rescue-строку при searchRescue=null", async () => {
+    mocks.listInventoryForUserWithMeta.mockResolvedValueOnce({
+      items: [{ id: "inv-1" }],
+      searchRescue: null
+    });
+
+    const view = await MyIngredientsContent({
+      searchParams: Promise.resolve({ search: "citra" })
+    });
+    const html = renderToStaticMarkup(view);
+
+    expect(html).not.toContain("Возможно, вы имели в виду:");
   });
 });

@@ -15,12 +15,16 @@ import {
 import type {
   ShoppingListDto,
   ShoppingListGroupDto,
-  ShoppingListLineDto,
   ShoppingOpportunityDto,
   ShoppingListSourceBrew
 } from "@/features/shopping/contracts";
 import { pluralize } from "@/lib/pluralize";
 import { RecipeThumb, StyleChip } from "@/components/recipes/recipe-card-parts";
+import { BuySectionHeader } from "./buy-section-header";
+import { GroupHeader } from "./group-header";
+import { ManualItemForm } from "./manual-item-form";
+import { ManualItemsGroup } from "./manual-items-group";
+import { ShoppingLineRow } from "./shopping-line-row";
 
 // «12 июля» — формат даты запланированной варки в строке источника.
 const plannedForFormatter = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long" });
@@ -36,62 +40,21 @@ const groupMeta: Record<ShoppingListGroupDto["category"], GroupMeta> = {
   other: { icon: Package, color: "text-muted-foreground", bg: "bg-muted" }
 };
 
-const resolveNeededByLabel = (neededBy: ShoppingListLineDto["neededBy"]) => {
-  const names = [...new Set(neededBy.map((need) => need.brewName))];
-  const shown = names.slice(0, 2).join(", ");
-  const rest = names.length - Math.min(2, names.length);
-  const prefix = names.length === 1 ? "Для партии" : "Для партий";
-  return rest > 0 ? `${prefix}: ${shown} +${rest}` : `${prefix}: ${shown}`;
-};
-
-// Строка ингредиента внутри блока «Добавить на склад»: плотный список (divide-y
-// в родителе), не отдельная карточка — блок один, россыпь рамок убрана.
-function ShoppingLineRow({ line }: { line: ShoppingListLineDto }) {
-  return (
-    <li className="flex items-start justify-between gap-3 py-2.5">
-      <div className="min-w-0 flex-1">
-        <p className="text-[15px] font-medium leading-snug text-foreground">
-          {line.catalogHref ? (
-            <Link href={line.catalogHref} className="transition-colors hover:text-muted-foreground">
-              {line.ingredientDisplayName}
-            </Link>
-          ) : (
-            line.ingredientDisplayName
-          )}
-        </p>
-        <p className="mt-0.5 text-xs text-muted-foreground">{resolveNeededByLabel(line.neededBy)}</p>
-      </div>
-      <div className="flex shrink-0 items-center gap-3">
-        <span className="text-sm font-bold tabular-nums text-foreground">{line.quantityLabel}</span>
-        {line.addToStockHref ? (
-          <Link
-            href={line.addToStockHref}
-            className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            На склад
-          </Link>
-        ) : null}
-      </div>
-    </li>
-  );
-}
-
+// Строка ингредиента внутри блока «Добавить на склад» — вынесена в
+// shopping-line-row.tsx (П2: чекбокс «куплено» требует клиентского компонента
+// с собственным оптимистичным стейтом).
 function ShoppingGroup({ group }: { group: ShoppingListGroupDto }) {
   const meta = groupMeta[group.category];
-  const Icon = meta.icon;
 
   return (
     <section>
-      <div className="flex items-center gap-2.5">
-        <div className={`flex h-7 w-7 items-center justify-center rounded-lg ${meta.bg}`}>
-          <Icon className={`h-3.5 w-3.5 ${meta.color}`} />
-        </div>
-        <h3 className="text-sm font-semibold text-foreground">{group.label}</h3>
-        <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
-          {group.items.length}
-        </span>
-      </div>
+      <GroupHeader
+        icon={meta.icon}
+        iconColorClassName={meta.color}
+        iconBgClassName={meta.bg}
+        label={group.label}
+        count={group.items.length}
+      />
       <ul className="mt-1 divide-y divide-border">
         {group.items.map((line) => (
           <ShoppingLineRow key={line.key} line={line} />
@@ -138,33 +101,47 @@ function SourceBrewRows({ plannedBrews }: { plannedBrews: ShoppingListSourceBrew
 
 /**
  * Блок «Добавить на склад» — единая карточка секции: сверху партии-источники,
- * ниже ингредиенты по категориям плотным списком. Лексика складская, не
- * магазинная: раздел говорит «этих позиций не хватает на складе под партию X»,
- * а покупка — лишь один из способов их туда добавить. При all_in_stock вместо
- * списка — компактная success-строка (сами партии выше остаются ссылками).
+ * ниже ингредиенты по категориям плотным списком, в конце — группа «Своё»
+ * (П1). Лексика складская, не магазинная: раздел говорит «этих позиций не
+ * хватает на складе под партию X», а покупка — лишь один из способов их туда
+ * добавить. При all_in_stock вместо списка — компактная success-строка (сами
+ * партии выше остаются ссылками); группа «Своё» показывается всегда, когда
+ * блок рендерится — это единственный вход в добавление ручной позиции.
+ *
+ * Блок теперь рендерится и без запланированных партий (см. showBuySection в
+ * ShoppingListView) — в этом случае здесь нет ни партий-источников, ни
+ * категорийных групп (обе завязаны на plannedBatches), только «Своё».
  */
 function BuySection({ list }: { list: ShoppingListDto }) {
   const allInStock = list.emptyReason === "all_in_stock";
+  const hasBrews = list.plannedBrews.length > 0;
 
   return (
     <section className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
-      <h2 className="text-base font-semibold text-foreground">Добавить на склад</h2>
-      <div className="mt-3">
-        <SourceBrewRows plannedBrews={list.plannedBrews} />
-      </div>
-      <div className="mt-4 border-t border-border pt-4">
-        {allInStock ? (
-          <p className="flex items-center gap-2 text-sm font-medium text-success">
-            <CircleCheck className="h-4 w-4 shrink-0" aria-hidden />
-            Всё нужное уже на складе.
-          </p>
-        ) : (
-          <div className="space-y-5">
-            {list.groups.map((group) => (
-              <ShoppingGroup key={group.category} group={group} />
-            ))}
+      <BuySectionHeader groups={list.groups} manualItems={list.manualItems} checkedCount={list.checkedCount} />
+      {hasBrews ? (
+        <>
+          <div className="mt-3">
+            <SourceBrewRows plannedBrews={list.plannedBrews} />
           </div>
-        )}
+          <div className="mt-4 border-t border-border pt-4">
+            {allInStock ? (
+              <p className="flex items-center gap-2 text-sm font-medium text-success">
+                <CircleCheck className="h-4 w-4 shrink-0" aria-hidden />
+                Всё нужное уже на складе.
+              </p>
+            ) : (
+              <div className="space-y-5">
+                {list.groups.map((group) => (
+                  <ShoppingGroup key={group.category} group={group} />
+                ))}
+              </div>
+            )}
+          </div>
+        </>
+      ) : null}
+      <div className={hasBrews ? "mt-5 border-t border-border pt-4" : "mt-3"}>
+        <ManualItemsGroup items={list.manualItems} />
       </div>
     </section>
   );
@@ -346,6 +323,7 @@ function EmptyState() {
         >
           Мои партии
         </Link>
+        <ManualItemForm variant="emptyState" />
       </div>
     </section>
   );
@@ -355,7 +333,11 @@ function EmptyState() {
 // «Чего не хватает» — таб «Моего склада», у view своего H1 нет.
 export function ShoppingListView({ list }: { list: ShoppingListDto }) {
   const brewCount = list.plannedBrews.length;
+  const hasManualItems = list.manualItems.length > 0;
   const hasOpportunities = list.opportunities.length > 0;
+  // П1: блок «Добавить на склад» рендерится и без партий, если есть ручные
+  // позиции — «Своё» не обязано ждать запланированную варку.
+  const showBuySection = brewCount > 0 || hasManualItems;
   // Компактный сценарий §3.4: возможности есть, а запланированных партий нет —
   // блока «Добавить на склад» нет (ему неоткуда взяться), вместо него подводка.
   const showRecipesTeaser = list.emptyReason === null && brewCount === 0 && hasOpportunities;
@@ -366,7 +348,7 @@ export function ShoppingListView({ list }: { list: ShoppingListDto }) {
 
   return (
     <div className="space-y-8">
-      {brewCount > 0 ? <BuySection list={list} /> : null}
+      {showBuySection ? <BuySection list={list} /> : null}
 
       {hasOpportunities ? (
         <OpportunitiesSection opportunities={list.opportunities} collapsedOpportunityCount={list.collapsedOpportunityCount} />

@@ -1,7 +1,11 @@
+import Link from "next/link";
 import React from "react";
 
 import { jsonLdScriptProps } from "@/features/ingredients/seo";
-import type { PublicRecipeFilters } from "@/features/recipes/contracts";
+import {
+  defaultPublicRecipePageSize,
+  type PublicRecipeFilters
+} from "@/features/recipes/contracts";
 import { buildPublicRecipeItemListJsonLd } from "@/features/recipes/seo";
 import { searchPublicRecipes } from "@/features/recipes/service";
 import { defaultPreferredGravityUnit, type PreferredGravityUnit } from "@/features/system/gravity-units";
@@ -39,6 +43,50 @@ const resultsCountLabel = (total: number): string => {
   return `Найдено ${total} ${noun}`;
 };
 
+// Rescue-выдача (С4): ссылка «Показаны результаты для «…»» над счётчиком —
+// тот же URL-контракт, что и toolbar/пагинация (public-recipe-query.ts), но
+// строится напрямую из уже распарсенных filters (RecipesResults — серверный
+// компонент, живого URLSearchParams вызывающей страницы у него нет). page
+// намеренно не переносится — новый (скорректированный) запрос начинается с 1-й.
+const buildRescueQueryHref = (filters: PublicRecipeFilters, correctedQuery: string): string => {
+  const params = new URLSearchParams();
+  params.set("q", correctedQuery);
+  if (filters.family) {
+    params.set("family", filters.family);
+  }
+  if (filters.styleCode) {
+    params.set("style", filters.styleCode);
+  }
+  if (filters.colorMinSrm != null) {
+    params.set("colorMin", String(filters.colorMinSrm));
+  }
+  if (filters.colorMaxSrm != null) {
+    params.set("colorMax", String(filters.colorMaxSrm));
+  }
+  if (filters.abvMin != null) {
+    params.set("abvMin", String(filters.abvMin));
+  }
+  if (filters.abvMax != null) {
+    params.set("abvMax", String(filters.abvMax));
+  }
+  if (filters.ibuMin != null) {
+    params.set("ibuMin", String(filters.ibuMin));
+  }
+  if (filters.ibuMax != null) {
+    params.set("ibuMax", String(filters.ibuMax));
+  }
+  if (filters.method?.length) {
+    params.set("method", filters.method.join(","));
+  }
+  if (filters.sort !== "newest") {
+    params.set("sort", filters.sort);
+  }
+  if (filters.pageSize !== defaultPublicRecipePageSize) {
+    params.set("pageSize", String(filters.pageSize));
+  }
+  return `/recipes?${params.toString()}`;
+};
+
 /**
  * Асинхронный серверный поддерево витрины: дергает `searchPublicRecipes`,
  * рендерит счётчик + список строк + интерактивную пагинацию либо empty-state.
@@ -51,7 +99,7 @@ export async function RecipesResults({
   filters: PublicRecipeFilters;
   preferredGravityUnit?: PreferredGravityUnit;
 }) {
-  const { items, total, page, pageSize } = await searchPublicRecipes(filters);
+  const { items, total, page, pageSize, rescue } = await searchPublicRecipes(filters);
 
   if (total === 0) {
     const variant = hasActiveFilters(filters) ? "no-results" : "no-recipes";
@@ -77,6 +125,18 @@ export async function RecipesResults({
 
   return (
     <div id="recipes-top" className="scroll-mt-4 space-y-6">
+      {rescue ? (
+        <p className="text-sm text-muted-foreground">
+          Показаны результаты для «
+          <Link
+            href={buildRescueQueryHref(filters, rescue.correctedQuery)}
+            className="underline decoration-dotted underline-offset-2 hover:text-foreground"
+          >
+            {rescue.correctedQuery}
+          </Link>
+          »
+        </p>
+      ) : null}
       <p className="text-sm text-muted-foreground" aria-live="polite">
         {resultsCountLabel(total)}
       </p>

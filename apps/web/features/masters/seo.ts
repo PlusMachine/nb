@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 
 import { buildMasterImageVariantUrl, getMasterSpecializationLabel, type MasterPublishedSnapshot } from "./contracts";
+import { getSectionOgImage } from "../og/section";
+
+import { getServerEnv } from "@/lib/env";
 
 // SEO-фундамент маркета и деталки мастеров (/market, /masters/<slug>),
 // §8 ТЗ. Билдеры по образцу features/recipes/seo.ts: jsonLdScriptProps
@@ -36,26 +39,41 @@ const MARKET_LIST_TITLE = "Маркет пивоварного оборудов�
 const MARKET_LIST_DESCRIPTION =
   "Пивоварное оборудование ручной работы: ЦКТ и ёмкости, автоматика для варки, чиллеры, мельницы — от мастеров из комьюнити. Контакты и фото — напрямую, без посредников.";
 
-export const buildMarketListMetadata = (): Metadata => ({
-  title: MARKET_LIST_TITLE,
-  description: MARKET_LIST_DESCRIPTION,
-  alternates: {
-    canonical: "/market"
-  },
-  openGraph: {
-    type: "website",
-    url: "/market",
+// "market" — ключ реестра обложек разделов (features/og/section.ts,
+// SECTION_HUBS.market), типизирован SectionOgKey — getSectionOgImage резолвит
+// его без null.
+const MARKET_LIST_OG_IMAGE = getSectionOgImage("market");
+
+export const buildMarketListMetadata = (): Metadata => {
+  // Страница ЗАМЕЩАЕТ openGraph родительского layout целиком (не мёржится) —
+  // locale/siteName повторяем сами (см. app/(public)/page.tsx).
+  const { SITE_NAME } = getServerEnv();
+
+  return {
     title: MARKET_LIST_TITLE,
-    description: MARKET_LIST_DESCRIPTION
-  },
-  twitter: {
-    // Картинки у списка нет (сайтовый дефолт не наследуется при своём openGraph) →
-    // summary, иначе пустая большая карточка. Генерённый OG — Ф2.
-    card: "summary",
-    title: MARKET_LIST_TITLE,
-    description: MARKET_LIST_DESCRIPTION
-  }
-});
+    description: MARKET_LIST_DESCRIPTION,
+    alternates: {
+      canonical: "/market"
+    },
+    openGraph: {
+      type: "website",
+      locale: "ru_RU",
+      siteName: SITE_NAME,
+      url: "/market",
+      title: MARKET_LIST_TITLE,
+      description: MARKET_LIST_DESCRIPTION,
+      images: [MARKET_LIST_OG_IMAGE]
+    },
+    twitter: {
+      // Брендовая обложка /market подключена (Ф3, docs/specs/og-images.md §5.8)
+      // → summary_large_image, как у деталки мастера.
+      card: "summary_large_image",
+      title: MARKET_LIST_TITLE,
+      description: MARKET_LIST_DESCRIPTION,
+      images: [MARKET_LIST_OG_IMAGE.url]
+    }
+  };
+};
 
 // --- Деталка /masters/[slug] --------------------------------------------------
 

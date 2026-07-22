@@ -98,10 +98,6 @@ vi.mock("../features/brew-batches/components/fermentation-board", () => ({
   },
   HERO_STEP_IDS: new Set(["ferment:primary"])
 }));
-// Тост списания после диалога «Сварить» — useSearchParams вне роутера Next.
-vi.mock("../features/brew-batches/components/brew-stock-notice", () => ({
-  BrewStockNotice: () => null
-}));
 // Блок «Брожение» (M2-C) — асинхронный серверный компонент (сам читает БД через
 // readBatchFermentSeries/listAvailableStreamDevices); renderToStaticMarkup не умеет
 // ждать вложенные async-компоненты (только верхний BrewBatchDetailPage резолвится
@@ -354,9 +350,88 @@ describe("Страница партии — акт «Брожение» (B3)", (
 });
 
 describe("Страница партии — акт «Подготовка» (A2)", () => {
-  it("считает нехватку с учётом уже списанного на ЭТУ партию", async () => {
+  it("считает покрытие склада (Ф5) с учётом уже списанного на ЭТУ партию", async () => {
+    mocks.getBrewBatchDetail.mockResolvedValue(detail({}, { status: "planned", startedAt: null, completedAt: null }));
+    // Коверидж считается, только когда есть свой инвентарный вид партии и она
+    // ещё не списала себя — пустой (не списанный) вид, как у свежей партии.
+    mocks.getBrewBatchInventoryView.mockResolvedValue({
+      brewBatchId: BATCH_ID,
+      recipeId: RECIPE_ID,
+      hasConsumed: false,
+      canRestore: false,
+      batchAlreadyConsumed: false,
+      consumed: [],
+      log: []
+    });
+
+    await renderDetail();
+
+    expect(mocks.computeRecipeMatch).toHaveBeenCalledWith({
+      userId: "u-1",
+      recipeId: RECIPE_ID,
+      brewBatchId: BATCH_ID
+    });
+  });
+
+  it("не считает покрытие, когда партия уже списала себя (batchAlreadyConsumed)", async () => {
+    mocks.getBrewBatchDetail.mockResolvedValue(detail({}, { status: "planned", startedAt: null, completedAt: null }));
+    mocks.getBrewBatchInventoryView.mockResolvedValue({
+      brewBatchId: BATCH_ID,
+      recipeId: RECIPE_ID,
+      hasConsumed: true,
+      canRestore: true,
+      batchAlreadyConsumed: true,
+      consumed: [],
+      log: []
+    });
+
+    await renderDetail();
+
+    expect(mocks.computeRecipeMatch).not.toHaveBeenCalled();
+  });
+
+  it("не считает покрытие без своего инвентарного вида партии (getBrewBatchInventoryView → null)", async () => {
     mocks.getBrewBatchDetail.mockResolvedValue(detail({}, { status: "planned", startedAt: null, completedAt: null }));
     mocks.getBrewBatchInventoryView.mockResolvedValue(null);
+
+    await renderDetail();
+
+    expect(mocks.computeRecipeMatch).not.toHaveBeenCalled();
+  });
+});
+
+// Находка 3: коверидж считался только на «Подготовке» (A2 покрывал только её) —
+// регресс на то, что кнопка «Списать» знает про нехватку и в «Варочном дне», и на
+// «Брожении» (акт не терминальный, кнопка там тоже видна).
+describe("Страница партии — покрытие склада вне «Подготовки» (Находка 3)", () => {
+  const liveInventoryView = {
+    brewBatchId: BATCH_ID,
+    recipeId: RECIPE_ID,
+    hasConsumed: false,
+    canRestore: false,
+    batchAlreadyConsumed: false,
+    consumed: [],
+    log: []
+  };
+
+  beforeEach(() => {
+    mocks.getBrewBatchInventoryView.mockResolvedValue(liveInventoryView);
+  });
+
+  it("считает покрытие в акте «Варочный день» (status brewing)", async () => {
+    mocks.getBrewBatchDetail.mockResolvedValue(detail({}, { status: "brewing", startedAt: new Date("2026-07-01T08:00:00Z"), completedAt: null }));
+
+    await renderDetail();
+
+    expect(mocks.computeRecipeMatch).toHaveBeenCalledWith({
+      userId: "u-1",
+      recipeId: RECIPE_ID,
+      brewBatchId: BATCH_ID
+    });
+  });
+
+  it("считает покрытие в акте «Брожение» (status fermenting)", async () => {
+    mocks.getBrewBatchDetail.mockResolvedValue(detail({}, { status: "fermenting", startedAt: new Date("2026-07-01T08:00:00Z"), completedAt: null }));
 
     await renderDetail();
 

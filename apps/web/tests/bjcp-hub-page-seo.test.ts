@@ -22,7 +22,11 @@ describe("bjcp hub page metadata", () => {
     const { metadata } = await import("../app/(public)/bjcp/page");
 
     expect(metadata.alternates).toEqual({ canonical: "/bjcp" });
-    expect(metadata.openGraph).toMatchObject({ type: "website", url: "/bjcp" });
+    expect(metadata.openGraph).toMatchObject({ type: "website", url: "/bjcp", locale: "ru_RU" });
+    expect((metadata.openGraph as { siteName?: string } | undefined)?.siteName).toBeTruthy();
+    expect((metadata.openGraph as { images?: { url: string }[] } | undefined)?.images?.[0]?.url).toBe(
+      "/api/og/sections/bjcp"
+    );
   });
 });
 

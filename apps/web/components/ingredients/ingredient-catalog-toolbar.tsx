@@ -436,6 +436,7 @@ export function IngredientCatalogToolbar({
             onBlur={handleSearchBlur}
             className="h-11 w-full rounded-xl border border-border bg-muted px-4 pr-10 text-base sm:text-sm"
             placeholder="Поиск по каталогу"
+            aria-label="Поиск по каталогу"
           />
           {/* Индикатор обновления внутри поля: отдельная строка текста меняла
               высоту тулбара на каждый ввод (28px layout shift). */}

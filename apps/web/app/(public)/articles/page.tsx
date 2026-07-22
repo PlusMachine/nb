@@ -5,11 +5,29 @@ import { Clock } from "lucide-react";
 import { listPublishedContentArticles } from "@/features/content-articles/service";
 import { contentArticleTypeLabels } from "@/features/content-articles/contracts";
 import { articleCoverFromSlug } from "@/features/content-articles/article-cover";
+import { getSectionOgImage } from "@/features/og/section";
+import { getServerEnv } from "@/lib/env";
+
+const title = "Статьи и обзоры для пивоваров";
+const description = "Практические статьи по домашнему пивоварению и обзоры оборудования.";
 
 export const metadata: Metadata = {
-  title: "Статьи и обзоры для пивоваров",
-  description: "Практические статьи по домашнему пивоварению и обзоры оборудования.",
-  alternates: { canonical: "/articles" }
+  title,
+  description,
+  alternates: { canonical: "/articles" },
+  // Своего twitter не задаём — наследуется дефолт из корневого layout
+  // (summary_large_image), картинка обложки раздела (Ф3) достаточна.
+  // openGraph страницы ЗАМЕЩАЕТ openGraph родительского layout целиком (не
+  // мёржится) — locale/siteName повторяем сами (см. app/(public)/page.tsx).
+  openGraph: {
+    type: "website",
+    locale: "ru_RU",
+    siteName: getServerEnv().SITE_NAME,
+    url: "/articles",
+    title,
+    description,
+    images: [getSectionOgImage("articles")]
+  }
 };
 
 const dateFmt = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long", year: "numeric" });
@@ -38,7 +56,7 @@ export default async function ArticlesPage() {
             <Link
               key={article.id}
               href={`/articles/${article.slug}`}
-              className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition hover:border-border hover:shadow-md"
+              className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition hover:border-border hover:shadow-md skin-hop:duration-200 skin-hop:hover:-translate-y-0.5"
             >
               {article.coverImageUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -50,9 +68,26 @@ export default async function ArticlesPage() {
                   className="h-40 w-full object-cover"
                 />
               ) : (
-                <div className="flex h-40 w-full items-center justify-center" style={{ background: cover.background }} aria-hidden>
+                <div
+                  className="relative flex h-40 w-full items-center justify-center overflow-hidden nb-grain"
+                  style={{ background: cover.background }}
+                  aria-hidden
+                >
+                  {/* Хмелевой лупулин вместо буквы на градиенте — только в скине hop */}
                   <span
-                    className="text-6xl font-semibold leading-none opacity-25"
+                    className="absolute inset-0 hidden skin-hop:block"
+                    style={{ background: "radial-gradient(circle at 82% 18%, hsl(var(--primary) / 0.45), transparent 55%)" }}
+                  />
+                  <span
+                    className="absolute inset-0 hidden skin-hop:block opacity-40"
+                    style={{
+                      backgroundImage: "radial-gradient(hsl(var(--primary) / 0.5) 1.5px, transparent 1.5px)",
+                      backgroundSize: "16px 16px",
+                      backgroundPosition: "4px 4px"
+                    }}
+                  />
+                  <span
+                    className="text-6xl font-semibold leading-none opacity-25 skin-hop:hidden"
                     style={{ color: cover.textColor, fontFamily: "var(--font-display)" }}
                   >
                     {article.title.charAt(0).toUpperCase()}

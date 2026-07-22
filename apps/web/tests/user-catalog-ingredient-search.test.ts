@@ -2123,4 +2123,116 @@ describe("user catalog ingredient search", () => {
       "custom-alias-pilsner"
     ]);
   });
+
+  it("двухпроходность: раскладочный фолбэк («vjpfbr» -> Mosaic) срабатывает вторым проходом при нуле результатов", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "hop-mosaic",
+        type: "hop",
+        category: "hop",
+        subtype: "hop",
+        primaryLabelRu: "Мозаик",
+        displayName: "Мозаик",
+        displayNameRu: "Мозаик",
+        displayNameEn: "Mosaic",
+        nameRu: "Мозаик",
+        nameEn: "Mosaic",
+        itemKind: "hop",
+        technicalData: {
+          type: "hop",
+          alphaAcidPctTypical: 12,
+          hopForm: "pellet"
+        },
+        defaultUnit: "g",
+        defaultDisplayUnit: "g",
+        allowedUnits: ["kg", "g"],
+        measurementDimension: "mass"
+      })
+    ];
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "vjpfbr",
+      category: "hop",
+      limit: 10
+    });
+
+    expect(result.items.map((item) => item.id)).toEqual(["hop-mosaic"]);
+    // С4: раскладочный фолбэк — matchRescue="layout" у ВСЕХ item'ов выдачи.
+    expect(result.items.every((item) => item.matchRescue === "layout")).toBe(true);
+  });
+
+  it("С4: matchRescue отсутствует у точного совпадения (без rescue)", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "hop-mosaic",
+        type: "hop",
+        category: "hop",
+        subtype: "hop",
+        primaryLabelRu: "Мозаик",
+        displayName: "Мозаик",
+        displayNameRu: "Мозаик",
+        displayNameEn: "Mosaic",
+        nameRu: "Мозаик",
+        nameEn: "Mosaic",
+        itemKind: "hop",
+        technicalData: {
+          type: "hop",
+          alphaAcidPctTypical: 12,
+          hopForm: "pellet"
+        },
+        defaultUnit: "g",
+        defaultDisplayUnit: "g",
+        allowedUnits: ["kg", "g"],
+        measurementDimension: "mass"
+      })
+    ];
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "мозаик",
+      category: "hop",
+      limit: 10
+    });
+
+    expect(result.items.map((item) => item.id)).toEqual(["hop-mosaic"]);
+    expect(result.items[0]?.matchRescue).toBeUndefined();
+  });
+
+  it("С4: matchRescue=\"fuzzy\" для опечатки в названии (tier 9 — левенштейн)", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "hop-citra",
+        type: "hop",
+        category: "hop",
+        subtype: "hop",
+        primaryLabelRu: "Citra",
+        displayName: "Citra",
+        displayNameRu: "Citra",
+        displayNameEn: "Citra",
+        nameRu: "Цитра",
+        nameEn: "Citra",
+        itemKind: "hop",
+        technicalData: {
+          type: "hop",
+          alphaAcidPctTypical: 12,
+          hopForm: "pellet"
+        },
+        defaultUnit: "g",
+        defaultDisplayUnit: "g",
+        allowedUnits: ["kg", "g"],
+        measurementDimension: "mass"
+      })
+    ];
+
+    // «citta» — опечатка на 1 правку от «citra» (r → t), не префикс и не
+    // подстрока — совпадает только через fuzzy (tier 9), см. аналогичный кейс
+    // в catalog-search-noise-and-sort.test.ts.
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "citta",
+      category: "hop",
+      limit: 10
+    });
+
+    const match = result.items.find((item) => item.id === "hop-citra");
+    expect(match?.matchRescue).toBe("fuzzy");
+  });
 });

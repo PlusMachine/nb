@@ -1122,4 +1122,131 @@ describe("recipe inventory allocation service", () => {
       expect(coverage.lines[0].requiredQuantityNormalized).toBe(4000);
     });
   });
+
+  // Ф4б: opt-in-послабление INSUFFICIENT_STOCK для НЕ-presence-based строк (солод,
+  // хмель и т.п. — не только дрожжи). Две строки рецепта, короткая первой: мок
+  // recipeInventoryAllocations.findMany отдаёт аллокации в порядке пуша (см.
+  // vi.mock("@nb/db") выше — сортировки по inventoryItemId здесь нет, в отличие от
+  // brew-batch-consume-substitution.test.ts), а autoAllocate создаёт их в порядке
+  // mockState.lines — короткая строка обрабатывается ПЕРВОЙ, что и делает регресс-тест
+  // (дефолт) содержательным: движок обязан остановиться до того, как тронул склад по
+  // второй, ещё не обработанной строке.
+  describe("allowPartialConsume (Ф4б): частичное списание не-presence-based строк", () => {
+    const BATCH = uuid(410);
+    const MALT_LINE_ID = uuid(51);
+    const HOP_LINE_ID = uuid(52);
+    const MALT_ITEM_ID = uuid(61);
+    const HOP_ITEM_ID = uuid(62);
+
+    beforeEach(() => {
+      mockState.lines = [
+        {
+          id: MALT_LINE_ID,
+          recipeId: uuid(1),
+          persistentKey: uuid(151),
+          displayOrder: 0,
+          type: "malt",
+          ingredientCategory: "fermentable",
+          ingredientCatalogItemId: "pilsner-malt",
+          userCustomIngredientId: null,
+          ingredientDisplayNameSnapshot: "Пильзнер",
+          amountNormalizedQuantity: 5000,
+          amountNormalizedUnit: "g",
+          inventoryIntentMode: "use_stock",
+          inventorySelectionMeta: null
+        },
+        {
+          id: HOP_LINE_ID,
+          recipeId: uuid(1),
+          persistentKey: uuid(152),
+          displayOrder: 1,
+          type: "hop",
+          ingredientCategory: "hop",
+          ingredientCatalogItemId: "hop-cascade",
+          userCustomIngredientId: null,
+          ingredientDisplayNameSnapshot: "Cascade",
+          amountNormalizedQuantity: 50,
+          amountNormalizedUnit: "g",
+          inventoryIntentMode: "use_stock",
+          inventorySelectionMeta: null
+        }
+      ];
+      mockState.inventory = [
+        {
+          id: MALT_ITEM_ID,
+          userId: uuid(2),
+          ingredientCatalogItemId: "pilsner-malt",
+          userCustomIngredientId: null,
+          ingredientDisplayNameSnapshot: "Пильзнер (склад)",
+          // Короче требуемых 5000 г — ровно случай владельца («рисовая лузга»
+          // не хватает на складе, но остальное списать хочется).
+          normalizedQuantity: 3000,
+          normalizedUnit: "g",
+          enteredQuantity: 3000,
+          enteredUnit: "g",
+          archivedAt: null,
+          updatedAt: new Date("2026-01-01T00:00:00.000Z")
+        },
+        {
+          id: HOP_ITEM_ID,
+          userId: uuid(2),
+          ingredientCatalogItemId: "hop-cascade",
+          userCustomIngredientId: null,
+          ingredientDisplayNameSnapshot: "Cascade (склад)",
+          normalizedQuantity: 200,
+          normalizedUnit: "g",
+          enteredQuantity: 200,
+          enteredUnit: "g",
+          archivedAt: null,
+          updatedAt: new Date("2026-01-01T00:00:00.000Z")
+        }
+      ];
+      mockState.catalogItems = [
+        { id: "pilsner-malt", type: "malt", attributes: { malt_type: "base" } },
+        { id: "hop-cascade", type: "hop", attributes: {} }
+      ];
+      mockState.allocations = [];
+      mockState.transactions = [];
+    });
+
+    it("без флага (дефолт): INSUFFICIENT_STOCK на короткой строке — ПОЛНЫЙ откат, вторую строку движок не трогает", async () => {
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: BATCH });
+
+      await expect(consumeRecipeInventoryAllocations(uuid(2), uuid(1), { brewBatchId: BATCH }))
+        .rejects.toThrow("INSUFFICIENT_STOCK");
+
+      // Ни одной транзакции — включая по второй, вполне исправной строке: частично
+      // закоммиченного списания без allowPartial быть не должно (регресс-инвариант).
+      expect(mockState.transactions).toHaveLength(0);
+      expect(mockState.inventory.find((item) => item.id === MALT_ITEM_ID)?.normalizedQuantity).toBe(3000);
+      expect(mockState.inventory.find((item) => item.id === HOP_ITEM_ID)?.normalizedQuantity).toBe(200);
+    });
+
+    it("allowPartialConsume=true: короткая строка клампится до остатка, вторая строка списывается полностью", async () => {
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: BATCH });
+
+      const coverage = await consumeRecipeInventoryAllocations(uuid(2), uuid(1), {
+        brewBatchId: BATCH,
+        allowPartialConsume: true
+      });
+
+      // Короткая строка (солод, НЕ дрожжи) ушла в 0 — списали весь остаток тем же
+      // кламп-путём, что раньше был доступен только presence-based строкам.
+      const maltItem = mockState.inventory.find((item) => item.id === MALT_ITEM_ID)!;
+      expect(maltItem.normalizedQuantity).toBe(0);
+      const maltAllocation = mockState.allocations.find((allocation) => allocation.recipeIngredientId === MALT_LINE_ID)!;
+      expect(maltAllocation).toMatchObject({ status: "consumed", allocatedQuantityNormalized: 3000 });
+      expect(maltAllocation.allocationMeta).toMatchObject({
+        clamped: true,
+        requestedQuantityNormalized: 5000
+      });
+
+      // Вторая (исправная) строка списана полностью — partial-режим не заставляет
+      // клампить то, чего он не касается.
+      const hopItem = mockState.inventory.find((item) => item.id === HOP_ITEM_ID)!;
+      expect(hopItem.normalizedQuantity).toBe(150);
+      expect(mockState.transactions).toHaveLength(2);
+      expect(coverage.lines.find((recipeLine) => recipeLine.recipeIngredientId === HOP_LINE_ID)?.status).toBe("consumed");
+    });
+  });
 });

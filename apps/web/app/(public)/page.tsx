@@ -22,6 +22,7 @@ import {
 import { jsonLdScriptProps } from "@/features/ingredients/seo";
 import { contentArticleTypeLabels } from "@/features/content-articles/contracts";
 import { articleCoverFromSlug } from "@/features/content-articles/article-cover";
+import { getSectionOgImage } from "@/features/og/section";
 
 // Спектр стилей BJCP для баннера — из той же SRM-палитры, что и весь сайт
 // (srmToHex по опорным SRM), а не отдельный набор хексов.
@@ -29,9 +30,23 @@ const BJCP_SPECTRUM = `linear-gradient(90deg, ${[1, 2, 3, 5, 7, 10, 13, 16, 20, 
   .map((srm, index, list) => `${srmToHex(srm)} ${Math.round((index / (list.length - 1)) * 100)}%`)
   .join(", ")})`;
 
+const HOME_DESCRIPTION =
+  "Соберите рецепт, сверьте со складом и сварите по шагам. Рецепты сообщества, стили BJCP, калькуляторы пивовара и наша автоматика BrewForge.";
+
 export const metadata: Metadata = {
-  description:
-    "Соберите рецепт, сверьте со складом и сварите по шагам. Рецепты сообщества, стили BJCP, калькуляторы пивовара и наша автоматика BrewForge."
+  description: HOME_DESCRIPTION,
+  // openGraph страницы ЗАМЕЩАЕТ openGraph родительского layout целиком (не
+  // мёржится) — без своего блока сайтовый og:image/siteName/locale терялись бы.
+  // Повторяем поля корневого layout (type/locale/siteName/url) + описание
+  // главной + брендовую обложку раздела (Ф3, docs/specs/og-images.md §5.8).
+  openGraph: {
+    type: "website",
+    locale: "ru_RU",
+    siteName: getServerEnv().SITE_NAME,
+    url: "/",
+    description: HOME_DESCRIPTION,
+    images: [getSectionOgImage("home")]
+  }
 };
 
 export default async function HomePage() {
@@ -76,8 +91,12 @@ export default async function HomePage() {
   // (мастерская, склад, BrewForge) → инструменты → финальный CTA.
   return (
     <main className="space-y-16 pb-24 pt-8">
-      <section className="overflow-hidden rounded-[2.75rem] border border-border/80 bg-card/90 px-6 py-10 shadow-[0_45px_120px_-70px_rgba(15,23,42,0.45)] backdrop-blur sm:px-8 lg:px-10">
-        <div className="grid items-center gap-8 lg:grid-cols-[1.15fr_1fr] lg:gap-12">
+      <section className="relative nb-grain overflow-hidden rounded-[2.75rem] border border-border/80 bg-card/90 px-6 py-10 shadow-[0_45px_120px_-70px_rgba(15,23,42,0.45)] backdrop-blur sm:px-8 lg:px-10">
+        <div aria-hidden className="pointer-events-none absolute inset-0 hidden skin-hop:block">
+          <span className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 12% 0%, hsl(var(--primary) / 0.17), transparent 55%)" }} />
+          <span className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 100% 100%, hsl(var(--foreground) / 0.06), transparent 45%)" }} />
+        </div>
+        <div className="relative z-10 grid items-center gap-8 lg:grid-cols-[1.15fr_1fr] lg:gap-12">
           <div className="space-y-6">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Домашнее пивоварение</p>
             <h1 className="max-w-2xl text-balance text-4xl font-semibold leading-[0.98] text-foreground sm:text-5xl lg:text-6xl" style={{ fontFamily: "var(--font-display)" }}>
@@ -87,7 +106,7 @@ export default async function HomePage() {
               Соберите рецепт — редактор посчитает плотность, горечь и цвет на лету. Сверьте со складом, сварите по шагам и следите за брожением.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Link href="/login?next=/app/recipes/new" className="inline-flex items-center rounded-full bg-foreground px-5 py-3 text-sm font-semibold text-background transition-colors hover:bg-foreground/90">
+              <Link href="/login?next=/app/recipes/new" className="inline-flex items-center rounded-full bg-foreground px-5 py-3 text-sm font-semibold text-background transition-colors hover:bg-foreground/90 skin-hop:bg-primary skin-hop:text-primary-foreground skin-hop:hover:bg-primary/90">
                 Собрать рецепт
               </Link>
               <Link href="/recipes" className="inline-flex items-center rounded-full border border-border bg-card px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:border-border">
@@ -139,7 +158,7 @@ export default async function HomePage() {
               <Link
                 key={guide.id}
                 href={`/articles/${guide.slug}`}
-                className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition hover:border-border hover:shadow-md"
+                className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition hover:border-border hover:shadow-md skin-hop:duration-200 skin-hop:hover:-translate-y-0.5"
               >
                 {guide.coverImageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -151,9 +170,11 @@ export default async function HomePage() {
                     className="h-40 w-full object-cover"
                   />
                 ) : (
-                  <div className="flex h-40 w-full items-center justify-center" style={{ background: cover.background }} aria-hidden>
+                  <div className="relative flex h-40 w-full items-center justify-center overflow-hidden nb-grain" style={{ background: cover.background }} aria-hidden>
+                    <span aria-hidden className="absolute inset-0 hidden skin-hop:block" style={{ background: "radial-gradient(circle at 82% 18%, hsl(var(--primary) / 0.45), transparent 55%)" }} />
+                    <span aria-hidden className="absolute inset-0 hidden skin-hop:block opacity-40" style={{ backgroundImage: "radial-gradient(hsl(var(--primary) / 0.5) 1.5px, transparent 1.5px)", backgroundSize: "16px 16px", backgroundPosition: "4px 4px" }} />
                     <span
-                      className="text-6xl font-semibold leading-none opacity-25"
+                      className="text-6xl font-semibold leading-none opacity-25 skin-hop:hidden"
                       style={{ color: cover.textColor, fontFamily: "var(--font-display)" }}
                     >
                       {guide.title.charAt(0).toUpperCase()}

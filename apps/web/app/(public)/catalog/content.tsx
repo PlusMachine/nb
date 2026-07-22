@@ -230,49 +230,54 @@ const renderCatalogHub = async ({
           ) : null}
         </section>
       ) : (
-        visibleSections.map((section) => {
-          const label = catalogHubSectionLabels[section.slug];
-          const meta = categoryMeta[section.category];
-          const Icon = meta.icon;
-          const sectionHref = buildViewQueryHref(`/catalog/${section.slug}`, { view, q: "" });
-          const sectionSearchHref = buildViewQueryHref(`/catalog/${section.slug}`, { view, q });
-          const showAllInSectionLink = hasQuery && section.total > section.items.length;
+        <>
+          {result.searchRescue ? (
+            <p className="text-sm text-muted-foreground">Возможно, вы имели в виду:</p>
+          ) : null}
+          {visibleSections.map((section) => {
+            const label = catalogHubSectionLabels[section.slug];
+            const meta = categoryMeta[section.category];
+            const Icon = meta.icon;
+            const sectionHref = buildViewQueryHref(`/catalog/${section.slug}`, { view, q: "" });
+            const sectionSearchHref = buildViewQueryHref(`/catalog/${section.slug}`, { view, q });
+            const showAllInSectionLink = hasQuery && section.total > section.items.length;
 
-          // Без rounded/border/bg — карточную рамку рисует сам CatalogItemsList,
-          // иначе получается рамка-в-рамке.
-          return (
-            <section key={section.slug} className="space-y-3">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <Icon className={`h-5 w-5 ${meta.color}`} />
-                  <h2 className="text-lg font-semibold text-foreground">{label}</h2>
-                  {hasQuery ? (
-                    <span className="tabular-nums text-sm text-muted-foreground">{section.total}</span>
+            // Без rounded/border/bg — карточную рамку рисует сам CatalogItemsList,
+            // иначе получается рамка-в-рамке.
+            return (
+              <section key={section.slug} className="space-y-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <Icon className={`h-5 w-5 ${meta.color}`} />
+                    <h2 className="text-lg font-semibold text-foreground">{label}</h2>
+                    {hasQuery ? (
+                      <span className="tabular-nums text-sm text-muted-foreground">{section.total}</span>
+                    ) : null}
+                  </div>
+                  {!hasQuery ? (
+                    <Link href={sectionHref} className="text-sm font-medium text-link hover:text-link/80">
+                      Все {section.total}
+                    </Link>
                   ) : null}
                 </div>
-                {!hasQuery ? (
-                  <Link href={sectionHref} className="text-sm font-medium text-link hover:text-link/80">
-                    Все {section.total}
-                  </Link>
+
+                <CatalogItemsList
+                  items={section.items}
+                  hideSubtypeBadge={Boolean(section.subtype)}
+                  canManage={canManage}
+                />
+
+                {showAllInSectionLink ? (
+                  <p>
+                    <Link href={sectionSearchHref} className="text-sm font-medium text-link hover:text-link/80">
+                      Все {section.total} в разделе
+                    </Link>
+                  </p>
                 ) : null}
-              </div>
-
-              <CatalogItemsList
-                items={section.items}
-                hideSubtypeBadge={Boolean(section.subtype)}
-                canManage={canManage}
-              />
-
-              {showAllInSectionLink ? (
-                <p>
-                  <Link href={sectionSearchHref} className="text-sm font-medium text-link hover:text-link/80">
-                    Все {section.total} в разделе
-                  </Link>
-                </p>
-              ) : null}
-            </section>
-          );
-        })
+              </section>
+            );
+          })}
+        </>
       )}
       {/* JSON-LD в конце main: первым ребёнком <script> участвует в space-y-6
           и даёт 24px layout shift, когда исчезает при q/view=mine. */}
@@ -475,6 +480,9 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
         </section>
       ) : (
         <>
+          {result.searchRescue ? (
+            <p className="text-sm text-muted-foreground">Возможно, вы имели в виду:</p>
+          ) : null}
           <CatalogItemsList
             items={result.items}
             hideSubtypeBadge={Boolean(landing.subtype)}

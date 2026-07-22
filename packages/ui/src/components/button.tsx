@@ -9,6 +9,10 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-foreground text-background hover:bg-foreground/90",
+        // Главный CTA экрана: в классике = default, в скине hop — лайм.
+        // Кольцо фокуса в hop — непрозрачный foreground (ink): лайм/40 сливался
+        // и с бумагой, и с самой кнопкой (контраст <3:1).
+        brand: "bg-foreground text-background hover:bg-foreground/90 skin-hop:bg-primary skin-hop:text-primary-foreground skin-hop:hover:bg-primary/90 skin-hop:focus-visible:ring-foreground",
         outline: "border border-border bg-card hover:bg-accent",
         ghost: "hover:bg-accent",
         // Действие-акцент (пуск/подтверждение) и деструктив (стоп/аварийно).

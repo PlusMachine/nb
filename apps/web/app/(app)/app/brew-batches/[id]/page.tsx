@@ -30,7 +30,6 @@ import { deviceChannel } from "@/features/brew-controller";
 import { mapFermentationPlanToDeviceSteps } from "@/features/brew-controller/ferment-profile";
 import { getRecipeById } from "@/features/recipes/service";
 import { computeRecipeMatch } from "@/features/recipes/match-service";
-import { isShoppingGapLine } from "@/features/shopping/service";
 import { formatGravity, formatGravityNumber, resolvePreferredGravityUnit } from "@/features/system/gravity-units";
 import { formatRelativeTimestamp } from "@/features/recipes/format";
 import { resolveFermenterBindingStatus } from "@/features/brew-batches/fermenter-status";
@@ -47,7 +46,6 @@ import { FermentationBoard } from "@/features/brew-batches/components/fermentati
 import { FermenterPanel } from "@/features/brew-batches/components/fermenter-panel";
 import { BrewHistoryGuide } from "@/features/brew-batches/components/brew-history-guide";
 import { BrewQuickDock } from "@/features/brew-batches/components/brew-quick-dock";
-import { BrewStockNotice } from "@/features/brew-batches/components/brew-stock-notice";
 import { BatchFermentBlock } from "@/features/device-streams/components/batch-ferment-block";
 import { JustFermentingPrompt } from "@/features/device-streams/components/just-fermenting-prompt";
 import { BatchCompletedSessionPrompt } from "@/features/device-streams/components/batch-completed-session-prompt";
@@ -105,21 +103,33 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
     : [];
   const inventoryView = await getBrewBatchInventoryView(user.id, batch.id);
 
-  // Вход в список покупок из акта «Подготовка» (S3, docs/shopping-list-redesign.md
-  // D13): считаем нехватку по рецепту ЭТОЙ партии — тем же предикатом
-  // isShoppingGapLine, что даёт строки в /app/shopping, чтобы числа на двух
-  // поверхностях совпадали. Ошибка матча (рецепт удалён/недоступен) — не должна
-  // ронять страницу партии, поэтому просто гасим её в null.
+  // Покрытие склада (Ф5, docs/brew-start-flow-redesign.md): кнопка «Списать со
+  // склада» должна знать про нехватку ДО открытия диалога с превью — считаем во
+  // ВСЕХ актах, где кнопка вообще может быть видна (не только в «Подготовке», как
+  // раньше). Не считаем, когда списывать уже нечего: терминальная партия (кнопки
+  // нет вовсе), партия без своего инвентарного вида или партия, которая уже
+  // списала себя (batchAlreadyConsumed — панель показывает архивную картину, а не
+  // призыв списать). Вход в список покупок (бывший S3/D13) остаётся — теперь он
+  // строкой в самой панели «Склад», а не отдельным числом на странице.
   // brewBatchId — чтобы уже списанное НА ЭТУ партию считалось покрытием (иначе
   // после списания склад партии показывал нехватку теми же позициями, что сам же
   // и списал). Кредит виден только в контексте партии, глобальный матч его не знает.
-  let prepShortage: { missingCount: number } | null = null;
-  if (act === "prep" && batch.recipeId) {
+  let stockCoverage: { totalLines: number; presentCount: number; coveredCount: number; fullyCovered: boolean } | null = null;
+  const isTerminalAct = batch.status === "cancelled" || batch.status === "completed";
+  if (batch.recipeId && !isTerminalAct && inventoryView && !inventoryView.batchAlreadyConsumed) {
     try {
       const match = await computeRecipeMatch({ userId: user.id, recipeId: batch.recipeId, brewBatchId: batch.id });
-      prepShortage = { missingCount: match.lines.filter(isShoppingGapLine).length };
+      stockCoverage = {
+        totalLines: match.totalLines,
+        // Гейт кнопки: хоть что-то есть (partial тоже считается — списывать можно).
+        presentCount: match.lines.filter((line) => line.status !== "missing").length,
+        // Честный счёт ЗАКРЫТЫХ позиций для подписи — partial сюда не входит
+        // (товар есть, но меньше нужного, строка всё ещё «не хватает»).
+        coveredCount: match.coveredLines,
+        fullyCovered: match.totalLines > 0 && match.lines.every((line) => line.status === "covered")
+      };
     } catch {
-      prepShortage = null;
+      stockCoverage = null;
     }
   }
 
@@ -274,12 +284,6 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
 
   return (
     <div className="space-y-6">
-      {/* Тост результата списания после диалога «Сварить» (query-параметр stock).
-          useSearchParams требует Suspense-границу. */}
-      <Suspense fallback={null}>
-        <BrewStockNotice />
-      </Suspense>
-
       <div>
         <Link href="/app/brew-batches" className="inline-flex items-center gap-1 text-sm text-muted-foreground transition hover:text-foreground">
           <ChevronLeft className="h-4 w-4" aria-hidden />
@@ -363,7 +367,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
             hideStats={act === "done"}
           />
           {inventoryView ? (
-            <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} prepShortage={prepShortage} />
+            <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} stockCoverage={stockCoverage} />
           ) : null}
           {act === "done" ? <BrewNotes brewBatchId={batch.id} kind="tasting" notes={batch.tastingNotes} /> : null}
           <BrewNotes brewBatchId={batch.id} kind="brew" notes={batch.notes} />
@@ -377,7 +381,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
             plannedForIso={batch.plannedFor ? batch.plannedFor.toISOString() : null}
           />
           {inventoryView ? (
-            <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} prepShortage={prepShortage} />
+            <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} stockCoverage={stockCoverage} />
           ) : null}
           <BrewNotes brewBatchId={batch.id} kind="brew" notes={batch.notes} />
         </>
@@ -392,7 +396,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
             measurementKind={measurementKind}
             title="Начальная плотность (OG)"
           />
-          {inventoryView ? <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} /> : null}
+          {inventoryView ? <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} stockCoverage={stockCoverage} /> : null}
           <BrewNotes brewBatchId={batch.id} kind="brew" notes={batch.notes} />
           <BrewQuickDock />
         </>
@@ -444,7 +448,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
             measurementKind={measurementKind}
             title="Плотность брожения (FG)"
           />
-          {inventoryView ? <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} /> : null}
+          {inventoryView ? <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} stockCoverage={stockCoverage} /> : null}
           <BrewNotes brewBatchId={batch.id} kind="brew" notes={batch.notes} />
           <BrewQuickDock />
         </>
@@ -489,7 +493,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
               же блок, что на device-пути: он уже completed-aware и прячет «Списать»).
               Раньше в этой ветке его просто не было, и после завершения варки склад
               партии становился недоступен. */}
-          {inventoryView ? <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} /> : null}
+          {inventoryView ? <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} stockCoverage={stockCoverage} /> : null}
           {act === "done" ? <BrewNotes brewBatchId={batch.id} kind="tasting" notes={batch.tastingNotes} /> : null}
           <BrewNotes brewBatchId={batch.id} kind="brew" notes={batch.notes} />
         </>

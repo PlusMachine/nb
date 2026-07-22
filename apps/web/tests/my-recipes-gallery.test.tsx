@@ -235,4 +235,78 @@ describe("MyRecipesGallery", () => {
 
     expect(html).not.toContain("Показать ещё");
   });
+
+  it("«Ёлки-палки» находится по запросу «елки» (ё≠е нормализуется)", () => {
+    const recipes: OwnerRecipeCardDto[] = [
+      { ...baseRecipe, id: "r-1", slug: "yolki-palki", title: "Ёлки-палки" },
+      { ...baseRecipe, id: "r-2", slug: "other", title: "Другой рецепт" }
+    ];
+
+    const html = renderToStaticMarkup(
+      <MyRecipesGallery recipes={recipes} preferredGravityUnit="plato" initialQuery="елки" />
+    );
+
+    expect(html).toContain("Ёлки-палки");
+    expect(html).not.toContain("Другой рецепт");
+  });
+
+  it("рецепт со стилем «Американский стаут» находится по «cnfen» — раскладочный фолбэк от «стаут»", () => {
+    const recipes: OwnerRecipeCardDto[] = [
+      { ...baseRecipe, id: "r-1", slug: "stout", title: "Тёмное варево", styleName: "Американский стаут" },
+      { ...baseRecipe, id: "r-2", slug: "other", title: "Светлый лагер", styleName: "Пилснер" }
+    ];
+
+    const html = renderToStaticMarkup(
+      <MyRecipesGallery recipes={recipes} preferredGravityUnit="plato" initialQuery="cnfen" />
+    );
+
+    expect(html).toContain("Тёмное варево");
+    expect(html).not.toContain("Светлый лагер");
+  });
+
+  it("рецепт находится по коду стиля BJCP (например «21A»)", () => {
+    const recipes: OwnerRecipeCardDto[] = [
+      { ...baseRecipe, id: "r-1", slug: "ipa", title: "Нейтральное название", styleCode: "21A" },
+      { ...baseRecipe, id: "r-2", slug: "other", title: "Другой рецепт", styleCode: "16B" }
+    ];
+
+    const html = renderToStaticMarkup(
+      <MyRecipesGallery recipes={recipes} preferredGravityUnit="plato" initialQuery="21A" />
+    );
+
+    expect(html).toContain("Нейтральное название");
+    expect(html).not.toContain("Другой рецепт");
+  });
+
+  it("мусорный запрос «qqqzzz» даёт пустой список", () => {
+    const recipes: OwnerRecipeCardDto[] = [
+      { ...baseRecipe, id: "r-1", slug: "one", title: "Один рецепт" },
+      { ...baseRecipe, id: "r-2", slug: "two", title: "Второй рецепт" }
+    ];
+
+    const html = renderToStaticMarkup(
+      <MyRecipesGallery recipes={recipes} preferredGravityUnit="plato" initialQuery="qqqzzz" />
+    );
+
+    expect(html).not.toContain("Один рецепт");
+    expect(html).not.toContain("Второй рецепт");
+    expect(html).toContain("Ничего не найдено");
+  });
+
+  it("рецепт «Session-IPA» находится по запросу «-» — легаси литеральный фолбэк на сырую строку", () => {
+    // Запрос целиком из пунктуации нормализуется в пустую строку (normalizeSearchText
+    // вырезает «-»), buildSearchQueryVariants даёт [] — без фолбэка фильтр молча
+    // отдавал бы 0 совпадений вместо литерального substring-поиска по «-».
+    const recipes: OwnerRecipeCardDto[] = [
+      { ...baseRecipe, id: "r-1", slug: "session-ipa", title: "Session-IPA" },
+      { ...baseRecipe, id: "r-2", slug: "other", title: "Другой рецепт" }
+    ];
+
+    const html = renderToStaticMarkup(
+      <MyRecipesGallery recipes={recipes} preferredGravityUnit="plato" initialQuery="-" />
+    );
+
+    expect(html).toContain("Session-IPA");
+    expect(html).not.toContain("Другой рецепт");
+  });
 });

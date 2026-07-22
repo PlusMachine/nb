@@ -95,6 +95,15 @@ type ScopedOptions = {
    * этой мапе не проходит через resolveOwnedInventoryItemForRecipeLine вовсе.
    */
   substitutionOverrides?: Map<string, string>;
+  /**
+   * Ф4б: разрешить консьюм короткой НЕ-presence-based строки (см.
+   * isPresenceBasedRecipeLine) тем же кламп-путём, что уже применяется к дрожжам —
+   * спишется остаток, а не INSUFFICIENT_STOCK на всю транзакцию. Читает только
+   * consumeRecipeInventoryAllocations; остальные функции этот флаг игнорируют.
+   * Дефолт false — не передавшие его вызовы (реэкспорт, легаси-скрипты) сохраняют
+   * прежнее строгое поведение молча, без миграции всех мест разом.
+   */
+  allowPartialConsume?: boolean;
 };
 
 const CONSUME_EPSILON = 0.000001;
@@ -1082,10 +1091,14 @@ export const consumeRecipeInventoryAllocations = async (
       const isShort = availableQuantity + CONSUME_EPSILON < requestedQuantity;
       const line = lineById.get(allocation.recipeIngredientId) ?? null;
 
-      // Нехватка дрожжей не роняет варку (матч у них по наличию штамма): списываем
-      // остаток и метим аллокацию clamped. Для остальных категорий нехватка — ошибка,
-      // иначе списание молча разошлось бы с рецептом.
-      if (isShort && !isPresenceBasedRecipeLine(line)) {
+      // Нехватка дрожжей не роняет варку (матч у них по наличию штамма) — списываем
+      // остаток и метим аллокацию clamped безусловно. Для остальных категорий это же
+      // послабление — только opt-in (Ф4б, allowPartialConsume): владелец диалога
+      // списания явно согласился взять то, что есть, и пропустить нехватку, а не
+      // получить пустое действие. Без флага (дефолт всех прочих вызовов — старт варки,
+      // ручной подбор) нехватка по-прежнему роняет ВСЮ транзакцию, иначе склад молча
+      // разошёлся бы с рецептом.
+      if (isShort && !isPresenceBasedRecipeLine(line) && !options.allowPartialConsume) {
         throw new Error("INSUFFICIENT_STOCK");
       }
 

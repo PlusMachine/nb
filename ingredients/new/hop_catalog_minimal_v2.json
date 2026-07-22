@@ -52,7 +52,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "au-eclipse-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "au-eclipse-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "au-ella-beervingem-standard",
@@ -99,7 +125,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings.",
+  "package_variants": [
+   {
+    "id": "au-ella-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "au-ella-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "au-ella-standard",
@@ -151,7 +203,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "au-ella-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "au-ella-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "au-enigma-beervingem-standard",
@@ -199,7 +277,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings.",
+  "package_variants": [
+   {
+    "id": "au-enigma-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "au-enigma-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "au-enigma-standard",
@@ -256,7 +360,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "au-enigma-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "au-enigma-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "au-galaxy-beervingem-standard",
@@ -304,7 +434,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings.",
+  "package_variants": [
+   {
+    "id": "au-galaxy-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "au-galaxy-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "au-galaxy-standard",
@@ -346,7 +502,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "au-galaxy-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "au-galaxy-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "au-topaz-standard",
@@ -403,7 +585,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "au-topaz-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "au-topaz-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "au-vic-secret-beervingem-standard",
@@ -450,7 +658,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings.",
+  "package_variants": [
+   {
+    "id": "au-vic-secret-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "au-vic-secret-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "au-vic-secret-standard",
@@ -491,7 +725,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "au-vic-secret-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "au-vic-secret-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "au-willamette-standard",
@@ -535,7 +795,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "au-willamette-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "au-willamette-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "be-blue-northern-brewer-standard",
@@ -574,7 +860,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "be-blue-northern-brewer-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "be-blue-northern-brewer-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "by-bor-standard",
@@ -619,7 +931,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "by-bor-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "by-bor-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "by-traditional-standard",
@@ -664,7 +1002,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "by-traditional-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "by-traditional-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "cn-magnum-beervingem-standard",
@@ -714,7 +1078,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для горечи."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для горечи.",
+  "package_variants": [
+   {
+    "id": "cn-magnum-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "cn-magnum-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "cz-agnus-standard",
@@ -756,7 +1146,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "cz-agnus-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "cz-agnus-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "cz-amethyst-standard",
@@ -795,7 +1211,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "cz-amethyst-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "cz-amethyst-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "cz-bohemie-standard",
@@ -834,7 +1276,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "cz-bohemie-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "cz-bohemie-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "cz-bor-standard",
@@ -873,7 +1341,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "cz-bor-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "cz-bor-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "cz-saaz-beervingem-standard",
@@ -920,7 +1414,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата.",
+  "package_variants": [
+   {
+    "id": "cz-saaz-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "cz-saaz-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "cz-saaz-standard",
@@ -976,7 +1496,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "cz-saaz-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "cz-saaz-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "cz-vital-standard",
@@ -1015,7 +1561,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "cz-vital-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "cz-vital-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-akoya-standard",
@@ -1054,7 +1626,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "de-akoya-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-akoya-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-amarillo-standard",
@@ -1097,7 +1695,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "de-amarillo-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-amarillo-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-amira-hvg-standard",
@@ -1140,7 +1764,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-amira-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-amira-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-ariana-standard",
@@ -1202,7 +1852,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-ariana-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-ariana-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-aurum-hvg-standard",
@@ -1245,7 +1921,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-aurum-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-aurum-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-callista-hvg-standard",
@@ -1288,7 +1990,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-callista-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-callista-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-callista-standard",
@@ -1333,7 +2061,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "de-callista-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-callista-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-diamant-hvg-standard",
@@ -1376,7 +2130,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-diamant-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-diamant-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-german-amarillo-hvg-standard",
@@ -1423,7 +2203,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-german-amarillo-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-german-amarillo-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-german-cascade-hvg-standard",
@@ -1470,7 +2276,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-german-cascade-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-german-cascade-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-german-saazer-hvg-standard",
@@ -1516,7 +2348,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-german-saazer-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-german-saazer-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-hallertau-blanc-beervingem-standard",
@@ -1561,7 +2419,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата.",
+  "package_variants": [
+   {
+    "id": "de-hallertau-blanc-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-hallertau-blanc-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-hallertau-blanc-hvg-standard",
@@ -1608,7 +2492,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-hallertau-blanc-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-hallertau-blanc-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-hallertau-blanc-standard",
@@ -1656,7 +2566,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "de-hallertau-blanc-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-hallertau-blanc-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-hallertau-cascade-standard",
@@ -1702,7 +2638,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "de-hallertau-cascade-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-hallertau-cascade-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-hallertau-mittelfruh-beervingem-standard",
@@ -1752,7 +2714,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата.",
+  "package_variants": [
+   {
+    "id": "de-hallertau-mittelfruh-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-hallertau-mittelfruh-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-hallertau-mittelfruher-standard",
@@ -1804,7 +2792,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "de-hallertau-mittelfruher-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-hallertau-mittelfruher-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-hallertau-traditional-standard",
@@ -1848,7 +2862,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "de-hallertau-traditional-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-hallertau-traditional-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-hallertauer-magnum-hvg-standard",
@@ -1891,7 +2931,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-hallertauer-magnum-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-hallertauer-magnum-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-hallertauer-mittelfruher-hvg-standard",
@@ -1939,7 +3005,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-hallertauer-mittelfruher-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-hallertauer-mittelfruher-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-hallertauer-taurus-hvg-standard",
@@ -1986,7 +3078,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-hallertauer-taurus-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-hallertauer-taurus-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-hallertauer-tradition-hvg-standard",
@@ -2029,7 +3147,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-hallertauer-tradition-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-hallertauer-tradition-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-hallertaur-magnum-standard",
@@ -2077,7 +3221,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "de-hallertaur-magnum-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-hallertaur-magnum-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-helios-standard",
@@ -2118,7 +3288,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "de-helios-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-helios-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-herkules-hvg-standard",
@@ -2161,7 +3357,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-herkules-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-herkules-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-herkules-standard",
@@ -2203,7 +3425,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "de-herkules-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-herkules-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-hersbrucker-beervingem-standard",
@@ -2248,7 +3496,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата.",
+  "package_variants": [
+   {
+    "id": "de-hersbrucker-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-hersbrucker-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-hersbrucker-spat-hvg-standard",
@@ -2293,7 +3567,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-hersbrucker-spat-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-hersbrucker-spat-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-huell-melon-beervingem-standard",
@@ -2341,7 +3641,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата.",
+  "package_variants": [
+   {
+    "id": "de-huell-melon-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-huell-melon-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-huell-melon-hvg-standard",
@@ -2386,7 +3712,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-huell-melon-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-huell-melon-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-huell-melon-standard",
@@ -2437,7 +3789,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "de-huell-melon-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-huell-melon-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-magnum-standard",
@@ -2480,7 +3858,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "de-magnum-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-magnum-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-mandarina-bavaria-beervingem-standard",
@@ -2524,7 +3928,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата.",
+  "package_variants": [
+   {
+    "id": "de-mandarina-bavaria-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-mandarina-bavaria-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-mandarina-bavaria-hvg-standard",
@@ -2567,7 +3997,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-mandarina-bavaria-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-mandarina-bavaria-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-mandarina-bavaria-standard",
@@ -2627,7 +4083,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "de-mandarina-bavaria-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-mandarina-bavaria-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-northern-brewer-hvg-standard",
@@ -2670,7 +4152,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-northern-brewer-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-northern-brewer-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-nugget-beervingem-standard",
@@ -2714,7 +4222,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для горечи."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для горечи.",
+  "package_variants": [
+   {
+    "id": "de-nugget-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-nugget-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-nugget-hvg-standard",
@@ -2757,7 +4291,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-nugget-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-nugget-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-opal-hvg-standard",
@@ -2800,7 +4360,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-opal-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-opal-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-perle-beervingem-standard",
@@ -2846,7 +4432,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата.",
+  "package_variants": [
+   {
+    "id": "de-perle-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-perle-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-perle-hvg-standard",
@@ -2889,7 +4501,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-perle-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-perle-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-perle-standard",
@@ -2946,7 +4584,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "de-perle-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-perle-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-polaris-hvg-standard",
@@ -2989,7 +4653,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-polaris-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-polaris-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-saphir-beervingem-standard",
@@ -3032,7 +4722,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата.",
+  "package_variants": [
+   {
+    "id": "de-saphir-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-saphir-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-saphir-hvg-standard",
@@ -3075,7 +4791,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-saphir-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-saphir-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-saphir-standard",
@@ -3132,7 +4874,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "de-saphir-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-saphir-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-select-beervingem-standard",
@@ -3176,7 +4944,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата.",
+  "package_variants": [
+   {
+    "id": "de-select-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-select-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-smaragd-hvg-standard",
@@ -3219,7 +5013,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-smaragd-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-smaragd-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-solero-standard",
@@ -3266,7 +5086,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "de-solero-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-solero-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-spalter-select-hvg-standard",
@@ -3309,7 +5155,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-spalter-select-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-spalter-select-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-spalter-select-standard",
@@ -3361,7 +5233,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "de-spalter-select-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-spalter-select-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-tango-hvg-standard",
@@ -3404,7 +5302,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-tango-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-tango-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-tettnanger-beervingem-standard",
@@ -3453,7 +5377,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата.",
+  "package_variants": [
+   {
+    "id": "de-tettnanger-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-tettnanger-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-tettnanger-hvg-standard",
@@ -3500,7 +5450,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-tettnanger-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-tettnanger-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-titan-hvg-standard",
@@ -3543,7 +5519,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added from official HVG varietal overview for broader RF-market coverage."
+  "notes": "Added from official HVG varietal overview for broader RF-market coverage.",
+  "package_variants": [
+   {
+    "id": "de-titan-hvg-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-titan-hvg-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-tradition-beervingem-standard",
@@ -3591,7 +5593,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата.",
+  "package_variants": [
+   {
+    "id": "de-tradition-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-tradition-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "fr-aramis-standard",
@@ -3643,7 +5671,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "fr-aramis-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "fr-aramis-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "fr-barbe-rouge-standard",
@@ -3682,7 +5736,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "fr-barbe-rouge-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "fr-barbe-rouge-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "fr-bouclier-standard",
@@ -3721,7 +5801,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "fr-bouclier-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "fr-bouclier-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "gb-admiral-standard",
@@ -3760,7 +5866,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "gb-admiral-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "gb-admiral-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "gb-archer-standard",
@@ -3810,7 +5942,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "gb-archer-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "gb-archer-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "gb-boadicea-standard",
@@ -3849,7 +6007,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "gb-boadicea-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "gb-boadicea-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "gb-bramling-cross-standard",
@@ -3891,7 +6075,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "gb-bramling-cross-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "gb-bramling-cross-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "gb-bramling-standard",
@@ -3930,7 +6140,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "gb-bramling-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "gb-bramling-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "gb-brewer-s-gold-standard",
@@ -3977,7 +6213,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "gb-brewer-s-gold-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "gb-brewer-s-gold-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "gb-brewers-gold-standard",
@@ -4033,7 +6295,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "gb-brewers-gold-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "gb-brewers-gold-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "gb-bullion-standard",
@@ -4072,7 +6360,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "gb-bullion-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "gb-bullion-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "gb-challenger-standard",
@@ -4119,7 +6433,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "gb-challenger-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "gb-challenger-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "gb-east-kent-golding-standard",
@@ -4171,7 +6511,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "gb-east-kent-golding-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "gb-east-kent-golding-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "gb-east-kent-goldings-beervingem-standard",
@@ -4221,7 +6587,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата.",
+  "package_variants": [
+   {
+    "id": "gb-east-kent-goldings-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "gb-east-kent-goldings-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "gb-fuggle-beervingem-standard",
@@ -4265,7 +6657,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата.",
+  "package_variants": [
+   {
+    "id": "gb-fuggle-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "gb-fuggle-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "gb-fuggle-standard",
@@ -4314,7 +6732,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "gb-fuggle-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "gb-fuggle-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "gb-viking-standard",
@@ -4355,7 +6799,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "gb-viking-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "gb-viking-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "nz-dr-rudi-standard",
@@ -4394,7 +6864,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "nz-dr-rudi-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "nz-dr-rudi-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "nz-green-bullet-standard",
@@ -4453,7 +6949,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Classic NZ workhorse still relevant in RF market; missing from current JSON."
+  "notes": "Classic NZ workhorse still relevant in RF market; missing from current JSON.",
+  "package_variants": [
+   {
+    "id": "nz-green-bullet-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "nz-green-bullet-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "nz-kohatu-standard",
@@ -4509,7 +7031,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "nz-kohatu-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "nz-kohatu-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "nz-motueka-beervingem-standard",
@@ -4554,7 +7102,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата.",
+  "package_variants": [
+   {
+    "id": "nz-motueka-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "nz-motueka-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "nz-motueka-standard",
@@ -4595,7 +7169,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "nz-motueka-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "nz-motueka-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "nz-moutere-standard",
@@ -4644,7 +7244,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "nz-moutere-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "nz-moutere-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "nz-nectaron-standard",
@@ -4701,7 +7327,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Added as a key current New Zealand hop with strong presence in Russian pro/craft supply."
+  "notes": "Added as a key current New Zealand hop with strong presence in Russian pro/craft supply.",
+  "package_variants": [
+   {
+    "id": "nz-nectaron-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "nz-nectaron-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "nz-nelson-sauvin-beervingem-standard",
@@ -4749,7 +7401,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings.",
+  "package_variants": [
+   {
+    "id": "nz-nelson-sauvin-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "nz-nelson-sauvin-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "nz-nelson-sauvin-standard",
@@ -4796,7 +7474,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "nz-nelson-sauvin-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "nz-nelson-sauvin-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "nz-pacifica-beervingem-standard",
@@ -4843,7 +7547,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата.",
+  "package_variants": [
+   {
+    "id": "nz-pacifica-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "nz-pacifica-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "nz-rakau-standard",
@@ -4882,7 +7612,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "nz-rakau-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "nz-rakau-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "nz-riwaka-standard",
@@ -4940,7 +7696,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "nz-riwaka-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "nz-riwaka-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "nz-southern-cross-standard",
@@ -4995,7 +7777,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Normalized to Southern Cross; old Southern Kross spelling kept in aliases."
+  "notes": "Normalized to Southern Cross; old Southern Kross spelling kept in aliases.",
+  "package_variants": [
+   {
+    "id": "nz-southern-cross-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "nz-southern-cross-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "nz-superdelic-standard",
@@ -5047,7 +7855,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Added as a current NZ trend hop already present in Russian brewing community."
+  "notes": "Added as a current NZ trend hop already present in Russian brewing community.",
+  "package_variants": [
+   {
+    "id": "nz-superdelic-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "nz-superdelic-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "nz-wai-iti-standard",
@@ -5090,7 +7924,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "nz-wai-iti-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "nz-wai-iti-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "nz-waimea-standard",
@@ -5129,7 +7989,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "nz-waimea-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "nz-waimea-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "nz-wakatu-standard",
@@ -5190,7 +8076,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Canonicalized under Wakatu with Hallertau Aroma kept as alias."
+  "notes": "Canonicalized under Wakatu with Hallertau Aroma kept as alias.",
+  "package_variants": [
+   {
+    "id": "nz-wakatu-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "nz-wakatu-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "ru-podvyazny-beervingem-standard",
@@ -5234,7 +8146,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата и горечи."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата и горечи.",
+  "package_variants": [
+   {
+    "id": "ru-podvyazny-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "ru-podvyazny-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "si-ahil-standard",
@@ -5273,7 +8211,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "si-ahil-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "si-ahil-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "si-apolon-standard",
@@ -5312,7 +8276,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "si-apolon-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "si-apolon-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "si-aroma-standard",
@@ -5351,7 +8341,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "si-aroma-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "si-aroma-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "si-aurora-standard",
@@ -5399,7 +8415,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "si-aurora-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "si-aurora-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "si-aurora-super-styrian-standard",
@@ -5438,7 +8480,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "si-aurora-super-styrian-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "si-aurora-super-styrian-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "si-backa-standard",
@@ -5477,7 +8545,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "si-backa-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "si-backa-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "si-blisk-standard",
@@ -5516,7 +8610,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "si-blisk-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "si-blisk-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "si-bobek-styrian-golding-b-standard",
@@ -5555,7 +8675,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "si-bobek-styrian-golding-b-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "si-bobek-styrian-golding-b-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "si-celeia-standard",
@@ -5604,7 +8750,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "si-celeia-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "si-celeia-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "si-styrian-celeia-standard",
@@ -5647,7 +8819,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "si-styrian-celeia-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "si-styrian-celeia-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "ua-standard",
@@ -5688,7 +8886,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "ua-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "ua-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-adha-484-standard",
@@ -5727,7 +8951,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-adha-484-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-adha-484-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-ahhhroma-standard",
@@ -5766,7 +9016,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-ahhhroma-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-ahhhroma-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-ahtanum-standard",
@@ -5823,7 +9099,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-ahtanum-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-ahtanum-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-alora-standard",
@@ -5867,7 +9169,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-alora-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-alora-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-amarillo-beervingem-standard",
@@ -5912,7 +9240,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата и горечи."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата и горечи.",
+  "package_variants": [
+   {
+    "id": "us-amarillo-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-amarillo-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-amarillo-cryo-cryo",
@@ -5953,7 +9307,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-amarillo-cryo-cryo-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-amarillo-cryo-cryo-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-amarillo-standard",
@@ -6022,7 +9402,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-amarillo-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-amarillo-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-apollo-standard",
@@ -6077,7 +9483,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-apollo-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-apollo-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-azacca-standard",
@@ -6118,7 +9550,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-azacca-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-azacca-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-belma-standard",
@@ -6157,7 +9615,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-belma-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-belma-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-bravo-standard",
@@ -6210,7 +9694,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-bravo-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-bravo-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-bru-1-standard",
@@ -6260,7 +9770,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-bru-1-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-bru-1-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-calypso-standard",
@@ -6309,7 +9845,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-calypso-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-calypso-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-cascade-beervingem-standard",
@@ -6354,7 +9916,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата.",
+  "package_variants": [
+   {
+    "id": "us-cascade-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-cascade-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-cascade-cryo-beervingem-cryo",
@@ -6400,7 +9988,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата.",
+  "package_variants": [
+   {
+    "id": "us-cascade-cryo-beervingem-cryo-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-cascade-cryo-beervingem-cryo-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-cascade-standard",
@@ -6450,7 +10064,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-cascade-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-cascade-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-cashmere-standard",
@@ -6498,7 +10138,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-cashmere-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-cashmere-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-centennial-beervingem-standard",
@@ -6543,7 +10209,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата и горечи."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата и горечи.",
+  "package_variants": [
+   {
+    "id": "us-centennial-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-centennial-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-centennial-standard",
@@ -6594,7 +10286,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-centennial-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-centennial-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-chinook-beervingem-standard",
@@ -6639,7 +10357,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата и вкуса."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата и вкуса.",
+  "package_variants": [
+   {
+    "id": "us-chinook-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-chinook-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-chinook-standard",
@@ -6688,7 +10432,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-chinook-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-chinook-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-citra-beervingem-standard",
@@ -6734,7 +10504,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата и вкуса."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата и вкуса.",
+  "package_variants": [
+   {
+    "id": "us-citra-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-citra-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-citra-cryo-beervingem-cryo",
@@ -6780,7 +10576,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата и вкуса."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата и вкуса.",
+  "package_variants": [
+   {
+    "id": "us-citra-cryo-beervingem-cryo-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-citra-cryo-beervingem-cryo-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-citra-cryo-cryo",
@@ -6824,7 +10646,33 @@
    }
   ],
   "notes": "Oil value on source is likely shown in mg/100g rather than mL/100g",
-  "oil_value_unit_warning": "source anomaly / likely mg vs mL mismatch"
+  "oil_value_unit_warning": "source anomaly / likely mg vs mL mismatch",
+  "package_variants": [
+   {
+    "id": "us-citra-cryo-cryo-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-citra-cryo-cryo-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-citra-standard",
@@ -6881,7 +10729,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-citra-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-citra-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-comet-standard",
@@ -6931,7 +10805,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-comet-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-comet-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-ctz-beervingem-standard",
@@ -6985,7 +10885,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата и горечи."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата и горечи.",
+  "package_variants": [
+   {
+    "id": "us-ctz-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-ctz-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-ctz-standard",
@@ -7032,7 +10958,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-ctz-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-ctz-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-el-dorado-standard",
@@ -7081,7 +11033,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-el-dorado-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-el-dorado-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-erebus-standard",
@@ -7125,7 +11103,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-erebus-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-erebus-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-eureka-beervingem-standard",
@@ -7174,7 +11178,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings.",
+  "package_variants": [
+   {
+    "id": "us-eureka-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-eureka-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-eureka-standard",
@@ -7226,7 +11256,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-eureka-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-eureka-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-galena-standard",
@@ -7276,7 +11332,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-galena-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-galena-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-hallertau-standard",
@@ -7322,7 +11404,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-hallertau-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-hallertau-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-idaho-7-beervingem-standard",
@@ -7375,7 +11483,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings.",
+  "package_variants": [
+   {
+    "id": "us-idaho-7-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-idaho-7-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-idaho-7-cryo-beervingem-cryo",
@@ -7428,7 +11562,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; cryo pellet variant from retail listings."
+  "notes": "Popular packaging brand on the Russian homebrewing market; cryo pellet variant from retail listings.",
+  "package_variants": [
+   {
+    "id": "us-idaho-7-cryo-beervingem-cryo-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-idaho-7-cryo-beervingem-cryo-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-idaho-7-cryo-cryo",
@@ -7472,7 +11632,33 @@
    }
   ],
   "notes": null,
-  "oil_value_unit_warning": "source anomaly / likely mg vs mL mismatch"
+  "oil_value_unit_warning": "source anomaly / likely mg vs mL mismatch",
+  "package_variants": [
+   {
+    "id": "us-idaho-7-cryo-cryo-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-idaho-7-cryo-cryo-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-idaho-7-standard",
@@ -7516,7 +11702,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-idaho-7-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-idaho-7-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-idaho-gem-beervingem-standard",
@@ -7566,7 +11778,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings.",
+  "package_variants": [
+   {
+    "id": "us-idaho-gem-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-idaho-gem-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-idaho-gem-standard",
@@ -7607,7 +11845,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-idaho-gem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-idaho-gem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-krush-standard",
@@ -7681,7 +11945,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Canonicalized under Krush after the 2024 commercial release; HBC 586 kept in aliases."
+  "notes": "Canonicalized under Krush after the 2024 commercial release; HBC 586 kept in aliases.",
+  "package_variants": [
+   {
+    "id": "us-krush-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-krush-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-krush-yakima-chief-hops-standard",
@@ -7735,7 +12025,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Official Yakima Chief Hops producer-specific stock variant."
+  "notes": "Official Yakima Chief Hops producer-specific stock variant.",
+  "package_variants": [
+   {
+    "id": "us-krush-yakima-chief-hops-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-krush-yakima-chief-hops-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-lemondrop-standard",
@@ -7780,7 +12096,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-lemondrop-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-lemondrop-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-lotus-standard",
@@ -7825,7 +12167,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-lotus-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-lotus-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-lupulin-citra-lupulin-concentrate",
@@ -7864,7 +12232,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-lupulin-citra-lupulin-concentrate-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-lupulin-citra-lupulin-concentrate-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-lupulin-simcoe-lupulin-concentrate",
@@ -7908,7 +12302,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-lupulin-simcoe-lupulin-concentrate-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-lupulin-simcoe-lupulin-concentrate-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-medusa-standard",
@@ -7964,7 +12384,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Added with conservative chemistry because published figures vary by source and crop."
+  "notes": "Added with conservative chemistry because published figures vary by source and crop.",
+  "package_variants": [
+   {
+    "id": "us-medusa-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-medusa-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-mosaic-beervingem-standard",
@@ -8013,7 +12459,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата и горечи."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата и горечи.",
+  "package_variants": [
+   {
+    "id": "us-mosaic-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-mosaic-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-mosaic-cryo-cryo",
@@ -8054,7 +12526,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-mosaic-cryo-cryo-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-mosaic-cryo-cryo-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-mosaic-lupuln2-cryo-hop-lupulin-concentrate",
@@ -8097,7 +12595,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-mosaic-lupuln2-cryo-hop-lupulin-concentrate-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-mosaic-lupuln2-cryo-hop-lupulin-concentrate-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-mosaic-standard",
@@ -8144,7 +12668,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-mosaic-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-mosaic-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-mt-hood-standard",
@@ -8194,7 +12744,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-mt-hood-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-mt-hood-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-nugget-standard",
@@ -8237,7 +12813,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-nugget-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-nugget-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-sabro-beervingem-standard",
@@ -8288,7 +12890,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings.",
+  "package_variants": [
+   {
+    "id": "us-sabro-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-sabro-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-sabro-cryo-beervingem-cryo",
@@ -8340,7 +12968,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; cryo pellet variant from retail listings."
+  "notes": "Popular packaging brand on the Russian homebrewing market; cryo pellet variant from retail listings.",
+  "package_variants": [
+   {
+    "id": "us-sabro-cryo-beervingem-cryo-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-sabro-cryo-beervingem-cryo-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-sabro-standard",
@@ -8384,7 +13038,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-sabro-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-sabro-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-sabro-yakima-chief-hops-standard",
@@ -8438,7 +13118,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Official Yakima Chief Hops producer-specific stock variant."
+  "notes": "Official Yakima Chief Hops producer-specific stock variant.",
+  "package_variants": [
+   {
+    "id": "us-sabro-yakima-chief-hops-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-sabro-yakima-chief-hops-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-simcoe-beervingem-standard",
@@ -8488,7 +13194,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings.",
+  "package_variants": [
+   {
+    "id": "us-simcoe-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-simcoe-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-simcoe-cryo-cryo",
@@ -8531,7 +13263,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-simcoe-cryo-cryo-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-simcoe-cryo-cryo-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-simcoe-standard",
@@ -8579,7 +13337,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-simcoe-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-simcoe-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-sterling-standard",
@@ -8627,7 +13411,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-sterling-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-sterling-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-strata-standard",
@@ -8685,7 +13495,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Added as one of the most relevant modern US craft varieties missing from the catalog."
+  "notes": "Added as one of the most relevant modern US craft varieties missing from the catalog.",
+  "package_variants": [
+   {
+    "id": "us-strata-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-strata-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-sultana-standard",
@@ -8730,7 +13566,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-sultana-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-sultana-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-summit-standard",
@@ -8782,7 +13644,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-summit-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-summit-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-talus-beervingem-standard",
@@ -8836,7 +13724,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings.",
+  "package_variants": [
+   {
+    "id": "us-talus-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-talus-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-talus-standard",
@@ -8904,7 +13818,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Added as missing modern US hop widely visible in Russian homebrew retail."
+  "notes": "Added as missing modern US hop widely visible in Russian homebrew retail.",
+  "package_variants": [
+   {
+    "id": "us-talus-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-talus-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-trident-standard",
@@ -8951,7 +13891,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-trident-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-trident-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-triumph-standard",
@@ -9008,7 +13974,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-triumph-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-triumph-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-vanguard-standard",
@@ -9051,7 +14043,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-vanguard-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-vanguard-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-vista-standard",
@@ -9102,7 +14120,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-vista-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-vista-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-warrior-standard",
@@ -9145,7 +14189,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-warrior-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-warrior-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-willamette-beervingem-standard",
@@ -9189,7 +14259,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата.",
+  "package_variants": [
+   {
+    "id": "us-willamette-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-willamette-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-willamette-standard",
@@ -9239,7 +14335,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-willamette-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-willamette-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-wuerttemberg-beervingem-standard",
@@ -9284,7 +14406,33 @@
     "confidence": "high"
    }
   ],
-  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата."
+  "notes": "Popular packaging brand on the Russian homebrewing market; stats mainly from retail listings. Use: для аромата.",
+  "package_variants": [
+   {
+    "id": "us-wuerttemberg-beervingem-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-wuerttemberg-beervingem-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-zappa-standard",
@@ -9336,7 +14484,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": "Producer left null because available sources in this pass were inconsistent on producer branding."
+  "notes": "Producer left null because available sources in this pass were inconsistent on producer branding.",
+  "package_variants": [
+   {
+    "id": "us-zappa-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-zappa-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "xx-azacca-standard",
@@ -9388,7 +14562,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "xx-azacca-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "xx-azacca-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "xx-bitter-gold-standard",
@@ -9436,7 +14636,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "xx-bitter-gold-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "xx-bitter-gold-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "xx-bravo-standard",
@@ -9485,7 +14711,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "xx-bravo-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "xx-bravo-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "xx-bru-1-lupomax-lupomax",
@@ -9529,7 +14781,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "xx-bru-1-lupomax-lupomax-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "xx-bru-1-lupomax-lupomax-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "xx-cascade-standard",
@@ -9578,7 +14856,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "xx-cascade-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "xx-cascade-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "xx-cashmere-standard",
@@ -9627,7 +14931,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "xx-cashmere-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "xx-cashmere-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "xx-centennial-standard",
@@ -9676,7 +15006,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "xx-centennial-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "xx-centennial-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "xx-chinook-standard",
@@ -9725,7 +15081,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "xx-chinook-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "xx-chinook-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "xx-cluster-standard",
@@ -9773,7 +15155,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "xx-cluster-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "xx-cluster-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "xx-comet-standard",
@@ -9821,7 +15229,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "xx-comet-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "xx-comet-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "xx-cryo-pop-original-blend-cryo",
@@ -9870,7 +15304,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "xx-cryo-pop-original-blend-cryo-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "xx-cryo-pop-original-blend-cryo-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "xx-crystal-standard",
@@ -9918,7 +15378,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "xx-crystal-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "xx-crystal-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "xx-ekuanot-standard",
@@ -9973,7 +15459,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "xx-ekuanot-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "xx-ekuanot-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "xx-el-dorado-standard",
@@ -10021,7 +15533,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "xx-el-dorado-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "xx-el-dorado-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "xx-falconer-s-flight-7cs-standard",
@@ -10069,7 +15607,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "xx-falconer-s-flight-7cs-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "xx-falconer-s-flight-7cs-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "xx-falconer-s-flight-standard",
@@ -10117,7 +15681,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "xx-falconer-s-flight-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "xx-falconer-s-flight-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "za-92-p-2-4-standard",
@@ -10156,7 +15746,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "za-92-p-2-4-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "za-92-p-2-4-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "za-african-queen-standard",
@@ -10195,7 +15811,33 @@
     "confidence": "medium"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "za-african-queen-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "za-african-queen-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "za-xja-436-standard",
@@ -10234,7 +15876,33 @@
     "confidence": "high"
    }
   ],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "za-xja-436-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "za-xja-436-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "gb-northdown-standard",
@@ -10263,7 +15931,33 @@
    "Cedar",
    "Woody"
   ],
-  "sources": []
+  "sources": [],
+  "package_variants": [
+   {
+    "id": "gb-northdown-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "gb-northdown-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "gb-target-standard",
@@ -10292,7 +15986,33 @@
    "Citrus peel",
    "Sage"
   ],
-  "sources": []
+  "sources": [],
+  "package_variants": [
+   {
+    "id": "gb-target-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "gb-target-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-mount-hood-standard",
@@ -10328,7 +16048,33 @@
    "Pine"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-mount-hood-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-mount-hood-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-sorachi-ace-standard",
@@ -10364,7 +16110,33 @@
    "Lemongrass"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-sorachi-ace-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-sorachi-ace-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "cz-sladek-standard",
@@ -10400,7 +16172,33 @@
    "Herbal"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "cz-sladek-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "cz-sladek-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "cz-premiant-standard",
@@ -10436,7 +16234,33 @@
    "Floral"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "cz-premiant-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "cz-premiant-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "de-merkur-standard",
@@ -10471,7 +16295,33 @@
    "Spicy"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "de-merkur-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "de-merkur-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "pl-sybilla-standard",
@@ -10504,7 +16354,33 @@
    "Herbal"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "pl-sybilla-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "pl-sybilla-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-denali-standard",
@@ -10540,7 +16416,33 @@
    "Pine"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-denali-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-denali-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-sonnet-standard",
@@ -10572,7 +16474,33 @@
    "Earthy"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-sonnet-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-sonnet-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "gb-whitbread-golding-variety-standard",
@@ -10612,7 +16540,33 @@
    "Floral"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "gb-whitbread-golding-variety-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "gb-whitbread-golding-variety-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "si-savinjski-golding-standard",
@@ -10653,7 +16607,33 @@
    "Floral"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "si-savinjski-golding-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "si-savinjski-golding-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "si-styrian-cardinal-standard",
@@ -10684,7 +16664,33 @@
    "Herbal"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "si-styrian-cardinal-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "si-styrian-cardinal-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "si-styrian-fox-standard",
@@ -10716,7 +16722,33 @@
    "Grapefruit"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "si-styrian-fox-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "si-styrian-fox-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "si-styrian-colibri-standard",
@@ -10748,7 +16780,33 @@
    "Citrus"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "si-styrian-colibri-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "si-styrian-colibri-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "ru-istrinskiy-standard",
@@ -10774,7 +16832,33 @@
    "Spicy"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "ru-istrinskiy-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "ru-istrinskiy-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "ru-moskovskiy-ranniy-standard",
@@ -10800,7 +16884,33 @@
    "Floral"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "ru-moskovskiy-ranniy-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "ru-moskovskiy-ranniy-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "ru-favorit-standard",
@@ -10826,7 +16936,33 @@
    "Spicy"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "ru-favorit-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "ru-favorit-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-liberty-standard",
@@ -10862,7 +16998,33 @@
    "Floral"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-liberty-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-liberty-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-ultra-standard",
@@ -10897,7 +17059,33 @@
    "Spicy"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-ultra-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-ultra-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-santiam-standard",
@@ -10933,7 +17121,33 @@
    "Spicy"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-santiam-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-santiam-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "fr-strisselspalt-standard",
@@ -10969,7 +17183,33 @@
    "Citrus"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "fr-strisselspalt-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "fr-strisselspalt-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "cz-kazbek-standard",
@@ -11005,7 +17245,33 @@
    "Herbal"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "cz-kazbek-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "cz-kazbek-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "us-loral-standard",
@@ -11043,7 +17309,33 @@
    "Citrus"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "us-loral-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "us-loral-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "si-dana-standard",
@@ -11079,7 +17371,33 @@
    "Herbal"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "si-dana-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "si-dana-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "fr-triskel-standard",
@@ -11115,7 +17433,33 @@
    "Herbal"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "fr-triskel-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "fr-triskel-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "gb-progress-standard",
@@ -11151,7 +17495,33 @@
    "Floral"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "gb-progress-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "gb-progress-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "gb-pilgrim-standard",
@@ -11187,7 +17557,33 @@
    "Lemon"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "gb-pilgrim-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "gb-pilgrim-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "cz-rubin-standard",
@@ -11223,7 +17619,33 @@
    "Citrus"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "cz-rubin-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "cz-rubin-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  },
  {
   "id": "si-styrian-wolf-standard",
@@ -11261,6 +17683,32 @@
    "Grapefruit"
   ],
   "sources": [],
-  "notes": null
+  "notes": null,
+  "package_variants": [
+   {
+    "id": "si-styrian-wolf-standard-pack-50g",
+    "package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 50,
+     "unit": "g"
+    },
+    "is_default_for_stock": true
+   },
+   {
+    "id": "si-styrian-wolf-standard-pack-100g",
+    "package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "stock_content_per_package": {
+     "amount": 100,
+     "unit": "g"
+    },
+    "is_default_for_stock": false
+   }
+  ]
  }
 ]

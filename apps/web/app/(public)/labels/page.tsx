@@ -3,9 +3,11 @@ import React, { Suspense } from "react";
 
 import { LabelStudio } from "@/components/recipes/labels/label-studio";
 import { buildCustomLabelSlots } from "@/features/labels/slots";
+import { getSectionOgImage } from "@/features/og/section";
 import { listRecipesForAuthor } from "@/features/recipes/service";
 import { defaultPreferredGravityUnit, resolvePreferredGravityUnit } from "@/features/system/gravity-units";
 import { getSessionUser } from "@/lib/auth";
+import { getServerEnv } from "@/lib/env";
 
 // Наклейки без рецепта: инструмент с ручным заполнением полей. Тот же
 // генератор и те же шаблоны, что и на странице рецепта, — отличается только
@@ -20,11 +22,16 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/labels"
   },
+  // openGraph страницы ЗАМЕЩАЕТ openGraph родительского layout целиком (не
+  // мёржится) — locale/siteName повторяем сами (см. app/(public)/page.tsx).
   openGraph: {
     type: "website",
+    locale: "ru_RU",
+    siteName: getServerEnv().SITE_NAME,
     url: "/labels",
     title: "Наклейки на бутылки",
-    description: "Генератор наклеек на бутылки домашнего пива: заполните поля и скачайте готовый файл для печати."
+    description: "Генератор наклеек на бутылки домашнего пива: заполните поля и скачайте готовый файл для печати.",
+    images: [getSectionOgImage("labels")]
   }
 };
 

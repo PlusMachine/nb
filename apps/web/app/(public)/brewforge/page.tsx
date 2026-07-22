@@ -2,14 +2,33 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Radio, Thermometer, Timer } from "lucide-react";
 
+import { getSectionOgImage } from "@/features/og/section";
+import { getServerEnv } from "@/lib/env";
+
 // Промо-страница BrewForge — пока заглушка: контроллер в разработке, продаж нет.
 // Сюда ведёт CTA из секции BrewForge на главной; позже здесь появится полноценный
 // материал про железо, прошивку и сборку.
 
+const title = "BrewForge — автоматика варки";
+const description =
+  "Контроллер BrewForge ведёт варку по рецепту с сайта: нагрев, паузы затирания, таймеры хмеля. Проект в разработке.";
+
 export const metadata: Metadata = {
-  title: "BrewForge — автоматика варки",
-  description:
-    "Контроллер BrewForge ведёт варку по рецепту с сайта: нагрев, паузы затирания, таймеры хмеля. Проект в разработке."
+  title,
+  description,
+  // Своего twitter не задаём — наследуется дефолт из корневого layout
+  // (summary_large_image), картинка обложки раздела (Ф3) достаточна.
+  // openGraph страницы ЗАМЕЩАЕТ openGraph родительского layout целиком (не
+  // мёржится) — locale/siteName повторяем сами (см. app/(public)/page.tsx).
+  openGraph: {
+    type: "website",
+    locale: "ru_RU",
+    siteName: getServerEnv().SITE_NAME,
+    url: "/brewforge",
+    title,
+    description,
+    images: [getSectionOgImage("brewforge")]
+  }
 };
 
 const features = [

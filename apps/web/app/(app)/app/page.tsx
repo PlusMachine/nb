@@ -371,6 +371,24 @@ function InventoryWidget({ summary }: { summary: InventorySummaryDto }) {
 
 function ShoppingWidget({ shopping }: { shopping: ShoppingListDto }) {
   if (shopping.totalItems === 0) {
+    // Всё отмечено «куплено», но ещё не перенесено на склад — это не то же
+    // самое, что «нехваток нет» (nothing_to_do/all_in_stock): вводная карточка
+    // без ссылки на действие тут спрятала бы незавершённый шаг переноса.
+    if (shopping.checkedCount > 0) {
+      return (
+        <Link
+          href="/app/shopping"
+          className="group flex flex-col gap-3 rounded-2xl border border-border bg-card p-5 shadow-sm transition hover:border-border hover:shadow-md"
+        >
+          <WidgetLabel>Чего не хватает</WidgetLabel>
+          <p className="mt-auto flex items-center gap-1.5 text-sm text-success">
+            <CircleCheck className="h-4 w-4 shrink-0" aria-hidden />
+            Куплено: {shopping.checkedCount} — перенесите на склад
+          </p>
+        </Link>
+      );
+    }
+
     return (
       <div className="flex flex-col gap-3 rounded-2xl border border-dashed border-border bg-card p-5">
         <WidgetLabel>Чего не хватает</WidgetLabel>
@@ -386,7 +404,18 @@ function ShoppingWidget({ shopping }: { shopping: ShoppingListDto }) {
     );
   }
 
-  const topLines = shopping.groups.flatMap((group) => group.items).slice(0, 3);
+  // Превью — неотмеченные производные строки §3.2, затем неотмеченные ручные
+  // позиции («Своё», П1): и те, и другие ещё нужно купить. У ручной позиции
+  // quantityLabel может быть null (количество не заполнено) — рендерим тогда
+  // только имя, без числа.
+  const derivedPreview = shopping.groups
+    .flatMap((group) => group.items)
+    .filter((line) => !line.checked)
+    .map((line) => ({ key: line.key, name: line.ingredientDisplayName, quantityLabel: line.quantityLabel }));
+  const manualPreview = shopping.manualItems
+    .filter((item) => !item.checked)
+    .map((item) => ({ key: item.id, name: item.name, quantityLabel: item.quantityLabel }));
+  const topLines = [...derivedPreview, ...manualPreview].slice(0, 3);
 
   return (
     <Link
@@ -403,8 +432,10 @@ function ShoppingWidget({ shopping }: { shopping: ShoppingListDto }) {
       <ul className="space-y-1.5">
         {topLines.map((line) => (
           <li key={line.key} className="flex items-baseline justify-between gap-2 text-sm">
-            <span className="truncate text-muted-foreground">{line.ingredientDisplayName}</span>
-            <span className="shrink-0 tabular-nums text-xs text-muted-foreground">{line.quantityLabel}</span>
+            <span className="truncate text-muted-foreground">{line.name}</span>
+            {line.quantityLabel ? (
+              <span className="shrink-0 tabular-nums text-xs text-muted-foreground">{line.quantityLabel}</span>
+            ) : null}
           </li>
         ))}
       </ul>

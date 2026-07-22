@@ -23,3 +23,18 @@ export const THEME_COLOR = { light: "#f4f4f6", dark: "#09090b" } as const;
  * заранее не знает. Вставляется как есть в <script> в layout.tsx.
  */
 export const themeInitScript = `(function(){try{var m=document.cookie.match(/(?:^|;\\s*)${THEME_COOKIE}=([^;]+)/);var t=m?decodeURIComponent(m[1]):'system';var d=t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);var e=document.documentElement;e.classList.toggle('dark',d);e.style.colorScheme=d?'dark':'light';}catch(e){}})();`;
+
+/**
+ * Скин оформления (набор значений токенов + шрифты) поверх светлой/тёмной темы.
+ * `classic` — текущий вид (без класса), `hop` — класс `skin-hop` на <html>.
+ * Хранится в cookie `nb_skin`; сервер знает её при рендере, поэтому отдельный
+ * инлайн-скрипт (как для system-темы) не нужен.
+ */
+export const SKIN_COOKIE = "nb_skin";
+
+export type SkinPreference = "classic" | "hop";
+export const DEFAULT_SKIN_PREFERENCE: SkinPreference = "classic";
+
+export function parseSkinPreference(value: string | null | undefined): SkinPreference {
+  return value === "hop" ? "hop" : DEFAULT_SKIN_PREFERENCE;
+}

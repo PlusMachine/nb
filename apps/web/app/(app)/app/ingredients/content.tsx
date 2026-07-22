@@ -13,7 +13,7 @@ import {
   hasActiveInventoryFilters,
   resolveInventoryShowFinished
 } from "@/features/inventory/page-model";
-import { getInventorySummaries, listInventoryForUser } from "@/features/inventory/service";
+import { getInventorySummaries, listInventoryForUserWithMeta } from "@/features/inventory/service";
 import {
   ingredientCategories,
   ingredientTypes,
@@ -116,8 +116,8 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
     ? (rawAddCategory as IngredientCategory)
     : undefined;
 
-  const [items, summary, currencyRates, initialSelection, missingCount] = await Promise.all([
-    listInventoryForUser(user.id, {
+  const [{ items, searchRescue }, summary, currencyRates, initialSelection, missingCount] = await Promise.all([
+    listInventoryForUserWithMeta(user.id, {
       category,
       subtype,
       group,
@@ -187,13 +187,18 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
       showFinished={showFinished}
     />
   ) : (
-    <GroupedInventoryList
-      items={items}
-      preferredCurrency={user.preferredCurrency}
-      currencyRates={currencyRates}
-      layout={sort === "price" || sort === "best_before" ? "flat" : "grouped"}
-      sortEmphasis={sort === "price" ? "price" : sort === "best_before" ? "best_before" : null}
-    />
+    <div className="space-y-3">
+      {searchRescue === "layout" ? (
+        <p className="text-sm text-muted-foreground">Возможно, вы имели в виду:</p>
+      ) : null}
+      <GroupedInventoryList
+        items={items}
+        preferredCurrency={user.preferredCurrency}
+        currencyRates={currencyRates}
+        layout={sort === "price" || sort === "best_before" ? "flat" : "grouped"}
+        sortEmphasis={sort === "price" ? "price" : sort === "best_before" ? "best_before" : null}
+      />
+    </div>
   );
 
   // «Можно сварить» — главный мотиватор страницы. На десктопе выносим в правый

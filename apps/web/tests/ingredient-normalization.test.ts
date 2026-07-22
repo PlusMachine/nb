@@ -17,13 +17,12 @@ describe("ingredient normalization", () => {
     expect(normalizeAliasList(["Citra", " citra ", "CITRA"])).toEqual(["citra"]);
   });
 
-  it("builds ru/en typo and layout query variants", () => {
+  it("builds ru/en typo query variants", () => {
     const typoVariants = buildQueryVariants("пильзнер");
     const shortFamilyVariants = buildQueryVariants("pil");
     const latinVariants = buildQueryVariants("pilsen");
     const familyVariants = buildQueryVariants("pils");
     const familyVariantsRu = buildQueryVariants("пилс");
-    const layoutVariants = buildQueryVariants("зшдытук");
 
     expect(typoVariants).toContain("пилснер");
     expect(typoVariants).toContain("pilsner");
@@ -32,7 +31,11 @@ describe("ingredient normalization", () => {
     expect(familyVariants).toContain("pilsner");
     expect(familyVariants).toContain("pilsener");
     expect(familyVariantsRu).toContain("пильзен");
-    expect(layoutVariants).toContain("pilsner");
+  });
+
+  it("раскладка выключена по умолчанию — только опциональным фолбэком", () => {
+    expect(buildQueryVariants("зшдытук")).not.toContain("pilsner");
+    expect(buildQueryVariants("зшдытук", { includeLayoutVariants: true })).toContain("pilsner");
   });
 
   it("consumes manufacturer-like query fully for brand-first refinements", () => {

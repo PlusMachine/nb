@@ -8,15 +8,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   requireUser: vi.fn(),
   createBrewBatchFromRecipe: vi.fn(),
-  startBrewOnDevice: vi.fn(),
-  consumeBrewBatchInventoryForStart: vi.fn()
+  startBrewOnDevice: vi.fn()
 }));
 
 vi.mock("@/lib/auth", () => ({ requireUser: mocks.requireUser }));
 vi.mock("@/features/brew-batches/service", () => ({ createBrewBatchFromRecipe: mocks.createBrewBatchFromRecipe }));
-vi.mock("@/features/brew-batches/inventory", () => ({
-  consumeBrewBatchInventoryForStart: mocks.consumeBrewBatchInventoryForStart
-}));
 vi.mock("./actions", () => ({ startBrewOnDevice: mocks.startBrewOnDevice }));
 
 import { startBrewOnDeviceFromRecipeAction } from "./brew-recipe-flow";
@@ -29,7 +25,6 @@ beforeEach(() => {
   mocks.requireUser.mockReset();
   mocks.createBrewBatchFromRecipe.mockReset();
   mocks.startBrewOnDevice.mockReset();
-  mocks.consumeBrewBatchInventoryForStart.mockReset();
   mocks.requireUser.mockResolvedValue({ id: USER_ID });
 });
 
@@ -139,87 +134,5 @@ describe("startBrewOnDeviceFromRecipeAction", () => {
     expect(result.heatingStarted).toBe(false);
     expect(result.brewBatchId).toBe("batch-4");
     expect(result.message).toContain("Устройство не найдено");
-  });
-
-  it("consumeIngredients=true и устройство бросает: списание уже в БД — result.consume не теряется в catch", async () => {
-    mocks.createBrewBatchFromRecipe.mockResolvedValue({ id: "batch-4b" });
-    mocks.consumeBrewBatchInventoryForStart.mockResolvedValue({ ok: true, itemCount: 2 });
-    mocks.startBrewOnDevice.mockRejectedValue(new Error("DEVICE_NOT_FOUND"));
-
-    const result = await startBrewOnDeviceFromRecipeAction({
-      recipeId: RECIPE_ID,
-      deviceId: DEVICE_ID,
-      consumeIngredients: true
-    });
-
-    expect(result.ok).toBe(false);
-    expect(result.brewBatchId).toBe("batch-4b");
-    expect(result.message).toContain("Устройство не найдено");
-    // Списание фиксируется ДО вызова устройства — брошенная ошибка не должна его «съесть».
-    expect(result.consume).toEqual({ ok: true, itemCount: 2 });
-    expect(mocks.consumeBrewBatchInventoryForStart).toHaveBeenCalledWith(USER_ID, "batch-4b");
-  });
-
-  it("consumeIngredients=true и списание прошло: result.consume — ok с itemCount", async () => {
-    mocks.createBrewBatchFromRecipe.mockResolvedValue({ id: "batch-5" });
-    mocks.consumeBrewBatchInventoryForStart.mockResolvedValue({ ok: true, itemCount: 3 });
-    mocks.startBrewOnDevice.mockResolvedValue({
-      ok: true,
-      heatingStarted: true,
-      status: "brewing",
-      externalId: "0",
-      slot: 0,
-      ack: { ok: true, reason: null },
-      reason: null
-    });
-
-    const result = await startBrewOnDeviceFromRecipeAction({
-      recipeId: RECIPE_ID,
-      deviceId: DEVICE_ID,
-      consumeIngredients: true
-    });
-
-    expect(mocks.consumeBrewBatchInventoryForStart).toHaveBeenCalledWith(USER_ID, "batch-5");
-    expect(result.consume).toEqual({ ok: true, itemCount: 3 });
-  });
-
-  it("consumeIngredients=true и склад уже списан: result.consume — ok false code already_consumed", async () => {
-    mocks.createBrewBatchFromRecipe.mockResolvedValue({ id: "batch-6" });
-    mocks.consumeBrewBatchInventoryForStart.mockResolvedValue({ ok: false, code: "already_consumed" });
-    mocks.startBrewOnDevice.mockResolvedValue({
-      ok: true,
-      heatingStarted: true,
-      status: "brewing",
-      externalId: "0",
-      slot: 0,
-      ack: { ok: true, reason: null },
-      reason: null
-    });
-
-    const result = await startBrewOnDeviceFromRecipeAction({
-      recipeId: RECIPE_ID,
-      deviceId: DEVICE_ID,
-      consumeIngredients: true
-    });
-
-    expect(result.consume).toEqual({ ok: false, code: "already_consumed" });
-  });
-
-  it("без consumeIngredients: result.consume не задан, списание не вызывается", async () => {
-    mocks.createBrewBatchFromRecipe.mockResolvedValue({ id: "batch-7" });
-    mocks.startBrewOnDevice.mockResolvedValue({
-      ok: true,
-      heatingStarted: true,
-      status: "brewing",
-      externalId: "0",
-      slot: 0,
-      ack: { ok: true, reason: null },
-      reason: null
-    });
-
-    const result = await startBrewOnDeviceFromRecipeAction({ recipeId: RECIPE_ID, deviceId: DEVICE_ID });
-
-    expect(result.consume).toBeUndefined();
-    expect(mocks.consumeBrewBatchInventoryForStart).not.toHaveBeenCalled();
   });
 });

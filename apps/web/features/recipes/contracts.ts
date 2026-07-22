@@ -722,6 +722,10 @@ export type PublicRecipeListResult = {
   page: number;
   pageSize: number;
   facets?: PublicRecipeFacets; // опционально (Phase C)
+  // Rescue-выдача (С4): второй (раскладочный) проход поиска дал непустой
+  // результат — correctedQuery это нормализованный запрос после свопа раскладки.
+  // null/undefined — обычный поиск, без пометки.
+  rescue?: { correctedQuery: string } | null;
 };
 
 // Рейтинги (Phase D, §3.4). Валидация на сервере: stars 1..5, body до 2000 симв.
@@ -860,11 +864,12 @@ export type RecipeDetailDto = RecipeListItemDto & {
 
 /**
  * Тонкая проекция рецепта для OG-карточки (превью ссылки). Карточке нужны только
- * скаляры строки + рейтинг + число варок + styleId — НЕ ингредиенты, версии,
- * клон-источник, автор. Отдельный тип, чтобы горячий публичный OG-эндпоинт не
- * тащил тяжёлый `mapRecipeDetailDto` с N+1 по ингредиентам (см.
- * `getPublicRecipeOgData` в ./service.ts). `RecipeDetailDto` структурно
- * присваиваем в `RecipeOgData` — та же карточка строится и из детального DTO.
+ * скаляры строки + рейтинг + число варок + styleId + heroImageId (Ф5: фото-врезка) —
+ * НЕ ингредиенты, версии, клон-источник, автор. Отдельный тип, чтобы горячий
+ * публичный OG-эндпоинт не тащил тяжёлый `mapRecipeDetailDto` с N+1 по
+ * ингредиентам (см. `getPublicRecipeOgData` в ./service.ts). `RecipeDetailDto`
+ * структурно присваиваем в `RecipeOgData` — та же карточка строится и из
+ * детального DTO.
  */
 export type RecipeOgData = Pick<
   RecipeListItemDto,
@@ -880,6 +885,7 @@ export type RecipeOgData = Pick<
 > & {
   rating: { average: number; count: number } | null;
   completedBrewCount: number;
+  heroImageId: string | null;
 };
 
 export type RecipeDraftPreviewDto = {

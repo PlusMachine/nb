@@ -38,11 +38,11 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
       n: params.get("n") ?? undefined,
       abv: params.get("abv") ?? undefined
     });
-    return renderOgCardResponse(buildBeerOgView(beer, bottle, { domain, wordmark: SITE_NAME }));
+    return await renderOgCardResponse(buildBeerOgView(beer, bottle, { domain, wordmark: SITE_NAME }));
   } catch (error) {
     console.error("og beer card render failed", { slug, error });
     try {
-      return renderOgFallbackResponse(SITE_NAME);
+      return await renderOgFallbackResponse(SITE_NAME);
     } catch {
       return ogStaticFallback();
     }

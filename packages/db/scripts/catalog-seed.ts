@@ -4,12 +4,14 @@ import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 import {
+  and,
   db,
   inArray,
   ingredientAliases,
   ingredients,
   ingredientPackageVariants,
-  ingredientSources
+  ingredientSources,
+  notInArray
 } from "../src";
 
 type CatalogSeedFileSpec = {
@@ -310,6 +312,52 @@ const buildConsumableQuantityDefaults = (source: Record<string, unknown>) => {
     stock_units_supported: uniqueStockUnits
   });
 };
+
+/**
+ * Общий парсер `package_variants` из сид-файла в строки ingredient_package_variants.
+ * Изначально жил только в билдере расходников; хмель/дрожжи/расходники используют
+ * один и тот же формат исходных данных, так что поведение (включая ошибку на
+ * вариант без id и нормализацию единицы stock_content через normalizeSeedInventoryUnit)
+ * должно оставаться одинаковым для всех вызывающих.
+ */
+const readPackageVariants = (
+  source: Record<string, unknown>,
+  ingredientId: string
+): Array<typeof ingredientPackageVariants.$inferInsert> => (
+  Array.isArray(source.package_variants)
+    ? source.package_variants
+      .filter(isRecord)
+      .map((variant, index) => {
+        const variantId = readString(variant.id);
+        if (!variantId) {
+          throw new Error(`Ingredient ${ingredientId} has package variant without id`);
+        }
+
+        const packageInfo = isRecord(variant.package) ? variant.package : {};
+        const stockContentInfo = isRecord(variant.stock_content_per_package) ? variant.stock_content_per_package : {};
+        const sourceInfo = isRecord(variant.source) ? variant.source : {};
+
+        return {
+          id: variantId,
+          ingredientId,
+          brand: readString(variant.brand),
+          productNameEn: readString(variant.product_name_en),
+          productNameRu: readString(variant.product_name_ru),
+          countryNameRu: readString(variant.country_name_ru) ?? readString(variant.country_name_en),
+          packageAmount: readNumber(packageInfo.amount),
+          packageUnit: readString(packageInfo.unit),
+          stockContentAmount: readNumber(stockContentInfo.amount),
+          // Содержимое пачки уходит в normalized_unit складской позиции: единица
+          // обязана быть рантайм-единицей ('item'), а не сырым 'pcs' из источника.
+          stockContentUnit: normalizeSeedInventoryUnit(readString(stockContentInfo.unit)),
+          sourceGroup: readString(sourceInfo.group),
+          sourceUrl: readString(sourceInfo.url),
+          isDefaultForStock: Boolean(variant.is_default_for_stock ?? index === 0),
+          position: index
+        } satisfies typeof ingredientPackageVariants.$inferInsert;
+      })
+    : []
+);
 
 export const normalizeCatalogAlias = (value: string) => value
   .normalize("NFKC")
@@ -694,7 +742,7 @@ const prepareHop = (item: unknown): PreparedSeedIngredient => {
       { locale: "neutral", values: source.producer_aliases }
     ]),
     sources: buildSourceRows(id, source.sources),
-    packageVariants: []
+    packageVariants: readPackageVariants(source, id)
   };
 };
 
@@ -834,7 +882,7 @@ const prepareYeast = (item: unknown): PreparedSeedIngredient => {
       { locale: "en", values: source.aliases_en }
     ]),
     sources: [],
-    packageVariants: []
+    packageVariants: readPackageVariants(source, id)
   };
 };
 
@@ -877,39 +925,7 @@ const prepareConsumable = (item: unknown): PreparedSeedIngredient => {
   const legacyCategory = readString(source.category);
   const legacySubcategory = readString(source.subcategory);
 
-  const packageVariants = Array.isArray(source.package_variants)
-    ? source.package_variants
-      .filter(isRecord)
-      .map((variant, index) => {
-        const variantId = readString(variant.id);
-        if (!variantId) {
-          throw new Error(`Consumable ${id} has package variant without id`);
-        }
-
-        const packageInfo = isRecord(variant.package) ? variant.package : {};
-        const stockContentInfo = isRecord(variant.stock_content_per_package) ? variant.stock_content_per_package : {};
-        const sourceInfo = isRecord(variant.source) ? variant.source : {};
-
-        return {
-          id: variantId,
-          ingredientId: id,
-          brand: readString(variant.brand),
-          productNameEn: readString(variant.product_name_en),
-          productNameRu: readString(variant.product_name_ru),
-          countryNameRu: readString(variant.country_name_ru) ?? readString(variant.country_name_en),
-          packageAmount: readNumber(packageInfo.amount),
-          packageUnit: readString(packageInfo.unit),
-          stockContentAmount: readNumber(stockContentInfo.amount),
-          // Содержимое пачки уходит в normalized_unit складской позиции: единица
-          // обязана быть рантайм-единицей ('item'), а не сырым 'pcs' из источника.
-          stockContentUnit: normalizeSeedInventoryUnit(readString(stockContentInfo.unit)),
-          sourceGroup: readString(sourceInfo.group),
-          sourceUrl: readString(sourceInfo.url),
-          isDefaultForStock: Boolean(variant.is_default_for_stock ?? index === 0),
-          position: index
-        } satisfies typeof ingredientPackageVariants.$inferInsert;
-      })
-    : [];
+  const packageVariants = readPackageVariants(source, id);
 
   return {
     ingredient: {
@@ -1068,9 +1084,11 @@ const seedCatalogFile = async (spec: CatalogSeedFileSpec) => {
       });
     }
 
+    // aliases/sources: ничего в БД не ссылается на конкретную строку этих
+    // таблиц (нет пользовательских FK) — delete-all-по-ingredientId+insert
+    // безопасен, id генерируется заново на каждый прогон, терять нечего.
     await tx.delete(ingredientAliases).where(inArray(ingredientAliases.ingredientId, ingredientIds));
     await tx.delete(ingredientSources).where(inArray(ingredientSources.ingredientId, ingredientIds));
-    await tx.delete(ingredientPackageVariants).where(inArray(ingredientPackageVariants.ingredientId, ingredientIds));
 
     const aliases = items.flatMap((item) => item.aliases);
     const sources = items.flatMap((item) => item.sources);
@@ -1084,8 +1102,39 @@ const seedCatalogFile = async (spec: CatalogSeedFileSpec) => {
       await tx.insert(ingredientSources).values(sources);
     }
 
-    if (packageVariants.length) {
-      await tx.insert(ingredientPackageVariants).values(packageVariants);
+    // package_variants — В ОТЛИЧИЕ от aliases/sources выше НЕЛЬЗЯ delete-all+
+    // insert: user_ingredients.package_variant_id ссылается на эту таблицу с
+    // ON DELETE SET NULL. Delete всех вариантов файла на каждом db:seed/
+    // catalog:sync рвёт привязку фасовки у пользователей, у которых она есть —
+    // повторная вставка строки с ТЕМ ЖЕ id ничего не восстанавливает, потому
+    // что ссылающаяся запись user_ingredients уже получила NULL и остаётся с
+    // ним навсегда. Вместо этого — upsert по id (сохраняет саму строку и FK на
+    // неё при изменении остальных полей) + удаление точечно только вариантов,
+    // исчезнувших из файла.
+    const newPackageVariantIds = packageVariants.map((variant) => variant.id);
+
+    for (const variant of packageVariants) {
+      await tx.insert(ingredientPackageVariants).values(variant).onConflictDoUpdate({
+        target: [ingredientPackageVariants.id],
+        set: {
+          ...variant,
+          updatedAt: new Date()
+        }
+      });
+    }
+
+    if (newPackageVariantIds.length > 0) {
+      await tx.delete(ingredientPackageVariants).where(
+        and(
+          inArray(ingredientPackageVariants.ingredientId, ingredientIds),
+          notInArray(ingredientPackageVariants.id, newPackageVariantIds)
+        )
+      );
+    } else {
+      // Пустой список — та же ловушка drizzle, что и в pruneOrphanLineChecks
+      // (features/shopping/data.ts): notInArray с [] не эквивалентен «всё» —
+      // короткое замыкание явным delete без notInArray.
+      await tx.delete(ingredientPackageVariants).where(inArray(ingredientPackageVariants.ingredientId, ingredientIds));
     }
 
     console.log(`${spec.fileName}: processed ${items.length}, inserted ${inserted}, updated ${updated}`);

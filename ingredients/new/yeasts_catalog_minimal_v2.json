@@ -2139,6 +2139,20 @@
    "pof": "positive",
    "aliases_ru": [
     "Би-134"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-be-134-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -2162,6 +2176,20 @@
    "aliases_ru": [
     "Би-256",
     "бельгийский аббатский"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-be-256-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -2189,6 +2217,20 @@
    ],
    "source_urls": [
     "https://fermentis.com/en/product/safbrew-br%E2%80%918/"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-br-8-safbrew-br-8-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -2210,7 +2252,21 @@
    "fermentation_temp_c_max": 26,
    "species": "Saccharomyces cerevisiae",
    "present_on_birrf": true,
-   "source_basis": "official+birrf"
+   "source_basis": "official+birrf",
+   "package_variants": [
+    {
+     "id": "fermentis-bw-20-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
+   ]
   },
   {
    "id": "fermentis-da-16",
@@ -2238,6 +2294,20 @@
    "aliases_ru": [
     "Brut IPA",
     "очень сухое пиво"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-da-16-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -2270,6 +2340,20 @@
    ],
    "source_urls": [
     "https://fermentis.com/en/product/safbrew-dw%E2%80%9117/"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-dw-17-safbrew-dw-17-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -2299,6 +2383,20 @@
    ],
    "source_urls": [
     "https://fermentis.com/en/product/saflager-e%E2%80%9130/"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-e-30-saflager-e-30-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -2332,6 +2430,20 @@
    ],
    "source_urls": [
     "https://fermentis.com/en/product/safale-f%E2%80%912/"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-f-2-safale-f-2-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -2359,6 +2471,20 @@
    "pof": "positive",
    "aliases_ru": [
     "для high gravity"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-ha-18-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -2395,6 +2521,20 @@
    "aliases_en": [
     "K97",
     "Fermentis K-97"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-k-97-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -2415,7 +2555,21 @@
    "present_on_birrf": true,
    "source_basis": "official+birrf",
    "notes": "Для low/no alcohol beer.",
-   "pof": "positive"
+   "pof": "positive",
+   "package_variants": [
+    {
+     "id": "fermentis-la-01-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
+   ]
   },
   {
    "id": "fermentis-ld-20-safbrew-ld-20",
@@ -2443,6 +2597,20 @@
    ],
    "source_urls": [
     "https://fermentis.com/en/product/safbrew-ld%E2%80%9120/"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-ld-20-safbrew-ld-20-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -2478,6 +2646,20 @@
    "aliases_en": [
     "S04",
     "Fermentis S-04"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-s-04-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -2505,6 +2687,20 @@
    "pof": "negative",
    "aliases_ru": [
     "С-189"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-s-189-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -2532,6 +2728,20 @@
    "pof": "negative",
    "aliases_ru": [
     "С-23"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-s-23-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -2558,6 +2768,20 @@
    "source_basis": "official+birrf",
    "aliases_ru": [
     "ЭС-33"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-s-33-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -2583,6 +2807,20 @@
    "notes": "Штамм для усиления тиольного профиля хмеля.",
    "aliases_ru": [
     "thiol lager"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-sh-45-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -2611,6 +2849,20 @@
    "aliases_ru": [
     "Т-58",
     "бельгийский пряный эль"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-t-58-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -2646,6 +2898,20 @@
    "aliases_en": [
     "US05",
     "Fermentis US-05"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-us-05-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -2679,6 +2945,20 @@
     "W34/70",
     "34-70",
     "Fermentis W-34/70"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-w-34-70-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -2703,6 +2983,20 @@
    "source_basis": "official+birrf",
    "aliases_ru": [
     "немецкие пшеничные"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-w-68-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -2730,6 +3024,20 @@
    "pof": "positive",
    "aliases_ru": [
     "ВБ-06"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-wb-06-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -2910,6 +3218,20 @@
    ],
    "aliases_en": [
     "LalBrew Abbaye"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-abbaye-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -2945,6 +3267,20 @@
    ],
    "source_urls": [
     "https://www.lallemandbrewing.com/es/global/productos/lalbrew-aurora/"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-aurora-lalbrew-aurora-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -2974,6 +3310,20 @@
    ],
    "aliases_en": [
     "LalBrew Belle Saison"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-belle-saison-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3002,6 +3352,20 @@
    "aliases_en": [
     "LalBrew BRY-97",
     "West Coast Ale"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-bry-97-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3029,6 +3393,20 @@
    ],
    "aliases_en": [
     "LalBrew CBC-1"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-cbc-1-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3056,6 +3434,20 @@
    ],
    "aliases_en": [
     "LalBrew Diamond Lager"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-diamond-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3080,6 +3472,20 @@
    ],
    "source_urls": [
     "https://connect.lallemandbrewing.com/en/canada/essential-series/"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-essential-01-essential-01-ale-and-lager-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3104,6 +3510,20 @@
    ],
    "source_urls": [
     "https://connect.lallemandbrewing.com/en/canada/essential-series/"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-essential-02-essential-02-lager-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3128,6 +3548,20 @@
    ],
    "source_urls": [
     "https://connect.lallemandbrewing.com/en/canada/essential-series/"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-essential-03-essential-03-ipa-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3159,6 +3593,20 @@
    ],
    "source_urls": [
     "https://connect.lallemandbrewing.com/wp-content/uploads/2024/11/Essential-04-Fruity-IPA-TDS-ENG-.pdf"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-essential-04-essential-04-fruity-ipa-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3190,6 +3638,20 @@
    ],
    "source_urls": [
     "https://connect.lallemandbrewing.com/wp-content/uploads/2024/11/Essential-05-Wheat-TDS-ENG.pdf"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-essential-05-essential-05-wheat-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3223,6 +3685,20 @@
    ],
    "source_urls": [
     "https://www.lallemandbrewing.com/fr/canada/produits/lalbrew-farmhouse/"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-farmhouse-lalbrew-farmhouse-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3249,6 +3725,20 @@
    ],
    "aliases_en": [
     "LalBrew House Ale"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-house-ale-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3277,6 +3767,20 @@
    ],
    "aliases_en": [
     "LalBrew LoNa"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-lona-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3305,6 +3809,20 @@
    ],
    "aliases_en": [
     "LalBrew London ESB"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-london-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3333,6 +3851,20 @@
    ],
    "aliases_en": [
     "LalBrew Munich Classic"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-munich-classic-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3361,6 +3893,20 @@
    ],
    "aliases_en": [
     "LalBrew New England"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-new-england-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3390,6 +3936,20 @@
    ],
    "aliases_en": [
     "LalBrew Nottingham Ale"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-nottingham-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3421,6 +3981,20 @@
    ],
    "aliases_en": [
     "LalBrew NovaLager"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-novalager-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3453,6 +4027,20 @@
    ],
    "aliases_en": [
     "WildBrew Philly Sour"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-philly-sour-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3482,6 +4070,20 @@
    ],
    "aliases_en": [
     "LalBrew Pomona"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-pomona-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3514,6 +4116,20 @@
    "aliases_en": [
     "LalBrew Verdant IPA",
     "LalBrew Verdant"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-verdant-ipa-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3546,6 +4162,20 @@
     "LalBrew Voss Kveik",
     "LalBrew Voss",
     "Voss Kveik"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-voss-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3574,6 +4204,20 @@
    ],
    "aliases_en": [
     "LalBrew Windsor Ale"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-windsor-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3601,6 +4245,20 @@
    ],
    "aliases_en": [
     "LalBrew Wit"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-wit-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3632,6 +4290,20 @@
    ],
    "source_urls": [
     "https://help.mangrovejacks.com/hc/en-us/articles/360019110594-What-can-I-use-instead-of-the-M10-Workhorse-Yeast-now-it-s-discontinued"
+   ],
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-m10-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3654,7 +4326,21 @@
    "alcohol_tolerance_abv_typical": 12.0,
    "present_on_birrf": true,
    "source_basis": "official+birrf",
-   "notes": "Быстрый теплолюбивый квейк-штамм."
+   "notes": "Быстрый теплолюбивый квейк-штамм.",
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-m12-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
+   ]
   },
   {
    "id": "mangrove-jack-s-m15",
@@ -3675,6 +4361,20 @@
    "source_basis": "official+birrf",
    "aliases_ru": [
     "Empire Ale"
+   ],
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-m15-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3695,7 +4395,21 @@
    "fermentation_temp_c_max": 30,
    "fermentation_temp_c_optimum": 24,
    "present_on_birrf": true,
-   "source_basis": "official+birrf"
+   "source_basis": "official+birrf",
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-m20-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
+   ]
   },
   {
    "id": "mangrove-jack-s-m21",
@@ -3715,7 +4429,21 @@
    "fermentation_temp_c_max": 25,
    "fermentation_temp_c_optimum": 21.5,
    "present_on_birrf": true,
-   "source_basis": "official+birrf"
+   "source_basis": "official+birrf",
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-m21-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
+   ]
   },
   {
    "id": "mangrove-jack-s-m24",
@@ -3738,6 +4466,20 @@
    "notes": "Powered by LalBrew NovaLager according to Mangrove Jack's.",
    "aliases_ru": [
     "версалагер"
+   ],
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-m24-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3756,7 +4498,21 @@
    "fermentation_temp_c_max": 32,
    "fermentation_temp_c_optimum": 29,
    "present_on_birrf": true,
-   "source_basis": "official+birrf"
+   "source_basis": "official+birrf",
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-m29-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
+   ]
   },
   {
    "id": "mangrove-jack-s-m31",
@@ -3774,7 +4530,21 @@
    "fermentation_temp_c_max": 28,
    "fermentation_temp_c_optimum": 23,
    "present_on_birrf": true,
-   "source_basis": "official+birrf"
+   "source_basis": "official+birrf",
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-m31-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
+   ]
   },
   {
    "id": "mangrove-jack-s-m36",
@@ -3800,6 +4570,20 @@
    ],
    "aliases_en": [
     "Liberty Bell"
+   ],
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-m36-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3815,7 +4599,21 @@
    "fermentation_temp_c_min": 18,
    "fermentation_temp_c_max": 23,
    "present_on_birrf": true,
-   "source_basis": "official+birrf"
+   "source_basis": "official+birrf",
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-m41-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
+   ]
   },
   {
    "id": "mangrove-jack-s-m42",
@@ -3833,6 +4631,20 @@
    "source_basis": "official+birrf",
    "aliases_ru": [
     "сильный эль"
+   ],
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-m42-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3860,6 +4672,20 @@
    "aliases_en": [
     "US West Coast",
     "West Coast Ale"
+   ],
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-m44-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3878,7 +4704,21 @@
    "fermentation_temp_c_max": 25,
    "fermentation_temp_c_optimum": 21.5,
    "present_on_birrf": true,
-   "source_basis": "official+birrf"
+   "source_basis": "official+birrf",
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-m47-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
+   ]
   },
   {
    "id": "mangrove-jack-s-m54",
@@ -3905,6 +4745,20 @@
    ],
    "aliases_en": [
     "California Common"
+   ],
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-m54-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3926,6 +4780,20 @@
    "source_basis": "official+birrf",
    "aliases_ru": [
     "хмелевой эль"
+   ],
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-m66-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3947,6 +4815,20 @@
    "source_basis": "official+birrf",
    "aliases_ru": [
     "баварский лагер"
+   ],
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-m76-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -3970,6 +4852,20 @@
    "source_basis": "official+birrf",
    "aliases_ru": [
     "богемский лагер"
+   ],
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-m84-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -4927,6 +5823,20 @@
    "source_urls": [
     "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_KOLN_ENG_A4-5.pdf",
     "https://www.mirbeer.ru/catalog/pivovarenie/drozhzhi/lallemand/pivnie_drozhzhi_lallemand_lalbrew_koln_kolsh_style_ale_11_g/"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-koln-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -4959,6 +5869,20 @@
    "source_urls": [
     "https://fermentis.com/en/product/safcider-ab-1/",
     "https://www.mirbeer.ru/catalog/pivovarenie/drozhzhi/pivnie_drozhzhi_verhovie/drozhzhi_fermentis_safcider_5_g/"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-safcider-ab-1-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -4991,6 +5915,20 @@
    "source_urls": [
     "https://fermentis.com/en/product/safcider-ac-4/",
     "https://www.mirbeer.ru/catalog/pivovarenie/drozhzhi/fermentis/fermentis_11_5_g/drozhzhi_dlya_sidra_fermentis_safcider_ac_4_5_g/"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-safcider-ac-4-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -5023,6 +5961,20 @@
    "source_urls": [
     "https://fermentis.com/en/product/safcider-as-2/",
     "https://www.mirbeer.ru/catalog/pivovarenie/drozhzhi/fermentis/fermentis_11_5_g/drozhzhi_dlya_sidra_fermentis_safcider_as_2_5_g/"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-safcider-as-2-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -5054,6 +6006,20 @@
    "source_urls": [
     "https://fermentis.com/en/product/safcider-tf-6/",
     "https://www.mirbeer.ru/catalog/pivovarenie/drozhzhi/fermentis/fermentis_11_5_g/drozhzhi_dlya_sidra_fermentis_safcider_tf_6_5_g/"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-safcider-tf-6-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -5087,6 +6053,20 @@
    "source_urls": [
     "https://mangrovejacks.com/products/craft-series-cider-yeast",
     "https://www.mirbeer.ru/catalog/pivovarenie/drozhzhi/mangrove_jacks/mangrove_jacks_10_g/drozhzhi_mangrove_jack_s_cider_m02_10_g/"
+   ],
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-m02-cider-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -5124,6 +6104,20 @@
    "source_urls": [
     "https://mangrovejacks.com/products/mead-m05-yeast-10g",
     "https://www.mirbeer.ru/catalog/pivovarenie/drozhzhi/mangrove_jacks/mangrove_jacks_10_g/drozhzhi_mangrove_jack_s_mead_m05_10_g/"
+   ],
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-m05-mead-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -5156,6 +6150,20 @@
    "source_urls": [
     "https://mangrovejacks.com/products/cl23-wine-yeast",
     "https://www.mirbeer.ru/catalog/vinodelie/ingredienti/vinnie_drozhzhi/vinnie_drozhzhi_mangrove_jack_s_cl23_8_g/"
+   ],
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-cl23-wine-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -5187,6 +6195,20 @@
    "source_urls": [
     "https://mangrovejacks.com/products/sn9-wine-yeast",
     "https://www.mirbeer.ru/catalog/vinodelie/ingredienti/vinnie_drozhzhi/vinnie_drozhzhi_mangrove_jack_s_sn9_8_g/"
+   ],
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-sn9-wine-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -5477,7 +6499,21 @@
    "fermentation_temp_c_max": 24,
    "alcohol_tolerance_abv_typical": 14.0,
    "present_on_birrf": false,
-   "source_basis": "vendor_spec"
+   "source_basis": "vendor_spec",
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-aw4-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
+   ]
   },
   {
    "id": "mangrove-jack-s-cy17",
@@ -5495,7 +6531,21 @@
    "fermentation_temp_c_max": 24,
    "alcohol_tolerance_abv_typical": 14.0,
    "present_on_birrf": false,
-   "source_basis": "vendor_spec"
+   "source_basis": "vendor_spec",
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-cy17-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
+   ]
   },
   {
    "id": "mangrove-jack-s-ma33",
@@ -5513,7 +6563,21 @@
    "fermentation_temp_c_max": 28,
    "alcohol_tolerance_abv_typical": 14.0,
    "present_on_birrf": false,
-   "source_basis": "vendor_spec"
+   "source_basis": "vendor_spec",
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-ma33-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
+   ]
   },
   {
    "id": "mangrove-jack-s-bv7",
@@ -5531,7 +6595,21 @@
    "fermentation_temp_c_max": 28,
    "alcohol_tolerance_abv_typical": 14.0,
    "present_on_birrf": false,
-   "source_basis": "vendor_spec"
+   "source_basis": "vendor_spec",
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-bv7-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
+   ]
   },
   {
    "id": "mangrove-jack-s-cr51",
@@ -5549,7 +6627,21 @@
    "fermentation_temp_c_max": 24,
    "alcohol_tolerance_abv_typical": 14.0,
    "present_on_birrf": false,
-   "source_basis": "vendor_spec"
+   "source_basis": "vendor_spec",
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-cr51-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
+   ]
   },
   {
    "id": "mangrove-jack-s-vr21",
@@ -5567,7 +6659,21 @@
    "fermentation_temp_c_max": 28,
    "alcohol_tolerance_abv_typical": 15.0,
    "present_on_birrf": false,
-   "source_basis": "vendor_spec"
+   "source_basis": "vendor_spec",
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-vr21-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
+   ]
   },
   {
    "id": "mangrove-jack-s-r56",
@@ -5585,7 +6691,21 @@
    "fermentation_temp_c_max": 28,
    "alcohol_tolerance_abv_typical": 15.0,
    "present_on_birrf": false,
-   "source_basis": "vendor_spec"
+   "source_basis": "vendor_spec",
+   "package_variants": [
+    {
+     "id": "mangrove-jack-s-r56-pack-10g",
+     "package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 10,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
+   ]
   },
   {
    "id": "aeb-fermolager-w",
@@ -8332,6 +9452,20 @@
    ],
    "aliases_en": [
     "SAFSOUR LP652"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-safsour-lp-652-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -8356,6 +9490,20 @@
    ],
    "aliases_en": [
     "SAFSOUR LB1"
+   ],
+   "package_variants": [
+    {
+     "id": "fermentis-safsour-lb-1-pack-11p5g",
+     "package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11.5,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   },
   {
@@ -8380,6 +9528,20 @@
    ],
    "aliases_en": [
     "Sour Pitch"
+   ],
+   "package_variants": [
+    {
+     "id": "lallemand-wildbrew-sour-pitch-pack-11g",
+     "package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "stock_content_per_package": {
+      "amount": 11,
+      "unit": "g"
+     },
+     "is_default_for_stock": true
+    }
    ]
   }
  ]

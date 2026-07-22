@@ -86,7 +86,13 @@ const assertNotBlocked = (user: typeof users.$inferSelect): typeof users.$inferS
   return user;
 };
 
-export const assertRateLimit = async (key: string, action: string, limit: number, windowSeconds: number): Promise<void> => {
+export const assertRateLimit = async (
+  key: string,
+  action: string,
+  limit: number,
+  windowSeconds: number,
+  increment = 1
+): Promise<void> => {
   // Атомарный fixed-window счётчик одним запросом. Раньше это был SELECT, затем
   // отдельный UPDATE count+1 — между ними нет блокировки, и N параллельных
   // запросов все читали одно значение и все проходили проверку (TOCTOU): лимит
@@ -95,18 +101,20 @@ export const assertRateLimit = async (key: string, action: string, limit: number
   // берётся серверное (now()), а лимит проверяется по возвращённому счётчику.
   // Отклонённые попытки тоже инкрементируют счётчик — это осознанно: флуд
   // продлевает собственную блокировку в пределах окна.
+  // increment позволяет списывать лимит пачкой (напр. массовый перенос N
+  // позиций одним действием) вместо N последовательных вызовов по 1.
   const result = await db.execute(sql`
     INSERT INTO auth_rate_limits (key, action, count, reset_at, updated_at)
-    VALUES (${key}, ${action}, 1, now() + ${windowSeconds} * interval '1 second', now())
+    VALUES (${key}, ${action}, ${increment}, now() + ${windowSeconds} * interval '1 second', now())
     ON CONFLICT (key, action) DO UPDATE SET
-      count = CASE WHEN auth_rate_limits.reset_at <= now() THEN 1 ELSE auth_rate_limits.count + 1 END,
+      count = CASE WHEN auth_rate_limits.reset_at <= now() THEN ${increment} ELSE auth_rate_limits.count + ${increment} END,
       reset_at = CASE WHEN auth_rate_limits.reset_at <= now()
         THEN now() + ${windowSeconds} * interval '1 second'
         ELSE auth_rate_limits.reset_at END,
       updated_at = now()
     RETURNING count
   `);
-  const count = (result as unknown as { rows: { count: number }[] }).rows?.[0]?.count ?? 1;
+  const count = (result as unknown as { rows: { count: number }[] }).rows?.[0]?.count ?? increment;
 
   if (count > limit) {
     throw new Error("RATE_LIMITED");

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Montserrat, Rubik } from "next/font/google";
+import { Montserrat, Onest, Rubik, Unbounded } from "next/font/google";
 import { cookies } from "next/headers";
 
 import "./globals.css";
@@ -7,7 +7,13 @@ import { Providers } from "../components/providers";
 import { DevGuestBadge } from "@/components/shared/dev-guest-badge";
 import { getSessionUser, getDevAuthState } from "@/lib/auth";
 import { getServerEnv } from "@/lib/env";
-import { THEME_COOKIE, parseThemePreference, themeInitScript } from "@/features/theme/theme";
+import {
+  SKIN_COOKIE,
+  THEME_COOKIE,
+  parseSkinPreference,
+  parseThemePreference,
+  themeInitScript
+} from "@/features/theme/theme";
 
 const bodyFont = Rubik({
   subsets: ["latin", "cyrillic"],
@@ -19,6 +25,24 @@ const displayFont = Montserrat({
   subsets: ["latin", "cyrillic"],
   variable: "--font-display",
   weight: ["600", "700", "800"]
+});
+
+// Шрифты скина «hop»: переменные подменяются в globals.css под html.skin-hop,
+// компоненты продолжают ссылаться на --font-sans / --font-display.
+// preload:false — скин hop опционален (дефолт classic); незачем преложать его
+// шрифты всем. Браузер догрузит их лениво, когда появится класс skin-hop.
+const hopBodyFont = Onest({
+  subsets: ["latin", "cyrillic"],
+  variable: "--font-sans-hop",
+  weight: ["400", "500", "600", "700"],
+  preload: false
+});
+
+const hopDisplayFont = Unbounded({
+  subsets: ["latin", "cyrillic"],
+  variable: "--font-display-hop",
+  weight: ["500", "600", "700"],
+  preload: false
 });
 
 const { SITE_NAME } = getServerEnv();
@@ -56,6 +80,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     getSessionUser()
   ]);
   const themePreference = parseThemePreference(cookieStore.get(THEME_COOKIE)?.value);
+  const skinPreference = parseSkinPreference(cookieStore.get(SKIN_COOKIE)?.value);
 
   return (
     <html
@@ -63,12 +88,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       // Явный dark ставим уже на сервере (нет вспышки для этих пользователей);
       // режим system досогласует инлайн-скрипт до пейнта. suppressHydrationWarning
       // гасит расхождение класса между сервером и клиентом.
-      className={`${bodyFont.variable} ${displayFont.variable}${themePreference === "dark" ? " dark" : ""}`}
+      className={`${bodyFont.variable} ${displayFont.variable} ${hopBodyFont.variable} ${hopDisplayFont.variable}${themePreference === "dark" ? " dark" : ""}${skinPreference === "hop" ? " skin-hop" : ""}`}
       suppressHydrationWarning
     >
       <body className="min-h-screen bg-background text-foreground antialiased" style={{ fontFamily: "var(--font-sans)" }}>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-        <Providers initialThemePreference={themePreference} isAuthenticated={Boolean(sessionUser)}>
+        <Providers
+          initialThemePreference={themePreference}
+          initialSkinPreference={skinPreference}
+          isAuthenticated={Boolean(sessionUser)}
+        >
           <div className="flex min-h-screen flex-col">
             <div className="flex-1">{children}</div>
           </div>

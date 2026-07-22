@@ -391,7 +391,15 @@ export const previewBrewBatchConsumption = async (
       lineTechnicalData
     );
 
-    const exact: BrewBatchConsumePlanCandidate | null = entry.exactItem
+    // Позиция с exactKey может существовать в БД с остатком 0 (запись не
+    // удалена — просто выгребли всё раньше). Списывать с неё нечего: ядро
+    // (consumeRecipeInventoryAllocations) в этом случае молча делает continue на
+    // consumedQuantity<=0 — аллокация НЕ становится consumed, транзакции нет.
+    // Показать такую позицию как exact/exact_short ("спишем остаток") было бы
+    // обманом: строка потом пропадала бы из результата и не в consumed, и не в
+    // skipped. Считаем её отсутствующей — строка честно падает в
+    // substitute_available (есть кандидаты) или missing.
+    const exact: BrewBatchConsumePlanCandidate | null = entry.exactItem && entry.exactItem.normalizedQuantity > CONSUME_EPSILON
       ? {
         inventoryItemId: entry.exactItem.id,
         name: entry.exactItem.ingredientDisplayNameSnapshot ?? displayName,
@@ -439,10 +447,12 @@ export const previewBrewBatchConsumption = async (
       requiredQuantityNormalized: entry.requiredQuantityNormalized,
       kind,
       // Тот же предикат, что и у самого списания (consumeRecipeInventoryAllocations):
-      // короткий exact дрожжей клампится (спишем остаток), у прочих категорий —
-      // роняет ВСЮ транзакцию INSUFFICIENT_STOCK. Диалог обязан честно различать
-      // эти два случая (см. ConsumeLineRow), иначе "спишем остаток" врало бы для
-      // категорий, которые сервер на деле блокирует целиком.
+      // короткий exact дрожжей клампится (спишем остаток) БЕЗУСЛОВНО — у прочих
+      // категорий клампится только с opts.allowPartial (Ф4б, диалог списания на
+      // странице партии передаёт его всегда), а без флага короткая строка роняет
+      // ВСЮ транзакцию INSUFFICIENT_STOCK. Поле фиксирует именно "presence-based без
+      // права на замену" (дрожжи) — от него зависит формулировка в UI (см.
+      // ConsumeLineRow), а не сам факт клампа, который в partial-режиме общий для всех.
       exactClamps: isPresenceBasedRecipeLine(entry.line),
       exact,
       substitutes,
@@ -486,11 +496,20 @@ export const previewBrewBatchConsumption = async (
  * (см. buildBrewBatchConsumeLinePlanEntries) — подделанный запрос с чужой
  * позицией/не тем groupKey роняет ВСЮ операцию (INVALID_SUBSTITUTION), а не
  * тихо игнорирует замену.
+ *
+ * opts.allowPartial (Ф4б) — по умолчанию нехватка любой не-presence-based строки
+ * (см. isPresenceBasedRecipeLine) роняет ВСЮ транзакцию (INSUFFICIENT_STOCK), как и
+ * раньше. С флагом (диалог списания на странице партии, где владелец явно видел
+ * превью с нехваткой и подтвердил «списать что есть») короткие строки клампятся —
+ * спишется остаток, а строки вовсе без складской позиции просто не создают
+ * аллокацию и списание не блокируют. Флаг прокидывается ТОЛЬКО в
+ * consumeRecipeInventoryAllocations — autoAllocate от него не зависит: подбор
+ * аллокаций сам по себе нехватку не проверяет, это делает только сам consume.
  */
 export const consumeBrewBatchInventory = async (
   userId: string,
   brewBatchId: string,
-  opts: { substitutions?: BrewBatchConsumeSubstitution[] } = {}
+  opts: { substitutions?: BrewBatchConsumeSubstitution[]; allowPartial?: boolean } = {}
 ): Promise<BrewBatchInventoryConsumeResult> => {
   const batch = await getBrewBatchById(userId, brewBatchId);
   if (!batch) {
@@ -555,6 +574,21 @@ export const consumeBrewBatchInventory = async (
     return !exactSufficient && entry.substitutes.length > 0;
   }).length;
 
+  // Ф4/П2: строки, которые списание не тронет вовсе — нет утверждённой замены И
+  // (либо нет точной позиции на складе вовсе — exactItem == null, kind="missing"
+  // /"substitute_available", — либо она есть, но остаток == 0: запись не удалена,
+  // но consumeRecipeInventoryAllocations на ней тоже молча делает continue при
+  // consumedQuantity<=0, аллокация в consumed не переходит). Предикат ЗЕРКАЛИТ
+  // классификацию previewBrewBatchConsumption (см. там же) — иначе превью обещало
+  // бы «спишем остаток», а результат тихо не засчитывал бы строку никуда: ни в
+  // consumed, ни в skipped.
+  const skippedEntries = entries.filter((entry) => (
+    !substitutionOverrides?.has(entry.line.id)
+    && (entry.exactItem == null || entry.exactItem.normalizedQuantity <= CONSUME_EPSILON)
+  ));
+  const skippedLineCount = skippedEntries.length;
+  const skippedLineNames = skippedEntries.map((entry) => entry.line.ingredientDisplayNameSnapshot ?? "—");
+
   await db.transaction(async (tx) => {
     const locked = await lockBrewBatchRow(tx, userId, brewBatchId);
     // Статус перечитываем ПОД блокировкой: прочитанный до транзакции он мог
@@ -580,56 +614,13 @@ export const consumeBrewBatchInventory = async (
       brewBatchId,
       targetBatchVolumeL,
       efficiencyFactor,
+      allowPartialConsume: opts.allowPartial === true,
       client: tx
     });
   });
 
   const view = await buildView(userId, brewBatchId, recipeId);
-  return { ...view, substituteAvailableCount };
-};
-
-/** Итог опционального списания склада при старте варки («Сварить самому» /
- *  «Сварить на автоматике») — доезжает до вызывающего экшена честно, без
- *  глотания ошибок. hasSubstitutes (Ф2) — на складе есть кандидаты на замену,
- *  которые списание при старте не подставляет само (exact-only): точный
- *  подбор не хватает/не находит позицию, но по match-group есть чем закрыть. */
-export type StartBrewConsumeResult =
-  | { ok: true; itemCount: number; hasSubstitutes?: boolean }
-  | {
-    ok: false;
-    code: "already_consumed" | "insufficient_stock" | "recipe_unavailable" | "nothing_to_consume" | "error";
-    hasSubstitutes?: boolean;
-  };
-
-const startBrewConsumeErrorCodeByMessage: Record<string, StartBrewConsumeResult & { ok: false }> = {
-  ALREADY_CONSUMED: { ok: false, code: "already_consumed" },
-  INSUFFICIENT_STOCK: { ok: false, code: "insufficient_stock" },
-  RECIPE_UNAVAILABLE: { ok: false, code: "recipe_unavailable" }
-};
-
-/**
- * Опциональное списание склада при старте варки (единый вход «Сварить», обе
- * ветки — «Сварить самому» и «Сварить на автоматике»): партия уже создана,
- * здесь только exact-only списание её состава. Провал списания — честная
- * ошибка отдельным полем, не глотается: партия при этом уже существует
- * независимо от исхода списания.
- */
-export const consumeBrewBatchInventoryForStart = async (
-  userId: string,
-  brewBatchId: string
-): Promise<StartBrewConsumeResult> => {
-  try {
-    const view = await consumeBrewBatchInventory(userId, brewBatchId);
-    // Списание отработало без ошибки, но склад не тронуло: ни одна строка
-    // рецепта не сопоставилась со складской позицией. Пользователь просил
-    // списать — молчать об этом («Списано: 0 поз.» бодрым тоном) нельзя.
-    return view.consumed.length > 0
-      ? { ok: true, itemCount: view.consumed.length, hasSubstitutes: view.substituteAvailableCount > 0 }
-      : { ok: false, code: "nothing_to_consume", hasSubstitutes: view.substituteAvailableCount > 0 };
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "";
-    return startBrewConsumeErrorCodeByMessage[message] ?? { ok: false, code: "error" };
-  }
+  return { ...view, substituteAvailableCount, skippedLineCount, skippedLineNames };
 };
 
 /**

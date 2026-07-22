@@ -147,6 +147,11 @@ vi.mock("@nb/db", () => {
     })
   };
 
+  const sql = (..._args: unknown[]) => ({}) as never;
+  // buildInventorySearchWhere (С2) joins per-variant OR-clauses через sql.join —
+  // реальный drizzle-тег экспортирует его как статический метод.
+  sql.join = (..._args: unknown[]) => ({}) as never;
+
   return {
     db,
     and: (...args: unknown[]) => args,
@@ -155,7 +160,7 @@ vi.mock("@nb/db", () => {
     eq: (...args: unknown[]) => args,
     inArray: (...args: unknown[]) => args,
     isNull: (v: unknown) => v,
-    sql: (..._args: unknown[]) => ({}) as never,
+    sql,
     ingredientAliases: tableRefs.ingredientAliases,
     ingredientPackageVariants: tableRefs.ingredientPackageVariants,
     ingredients: tableRefs.ingredients,

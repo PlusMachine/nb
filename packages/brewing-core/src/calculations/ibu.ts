@@ -64,6 +64,13 @@ const DEFAULT_BOIL_TIME_MINUTES = 60;
 const DEFAULT_WHIRLPOOL_TEMPERATURE_C = 85;
 const LATE_BOIL_CARRYOVER_THRESHOLD_MIN = 20;
 
+// К19 (аудит калькуляторов 2026-07-17): выше ~100 IBU модель Тинсета (и производные —
+// Rager/Garetz/Noonan считают через неё же) продолжает расти линейно, а в реальном сусле
+// растворимость изо-альфа-кислот ограничена — утилизация выходит на плато и ощущаемая
+// горечь отстаёт от расчётной. Порог эмпирический (общепринятый ориентир в комьюнити —
+// BYO/Palmer «How to Brew» и т.п.), не физическая константа.
+export const IBU_SOLUBILITY_CEILING = 100;
+
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
 export const utilizationTinseth = (sg: number, boilTimeMinutes: number): number => {
@@ -411,13 +418,18 @@ const finalizeBitterness = (
   contributions: BitternessContribution[],
   warnings: string[],
   resolvedOg: number
-): BitternessResult => ({
-  formula,
-  ibu: roundTo(contributions.reduce((sum, contribution) => sum + contribution.ibu, 0), 1),
-  contributions,
-  resolvedOg,
-  warnings: [...new Set(warnings)]
-});
+): BitternessResult => {
+  const ibu = roundTo(contributions.reduce((sum, contribution) => sum + contribution.ibu, 0), 1);
+  const allWarnings = ibu > IBU_SOLUBILITY_CEILING ? [...warnings, "ibu_above_solubility_ceiling"] : warnings;
+
+  return {
+    formula,
+    ibu,
+    contributions,
+    resolvedOg,
+    warnings: [...new Set(allWarnings)]
+  };
+};
 
 export const calculateBitterness = (input: BitternessEngineInput): BitternessResult => {
   const formula = input.formula ?? DEFAULT_FORMULA;

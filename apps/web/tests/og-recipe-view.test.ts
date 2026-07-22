@@ -3,10 +3,12 @@ import type { BeerStyle } from "@nb/brewing-core";
 
 import { srmToHex } from "../features/recipes/beer-color";
 import { defaultRecipeProcessMeta, type RecipeDetailDto } from "../features/recipes/contracts";
-import { buildRecipeOgView } from "../features/og/models";
+import { buildRecipeOgView, type OgPhoto } from "../features/og/models";
 import { OG_COLORS } from "../features/og/theme";
 
 const OPTS = { domain: "hmelo.example", wordmark: "NB" };
+
+const FAKE_PHOTO: OgPhoto = { dataUri: "data:image/jpeg;base64,AAAA", width: 400, height: 630 };
 
 const buildRecipe = (overrides: Partial<RecipeDetailDto> = {}): RecipeDetailDto => ({
   id: "r-1",
@@ -149,5 +151,31 @@ describe("buildRecipeOgView", () => {
   it("название только из эмодзи — фолбэк «Рецепт»", () => {
     const view = buildRecipeOgView(buildRecipe({ title: "🍺🔥" }), style(), OPTS);
     expect(view.title).toBe("Рецепт");
+  });
+
+  it("Ф5: photo прокидывается в view как есть", () => {
+    const view = buildRecipeOgView(buildRecipe(), style(), { ...OPTS, photo: FAKE_PHOTO });
+    expect(view.photo).toEqual(FAKE_PHOTO);
+  });
+
+  it("Ф5: без photo — поле null (фолбэк, чтобы card.tsx не рендерил врезку)", () => {
+    const view = buildRecipeOgView(buildRecipe(), style(), OPTS);
+    expect(view.photo).toBeNull();
+  });
+
+  it("Ф5: с photo кегль капается 50, даже если заголовок короткий (без photo был бы 70)", () => {
+    const view = buildRecipeOgView(buildRecipe({ title: "Портер" }), style(), { ...OPTS, photo: FAKE_PHOTO });
+    expect(view.titleFontSize).toBe(50);
+  });
+
+  it("Ф5: с photo длинный заголовок капается тем же значением, что и обычная эвристика (min не задирает кегль вверх)", () => {
+    const longTitle = "Экспериментальный тройной сухохмельный новоанглийский империал IPA на дикой воде";
+    const view = buildRecipeOgView(buildRecipe({ title: longTitle }), style(), { ...OPTS, photo: FAKE_PHOTO });
+    expect(view.titleFontSize).toBe(40);
+  });
+
+  it("Ф5: без photo кегль не меняется (раскладка карточек без фото — пиксель-в-пиксель)", () => {
+    const view = buildRecipeOgView(buildRecipe({ title: "Портер" }), style(), OPTS);
+    expect(view.titleFontSize).toBe(70);
   });
 });

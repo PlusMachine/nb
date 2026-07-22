@@ -50,7 +50,7 @@ export async function MyRecipesContent({ searchParams }: Props = {}) {
   return (
     <main className="space-y-4">
       <section className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-2xl font-semibold">{brewMode ? "Сварить" : "Рецепты"}</h1>
+        <h1 className="text-2xl font-semibold">{brewMode ? "Выберите рецепт и начните варку" : "Рецепты"}</h1>
         {brewMode ? (
           <Link
             href="/app/recipes"
@@ -59,15 +59,16 @@ export async function MyRecipesContent({ searchParams }: Props = {}) {
             К рецептам
           </Link>
         ) : (
-          <Link href="/app/recipes/new" className="rounded-md bg-foreground px-3 py-2 text-sm font-medium text-background">
+          <Link href="/app/recipes/new" className="rounded-md bg-foreground px-3 py-2 text-sm font-medium text-background skin-hop:bg-primary skin-hop:text-primary-foreground skin-hop:hover:bg-primary/90">
             Создать рецепт
           </Link>
         )}
       </section>
-      {/* В brew-режиме табы не показываем: контекст «выбери рецепт для варки» не
-          должен предлагать уход в «Закладки»/витрину — выход отсюда уже есть
-          выше («К рецептам»). */}
-      {brewMode ? null : <RecipeTabs />}
+      {/* Табы показываем и в brew-режиме — со «Закладок» и витрины «Найти»
+          рецепт тоже варят (кнопкой на карточке/детальной странице); прятать
+          их означало бы незаметно менять поведение страницы по ?intent=brew
+          (Ф1: единая страница выбора без скрытой смены поведения). */}
+      <RecipeTabs />
       {recipes.length === 0 ? (
         <RecipeEmptyState />
       ) : (

@@ -46,13 +46,13 @@ describe("calculator query serialization round-trip", () => {
     expect(String(restored.servingSizeMl)).toBe("330");
   });
 
-  it("ibu: список хмеля (2 внесения) восстанавливается из скопированной ссылки", () => {
+  it("ibu: список хмеля (2 внесения, с именем сорта из каталога) восстанавливается из скопированной ссылки", () => {
     const definition = calculatorDefinitionBySlug.ibu;
-    // "name" не входит в field.fields редактора внесений (нет такого поля в форме) —
-    // сериализация/разбор его не трогают, поэтому в customAdditions его нет.
+    // К12: "name" (IngredientPicker, см. brewhouse-efficiency) теперь первое подполе строки —
+    // сериализация/разбор кладут его туда же, где и остальные подполя.
     const customAdditions = [
-      { amountG: "20", alphaAcidPercent: "10", timeMinutes: "60", use: "boil", form: "pellet" },
-      { amountG: "30", alphaAcidPercent: "8", timeMinutes: "15", use: "whirlpool", form: "pellet" }
+      { name: "Citra", amountG: "20", alphaAcidPercent: "10", timeMinutes: "60", use: "boil", form: "pellet" },
+      { name: "Cascade", amountG: "30", alphaAcidPercent: "8", timeMinutes: "15", use: "whirlpool", form: "pellet" }
     ];
     const state = {
       ...definition.defaults,
@@ -68,8 +68,8 @@ describe("calculator query serialization round-trip", () => {
     expect(params.postBoilVolumeL).toBe("25");
     expect(params.boilTimeMinutes).toBe("45");
     expect(params.formula).toBe("tinseth_classic");
-    // Порядок подполей — amountG~alphaAcidPercent~timeMinutes~use~form, строки через ";".
-    expect(params.additions).toBe("20~10~60~boil~pellet;30~8~15~whirlpool~pellet");
+    // Порядок подполей — name~amountG~alphaAcidPercent~timeMinutes~use~form, строки через ";".
+    expect(params.additions).toBe("Citra~20~10~60~boil~pellet;Cascade~30~8~15~whirlpool~pellet");
 
     const restored = initialCalculatorStateFromQuery(definition, params);
 
@@ -253,5 +253,42 @@ describe("unit-converter: входящие ссылки", () => {
     expect(restored.activeGroup).toBe("pressure");
     expect(restored.pressureFrom).toBe("PSI");
     expect(restored.pressureValue).toBe("12");
+  });
+});
+
+// mash-infusion: "Паузы" — array-поле с ОДНИМ подполем (targetTempC), в отличие от хмеля/
+// засыпи выше. Строки через ";", подполей внутри строки нет — значит и "~" в сериализации
+// не появляется вовсе (см. К15 — многоступенчатый затор).
+describe("mash-infusion: round-trip «Пауз» (одно подполе на строку)", () => {
+  const definition = calculatorDefinitionBySlug["mash-infusion"];
+
+  it("две паузы сериализуются как «72;76», без «~»", () => {
+    const state = { ...definition.defaults, mode: "stepMash", pauses: [{ targetTempC: "72" }, { targetTempC: "76" }] };
+
+    const query = serializeCalculatorStateToQuery(definition, state);
+    const params = Object.fromEntries(query.entries());
+
+    expect(params.pauses).toBe("72;76");
+
+    const restored = initialCalculatorStateFromQuery(definition, params);
+    expect(restored.pauses).toEqual([{ targetTempC: "72" }, { targetTempC: "76" }]);
+  });
+
+  it("легаси-ключи ?targetTempC=/?currentTempC=/?currentMashWaterL= переносятся в mashTempC/mashWaterL", () => {
+    const restoredStrike = initialCalculatorStateFromQuery(definition, { mode: "strike", targetTempC: "68" });
+    expect(restoredStrike.mashTempC).toBe("68");
+
+    const restoredInfusion = initialCalculatorStateFromQuery(definition, {
+      mode: "infusion",
+      currentTempC: "63",
+      currentMashWaterL: "18"
+    });
+    expect(restoredInfusion.mashTempC).toBe("63");
+    expect(restoredInfusion.mashWaterL).toBe("18");
+  });
+
+  it("новый ключ mashTempC в ссылке — легаси-ключ рядом его не перебивает", () => {
+    const restored = initialCalculatorStateFromQuery(definition, { mashTempC: "70", targetTempC: "68" });
+    expect(restored.mashTempC).toBe("70");
   });
 });

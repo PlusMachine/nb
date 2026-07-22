@@ -20,8 +20,8 @@ import {
 } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
-import { calibrateWcf, convertBrewingUnitGroup, sgToBrix, sgToPlato, type CalculatorGravityUnit } from "@nb/brewing-core";
-import { Button } from "@nb/ui";
+import { calibrateWcf, convertBrewingUnitGroup, HOT_WORT_COOLING_SHRINKAGE, sgToBrix, sgToPlato, type CalculatorGravityUnit } from "@nb/brewing-core";
+import { Button, Checkbox } from "@nb/ui";
 
 import { CopyLinkButton } from "@/components/shared/copy-link-button";
 import { RelatedLinksSection } from "@/components/shared/related-links-section";
@@ -185,6 +185,7 @@ function CalculatorInput({
   const options: CalculatorFieldOption[] = field.dynamicOptions ? field.dynamicOptions(state, row) : (field.options ?? []);
   const unitLabel = field.dynamicUnit ? field.dynamicUnit(state, row) : field.unit;
   const step = field.dynamicStep ? field.dynamicStep(state, row) : field.step;
+  const helperText = field.dynamicHelper ? field.dynamicHelper(state, row) : field.helper;
 
   return (
     <label className="block min-w-0 text-xs font-medium text-muted-foreground">
@@ -244,7 +245,7 @@ function CalculatorInput({
           className={commonClassName}
         />
       )}
-      {field.helper ? <span className="mt-1 block text-[11px] font-normal leading-4 text-muted-foreground">{field.helper}</span> : null}
+      {helperText ? <span className="mt-1 block text-[11px] font-normal leading-4 text-muted-foreground">{helperText}</span> : null}
     </label>
   );
 }
@@ -280,11 +281,10 @@ function IngredientRowField({
           includeCustom={false}
           // База — помощник, а не обязаловка: если позиции нет в каталоге, введённое
           // название уже принято (onValueChange пишет его в строку), и стандартное
-          // «Ничего не найдено» читалось бы как тупик. Подсказываем ввести PPG вручную.
+          // «Ничего не найдено» читалось бы как тупик. Что подсказать заполнить вручную
+          // (PPG/AA/цвет — разное для каждого поля) — берём из field.helper.
           emptyCta={
-            <p className="text-xs text-muted-foreground">
-              Нет в базе — оставьте своё название и укажите экстрактивность (PPG) вручную.
-            </p>
+            field.helper ? <p className="text-xs text-muted-foreground">{field.helper}</p> : undefined
           }
         />
       </div>
@@ -391,7 +391,7 @@ function ArrayFieldEditor({
                       value={row[subfield.name]}
                       onValueChange={(nextValue) => updateRow(index, subfield.name, nextValue)}
                       onSelect={(item) => {
-                        const updates = subfield.onPick?.(item) ?? [[subfield.name, item.primaryLabelRu ?? item.displayName]];
+                        const updates = subfield.onPick?.(item, state) ?? [[subfield.name, item.primaryLabelRu ?? item.displayName]];
                         applyRowPatch(index, Object.fromEntries(updates));
                       }}
                     />
@@ -976,7 +976,7 @@ function WcfCalibrator({ onApply }: { onApply: (wcf: number) => void }) {
         Применить коэффициент
       </Button>
       <p className="text-[11px] leading-4 text-muted-foreground">
-        Делается один раз — дальше значение постоянно для твоего прибора. Замеряй по суслу до брожения (без спирта).
+        Делается один раз — дальше значение постоянно для вашего прибора. Замеряйте по суслу до брожения (без спирта).
       </p>
     </div>
   );
@@ -1109,7 +1109,7 @@ function RefractometerFieldsBlock({
           </summary>
           <div className="mt-4 space-y-4">
             <p className="text-[11px] leading-4 text-muted-foreground">
-              Рефрактометр откалиброван по чистой сахарозе, а в сусле есть белки и декстрины — поэтому он немного завышает. Поправочный коэффициент подгоняет прибор под твоё сусло: 1,04 — рабочее значение, но точнее измерить своё.
+              Рефрактометр откалиброван по чистой сахарозе, а в сусле есть белки и декстрины — поэтому он немного завышает. Поправочный коэффициент подгоняет прибор под ваше сусло: 1,04 — рабочее значение, но точнее измерить своё.
             </p>
             <WcfCalibrator onApply={(wcf) => onChange("wortCorrectionFactor", String(wcf))} />
           </div>
@@ -1284,7 +1284,7 @@ function AbvFieldsBlock({
         </div>
 
         <p className="text-xs leading-5 text-muted-foreground">
-          Меряешь рефрактометром?{" "}
+          Меряете рефрактометром?{" "}
           <Link
             href="/calculators/refractometer-correction"
             className="font-medium text-foreground underline underline-offset-2 hover:text-foreground"
@@ -1625,6 +1625,13 @@ function DilutionFieldsBlock({
   const unitLabel = DILUTION_GRAVITY_UNIT_OPTIONS.find((option) => option.value === unit)?.label ?? unit;
   const gravityStep = unit === "SG" ? 0.001 : 0.1;
   const findOptions = dilutionFindOptions[operation];
+  // К17: «Объём замерен горячим» — по умолчанию выключено (значит объём уже холодный, как и
+  // было раньше). Предпросмотр под чекбоксом считает тем же коэффициентом, что и ядро
+  // (HOT_WORT_COOLING_SHRINKAGE), чтобы не заводить второе магическое число в UI.
+  const currentVolumeMeasuredHot = String(state.currentVolumeMeasuredHot ?? "0") === "1";
+  const rawCurrentVolumeL = Number(state.currentVolumeL);
+  const currentVolumeForPreview = Number.isFinite(rawCurrentVolumeL) && rawCurrentVolumeL > 0 ? rawCurrentVolumeL : 20;
+  const coldVolumePreview = formatDilutionLiters(currentVolumeForPreview * HOT_WORT_COOLING_SHRINKAGE);
 
   const selectOperation = (nextOperation: string) => {
     const nextMode = dilutionFindOptions[nextOperation as DilutionOperation][0].mode;
@@ -1714,6 +1721,22 @@ function DilutionFieldsBlock({
           </div>
         </div>
 
+        <label className="flex items-start gap-2 text-sm text-foreground">
+          <Checkbox
+            checked={currentVolumeMeasuredHot}
+            onCheckedChange={(checked) => onChange("currentVolumeMeasuredHot", checked ? "1" : "0")}
+            className="mt-0.5"
+          />
+          <span>
+            Объём замерен горячим
+            <span className="mt-0.5 block text-xs font-normal leading-4 text-muted-foreground">
+              {currentVolumeMeasuredHot
+                ? `Сразу после кипячения, пока сусло горячее — учитываем усадку при остывании: станет ≈ ${coldVolumePreview}`
+                : "Отметьте, если «Текущий объём» замерен сразу после кипячения — при остывании сусло усаживается примерно на 4%"}
+            </span>
+          </span>
+        </label>
+
         {hasTargetRow ? (
           <div className="grid gap-x-4 gap-y-4 sm:grid-cols-2">
             {showTargetGravity ? (
@@ -1738,7 +1761,7 @@ function DilutionFieldsBlock({
             ) : null}
             {showRate ? (
               <RefractoNumberInput
-                label="Скорость испарения"
+                label="Скорость выкипания"
                 unit="л/ч"
                 value={state.boilOffRateLPerHour}
                 min={0}
@@ -2225,7 +2248,10 @@ export function CalculatorPageClient({ slug }: { slug: CalculatorSlug }) {
             <CopyLinkButton
               buildHref={() => {
                 const query = serializeCalculatorStateToQuery(definition, state).toString();
-                return `${window.location.origin}/calculators/${definition.catalog.slug}${query ? `?${query}` : ""}`;
+                // Ссылка ведёт на /share (Ф4, docs/specs/og-images.md §5.2/§10.2): там
+                // og:image собирает карточку с самим результатом расчёта. Старые ссылки
+                // на основную страницу с тем же query продолжают работать как раньше.
+                return `${window.location.origin}/calculators/${definition.catalog.slug}/share${query ? `?${query}` : ""}`;
               }}
               label="Скопировать ссылку на расчёт"
               successTitle="Ссылка на расчёт скопирована"

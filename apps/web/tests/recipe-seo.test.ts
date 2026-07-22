@@ -110,7 +110,7 @@ const americanIpaStyle: BeerStyle = {
 };
 
 describe("features/recipes/seo — публичная деталка рецепта", () => {
-  it("buildPublicRecipeMetadata: title/canonical/description с фактами, OG-изображение при heroImageId", () => {
+  it("buildPublicRecipeMetadata: title/canonical/description с фактами, OG-изображение — генерённая карточка даже при heroImageId", () => {
     const recipe = buildRecipe({ heroImageId: "img-42" });
     const metadata = buildPublicRecipeMetadata(recipe, americanIpaStyle);
 
@@ -123,12 +123,13 @@ describe("features/recipes/seo — публичная деталка рецеп�
     expect(metadata.description).toContain("Солод: Пейл эль солод");
     expect(metadata.description).toContain("хмель: Цитра");
     expect(metadata.description).not.toContain("Свободный текст автора");
-    // С фото: og:image = само фото рецепта. Размеры НЕ указываем (фото
-    // произвольного аспекта — 1200×630 на нём соврало бы), только url+alt.
+    // Ф5: og:image ВСЕГДА генерённая карточка 1200×630, даже когда у рецепта
+    // есть heroImageId — фото встраивается врезкой внутри api/og/recipes/[slug]
+    // (features/og/photo.ts:loadRecipeOgPhoto), сырым og:image больше не отдаётся.
     expect(metadata.openGraph?.images).toEqual([
-      { url: "/api/recipe-images/img-42/large", alt: "Hazy IPA — рецепт Американский IPA" }
+      { url: "/api/og/recipes/hazy-ipa", width: 1200, height: 630, alt: "Hazy IPA — рецепт Американский IPA" }
     ]);
-    expect(metadata.twitter).toMatchObject({ card: "summary_large_image", images: ["/api/recipe-images/img-42/large"] });
+    expect(metadata.twitter).toMatchObject({ card: "summary_large_image", images: ["/api/og/recipes/hazy-ipa"] });
   });
 
   it("buildPublicRecipeMetadata: без стиля и без фото — title содержит «рецепт», og:image = динамическая карточка", () => {
@@ -230,6 +231,22 @@ describe("features/recipes/seo — витрина /recipes", () => {
 
     expect(metadata.alternates?.canonical).toBe("/recipes");
     expect(metadata.title).toBe("Рецепты сообщества");
+  });
+
+  it("подключает брендовую обложку хаба /recipes (Ф3, docs/specs/og-images.md)", () => {
+    const metadata = buildPublicRecipeListMetadata({});
+
+    expect(metadata.openGraph?.images).toEqual([
+      expect.objectContaining({ url: "/api/og/sections/recipes" })
+    ]);
+    expect(metadata.twitter).toMatchObject({ card: "summary_large_image", images: ["/api/og/sections/recipes"] });
+  });
+
+  it("openGraph несёт locale/siteName (страница замещает openGraph родительского layout целиком)", () => {
+    const metadata = buildPublicRecipeListMetadata({});
+
+    expect(metadata.openGraph).toMatchObject({ locale: "ru_RU" });
+    expect((metadata.openGraph as { siteName?: string } | undefined)?.siteName).toBeTruthy();
   });
 
   it("page=1 явно — canonical голый /recipes (не ?page=1)", () => {

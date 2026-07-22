@@ -14,19 +14,25 @@ export interface EstimateBrewhouseEfficiencyResult {
   warnings: string[];
 }
 
-/**
- * Inverse of calculateOg: given a measured OG, back out the brewhouse efficiency that
- * would have produced it. Fermentables with appliesBrewhouseEfficiency === false
- * (extract/sugar/honey) dissolve at ~100% regardless of mash efficiency, so their
- * point contribution is subtracted before dividing by the grain bill's full potential.
- */
-export const estimateBrewhouseEfficiency = (input: EstimateBrewhouseEfficiencyInput): EstimateBrewhouseEfficiencyResult => {
-  const warnings: string[] = [];
-  const grainItems = input.fermentables.filter((item) => item.appliesBrewhouseEfficiency !== false);
-  const fullDissolutionItems = input.fermentables.filter((item) => item.appliesBrewhouseEfficiency === false);
+export interface GrainBillPotential {
+  grainPotentialPoints: number;
+  warnings: string[];
+}
 
+/**
+ * Есть ли в засыпи хоть что-то затираемое, что даёт положительный потенциал экстракта
+ * (солод/зерно с заполненным PPG) — guard для estimateBrewhouseEfficiency: без затираемого
+ * зерна с потенциалом делить на ноль бессмысленно, "эффективность" как понятие неприменима.
+ *
+ * Режим "Прогноз НП" калькулятора brewhouse-efficiency (predict) СВОЙ guard не переиспользует:
+ * экстракт/сахар растворяются на 100% независимо от эффективности, так что чисто экстрактная
+ * засыпь прогнозируется прекрасно — там достаточно, чтобы суммарный потенциал (зерно +
+ * растворимое) был положительным (см. Ф-3, аудит калькуляторов 2026-07-17).
+ */
+export const assessGrainBillPotential = (fermentables: FermentableGrainBillItem[]): GrainBillPotential => {
+  const warnings: string[] = [];
+  const grainItems = fermentables.filter((item) => item.appliesBrewhouseEfficiency !== false);
   const grainPotentialPoints = grainItems.reduce((sum, item) => sum + item.weightKg * KG_TO_LB * item.potentialPpg, 0);
-  const fullDissolutionPoints = fullDissolutionItems.reduce((sum, item) => sum + item.weightKg * KG_TO_LB * item.potentialPpg, 0);
 
   if (grainItems.length === 0) {
     warnings.push("no_grain_bill");
@@ -36,13 +42,28 @@ export const estimateBrewhouseEfficiency = (input: EstimateBrewhouseEfficiencyIn
     // формально не пуста, просто её вклад не задан.
     warnings.push("no_grain_potential");
   }
+
+  return { grainPotentialPoints, warnings };
+};
+
+/**
+ * Inverse of calculateOg: given a measured OG, back out the brewhouse efficiency that
+ * would have produced it. Fermentables with appliesBrewhouseEfficiency === false
+ * (extract/sugar/honey) dissolve at ~100% regardless of mash efficiency, so their
+ * point contribution is subtracted before dividing by the grain bill's full potential.
+ */
+export const estimateBrewhouseEfficiency = (input: EstimateBrewhouseEfficiencyInput): EstimateBrewhouseEfficiencyResult => {
+  const { grainPotentialPoints, warnings } = assessGrainBillPotential(input.fermentables);
+  const fullDissolutionItems = input.fermentables.filter((item) => item.appliesBrewhouseEfficiency === false);
+  const fullDissolutionPoints = fullDissolutionItems.reduce((sum, item) => sum + item.weightKg * KG_TO_LB * item.potentialPpg, 0);
+
   if (input.measuredOg <= 1) {
     warnings.push("no_measured_points");
   }
 
   // Любое из условий делает деление бессмысленным (нулевой делитель) — бэйлаутим до
   // арифметики, которая иначе дала бы NaN/Infinity.
-  if (grainItems.length === 0 || grainPotentialPoints <= 0 || input.measuredOg <= 1) {
+  if (grainPotentialPoints <= 0 || input.measuredOg <= 1) {
     return {
       efficiencyPercent: 0,
       grainPotentialPoints: roundTo(grainPotentialPoints, 1),

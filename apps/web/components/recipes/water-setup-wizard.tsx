@@ -1185,6 +1185,7 @@ function WaterProfileSelector({
             value={query}
             onChange={(event) => onQueryChange(event.target.value)}
             placeholder={searchPlaceholder}
+            aria-label={searchPlaceholder}
             className="h-full min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
           />
         </label>
@@ -2506,6 +2507,7 @@ export function WaterSetupWizard({
                     setShowAllTargetProfiles(false);
                   }}
                   placeholder="IPA, lager, blanche, стаут..."
+                  aria-label="IPA, lager, blanche, стаут..."
                   className="h-full min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
                 />
               </label>

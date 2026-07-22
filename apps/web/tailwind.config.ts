@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import plugin from "tailwindcss/plugin";
 
 // Семантические токены задаются CSS-переменными в app/globals.css (:root / .dark)
 // как HSL-каналы, поэтому здесь оборачиваем их в hsl(var(--…) / <alpha-value>) —
@@ -79,7 +80,15 @@ const config: Config = {
       }
     }
   },
-  plugins: []
+  plugins: [
+    // Вариант «скин»: skin-hop: применяет утилиту только при классе .skin-hop на
+    // <html> (cookie nb_skin), skin-classic: — только без него. Так компоненты
+    // несут оба оформления одновременно, а переключение — мгновенное, без JS.
+    plugin(({ addVariant }) => {
+      addVariant("skin-hop", ".skin-hop &");
+      addVariant("skin-classic", "html:not(.skin-hop) &");
+    })
+  ]
 };
 
 export default config;
