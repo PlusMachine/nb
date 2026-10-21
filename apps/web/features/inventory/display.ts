@@ -101,6 +101,12 @@ export const resolveInventoryMeasurementForDisplay = (input: InventoryDisplayInp
     };
   }
 
+  // После вскрытия пачки фактом остаётся вес/объём, а не округлённое число упаковок.
+  if (displayUnit === "pack" && input.normalizedUnit !== "pack"
+    && Math.abs(displayQuantity - Math.round(displayQuantity)) > 0.0001) {
+    return { quantity: input.normalizedQuantity, unit: input.normalizedUnit, converted: true };
+  }
+
   return {
     quantity: roundTo(displayQuantity, 3),
     unit: displayUnit,
@@ -110,7 +116,7 @@ export const resolveInventoryMeasurementForDisplay = (input: InventoryDisplayInp
 };
 
 export const formatInventoryQuantityInputValue = (value: number, unit?: InventoryUnit) => (
-  formatDisplayNumber(value, unit ? getInventoryUnitQuantityPrecision(unit) : 3)
+  formatDisplayNumber(value, unit === "pack" && !Number.isInteger(value) ? 3 : unit ? getInventoryUnitQuantityPrecision(unit) : 3)
 );
 
 const resolveDisplayUnitCostMinor = (

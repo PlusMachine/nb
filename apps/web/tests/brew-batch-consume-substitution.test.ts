@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Ф2: «списание предлагает замены по match-group» — интеграционные тесты превью
 // (previewBrewBatchConsumption) и реального списания с заменой
@@ -25,6 +25,7 @@ const { tableRefs, mockState } = vi.hoisted(() => ({
       userId: "userId",
       recipeId: "recipeId",
       recipeIngredientId: "recipeIngredientId",
+      recipeIngredientPersistentKey: "recipeIngredientPersistentKey",
       brewBatchId: "brewBatchId",
       status: "status"
     },
@@ -264,6 +265,7 @@ vi.mock("@nb/db", () => {
             const userId = getEqValue(where, "userId");
             const recipeId = getEqValue(where, "recipeId");
             const lineId = getEqValue(where, "recipeIngredientId");
+            const persistentKey = getEqValue(where, "recipeIngredientPersistentKey");
             const status = getEqValue(where, "status");
             const statuses = getInArrayValue(where, "status");
             const addressedById = Boolean(id || ids);
@@ -275,6 +277,7 @@ vi.mock("@nb/db", () => {
                 && (userId ? allocation.userId === userId : true)
                 && (recipeId ? allocation.recipeId === recipeId : true)
                 && (lineId ? allocation.recipeIngredientId === lineId : true)
+                && (persistentKey === undefined || allocation.recipeIngredientPersistentKey === persistentKey)
                 && inScope(allocation)
                 && (status === undefined || allocation.status === status)
                 && (!statuses || statuses.includes(allocation.status))
@@ -313,7 +316,11 @@ vi.mock("@nb/db", () => {
         }
       })
     }),
-    transaction: async (callback: (tx: any) => Promise<any>) => callback(db)
+    transaction: async (callback: (tx: any) => Promise<any>) => {
+      const before = structuredClone({ inventory: mockState.inventory, allocations: mockState.allocations, transactions: mockState.transactions });
+      try { return await callback(db); }
+      catch (error) { Object.assign(mockState, before); throw error; }
+    }
   };
 
   return {
@@ -357,6 +364,14 @@ import {
   restoreBrewBatchInventory
 } from "../features/brew-batches/inventory";
 
+import { db as testDb } from "@nb/db";
+
+afterEach(() => { vi.restoreAllMocks(); });
+
+import { buildBrewInventorySnapshot } from "../features/brew-batches/inventory-snapshot";
+import type { RecipeDetailDto } from "../features/recipes/contracts";
+import { extractIngredientTechnicalData } from "../features/ingredients/technical-fields";
+
 const makeBrewPlanSnapshot = (batchSizeL: number) => ({
   recipe: { batchSizeL, efficiencyPct: null, recipeEfficiencyPct: null }
 });
@@ -367,6 +382,23 @@ const makeBatch = (id: string, overrides: Partial<Record<string, unknown>> = {})
   recipeId: RECIPE_ID,
   status: "planned",
   brewPlanSnapshot: makeBrewPlanSnapshot(20),
+  recipeSnapshot: {
+    inventory: buildBrewInventorySnapshot({
+      id: RECIPE_ID,
+      authorId: USER_ID,
+      ingredients: mockState.lines.map((row) => {
+        const catalog = mockState.catalogItems.find((item) => item.id === row.ingredientCatalogItemId);
+        return {
+          ...row,
+          stage: row.stage ?? "other",
+          timeOffset: row.timeOffset ?? null,
+          amountEnteredQuantity: row.amountEnteredQuantity ?? row.amountNormalizedQuantity,
+          amountEnteredUnit: row.amountEnteredUnit ?? row.amountNormalizedUnit,
+          ingredientTechnicalData: catalog ? extractIngredientTechnicalData({ type: catalog.type, attributes: catalog.attributes }) : null
+        };
+      })
+    } as RecipeDetailDto, USER_ID)
+  },
   ...overrides
 });
 
@@ -867,6 +899,29 @@ describe("П3: exact-позиция с нулевым остатком — не 
 // пропущенные/клампнутые строки не роняют операцию целиком (владелец видел превью
 // с нехваткой и явно согласился «списать что есть»).
 describe("consumeBrewBatchInventory({ allowPartial: true })", () => {
+  it("distributes one short hop lot in recipe order and reports later empty additions as skipped", async () => {
+    mockState.catalogItems = [catalog("cascade-short", "hop", "Каскад", "Cascade", { alpha_acid_pct_typical: 6 })];
+    mockState.lines = [2, 4, 6, 6, 8].map((amount, displayOrder) => line({
+      ingredientCatalogItemId: "cascade-short", ingredientCategory: "hop", type: "hop",
+      ingredientDisplayNameSnapshot: `Cascade ${displayOrder}`, displayOrder,
+      amountNormalizedQuantity: amount, amountNormalizedUnit: "g"
+    }));
+    const hop = shelfItem({ ingredientCatalogItemId: "cascade-short", normalizedQuantity: 7.5, normalizedUnit: "g", ingredientDisplayNameSnapshot: "Cascade" });
+    mockState.inventory = [hop];
+    mockState.enrichedInventory = [enrichedItem(hop, { category: "hop", type: "hop", displayName: "Cascade" })];
+    const batch = makeBatch(uuid(5088));
+    mockState.brewBatches = [batch];
+
+    const result = await consumeBrewBatchInventory(USER_ID, batch.id, { allowPartial: true });
+
+    expect(result.consumed[0]!.quantityNormalized).toBe(7.5);
+    expect(result.consumed[0]!.requiredQuantityNormalized).toBe(26);
+    expect(mockState.inventory[0]!.normalizedQuantity).toBe(0);
+    expect(result.skippedLineCount).toBe(2);
+    expect(result.skippedLineNames).toEqual(["Cascade 3", "Cascade 4"]);
+    expect(mockState.transactions.map((transaction) => -transaction.quantityDeltaNormalized)).toEqual([2, 4, 1.5]);
+  });
+
   it("строка вовсе без складской позиции не мешает списанию остальных; повторный вызов после успеха → ALREADY_CONSUMED", async () => {
     mockState.catalogItems = [
       catalog("brandx--cascade", "hop", "Каскад", "Cascade", { alpha_acid_pct_typical: 6 }),
@@ -973,4 +1028,111 @@ describe("consumeBrewBatchInventory({ allowPartial: true })", () => {
     expect(result.skippedLineCount).toBe(1);
     expect(result.skippedLineNames).toEqual(["Рисовая лузга"]);
   });
+});
+
+
+describe("immutable batch composition", () => {
+  const prepareBatch = () => {
+    mockState.catalogItems = [
+      catalog("malt-source", "malt", "Пилснер", "Pilsner", { malt_type: "base", color_lovibond: 2 }),
+      catalog("hop-source", "hop", "Каскад", "Cascade", { alpha_acid_pct_typical: 6 })
+    ];
+    mockState.lines = [
+      line({ ingredientCatalogItemId: "malt-source", ingredientCategory: "fermentable", type: "malt", ingredientDisplayNameSnapshot: "Пилснер", amountNormalizedQuantity: 4000, amountNormalizedUnit: "g" }),
+      line({ ingredientCatalogItemId: "hop-source", ingredientCategory: "hop", type: "hop", ingredientDisplayNameSnapshot: "Каскад", amountNormalizedQuantity: 50, amountNormalizedUnit: "g" })
+    ];
+    mockState.inventory = [
+      shelfItem({ ingredientCatalogItemId: "malt-source", normalizedQuantity: 10000, normalizedUnit: "g", ingredientDisplayNameSnapshot: "Пилснер" }),
+      shelfItem({ ingredientCatalogItemId: "hop-source", normalizedQuantity: 200, normalizedUnit: "g", ingredientDisplayNameSnapshot: "Каскад" })
+    ];
+    const batch = makeBatch(uuid(701));
+    mockState.brewBatches = [batch];
+    return batch;
+  };
+
+  it("preview and consumption keep the planned amounts after recipe edits, deletion and catalog changes", async () => {
+    const batch = prepareBatch();
+    const expectedSnapshot = structuredClone(batch.recipeSnapshot);
+    mockState.lines[0].amountNormalizedQuantity = 99000;
+    mockState.recipes[0].batchSizeNormalizedQuantity = 100000;
+    mockState.catalogItems[0].attributes = { malt_type: "roasted", color_lovibond: 500 };
+    // Neither reading the live recipe nor reloading its composition is allowed.
+    vi.spyOn(testDb.query.recipes, "findFirst").mockRejectedValue(new Error("LIVE_RECIPE_READ"));
+    vi.spyOn(testDb.query.recipeIngredients, "findMany").mockRejectedValue(new Error("LIVE_COMPOSITION_READ"));
+    vi.spyOn(testDb.query.ingredients, "findMany").mockRejectedValue(new Error("LIVE_CATALOG_READ"));
+    mockState.brewBatches[0].recipeId = null;
+    mockState.recipes = [];
+    mockState.lines = [];
+
+    const preview = await previewBrewBatchConsumption(USER_ID, batch.id);
+    expect(preview?.lines.map((entry) => entry.requiredQuantityNormalized)).toEqual([4000, 50]);
+    const result = await consumeBrewBatchInventory(USER_ID, batch.id);
+    expect(result.hasInventorySnapshot).toBe(true);
+    expect(result.recipeId).toBeNull();
+    expect(mockState.inventory.map((item) => item.normalizedQuantity)).toEqual([6000, 150]);
+    expect(mockState.allocations).toHaveLength(2);
+    expect(mockState.allocations.every((allocation) => allocation.recipeId === null && allocation.recipeIngredientId === null && allocation.status === "consumed")).toBe(true);
+    expect(mockState.brewBatches[0].recipeSnapshot).toEqual(expectedSnapshot);
+    await expect(consumeBrewBatchInventory(USER_ID, batch.id)).rejects.toThrow("ALREADY_CONSUMED");
+    expect(mockState.transactions.filter((txn) => txn.type === "consume")).toHaveLength(2);
+
+    await restoreBrewBatchInventory(USER_ID, batch.id);
+    expect(mockState.inventory.map((item) => item.normalizedQuantity)).toEqual([10000, 200]);
+    await consumeBrewBatchInventory(USER_ID, batch.id);
+    expect(mockState.inventory.map((item) => item.normalizedQuantity)).toEqual([6000, 150]);
+  });
+
+  it("two batches sharing persistent keys consume and restore independently", async () => {
+    const first = prepareBatch();
+    const second = { ...structuredClone(first), id: uuid(702), recipeId: null };
+    mockState.brewBatches.push(second);
+    await consumeBrewBatchInventory(USER_ID, first.id);
+    await consumeBrewBatchInventory(USER_ID, second.id);
+    expect(mockState.inventory.map((item) => item.normalizedQuantity)).toEqual([2000, 100]);
+    await restoreBrewBatchInventory(USER_ID, first.id);
+    expect(mockState.inventory.map((item) => item.normalizedQuantity)).toEqual([6000, 150]);
+    await expect(consumeBrewBatchInventory(USER_ID, second.id)).rejects.toThrow("ALREADY_CONSUMED");
+  });
+
+  it("legacy and corrupt snapshots never fall back to a live recipe", async () => {
+    const batch = prepareBatch();
+    const before = structuredClone(mockState.inventory);
+    for (const recipeSnapshot of [null, { ingredients: [{ displayName: "Пилснер", amount: 4, unit: "kg" }] }, { inventory: { version: 1, lines: [] } }]) {
+      mockState.brewBatches[0].recipeSnapshot = recipeSnapshot;
+      await expect(previewBrewBatchConsumption(USER_ID, batch.id)).rejects.toThrow("BATCH_INVENTORY_SNAPSHOT_REQUIRED");
+      await expect(consumeBrewBatchInventory(USER_ID, batch.id)).rejects.toThrow("BATCH_INVENTORY_SNAPSHOT_REQUIRED");
+    }
+    expect(mockState.inventory).toEqual(before);
+    expect(mockState.allocations).toEqual([]);
+    expect(mockState.transactions).toEqual([]);
+  });
+
+  it("rolls back all writes when a later snapshot line has insufficient stock", async () => {
+    const batch = prepareBatch();
+    mockState.inventory[1].normalizedQuantity = 10;
+    const before = structuredClone(mockState.inventory);
+    await expect(consumeBrewBatchInventory(USER_ID, batch.id)).rejects.toThrow("INSUFFICIENT_STOCK");
+    expect(mockState.inventory).toEqual(before);
+    expect(mockState.allocations).toEqual([]);
+    expect(mockState.transactions).toEqual([]);
+  });
+
+  it("does not let another user consume a batch's snapshot", async () => {
+    const batch = prepareBatch();
+    await expect(consumeBrewBatchInventory(uuid(999), batch.id)).rejects.toThrow("NOT_FOUND");
+    expect(mockState.transactions).toEqual([]);
+  });
+
+  it("keeps explicit return available for legacy batches without a complete snapshot", async () => {
+    const batch = prepareBatch();
+    await consumeBrewBatchInventory(USER_ID, batch.id);
+    mockState.brewBatches[0].recipeSnapshot = { title: "Legacy batch" };
+    mockState.brewBatches[0].recipeId = null;
+    const result = await restoreBrewBatchInventory(USER_ID, batch.id);
+    expect(result.restoredItemCount).toBe(2);
+    expect(result.view.hasInventorySnapshot).toBe(false);
+    expect(mockState.inventory.map((item) => item.normalizedQuantity)).toEqual([10000, 200]);
+    expect((await restoreBrewBatchInventory(USER_ID, batch.id)).restoredItemCount).toBe(0);
+  });
+
 });

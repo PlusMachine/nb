@@ -117,7 +117,7 @@ export function FirstBrewScaleWidget() {
               <Row label="Ёмкость для брожения" value={`от ${fmtRu(fermenterL, 0)} л`} />
             </dl>
             <p className="mt-3 text-xs leading-5 text-muted-foreground">
-              Кастрюля и ёмкость — с запасом: под кипячение с зерном и под шапку пены при брожении.
+              Кастрюля и ёмкость — с запасом: для затирания и кипячения, а также для пенной шапки при брожении.
             </p>
           </div>
         </div>

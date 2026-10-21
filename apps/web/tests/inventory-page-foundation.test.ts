@@ -223,7 +223,7 @@ describe("inventory page foundation", () => {
 
     expect(html).toContain("Всего позиций");
     expect(html).toContain("В наличии");
-    expect(html).toContain("Пустые");
+    expect(html).toContain("Закончились");
     expect(html).toContain("Сбраживаемые");
     expect(html).toContain("Хмель");
   });

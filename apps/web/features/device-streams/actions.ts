@@ -212,7 +212,7 @@ export async function deleteStreamDeviceAction(
 
 const SESSION_ERROR_MESSAGES: Record<string, string> = {
   NOT_FOUND: "Устройство или партия не найдены.",
-  SESSION_INVALID_BATCH_STATUS: "Привязать ареометр можно только к партии в статусе «Варка» или «Брожение».",
+  SESSION_INVALID_BATCH_STATUS: "Привязать ареометр можно только к партии в статусе «Варится» или «Брожение».",
   SESSION_DEVICE_BUSY: "У этого устройства уже есть активный сеанс. Сначала завершите его.",
   SESSION_NOT_FOUND: "Сеанс не найден.",
   SESSION_TEMP_CORRIDOR_INCOMPLETE: "Заполните обе границы коридора (или обе очистите).",

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RECIPES>
+  <RECIPE>
+    <NAME>QA mobile audit 21.10</NAME>
+    <VERSION>1</VERSION>
+    <TYPE>All Grain</TYPE>
+    <STYLE>
+      <NAME>21A</NAME>
+      <VERSION>1</VERSION>
+      <CATEGORY_NUMBER>21</CATEGORY_NUMBER>
+      <STYLE_LETTER>A</STYLE_LETTER>
+      <STYLE_GUIDE>BJCP 2021</STYLE_GUIDE>
+    </STYLE>
+    <FERMENTATION_STAGES>1</FERMENTATION_STAGES>
+    <PRIMARY_TEMP>20</PRIMARY_TEMP>
+    <PRIMARY_AGE>10</PRIMARY_AGE>
+    <NB_PROCESS_META>{&quot;mashProfile&quot;:{&quot;steps&quot;:[{&quot;id&quot;:&quot;a6ab12fc-531c-4dc3-86c9-d301b8a7174b&quot;,&quot;name&quot;:&quot;Шаг 1&quot;,&quot;temperatureC&quot;:66,&quot;durationMinutes&quot;:60}]},&quot;fermentationProfile&quot;:{&quot;primaryTemperatureC&quot;:20,&quot;primaryDurationDays&quot;:10,&quot;extraSteps&quot;:[],&quot;coldCrash&quot;:{&quot;enabled&quot;:false,&quot;temperatureC&quot;:2,&quot;durationDays&quot;:2},&quot;conditioning&quot;:{&quot;enabled&quot;:false,&quot;temperatureC&quot;:12,&quot;durationDays&quot;:14}}}</NB_PROCESS_META>
+    <NB_WATER_PLAN>{&quot;setupEnabled&quot;:false,&quot;engine&quot;:&quot;balanced_default&quot;,&quot;phModel&quot;:&quot;hybrid_mash_ph_v1&quot;,&quot;sourceProfileMode&quot;:&quot;preset&quot;,&quot;sourceProfilePresetId&quot;:&quot;ro_distilled&quot;,&quot;sourceProfileSavedId&quot;:null,&quot;sourceProfileName&quot;:null,&quot;sourceProfile&quot;:null,&quot;targetProfileMode&quot;:&quot;catalog&quot;,&quot;targetProfilePresetId&quot;:null,&quot;targetProfileSlug&quot;:null,&quot;targetProfileSavedId&quot;:null,&quot;targetProfileName&quot;:null,&quot;targetProfileSource&quot;:null,&quot;targetProfileIsOverridden&quot;:false,&quot;targetProfileResolvedFromBjcpStyleKey&quot;:null,&quot;targetProfile&quot;:null,&quot;showWaterAdditivesInIngredients&quot;:false,&quot;blendRatio&quot;:null,&quot;mashWaterVolumeL&quot;:null,&quot;spargeWaterVolumeL&quot;:null,&quot;totalWaterVolumeL&quot;:null,&quot;grainAbsorptionLPerKg&quot;:null,&quot;allowedSalts&quot;:[],&quot;allowedAcids&quot;:[],&quot;manualSaltAdditions&quot;:[],&quot;targetMashPh&quot;:null,&quot;spargeAcidificationEnabled&quot;:false,&quot;spargeSourcePh&quot;:null,&quot;targetSpargePh&quot;:null,&quot;selectedAcid&quot;:&quot;lactic_acid&quot;,&quot;acidConcentrationPct&quot;:null,&quot;calibrationOffset&quot;:null}</NB_WATER_PLAN>
+    <NB_CALCULATION_META>{&quot;bitternessFormula&quot;:&quot;tinseth_whirlpool_v2&quot;,&quot;bitternessSettings&quot;:{},&quot;fgEstimateMode&quot;:&quot;default_estimate&quot;,&quot;manualAttenuationOverridePct&quot;:null,&quot;manualFgOverrideValue&quot;:null,&quot;fgEstimateDetails&quot;:{&quot;baseAttenuationPct&quot;:75,&quot;attenuationSource&quot;:&quot;default&quot;,&quot;mainMashTempC&quot;:66,&quot;mashAdjPctPoints&quot;:0.75,&quot;simpleSugarSharePct&quot;:0,&quot;crystalDextrinSharePct&quot;:0,&quot;lactoseSharePct&quot;:0,&quot;simpleSugarAdj&quot;:0,&quot;crystalDextrinAdj&quot;:0,&quot;lactoseAdj&quot;:0,&quot;effectiveAttenuationPct&quot;:75.75,&quot;fgRangeMin&quot;:1.01,&quot;fgRangeMax&quot;:1.013}}</NB_CALCULATION_META>
+    <BATCH_SIZE>20</BATCH_SIZE>
+    <BOIL_TIME>60</BOIL_TIME>
+    <EFFICIENCY>70</EFFICIENCY>
+    <OG>1.048</OG>
+    <FG>1.012</FG>
+    <IBU_METHOD>Tinseth Whirlpool v2</IBU_METHOD>
+    <COLOR>5.2</COLOR>
+    <ABV>4.73</ABV>
+    <FERMENTABLES>
+      <FERMENTABLE>
+        <NAME>Пэйл Эль</NAME>
+        <VERSION>1</VERSION>
+        <DISPLAY_AMOUNT>4.5 kg</DISPLAY_AMOUNT>
+        <NB_INGREDIENT>{&quot;amount&quot;:4.5,&quot;unit&quot;:&quot;kg&quot;,&quot;stage&quot;:&quot;mash&quot;,&quot;stepMeta&quot;:null,&quot;hopForm&quot;:null,&quot;yeastForm&quot;:null}</NB_INGREDIENT>
+        <TYPE>Grain</TYPE>
+        <AMOUNT>4.5</AMOUNT>
+        <YIELD>79</YIELD>
+        <COLOR>3.3</COLOR>
+        <ADD_AFTER_BOIL>FALSE</ADD_AFTER_BOIL>
+      </FERMENTABLE>
+    </FERMENTABLES>
+    <MASH>
+      <NAME>QA mobile audit 21.10 Mash</NAME>
+      <VERSION>1</VERSION>
+      <MASH_STEPS>
+        <MASH_STEP>
+          <NAME>Шаг 1</NAME>
+          <VERSION>1</VERSION>
+          <TYPE>Infusion</TYPE>
+          <STEP_TEMP>66</STEP_TEMP>
+          <STEP_TIME>60</STEP_TIME>
+        </MASH_STEP>
+      </MASH_STEPS>
+    </MASH>
+  </RECIPE>
+</RECIPES>

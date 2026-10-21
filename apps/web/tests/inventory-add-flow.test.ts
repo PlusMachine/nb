@@ -74,7 +74,15 @@ vi.mock("@/features/inventory/service", () => ({
   },
   updateInventoryItem: async (_userId: string, inventoryItemId: string, payload: unknown) => {
     mockState.updateItemCalls.push({ inventoryItemId, payload });
-    return { id: inventoryItemId };
+    const parsed = payload as {
+      ingredientCatalogItemId?: string | null;
+      userCustomIngredientId?: string | null;
+    };
+    return {
+      id: inventoryItemId,
+      ingredientCatalogItemId: parsed.ingredientCatalogItemId ?? null,
+      userCustomIngredientId: parsed.userCustomIngredientId ?? null
+    };
   },
   updateInventoryQuantity: async () => ({ id: "inv-updated" }),
   setInventoryItemQuantityToZero: async () => ({ id: "inv-updated" }),
@@ -311,6 +319,8 @@ describe("inventory add-flow", () => {
     expect(html).toContain("Тип хмеля");
     expect(html).toContain("Альфа, %");
     expect(html).toContain("Урожай");
+    expect(html).toContain("Не указан");
+    expect(html).toContain(`>${new Date().getFullYear()}<`);
     expect(html).toContain("Гранулы");
     expect(html).not.toContain(">Стандарт<");
     expect(html).not.toContain("Подтип");
@@ -1063,6 +1073,7 @@ describe("inventory add-flow", () => {
         fermentableColorEbc: "4.2",
         fermentableExtractYieldPct: "79",
         hopAlphaAcidPct: "",
+        harvestYear: "",
         waterTreatmentConcentrationPct: ""
       },
       hasTechnicalOverrides: true
@@ -1075,7 +1086,7 @@ describe("inventory add-flow", () => {
         { label: "Цвет", value: "3.5 EBC" },
         { label: "Экстрактивность", value: "81%" }
       ],
-      statusBadgeLabel: "ИЗМЕНЕННЫЙ"
+      statusBadgeLabel: "ИЗМЕНЁННЫЙ"
     });
 
     expect(resolveCatalogBatchOverrideSummaryState({
@@ -1088,17 +1099,43 @@ describe("inventory add-flow", () => {
         fermentableColorEbc: "",
         fermentableExtractYieldPct: "",
         hopAlphaAcidPct: "6.1",
+        harvestYear: "",
         waterTreatmentConcentrationPct: ""
       },
       hasTechnicalOverrides: true
     })).toEqual({
       currentEntries: [
-        { label: "Альфа-кислота", value: "6.1% AA" }
+        { label: "Альфа-кислота", value: "6.1% AA (пользовательская)" }
       ],
       catalogEntries: [
         { label: "Альфа-кислота", value: "5.5% AA" }
       ],
-      statusBadgeLabel: "ИЗМЕНЕННЫЙ"
+      statusBadgeLabel: null
+    });
+
+    expect(resolveCatalogBatchOverrideSummaryState({
+      defaults: {
+        kind: "hop",
+        hopAlphaAcidPct: "5.5",
+        alphaAcidPct: 5.5
+      },
+      overrides: {
+        fermentableColorEbc: "",
+        fermentableExtractYieldPct: "",
+        hopAlphaAcidPct: "5.5",
+        harvestYear: "2024",
+        waterTreatmentConcentrationPct: ""
+      },
+      hasTechnicalOverrides: true
+    })).toEqual({
+      currentEntries: [
+        { label: "Альфа-кислота", value: "5.5% AA" },
+        { label: "Урожай", value: "2024" }
+      ],
+      catalogEntries: [
+        { label: "Альфа-кислота", value: "5.5% AA" }
+      ],
+      statusBadgeLabel: null
     });
 
     expect(resolveCatalogBatchOverrideSummaryState({
@@ -1111,6 +1148,7 @@ describe("inventory add-flow", () => {
         fermentableColorEbc: "",
         fermentableExtractYieldPct: "",
         hopAlphaAcidPct: "",
+        harvestYear: "",
         waterTreatmentConcentrationPct: "75"
       },
       hasTechnicalOverrides: true
@@ -1194,7 +1232,7 @@ describe("inventory add-flow", () => {
     })).toEqual({
       isDerivedVariantFlow: true,
       submitLabel: "Добавить как свой вариант",
-      noticeText: "Сохранится как ваш измененный вариант ингредиента.",
+      noticeText: "Сохранится как ваш изменённый вариант ингредиента.",
       inlineHelper: "Каталог не изменится."
     });
 
@@ -1551,6 +1589,28 @@ describe("inventory add-flow", () => {
     expect(mockState.addCustomCalls).toHaveLength(1);
   });
 
+  it("routes catalog hop harvest year through the derived custom source resolver", async () => {
+    mockState.resolveCatalogSourceMode = "custom";
+
+    const formData = new FormData();
+    formData.set("ingredientCatalogItemId", "catalog-hop-1");
+    formData.set("enteredQuantity", "250");
+    formData.set("enteredUnit", "g");
+    formData.set("hopAlphaAcidPct", "12");
+    formData.set("harvestYear", "2025");
+
+    const result = await addSelectedIngredientAction(null, formData);
+
+    expect(result.ok).toBe(true);
+    expect(mockState.resolveCatalogSourceCalls[0]).toMatchObject({
+      ingredientCatalogItemId: "catalog-hop-1",
+      hopAlphaAcidPct: "12",
+      harvestYear: "2025"
+    });
+    expect(mockState.addCatalogCalls).toHaveLength(0);
+    expect(mockState.addCustomCalls).toHaveLength(1);
+  });
+
   it("stores catalog acid concentration through the catalog inventory path", async () => {
     mockState.resolveCatalogSourceMode = "custom";
 
@@ -1797,6 +1857,7 @@ describe("inventory add-flow", () => {
         fermentableColorEbc: "5",
         fermentableExtractYieldPct: "81",
         hopAlphaAcidPct: "",
+        harvestYear: "",
         waterTreatmentConcentrationPct: ""
       }
     })).toBe(false);
@@ -1806,6 +1867,7 @@ describe("inventory add-flow", () => {
         fermentableColorEbc: "6.5",
         fermentableExtractYieldPct: "82",
         hopAlphaAcidPct: "",
+        harvestYear: "",
         waterTreatmentConcentrationPct: ""
       }
     })).toBe(true);
@@ -1843,6 +1905,7 @@ describe("inventory add-flow", () => {
         fermentableColorEbc: "3.71",
         fermentableExtractYieldPct: "83",
         hopAlphaAcidPct: "",
+        harvestYear: "",
         waterTreatmentConcentrationPct: ""
       }
     })).toBe(false);
@@ -1880,9 +1943,49 @@ describe("inventory add-flow", () => {
         fermentableColorEbc: "6",
         fermentableExtractYieldPct: "80",
         hopAlphaAcidPct: "",
+        harvestYear: "",
         waterTreatmentConcentrationPct: ""
       }
     })).toBe(false);
+  });
+
+  it("treats hop harvest year as a catalog technical override even when alpha matches", () => {
+    const selected = {
+      id: "hop-1",
+      type: "hop" as const,
+      category: "hop" as const,
+      subtype: "hop" as const,
+      displayName: "Citra",
+      defaultUnit: "g" as const,
+      source: "catalog" as const,
+      technicalData: {
+        type: "hop" as const,
+        alphaAcidPctTypical: 12,
+        betaAcidPctTypical: 3.5,
+        hopForm: "pellet" as const
+      }
+    };
+
+    expect(hasCatalogIngredientTechnicalOverrides({
+      selected,
+      overrides: {
+        fermentableColorEbc: "",
+        fermentableExtractYieldPct: "",
+        hopAlphaAcidPct: "12",
+        harvestYear: "",
+        waterTreatmentConcentrationPct: ""
+      }
+    })).toBe(false);
+    expect(hasCatalogIngredientTechnicalOverrides({
+      selected,
+      overrides: {
+        fermentableColorEbc: "",
+        fermentableExtractYieldPct: "",
+        hopAlphaAcidPct: "12",
+        harvestYear: "2025",
+        waterTreatmentConcentrationPct: ""
+      }
+    })).toBe(true);
   });
 
   it("recognizes catalog acid concentration when itemKind is a specific acid token", () => {

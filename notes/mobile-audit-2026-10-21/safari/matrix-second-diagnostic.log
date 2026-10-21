@@ -1,0 +1,294 @@
+
+Running 252 tests using 1 worker
+
+  ✓    1 [iphone-se] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (4.5s)
+  ✓    2 [iphone-se] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла (7.0s)
+  ✓    3 [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет (7.2s)
+  ✓    4 [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (4.4s)
+  ✓    5 [iphone-se] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (2.9s)
+  ✓    6 [iphone-se] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла (4.8s)
+  ✓    7 [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет (4.6s)
+  ✓    8 [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.0s)
+  ✓    9 [iphone-se] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (1.7s)
+  ✓   10 [iphone-se] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла (1.7s)
+  ✓   11 [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет (1.6s)
+  ✓   12 [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (3.8s)
+  ✓   13 [iphone-se] › e2e/beer-presentation.spec.ts:92:3 › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек (1.9s)
+  ✘   14 [iphone-se] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (11.4s)
+  ✘   15 [iphone-se] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query (1.0m)
+  ✓   16 [iphone-se] › e2e/bjcp-search.spec.ts:46:1 › local search and view filters preserve browser history without RSC navigation (5.7s)
+  ✓   17 [iphone-se] › e2e/bjcp-search.spec.ts:72:1 › choosing a family suggestion cancels pending text and keeps the chosen scope (7.0s)
+  ✘   18 [iphone-se] › e2e/bjcp-search.spec.ts:86:1 › back cancels an uncommitted query instead of rewriting the restored history (8.5s)
+  ✓   19 [iphone-se] › e2e/calculators-unit-converter.spec.ts:12:3 › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow) (14.3s)
+  ✓   20 [iphone-se] › e2e/calculators-unit-converter.spec.ts:21:3 › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей (12.1s)
+  ✓   21 [iphone-se] › e2e/calculators-unit-converter.spec.ts:34:3 › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением (4.6s)
+  -   22 [iphone-se] › e2e/calculators-unit-converter.spec.ts:45:3 › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину
+  ✓   23 [iphone-se] › e2e/calculators-unit-converter.spec.ts:61:3 › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой (9.3s)
+  ✓   24 [iphone-se] › e2e/calculators-unit-converter.spec.ts:74:3 › Конвертер единиц пивовара › у каждой вкладки группы есть иконка (4.3s)
+  ✓   25 [iphone-se] › e2e/calculators-unit-converter.spec.ts:86:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (2.8s)
+  ✘   26 [iphone-se] › e2e/calculators-unit-converter.spec.ts:98:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (908ms)
+  ✓   27 [iphone-se] › e2e/calculators-unit-converter.spec.ts:111:3 › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки (23.4s)
+  ✘   28 [iphone-se] › e2e/calculators-unit-converter.spec.ts:118:3 › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex) (1.1m)
+  ✘   29 [iphone-se] › e2e/mobile-audit.spec.ts:34:1 › M01: label preview leaves data fields clickable in every format (4ms)
+  ✘   30 [iphone-se] › e2e/mobile-audit.spec.ts:53:1 › M02: public navigation and sign-in fit, including tablet breakpoint (3ms)
+  ✘   31 [iphone-se] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (3ms)
+  ✘   32 [iphone-se] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions (5ms)
+  ✘   33 [iphone-se] › e2e/mobile-audit.spec.ts:124:1 › M05: every dilution operation fits on the narrow screen (4ms)
+  ✘   34 [iphone-se] › e2e/safari-interactions.spec.ts:18:1 › QR description remains readable and collapses back to the short viewport (5ms)
+
+
+  1) [iphone-se] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it 
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected pattern: /[?&]q=IPA(?:&|$)/
+    Received string:  "http://127.0.0.1:3100/bjcp"
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 5000ms
+        13 × unexpected value "http://127.0.0.1:3100/bjcp"
+
+
+       9 |   // Establish one query, then close suggestions before the next debounce fires.
+      10 |   await search.fill("IPA");
+    > 11 |   await expect(page).toHaveURL(/[?&]q=IPA(?:&|$)/);
+         |                      ^
+      12 |   const query = "несуществующийстильxyz";
+      13 |   await search.fill(query);
+      14 |   await search.press("Escape");
+        at /home/dopefish/projects/nb/apps/web/e2e/bjcp-search.spec.ts:11:22
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-closing-BJCP-s-5c709-arch-and-allows-clearing-it-iphone-se/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-closing-BJCP-s-5c709-arch-and-allows-clearing-it-iphone-se/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-closing-BJCP-s-5c709-arch-and-allows-clearing-it-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-closing-BJCP-s-5c709-arch-and-allows-clearing-it-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [iphone-se] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: locator.click: Test timeout of 60000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Очистить поиск', exact: true })
+
+
+      30 |   const search = page.getByRole("combobox", { name: "Поиск стилей BJCP" });
+      31 |   await search.fill("IPA");
+    > 32 |   await page.getByRole("button", { name: "Очистить поиск", exact: true }).click();
+         |                                                                           ^
+      33 |   await search.fill("pilsner");
+      34 |   await search.press("Escape");
+      35 |   await expect.poll(() => new URL(page.url()).searchParams.get("q")).toBe("pilsner");
+        at /home/dopefish/projects/nb/apps/web/e2e/bjcp-search.spec.ts:32:75
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-clearing-befor-f7b23-annot-restore-a-stale-query-iphone-se/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-clearing-befor-f7b23-annot-restore-a-stale-query-iphone-se/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-clearing-befor-f7b23-annot-restore-a-stale-query-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-clearing-befor-f7b23-annot-restore-a-stale-query-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [iphone-se] › e2e/bjcp-search.spec.ts:86:1 › back cancels an uncommitted query instead of rewriting the restored history 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "IPA"
+    Received: null
+
+    Call Log:
+    - Timeout 5000ms exceeded while waiting on the predicate
+
+      90 |   const search = page.getByRole("combobox", { name: "Поиск стилей BJCP" });
+      91 |   await search.fill("IPA");
+    > 92 |   await expect.poll(() => new URL(page.url()).searchParams.get("q")).toBe("IPA");
+         |                                                                      ^
+      93 |   await search.press("Escape");
+      94 |   const initial = page.url();
+      95 |   await page.getByRole("button", { name: "Категории BJCP", exact: true }).click();
+        at /home/dopefish/projects/nb/apps/web/e2e/bjcp-search.spec.ts:92:70
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-back-cancels-a-74734-riting-the-restored-history-iphone-se/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-back-cancels-a-74734-riting-the-restored-history-iphone-se/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-back-cancels-a-74734-riting-the-restored-history-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-back-cancels-a-74734-riting-the-restored-history-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [iphone-se] › e2e/calculators-unit-converter.spec.ts:98:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля 
+
+    Error: page.goto: Error receiving data: Connection reset by peer
+    Call log:
+      - navigating to "http://127.0.0.1:3100/calculators/unit-converter", waiting until "load"
+
+
+       7 | test.describe("Конвертер единиц пивовара", () => {
+       8 |   test.beforeEach(async ({ page }) => {
+    >  9 |     await page.goto("/calculators/unit-converter");
+         |                ^
+      10 |   });
+      11 |
+      12 |   test("не выходит за ширину вьюпорта (нет horizontal overflow)", async ({ page }) => {
+        at /home/dopefish/projects/nb/apps/web/e2e/calculators-unit-converter.spec.ts:9:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/calculators-unit-converter-17086-устыми-а-не-конверсией-нуля-iphone-se/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/calculators-unit-converter-17086-устыми-а-не-конверсией-нуля-iphone-se/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/calculators-unit-converter-17086-устыми-а-не-конверсией-нуля-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/calculators-unit-converter-17086-устыми-а-не-конверсией-нуля-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [iphone-se] › e2e/calculators-unit-converter.spec.ts:118:3 › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex) 
+
+    Test timeout of 60000ms exceeded while running "beforeEach" hook.
+
+       6 |
+       7 | test.describe("Конвертер единиц пивовара", () => {
+    >  8 |   test.beforeEach(async ({ page }) => {
+         |        ^
+       9 |     await page.goto("/calculators/unit-converter");
+      10 |   });
+      11 |
+        at /home/dopefish/projects/nb/apps/web/e2e/calculators-unit-converter.spec.ts:8:8
+
+    Error: browserContext.newPage: Test timeout of 60000ms exceeded.
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/calculators-unit-converter-0511e-клавиатуры-roving-tabindex--iphone-se/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/calculators-unit-converter-0511e-клавиатуры-roving-tabindex--iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/calculators-unit-converter-0511e-клавиатуры-roving-tabindex--iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [iphone-se] › e2e/mobile-audit.spec.ts:34:1 › M01: label preview leaves data fields clickable in every format 
+
+    Error: browserType.launch: Failed to launch webkit because executable doesn't exist at /home/dopefish/projects/nb/apps/web/.next-safari-audit/qa-runtime/run-webkit.sh
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M01-label-pre-3cac3-s-clickable-in-every-format-iphone-se/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M01-label-pre-3cac3-s-clickable-in-every-format-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M01-label-pre-3cac3-s-clickable-in-every-format-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [iphone-se] › e2e/mobile-audit.spec.ts:53:1 › M02: public navigation and sign-in fit, including tablet breakpoint 
+
+    Error: browserType.launch: Failed to launch webkit because executable doesn't exist at /home/dopefish/projects/nb/apps/web/.next-safari-audit/qa-runtime/run-webkit.sh
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M02-public-na-2f789-including-tablet-breakpoint-iphone-se/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M02-public-na-2f789-including-tablet-breakpoint-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M02-public-na-2f789-including-tablet-breakpoint-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [iphone-se] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document 
+
+    Error: browserType.launch: Failed to launch webkit because executable doesn't exist at /home/dopefish/projects/nb/apps/web/.next-safari-audit/qa-runtime/run-webkit.sh
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-iphone-se/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) [iphone-se] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions 
+
+    Error: browserType.launch: Failed to launch webkit because executable doesn't exist at /home/dopefish/projects/nb/apps/web/.next-safari-audit/qa-runtime/run-webkit.sh
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M04-filled-re-6b1a1-metrics-and-working-actions-iphone-se/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M04-filled-re-6b1a1-metrics-and-working-actions-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M04-filled-re-6b1a1-metrics-and-working-actions-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10) [iphone-se] › e2e/mobile-audit.spec.ts:124:1 › M05: every dilution operation fits on the narrow screen 
+
+    Error: browserType.launch: Failed to launch webkit because executable doesn't exist at /home/dopefish/projects/nb/apps/web/.next-safari-audit/qa-runtime/run-webkit.sh
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M05-every-dil-465fb-n-fits-on-the-narrow-screen-iphone-se/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M05-every-dil-465fb-n-fits-on-the-narrow-screen-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M05-every-dil-465fb-n-fits-on-the-narrow-screen-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11) [iphone-se] › e2e/safari-interactions.spec.ts:18:1 › QR description remains readable and collapses back to the short viewport 
+
+    Error: browserType.launch: Failed to launch webkit because executable doesn't exist at /home/dopefish/projects/nb/apps/web/.next-safari-audit/qa-runtime/run-webkit.sh
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-se/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11 failed
+    [iphone-se] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it 
+    [iphone-se] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query 
+    [iphone-se] › e2e/bjcp-search.spec.ts:86:1 › back cancels an uncommitted query instead of rewriting the restored history 
+    [iphone-se] › e2e/calculators-unit-converter.spec.ts:98:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля 
+    [iphone-se] › e2e/calculators-unit-converter.spec.ts:118:3 › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex) 
+    [iphone-se] › e2e/mobile-audit.spec.ts:34:1 › M01: label preview leaves data fields clickable in every format 
+    [iphone-se] › e2e/mobile-audit.spec.ts:53:1 › M02: public navigation and sign-in fit, including tablet breakpoint 
+    [iphone-se] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document 
+    [iphone-se] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions 
+    [iphone-se] › e2e/mobile-audit.spec.ts:124:1 › M05: every dilution operation fits on the narrow screen 
+    [iphone-se] › e2e/safari-interactions.spec.ts:18:1 › QR description remains readable and collapses back to the short viewport 
+  1 skipped
+  218 did not run
+  22 passed (5.0m)

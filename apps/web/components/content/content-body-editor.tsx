@@ -8,7 +8,7 @@ import { Image as ImageIcon, LayoutPanelTop } from "lucide-react";
 import { contentEditorExtensions, toPlainTiptapDoc } from "@/features/content-articles/tiptap-schema";
 import type { TiptapDoc } from "@/features/content-articles/contracts";
 
-const buttonClassName = "rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition hover:border-border hover:bg-muted";
+const buttonClassName = "rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition hover:border-border hover:bg-muted aria-pressed:bg-foreground aria-pressed:text-background";
 
 const emptyDoc: TiptapDoc = { type: "doc", content: [{ type: "paragraph" }] };
 
@@ -101,6 +101,7 @@ export function ContentBodyEditor({
       }
     },
     immediatelyRender: false,
+    shouldRerenderOnTransaction: true,
     onUpdate({ editor: current }) {
       if (brokenRef.current) {
         return;
@@ -131,12 +132,12 @@ export function ContentBodyEditor({
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2">
-        <button type="button" className={buttonClassName} onClick={() => editor.chain().focus().toggleBold().run()}>Bold</button>
-        <button type="button" className={buttonClassName} onClick={() => editor.chain().focus().toggleItalic().run()}>Italic</button>
-        <button type="button" className={buttonClassName} onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>H2</button>
-        <button type="button" className={buttonClassName} onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}>H3</button>
-        <button type="button" className={buttonClassName} onClick={() => editor.chain().focus().toggleBulletList().run()}>Список</button>
-        <button type="button" className={buttonClassName} onClick={() => editor.chain().focus().toggleBlockquote().run()}>Цитата</button>
+        <button type="button" className={buttonClassName} aria-pressed={editor.isActive("bold")} onClick={() => editor.chain().focus().toggleBold().run()}>Полужирный</button>
+        <button type="button" className={buttonClassName} aria-pressed={editor.isActive("italic")} onClick={() => editor.chain().focus().toggleItalic().run()}>Курсив</button>
+        <button type="button" className={buttonClassName} aria-label="Заголовок 2 уровня" aria-pressed={editor.isActive("heading", { level: 2 })} onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>H2</button>
+        <button type="button" className={buttonClassName} aria-label="Заголовок 3 уровня" aria-pressed={editor.isActive("heading", { level: 3 })} onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}>H3</button>
+        <button type="button" className={buttonClassName} aria-pressed={editor.isActive("bulletList")} onClick={() => editor.chain().focus().toggleBulletList().run()}>Список</button>
+        <button type="button" className={buttonClassName} aria-pressed={editor.isActive("blockquote")} onClick={() => editor.chain().focus().toggleBlockquote().run()}>Цитата</button>
         <button
           type="button"
           className={buttonClassName}

@@ -41,7 +41,7 @@ export function BitternessSettingsDrawer({
             </div>
             <div>
               <h3 className="text-base font-semibold text-foreground">Настройки расчёта горечи</h3>
-              <p className="mt-1 text-sm leading-6 text-muted-foreground">По умолчанию используется Tinseth с учётом whirlpool и плотности на момент добавления.</p>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">По умолчанию используется формула Тинсета с учётом вирпула и плотности сусла при внесении хмеля.</p>
             </div>
           </div>
           <DialogCloseButton />
@@ -75,8 +75,8 @@ export function BitternessSettingsDrawer({
               className="mt-1 h-4 w-4 rounded border-border"
             />
             <span>
-              <span className="block font-medium text-foreground">Учитывать whirlpool</span>
-              <span className="text-xs text-muted-foreground">Whirlpool/hopstand добавки будут давать вклад в IBU через температурный коэффициент.</span>
+              <span className="block font-medium text-foreground">Учитывать вирпул</span>
+              <span className="text-xs text-muted-foreground">Горечь от хмеля на вирпуле и хопстенде рассчитывается с учётом температуры сусла.</span>
             </span>
           </label>
 
@@ -94,13 +94,13 @@ export function BitternessSettingsDrawer({
               className="mt-1 h-4 w-4 rounded border-border"
             />
             <span>
-              <span className="block font-medium text-foreground">Учитывать carryover позднего хмеля</span>
-              <span className="text-xs text-muted-foreground">Практическая оценка для хмеля, который попал в котёл незадолго до flameout.</span>
+              <span className="block font-medium text-foreground">Учитывать горечь от позднего хмеля после кипячения</span>
+              <span className="text-xs text-muted-foreground">Хмель, внесённый незадолго до конца кипячения, продолжает отдавать горечь после выключения нагрева.</span>
             </span>
           </label>
 
           <label className="block text-xs font-medium text-muted-foreground">
-            FWH mode
+            Расчёт охмеления первого сусла (FWH)
             <select
               value={calculationMeta.bitternessSettings.firstWortHopMode ?? "bonus_10pct"}
               onChange={(event) => onChange({
@@ -118,7 +118,7 @@ export function BitternessSettingsDrawer({
             </select>
           </label>
 
-          <p className="rounded-lg bg-muted px-3 py-2 text-xs leading-5 text-muted-foreground">Dry hop по умолчанию не входит в стандартный IBU total, но может менять воспринимаемую горечь.</p>
+          <p className="rounded-lg bg-muted px-3 py-2 text-xs leading-5 text-muted-foreground">Сухое охмеление по умолчанию не учитывается в расчёте IBU, но может влиять на воспринимаемую горечь.</p>
         </div>
       </div>
     </Dialog>

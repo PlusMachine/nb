@@ -21,8 +21,8 @@ const buildProcessMeta = (overrides: Partial<RecipeProcessMeta> = {}): RecipePro
   ...overrides
 });
 
-const renderMash = (meta: RecipeProcessMeta) =>
-  renderToStaticMarkup(React.createElement(PublicRecipeMashSection, { processMeta: meta }));
+const renderMash = (meta: RecipeProcessMeta, boilTimeMinutes?: number | null) =>
+  renderToStaticMarkup(React.createElement(PublicRecipeMashSection, { processMeta: meta, boilTimeMinutes }));
 const renderFerment = (meta: RecipeProcessMeta, ingredients?: RecipeIngredientDto[]) =>
   renderToStaticMarkup(React.createElement(PublicRecipeFermentationSection, { processMeta: meta, ingredients }));
 
@@ -75,6 +75,24 @@ describe("PublicRecipeMashSection", () => {
     // Итог: 2 шага · 75 мин.
     expect(html).toContain("75 мин");
     expect(html).toContain("2 шага");
+  });
+
+  it("добавляет длительность кипячения строкой после шагов затора", () => {
+    const html = renderMash(
+      buildProcessMeta({
+        mashProfile: { steps: [{ id: "m1", name: "Осахаривание", temperatureC: 66, durationMinutes: 60 }] }
+      }),
+      90
+    );
+    expect(html).toContain("Кипячение");
+    expect(html).toContain("90 мин");
+  });
+
+  it("без boilTimeMinutes не показывает строку кипячения в затирании", () => {
+    const html = renderMash(buildProcessMeta({
+      mashProfile: { steps: [{ id: "m1", name: "Осахаривание", temperatureC: 66, durationMinutes: 60 }] }
+    }));
+    expect(html).not.toContain("Кипячение");
   });
 
   it("генерик-имя шага заменяет на «Шаг N»", () => {

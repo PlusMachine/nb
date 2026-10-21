@@ -1,0 +1,6 @@
+{
+  "command": "tsc --noEmit",
+  "cwd": "apps/web",
+  "exitCode": 0,
+  "afterTemporaryConfigCleanup": true
+}

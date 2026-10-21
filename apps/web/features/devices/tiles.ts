@@ -14,6 +14,7 @@
 import { db, sql } from "@nb/db";
 
 import { isStreamLikeProviderId } from "@/features/device-streams/contracts";
+import { isDemoStreamDevice } from "@/features/device-streams/demo";
 
 import { listUserDevices, isDemoDevice } from "./service";
 import { emptySnapshot, snapshotFromRow, type TileRow } from "./tile-snapshot";
@@ -58,7 +59,7 @@ export async function listDeviceTiles(userId: string): Promise<DeviceTile[]> {
         hardwareId: d.hardwareId,
         status: d.status,
         fw: d.fw,
-        isDemo: false,
+        isDemo: isDemoStreamDevice(d),
         lastSeenAt: d.lastSeenAt ? d.lastSeenAt.toISOString() : null,
         createdAt: d.createdAt.toISOString(),
         kind: "stream",

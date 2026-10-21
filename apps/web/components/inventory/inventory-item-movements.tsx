@@ -17,7 +17,7 @@ const TYPE_LABELS: Record<InventoryItemMovementDto["type"], string> = {
   consume: "Списание",
   reserve: "Резерв",
   release: "Возврат",
-  adjustment: "Поправка"
+  adjustment: "Корректировка"
 };
 
 const dateFmt = new Intl.DateTimeFormat("ru-RU", {
@@ -71,17 +71,17 @@ export function InventoryItemMovements({
 
   return (
     <section className="mt-6 space-y-2 border-t border-border pt-4">
-      <h3 className="text-sm font-semibold text-foreground">Движения</h3>
+      <h3 className="text-sm font-semibold text-foreground">История запасов</h3>
 
       {state.status === "loading" ? <p className="text-sm text-muted-foreground">Загрузка…</p> : null}
       {state.status === "error" ? (
         <p className="text-sm text-destructive" role="alert">
-          Не удалось загрузить журнал движений.
+          Не удалось загрузить историю запасов.
         </p>
       ) : null}
       {state.status === "ready" && state.movements.length === 0 ? (
         <p className="text-sm text-muted-foreground">
-          Движений по этой позиции пока нет. Здесь появятся пополнения, списания и расход на варки.
+          История этой позиции пока пуста. Здесь появятся пополнения, списания и расход на варки.
         </p>
       ) : null}
 

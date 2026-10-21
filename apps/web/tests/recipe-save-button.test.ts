@@ -32,6 +32,7 @@ describe("resolveSaveToastAction(countStockGaps(lines)) — Ф25: partial тож
     ingredientDisplayName: "Кориандр молотый",
     category: "consumable",
     brand: null,
+    countryCode: null,
     status: "covered",
     coveragePercent: 100,
     requiredQuantityNormalized: 10,

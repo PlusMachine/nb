@@ -1,4 +1,5 @@
 import type { DeviceTile } from "./contracts";
+import { summarizeDeviceConnection } from "./connection";
 
 // =============================================================================
 //  features/devices — return-recipe-core.ts
@@ -31,8 +32,11 @@ export const resolveReturnRecipeHref = (recipe: ReturnRecipeSource, viewerId: st
 /**
  * «Может сварить прямо сейчас» для баннера «Продолжить варку» — DeviceTile не
  * несёт supportsRecipePush (в отличие от DeviceDto/PickerDevice), поэтому
- * допущение: online-плитка BrewForge способна варить. Демо-пивоварня создаётся
- * сразу в статусе online и попадает сюда так же, как реальный контроллер.
+ * допущение: BrewForge с подтверждённой связью способен варить.
  */
-export const hasBrewCapableOnlineTile = (tiles: readonly DeviceTile[]): boolean =>
-  tiles.some((tile) => tile.kind === "brewforge" && tile.status === "online");
+export const hasBrewCapableOnlineTile = (tiles: readonly DeviceTile[], nowMs = Date.now()): boolean =>
+  tiles.some((tile) => tile.kind === "brewforge" && summarizeDeviceConnection({
+    status: tile.status,
+    lastSeenAtMs: tile.lastSeenAt ? Date.parse(tile.lastSeenAt) : null,
+    lastTelemetryAtMs: tile.snapshot?.ts ?? null
+  }, nowMs).tone === "online");

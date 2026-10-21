@@ -45,10 +45,11 @@ import {
   updateInventoryQuantitySchema
 } from "./contracts";
 import { escapeLikePattern } from "@nb/search";
+import { normalizedSearchMatch } from "@/lib/search-sql";
 
 import type { IngredientCategory, IngredientTechnicalData } from "../ingredients/contracts";
 import { buildLayoutQueryVariants, buildQueryVariants, normalizeIngredientName } from "../ingredients/normalization";
-import { rankIngredientCandidate, type RankedCandidate } from "../ingredients/ranking";
+import { createIngredientRanker, type RankedCandidate } from "../ingredients/ranking";
 import {
   resolveIngredientTechnicalDataColorRangeEbc,
   resolveIngredientTechnicalDataHopAlphaAcidPct
@@ -67,6 +68,7 @@ import {
   type IngredientSourceLinkage
 } from "../ingredients/source-linkage";
 import { readCustomIngredientMetadata } from "../ingredients/custom-metadata";
+import { readDerivedFromHopAlphaAcidPct } from "../ingredients/derived-ingredient-presentation";
 import {
   applyInventoryWaterTreatmentConcentration,
   formatWaterTreatmentConcentrationPct,
@@ -325,7 +327,17 @@ export const buildInventorySearchWhere = (variants: string[]) => {
     )
   )`);
 
-  return clauses.length === 1 ? clauses[0] : sql<boolean>`(${sql.join(clauses, sql` or `)})`;
+  const normalizedClauses = [
+    userIngredients.ingredientDisplayNameSnapshot, ingredients.nameRu, ingredients.nameEn,
+    ingredients.brand, ingredients.producer, userCustomIngredients.displayName, userCustomIngredients.manufacturer
+  ].map((column) => normalizedSearchMatch(column, terms));
+  normalizedClauses.push(sql<boolean>`exists (
+    select 1 from ${ingredientAliases}
+    where ${ingredientAliases.ingredientId} = ${userIngredients.ingredientCatalogItemId}
+      and ${ingredientAliases.isEnabled}
+      and ${normalizedSearchMatch(ingredientAliases.alias, terms)}
+  )`);
+  return sql<boolean>`(${sql.join([...clauses, ...normalizedClauses], sql` or `)})`;
 };
 
 const buildLiveInventoryLinkage = (
@@ -430,6 +442,9 @@ const buildCustomSourceDto = (
       const normalized = Number.parseInt(String(custom.hopSeason ?? ""), 10);
       return Number.isFinite(normalized) ? normalized : null;
     })();
+  const countryCode = typeof properties.countryCode === "string" && /^[A-Za-z]{2}$/.test(properties.countryCode.trim())
+    ? properties.countryCode.trim().toUpperCase()
+    : null;
 
   return {
     sourceKind: "custom",
@@ -454,7 +469,7 @@ const buildCustomSourceDto = (
     producer: brand,
     brandName: brand,
     manufacturer: brand,
-    countryCode: null,
+    countryCode,
     countryName: custom.country,
     country: custom.country,
     groupName,
@@ -468,6 +483,7 @@ const buildCustomSourceDto = (
     packageVariantName: null,
     derivedFromIngredientId: metadata.derivedFromIngredientId,
     derivedFromDisplayName: metadata.derivedFromDisplayName,
+    derivedFromHopAlphaAcidPct: readDerivedFromHopAlphaAcidPct(properties),
     summary: linkage.summary,
     ...extractIngredientTechnicalFields({
       type: linkage.type,
@@ -958,6 +974,10 @@ const buildPersistedCustomIngredientValues = (
         subtype,
         brand,
         country,
+        countryCode: typeof parsed.properties?.countryCode === "string"
+          && /^[A-Za-z]{2}$/.test(parsed.properties.countryCode.trim())
+          ? parsed.properties.countryCode.trim().toUpperCase()
+          : null,
         nameRu: parsed.nameRu ?? null,
         nameEn: parsed.nameEn ?? null,
         aliases: aliases.map((alias) => ({
@@ -975,6 +995,10 @@ const buildPersistedCustomIngredientValues = (
         productCode: parsed.productCode ?? null,
         derivedFromIngredientId: parsed.derivedFromIngredientId ?? null,
         derivedFromDisplayName: parsed.derivedFromDisplayName ?? null,
+        derivedFromHopAlphaAcidPct: typeof parsed.properties?.derivedFromHopAlphaAcidPct === "number"
+          && Number.isFinite(parsed.properties.derivedFromHopAlphaAcidPct)
+          ? parsed.properties.derivedFromHopAlphaAcidPct
+          : null,
         hopForm: parsed.hopForm ?? null,
         hopBetaAcidPct: parsed.hopBetaAcidPct ?? null,
         fermentableProteinPct: parsed.fermentableProteinPct ?? null,
@@ -1140,7 +1164,20 @@ type CatalogTechnicalOverrideResolution =
   | {
     kind: "hop";
     hopAlphaAcidPct: number | null;
+    harvestYear: number | null;
   };
+
+const readCustomIngredientHarvestYear = (
+  customIngredient: typeof userCustomIngredients.$inferSelect
+): number | null => {
+  const properties = isRecord(customIngredient.properties) ? customIngredient.properties : {};
+  if (typeof properties.harvestYear === "number" && Number.isFinite(properties.harvestYear)) {
+    return properties.harvestYear;
+  }
+
+  const normalized = Number.parseInt(String(customIngredient.hopSeason ?? ""), 10);
+  return Number.isFinite(normalized) ? normalized : null;
+};
 
 const resolveCatalogTechnicalOverrideResolution = (
   catalogItem: typeof ingredients.$inferSelect,
@@ -1172,15 +1209,24 @@ const resolveCatalogTechnicalOverrideResolution = (
     };
   }
 
-  if (linkage.category === "hop" && parsed.hopAlphaAcidPct != null) {
+  if (
+    linkage.category === "hop"
+    && (parsed.hopAlphaAcidPct != null || parsed.harvestYear != null)
+  ) {
     const currentAlphaAcidPct = readHopAlphaAcidPct(technicalData);
-    if (numbersEqual(parsed.hopAlphaAcidPct, currentAlphaAcidPct)) {
+    const nextAlphaAcidPct = parsed.hopAlphaAcidPct ?? currentAlphaAcidPct;
+    const alphaChanged = parsed.hopAlphaAcidPct != null
+      && !numbersEqual(parsed.hopAlphaAcidPct, currentAlphaAcidPct);
+    const harvestYear = parsed.harvestYear ?? null;
+
+    if (!alphaChanged && harvestYear == null) {
       return { kind: "none" };
     }
 
     return {
       kind: "hop",
-      hopAlphaAcidPct: parsed.hopAlphaAcidPct
+      hopAlphaAcidPct: nextAlphaAcidPct,
+      harvestYear
     };
   }
 
@@ -1209,7 +1255,10 @@ const matchesDerivedCustomIngredient = ({
     );
   }
 
-  return numbersEqual(readHopAlphaAcidPct(linkage.technicalData), override.hopAlphaAcidPct);
+  return (
+    numbersEqual(readHopAlphaAcidPct(linkage.technicalData), override.hopAlphaAcidPct)
+    && readCustomIngredientHarvestYear(customIngredient) === (override.harvestYear ?? null)
+  );
 };
 
 export const findOwnedCustomIngredientByDisplayName = async (
@@ -1263,6 +1312,7 @@ const buildDerivedCustomIngredientPayload = (
     hopAlphaAcidPct: override.kind === "hop"
       ? override.hopAlphaAcidPct
       : readHopAlphaAcidPct(technicalData),
+    harvestYear: override.kind === "hop" ? override.harvestYear : null,
     hopBetaAcidPct: readHopBetaAcidPct(technicalData),
     hopForm: isHopTechnicalData(technicalData) ? technicalData.hopForm ?? null : null,
     yeastAttenuationPct: isYeastTechnicalData(technicalData)
@@ -1291,7 +1341,13 @@ const buildDerivedCustomIngredientPayload = (
     concentration: null,
     waterTreatmentConcentrationPct: null,
     defaultDisplayUnit: linkage.defaultDisplayUnit,
-    visibility: "private" as const
+    visibility: "private" as const,
+    properties: {
+      countryCode: catalogItem.countryCode ?? null,
+      ...(override.kind === "hop"
+        ? { derivedFromHopAlphaAcidPct: readHopAlphaAcidPct(technicalData) }
+        : {})
+    }
   };
 };
 
@@ -1302,7 +1358,8 @@ const buildDerivedCustomIngredientDescriptor = (
     return `${formatDerivedOverrideNumber(override.fermentableColorEbc)} EBC / ${formatDerivedOverrideNumber(override.fermentableExtractYieldPct)}%`;
   }
 
-  return `${formatDerivedOverrideNumber(override.hopAlphaAcidPct)}% AA`;
+  const alphaPart = `${formatDerivedOverrideNumber(override.hopAlphaAcidPct)}% AA`;
+  return override.harvestYear != null ? `${alphaPart}, ${override.harvestYear}` : alphaPart;
 };
 
 const resolveOrCreateDerivedCustomIngredient = async (
@@ -1364,6 +1421,125 @@ export const resolveCatalogInventoryAdditionSource = async (
   return {
     sourceKind: "custom",
     userCustomIngredientId: derivedCustomIngredient.id
+  };
+};
+
+const patchOwnedCustomHopBatchParams = async (
+  userId: string,
+  customIngredient: typeof userCustomIngredients.$inferSelect,
+  params: {
+    hopAlphaAcidPct: number | null;
+    harvestYear: number | null;
+  }
+) => {
+  const linkage = buildCustomIngredientLinkage(customIngredient);
+  const properties = isRecord(customIngredient.properties) ? { ...customIngredient.properties } : {};
+  const nextTechnicalData = isHopTechnicalData(linkage.technicalData)
+    ? {
+      ...linkage.technicalData,
+      alphaAcidPctTypical: params.hopAlphaAcidPct
+    }
+    : {
+      type: "hop" as const,
+      alphaAcidPctTypical: params.hopAlphaAcidPct,
+      betaAcidPctTypical: null,
+      hopForm: null
+    };
+
+  properties.harvestYear = params.harvestYear;
+  properties.technicalData = nextTechnicalData;
+
+  const [updated] = await db.update(userCustomIngredients).set({
+    hopAlphaAcidPct: params.hopAlphaAcidPct,
+    hopSeason: params.harvestYear == null ? null : String(params.harvestYear),
+    properties,
+    updatedAt: new Date()
+  }).where(and(
+    eq(userCustomIngredients.id, customIngredient.id),
+    eq(userCustomIngredients.userId, userId)
+  )).returning();
+
+  if (!updated) {
+    throw new Error("CUSTOM_INGREDIENT_NOT_FOUND");
+  }
+
+  return updated;
+};
+
+const resolveInventoryUpdateSourceLinkage = async (
+  userId: string,
+  parsed: z.infer<typeof updateInventoryItemSchema>
+): Promise<{
+  ingredientCatalogItemId: string | null;
+  userCustomIngredientId: string | null;
+}> => {
+  if (parsed.ingredientCatalogItemId) {
+    const catalogItem = await ensureCatalogIngredientExists(parsed.ingredientCatalogItemId);
+    const linkage = buildCatalogIngredientLinkage(catalogItem);
+    if (linkage.category !== "hop") {
+      return {
+        ingredientCatalogItemId: catalogItem.id,
+        userCustomIngredientId: null
+      };
+    }
+
+    const resolved = await resolveCatalogInventoryAdditionSource(userId, {
+      ingredientCatalogItemId: catalogItem.id,
+      hopAlphaAcidPct: parsed.hopAlphaAcidPct,
+      harvestYear: parsed.harvestYear
+    });
+
+    if (resolved.sourceKind === "catalog") {
+      return {
+        ingredientCatalogItemId: resolved.ingredientCatalogItemId,
+        userCustomIngredientId: null
+      };
+    }
+
+    return {
+      ingredientCatalogItemId: null,
+      userCustomIngredientId: resolved.userCustomIngredientId
+    };
+  }
+
+  const customIngredient = await ensureOwnedCustomIngredient(userId, parsed.userCustomIngredientId!);
+  const linkage = buildCustomIngredientLinkage(customIngredient);
+  if (linkage.category !== "hop") {
+    return {
+      ingredientCatalogItemId: null,
+      userCustomIngredientId: customIngredient.id
+    };
+  }
+
+  const metadata = readCustomIngredientMetadata(customIngredient);
+  if (metadata.derivedFromIngredientId) {
+    const resolved = await resolveCatalogInventoryAdditionSource(userId, {
+      ingredientCatalogItemId: metadata.derivedFromIngredientId,
+      hopAlphaAcidPct: parsed.hopAlphaAcidPct ?? readHopAlphaAcidPct(linkage.technicalData),
+      harvestYear: parsed.harvestYear
+    });
+
+    if (resolved.sourceKind === "catalog") {
+      return {
+        ingredientCatalogItemId: resolved.ingredientCatalogItemId,
+        userCustomIngredientId: null
+      };
+    }
+
+    return {
+      ingredientCatalogItemId: null,
+      userCustomIngredientId: resolved.userCustomIngredientId
+    };
+  }
+
+  await patchOwnedCustomHopBatchParams(userId, customIngredient, {
+    hopAlphaAcidPct: parsed.hopAlphaAcidPct ?? readHopAlphaAcidPct(linkage.technicalData),
+    harvestYear: parsed.harvestYear ?? null
+  });
+
+  return {
+    ingredientCatalogItemId: null,
+    userCustomIngredientId: customIngredient.id
   };
 };
 
@@ -1663,7 +1839,7 @@ export const updateInventoryQuantity = async (userId: string, inventoryItemId: s
       })
       .from(userIngredients)
       .where(eq(userIngredients.id, current.id))
-      .for("update");
+      .for("no key update");
     const beforeNormalized = locked?.normalizedQuantity ?? current.normalizedQuantity;
     const beforeUnit = locked?.normalizedUnit ?? current.normalizedUnit;
 
@@ -1710,7 +1886,7 @@ export const setInventoryItemQuantityToZero = async (userId: string, inventoryIt
       })
       .from(userIngredients)
       .where(eq(userIngredients.id, inventoryItemId))
-      .for("update");
+      .for("no key update");
     const beforeNormalized = locked?.normalizedQuantity ?? current.normalizedQuantity;
     const beforeUnit = locked?.normalizedUnit ?? current.normalizedUnit;
 
@@ -1799,11 +1975,12 @@ export const updateInventoryItem = async (
   const current = await ensureInventoryItem(userId, inventoryItemId);
   const parsed = updateInventoryItemSchema.parse(payload);
   ensureSourceLinkage(parsed.ingredientCatalogItemId ?? null, parsed.userCustomIngredientId ?? null);
+  const sourceLinkage = await resolveInventoryUpdateSourceLinkage(userId, parsed);
 
-  if (parsed.ingredientCatalogItemId) {
+  if (sourceLinkage.ingredientCatalogItemId) {
     const [catalogItem, packageVariant, rates] = await Promise.all([
-      ensureCatalogIngredientExists(parsed.ingredientCatalogItemId),
-      ensureCatalogPackageVariant(parsed.ingredientCatalogItemId, parsed.packageVariantId ?? null),
+      ensureCatalogIngredientExists(sourceLinkage.ingredientCatalogItemId),
+      ensureCatalogPackageVariant(sourceLinkage.ingredientCatalogItemId, parsed.packageVariantId ?? null),
       listSystemCurrencyRates()
     ]);
     const { profile, category, subtype } = buildCatalogProfile(catalogItem);
@@ -1873,7 +2050,7 @@ export const updateInventoryItem = async (
   }
 
   const [customIngredient, rates] = await Promise.all([
-    ensureOwnedCustomIngredient(userId, parsed.userCustomIngredientId!),
+    ensureOwnedCustomIngredient(userId, sourceLinkage.userCustomIngredientId!),
     listSystemCurrencyRates()
   ]);
   const linkage = buildCustomIngredientLinkage(customIngredient);
@@ -2012,8 +2189,9 @@ const rankInventorySearchItems = (
   const ranked: Array<{ item: InventoryListItemDto; tier: number; score: number }> = [];
   const unranked: InventoryListItemDto[] = [];
 
+  const rankCandidate = createIngredientRanker(search, { includeLayoutVariants });
   for (const item of items) {
-    const rank = rankIngredientCandidate(search, buildInventoryRankedCandidate(item), { includeLayoutVariants });
+    const rank = rankCandidate(buildInventoryRankedCandidate(item));
     if (rank) {
       ranked.push({ item, tier: rank.tier, score: rank.score });
     } else {
@@ -2025,6 +2203,54 @@ const rankInventorySearchItems = (
   unranked.sort(compareInventoryItemsByPrimaryLabel);
 
   return [...ranked.map((entry) => entry.item), ...unranked];
+};
+
+const enrichInventoryDerivedCustomCountry = async (
+  items: InventoryListItemDto[]
+): Promise<InventoryListItemDto[]> => {
+  const missingBaseIds = Array.from(new Set(
+    items
+      .filter((item) => (
+        item.source.sourceKind === "custom"
+        && item.source.derivedFromIngredientId
+        && !item.source.countryCode
+      ))
+      .map((item) => item.source.derivedFromIngredientId as string)
+  ));
+
+  if (missingBaseIds.length === 0) {
+    return items;
+  }
+
+  const catalogRows = await db.select({
+    id: ingredients.id,
+    countryCode: ingredients.countryCode,
+    countryName: ingredients.countryName
+  }).from(ingredients).where(inArray(ingredients.id, missingBaseIds));
+
+  const catalogById = new Map(catalogRows.map((row) => [row.id, row] as const));
+
+  return items.map((item) => {
+    const baseId = item.source.derivedFromIngredientId;
+    if (item.source.sourceKind !== "custom" || !baseId || item.source.countryCode) {
+      return item;
+    }
+
+    const base = catalogById.get(baseId);
+    if (!base?.countryCode) {
+      return item;
+    }
+
+    return {
+      ...item,
+      source: {
+        ...item.source,
+        countryCode: base.countryCode,
+        countryName: item.source.countryName ?? base.countryName ?? null,
+        country: item.source.country ?? base.countryName ?? null
+      }
+    };
+  });
 };
 
 export const listInventoryForUserWithMeta = async (
@@ -2059,6 +2285,7 @@ export const listInventoryForUserWithMeta = async (
   }
 
   let items = rows.map((row) => mapInventoryRow(row));
+  items = await enrichInventoryDerivedCustomCountry(items);
 
   if (parsed.type) {
     items = items.filter((item) => item.source.type === parsed.type);
@@ -2185,6 +2412,8 @@ export const searchInventorySuggestions = async (
         familyDisplayName: item.source.familyDisplayName,
         derivedFromIngredientId: item.source.derivedFromIngredientId,
         derivedFromDisplayName: item.source.derivedFromDisplayName,
+        derivedFromHopAlphaAcidPct: item.source.derivedFromHopAlphaAcidPct,
+        hopAlphaAcidPct: item.source.hopAlphaAcidPct,
         source: item.source.sourceKind === "catalog" ? "catalog" as const : "custom" as const,
         inventoryItemId: item.id,
         inventoryQuantityLabel: formatInventoryQuantityForDisplay(item),

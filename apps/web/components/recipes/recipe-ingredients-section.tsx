@@ -2,6 +2,7 @@ import React from "react";
 import { Droplets, FlaskConical, Hop, Package, Wheat } from "lucide-react";
 import { resolveIngredientCategory } from "@/features/ingredients/taxonomy";
 import type { IngredientTechnicalData } from "@/features/ingredients/contracts";
+import { inventoryUnitLabels, type InventoryUnit } from "@/features/inventory/units";
 import type { RecipeDetailDto } from "@/features/recipes/contracts";
 import { fermentableUseLabels, hopUseTypeLabels } from "@/features/recipes/ingredient-labels";
 import {
@@ -211,15 +212,56 @@ const buildIngredientCardSource = (ingredient: RecipeIngredient): RecipeIngredie
   };
 };
 
-export function RecipeIngredientsSection({ ingredients }: { ingredients: RecipeDetailDto["ingredients"] }) {
+type RecipeIngredientsBatchContext = {
+  batchSizeEnteredQuantity: number;
+  batchSizeEnteredUnit: InventoryUnit;
+  efficiency: number | null;
+};
+
+const formatBatchContextLine = ({
+  batchSizeEnteredQuantity,
+  batchSizeEnteredUnit,
+  efficiency
+}: RecipeIngredientsBatchContext): string => {
+  const unitLabel = inventoryUnitLabels[batchSizeEnteredUnit] ?? batchSizeEnteredUnit;
+  const batch = `Объём партии — ${batchSizeEnteredQuantity} ${unitLabel}`;
+  if (efficiency == null || !Number.isFinite(efficiency)) {
+    return batch;
+  }
+  return `${batch}, при эффективности ${efficiency}%`;
+};
+
+export function RecipeIngredientsSection({
+  ingredients,
+  batchSizeEnteredQuantity,
+  batchSizeEnteredUnit,
+  efficiency,
+  batchAction
+}: {
+  ingredients: RecipeDetailDto["ingredients"];
+  batchAction?: React.ReactNode;
+} & Partial<RecipeIngredientsBatchContext>) {
   const grouped = sectionOrder.map((category) => ({
     category,
     items: sortGroupItems(category, ingredients.filter((ingredient) => recipeIngredientCategoryOf(ingredient) === category))
   }));
+  const batchContext = batchSizeEnteredQuantity != null && batchSizeEnteredUnit
+    ? formatBatchContextLine({ batchSizeEnteredQuantity, batchSizeEnteredUnit, efficiency: efficiency ?? null })
+    : null;
 
   return (
     <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-      <h2 className="mb-4 text-base font-semibold text-foreground">Ингредиенты</h2>
+      <div className="mb-4 space-y-1">
+        <h2 className="text-base font-semibold text-foreground">Ингредиенты</h2>
+        {batchContext || batchAction ? (
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            {batchContext ? (
+              <p className="text-sm tabular-nums text-muted-foreground">{batchContext}</p>
+            ) : null}
+            {batchAction}
+          </div>
+        ) : null}
+      </div>
       {ingredients.length === 0 ? <p className="text-sm text-muted-foreground">Ингредиенты пока не добавлены.</p> : null}
       <div className="space-y-5">
         {grouped.map((group) => {

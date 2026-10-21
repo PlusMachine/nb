@@ -1,0 +1,106 @@
+[
+  {
+    "id": "S01",
+    "priority": "P2",
+    "title": "Ссылка на рецепт QR-страницы уходит ниже короткого экрана",
+    "status": "fixed",
+    "source": [
+      "apps/web/components/beer/beer-presentation.tsx",
+      "apps/web/components/beer/beer-presentation.module.css"
+    ],
+    "before": "screens/before-qr-iphone-se.png",
+    "after": "screens/final-qr-iPhone-SE.png",
+    "verification": "beer-presentation.spec.ts; safari-interactions.spec.ts; visual-checks.json",
+    "steps": [
+      "Открыть /beer/pilsner-urquell на 320×568 или 750×342.",
+      "Проверить имя, паспорт и ссылку «Рецепт этого пива» без прокрутки."
+    ]
+  },
+  {
+    "id": "S02",
+    "priority": "P2",
+    "title": "Обратная связь перекрывает нижние ссылки QR в landscape",
+    "status": "fixed",
+    "source": [
+      "apps/web/components/feedback/feedback-launcher.tsx"
+    ],
+    "before": "screens/qr-pilsner-urquell-750.png",
+    "after": "screens/final-qr-iPhone-13-landscape.png",
+    "verification": "QR feedback overlap=0; 44×44; two open/close cycles",
+    "steps": [
+      "Открыть QR-страницу в iPhone landscape.",
+      "Сравнить прямоугольники обратной связи и ссылки на рецепт; открыть и закрыть панель дважды."
+    ]
+  },
+  {
+    "id": "S03",
+    "priority": "P2",
+    "title": "Ряд полей уменьшается до 14 px на сенсорных экранах шире 640 px",
+    "status": "fixed",
+    "source": [
+      "packages/ui/src/components/input.tsx",
+      "packages/ui/src/components/select.tsx",
+      "packages/ui/src/components/textarea.tsx"
+    ],
+    "before": "broad-initial.json",
+    "after": "broad-scan.json",
+    "verification": "272 final states; no text fields below 16 px with coarse pointer. Native iOS keyboard zoom not emulated.",
+    "steps": [
+      "Использовать coarse pointer при ширине от 640 px.",
+      "Проверить computed font-size текстовых полей в этикетках, профиле, редакторе, калькуляторах и каталоге."
+    ]
+  },
+  {
+    "id": "S04",
+    "priority": "P2",
+    "title": "Первый ввод BJCP до гидратации сбрасывается",
+    "status": "fixed",
+    "source": [
+      "apps/web/components/content/bjcp-catalog.tsx"
+    ],
+    "before": "screens/before-bjcp-first-query-iphone-se.png",
+    "after": "screens/final-bjcp-query-iphone.png",
+    "verification": "delayed JS chunks; disabled until handlers attach; pressSequentially IPA then URL q=IPA; search-focused-results.json",
+    "steps": [
+      "Задержать все /_next/static/**/*.js.",
+      "Дождаться SSR-поля BJCP; раньше оно принимало ввод без обработчиков.",
+      "Разрешить JS и ввести IPA: после исправления поле включается после гидратации и URL содержит q=IPA."
+    ]
+  },
+  {
+    "id": "S05",
+    "priority": "P2",
+    "title": "Подсказки BJCP выходят за нижний край короткого экрана",
+    "status": "fixed",
+    "source": [
+      "apps/web/components/content/bjcp-catalog.tsx",
+      "packages/ui/src/components/popover.tsx"
+    ],
+    "before": "screens/before-bjcp-suggestions-landscape.png",
+    "after": "screens/final-bjcp-suggestions-landscape-fixed.png",
+    "verification": "collision-aware anchored portal; max 320 px or available height; internal scroll and active-option visibility; Escape/reopen/select; touch tap does not cancel click; clear tap",
+    "steps": [
+      "На 750×342 открыть /bjcp и ввести IPA.",
+      "Проверить границы списка, прокрутку стрелками до последнего варианта, Escape и повторное открытие.",
+      "Касанием выбрать семейство, затем ввести новый запрос и касанием очистить поле."
+    ]
+  },
+  {
+    "id": "S06",
+    "priority": "P2",
+    "title": "Фиксированный результат и обратная связь перекрывают переключатели калькулятора в landscape",
+    "status": "fixed",
+    "source": [
+      "apps/web/components/calculators/calculator-page-client.tsx",
+      "apps/web/components/feedback/feedback-launcher.tsx"
+    ],
+    "before": "screens/before-calculator-landscape.png",
+    "after": "screens/final-calculator-landscape.png",
+    "verification": "M05: all operations selected through real clicks; full result remains in document; fixed duplicate hidden at height <=450 px; ResizeObserver includes full padding in reserved height",
+    "steps": [
+      "В авторизованной сессии на 750×342 открыть /calculators/dilution-boiloff.",
+      "Выбрать «Уварить», затем «Время кипячения».",
+      "Проверить выбранное состояние и отсутствие перекрытия; повернуть в портрет и обратно."
+    ]
+  }
+]

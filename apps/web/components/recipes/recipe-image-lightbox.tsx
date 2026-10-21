@@ -30,6 +30,16 @@ export function RecipeImageLightbox({
       index={openIndex}
       close={onClose}
       slides={slides}
+      labels={{
+        Previous: "Предыдущее фото",
+        Next: "Следующее фото",
+        Close: "Закрыть",
+        Slide: "Фото",
+        Carousel: "Галерея",
+        Lightbox: "Просмотр фотографий",
+        "Photo gallery": "Фотогалерея",
+        "{index} of {total}": "{index} из {total}"
+      }}
       controller={{
         closeOnBackdropClick: true
       }}

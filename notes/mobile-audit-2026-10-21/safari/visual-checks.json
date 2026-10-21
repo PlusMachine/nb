@@ -1,0 +1,748 @@
+[
+  {
+    "profile": "iPhone SE",
+    "path": "/beer/pilsner-urquell",
+    "name": "final-qr-iPhone-SE",
+    "status": "passed",
+    "width": 320,
+    "height": 568,
+    "client": 320,
+    "scroll": 320,
+    "outside": [],
+    "smallInputs": []
+  },
+  {
+    "profile": "iPhone 13",
+    "path": "/beer/pilsner-urquell",
+    "name": "final-qr-iPhone-13",
+    "status": "passed",
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": []
+  },
+  {
+    "profile": "iPhone 13 landscape",
+    "path": "/beer/pilsner-urquell",
+    "name": "final-qr-iPhone-13-landscape",
+    "status": "passed",
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": []
+  },
+  {
+    "profile": "iPad Pro 11",
+    "path": "/beer/pilsner-urquell",
+    "name": "final-qr-iPad-Pro-11",
+    "status": "passed",
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": []
+  },
+  {
+    "profile": "iPhone 13",
+    "path": "/beer/pilsner-urquell",
+    "name": "final-qr-description-open",
+    "status": "passed",
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": []
+  },
+  {
+    "profile": "iPhone 13 landscape",
+    "path": "/beer/pilsner-urquell",
+    "name": "final-qr-feedback",
+    "status": "passed",
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": []
+  },
+  {
+    "profile": "iPhone 13",
+    "path": "/calculators/abv-attenuation",
+    "name": "final-public-menu-iPhone-13",
+    "status": "passed",
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": []
+  },
+  {
+    "profile": "iPhone 13 landscape",
+    "path": "/calculators/abv-attenuation",
+    "name": "final-public-menu-iPhone-13-landscape",
+    "status": "passed",
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": []
+  },
+  {
+    "profile": "iPhone SE",
+    "path": "/admin/recipes",
+    "name": "final-admin-drawer",
+    "status": "passed",
+    "width": 320,
+    "height": 568,
+    "client": 320,
+    "scroll": 320,
+    "outside": [
+      {
+        "tag": "DIV",
+        "text": "NBАДМИНКА",
+        "cls": "sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border bg-popover/95 px-5 py-4 backdrop-blur-sm",
+        "rect": "{\"x\":-272,\"y\":0,\"width\":271,\"height\":77,\"top\":0,\"right\":-1,\"bottom\":77,\"left\":-272}"
+      },
+      {
+        "tag": "H2",
+        "text": "NBАДМИНКА",
+        "cls": "text-base font-semibold text-foreground",
+        "rect": "{\"x\":-252,\"y\":24,\"width\":124.875,\"height\":28,\"top\":24,\"right\":-127.125,\"bottom\":52,\"left\":-252}"
+      },
+      {
+        "tag": "A",
+        "text": "NBАДМИНКА",
+        "cls": "flex items-baseline gap-2 text-lg font-semibold tracking-[0.2em] text-foreground",
+        "rect": "{\"x\":-252,\"y\":24,\"width\":124.875,\"height\":28,\"top\":24,\"right\":-127.125,\"bottom\":52,\"left\":-252}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "АДМИНКА",
+        "cls": "text-xs font-medium tracking-[0.16em] text-muted-foreground",
+        "rect": "{\"x\":-208.515625,\"y\":31.5,\"width\":81.390625,\"height\":16,\"top\":31.5,\"right\":-127.125,\"bottom\":47.5,\"left\":-208.515625}"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "",
+        "cls": "flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
+        "rect": "{\"x\":-65,\"y\":16,\"width\":44,\"height\":44,\"top\":16,\"right\":-21,\"bottom\":60,\"left\":-65}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":-51,\"y\":30,\"width\":16,\"height\":16,\"top\":30,\"right\":-35,\"bottom\":46,\"left\":-51}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":-47,\"y\":34,\"width\":8,\"height\":8,\"top\":34,\"right\":-39,\"bottom\":42,\"left\":-47}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":-47,\"y\":34,\"width\":8,\"height\":8,\"top\":34,\"right\":-39,\"bottom\":42,\"left\":-47}"
+      },
+      {
+        "tag": "DIV",
+        "text": "ОбзорКаталогИнгредиентыМодерация ингредиентовОбъединение дублейСообществоПользователиРецеп",
+        "cls": "min-h-0 flex-1 overflow-y-auto p-5",
+        "rect": "{\"x\":-272,\"y\":77,\"width\":271,\"height\":491,\"top\":77,\"right\":-1,\"bottom\":568,\"left\":-272}"
+      },
+      {
+        "tag": "DIV",
+        "text": "ОбзорКаталогИнгредиентыМодерация ингредиентовОбъединение дублейСообществоПользователиРецеп",
+        "cls": "flex h-full flex-col",
+        "rect": "{\"x\":-252,\"y\":97,\"width\":231,\"height\":451,\"top\":97,\"right\":-21,\"bottom\":548,\"left\":-252}"
+      },
+      {
+        "tag": "NAV",
+        "text": "ОбзорКаталогИнгредиентыМодерация ингредиентовОбъединение дублейСообществоПользователиРецеп",
+        "cls": "flex flex-1 flex-col gap-1",
+        "rect": "{\"x\":-252,\"y\":97,\"width\":231,\"height\":870.5,\"top\":97,\"right\":-21,\"bottom\":967.5,\"left\":-252}"
+      },
+      {
+        "tag": "A",
+        "text": "Обзор",
+        "cls": "flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors text-muted-foreground hover:bg-accent hover:text-foreground",
+        "rect": "{\"x\":-252,\"y\":97,\"width\":231,\"height\":44,\"top\":97,\"right\":-21,\"bottom\":141,\"left\":-252}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":-240,\"y\":111,\"width\":16,\"height\":16,\"top\":111,\"right\":-224,\"bottom\":127,\"left\":-240}"
+      },
+      {
+        "tag": "rect",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":-238,\"y\":113,\"width\":4.6666717529296875,\"height\":4.666664123535156,\"top\":113,\"right\":-233.3333282470703,\"bottom\":117.66666412353516,\"left\":-238}"
+      },
+      {
+        "tag": "rect",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":-230.6666717529297,\"y\":113,\"width\":4.6666717529296875,\"height\":4.666664123535156,\"top\":113,\"right\":-226,\"bottom\":117.66666412353516,\"left\":-230.6666717529297}"
+      },
+      {
+        "tag": "rect",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":-230.6666717529297,\"y\":120.33333587646484,\"width\":4.6666717529296875,\"height\":4.666664123535156,\"top\":120.33333587646484,\"right\":-226,\"bottom\":125,\"left\":-230.6666717529297}"
+      },
+      {
+        "tag": "rect",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":-238,\"y\":120.33333587646484,\"width\":4.6666717529296875,\"height\":4.666664123535156,\"top\":120.33333587646484,\"right\":-233.3333282470703,\"bottom\":125,\"left\":-238}"
+      },
+      {
+        "tag": "P",
+        "text": "Каталог",
+        "cls": "px-3 pb-1 pt-4 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground",
+        "rect": "{\"x\":-252,\"y\":145,\"width\":231,\"height\":36.5,\"top\":145,\"right\":-21,\"bottom\":181.5,\"left\":-252}"
+      },
+      {
+        "tag": "A",
+        "text": "Ингредиенты",
+        "cls": "flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors text-muted-foreground hover:bg-accent hover:text-foreground",
+        "rect": "{\"x\":-252,\"y\":185.5,\"width\":231,\"height\":44,\"top\":185.5,\"right\":-21,\"bottom\":229.5,\"left\":-252}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":-240,\"y\":199.5,\"width\":16,\"height\":16,\"top\":199.5,\"right\":-224,\"bottom\":215.5,\"left\":-240}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":-238.6666717529297,\"y\":206.5,\"width\":6.6666717529296875,\"height\":7.443756103515625,\"top\":206.5,\"right\":-232,\"bottom\":213.94375610351562,\"left\":-238.6666717529297}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":-238.4933319091797,\"y\":208.60000610351562,\"width\":3.160003662109375,\"height\":1.899993896484375,\"top\":208.60000610351562,\"right\":-235.3333282470703,\"bottom\":210.5,\"left\":-238.4933319091797}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":-235.3333282470703,\"y\":208.5,\"width\":3.3333282470703125,\"height\":2,\"top\":208.5,\"right\":-232,\"bottom\":210.5,\"left\":-235.3333282470703}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":-232,\"y\":206.5,\"width\":6.6666717529296875,\"height\":7.443756103515625,\"top\":206.5,\"right\":-225.3333282470703,\"bottom\":213.94375610351562,\"left\":-232}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":-232,\"y\":208.5,\"width\":3.3333282470703125,\"height\":2,\"top\":208.5,\"right\":-228.6666717529297,\"bottom\":210.5,\"left\":-232}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":-228.6666717529297,\"y\":208.60000610351562,\"width\":3.160003662109375,\"height\":1.899993896484375,\"top\":208.60000610351562,\"right\":-225.5066680908203,\"bottom\":210.5,\"left\":-228.6666717529297}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":-235.3333282470703,\"y\":201.05625915527344,\"width\":6.666656494140625,\"height\":7.4437408447265625,\"top\":201.05625915527344,\"right\":-228.6666717529297,\"bottom\":208.5,\"left\":-235.3333282470703}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":-235.16000366210938,\"y\":202.93333435058594,\"width\":3.160003662109375,\"height\":1.899993896484375,\"top\":202.93333435058594,\"right\":-232,\"bottom\":204.8333282470703,\"left\":-235.16000366210938}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":-232,\"y\":202.93333435058594,\"width\":3.160003662109375,\"height\":1.899993896484375,\"top\":202.93333435058594,\"right\":-228.83999633789062,\"bottom\":204.8333282470703,\"left\":-232}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "Ингредиенты",
+        "cls": "truncate",
+        "rect": "{\"x\":-212,\"y\":197.5,\"width\":94.71875,\"height\":20,\"top\":197.5,\"right\":-117.28125,\"bottom\":217.5,\"left\":-212}"
+      }
+    ],
+    "smallInputs": []
+  },
+  {
+    "profile": "iPad Mini landscape",
+    "path": "/admin/recipes",
+    "name": "final-admin-table",
+    "status": "passed",
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [
+      {
+        "tag": "TABLE",
+        "text": "РецептАвторСтильСтатусРейтингОбновлёнДействияQA mobile audit 21.10qa.mobile.2026102121A Ам",
+        "cls": "w-full caption-bottom border-collapse text-sm text-foreground",
+        "rect": "{\"x\":265,\"y\":203,\"width\":835.5,\"height\":1559.5,\"top\":203,\"right\":1100.5,\"bottom\":1762.5,\"left\":265}"
+      },
+      {
+        "tag": "THEAD",
+        "text": "РецептАвторСтильСтатусРейтингОбновлёнДействия",
+        "cls": "[&_tr]:border-b [&_tr]:border-border [&_tr:hover]:bg-transparent",
+        "rect": "{\"x\":265,\"y\":203,\"width\":835.5,\"height\":40,\"top\":203,\"right\":1100.5,\"bottom\":243,\"left\":265}"
+      },
+      {
+        "tag": "TR",
+        "text": "РецептАвторСтильСтатусРейтингОбновлёнДействия",
+        "cls": "border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+        "rect": "{\"x\":265,\"y\":203,\"width\":835.5,\"height\":40,\"top\":203,\"right\":1100.5,\"bottom\":243,\"left\":265}"
+      },
+      {
+        "tag": "TH",
+        "text": "Обновлён",
+        "cls": "h-10 whitespace-nowrap px-3 text-left align-middle text-xs font-medium text-muted-foreground w-32",
+        "rect": "{\"x\":957.78125,\"y\":203,\"width\":82.71875,\"height\":40,\"top\":203,\"right\":1040.5,\"bottom\":243,\"left\":957.78125}"
+      },
+      {
+        "tag": "TH",
+        "text": "Действия",
+        "cls": "h-10 whitespace-nowrap px-3 text-left align-middle text-xs font-medium text-muted-foreground w-12",
+        "rect": "{\"x\":1040.5,\"y\":203,\"width\":60,\"height\":40,\"top\":203,\"right\":1100.5,\"bottom\":243,\"left\":1040.5}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "Действия",
+        "cls": "sr-only",
+        "rect": "{\"x\":1051.5,\"y\":221.75,\"width\":1,\"height\":1,\"top\":221.75,\"right\":1052.5,\"bottom\":222.75,\"left\":1051.5}"
+      },
+      {
+        "tag": "TBODY",
+        "text": "QA mobile audit 21.10qa.mobile.2026102121A Американский IPAПриватный—22 окт. 2026 г.Каскад",
+        "cls": "[&_tr:last-child]:border-0",
+        "rect": "{\"x\":265,\"y\":243,\"width\":835.5,\"height\":1519.5,\"top\":243,\"right\":1100.5,\"bottom\":1762.5,\"left\":265}"
+      },
+      {
+        "tag": "TR",
+        "text": "QA mobile audit 21.10qa.mobile.2026102121A Американский IPAПриватный—22 окт. 2026 г.",
+        "cls": "border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+        "rect": "{\"x\":265,\"y\":243,\"width\":835.5,\"height\":77,\"top\":243,\"right\":1100.5,\"bottom\":320,\"left\":265}"
+      },
+      {
+        "tag": "TD",
+        "text": "22 окт. 2026 г.",
+        "cls": "px-3 py-2 align-middle",
+        "rect": "{\"x\":957.78125,\"y\":243,\"width\":82.71875,\"height\":77,\"top\":243,\"right\":1040.5,\"bottom\":320,\"left\":957.78125}"
+      },
+      {
+        "tag": "TD",
+        "text": "",
+        "cls": "px-3 py-2 align-middle",
+        "rect": "{\"x\":1040.5,\"y\":243,\"width\":60,\"height\":77,\"top\":243,\"right\":1100.5,\"bottom\":320,\"left\":1040.5}"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "",
+        "cls": "inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors hover:text-foreground",
+        "rect": "{\"x\":1052.5,\"y\":263.5,\"width\":36,\"height\":36,\"top\":263.5,\"right\":1088.5,\"bottom\":299.5,\"left\":1052.5}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1062.5,\"y\":273.5,\"width\":16,\"height\":16,\"top\":273.5,\"right\":1078.5,\"bottom\":289.5,\"left\":1062.5}"
+      },
+      {
+        "tag": "circle",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1069.8333740234375,\"y\":280.8333435058594,\"width\":1.333251953125,\"height\":1.33331298828125,\"top\":280.8333435058594,\"right\":1071.1666259765625,\"bottom\":282.1666564941406,\"left\":1069.8333740234375}"
+      },
+      {
+        "tag": "circle",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1074.5,\"y\":280.8333435058594,\"width\":1.3333740234375,\"height\":1.33331298828125,\"top\":280.8333435058594,\"right\":1075.8333740234375,\"bottom\":282.1666564941406,\"left\":1074.5}"
+      },
+      {
+        "tag": "circle",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1065.1666259765625,\"y\":280.8333435058594,\"width\":1.3333740234375,\"height\":1.33331298828125,\"top\":280.8333435058594,\"right\":1066.5,\"bottom\":282.1666564941406,\"left\":1065.1666259765625}"
+      },
+      {
+        "tag": "TR",
+        "text": "Каскад цветочно-ванильный (Граф_Пивоварoff, бир.рф) (копия)qa.deep.main.2026102018B Америк",
+        "cls": "border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+        "rect": "{\"x\":265,\"y\":320,\"width\":835.5,\"height\":97,\"top\":320,\"right\":1100.5,\"bottom\":417,\"left\":265}"
+      },
+      {
+        "tag": "TD",
+        "text": "20 окт. 2026 г.",
+        "cls": "px-3 py-2 align-middle",
+        "rect": "{\"x\":957.78125,\"y\":320,\"width\":82.71875,\"height\":97,\"top\":320,\"right\":1040.5,\"bottom\":417,\"left\":957.78125}"
+      },
+      {
+        "tag": "TD",
+        "text": "",
+        "cls": "px-3 py-2 align-middle",
+        "rect": "{\"x\":1040.5,\"y\":320,\"width\":60,\"height\":97,\"top\":320,\"right\":1100.5,\"bottom\":417,\"left\":1040.5}"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "",
+        "cls": "inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors hover:text-foreground",
+        "rect": "{\"x\":1052.5,\"y\":350.5,\"width\":36,\"height\":36,\"top\":350.5,\"right\":1088.5,\"bottom\":386.5,\"left\":1052.5}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1062.5,\"y\":360.5,\"width\":16,\"height\":16,\"top\":360.5,\"right\":1078.5,\"bottom\":376.5,\"left\":1062.5}"
+      },
+      {
+        "tag": "circle",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1069.8333740234375,\"y\":367.8333435058594,\"width\":1.333251953125,\"height\":1.33331298828125,\"top\":367.8333435058594,\"right\":1071.1666259765625,\"bottom\":369.1666564941406,\"left\":1069.8333740234375}"
+      },
+      {
+        "tag": "circle",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1074.5,\"y\":367.8333435058594,\"width\":1.3333740234375,\"height\":1.33331298828125,\"top\":367.8333435058594,\"right\":1075.8333740234375,\"bottom\":369.1666564941406,\"left\":1074.5}"
+      },
+      {
+        "tag": "circle",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1065.1666259765625,\"y\":367.8333435058594,\"width\":1.3333740234375,\"height\":1.33331298828125,\"top\":367.8333435058594,\"right\":1066.5,\"bottom\":369.1666564941406,\"left\":1065.1666259765625}"
+      },
+      {
+        "tag": "TR",
+        "text": "Каскад цветочно-ванильный (Граф_Пивоварoff, бир.рф) (копия)qa.deep.main.2026102018B Америк",
+        "cls": "border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+        "rect": "{\"x\":265,\"y\":417,\"width\":835.5,\"height\":97,\"top\":417,\"right\":1100.5,\"bottom\":514,\"left\":265}"
+      },
+      {
+        "tag": "TD",
+        "text": "20 окт. 2026 г.",
+        "cls": "px-3 py-2 align-middle",
+        "rect": "{\"x\":957.78125,\"y\":417,\"width\":82.71875,\"height\":97,\"top\":417,\"right\":1040.5,\"bottom\":514,\"left\":957.78125}"
+      },
+      {
+        "tag": "TD",
+        "text": "",
+        "cls": "px-3 py-2 align-middle",
+        "rect": "{\"x\":1040.5,\"y\":417,\"width\":60,\"height\":97,\"top\":417,\"right\":1100.5,\"bottom\":514,\"left\":1040.5}"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "",
+        "cls": "inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors hover:text-foreground",
+        "rect": "{\"x\":1052.5,\"y\":447.5,\"width\":36,\"height\":36,\"top\":447.5,\"right\":1088.5,\"bottom\":483.5,\"left\":1052.5}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1062.5,\"y\":457.5,\"width\":16,\"height\":16,\"top\":457.5,\"right\":1078.5,\"bottom\":473.5,\"left\":1062.5}"
+      },
+      {
+        "tag": "circle",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1069.8333740234375,\"y\":464.8333435058594,\"width\":1.333251953125,\"height\":1.33331298828125,\"top\":464.8333435058594,\"right\":1071.1666259765625,\"bottom\":466.1666564941406,\"left\":1069.8333740234375}"
+      },
+      {
+        "tag": "circle",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1074.5,\"y\":464.8333435058594,\"width\":1.3333740234375,\"height\":1.33331298828125,\"top\":464.8333435058594,\"right\":1075.8333740234375,\"bottom\":466.1666564941406,\"left\":1074.5}"
+      }
+    ],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "12px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ]
+  },
+  {
+    "profile": "iPhone 13",
+    "path": "/app/master",
+    "name": "final-master-iPhone-13",
+    "status": "passed",
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": []
+  },
+  {
+    "profile": "iPhone 13",
+    "path": "/app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit",
+    "name": "final-recipe-iPhone-13",
+    "status": "passed",
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ]
+  },
+  {
+    "profile": "iPad Pro 11",
+    "path": "/app/master",
+    "name": "final-master-iPad-Pro-11",
+    "status": "passed",
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": []
+  },
+  {
+    "profile": "iPad Pro 11",
+    "path": "/app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit",
+    "name": "final-recipe-iPad-Pro-11",
+    "status": "passed",
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ]
+  },
+  {
+    "profile": "iPhone 13",
+    "path": "/profile",
+    "name": "final-profile-iPhone-13",
+    "status": "passed",
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": []
+  },
+  {
+    "profile": "iPad Pro 11",
+    "path": "/profile",
+    "name": "final-profile-iPad-Pro-11",
+    "status": "passed",
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": []
+  },
+  {
+    "profile": "iPhone 13",
+    "path": "/bjcp",
+    "name": "final-bjcp-query-iphone",
+    "status": "passed",
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": []
+  },
+  {
+    "profile": "iPad Pro 11",
+    "path": "/bjcp",
+    "name": "final-bjcp-query-ipad",
+    "status": "passed",
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": []
+  },
+  {
+    "profile": "iPhone 13 landscape",
+    "path": "/bjcp",
+    "name": "final-bjcp-suggestions-landscape-fixed",
+    "status": "passed",
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": []
+  },
+  {
+    "profile": "iPhone 13 landscape",
+    "path": "/calculators/dilution-boiloff",
+    "name": "final-calculator-landscape",
+    "status": "passed",
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ]
+  },
+  {
+    "profile": "iPhone 13",
+    "path": "/beer/pilsner-urquell",
+    "name": "final-qr-375x715",
+    "status": "passed",
+    "width": 375,
+    "height": 715,
+    "client": 375,
+    "scroll": 375,
+    "outside": [],
+    "smallInputs": []
+  },
+  {
+    "profile": "iPhone 13",
+    "path": "/beer/pilsner-urquell",
+    "name": "final-qr-390x720",
+    "status": "passed",
+    "width": 390,
+    "height": 720,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": []
+  },
+  {
+    "profile": "iPhone 13",
+    "path": "/beer/pilsner-urquell",
+    "name": "final-qr-428x746",
+    "status": "passed",
+    "width": 428,
+    "height": 746,
+    "client": 428,
+    "scroll": 428,
+    "outside": [],
+    "smallInputs": []
+  }
+]

@@ -1,0 +1,44 @@
+- banner:
+  - link "NB":
+    - /url: /app
+  - radiogroup "Тема оформления":
+    - radio "Светлая тема":
+      - img
+    - radio "Тёмная тема":
+      - img
+    - radio "Как в системе" [checked]:
+      - img
+  - 'button "Скин «Хмель»: выключен"':
+    - img
+  - button "Открыть меню":
+    - img
+- main:
+  - main:
+    - heading "Профили оборудования" [level=1]
+    - paragraph: 0 профилей
+    - link "Создать профиль":
+      - /url: /app/equipment?mode=create
+    - paragraph: Профилей пока нет.
+- navigation "Быстрая навигация":
+  - link "Обзор":
+    - /url: /app
+    - img
+    - text: Обзор
+  - link "Рецепты":
+    - /url: /app/recipes
+    - img
+    - text: Рецепты
+  - link "Склад":
+    - /url: /app/ingredients
+    - img
+    - text: Склад
+  - link "Партии":
+    - /url: /app/brew-batches
+    - img
+    - text: Партии
+  - button "Ещё":
+    - img
+    - text: Ещё
+- button "Обратная связь"
+- region "Notifications (F8)":
+  - list

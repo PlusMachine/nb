@@ -190,7 +190,7 @@ export function InventoryPriceInput({
         <NumericInput
           min={0}
           step="0.01"
-          className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
+          className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
           value={priceInputAmount}
           onChange={(event) => onPriceInputAmountChange(event.target.value)}
           placeholder={

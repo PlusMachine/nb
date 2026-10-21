@@ -1,0 +1,83 @@
+
+Running 42 tests using 1 worker
+
+  ✓   1 [iphone-se] › e2e/calculators-unit-converter.spec.ts:90:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (2.7s)
+  ✓   2 [iphone-se] › e2e/calculators-unit-converter.spec.ts:102:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (2.4s)
+  ✓   3 [iphone-se] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (3.1s)
+  ✓   4 [iphone-se] › e2e/mobile-audit.spec.ts:102:1 › M04: filled recipe has compact metrics and working actions (8.4s)
+  ✓   5 [iphone-se] › e2e/mobile-audit.spec.ts:127:1 › M05: every dilution operation fits on the narrow screen (9.9s)
+  ✓   6 [iphone-se] › e2e/safari-interactions.spec.ts:25:1 › QR description remains readable and collapses back to the short viewport (6.4s)
+  ✓   7 [iphone-13] › e2e/calculators-unit-converter.spec.ts:90:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (4.2s)
+  ✓   8 [iphone-13] › e2e/calculators-unit-converter.spec.ts:102:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (3.3s)
+  ✓   9 [iphone-13] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (4.7s)
+  ✓  10 [iphone-13] › e2e/mobile-audit.spec.ts:102:1 › M04: filled recipe has compact metrics and working actions (12.1s)
+  ✓  11 [iphone-13] › e2e/mobile-audit.spec.ts:127:1 › M05: every dilution operation fits on the narrow screen (4.6s)
+  ✓  12 [iphone-13] › e2e/safari-interactions.spec.ts:25:1 › QR description remains readable and collapses back to the short viewport (5.1s)
+  ✓  13 [iphone-landscape] › e2e/calculators-unit-converter.spec.ts:90:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (4.1s)
+  ✓  14 [iphone-landscape] › e2e/calculators-unit-converter.spec.ts:102:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (2.4s)
+  ✓  15 [iphone-landscape] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (13.9s)
+  ✓  16 [iphone-landscape] › e2e/mobile-audit.spec.ts:102:1 › M04: filled recipe has compact metrics and working actions (13.1s)
+  ✓  17 [iphone-landscape] › e2e/mobile-audit.spec.ts:127:1 › M05: every dilution operation fits on the narrow screen (5.1s)
+  ✓  18 [iphone-landscape] › e2e/safari-interactions.spec.ts:25:1 › QR description remains readable and collapses back to the short viewport (4.3s)
+  ✓  19 [ipad-mini] › e2e/calculators-unit-converter.spec.ts:90:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (3.3s)
+  ✓  20 [ipad-mini] › e2e/calculators-unit-converter.spec.ts:102:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (3.1s)
+  ✓  21 [ipad-mini] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (4.4s)
+  ✓  22 [ipad-mini] › e2e/mobile-audit.spec.ts:102:1 › M04: filled recipe has compact metrics and working actions (9.1s)
+  ✓  23 [ipad-mini] › e2e/mobile-audit.spec.ts:127:1 › M05: every dilution operation fits on the narrow screen (4.1s)
+  ✓  24 [ipad-mini] › e2e/safari-interactions.spec.ts:25:1 › QR description remains readable and collapses back to the short viewport (5.8s)
+  ✓  25 [ipad-mini-landscape] › e2e/calculators-unit-converter.spec.ts:90:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (3.3s)
+  ✓  26 [ipad-mini-landscape] › e2e/calculators-unit-converter.spec.ts:102:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (3.8s)
+  ✓  27 [ipad-mini-landscape] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (6.4s)
+  ✓  28 [ipad-mini-landscape] › e2e/mobile-audit.spec.ts:102:1 › M04: filled recipe has compact metrics and working actions (8.8s)
+  ✓  29 [ipad-mini-landscape] › e2e/mobile-audit.spec.ts:127:1 › M05: every dilution operation fits on the narrow screen (4.0s)
+  ✓  30 [ipad-mini-landscape] › e2e/safari-interactions.spec.ts:25:1 › QR description remains readable and collapses back to the short viewport (4.8s)
+  ✓  31 [ipad-pro] › e2e/calculators-unit-converter.spec.ts:90:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (2.5s)
+  ✓  32 [ipad-pro] › e2e/calculators-unit-converter.spec.ts:102:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (3.4s)
+  ✓  33 [ipad-pro] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (3.9s)
+  ✓  34 [ipad-pro] › e2e/mobile-audit.spec.ts:102:1 › M04: filled recipe has compact metrics and working actions (8.9s)
+  ✓  35 [ipad-pro] › e2e/mobile-audit.spec.ts:127:1 › M05: every dilution operation fits on the narrow screen (5.6s)
+  ✓  36 [ipad-pro] › e2e/safari-interactions.spec.ts:25:1 › QR description remains readable and collapses back to the short viewport (4.1s)
+  ✓  37 [ipad-pro-landscape] › e2e/calculators-unit-converter.spec.ts:90:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (3.2s)
+  ✓  38 [ipad-pro-landscape] › e2e/calculators-unit-converter.spec.ts:102:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (3.4s)
+  ✘  39 [ipad-pro-landscape] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (7.4s)
+  ✓  40 [ipad-pro-landscape] › e2e/mobile-audit.spec.ts:102:1 › M04: filled recipe has compact metrics and working actions (10.2s)
+  ✓  41 [ipad-pro-landscape] › e2e/mobile-audit.spec.ts:127:1 › M05: every dilution operation fits on the narrow screen (4.9s)
+  ✓  42 [ipad-pro-landscape] › e2e/safari-interactions.spec.ts:25:1 › QR description remains readable and collapses back to the short viewport (5.5s)
+
+
+  1) [ipad-pro-landscape] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document 
+
+    Error: expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+    Call Log:
+    - Timeout 5000ms exceeded while waiting on the predicate
+
+       95 |     await expect(page.getByRole("menu")).toBeVisible();
+       96 |     await page.keyboard.press("Escape");
+    >  97 |     await expect.poll(() => scroller.evaluate(el => el.scrollLeft)).toBeGreaterThan(0);
+          |                                                                     ^
+       98 |     await expectDocumentFits(page);
+       99 |   }
+      100 | });
+        at /home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:97:69
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/verification-final-playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-ipad-pro-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/verification-final-playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-ipad-pro-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/verification-final-playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-ipad-pro-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/verification-final-playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-ipad-pro-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [ipad-pro-landscape] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document 
+  41 passed (4.3m)

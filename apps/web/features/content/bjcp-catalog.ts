@@ -133,12 +133,12 @@ const quickChips: Record<BjcpQuickChipId, BjcpQuickChip> = {
   light: {
     id: "light",
     label: "Светлое",
-    description: "Светлые и более лёгкие по цвету стили"
+    description: "Стили со светлым цветом пива"
   },
   dark: {
     id: "dark",
     label: "Тёмное",
-    description: "Тёмные, жареные и насыщенные по цвету стили"
+    description: "Тёмные стили, в том числе с выраженным жжёным характером"
   },
   ipa_hoppy: {
     id: "ipa_hoppy",
@@ -163,14 +163,14 @@ const quickChips: Record<BjcpQuickChipId, BjcpQuickChip> = {
   sour: {
     id: "sour",
     label: "Кислое",
-    description: "Кислые и mixed fermentation стили"
+    description: "Кислые стили и пиво смешанного брожения"
   }
 };
 
 export const sortLabels: Record<BjcpCatalogSortOption, string> = {
   relevance: "По релевантности",
   name: "По названию",
-  code: "По BJCP коду"
+  code: "По коду BJCP"
 };
 
 export const advancedFilterDefinitions: Array<{
@@ -225,7 +225,7 @@ export const advancedFilterDefinitions: Array<{
       { id: "hoppy", label: "Хмелевое" },
       { id: "malty", label: "Солодовое" },
       { id: "sour", label: "Кислое" },
-      { id: "roasty", label: "Тёмное / жареное" },
+      { id: "roasty", label: "Тёмное / жжёное" },
       { id: "smoked", label: "Копчёное" },
       { id: "fruity", label: "Фруктовое" },
       { id: "spiced", label: "Пряное" },
@@ -471,7 +471,7 @@ const getStyleCharacters = (style: BjcpCatalogStyle): BjcpFilterOptionId[] => {
   if (badges.has("Кислое") || styleInFamily(style, "sour_wild")) {
     out.add("sour");
   }
-  if (badges.has("Жареное") || styleInFamily(style, "porters_stouts") || getStyleColor(style) === "dark") {
+  if (badges.has("Жжёное") || styleInFamily(style, "porters_stouts") || getStyleColor(style) === "dark") {
     out.add("roasty");
   }
   if (badges.has("Копчёное")) {
@@ -622,7 +622,7 @@ export const getBjcpSearchSuggestions = (query: string, catalog: BjcpCatalogData
       id: family.id,
       kind: "family" as const,
       label: family.nameRu,
-      subtitle: `${family.styleCount} стилей`,
+      subtitle: `Стилей: ${family.styleCount}`,
       familyId: family.id
     }));
 
@@ -635,7 +635,7 @@ export const getBjcpSearchSuggestions = (query: string, catalog: BjcpCatalogData
       id: category.id,
       kind: "category" as const,
       label: `${category.id} · ${category.nameRu}`,
-      subtitle: `${category.articleCount} стилей`,
+      subtitle: `Стилей: ${category.articleCount}`,
       categoryId: category.id
     }));
 

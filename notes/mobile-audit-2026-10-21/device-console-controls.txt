@@ -1,0 +1,75 @@
+- banner:
+  - link "NB":
+    - /url: /app
+  - radiogroup "Тема оформления":
+    - radio "Светлая тема":
+      - img
+    - radio "Тёмная тема":
+      - img
+    - radio "Как в системе" [checked]:
+      - img
+  - 'button "Скин «Хмель»: выключен"':
+    - img
+  - button "Открыть меню":
+    - img
+- main:
+  - link:
+    - /url: /app/devices
+  - heading "Демо-пивоварня" [level=1]
+  - text: Демо Подключение… Управление свободно
+  - button "Киоск"
+  - link "Настройки":
+    - /url: /app/devices/4c8a9d03-ea60-4f3b-b922-450696562011/settings
+  - button "Пульт"
+  - button "Рецепты"
+  - paragraph: Температура
+  - paragraph: нет данных
+  - paragraph: "Уставка: —"
+  - paragraph: Стадия
+  - paragraph: —
+  - paragraph: Осталось — · прошло —
+  - heading "История температуры" [level=2]
+  - text: Температура Уставка Нагрев, % Событие нет данных
+  - paragraph: Контур
+  - term: Скважность нагрева
+  - definition: —
+  - term: Нагрев (SSR)
+  - definition: ВЫКЛ
+  - term: Кипение
+  - definition: —
+  - term: Насос
+  - definition: ВЫКЛ
+  - term: Нагрев промывки
+  - definition: ВЫКЛ
+  - term: Нагрев разрешён
+  - definition: НЕТ
+  - paragraph: Управление
+  - paragraph: Варка не идёт — транспортное управление появится во время варки.
+  - button "Аварийный останов"
+  - text: Кнопка в приложении не заменяет аппаратный аварийный выключатель.
+  - paragraph: Датчики
+  - paragraph: —
+- navigation "Быстрая навигация":
+  - link "Обзор":
+    - /url: /app
+    - img
+    - text: Обзор
+  - link "Рецепты":
+    - /url: /app/recipes
+    - img
+    - text: Рецепты
+  - link "Склад":
+    - /url: /app/ingredients
+    - img
+    - text: Склад
+  - link "Партии":
+    - /url: /app/brew-batches
+    - img
+    - text: Партии
+  - button "Ещё":
+    - img
+    - text: Ещё
+- button "Обратная связь"
+- region "Notifications (F8)":
+  - list
+- alert

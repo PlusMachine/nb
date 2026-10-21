@@ -1,0 +1,461 @@
+{
+  "userId": "1f26ba16-e1e7-4c40-8f0a-cd7502a2f3d8",
+  "assertions": [
+    "completed direct batch: 10 L, target OG 1.053 SG and ABV 5.6%",
+    "2 measurements persisted",
+    "all 10 brew-day steps and 1 dry-hop step persisted",
+    "original 10 L equipment snapshot preserved after primary-profile changes",
+    "copy and BeerXML import are the only 2 private recipes",
+    "all stock nonnegative",
+    "all movement arithmetic correct",
+    "every stock balance equals its known initial quantity plus net movements",
+    "26 g hops consumed, exact two-lot pool leaves 4 g"
+  ],
+  "batches": [
+    {
+      "id": "1fd87c9a-abbd-4839-a70b-cc02e85eed88",
+      "status": "planned",
+      "recipeId": "cf4aa96c-01d7-4538-985f-a2a006634563",
+      "plan": {
+        "id": "cf4aa96c-01d7-4538-985f-a2a006634563",
+        "title": "Каскад цветочно-ванильный (Граф_Пивоварoff, бир.рф)",
+        "batchSizeL": 30,
+        "efficiencyPct": 72,
+        "versionNumber": 1,
+        "recipeEfficiencyPct": 72
+      },
+      "targets": {
+        "og": 1.058,
+        "fg": 1.011,
+        "abv": 6.9
+      },
+      "equipment": {},
+      "water": {
+        "mashWaterVolumeL": 21.6,
+        "spargeWaterVolumeL": 20.951666666666668
+      },
+      "progress": {},
+      "notes": null
+    },
+    {
+      "id": "a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+      "status": "completed",
+      "recipeId": "cf4aa96c-01d7-4538-985f-a2a006634563",
+      "plan": {
+        "id": "cf4aa96c-01d7-4538-985f-a2a006634563",
+        "title": "Каскад цветочно-ванильный (Граф_Пивоварoff, бир.рф)",
+        "batchSizeL": 10,
+        "efficiencyPct": 65,
+        "versionNumber": 1,
+        "recipeEfficiencyPct": 72
+      },
+      "targets": {
+        "og": 1.053,
+        "fg": 1.01,
+        "abv": 5.64
+      },
+      "equipment": {
+        "id": "9f083a1a-522f-472b-81e3-b9c114aaa7be",
+        "name": "QA Deep Кухня 10 л"
+      },
+      "water": {
+        "mashWaterVolumeL": 7.974,
+        "spargeWaterVolumeL": 10.110733333333332
+      },
+      "progress": {
+        "steps": {
+          "boil:timer": {
+            "done": true,
+            "timerStartedAt": null
+          },
+          "mash:lauter": {
+            "done": true,
+            "timerStartedAt": null
+          },
+          "mash:mash-1": {
+            "done": true,
+            "timerStartedAt": "2026-10-20T20:09:36.394Z"
+          },
+          "mash:strike": {
+            "done": true,
+            "timerStartedAt": null
+          },
+          "chill:target": {
+            "done": true,
+            "timerStartedAt": null
+          },
+          "mash:dough-in": {
+            "done": true,
+            "timerStartedAt": null
+          },
+          "boil:add:5ae960f3-7a4f-4b80-8c62-40eb535bd483": {
+            "done": true,
+            "timerStartedAt": null
+          },
+          "boil:add:9502e938-c612-4f29-ad54-95bcb0efe53a": {
+            "done": true,
+            "timerStartedAt": null
+          },
+          "boil:add:9d3c10f6-217d-4808-a132-2c07ac8d419b": {
+            "done": true,
+            "timerStartedAt": null
+          },
+          "boil:add:9f0501fa-e57c-4bc3-98ff-afdd2ccc431e": {
+            "done": true,
+            "timerStartedAt": null
+          },
+          "ferment:add:0275f3e3-36d9-4c79-8eca-3a98fc8ca2fa": {
+            "done": true,
+            "timerStartedAt": null
+          }
+        },
+        "updatedAt": "2026-10-20T20:10:34.763Z"
+      },
+      "notes": "QA Deep: склад, оборудование и быстрые шаги проверены."
+    }
+  ],
+  "recipes": [
+    {
+      "id": "a6cb7b1a-e93b-4948-8b95-4be4076de7a5",
+      "equipmentProfileId": null,
+      "efficiency": 65,
+      "batchMl": 10000
+    },
+    {
+      "id": "aebd5843-25f6-4226-9ce4-541986af0c94",
+      "equipmentProfileId": "9f083a1a-522f-472b-81e3-b9c114aaa7be",
+      "efficiency": 65,
+      "batchMl": 10000
+    }
+  ],
+  "inventory": [
+    {
+      "id": "091c232a-11f8-4d86-982e-55bd4d5c1116",
+      "catalogId": null,
+      "name": "QA Deep Цедра",
+      "quantity": 50,
+      "unit": "g",
+      "enteredQuantity": 50,
+      "enteredUnit": "g"
+    },
+    {
+      "id": "d86d917b-fe06-4e99-af0a-f1e6aea2b722",
+      "catalogId": "weyermann--pale-ale-malt",
+      "name": "Пэйл Эль",
+      "quantity": 2841.538,
+      "unit": "g",
+      "enteredQuantity": 2.842,
+      "enteredUnit": "kg"
+    },
+    {
+      "id": "2c539d55-e0ed-4d55-bf7d-9ac84e1751a4",
+      "catalogId": "fermentis-us-05",
+      "name": "US-05",
+      "quantity": 18.333,
+      "unit": "g",
+      "enteredQuantity": 1.667,
+      "enteredUnit": "pack"
+    },
+    {
+      "id": "d9016eed-8d65-44c5-adce-e3da5716f461",
+      "catalogId": "xx-cascade-standard",
+      "name": "Каскад",
+      "quantity": 192,
+      "unit": "g",
+      "enteredQuantity": 192,
+      "enteredUnit": "g"
+    },
+    {
+      "id": "33f5b7c4-9b35-4b60-b53a-864c0f16e22e",
+      "catalogId": "us-cascade-beervingem-standard",
+      "name": "Каскад",
+      "quantity": 0,
+      "unit": "g",
+      "enteredQuantity": 0,
+      "enteredUnit": "g"
+    },
+    {
+      "id": "a4de22ae-0d42-4e08-8b21-c852c6d5b52b",
+      "catalogId": "us-cascade-beervingem-standard",
+      "name": "Каскад",
+      "quantity": 4,
+      "unit": "g",
+      "enteredQuantity": 4,
+      "enteredUnit": "g"
+    }
+  ],
+  "consumed": [
+    {
+      "lineKey": "66b97c03-9de6-443c-9797-f34288289426",
+      "itemId": "2c539d55-e0ed-4d55-bf7d-9ac84e1751a4",
+      "quantity": 3.667,
+      "meta": {
+        "source": "recipe_selection",
+        "sourceRecipeId": "cf4aa96c-01d7-4538-985f-a2a006634563",
+        "snapshotVersion": 1,
+        "ingredientDisplayName": "US-05",
+        "sourceRecipeIngredientId": "95eb2be5-e6dc-4475-af62-cbadf18b5492"
+      }
+    },
+    {
+      "lineKey": "5ae960f3-7a4f-4b80-8c62-40eb535bd483",
+      "itemId": "33f5b7c4-9b35-4b60-b53a-864c0f16e22e",
+      "quantity": 2,
+      "meta": {
+        "source": "recipe_selection",
+        "splitGroupId": "5ae960f3-7a4f-4b80-8c62-40eb535bd483:1792526975092",
+        "sourceRecipeId": "cf4aa96c-01d7-4538-985f-a2a006634563",
+        "snapshotVersion": 1,
+        "ingredientDisplayName": "Каскад",
+        "sourceRecipeIngredientId": "54c3ffdf-9c64-45bd-9912-4b16d6332668"
+      }
+    },
+    {
+      "lineKey": "9f0501fa-e57c-4bc3-98ff-afdd2ccc431e",
+      "itemId": "33f5b7c4-9b35-4b60-b53a-864c0f16e22e",
+      "quantity": 4,
+      "meta": {
+        "source": "recipe_selection",
+        "splitGroupId": "9f0501fa-e57c-4bc3-98ff-afdd2ccc431e:1792526975101",
+        "sourceRecipeId": "cf4aa96c-01d7-4538-985f-a2a006634563",
+        "snapshotVersion": 1,
+        "ingredientDisplayName": "Каскад",
+        "sourceRecipeIngredientId": "cc7388aa-b6dc-4abe-9069-649afec65a95"
+      }
+    },
+    {
+      "lineKey": "9d3c10f6-217d-4808-a132-2c07ac8d419b",
+      "itemId": "33f5b7c4-9b35-4b60-b53a-864c0f16e22e",
+      "quantity": 6,
+      "meta": {
+        "source": "recipe_selection",
+        "splitGroupId": "9d3c10f6-217d-4808-a132-2c07ac8d419b:1792526975107",
+        "sourceRecipeId": "cf4aa96c-01d7-4538-985f-a2a006634563",
+        "snapshotVersion": 1,
+        "ingredientDisplayName": "Каскад",
+        "sourceRecipeIngredientId": "fe408b89-ea1e-4151-8b0a-acdd1a93456f"
+      }
+    },
+    {
+      "lineKey": "9502e938-c612-4f29-ad54-95bcb0efe53a",
+      "itemId": "a4de22ae-0d42-4e08-8b21-c852c6d5b52b",
+      "quantity": 6,
+      "meta": {
+        "source": "recipe_selection",
+        "splitGroupId": "9502e938-c612-4f29-ad54-95bcb0efe53a:1792526975114",
+        "sourceRecipeId": "cf4aa96c-01d7-4538-985f-a2a006634563",
+        "snapshotVersion": 1,
+        "ingredientDisplayName": "Каскад",
+        "sourceRecipeIngredientId": "d557ab3c-1f63-4f6e-b3e1-5aaaa0290de1"
+      }
+    },
+    {
+      "lineKey": "45e00bd0-8c3f-4079-9c2d-a389976c3d2b",
+      "itemId": "d86d917b-fe06-4e99-af0a-f1e6aea2b722",
+      "quantity": 2658.462,
+      "meta": {
+        "source": "recipe_substitution",
+        "substitution": true,
+        "sourceRecipeId": "cf4aa96c-01d7-4538-985f-a2a006634563",
+        "snapshotVersion": 1,
+        "ingredientDisplayName": "Пэйл Эль",
+        "sourceRecipeIngredientId": "86f171a0-fd1f-479b-8347-3556a55fbec9",
+        "substitutedForDisplayName": "Пэйл Эль"
+      }
+    },
+    {
+      "lineKey": "0275f3e3-36d9-4c79-8eca-3a98fc8ca2fa",
+      "itemId": "d9016eed-8d65-44c5-adce-e3da5716f461",
+      "quantity": 8,
+      "meta": {
+        "source": "recipe_substitution",
+        "substitution": true,
+        "sourceRecipeId": "cf4aa96c-01d7-4538-985f-a2a006634563",
+        "snapshotVersion": 1,
+        "ingredientDisplayName": "Каскад",
+        "sourceRecipeIngredientId": "9cc03488-ae8e-4c9f-b7a5-f915924cb963",
+        "substitutedForDisplayName": "Каскад"
+      }
+    }
+  ],
+  "measurements": [
+    {
+      "sg": 1.05344,
+      "final": false
+    },
+    {
+      "sg": 1.01172,
+      "final": true
+    }
+  ],
+  "movements": [
+    {
+      "itemId": "091c232a-11f8-4d86-982e-55bd4d5c1116",
+      "batchId": null,
+      "type": "adjustment",
+      "delta": 50,
+      "before": 0,
+      "after": 50
+    },
+    {
+      "itemId": "2c539d55-e0ed-4d55-bf7d-9ac84e1751a4",
+      "batchId": "a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+      "type": "consume",
+      "delta": -3.667,
+      "before": 22,
+      "after": 18.333
+    },
+    {
+      "itemId": "33f5b7c4-9b35-4b60-b53a-864c0f16e22e",
+      "batchId": "a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+      "type": "consume",
+      "delta": -2,
+      "before": 12,
+      "after": 10
+    },
+    {
+      "itemId": "33f5b7c4-9b35-4b60-b53a-864c0f16e22e",
+      "batchId": "a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+      "type": "consume",
+      "delta": -4,
+      "before": 10,
+      "after": 6
+    },
+    {
+      "itemId": "33f5b7c4-9b35-4b60-b53a-864c0f16e22e",
+      "batchId": "a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+      "type": "consume",
+      "delta": -6,
+      "before": 6,
+      "after": 0
+    },
+    {
+      "itemId": "a4de22ae-0d42-4e08-8b21-c852c6d5b52b",
+      "batchId": "a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+      "type": "consume",
+      "delta": -6,
+      "before": 10,
+      "after": 4
+    },
+    {
+      "itemId": "d86d917b-fe06-4e99-af0a-f1e6aea2b722",
+      "batchId": "a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+      "type": "consume",
+      "delta": -2658.462,
+      "before": 5500,
+      "after": 2841.538
+    },
+    {
+      "itemId": "d9016eed-8d65-44c5-adce-e3da5716f461",
+      "batchId": "a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+      "type": "consume",
+      "delta": -8,
+      "before": 200,
+      "after": 192
+    },
+    {
+      "itemId": "2c539d55-e0ed-4d55-bf7d-9ac84e1751a4",
+      "batchId": "a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+      "type": "consume",
+      "delta": -3.667,
+      "before": 22,
+      "after": 18.333
+    },
+    {
+      "itemId": "33f5b7c4-9b35-4b60-b53a-864c0f16e22e",
+      "batchId": "a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+      "type": "consume",
+      "delta": -2,
+      "before": 12,
+      "after": 10
+    },
+    {
+      "itemId": "33f5b7c4-9b35-4b60-b53a-864c0f16e22e",
+      "batchId": "a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+      "type": "consume",
+      "delta": -4,
+      "before": 10,
+      "after": 6
+    },
+    {
+      "itemId": "33f5b7c4-9b35-4b60-b53a-864c0f16e22e",
+      "batchId": "a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+      "type": "consume",
+      "delta": -6,
+      "before": 6,
+      "after": 0
+    },
+    {
+      "itemId": "a4de22ae-0d42-4e08-8b21-c852c6d5b52b",
+      "batchId": "a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+      "type": "consume",
+      "delta": -6,
+      "before": 10,
+      "after": 4
+    },
+    {
+      "itemId": "d86d917b-fe06-4e99-af0a-f1e6aea2b722",
+      "batchId": "a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+      "type": "consume",
+      "delta": -2658.462,
+      "before": 5500,
+      "after": 2841.538
+    },
+    {
+      "itemId": "d9016eed-8d65-44c5-adce-e3da5716f461",
+      "batchId": "a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+      "type": "consume",
+      "delta": -8,
+      "before": 200,
+      "after": 192
+    },
+    {
+      "itemId": "2c539d55-e0ed-4d55-bf7d-9ac84e1751a4",
+      "batchId": "a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+      "type": "release",
+      "delta": 3.667,
+      "before": 18.333,
+      "after": 22
+    },
+    {
+      "itemId": "33f5b7c4-9b35-4b60-b53a-864c0f16e22e",
+      "batchId": "a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+      "type": "release",
+      "delta": 12,
+      "before": 0,
+      "after": 12
+    },
+    {
+      "itemId": "a4de22ae-0d42-4e08-8b21-c852c6d5b52b",
+      "batchId": "a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+      "type": "release",
+      "delta": 6,
+      "before": 4,
+      "after": 10
+    },
+    {
+      "itemId": "d86d917b-fe06-4e99-af0a-f1e6aea2b722",
+      "batchId": "a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+      "type": "release",
+      "delta": 2658.462,
+      "before": 2841.538,
+      "after": 5500
+    },
+    {
+      "itemId": "d9016eed-8d65-44c5-adce-e3da5716f461",
+      "batchId": "a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+      "type": "release",
+      "delta": 8,
+      "before": 192,
+      "after": 200
+    },
+    {
+      "itemId": "091c232a-11f8-4d86-982e-55bd4d5c1116",
+      "batchId": null,
+      "type": "adjustment",
+      "delta": -50,
+      "before": 50,
+      "after": 0
+    }
+  ]
+}

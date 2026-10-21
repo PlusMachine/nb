@@ -331,7 +331,7 @@ export function InventoryToolbar({
 
   return (
     <section className="space-y-3" aria-label="Фильтры по запасам">
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-6">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {primaryButtons.map((button) => {
           const meta = categoryMeta[button.key];
           const Icon = meta.icon;
@@ -343,7 +343,7 @@ export function InventoryToolbar({
               type="button"
               disabled={isDisabled}
               onClick={() => handlePrimaryFilterClick(button.key)}
-              className={`flex items-center justify-center gap-1.5 rounded-xl border px-2 py-2.5 text-xs font-medium transition-all duration-150 sm:gap-2 sm:px-3 sm:text-[13px] ${
+              className={`grid grid-cols-[1fr_auto] items-center justify-items-center gap-x-1.5 gap-y-1 rounded-xl border px-2 py-2.5 text-xs font-medium transition-all duration-150 sm:flex sm:justify-center sm:gap-2 sm:px-3 sm:text-[13px] ${
                 isDisabled
                   ? "cursor-not-allowed border-border bg-muted text-muted-foreground"
                   : button.active
@@ -351,10 +351,10 @@ export function InventoryToolbar({
                     : "border-border bg-card text-muted-foreground hover:border-border hover:bg-accent active:scale-[0.97]"
               }`}
             >
-              <Icon className={`h-4 w-4 shrink-0 ${isDisabled ? "text-muted-foreground" : button.active ? "text-current" : ""}`} />
-              <span className="truncate">{button.label}</span>
+              <Icon className={`col-start-1 row-start-1 h-4 w-4 shrink-0 justify-self-start ${isDisabled ? "text-muted-foreground" : button.active ? "text-current" : ""}`} />
+              <span className="col-span-2 row-start-2 min-w-0 whitespace-nowrap leading-snug">{button.label}</span>
               {showCategoryCounts ? (
-                <span className={`shrink-0 rounded-full px-1.5 py-0.5 text-center text-[11px] font-semibold leading-none ${
+                <span className={`col-start-2 row-start-1 shrink-0 rounded-full px-1.5 py-0.5 text-center text-[11px] font-semibold leading-none ${
                   isDisabled
                     ? "bg-muted text-muted-foreground"
                     : button.active

@@ -299,7 +299,7 @@ describe("processIngestAlerts — вердикт брожения (§5 F5, че�
 
     expect(mocks.sendPushToUser).toHaveBeenCalledTimes(1);
     const [, payload] = mocks.sendPushToUser.mock.calls[0]!;
-    expect(payload.title).toBe("Брожение не началось?: IPA №7");
+    expect(payload.title).toBe("Брожение не началось? IPA №7");
     expect(payload.body).toContain("проверьте дрожжи");
   });
 
@@ -322,7 +322,7 @@ describe("processIngestAlerts — вердикт брожения (§5 F5, че�
 
     expect(mocks.sendPushToUser).toHaveBeenCalledTimes(1);
     const [, payload] = mocks.sendPushToUser.mock.calls[0]!;
-    expect(payload.title).toBe("Похоже, добродило: IPA №7");
+    expect(payload.title).toBe("Брожение, похоже, завершилось: IPA №7");
     expect(payload.body).toBe("Стабильно 3 дн. Перед розливом подтвердите плотность ареометром.");
     expect(payload.tag).toBe(`ferment-likely_done-${SESSION_ID}`);
   });

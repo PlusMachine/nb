@@ -1,0 +1,318 @@
+[
+  {
+    "name": "Equipment create / persist / mobile form",
+    "pass": true,
+    "detail": "Профили оборудования\n\n1 профиль · основной: QA mobile equipment 10L\n\nСоздать профиль\nQA mobile equipment 10L\nОсновной\nРедактировать\nДублировать\nУдалить\nТИПИЧНЫЙ ОБЪЁМ ПАРТИИ\n10.0 л\nЭФФЕКТИВНОСТЬ\n65%\nИСПАРЕНИЕ\n3.0 л/ч"
+  },
+  {
+    "name": "BJCP rapid search + Escape",
+    "pass": true,
+    "detail": {
+      "url": "http://127.0.0.1:3100/bjcp?q=%D0%BD%D0%B5%D1%81%D1%83%D1%89%D0%B5%D1%81%D1%82%D0%B2%D1%83%D1%8E%D1%89%D0%B8%D0%B9%D1%81%D1%82%D0%B8%D0%BB%D1%8Cxyz",
+      "input": "несуществующийстильxyz",
+      "headings": [
+        "Стили пива по BJCP",
+        "Семейства",
+        "Результаты поиска: несуществующийстильxyz",
+        "По запросу ничего не найдено",
+        "Указатель стилей",
+        "1. Стандартное американское пиво",
+        "2. Международный лагер",
+        "3. Чешский лагер",
+        "4. Светлый солодовый европейский лагер",
+        "5. Светлое горькое европейское пиво",
+        "6. Янтарный солодовый европейский лагер",
+        "7. Янтарное горькое европейское пиво",
+        "8. Тёмный европейский лагер",
+        "9. Крепкое европейское пиво",
+        "10. Немецкое пшеничное пиво",
+        "11. Британский биттер",
+        "12. Светлое пиво стран Содружества",
+        "13. Коричневое британское пиво",
+        "14. Шотландский эль",
+        "15. Ирландское пиво",
+        "16. Тёмное британское пиво",
+        "17. Крепкий британский эль",
+        "18. Светлый американский эль",
+        "19. Янтарное и коричневое американское пиво",
+        "20. Американский портер и стаут",
+        "21. IPA",
+        "22. Крепкий американский эль",
+        "23. Европейский кислый эль",
+        "24. Бельгийский эль",
+        "25. Крепкий бельгийский эль",
+        "26. Монастырский эль",
+        "27. Историческое пиво",
+        "28. Американский вайлд-эль",
+        "29. Фруктовое пиво",
+        "30. Пиво со специями, травами и овощами",
+        "31. Пиво с альтернативными зерновыми и сахарами",
+        "32. Копчёное пиво",
+        "33. Пиво с древесной выдержкой",
+        "34. Специальное пиво",
+        "X-AR. Аргентинские стили",
+        "X-BR. Бразильские стили",
+        "X-IT. Итальянские стили",
+        "X-NZ. Новозеландские стили"
+      ]
+    }
+  },
+  {
+    "name": "Inventory custom: invalid zero then add 50g",
+    "pass": true,
+    "detail": "50 г saved"
+  },
+  {
+    "name": "Labels: edit title, change format/template and download PNG",
+    "pass": true,
+    "detail": {
+      "filename": "naklejka-l-203dpi.png",
+      "inputBox": {
+        "x": 16,
+        "y": 382.1875,
+        "width": 328,
+        "height": 36
+      }
+    }
+  },
+  {
+    "name": "Device connection form and demo creation",
+    "pass": true,
+    "detail": "Устройства\nДемо-пивоварня\nДемо-ареометр\nСкрыть\nУведомления заблокированы в браузере. Разрешите их в настройках сайта, чтобы получать пуш о варке.\nЧто подключаем?\n\nBrewForge — контроллер варки\n\nЦифровой ареометр или датчик\n\niSpindel, Tilt, Floaty, BrewPiLess…\n\nRAPT Cloud\n\nPill, камера ферментации, BrewZilla\n\nПока нет подключённых устройств. Подключите BrewForge или цифровой ареометр, либо создайте демо-пивоварню без железа."
+  },
+  {
+    "name": "Labels tall preview allows editing Style on 360px",
+    "pass": false,
+    "error": "locator.click: Timeout 3000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Стиль', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <input value=\"\" type=\"text\" id=\"lb-style\" maxlength=\"80\" class=\"h-9 w-full rounded-md border border-border bg-background px-2 text-base sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring\"/>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <img alt=\"Превью наклейки «QA mobile label»\" src=\"blob:http://127.0.0.1:3100/be952033-c4c7-4e8d-8d81-6d0a46f20bf4\" class=\"max-h-[560px] w-auto max-w-full border border-border bg-white shadow-sm transition-opacity opacity-100\"/> from <section class=\"space-y-3 sticky top-[var(--chrome-top,0px)] z-10 lg:col-start-2 lg:row-span-2 lg:top-4 lg:self-start\">…</section> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <a href=\"/app/ingredients\" class=\"flex flex-1 flex-col items-center justify-center gap-0.5 text-[11px] font-medium transition-colors text-muted-foreground\">…</a> from <nav aria-label=\"Быстрая навигация\" class=\"fixed inset-x-0 bottom-0 z-40 flex min-h-14 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden\">…</nav> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <img alt=\"Превью наклейки «QA mobile label»\" src=\"blob:http://127.0.0.1:3100/be952033-c4c7-4e8d-8d81-6d0a46f20bf4\" class=\"max-h-[560px] w-auto max-w-full border border-border bg-white shadow-sm transition-opacity opacity-100\"/> from <section class=\"space-y-3 sticky top-[var(--chrome-top,0px)] z-10 lg:col-start-2 lg:row-span-2 lg:top-4 lg:self-start\">…</section> subtree intercepts pointer events\u001b[22m\n\u001b[2m  2 × retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m      - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <button role=\"radio\" type=\"button\" title=\"Тёмная тема\" aria-checked=\"false\" aria-label=\"Тёмная тема\" class=\"grid min-h-11 min-w-11 place-items-center rounded-full transition-colors text-muted-foreground hover:text-foreground\">…</button> from <header class=\"sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur lg:hidden\">…</header> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <a href=\"/app/ingredients\" class=\"flex flex-1 flex-col items-center justify-center gap-0.5 text-[11px] font-medium transition-colors text-muted-foreground\">…</a> from <nav aria-label=\"Быстрая навигация\" class=\"fixed inset-x-0 bottom-0 z-40 flex min-h-14 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden\">…</nav> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <img alt=\"Превью наклейки «QA mobile label»\" src=\"blob:http://127.0.0.1:3100/be952033-c4c7-4e8d-8d81-6d0a46f20bf4\" class=\"max-h-[560px] w-auto max-w-full border border-border bg-white shadow-sm transition-opacity opacity-100\"/> from <section class=\"space-y-3 sticky top-[var(--chrome-top,0px)] z-10 lg:col-start-2 lg:row-span-2 lg:top-4 lg:self-start\">…</section> subtree intercepts pointer events\u001b[22m\n\u001b[2m  2 × retrying click action\u001b[22m\n\u001b[2m      - waiting 500ms\u001b[22m\n\u001b[2m      - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <button role=\"radio\" type=\"button\" title=\"Тёмная тема\" aria-checked=\"false\" aria-label=\"Тёмная тема\" class=\"grid min-h-11 min-w-11 place-items-center rounded-full transition-colors text-muted-foreground hover:text-foreground\">…</button> from <header class=\"sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur lg:hidden\">…</header> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <a href=\"/app/ingredients\" class=\"flex flex-1 flex-col items-center justify-center gap-0.5 text-[11px] font-medium transition-colors text-muted-foreground\">…</a> from <nav aria-label=\"Быстрая навигация\" class=\"fixed inset-x-0 bottom-0 z-40 flex min-h-14 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden\">…</nav> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n"
+  },
+  {
+    "name": "WebKit runtime",
+    "pass": false,
+    "error": "browserType.launch: Executable doesn't exist at /home/dopefish/.cache/ms-playwright/webkit-2311/pw_run.sh\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
+  },
+  {
+    "name": "Calculator input/select smoke /calculators/abv-attenuation",
+    "pass": true,
+    "detail": {
+      "modifiedFields": 2,
+      "selects": 1,
+      "tabs": 0
+    }
+  },
+  {
+    "name": "Calculator input/select smoke /calculators/refractometer-correction",
+    "pass": true,
+    "detail": {
+      "modifiedFields": 2,
+      "selects": 1,
+      "tabs": 0
+    }
+  },
+  {
+    "name": "Calculator input/select smoke /calculators/hydrometer-correction",
+    "pass": true,
+    "detail": {
+      "modifiedFields": 2,
+      "selects": 0,
+      "tabs": 0
+    }
+  },
+  {
+    "name": "Calculator input/select smoke /calculators/dilution-boiloff",
+    "pass": true,
+    "detail": {
+      "modifiedFields": 2,
+      "selects": 0,
+      "tabs": 0
+    }
+  },
+  {
+    "name": "Recipe export BeerXML",
+    "pass": false,
+    "error": "locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Скачать', exact: true }) to be visible\u001b[22m\n"
+  },
+  {
+    "name": "Calculator input/select smoke /calculators/ibu",
+    "pass": true,
+    "detail": {
+      "modifiedFields": 2,
+      "selects": 2,
+      "tabs": 0
+    }
+  },
+  {
+    "name": "Calculator input/select smoke /calculators/brewing-water-volume",
+    "pass": true,
+    "detail": {
+      "modifiedFields": 2,
+      "selects": 1,
+      "tabs": 0
+    }
+  },
+  {
+    "name": "Calculator input/select smoke /calculators/mash-infusion",
+    "pass": true,
+    "detail": {
+      "modifiedFields": 2,
+      "selects": 0,
+      "tabs": 0
+    }
+  },
+  {
+    "name": "Demo controller pause/resume",
+    "pass": false,
+    "error": "locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Продолжить|Возобновить/ }) to be visible\u001b[22m\n"
+  },
+  {
+    "name": "Calculator input/select smoke /calculators/water-ph",
+    "pass": true,
+    "detail": {
+      "modifiedFields": 2,
+      "selects": 0,
+      "tabs": 0
+    }
+  },
+  {
+    "name": "Calculator input/select smoke /calculators/yeast-starter",
+    "pass": true,
+    "detail": {
+      "modifiedFields": 2,
+      "selects": 0,
+      "tabs": 0
+    }
+  },
+  {
+    "name": "Calculator input/select smoke /calculators/priming-sugar",
+    "pass": true,
+    "detail": {
+      "modifiedFields": 2,
+      "selects": 0,
+      "tabs": 0
+    }
+  },
+  {
+    "name": "Calculator input/select smoke /calculators/keg-carbonation",
+    "pass": true,
+    "detail": {
+      "modifiedFields": 2,
+      "selects": 0,
+      "tabs": 2
+    }
+  },
+  {
+    "name": "Calculator input/select smoke /calculators/bottling",
+    "pass": true,
+    "detail": {
+      "modifiedFields": 2,
+      "selects": 1,
+      "tabs": 0
+    }
+  },
+  {
+    "name": "Calculator input/select smoke /calculators/speise-krausen",
+    "pass": true,
+    "detail": {
+      "modifiedFields": 2,
+      "selects": 0,
+      "tabs": 0
+    }
+  },
+  {
+    "name": "Calculator input/select smoke /calculators/beer-color",
+    "pass": true,
+    "detail": {
+      "modifiedFields": 1,
+      "selects": 0,
+      "tabs": 0
+    }
+  },
+  {
+    "name": "Calculator input/select smoke /calculators/brewhouse-efficiency",
+    "pass": true,
+    "detail": {
+      "modifiedFields": 2,
+      "selects": 0,
+      "tabs": 0
+    }
+  },
+  {
+    "name": "Calculator input/select smoke /calculators/hop-freshness",
+    "pass": true,
+    "detail": {
+      "modifiedFields": 1,
+      "selects": 0,
+      "tabs": 0
+    }
+  },
+  {
+    "name": "Calculator input/select smoke /calculators/unit-converter",
+    "pass": true,
+    "detail": {
+      "modifiedFields": 2,
+      "selects": 0,
+      "tabs": 7
+    }
+  },
+  {
+    "name": "Create manual brew on own 10L equipment",
+    "pass": true,
+    "detail": {
+      "url": "http://127.0.0.1:3100/app/brew-batches/7949d153-3c69-4f47-ad2f-b15acc0ccbc4",
+      "text": "Все партии\nQA mobile audit 21.10 · партия №1\nЗапланирована\nПлан варочного дня\nЗатор4\nКипячение1\nОхлаждение1\nБрожение1\n\n7 шагов · ≈ 2 ч активного времени · цель OG 11.9 °P\n\nДата варки\nНачать варочный день\nСклад\n\nИнгредиентов этого рецепта нет на складе · Чего не хватает\n\nЗаметки о варке\nСохранить"
+    }
+  },
+  {
+    "name": "Recipe filter selection and reset",
+    "pass": true,
+    "detail": "http://127.0.0.1:3100/recipes?style=21A"
+  },
+  {
+    "name": "Start manual brew day",
+    "pass": true,
+    "detail": "Все партии\nQA mobile audit 21.10 · партия №1\nВарится\n\nначата 21 октября 2026 г.\n\nВарочный день\n0 / 6\nЗатор\nКипячение\nОхлаждение\n\nСЕЙЧАС\n\nНагрейте воду\n\n7.27 л · до ≈70 °C\n\nСледом: Засыпьте солод\n\nГотово\nЗАТОР\n0 / 4\n\nНагрейте воду\n\n7.27 л · до ≈70 °C\n\nЗасыпьте солод\n\n2.42 кг\n\nШаг 1\n\n66 °C · 1 ч\n\n60:00\n\nПромывка и фильтрация\n\nпромывочная вода 9.13 л\n\nКипячение\n0 / 1\nОхлаждение\n0 / 1\nПоставить на брожение\nНачальная плотность (OG)\nПлотность (°P)\nКогда (по умолч. — сейчас)\nЗаметка\nДобавить\nЭто финальный замер (FG)\n\nПока нет замеров. Внесите начальную плотность (OG), затем финальную (FG) — посчитаем ABV и сбраживание.\n\nСклад\n\nИнгредиентов этого рецепта нет на складе · Чего не хватает\n\nЗаметки о варке\nСохранить\nЗамер\nЗаметка"
+  },
+  {
+    "name": "Public landscape menu dark theme tap",
+    "pass": true
+  },
+  {
+    "name": "Batch menu open and cancel stage change",
+    "pass": false,
+    "error": "locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Отмена', exact: true })\u001b[22m\n"
+  },
+  {
+    "name": "Batch menu stage dialog closes and page stays clickable",
+    "pass": true,
+    "detail": "1 / 6 after reload"
+  },
+  {
+    "name": "OG comma input + fermentation transition",
+    "pass": true,
+    "detail": "Все партии\nQA mobile audit 21.10 · партия №1\nВарится\n\nначата 21 октября 2026 г.\n\nВарочный день\n1 / 6\nЗатор\nКипячение\nОхлаждение\n\nСЕЙЧАС\n\nЗасыпьте солод\n\n2.42 кг\n\nСледом: Шаг 1\n\nВернуть шаг\nГотово\nЗАТОР\n1 / 4\n\nНагрейте воду\n\n7.27 л · до ≈70 °C\n\nЗасыпьте солод\n\n2.42 кг\n\nШаг 1\n\n66 °C · 1 ч\n\n60:00\n\nПромывка и фильтрация\n\nпромывочная вода 9.13 л\n\nКипячение\n0 / 1\nОхлаждение\n0 / 1\nПоставить на брожение\nНачальная плотность (OG)\nПлотность (°P)\nКогда (по умолч. — сейчас)\nЗаметка\nДобавить\nЭто финальный замер (FG)\n\nПока нет замеров. Внесите начальную плотность (OG), затем финальную (FG) — посчитаем ABV и сбраживание.\n\nСклад\n\nИнгредиентов этого рецепта нет на складе · Чего не хватает\n\nЗаметки о варке\nСохранить\nЗамер\nЗаметка"
+  },
+  {
+    "name": "FG and complete manual brew",
+    "pass": true
+  },
+  {
+    "name": "Complete test batch and persist result",
+    "pass": true,
+    "detail": {
+      "url": "http://127.0.0.1:3100/app/brew-batches/7949d153-3c69-4f47-ad2f-b15acc0ccbc4?just-completed=1",
+      "text": "Все партии\nQA mobile audit 21.10 · партия №1\nЗавершена\n\nзавершена 21 октября 2026 г.\n\nИтог партии\nOG\n12.1 °P\n1.049 SG\nцель 11.9 °P · 1.048 SG\nFG\n3.0 °P\n1.012 SG\nцель 3.1 °P · 1.012 SG\nABV\n4.9%\nцель 4.7%\nСБРАЖИВАНИЕ\n76%\nОБЪЁМ\n10.0 л\nНаклейки\nБрожение\nПЛОТНОСТЬ СЕЙЧАС\n3.0 °P\nСБРАЖИВАНИЕ\n76%\nABV, ОЦЕНКА\n~4.9%\nТЕМПЕРАТУРА\n—\n\nБрожение завершено\n\nРучной замер\n24 ч\n7 д\nВсё\n2.0 °P\n7.6 °P\n13.0 °P\n21.10\nКак прошла варка\nЖурнал замеров\nПлотность (°P)\nКогда (по умолч. — сейчас)\nЗаметка\nДобавить\nЭто финальный замер (FG)\n12.1 °P\nOG\n21 окт., 20:35\n3.0 °P\nFG\n21 окт., 20:36\nСклад\n\nПо этой варке ингредиенты со склада не списывались.\n\nДегустация\nСохранить\nЗаметки о варке\nСохранить"
+    }
+  },
+  {
+    "name": "Recipe BeerXML export final: real download link",
+    "pass": true,
+    "detail": {
+      "filename": "recipe.beerxml",
+      "bytes": 4266
+    }
+  },
+  {
+    "name": "Shopping add manual item",
+    "pass": true,
+    "detail": "20 штук"
+  }
+]

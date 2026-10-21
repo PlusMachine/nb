@@ -531,7 +531,7 @@ export function RecipeWaterAdditivesSection({
   if (!waterPlanMeta.setupEnabled) {
     return (
       <div className="rounded-xl border border-dashed border-border bg-muted/50 px-4 py-5 text-sm text-muted-foreground">
-        Нет добавок воды
+        Добавки для воды пока не внесены
       </div>
     );
   }
@@ -541,7 +541,7 @@ export function RecipeWaterAdditivesSection({
       <div className="space-y-3">
         <div className="flex items-center justify-between gap-3">
           <h3 className="text-sm font-semibold text-foreground">
-            Добавки воды
+            Добавки для воды
           </h3>
           {onAddManualSalt ? (
             <button
@@ -696,7 +696,7 @@ export function RecipeWaterAdditivesSection({
           </section>
         )) : (
           <div className="rounded-xl border border-dashed border-border bg-muted/50 px-4 py-5 text-sm text-muted-foreground">
-            Нет добавок воды
+            Добавки для воды пока не внесены
           </div>
         )}
         {showResultSummary ? (

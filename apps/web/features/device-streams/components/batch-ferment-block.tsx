@@ -39,13 +39,13 @@ const MIN_HISTORY_MANUAL_MEASUREMENTS = 2;
 // рендерится вовсе, см. FermentVerdictRow).
 const VERDICT_LABELS: Record<Exclude<FermentVerdict["kind"], "insufficient_data">, string> = {
   batch_completed: "Брожение завершено",
-  fg_confirmed: "Добродило — FG зафиксирован",
+  fg_confirmed: "Брожение завершено — FG записана",
   awaiting_start: "Ждём начала брожения",
   not_started: "Брожение не началось?",
   active: "Бродит активно",
   slowing: "Дображивает",
-  possibly_stuck: "Возможен затык",
-  likely_done: "Похоже, добродило"
+  possibly_stuck: "Возможно, брожение остановилось",
+  likely_done: "Брожение, похоже, завершилось"
 };
 
 // ⚠-вердикты (§5 F5) — тревожный тон/иконка, остальные — нейтральный.

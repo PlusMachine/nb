@@ -18,7 +18,7 @@ export const STAGE_LABELS: Record<Stage, string> = {
   MASH_STEP: "Пауза затирания",
   MASH_OUT: "Мэшаут",
   PROMPT_IODINE: "Йодная проба",
-  PROMPT_REMOVE_MALT: "Снятие солода",
+  PROMPT_REMOVE_MALT: "Извлечение дробины",
   BOIL_RAMP: "Выход на кипение",
   BOILING: "Кипячение",
   HOP_STAND: "Хопстенд",

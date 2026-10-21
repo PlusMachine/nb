@@ -67,7 +67,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <ToastContext.Provider value={contextValue}>
-      <RadixToast.Provider swipeDirection="right">
+      <RadixToast.Provider swipeDirection="right" label="Уведомление">
         {children}
         {toasts.map((toast) => {
           const tone = toast.tone ?? "default";
@@ -130,7 +130,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           обрезался слева из-за w-full max-w-sm без left), max-w-sm сверху
           ограничивает её на широких экранах.
         */}
-        <RadixToast.Viewport className="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px)+var(--nb-sticky-bar-h,0px)+var(--nb-fab-h,0px))] left-4 right-4 z-[120] flex max-w-sm flex-col gap-2 outline-none" />
+        <RadixToast.Viewport label="Уведомления ({hotkey})" className="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px)+var(--nb-sticky-bar-h,0px)+var(--nb-fab-h,0px))] left-4 right-4 z-[120] flex max-w-sm flex-col gap-2 outline-none" />
       </RadixToast.Provider>
     </ToastContext.Provider>
   );

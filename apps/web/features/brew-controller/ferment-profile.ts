@@ -164,7 +164,7 @@ export type FermentProgress = {
   current: FermentStepView | null;
   /** Ступень после текущей — null, если текущей нет или она последняя. */
   next: FermentStepView | null;
-  /** «день N из M» текущей ступени либо «держится вручную» (hours=0); null — нет текущей ступени. */
+  /** «день N из M» текущей ступени либо «до ручного перехода» (hours=0); null — нет текущей ступени. */
   dayLabel: string | null;
 };
 
@@ -208,7 +208,7 @@ export function buildFermentProgress(params: {
   let dayLabel: string | null = null;
   if (current) {
     if (current.hours === 0) {
-      dayLabel = "держится вручную";
+      dayLabel = "до ручного перехода";
     } else {
       const totalDays = Math.ceil(current.hours / HOURS_PER_DAY);
       const elapsedDays = Math.floor(Math.max(0, elapsedSec) / SECONDS_PER_DAY) + 1;

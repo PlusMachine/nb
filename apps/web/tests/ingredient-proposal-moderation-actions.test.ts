@@ -129,7 +129,7 @@ describe("describeIngredientProposalPayload", () => {
     });
 
     expect(fields).toEqual([
-      { key: "category", label: "Категория", value: "Ферментируемые" },
+      { key: "category", label: "Категория", value: "Сбраживаемые" },
       { key: "type", label: "Тип", value: "Хмель" },
       { key: "subtype", label: "Подтип", value: "солод" },
       { key: "brand", label: "Бренд", value: "Курский солод" },

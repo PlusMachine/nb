@@ -8,10 +8,12 @@ import { Check, ChevronDown, Loader2, Plus, X } from "lucide-react";
 import { useToast } from "@nb/ui";
 
 import { addRecipeIngredientToInventory, loadMatchIngredientCard } from "@/app/(public)/recipes/[slug]/match-actions";
+import { CountryFlag } from "@/components/shared/country-flag";
 import type { RecipeMatchDto, RecipeMatchLineDto, RecipeMatchLineStatus, RecipeMatchLabel } from "@/features/recipes/contracts";
+import { collapseMatchLinesForPanel } from "@/features/recipes/match-lines";
 import { buildCatalogDetailHref, buildIngredientNameActionHref } from "@/features/ingredients/catalog-links";
 import type { IngredientSuggestionItem } from "@/features/ingredients/contracts";
-import { ingredientCategoryLabels, resolveIngredientBrandLabel, resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
+import { ingredientCategoryLabels, resolveIngredientBrandLabel, resolveIngredientCountry, resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
 import { inventoryUnitShortLabels, resolveHumanFacingInventoryUnitProfile, type InventoryUnit } from "@/features/inventory/units";
 import { redirectToLoginWithNext } from "@/lib/auth-links";
 
@@ -68,7 +70,9 @@ const numberFormatter = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 
 // брони способности сварить/списка покупок — её трогать нельзя, см. Ф25 в ТЗ).
 // Экспортированы — переиспользуются мобильной плашкой (recipe-match-mobile-badge.tsx).
 export const isStockGapLine = (line: RecipeMatchLineDto) => line.status === "missing" || line.status === "partial";
-export const countStockGaps = (lines: RecipeMatchLineDto[]) => lines.filter(isStockGapLine).length;
+export const countStockGaps = (lines: RecipeMatchLineDto[]) => (
+  collapseMatchLinesForPanel(lines).filter(isStockGapLine).length
+);
 
 // Ф25: строка-нехватка с понятной каталожной/кастомной привязкой и предложенным
 // количеством — можно докинуть на склад прямо отсюда (MatchGapRow). Иначе —
@@ -80,11 +84,27 @@ const hasStockGapAddEntry = (line: RecipeMatchLineDto) => (
   && Boolean(line.suggestedAddUnit)
 );
 
-// Ф23: подпись под именем строки — «категория · бренд» (бренда может не быть).
-const buildIngredientSubtitle = (line: Pick<RecipeMatchLineDto, "category" | "brand">) => {
+// Ф23: подпись под именем — категория, бренд и флаг страны (как в карточке
+// ингредиента на странице рецепта). Пусто → null (строку не рендерим).
+function MatchIngredientMeta({ line }: { line: Pick<RecipeMatchLineDto, "category" | "brand" | "countryCode"> }) {
   const categoryLabel = line.category ? ingredientCategoryLabels[line.category] : null;
-  return [categoryLabel, line.brand].filter(Boolean).join(" · ") || null;
-};
+  const brand = line.brand?.trim() || null;
+  const country = resolveIngredientCountry({ countryCode: line.countryCode });
+  if (!categoryLabel && !brand && !country?.code) {
+    return null;
+  }
+
+  return (
+    <p className="flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
+      {categoryLabel ? <span className="truncate">{categoryLabel}</span> : null}
+      {categoryLabel && brand ? <span aria-hidden="true">·</span> : null}
+      {brand ? <span className="truncate font-medium text-foreground">{brand}</span> : null}
+      {country?.code ? (
+        <CountryFlag countryCode={country.code} className="h-3 w-4 shrink-0" />
+      ) : null}
+    </p>
+  );
+}
 
 export function RecipeMatchPanelView({ match, onChanged }: { match: RecipeMatchDto; onChanged: () => void | Promise<void> }) {
   if (match.totalLines === 0) {
@@ -92,9 +112,12 @@ export function RecipeMatchPanelView({ match, onChanged }: { match: RecipeMatchD
   }
 
   const label = labelMeta[match.label];
+  // Повторные добавки одного ингредиента (кипячение + вирпул) схлопываем для
+  // отображения — счётчики в шапке уже считают уникальные (summarizeMatch).
+  const lines = collapseMatchLinesForPanel(match.lines);
   // Ф25: единый набор нехваток (missing ИЛИ partial) — счётчик в шапке всегда
   // равен gapLines.length, то есть сумме строк ниже (withEntry + nameOnly).
-  const gapLines = match.lines.filter(isStockGapLine);
+  const gapLines = lines.filter(isStockGapLine);
   // Недостающие/частичные строки с каталожной или кастомной привязкой и понятным
   // количеством — их можно докинуть на склад прямо отсюда.
   const gaps = gapLines.filter(hasStockGapAddEntry);
@@ -110,7 +133,7 @@ export function RecipeMatchPanelView({ match, onChanged }: { match: RecipeMatchD
           {match.matchPercent}%
         </div>
         <div className="min-w-0">
-          <h2 className="text-base font-semibold text-foreground">Совпадение со складом</h2>
+          <h2 className="text-base font-semibold text-foreground">Наличие на складе</h2>
           <p className={`text-sm font-medium ${label.accent}`}>{label.text}</p>
           <p className="mt-0.5 text-xs text-muted-foreground">
             Есть {match.coveredLines} из {match.totalLines}
@@ -155,14 +178,13 @@ export function RecipeMatchPanelView({ match, onChanged }: { match: RecipeMatchD
           <ChevronDown className="h-4 w-4 shrink-0 transition-transform group-open:rotate-180" aria-hidden />
         </summary>
         <ul className="mt-2 space-y-1">
-          {match.lines.map((line) => {
+          {lines.map((line) => {
             const meta = statusMeta[line.status];
-            const subtitle = buildIngredientSubtitle(line);
             return (
               <li key={line.recipeIngredientId} className="flex items-start justify-between gap-3 text-sm">
                 <span className="min-w-0">
                   <span className="block truncate text-foreground">{line.ingredientDisplayName ?? "—"}</span>
-                  {subtitle ? <span className="block truncate text-xs text-muted-foreground">{subtitle}</span> : null}
+                  <MatchIngredientMeta line={line} />
                 </span>
                 <span className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ring-1 ${meta.pill}`}>
                   {meta.label}
@@ -199,7 +221,6 @@ function MatchGapRow({
     customId: line.userCustomIngredientId,
     name: line.ingredientDisplayName
   });
-  const subtitle = buildIngredientSubtitle(line);
   const { show } = useToast();
   const [open, setOpen] = useState(false);
   const [quantity, setQuantity] = useState(() => String(line.suggestedAddQuantity ?? ""));
@@ -313,7 +334,7 @@ function MatchGapRow({
   const unitLabel = inventoryUnitShortLabels[unit] ?? unit;
 
   return (
-    <li className="rounded-lg bg-muted px-3 py-2">
+    <li className="group rounded-lg bg-muted px-3 py-2">
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           {/* Тач-таргет ссылки-имени растим невидимым before-псевдоэлементом
@@ -326,13 +347,13 @@ function MatchGapRow({
           >
             {line.ingredientDisplayName ?? "—"}
           </Link>
-          {subtitle ? <p className="truncate text-xs text-muted-foreground">{subtitle}</p> : null}
+          <MatchIngredientMeta line={line} />
         </div>
         {open ? null : (
           <button
             type="button"
             onClick={openRow}
-            className="inline-flex shrink-0 items-center gap-1 rounded-full bg-card px-2.5 py-1 text-xs font-medium text-foreground ring-1 ring-border transition hover:bg-accent"
+            className="inline-flex shrink-0 items-center gap-1 rounded-full bg-card px-2.5 py-1 text-xs font-medium text-foreground ring-1 ring-border transition hover:bg-accent sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
           >
             <Plus className="h-3.5 w-3.5" aria-hidden />
             На склад
@@ -425,7 +446,7 @@ function MatchGapRow({
           ) : null}
           {targetBatchVolumeL > 0 ? (
             <p className="text-xs text-muted-foreground">
-              Нехватка под расчётный объём {numberFormatter.format(targetBatchVolumeL)} л
+              Не хватает на расчётный объём {numberFormatter.format(targetBatchVolumeL)} л
             </p>
           ) : null}
           <div className="flex flex-wrap items-center gap-2">
@@ -483,14 +504,13 @@ function MatchGapNameRow({ line }: { line: RecipeMatchLineDto }) {
     ? { quantity: line.suggestedAddQuantity, unit: line.suggestedAddUnit }
     : null;
   const addHref = buildIngredientNameActionHref("/app/ingredients", name, amount, line.category);
-  const subtitle = buildIngredientSubtitle(line);
 
   return (
     <li className="rounded-lg bg-muted px-3 py-2">
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <span className="block truncate text-sm text-foreground">{name}</span>
-          {subtitle ? <p className="truncate text-xs text-muted-foreground">{subtitle}</p> : null}
+          <MatchIngredientMeta line={line} />
         </div>
         <span className="flex shrink-0 items-center gap-1.5">
           <Link
@@ -513,7 +533,7 @@ function MatchGapNameRow({ line }: { line: RecipeMatchLineDto }) {
 }
 
 /**
- * Панель «Совпадение со складом» на публичной странице рецепта. Персональный
+ * Панель «Наличие на складе» на публичной странице рецепта. Персональный
  * матчинг тянется ПОСЛЕ гидрации через server action (в {@link RecipeMatchProvider},
  * который оборачивает страницу), чтобы документ оставался кэшируемым для
  * анонимов (тот же приём, что и форма оценки). Панель — один из потребителей

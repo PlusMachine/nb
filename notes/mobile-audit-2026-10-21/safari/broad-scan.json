@@ -1,0 +1,6043 @@
+[
+  {
+    "route": "/app",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app-iPhone-13.png"
+  },
+  {
+    "route": "/app",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/app",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/app",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/app",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app-iPad-Pro-11.png"
+  },
+  {
+    "route": "/app",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/app",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/app/ingredients",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/ingredients",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [
+      {
+        "tag": "SPAN",
+        "text": "",
+        "cls": "absolute inset-y-0 left-[40%] w-full",
+        "rect": "{\"x\":159.390625,\"y\":734.5,\"width\":356,\"height\":89.25,\"top\":734.5,\"right\":515.390625,\"bottom\":823.75,\"left\":159.390625}"
+      },
+      {
+        "tag": "DIV",
+        "text": "",
+        "cls": "relative overflow-hidden h-full w-full",
+        "rect": "{\"x\":159.390625,\"y\":734.5,\"width\":356,\"height\":89.25,\"top\":734.5,\"right\":515.390625,\"bottom\":823.75,\"left\":159.390625}"
+      },
+      {
+        "tag": "IMG",
+        "text": "",
+        "cls": "scale-105 object-cover blur-[2px] transition duration-300 [@media(hover:hover)]:group-hover:scale-100 [@media(hover:hover)]:group-hover:blur-0",
+        "rect": "{\"x\":150.49063110351562,\"y\":732.2666625976562,\"width\":373.8000183105469,\"height\":93.7125244140625,\"top\":732.2666625976562,\"right\":524.2906494140625,\"bottom\":825.9791870117188,\"left\":150.49063110351562}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "",
+        "cls": "absolute inset-y-0 left-[40%] w-full",
+        "rect": "{\"x\":159.390625,\"y\":837.75,\"width\":356,\"height\":89.25,\"top\":837.75,\"right\":515.390625,\"bottom\":927,\"left\":159.390625}"
+      },
+      {
+        "tag": "DIV",
+        "text": "",
+        "cls": "relative overflow-hidden h-full w-full",
+        "rect": "{\"x\":159.390625,\"y\":837.75,\"width\":356,\"height\":89.25,\"top\":837.75,\"right\":515.390625,\"bottom\":927,\"left\":159.390625}"
+      },
+      {
+        "tag": "IMG",
+        "text": "",
+        "cls": "scale-105 object-cover blur-[2px] transition duration-500 [@media(hover:hover)]:group-hover:scale-100 [@media(hover:hover)]:group-hover:blur-0",
+        "rect": "{\"x\":150.49063110351562,\"y\":835.5166625976562,\"width\":373.8000183105469,\"height\":93.7125244140625,\"top\":835.5166625976562,\"right\":524.2906494140625,\"bottom\":929.2291870117188,\"left\":150.49063110351562}"
+      }
+    ],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_ingredients-iPhone-13.png"
+  },
+  {
+    "route": "/app/ingredients",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/app/ingredients",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [
+      {
+        "tag": "SPAN",
+        "text": "",
+        "cls": "absolute inset-y-0 left-[40%] w-full",
+        "rect": "{\"x\":519.1875,\"y\":588.75,\"width\":343,\"height\":89.25,\"top\":588.75,\"right\":862.1875,\"bottom\":678,\"left\":519.1875}"
+      },
+      {
+        "tag": "DIV",
+        "text": "",
+        "cls": "relative overflow-hidden h-full w-full",
+        "rect": "{\"x\":519.1875,\"y\":588.75,\"width\":343,\"height\":89.25,\"top\":588.75,\"right\":862.1875,\"bottom\":678,\"left\":519.1875}"
+      },
+      {
+        "tag": "IMG",
+        "text": "",
+        "cls": "scale-105 object-cover blur-[2px] transition duration-500 [@media(hover:hover)]:group-hover:scale-100 [@media(hover:hover)]:group-hover:blur-0",
+        "rect": "{\"x\":510.61248779296875,\"y\":586.5166625976562,\"width\":360.1500244140625,\"height\":93.7125244140625,\"top\":586.5166625976562,\"right\":870.7625122070312,\"bottom\":680.2291870117188,\"left\":510.61248779296875}"
+      }
+    ],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_ingredients-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/app/ingredients",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/app/ingredients",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [
+      {
+        "tag": "SPAN",
+        "text": "",
+        "cls": "absolute inset-y-0 left-[40%] w-full",
+        "rect": "{\"x\":578,\"y\":588.75,\"width\":385,\"height\":89.25,\"top\":588.75,\"right\":963,\"bottom\":678,\"left\":578}"
+      },
+      {
+        "tag": "DIV",
+        "text": "",
+        "cls": "relative overflow-hidden h-full w-full",
+        "rect": "{\"x\":578,\"y\":588.75,\"width\":385,\"height\":89.25,\"top\":588.75,\"right\":963,\"bottom\":678,\"left\":578}"
+      },
+      {
+        "tag": "IMG",
+        "text": "",
+        "cls": "scale-105 object-cover blur-[2px] transition duration-500 [@media(hover:hover)]:group-hover:scale-100 [@media(hover:hover)]:group-hover:blur-0",
+        "rect": "{\"x\":568.375,\"y\":586.5125122070312,\"width\":404.25,\"height\":93.71246337890625,\"top\":586.5125122070312,\"right\":972.625,\"bottom\":680.2249755859375,\"left\":568.375}"
+      }
+    ],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_ingredients-iPad-Pro-11.png"
+  },
+  {
+    "route": "/app/ingredients",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/app/ingredients",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [
+      {
+        "tag": "SPAN",
+        "text": "",
+        "cls": "absolute inset-y-0 left-[40%] w-full",
+        "rect": "{\"x\":808.1875,\"y\":348.75,\"width\":318,\"height\":89.25,\"top\":348.75,\"right\":1126.1875,\"bottom\":438,\"left\":808.1875}"
+      },
+      {
+        "tag": "DIV",
+        "text": "",
+        "cls": "relative overflow-hidden h-full w-full",
+        "rect": "{\"x\":808.1875,\"y\":348.75,\"width\":318,\"height\":89.25,\"top\":348.75,\"right\":1126.1875,\"bottom\":438,\"left\":808.1875}"
+      },
+      {
+        "tag": "IMG",
+        "text": "",
+        "cls": "scale-105 object-cover blur-[2px] transition duration-300 [@media(hover:hover)]:group-hover:scale-100 [@media(hover:hover)]:group-hover:blur-0",
+        "rect": "{\"x\":800.2374877929688,\"y\":346.51251220703125,\"width\":333.89996337890625,\"height\":93.71249389648438,\"top\":346.51251220703125,\"right\":1134.137451171875,\"bottom\":440.2250061035156,\"left\":800.2374877929688}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "",
+        "cls": "absolute inset-y-0 left-[40%] w-full",
+        "rect": "{\"x\":808.1875,\"y\":452,\"width\":318,\"height\":89.25,\"top\":452,\"right\":1126.1875,\"bottom\":541.25,\"left\":808.1875}"
+      },
+      {
+        "tag": "DIV",
+        "text": "",
+        "cls": "relative overflow-hidden h-full w-full",
+        "rect": "{\"x\":808.1875,\"y\":452,\"width\":318,\"height\":89.25,\"top\":452,\"right\":1126.1875,\"bottom\":541.25,\"left\":808.1875}"
+      },
+      {
+        "tag": "IMG",
+        "text": "",
+        "cls": "scale-105 object-cover blur-[2px] transition duration-500 [@media(hover:hover)]:group-hover:scale-100 [@media(hover:hover)]:group-hover:blur-0",
+        "rect": "{\"x\":800.2374877929688,\"y\":449.76251220703125,\"width\":333.89996337890625,\"height\":93.71246337890625,\"top\":449.76251220703125,\"right\":1134.137451171875,\"bottom\":543.4749755859375,\"left\":800.2374877929688}"
+      }
+    ],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_ingredients-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/app/shopping",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/shopping",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_shopping-iPhone-13.png"
+  },
+  {
+    "route": "/app/shopping",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/app/shopping",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_shopping-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/app/shopping",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/app/shopping",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_shopping-iPad-Pro-11.png"
+  },
+  {
+    "route": "/app/shopping",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/app/shopping",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_shopping-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/app/equipment",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/equipment",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_equipment-iPhone-13.png"
+  },
+  {
+    "route": "/app/equipment",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/app/equipment",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_equipment-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/app/equipment",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/app/equipment",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_equipment-iPad-Pro-11.png"
+  },
+  {
+    "route": "/app/equipment",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/app/equipment",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_equipment-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/app/devices",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/devices",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_devices-iPhone-13.png"
+  },
+  {
+    "route": "/app/devices",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/app/devices",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_devices-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/app/devices",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/app/devices",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_devices-iPad-Pro-11.png"
+  },
+  {
+    "route": "/app/devices",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/app/devices",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_devices-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/app/saved",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/saved",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_saved-iPhone-13.png"
+  },
+  {
+    "route": "/app/saved",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/app/saved",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_saved-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/app/saved",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/app/saved",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_saved-iPad-Pro-11.png"
+  },
+  {
+    "route": "/app/saved",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/app/saved",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_saved-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/app/master",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/master",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_master-iPhone-13.png"
+  },
+  {
+    "route": "/app/master",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/app/master",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_master-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/app/master",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/app/master",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_master-iPad-Pro-11.png"
+  },
+  {
+    "route": "/app/master",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/app/master",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_master-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/profile",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/profile",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_profile-iPhone-13.png"
+  },
+  {
+    "route": "/profile",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/profile",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_profile-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/profile",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/profile",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_profile-iPad-Pro-11.png"
+  },
+  {
+    "route": "/profile",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/profile",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_profile-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/settings",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/profile",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_settings-iPhone-13.png"
+  },
+  {
+    "route": "/settings",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/profile",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_settings-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/settings",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/profile",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_settings-iPad-Pro-11.png"
+  },
+  {
+    "route": "/settings",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/profile",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_settings-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [
+      {
+        "tag": "DIV",
+        "text": "2РецептOG15 °PIBU · Цвет55 · 16 EBCСтиль 21AAmerican IPA",
+        "cls": "flex w-[78%] shrink-0 snap-start flex-col gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm sm:w-auto sm:shrink",
+        "rect": "{\"x\":307.234375,\"y\":3934.5625,\"width\":279.234375,\"height\":184.5,\"top\":3934.5625,\"right\":586.46875,\"bottom\":4119.0625,\"left\":307.234375}"
+      },
+      {
+        "tag": "DIV",
+        "text": "2Рецепт",
+        "cls": "flex items-center gap-2.5",
+        "rect": "{\"x\":324.234375,\"y\":3951.5625,\"width\":245.234375,\"height\":32,\"top\":3951.5625,\"right\":569.46875,\"bottom\":3983.5625,\"left\":324.234375}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "Рецепт",
+        "cls": "text-[17px] font-semibold text-foreground",
+        "rect": "{\"x\":384.046875,\"y\":3954.8125,\"width\":65.859375,\"height\":25.5,\"top\":3954.8125,\"right\":449.90625,\"bottom\":3980.3125,\"left\":384.046875}"
+      },
+      {
+        "tag": "DIV",
+        "text": "OG15 °PIBU · Цвет55 · 16 EBCСтиль 21AAmerican IPA",
+        "cls": "flex flex-col gap-2 rounded-xl border border-border bg-muted p-3 text-[13px]",
+        "rect": "{\"x\":324.234375,\"y\":3995.5625,\"width\":245.234375,\"height\":100.5,\"top\":3995.5625,\"right\":569.46875,\"bottom\":4096.0625,\"left\":324.234375}"
+      },
+      {
+        "tag": "DIV",
+        "text": "OG15 °P",
+        "cls": "flex items-baseline justify-between gap-3",
+        "rect": "{\"x\":337.234375,\"y\":4008.5625,\"width\":219.234375,\"height\":19.5,\"top\":4008.5625,\"right\":556.46875,\"bottom\":4028.0625,\"left\":337.234375}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "15 °P",
+        "cls": "shrink-0 font-semibold tabular-nums text-foreground",
+        "rect": "{\"x\":522.71875,\"y\":4008.5625,\"width\":33.75,\"height\":19.5,\"top\":4008.5625,\"right\":556.46875,\"bottom\":4028.0625,\"left\":522.71875}"
+      },
+      {
+        "tag": "DIV",
+        "text": "IBU · Цвет55 · 16 EBC",
+        "cls": "flex items-baseline justify-between gap-3",
+        "rect": "{\"x\":337.234375,\"y\":4036.0625,\"width\":219.234375,\"height\":19.5,\"top\":4036.0625,\"right\":556.46875,\"bottom\":4055.5625,\"left\":337.234375}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "IBU · Цвет",
+        "cls": "min-w-0 truncate text-muted-foreground",
+        "rect": "{\"x\":337.234375,\"y\":4036.0625,\"width\":62.78125,\"height\":19.5,\"top\":4036.0625,\"right\":400.015625,\"bottom\":4055.5625,\"left\":337.234375}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "55 · 16 EBC",
+        "cls": "shrink-0 font-semibold tabular-nums text-foreground",
+        "rect": "{\"x\":483.46875,\"y\":4036.0625,\"width\":73,\"height\":19.5,\"top\":4036.0625,\"right\":556.46875,\"bottom\":4055.5625,\"left\":483.46875}"
+      },
+      {
+        "tag": "DIV",
+        "text": "Стиль 21AAmerican IPA",
+        "cls": "flex items-baseline justify-between gap-3",
+        "rect": "{\"x\":337.234375,\"y\":4063.5625,\"width\":219.234375,\"height\":19.5,\"top\":4063.5625,\"right\":556.46875,\"bottom\":4083.0625,\"left\":337.234375}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "Стиль 21A",
+        "cls": "min-w-0 truncate text-muted-foreground",
+        "rect": "{\"x\":337.234375,\"y\":4063.5625,\"width\":62.375,\"height\":19.5,\"top\":4063.5625,\"right\":399.609375,\"bottom\":4083.0625,\"left\":337.234375}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "American IPA",
+        "cls": "shrink-0 font-semibold tabular-nums text-foreground",
+        "rect": "{\"x\":471.21875,\"y\":4063.5625,\"width\":85.25,\"height\":19.5,\"top\":4063.5625,\"right\":556.46875,\"bottom\":4083.0625,\"left\":471.21875}"
+      },
+      {
+        "tag": "DIV",
+        "text": "3ВаркаКипячение45 из 60 минЧерез 12:30 — внести Citra, 30 г",
+        "cls": "flex w-[78%] shrink-0 snap-start flex-col gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm sm:w-auto sm:shrink",
+        "rect": "{\"x\":598.46875,\"y\":3934.5625,\"width\":279.234375,\"height\":184.5,\"top\":3934.5625,\"right\":877.703125,\"bottom\":4119.0625,\"left\":598.46875}"
+      },
+      {
+        "tag": "DIV",
+        "text": "3Варка",
+        "cls": "flex items-center gap-2.5",
+        "rect": "{\"x\":615.46875,\"y\":3951.5625,\"width\":245.234375,\"height\":32,\"top\":3951.5625,\"right\":860.703125,\"bottom\":3983.5625,\"left\":615.46875}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "",
+        "cls": "grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-foreground text-background",
+        "rect": "{\"x\":615.46875,\"y\":3951.5625,\"width\":32,\"height\":32,\"top\":3951.5625,\"right\":647.46875,\"bottom\":3983.5625,\"left\":615.46875}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":623.46875,\"y\":3959.5625,\"width\":16,\"height\":16,\"top\":3959.5625,\"right\":639.46875,\"bottom\":3975.5625,\"left\":623.46875}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":634.8020629882812,\"y\":3966.895751953125,\"width\":2.66668701171875,\"height\":4,\"top\":3966.895751953125,\"right\":637.46875,\"bottom\":3970.895751953125,\"left\":634.8020629882812}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":625.46875,\"y\":3960.895751953125,\"width\":10.66668701171875,\"height\":4,\"top\":3960.895751953125,\"right\":636.1354370117188,\"bottom\":3964.895751953125,\"left\":625.46875}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":626.8020629882812,\"y\":3964.895751953125,\"width\":8,\"height\":9.33349609375,\"top\":3964.895751953125,\"right\":634.8020629882812,\"bottom\":3974.229248046875,\"left\":626.8020629882812}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "3",
+        "cls": "text-xs font-semibold tabular-nums text-muted-foreground",
+        "rect": "{\"x\":657.46875,\"y\":3959.5625,\"width\":7.8125,\"height\":16,\"top\":3959.5625,\"right\":665.28125,\"bottom\":3975.5625,\"left\":657.46875}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "Варка",
+        "cls": "text-[17px] font-semibold text-foreground",
+        "rect": "{\"x\":675.28125,\"y\":3954.8125,\"width\":55.078125,\"height\":25.5,\"top\":3954.8125,\"right\":730.359375,\"bottom\":3980.3125,\"left\":675.28125}"
+      },
+      {
+        "tag": "DIV",
+        "text": "Кипячение45 из 60 минЧерез 12:30 — внести Citra, 30 г",
+        "cls": "flex flex-col gap-2 rounded-xl border border-border bg-muted p-3 text-[13px]",
+        "rect": "{\"x\":615.46875,\"y\":3995.5625,\"width\":245.234375,\"height\":106.5,\"top\":3995.5625,\"right\":860.703125,\"bottom\":4102.0625,\"left\":615.46875}"
+      },
+      {
+        "tag": "DIV",
+        "text": "Кипячение45 из 60 мин",
+        "cls": "flex items-baseline justify-between gap-3",
+        "rect": "{\"x\":628.46875,\"y\":4008.5625,\"width\":219.234375,\"height\":19.5,\"top\":4008.5625,\"right\":847.703125,\"bottom\":4028.0625,\"left\":628.46875}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "Кипячение",
+        "cls": "min-w-0 truncate text-muted-foreground",
+        "rect": "{\"x\":628.46875,\"y\":4008.5625,\"width\":68.5625,\"height\":19.5,\"top\":4008.5625,\"right\":697.03125,\"bottom\":4028.0625,\"left\":628.46875}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "45 из 60 мин",
+        "cls": "shrink-0 font-semibold tabular-nums text-foreground",
+        "rect": "{\"x\":764.28125,\"y\":4008.5625,\"width\":83.421875,\"height\":19.5,\"top\":4008.5625,\"right\":847.703125,\"bottom\":4028.0625,\"left\":764.28125}"
+      },
+      {
+        "tag": "DIV",
+        "text": "",
+        "cls": "h-1 overflow-hidden rounded-full bg-muted",
+        "rect": "{\"x\":628.46875,\"y\":4036.0625,\"width\":219.234375,\"height\":4,\"top\":4036.0625,\"right\":847.703125,\"bottom\":4040.0625,\"left\":628.46875}"
+      },
+      {
+        "tag": "DIV",
+        "text": "",
+        "cls": "h-full rounded-full bg-warning",
+        "rect": "{\"x\":628.46875,\"y\":4036.0625,\"width\":164.421875,\"height\":4,\"top\":4036.0625,\"right\":792.890625,\"bottom\":4040.0625,\"left\":628.46875}"
+      },
+      {
+        "tag": "DIV",
+        "text": "Через 12:30 — внести Citra, 30 г",
+        "cls": "flex items-center gap-2 pt-0.5 font-semibold text-foreground",
+        "rect": "{\"x\":628.46875,\"y\":4048.0625,\"width\":219.234375,\"height\":41,\"top\":4048.0625,\"right\":847.703125,\"bottom\":4089.0625,\"left\":628.46875}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "",
+        "cls": "h-2 w-2 shrink-0 rounded-full bg-warning",
+        "rect": "{\"x\":628.46875,\"y\":4065.5625,\"width\":8,\"height\":8,\"top\":4065.5625,\"right\":636.46875,\"bottom\":4073.5625,\"left\":628.46875}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "Через 12:30 — внести Citra, 30 г",
+        "cls": "tabular-nums",
+        "rect": "{\"x\":644.46875,\"y\":4050.0625,\"width\":203.234375,\"height\":39,\"top\":4050.0625,\"right\":847.703125,\"bottom\":4089.0625,\"left\":644.46875}"
+      }
+    ],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_-iPhone-13.png"
+  },
+  {
+    "route": "/",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_-iPad-Pro-11.png"
+  },
+  {
+    "route": "/",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/catalog",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/catalog",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [
+      {
+        "tag": "A",
+        "text": "Сбраживаемое сырьё174",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":270.796875,\"y\":246,\"width\":232.625,\"height\":38,\"top\":246,\"right\":503.421875,\"bottom\":284,\"left\":270.796875}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "174",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":463.484375,\"y\":255,\"width\":26.9375,\"height\":20,\"top\":255,\"right\":490.421875,\"bottom\":275,\"left\":463.484375}"
+      },
+      {
+        "tag": "A",
+        "text": "Хмель248",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":511.421875,\"y\":246,\"width\":123.921875,\"height\":38,\"top\":246,\"right\":635.34375,\"bottom\":284,\"left\":511.421875}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":524.421875,\"y\":257,\"width\":16,\"height\":16,\"top\":257,\"right\":540.421875,\"bottom\":273,\"left\":524.421875}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":531.6351928710938,\"y\":264.2133483886719,\"width\":4.1009521484375,\"height\":4.100921630859375,\"top\":264.2133483886719,\"right\":535.7361450195312,\"bottom\":268.31427001953125,\"left\":531.6351928710938}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":525.7606811523438,\"y\":258.33880615234375,\"width\":11.080078125,\"height\":11.08013916015625,\"top\":258.33880615234375,\"right\":536.8407592773438,\"bottom\":269.4189453125,\"left\":525.7606811523438}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":531.8485717773438,\"y\":268.29998779296875,\"width\":3.3341064453125,\"height\":3.327117919921875,\"top\":268.29998779296875,\"right\":535.1826782226562,\"bottom\":271.6271057128906,\"left\":531.8485717773438}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":535.1752319335938,\"y\":267.7533264160156,\"width\":3.88665771484375,\"height\":3.888092041015625,\"top\":267.7533264160156,\"right\":539.0618896484375,\"bottom\":271.64141845703125,\"left\":535.1752319335938}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":535.7152099609375,\"y\":264.4266662597656,\"width\":3.333740234375,\"height\":3.334136962890625,\"top\":264.4266662597656,\"right\":539.0489501953125,\"bottom\":267.76080322265625,\"left\":535.7152099609375}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":532.5485229492188,\"y\":260.67999267578125,\"width\":6.01458740234375,\"height\":3.781097412109375,\"top\":260.67999267578125,\"right\":538.5631103515625,\"bottom\":264.4610900878906,\"left\":532.5485229492188}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":526.2817993164062,\"y\":258.3333435058594,\"width\":1.4267578125,\"height\":1.953338623046875,\"top\":258.3333435058594,\"right\":527.7085571289062,\"bottom\":260.28668212890625,\"left\":526.2817993164062}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":528.1018676757812,\"y\":265.1199951171875,\"width\":3.7806396484375,\"height\":6.021240234375,\"top\":265.1199951171875,\"right\":531.8825073242188,\"bottom\":271.1412353515625,\"left\":528.1018676757812}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "248",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":595.40625,\"y\":255,\"width\":26.9375,\"height\":20,\"top\":255,\"right\":622.34375,\"bottom\":275,\"left\":595.40625}"
+      },
+      {
+        "tag": "A",
+        "text": "Дрожжи349",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":643.34375,\"y\":246,\"width\":140.953125,\"height\":38,\"top\":246,\"right\":784.296875,\"bottom\":284,\"left\":643.34375}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":656.34375,\"y\":257,\"width\":16,\"height\":16,\"top\":257,\"right\":672.34375,\"bottom\":273,\"left\":656.34375}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":659.0101318359375,\"y\":258.3333435058594,\"width\":10.667236328125,\"height\":13.33331298828125,\"top\":258.3333435058594,\"right\":669.6773681640625,\"bottom\":271.6666564941406,\"left\":659.0101318359375}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "349",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":744.359375,\"y\":255,\"width\":26.9375,\"height\":20,\"top\":255,\"right\":771.296875,\"bottom\":275,\"left\":744.359375}"
+      },
+      {
+        "tag": "A",
+        "text": "Водоподготовка28",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":792.296875,\"y\":246,\"width\":186.8125,\"height\":38,\"top\":246,\"right\":979.109375,\"bottom\":284,\"left\":792.296875}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":805.296875,\"y\":257,\"width\":16,\"height\":16,\"top\":257,\"right\":821.296875,\"bottom\":273,\"left\":805.296875}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":807.296875,\"y\":260.5333251953125,\"width\":5.33331298828125,\"height\":7.333343505859375,\"top\":260.5333251953125,\"right\":812.6301879882812,\"bottom\":267.8666687011719,\"left\":807.296875}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":811.3568725585938,\"y\":259.0133361816406,\"width\":7.9400634765625,\"height\":12.672698974609375,\"top\":259.0133361816406,\"right\":819.2969360351562,\"bottom\":271.68603515625,\"left\":811.3568725585938}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "28",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":948.15625,\"y\":255,\"width\":17.953125,\"height\":20,\"top\":255,\"right\":966.109375,\"bottom\":275,\"left\":948.15625}"
+      },
+      {
+        "tag": "A",
+        "text": "Специи и добавки118",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":987.109375,\"y\":246,\"width\":206.953125,\"height\":38,\"top\":246,\"right\":1194.0625,\"bottom\":284,\"left\":987.109375}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1000.109375,\"y\":257,\"width\":16,\"height\":16,\"top\":257,\"right\":1016.109375,\"bottom\":273,\"left\":1000.109375}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1002.109375,\"y\":258.3346862792969,\"width\":12,\"height\":13.330596923828125,\"top\":258.3346862792969,\"right\":1014.109375,\"bottom\":271.665283203125,\"left\":1002.109375}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1002.3093872070312,\"y\":261.6666564941406,\"width\":11.5999755859375,\"height\":3.33349609375,\"top\":261.6666564941406,\"right\":1013.9093627929688,\"bottom\":265.0001525878906,\"left\":1002.3093872070312}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1005.109375,\"y\":259.8466796875,\"width\":6,\"height\":3.433319091796875,\"top\":259.8466796875,\"right\":1011.109375,\"bottom\":263.2799987792969,\"left\":1005.109375}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "118",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":1154.125,\"y\":255,\"width\":26.9375,\"height\":20,\"top\":255,\"right\":1181.0625,\"bottom\":275,\"left\":1154.125}"
+      },
+      {
+        "tag": "A",
+        "text": "Расходники28",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":1202.0625,\"y\":246,\"width\":156.3125,\"height\":38,\"top\":246,\"right\":1358.375,\"bottom\":284,\"left\":1202.0625}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1215.0625,\"y\":257,\"width\":16,\"height\":16,\"top\":257,\"right\":1231.0625,\"bottom\":273,\"left\":1215.0625}"
+      }
+    ],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_catalog-iPhone-13.png"
+  },
+  {
+    "route": "/catalog",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/catalog",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [
+      {
+        "tag": "A",
+        "text": "Дрожжи349",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":651.34375,\"y\":222,\"width\":140.953125,\"height\":38,\"top\":222,\"right\":792.296875,\"bottom\":260,\"left\":651.34375}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "349",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":752.359375,\"y\":231,\"width\":26.9375,\"height\":20,\"top\":231,\"right\":779.296875,\"bottom\":251,\"left\":752.359375}"
+      },
+      {
+        "tag": "A",
+        "text": "Водоподготовка28",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":800.296875,\"y\":222,\"width\":186.8125,\"height\":38,\"top\":222,\"right\":987.109375,\"bottom\":260,\"left\":800.296875}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":813.296875,\"y\":233,\"width\":16,\"height\":16,\"top\":233,\"right\":829.296875,\"bottom\":249,\"left\":813.296875}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":815.296875,\"y\":236.53334045410156,\"width\":5.33331298828125,\"height\":7.3333282470703125,\"top\":236.53334045410156,\"right\":820.6301879882812,\"bottom\":243.86666870117188,\"left\":815.296875}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":819.3568725585938,\"y\":235.01333618164062,\"width\":7.9400634765625,\"height\":12.672698974609375,\"top\":235.01333618164062,\"right\":827.2969360351562,\"bottom\":247.68603515625,\"left\":819.3568725585938}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "28",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":956.15625,\"y\":231,\"width\":17.953125,\"height\":20,\"top\":231,\"right\":974.109375,\"bottom\":251,\"left\":956.15625}"
+      },
+      {
+        "tag": "A",
+        "text": "Специи и добавки118",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":995.109375,\"y\":222,\"width\":206.953125,\"height\":38,\"top\":222,\"right\":1202.0625,\"bottom\":260,\"left\":995.109375}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1008.109375,\"y\":233,\"width\":16,\"height\":16,\"top\":233,\"right\":1024.109375,\"bottom\":249,\"left\":1008.109375}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1010.109375,\"y\":234.33470153808594,\"width\":12,\"height\":13.330596923828125,\"top\":234.33470153808594,\"right\":1022.109375,\"bottom\":247.66529846191406,\"left\":1010.109375}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1010.3093872070312,\"y\":237.6666717529297,\"width\":11.5999755859375,\"height\":3.3334808349609375,\"top\":237.6666717529297,\"right\":1021.9093627929688,\"bottom\":241.00015258789062,\"left\":1010.3093872070312}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1013.109375,\"y\":235.84666442871094,\"width\":6,\"height\":3.4333343505859375,\"top\":235.84666442871094,\"right\":1019.109375,\"bottom\":239.27999877929688,\"left\":1013.109375}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "118",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":1162.125,\"y\":231,\"width\":26.9375,\"height\":20,\"top\":231,\"right\":1189.0625,\"bottom\":251,\"left\":1162.125}"
+      },
+      {
+        "tag": "A",
+        "text": "Расходники28",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":1210.0625,\"y\":222,\"width\":156.3125,\"height\":38,\"top\":222,\"right\":1366.375,\"bottom\":260,\"left\":1210.0625}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1223.0625,\"y\":233,\"width\":16,\"height\":16,\"top\":233,\"right\":1239.0625,\"bottom\":249,\"left\":1223.0625}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1225.0625,\"y\":234.33470153808594,\"width\":12,\"height\":13.330596923828125,\"top\":234.33470153808594,\"right\":1237.0625,\"bottom\":247.66529846191406,\"left\":1225.0625}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1225.262451171875,\"y\":237.6666717529297,\"width\":11.60009765625,\"height\":3.3334808349609375,\"top\":237.6666717529297,\"right\":1236.862548828125,\"bottom\":241.00015258789062,\"left\":1225.262451171875}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1228.0625,\"y\":235.84666442871094,\"width\":6,\"height\":3.4333343505859375,\"top\":235.84666442871094,\"right\":1234.0625,\"bottom\":239.27999877929688,\"left\":1228.0625}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "28",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":1335.421875,\"y\":231,\"width\":17.953125,\"height\":20,\"top\":231,\"right\":1353.375,\"bottom\":251,\"left\":1335.421875}"
+      }
+    ],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_catalog-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/catalog",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/catalog",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [
+      {
+        "tag": "A",
+        "text": "Водоподготовка28",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":800.296875,\"y\":222,\"width\":186.8125,\"height\":38,\"top\":222,\"right\":987.109375,\"bottom\":260,\"left\":800.296875}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "28",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":956.15625,\"y\":231,\"width\":17.953125,\"height\":20,\"top\":231,\"right\":974.109375,\"bottom\":251,\"left\":956.15625}"
+      },
+      {
+        "tag": "A",
+        "text": "Специи и добавки118",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":995.109375,\"y\":222,\"width\":206.953125,\"height\":38,\"top\":222,\"right\":1202.0625,\"bottom\":260,\"left\":995.109375}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1008.109375,\"y\":233,\"width\":16,\"height\":16,\"top\":233,\"right\":1024.109375,\"bottom\":249,\"left\":1008.109375}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1010.109375,\"y\":234.33470153808594,\"width\":12,\"height\":13.330596923828125,\"top\":234.33470153808594,\"right\":1022.109375,\"bottom\":247.66529846191406,\"left\":1010.109375}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1010.3093872070312,\"y\":237.6666717529297,\"width\":11.5999755859375,\"height\":3.3334808349609375,\"top\":237.6666717529297,\"right\":1021.9093627929688,\"bottom\":241.00015258789062,\"left\":1010.3093872070312}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1013.109375,\"y\":235.84666442871094,\"width\":6,\"height\":3.4333343505859375,\"top\":235.84666442871094,\"right\":1019.109375,\"bottom\":239.27999877929688,\"left\":1013.109375}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "118",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":1162.125,\"y\":231,\"width\":26.9375,\"height\":20,\"top\":231,\"right\":1189.0625,\"bottom\":251,\"left\":1162.125}"
+      },
+      {
+        "tag": "A",
+        "text": "Расходники28",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":1210.0625,\"y\":222,\"width\":156.3125,\"height\":38,\"top\":222,\"right\":1366.375,\"bottom\":260,\"left\":1210.0625}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1223.0625,\"y\":233,\"width\":16,\"height\":16,\"top\":233,\"right\":1239.0625,\"bottom\":249,\"left\":1223.0625}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1225.0625,\"y\":234.33470153808594,\"width\":12,\"height\":13.330596923828125,\"top\":234.33470153808594,\"right\":1237.0625,\"bottom\":247.66529846191406,\"left\":1225.0625}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1225.262451171875,\"y\":237.6666717529297,\"width\":11.60009765625,\"height\":3.3334808349609375,\"top\":237.6666717529297,\"right\":1236.862548828125,\"bottom\":241.00015258789062,\"left\":1225.262451171875}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1228.0625,\"y\":235.84666442871094,\"width\":6,\"height\":3.4333343505859375,\"top\":235.84666442871094,\"right\":1234.0625,\"bottom\":239.27999877929688,\"left\":1228.0625}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "28",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":1335.421875,\"y\":231,\"width\":17.953125,\"height\":20,\"top\":231,\"right\":1353.375,\"bottom\":251,\"left\":1335.421875}"
+      }
+    ],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_catalog-iPad-Pro-11.png"
+  },
+  {
+    "route": "/catalog",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/catalog",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_catalog-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/articles",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/articles",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_articles-iPhone-13.png"
+  },
+  {
+    "route": "/recipes",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/recipes",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_recipes-iPhone-13.png"
+  },
+  {
+    "route": "/recipes",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/recipes",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_recipes-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/recipes",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/recipes",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_recipes-iPad-Pro-11.png"
+  },
+  {
+    "route": "/recipes",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/recipes",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_recipes-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/articles",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/articles",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_articles-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/articles",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/articles",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_articles-iPad-Pro-11.png"
+  },
+  {
+    "route": "/articles",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/articles",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_articles-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/bjcp",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/bjcp",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_bjcp-iPhone-13.png"
+  },
+  {
+    "route": "/bjcp",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/bjcp",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_bjcp-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/bjcp",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/bjcp",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_bjcp-iPad-Pro-11.png"
+  },
+  {
+    "route": "/bjcp",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/bjcp",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_bjcp-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/app/recipes",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/recipes",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_recipes-iPhone-13.png"
+  },
+  {
+    "route": "/app/recipes",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/app/recipes",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_recipes-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/app/recipes",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/app/recipes",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_recipes-iPad-Pro-11.png"
+  },
+  {
+    "route": "/app/recipes",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/app/recipes",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_recipes-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/app/brew-batches",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/brew-batches",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_brew_batches-iPhone-13.png"
+  },
+  {
+    "route": "/app/brew-batches",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/app/brew-batches",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_brew_batches-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/app/brew-batches",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/app/brew-batches",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_brew_batches-iPad-Pro-11.png"
+  },
+  {
+    "route": "/app/brew-batches",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/app/brew-batches",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_brew_batches-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/labels",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/labels",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_labels-iPhone-13.png"
+  },
+  {
+    "route": "/labels",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/labels",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_labels-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/labels",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/labels",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_labels-iPad-Pro-11.png"
+  },
+  {
+    "route": "/labels",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/labels",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_labels-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/masters",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/market",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_masters-iPhone-13.png"
+  },
+  {
+    "route": "/masters",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/market",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_masters-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/masters",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/market",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_masters-iPad-Pro-11.png"
+  },
+  {
+    "route": "/masters",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/market",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_masters-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/market",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/market",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_market-iPhone-13.png"
+  },
+  {
+    "route": "/market",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/market",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_market-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/market",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/market",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_market-iPad-Pro-11.png"
+  },
+  {
+    "route": "/market",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/market",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_market-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/brewforge",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/brewforge",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_brewforge-iPhone-13.png"
+  },
+  {
+    "route": "/brewforge",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/brewforge",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_brewforge-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/brewforge",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/brewforge",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_brewforge-iPad-Pro-11.png"
+  },
+  {
+    "route": "/brewforge",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/brewforge",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_brewforge-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/demo",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/demo",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [
+      {
+        "tag": "LI",
+        "text": "Брожение",
+        "cls": "min-w-[5.5rem] flex-1 shrink-0",
+        "rect": "{\"x\":392,\"y\":3901.296875,\"width\":88,\"height\":26.5,\"top\":3901.296875,\"right\":480,\"bottom\":3927.796875,\"left\":392}"
+      },
+      {
+        "tag": "DIV",
+        "text": "Брожение",
+        "cls": "flex items-center gap-1 text-[11px] font-medium text-muted-foreground",
+        "rect": "{\"x\":392,\"y\":3901.296875,\"width\":88,\"height\":16.5,\"top\":3901.296875,\"right\":480,\"bottom\":3917.796875,\"left\":392}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "Брожение",
+        "cls": "truncate",
+        "rect": "{\"x\":392,\"y\":3901.296875,\"width\":56.21875,\"height\":16.5,\"top\":3901.296875,\"right\":448.21875,\"bottom\":3917.796875,\"left\":392}"
+      },
+      {
+        "tag": "DIV",
+        "text": "",
+        "cls": "mt-1 h-1.5 overflow-hidden rounded-full bg-muted",
+        "rect": "{\"x\":392,\"y\":3921.796875,\"width\":88,\"height\":6,\"top\":3921.796875,\"right\":480,\"bottom\":3927.796875,\"left\":392}"
+      },
+      {
+        "tag": "LI",
+        "text": "Розлив",
+        "cls": "min-w-[5.5rem] flex-1 shrink-0",
+        "rect": "{\"x\":486,\"y\":3901.296875,\"width\":88,\"height\":26.5,\"top\":3901.296875,\"right\":574,\"bottom\":3927.796875,\"left\":486}"
+      },
+      {
+        "tag": "DIV",
+        "text": "Розлив",
+        "cls": "flex items-center gap-1 text-[11px] font-medium text-muted-foreground",
+        "rect": "{\"x\":486,\"y\":3901.296875,\"width\":88,\"height\":16.5,\"top\":3901.296875,\"right\":574,\"bottom\":3917.796875,\"left\":486}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "Розлив",
+        "cls": "truncate",
+        "rect": "{\"x\":486,\"y\":3901.296875,\"width\":39.546875,\"height\":16.5,\"top\":3901.296875,\"right\":525.546875,\"bottom\":3917.796875,\"left\":486}"
+      },
+      {
+        "tag": "DIV",
+        "text": "",
+        "cls": "mt-1 h-1.5 overflow-hidden rounded-full bg-muted",
+        "rect": "{\"x\":486,\"y\":3921.796875,\"width\":88,\"height\":6,\"top\":3921.796875,\"right\":574,\"bottom\":3927.796875,\"left\":486}"
+      }
+    ],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_demo-iPhone-13.png"
+  },
+  {
+    "route": "/demo",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/demo",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_demo-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/demo",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/demo",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_demo-iPad-Pro-11.png"
+  },
+  {
+    "route": "/demo",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/demo",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_demo-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/login",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/login",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "12px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_login-iPhone-13.png"
+  },
+  {
+    "route": "/login",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/login",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "12px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_login-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/login",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/login",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "12px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_login-iPad-Pro-11.png"
+  },
+  {
+    "route": "/login",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/login",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "12px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_login-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/legal",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/legal",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_legal-iPhone-13.png"
+  },
+  {
+    "route": "/legal",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/legal",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_legal-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/legal",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/legal",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_legal-iPad-Pro-11.png"
+  },
+  {
+    "route": "/legal",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/legal",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_legal-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/legal/privacy",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/legal/privacy",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_legal_privacy-iPhone-13.png"
+  },
+  {
+    "route": "/legal/privacy",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/legal/privacy",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_legal_privacy-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/legal/privacy",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/legal/privacy",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_legal_privacy-iPad-Pro-11.png"
+  },
+  {
+    "route": "/legal/privacy",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/legal/privacy",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_legal_privacy-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/legal/terms",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/legal/terms",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_legal_terms-iPhone-13.png"
+  },
+  {
+    "route": "/calculators",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/calculators",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators-iPhone-13.png"
+  },
+  {
+    "route": "/calculators",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/calculators",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/calculators",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/calculators",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators-iPad-Pro-11.png"
+  },
+  {
+    "route": "/calculators",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/calculators",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/legal/terms",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/legal/terms",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_legal_terms-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/legal/terms",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/legal/terms",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_legal_terms-iPad-Pro-11.png"
+  },
+  {
+    "route": "/legal/terms",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/legal/terms",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_legal_terms-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/legal/cookies",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/legal/cookies",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_legal_cookies-iPhone-13.png"
+  },
+  {
+    "route": "/legal/cookies",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/legal/cookies",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_legal_cookies-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/legal/cookies",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/legal/cookies",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_legal_cookies-iPad-Pro-11.png"
+  },
+  {
+    "route": "/legal/cookies",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/legal/cookies",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_legal_cookies-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/legal/consent",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/legal/consent",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_legal_consent-iPhone-13.png"
+  },
+  {
+    "route": "/legal/consent",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/legal/consent",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_legal_consent-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/legal/consent",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/legal/consent",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_legal_consent-iPad-Pro-11.png"
+  },
+  {
+    "route": "/legal/consent",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/legal/consent",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_legal_consent-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/offline",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/offline",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_offline-iPhone-13.png"
+  },
+  {
+    "route": "/offline",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/offline",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_offline-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/offline",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/offline",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_offline-iPad-Pro-11.png"
+  },
+  {
+    "route": "/offline",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/offline",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_offline-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/calculators/abv-attenuation",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/calculators/abv-attenuation",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_abv_attenuation-iPhone-13.png"
+  },
+  {
+    "route": "/calculators/refractometer-correction",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/calculators/refractometer-correction",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_refractometer_correction-iPhone-13.png"
+  },
+  {
+    "route": "/calculators/hydrometer-correction",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/calculators/hydrometer-correction",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_hydrometer_correction-iPhone-13.png"
+  },
+  {
+    "route": "/calculators/dilution-boiloff",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/calculators/dilution-boiloff",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_dilution_boiloff-iPhone-13.png"
+  },
+  {
+    "route": "/calculators/ibu",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/calculators/ibu",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_ibu-iPhone-13.png"
+  },
+  {
+    "route": "/calculators/brewing-water-volume",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/calculators/brewing-water-volume",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_brewing_water_volume-iPhone-13.png"
+  },
+  {
+    "route": "/calculators/mash-infusion",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/calculators/mash-infusion",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_mash_infusion-iPhone-13.png"
+  },
+  {
+    "route": "/calculators/water-ph",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/calculators/water-ph",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_water_ph-iPhone-13.png"
+  },
+  {
+    "route": "/calculators/yeast-starter",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/calculators/yeast-starter",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_yeast_starter-iPhone-13.png"
+  },
+  {
+    "route": "/calculators/priming-sugar",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/calculators/priming-sugar",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_priming_sugar-iPhone-13.png"
+  },
+  {
+    "route": "/calculators/keg-carbonation",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/calculators/keg-carbonation",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [
+      {
+        "tag": "TABLE",
+        "text": "T \\ бар0,400,500,600,700,800,901,001,101,201,301,401,501,601,701,801,902,00-2 °C2,432,592,",
+        "cls": "w-full min-w-[820px] border-collapse text-center text-sm",
+        "rect": "{\"x\":17,\"y\":805,\"width\":820,\"height\":924,\"top\":805,\"right\":837,\"bottom\":1729,\"left\":17}"
+      },
+      {
+        "tag": "THEAD",
+        "text": "T \\ бар0,400,500,600,700,800,901,001,101,201,301,401,501,601,701,801,902,00",
+        "cls": "",
+        "rect": "{\"x\":17,\"y\":805,\"width\":820,\"height\":56,\"top\":805,\"right\":837,\"bottom\":861,\"left\":17}"
+      },
+      {
+        "tag": "TR",
+        "text": "T \\ бар0,400,500,600,700,800,901,001,101,201,301,401,501,601,701,801,902,00",
+        "cls": "",
+        "rect": "{\"x\":17,\"y\":805,\"width\":820,\"height\":56,\"top\":805,\"right\":837,\"bottom\":861,\"left\":17}"
+      },
+      {
+        "tag": "TH",
+        "text": "1,10",
+        "cls": "px-2 py-2 text-xs font-semibold tabular-nums transition-colors text-muted-foreground",
+        "rect": "{\"x\":382.15625,\"y\":805,\"width\":45.484375,\"height\":56,\"top\":805,\"right\":427.640625,\"bottom\":861,\"left\":382.15625}"
+      },
+      {
+        "tag": "TH",
+        "text": "1,20",
+        "cls": "px-2 py-2 text-xs font-semibold tabular-nums transition-colors text-muted-foreground",
+        "rect": "{\"x\":427.640625,\"y\":805,\"width\":45.484375,\"height\":56,\"top\":805,\"right\":473.125,\"bottom\":861,\"left\":427.640625}"
+      },
+      {
+        "tag": "TH",
+        "text": "1,30",
+        "cls": "px-2 py-2 text-xs font-semibold tabular-nums transition-colors text-muted-foreground",
+        "rect": "{\"x\":473.125,\"y\":805,\"width\":45.484375,\"height\":56,\"top\":805,\"right\":518.609375,\"bottom\":861,\"left\":473.125}"
+      },
+      {
+        "tag": "TH",
+        "text": "1,40",
+        "cls": "px-2 py-2 text-xs font-semibold tabular-nums transition-colors text-muted-foreground",
+        "rect": "{\"x\":518.609375,\"y\":805,\"width\":45.484375,\"height\":56,\"top\":805,\"right\":564.09375,\"bottom\":861,\"left\":518.609375}"
+      },
+      {
+        "tag": "TH",
+        "text": "1,50",
+        "cls": "px-2 py-2 text-xs font-semibold tabular-nums transition-colors text-muted-foreground",
+        "rect": "{\"x\":564.09375,\"y\":805,\"width\":45.484375,\"height\":56,\"top\":805,\"right\":609.578125,\"bottom\":861,\"left\":564.09375}"
+      },
+      {
+        "tag": "TH",
+        "text": "1,60",
+        "cls": "px-2 py-2 text-xs font-semibold tabular-nums transition-colors text-muted-foreground",
+        "rect": "{\"x\":609.578125,\"y\":805,\"width\":45.484375,\"height\":56,\"top\":805,\"right\":655.0625,\"bottom\":861,\"left\":609.578125}"
+      },
+      {
+        "tag": "TH",
+        "text": "1,70",
+        "cls": "px-2 py-2 text-xs font-semibold tabular-nums transition-colors text-muted-foreground",
+        "rect": "{\"x\":655.0625,\"y\":805,\"width\":45.484375,\"height\":56,\"top\":805,\"right\":700.546875,\"bottom\":861,\"left\":655.0625}"
+      },
+      {
+        "tag": "TH",
+        "text": "1,80",
+        "cls": "px-2 py-2 text-xs font-semibold tabular-nums transition-colors text-muted-foreground",
+        "rect": "{\"x\":700.546875,\"y\":805,\"width\":45.484375,\"height\":56,\"top\":805,\"right\":746.03125,\"bottom\":861,\"left\":700.546875}"
+      },
+      {
+        "tag": "TH",
+        "text": "1,90",
+        "cls": "px-2 py-2 text-xs font-semibold tabular-nums transition-colors text-muted-foreground",
+        "rect": "{\"x\":746.03125,\"y\":805,\"width\":45.484375,\"height\":56,\"top\":805,\"right\":791.515625,\"bottom\":861,\"left\":746.03125}"
+      },
+      {
+        "tag": "TH",
+        "text": "2,00",
+        "cls": "px-2 py-2 text-xs font-semibold tabular-nums transition-colors text-muted-foreground",
+        "rect": "{\"x\":791.515625,\"y\":805,\"width\":45.484375,\"height\":56,\"top\":805,\"right\":837,\"bottom\":861,\"left\":791.515625}"
+      },
+      {
+        "tag": "TBODY",
+        "text": "-2 °C2,432,592,762,923,093,253,423,593,753,924,094,264,434,604,774,945,11-1 °C2,332,492,65",
+        "cls": "",
+        "rect": "{\"x\":17,\"y\":861,\"width\":820,\"height\":868,\"top\":861,\"right\":837,\"bottom\":1729,\"left\":17}"
+      },
+      {
+        "tag": "TR",
+        "text": "-2 °C2,432,592,762,923,093,253,423,593,753,924,094,264,434,604,774,945,11",
+        "cls": "",
+        "rect": "{\"x\":17,\"y\":861,\"width\":820,\"height\":32,\"top\":861,\"right\":837,\"bottom\":893,\"left\":17}"
+      },
+      {
+        "tag": "TD",
+        "text": "3,59",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":382.15625,\"y\":861,\"width\":45.484375,\"height\":32,\"top\":861,\"right\":427.640625,\"bottom\":893,\"left\":382.15625}"
+      },
+      {
+        "tag": "TD",
+        "text": "3,75",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":427.640625,\"y\":861,\"width\":45.484375,\"height\":32,\"top\":861,\"right\":473.125,\"bottom\":893,\"left\":427.640625}"
+      },
+      {
+        "tag": "TD",
+        "text": "3,92",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":473.125,\"y\":861,\"width\":45.484375,\"height\":32,\"top\":861,\"right\":518.609375,\"bottom\":893,\"left\":473.125}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,09",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":518.609375,\"y\":861,\"width\":45.484375,\"height\":32,\"top\":861,\"right\":564.09375,\"bottom\":893,\"left\":518.609375}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,26",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":564.09375,\"y\":861,\"width\":45.484375,\"height\":32,\"top\":861,\"right\":609.578125,\"bottom\":893,\"left\":564.09375}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,43",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":609.578125,\"y\":861,\"width\":45.484375,\"height\":32,\"top\":861,\"right\":655.0625,\"bottom\":893,\"left\":609.578125}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,60",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":655.0625,\"y\":861,\"width\":45.484375,\"height\":32,\"top\":861,\"right\":700.546875,\"bottom\":893,\"left\":655.0625}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,77",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":700.546875,\"y\":861,\"width\":45.484375,\"height\":32,\"top\":861,\"right\":746.03125,\"bottom\":893,\"left\":700.546875}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,94",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":746.03125,\"y\":861,\"width\":45.484375,\"height\":32,\"top\":861,\"right\":791.515625,\"bottom\":893,\"left\":746.03125}"
+      },
+      {
+        "tag": "TD",
+        "text": "5,11",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":791.515625,\"y\":861,\"width\":45.484375,\"height\":32,\"top\":861,\"right\":837,\"bottom\":893,\"left\":791.515625}"
+      },
+      {
+        "tag": "TR",
+        "text": "-1 °C2,332,492,652,812,973,133,293,453,613,773,944,104,264,424,594,754,92",
+        "cls": "",
+        "rect": "{\"x\":17,\"y\":893,\"width\":820,\"height\":32,\"top\":893,\"right\":837,\"bottom\":925,\"left\":17}"
+      },
+      {
+        "tag": "TD",
+        "text": "3,45",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":382.15625,\"y\":893,\"width\":45.484375,\"height\":32,\"top\":893,\"right\":427.640625,\"bottom\":925,\"left\":382.15625}"
+      },
+      {
+        "tag": "TD",
+        "text": "3,61",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":427.640625,\"y\":893,\"width\":45.484375,\"height\":32,\"top\":893,\"right\":473.125,\"bottom\":925,\"left\":427.640625}"
+      },
+      {
+        "tag": "TD",
+        "text": "3,77",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":473.125,\"y\":893,\"width\":45.484375,\"height\":32,\"top\":893,\"right\":518.609375,\"bottom\":925,\"left\":473.125}"
+      },
+      {
+        "tag": "TD",
+        "text": "3,94",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":518.609375,\"y\":893,\"width\":45.484375,\"height\":32,\"top\":893,\"right\":564.09375,\"bottom\":925,\"left\":518.609375}"
+      }
+    ],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_keg_carbonation-iPhone-13.png"
+  },
+  {
+    "route": "/calculators/bottling",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/calculators/bottling",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_bottling-iPhone-13.png"
+  },
+  {
+    "route": "/calculators/speise-krausen",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/calculators/speise-krausen",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_speise_krausen-iPhone-13.png"
+  },
+  {
+    "route": "/calculators/beer-color",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/calculators/beer-color",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_beer_color-iPhone-13.png"
+  },
+  {
+    "route": "/calculators/beer-color",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/calculators/beer-color",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_beer_color-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/calculators/beer-color",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/calculators/beer-color",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_beer_color-iPad-Pro-11.png"
+  },
+  {
+    "route": "/calculators/beer-color",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/calculators/beer-color",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_beer_color-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/calculators/brewhouse-efficiency",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/calculators/brewhouse-efficiency",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_brewhouse_efficiency-iPhone-13.png"
+  },
+  {
+    "route": "/calculators/brewhouse-efficiency",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/calculators/brewhouse-efficiency",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_brewhouse_efficiency-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/calculators/brewhouse-efficiency",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/calculators/brewhouse-efficiency",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_brewhouse_efficiency-iPad-Pro-11.png"
+  },
+  {
+    "route": "/calculators/brewhouse-efficiency",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/calculators/brewhouse-efficiency",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_brewhouse_efficiency-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/calculators/hop-freshness",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/calculators/hop-freshness",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_hop_freshness-iPhone-13.png"
+  },
+  {
+    "route": "/calculators/hop-freshness",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/calculators/hop-freshness",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_hop_freshness-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/calculators/hop-freshness",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/calculators/hop-freshness",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_hop_freshness-iPad-Pro-11.png"
+  },
+  {
+    "route": "/calculators/hop-freshness",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/calculators/hop-freshness",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_hop_freshness-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/calculators/unit-converter",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/calculators/unit-converter",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_unit_converter-iPhone-13.png"
+  },
+  {
+    "route": "/calculators/unit-converter",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/calculators/unit-converter",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_unit_converter-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/calculators/unit-converter",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/calculators/unit-converter",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_unit_converter-iPad-Pro-11.png"
+  },
+  {
+    "route": "/calculators/unit-converter",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/calculators/unit-converter",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_unit_converter-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/admin",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/admin",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin-iPhone-13.png"
+  },
+  {
+    "route": "/admin",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/admin",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/admin",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/admin",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin-iPad-Pro-11.png"
+  },
+  {
+    "route": "/admin",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/admin",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/admin/users",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/admin/users",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_users-iPhone-13.png"
+  },
+  {
+    "route": "/admin/users",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/admin/users",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_users-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/admin/users",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/admin/users",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_users-iPad-Pro-11.png"
+  },
+  {
+    "route": "/admin/users",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/admin/users",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_users-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/admin/recipes",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/admin/recipes",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_recipes-iPhone-13.png"
+  },
+  {
+    "route": "/admin/recipes",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/admin/recipes",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_recipes-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/admin/recipes",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/admin/recipes",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_recipes-iPad-Pro-11.png"
+  },
+  {
+    "route": "/admin/recipes",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/admin/recipes",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [
+      {
+        "tag": "TABLE",
+        "text": "РецептАвторСтильСтатусРейтингОбновлёнДействияQA mobile audit 21.10qa.mobile.2026102121A Ам",
+        "cls": "w-full caption-bottom border-collapse text-sm text-foreground",
+        "rect": "{\"x\":265,\"y\":203,\"width\":835.5,\"height\":1559.5,\"top\":203,\"right\":1100.5,\"bottom\":1762.5,\"left\":265}"
+      },
+      {
+        "tag": "THEAD",
+        "text": "РецептАвторСтильСтатусРейтингОбновлёнДействия",
+        "cls": "[&_tr]:border-b [&_tr]:border-border [&_tr:hover]:bg-transparent",
+        "rect": "{\"x\":265,\"y\":203,\"width\":835.5,\"height\":40,\"top\":203,\"right\":1100.5,\"bottom\":243,\"left\":265}"
+      },
+      {
+        "tag": "TR",
+        "text": "РецептАвторСтильСтатусРейтингОбновлёнДействия",
+        "cls": "border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+        "rect": "{\"x\":265,\"y\":203,\"width\":835.5,\"height\":40,\"top\":203,\"right\":1100.5,\"bottom\":243,\"left\":265}"
+      },
+      {
+        "tag": "TH",
+        "text": "Обновлён",
+        "cls": "h-10 whitespace-nowrap px-3 text-left align-middle text-xs font-medium text-muted-foreground w-32",
+        "rect": "{\"x\":957.78125,\"y\":203,\"width\":82.71875,\"height\":40,\"top\":203,\"right\":1040.5,\"bottom\":243,\"left\":957.78125}"
+      },
+      {
+        "tag": "TH",
+        "text": "Действия",
+        "cls": "h-10 whitespace-nowrap px-3 text-left align-middle text-xs font-medium text-muted-foreground w-12",
+        "rect": "{\"x\":1040.5,\"y\":203,\"width\":60,\"height\":40,\"top\":203,\"right\":1100.5,\"bottom\":243,\"left\":1040.5}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "Действия",
+        "cls": "sr-only",
+        "rect": "{\"x\":1051.5,\"y\":221.75,\"width\":1,\"height\":1,\"top\":221.75,\"right\":1052.5,\"bottom\":222.75,\"left\":1051.5}"
+      },
+      {
+        "tag": "TBODY",
+        "text": "QA mobile audit 21.10qa.mobile.2026102121A Американский IPAПриватный—21 окт. 2026 г.Каскад",
+        "cls": "[&_tr:last-child]:border-0",
+        "rect": "{\"x\":265,\"y\":243,\"width\":835.5,\"height\":1519.5,\"top\":243,\"right\":1100.5,\"bottom\":1762.5,\"left\":265}"
+      },
+      {
+        "tag": "TR",
+        "text": "QA mobile audit 21.10qa.mobile.2026102121A Американский IPAПриватный—21 окт. 2026 г.",
+        "cls": "border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+        "rect": "{\"x\":265,\"y\":243,\"width\":835.5,\"height\":77,\"top\":243,\"right\":1100.5,\"bottom\":320,\"left\":265}"
+      },
+      {
+        "tag": "TD",
+        "text": "21 окт. 2026 г.",
+        "cls": "px-3 py-2 align-middle",
+        "rect": "{\"x\":957.78125,\"y\":243,\"width\":82.71875,\"height\":77,\"top\":243,\"right\":1040.5,\"bottom\":320,\"left\":957.78125}"
+      },
+      {
+        "tag": "TD",
+        "text": "",
+        "cls": "px-3 py-2 align-middle",
+        "rect": "{\"x\":1040.5,\"y\":243,\"width\":60,\"height\":77,\"top\":243,\"right\":1100.5,\"bottom\":320,\"left\":1040.5}"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "",
+        "cls": "inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors hover:text-foreground",
+        "rect": "{\"x\":1052.5,\"y\":263.5,\"width\":36,\"height\":36,\"top\":263.5,\"right\":1088.5,\"bottom\":299.5,\"left\":1052.5}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1062.5,\"y\":273.5,\"width\":16,\"height\":16,\"top\":273.5,\"right\":1078.5,\"bottom\":289.5,\"left\":1062.5}"
+      },
+      {
+        "tag": "circle",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1069.8333740234375,\"y\":280.8333435058594,\"width\":1.333251953125,\"height\":1.33331298828125,\"top\":280.8333435058594,\"right\":1071.1666259765625,\"bottom\":282.1666564941406,\"left\":1069.8333740234375}"
+      },
+      {
+        "tag": "circle",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1074.5,\"y\":280.8333435058594,\"width\":1.3333740234375,\"height\":1.33331298828125,\"top\":280.8333435058594,\"right\":1075.8333740234375,\"bottom\":282.1666564941406,\"left\":1074.5}"
+      },
+      {
+        "tag": "circle",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1065.1666259765625,\"y\":280.8333435058594,\"width\":1.3333740234375,\"height\":1.33331298828125,\"top\":280.8333435058594,\"right\":1066.5,\"bottom\":282.1666564941406,\"left\":1065.1666259765625}"
+      },
+      {
+        "tag": "TR",
+        "text": "Каскад цветочно-ванильный (Граф_Пивоварoff, бир.рф) (копия)qa.deep.main.2026102018B Америк",
+        "cls": "border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+        "rect": "{\"x\":265,\"y\":320,\"width\":835.5,\"height\":97,\"top\":320,\"right\":1100.5,\"bottom\":417,\"left\":265}"
+      },
+      {
+        "tag": "TD",
+        "text": "20 окт. 2026 г.",
+        "cls": "px-3 py-2 align-middle",
+        "rect": "{\"x\":957.78125,\"y\":320,\"width\":82.71875,\"height\":97,\"top\":320,\"right\":1040.5,\"bottom\":417,\"left\":957.78125}"
+      },
+      {
+        "tag": "TD",
+        "text": "",
+        "cls": "px-3 py-2 align-middle",
+        "rect": "{\"x\":1040.5,\"y\":320,\"width\":60,\"height\":97,\"top\":320,\"right\":1100.5,\"bottom\":417,\"left\":1040.5}"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "",
+        "cls": "inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors hover:text-foreground",
+        "rect": "{\"x\":1052.5,\"y\":350.5,\"width\":36,\"height\":36,\"top\":350.5,\"right\":1088.5,\"bottom\":386.5,\"left\":1052.5}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1062.5,\"y\":360.5,\"width\":16,\"height\":16,\"top\":360.5,\"right\":1078.5,\"bottom\":376.5,\"left\":1062.5}"
+      },
+      {
+        "tag": "circle",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1069.8333740234375,\"y\":367.8333435058594,\"width\":1.333251953125,\"height\":1.33331298828125,\"top\":367.8333435058594,\"right\":1071.1666259765625,\"bottom\":369.1666564941406,\"left\":1069.8333740234375}"
+      },
+      {
+        "tag": "circle",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1074.5,\"y\":367.8333435058594,\"width\":1.3333740234375,\"height\":1.33331298828125,\"top\":367.8333435058594,\"right\":1075.8333740234375,\"bottom\":369.1666564941406,\"left\":1074.5}"
+      },
+      {
+        "tag": "circle",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1065.1666259765625,\"y\":367.8333435058594,\"width\":1.3333740234375,\"height\":1.33331298828125,\"top\":367.8333435058594,\"right\":1066.5,\"bottom\":369.1666564941406,\"left\":1065.1666259765625}"
+      },
+      {
+        "tag": "TR",
+        "text": "Каскад цветочно-ванильный (Граф_Пивоварoff, бир.рф) (копия)qa.deep.main.2026102018B Америк",
+        "cls": "border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+        "rect": "{\"x\":265,\"y\":417,\"width\":835.5,\"height\":97,\"top\":417,\"right\":1100.5,\"bottom\":514,\"left\":265}"
+      },
+      {
+        "tag": "TD",
+        "text": "20 окт. 2026 г.",
+        "cls": "px-3 py-2 align-middle",
+        "rect": "{\"x\":957.78125,\"y\":417,\"width\":82.71875,\"height\":97,\"top\":417,\"right\":1040.5,\"bottom\":514,\"left\":957.78125}"
+      },
+      {
+        "tag": "TD",
+        "text": "",
+        "cls": "px-3 py-2 align-middle",
+        "rect": "{\"x\":1040.5,\"y\":417,\"width\":60,\"height\":97,\"top\":417,\"right\":1100.5,\"bottom\":514,\"left\":1040.5}"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "",
+        "cls": "inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors hover:text-foreground",
+        "rect": "{\"x\":1052.5,\"y\":447.5,\"width\":36,\"height\":36,\"top\":447.5,\"right\":1088.5,\"bottom\":483.5,\"left\":1052.5}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1062.5,\"y\":457.5,\"width\":16,\"height\":16,\"top\":457.5,\"right\":1078.5,\"bottom\":473.5,\"left\":1062.5}"
+      },
+      {
+        "tag": "circle",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1069.8333740234375,\"y\":464.8333435058594,\"width\":1.333251953125,\"height\":1.33331298828125,\"top\":464.8333435058594,\"right\":1071.1666259765625,\"bottom\":466.1666564941406,\"left\":1069.8333740234375}"
+      },
+      {
+        "tag": "circle",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1074.5,\"y\":464.8333435058594,\"width\":1.3333740234375,\"height\":1.33331298828125,\"top\":464.8333435058594,\"right\":1075.8333740234375,\"bottom\":466.1666564941406,\"left\":1074.5}"
+      }
+    ],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "12px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_recipes-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/admin/ingredients",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/admin/ingredients",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_ingredients-iPhone-13.png"
+  },
+  {
+    "route": "/admin/ingredients",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/admin/ingredients",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_ingredients-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/admin/ingredients",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/admin/ingredients",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_ingredients-iPad-Pro-11.png"
+  },
+  {
+    "route": "/admin/ingredients",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/admin/ingredients",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "12px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_ingredients-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/admin/ingredients/new",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/admin/ingredients/new",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_ingredients_new-iPhone-13.png"
+  },
+  {
+    "route": "/admin/ingredients/new",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/admin/ingredients/new",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_ingredients_new-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/admin/ingredients/new",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/admin/ingredients/new",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_ingredients_new-iPad-Pro-11.png"
+  },
+  {
+    "route": "/admin/ingredients/new",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/admin/ingredients/new",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_ingredients_new-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/admin/ingredients/moderation",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/admin/ingredients/moderation",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_ingredients_moderation-iPhone-13.png"
+  },
+  {
+    "route": "/admin/ingredients/moderation",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/admin/ingredients/moderation",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_ingredients_moderation-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/admin/ingredients/moderation",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/admin/ingredients/moderation",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_ingredients_moderation-iPad-Pro-11.png"
+  },
+  {
+    "route": "/admin/ingredients/moderation",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/admin/ingredients/moderation",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_ingredients_moderation-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/admin/ingredients/merge",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/admin/ingredients/merge",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_ingredients_merge-iPhone-13.png"
+  },
+  {
+    "route": "/admin/ingredients/merge",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/admin/ingredients/merge",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_ingredients_merge-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/admin/ingredients/merge",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/admin/ingredients/merge",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_ingredients_merge-iPad-Pro-11.png"
+  },
+  {
+    "route": "/admin/ingredients/merge",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/admin/ingredients/merge",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_ingredients_merge-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/admin/articles",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/admin/articles",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_articles-iPhone-13.png"
+  },
+  {
+    "route": "/admin/articles",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/admin/articles",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_articles-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/admin/articles",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/admin/articles",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_articles-iPad-Pro-11.png"
+  },
+  {
+    "route": "/admin/articles",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/admin/articles",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_articles-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/admin/masters",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/admin/masters",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_masters-iPhone-13.png"
+  },
+  {
+    "route": "/admin/masters",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/admin/masters",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_masters-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/admin/masters",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/admin/masters",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_masters-iPad-Pro-11.png"
+  },
+  {
+    "route": "/admin/masters",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/admin/masters",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_masters-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/admin/devices",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/admin/devices",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_devices-iPhone-13.png"
+  },
+  {
+    "route": "/admin/devices",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/admin/devices",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_devices-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/admin/devices",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/admin/devices",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_devices-iPad-Pro-11.png"
+  },
+  {
+    "route": "/admin/devices",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/admin/devices",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_devices-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/admin/firmware",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/admin/firmware",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_firmware-iPhone-13.png"
+  },
+  {
+    "route": "/admin/firmware",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/admin/firmware",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_firmware-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/admin/firmware",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/admin/firmware",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_firmware-iPad-Pro-11.png"
+  },
+  {
+    "route": "/admin/firmware",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/admin/firmware",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_firmware-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/admin/feedback",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/admin/feedback",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_feedback-iPhone-13.png"
+  },
+  {
+    "route": "/admin/feedback",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/admin/feedback",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_feedback-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/admin/feedback",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/admin/feedback",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_feedback-iPad-Pro-11.png"
+  },
+  {
+    "route": "/admin/feedback",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/admin/feedback",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_feedback-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/admin/audit",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/admin/audit",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_audit-iPhone-13.png"
+  },
+  {
+    "route": "/admin/audit",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/admin/audit",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_audit-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/admin/audit",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/admin/audit",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_audit-iPad-Pro-11.png"
+  },
+  {
+    "route": "/admin/audit",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/admin/audit",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_audit-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/admin/settings/currency",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/admin/settings/currency",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_settings_currency-iPhone-13.png"
+  },
+  {
+    "route": "/admin/push",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/admin/push",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_push-iPhone-13.png"
+  },
+  {
+    "route": "/admin/push",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/admin/push",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_push-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/admin/push",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/admin/push",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_push-iPad-Pro-11.png"
+  },
+  {
+    "route": "/admin/push",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/admin/push",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_push-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/app/brew-batches/a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/brew-batches/a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "12px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_brew_batches_a42dbf9d_a841_4bba_b2a8_2f32a7e8481c-iPhone-13.png"
+  },
+  {
+    "route": "/recipes/pilsner-urquell",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/recipes/pilsner-urquell",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_recipes_pilsner_urquell-iPhone-13.png"
+  },
+  {
+    "route": "/recipes/pilsner-urquell",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/recipes/pilsner-urquell",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_recipes_pilsner_urquell-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/recipes/pilsner-urquell",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/recipes/pilsner-urquell",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_recipes_pilsner_urquell-iPad-Pro-11.png"
+  },
+  {
+    "route": "/recipes/pilsner-urquell",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/recipes/pilsner-urquell",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_recipes_pilsner_urquell-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/bjcp/bjcp-3b-czech-premium-pale-lager",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/bjcp/bjcp-3b-czech-premium-pale-lager",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_bjcp_bjcp_3b_czech_premium_pale_lager-iPhone-13.png"
+  },
+  {
+    "route": "/bjcp/bjcp-3b-czech-premium-pale-lager",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/bjcp/bjcp-3b-czech-premium-pale-lager",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_bjcp_bjcp_3b_czech_premium_pale_lager-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/bjcp/bjcp-3b-czech-premium-pale-lager",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/bjcp/bjcp-3b-czech-premium-pale-lager",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_bjcp_bjcp_3b_czech_premium_pale_lager-iPad-Pro-11.png"
+  },
+  {
+    "route": "/bjcp/bjcp-3b-czech-premium-pale-lager",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/bjcp/bjcp-3b-czech-premium-pale-lager",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_bjcp_bjcp_3b_czech_premium_pale_lager-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/calculators/abv-attenuation",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/calculators/abv-attenuation",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_abv_attenuation-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/calculators/abv-attenuation",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/calculators/abv-attenuation",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_abv_attenuation-iPad-Pro-11.png"
+  },
+  {
+    "route": "/calculators/abv-attenuation",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/calculators/abv-attenuation",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_abv_attenuation-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/calculators/refractometer-correction",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/calculators/refractometer-correction",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_refractometer_correction-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/calculators/refractometer-correction",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/calculators/refractometer-correction",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_refractometer_correction-iPad-Pro-11.png"
+  },
+  {
+    "route": "/calculators/refractometer-correction",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/calculators/refractometer-correction",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_refractometer_correction-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/calculators/hydrometer-correction",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/calculators/hydrometer-correction",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_hydrometer_correction-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/calculators/hydrometer-correction",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/calculators/hydrometer-correction",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_hydrometer_correction-iPad-Pro-11.png"
+  },
+  {
+    "route": "/calculators/hydrometer-correction",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/calculators/hydrometer-correction",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_hydrometer_correction-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/calculators/dilution-boiloff",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/calculators/dilution-boiloff",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_dilution_boiloff-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/calculators/dilution-boiloff",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/calculators/dilution-boiloff",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_dilution_boiloff-iPad-Pro-11.png"
+  },
+  {
+    "route": "/calculators/dilution-boiloff",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/calculators/dilution-boiloff",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_dilution_boiloff-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/calculators/ibu",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/calculators/ibu",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_ibu-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/calculators/ibu",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/calculators/ibu",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_ibu-iPad-Pro-11.png"
+  },
+  {
+    "route": "/calculators/ibu",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/calculators/ibu",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_ibu-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/calculators/brewing-water-volume",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/calculators/brewing-water-volume",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_brewing_water_volume-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/calculators/brewing-water-volume",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/calculators/brewing-water-volume",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_brewing_water_volume-iPad-Pro-11.png"
+  },
+  {
+    "route": "/calculators/brewing-water-volume",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/calculators/brewing-water-volume",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_brewing_water_volume-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/calculators/mash-infusion",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/calculators/mash-infusion",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_mash_infusion-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/calculators/mash-infusion",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/calculators/mash-infusion",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_mash_infusion-iPad-Pro-11.png"
+  },
+  {
+    "route": "/calculators/mash-infusion",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/calculators/mash-infusion",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_mash_infusion-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/calculators/water-ph",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/calculators/water-ph",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_water_ph-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/calculators/water-ph",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/calculators/water-ph",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_water_ph-iPad-Pro-11.png"
+  },
+  {
+    "route": "/calculators/water-ph",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/calculators/water-ph",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_water_ph-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/calculators/yeast-starter",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/calculators/yeast-starter",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_yeast_starter-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/calculators/yeast-starter",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/calculators/yeast-starter",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_yeast_starter-iPad-Pro-11.png"
+  },
+  {
+    "route": "/calculators/yeast-starter",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/calculators/yeast-starter",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_yeast_starter-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/calculators/priming-sugar",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/calculators/priming-sugar",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_priming_sugar-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/calculators/priming-sugar",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/calculators/priming-sugar",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_priming_sugar-iPad-Pro-11.png"
+  },
+  {
+    "route": "/calculators/priming-sugar",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/calculators/priming-sugar",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_priming_sugar-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/calculators/keg-carbonation",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/calculators/keg-carbonation",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [
+      {
+        "tag": "TABLE",
+        "text": "T \\ бар0,400,500,600,700,800,901,001,101,201,301,401,501,601,701,801,902,00-2 °C2,432,592,",
+        "cls": "w-full min-w-[820px] border-collapse text-center text-sm",
+        "rect": "{\"x\":25,\"y\":673,\"width\":820,\"height\":924,\"top\":673,\"right\":845,\"bottom\":1597,\"left\":25}"
+      },
+      {
+        "tag": "THEAD",
+        "text": "T \\ бар0,400,500,600,700,800,901,001,101,201,301,401,501,601,701,801,902,00",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":673,\"width\":820,\"height\":56,\"top\":673,\"right\":845,\"bottom\":729,\"left\":25}"
+      },
+      {
+        "tag": "TR",
+        "text": "T \\ бар0,400,500,600,700,800,901,001,101,201,301,401,501,601,701,801,902,00",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":673,\"width\":820,\"height\":56,\"top\":673,\"right\":845,\"bottom\":729,\"left\":25}"
+      },
+      {
+        "tag": "TH",
+        "text": "1,80",
+        "cls": "px-2 py-2 text-xs font-semibold tabular-nums transition-colors text-muted-foreground",
+        "rect": "{\"x\":708.546875,\"y\":673,\"width\":45.484375,\"height\":56,\"top\":673,\"right\":754.03125,\"bottom\":729,\"left\":708.546875}"
+      },
+      {
+        "tag": "TH",
+        "text": "1,90",
+        "cls": "px-2 py-2 text-xs font-semibold tabular-nums transition-colors text-muted-foreground",
+        "rect": "{\"x\":754.03125,\"y\":673,\"width\":45.484375,\"height\":56,\"top\":673,\"right\":799.515625,\"bottom\":729,\"left\":754.03125}"
+      },
+      {
+        "tag": "TH",
+        "text": "2,00",
+        "cls": "px-2 py-2 text-xs font-semibold tabular-nums transition-colors text-muted-foreground",
+        "rect": "{\"x\":799.515625,\"y\":673,\"width\":45.484375,\"height\":56,\"top\":673,\"right\":845,\"bottom\":729,\"left\":799.515625}"
+      },
+      {
+        "tag": "TBODY",
+        "text": "-2 °C2,432,592,762,923,093,253,423,593,753,924,094,264,434,604,774,945,11-1 °C2,332,492,65",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":729,\"width\":820,\"height\":868,\"top\":729,\"right\":845,\"bottom\":1597,\"left\":25}"
+      },
+      {
+        "tag": "TR",
+        "text": "-2 °C2,432,592,762,923,093,253,423,593,753,924,094,264,434,604,774,945,11",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":729,\"width\":820,\"height\":32,\"top\":729,\"right\":845,\"bottom\":761,\"left\":25}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,77",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":708.546875,\"y\":729,\"width\":45.484375,\"height\":32,\"top\":729,\"right\":754.03125,\"bottom\":761,\"left\":708.546875}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,94",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":754.03125,\"y\":729,\"width\":45.484375,\"height\":32,\"top\":729,\"right\":799.515625,\"bottom\":761,\"left\":754.03125}"
+      },
+      {
+        "tag": "TD",
+        "text": "5,11",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":799.515625,\"y\":729,\"width\":45.484375,\"height\":32,\"top\":729,\"right\":845,\"bottom\":761,\"left\":799.515625}"
+      },
+      {
+        "tag": "TR",
+        "text": "-1 °C2,332,492,652,812,973,133,293,453,613,773,944,104,264,424,594,754,92",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":761,\"width\":820,\"height\":32,\"top\":761,\"right\":845,\"bottom\":793,\"left\":25}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,59",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":708.546875,\"y\":761,\"width\":45.484375,\"height\":32,\"top\":761,\"right\":754.03125,\"bottom\":793,\"left\":708.546875}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,75",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":754.03125,\"y\":761,\"width\":45.484375,\"height\":32,\"top\":761,\"right\":799.515625,\"bottom\":793,\"left\":754.03125}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,92",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":799.515625,\"y\":761,\"width\":45.484375,\"height\":32,\"top\":761,\"right\":845,\"bottom\":793,\"left\":799.515625}"
+      },
+      {
+        "tag": "TR",
+        "text": "0 °C2,242,402,552,712,863,013,173,323,483,643,793,954,114,264,424,584,74",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":793,\"width\":820,\"height\":32,\"top\":793,\"right\":845,\"bottom\":825,\"left\":25}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,42",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":708.546875,\"y\":793,\"width\":45.484375,\"height\":32,\"top\":793,\"right\":754.03125,\"bottom\":825,\"left\":708.546875}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,58",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":754.03125,\"y\":793,\"width\":45.484375,\"height\":32,\"top\":793,\"right\":799.515625,\"bottom\":825,\"left\":754.03125}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,74",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":799.515625,\"y\":793,\"width\":45.484375,\"height\":32,\"top\":793,\"right\":845,\"bottom\":825,\"left\":799.515625}"
+      },
+      {
+        "tag": "TR",
+        "text": "1 °C2,162,312,462,612,762,903,053,203,353,503,663,813,964,114,264,424,57",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":825,\"width\":820,\"height\":32,\"top\":825,\"right\":845,\"bottom\":857,\"left\":25}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,26",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":708.546875,\"y\":825,\"width\":45.484375,\"height\":32,\"top\":825,\"right\":754.03125,\"bottom\":857,\"left\":708.546875}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,42",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":754.03125,\"y\":825,\"width\":45.484375,\"height\":32,\"top\":825,\"right\":799.515625,\"bottom\":857,\"left\":754.03125}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,57",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":799.515625,\"y\":825,\"width\":45.484375,\"height\":32,\"top\":825,\"right\":845,\"bottom\":857,\"left\":799.515625}"
+      },
+      {
+        "tag": "TR",
+        "text": "2 °C2,082,232,372,512,662,802,953,093,243,383,533,673,823,974,114,264,41",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":857,\"width\":820,\"height\":32,\"top\":857,\"right\":845,\"bottom\":889,\"left\":25}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,11",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":708.546875,\"y\":857,\"width\":45.484375,\"height\":32,\"top\":857,\"right\":754.03125,\"bottom\":889,\"left\":708.546875}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,26",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":754.03125,\"y\":857,\"width\":45.484375,\"height\":32,\"top\":857,\"right\":799.515625,\"bottom\":889,\"left\":754.03125}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,41",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":799.515625,\"y\":857,\"width\":45.484375,\"height\":32,\"top\":857,\"right\":845,\"bottom\":889,\"left\":799.515625}"
+      },
+      {
+        "tag": "TR",
+        "text": "3 °C2,012,152,282,422,562,702,842,983,133,273,413,553,693,833,974,124,26",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":889,\"width\":820,\"height\":32,\"top\":889,\"right\":845,\"bottom\":921,\"left\":25}"
+      },
+      {
+        "tag": "TD",
+        "text": "3,97",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":708.546875,\"y\":889,\"width\":45.484375,\"height\":32,\"top\":889,\"right\":754.03125,\"bottom\":921,\"left\":708.546875}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,12",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":754.03125,\"y\":889,\"width\":45.484375,\"height\":32,\"top\":889,\"right\":799.515625,\"bottom\":921,\"left\":754.03125}"
+      }
+    ],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_keg_carbonation-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/calculators/keg-carbonation",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/calculators/keg-carbonation",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [
+      {
+        "tag": "TABLE",
+        "text": "T \\ бар0,400,500,600,700,800,901,001,101,201,301,401,501,601,701,801,902,00-2 °C2,432,592,",
+        "cls": "w-full min-w-[820px] border-collapse text-center text-sm",
+        "rect": "{\"x\":25,\"y\":649,\"width\":820,\"height\":924,\"top\":649,\"right\":845,\"bottom\":1573,\"left\":25}"
+      },
+      {
+        "tag": "THEAD",
+        "text": "T \\ бар0,400,500,600,700,800,901,001,101,201,301,401,501,601,701,801,902,00",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":649,\"width\":820,\"height\":56,\"top\":649,\"right\":845,\"bottom\":705,\"left\":25}"
+      },
+      {
+        "tag": "TR",
+        "text": "T \\ бар0,400,500,600,700,800,901,001,101,201,301,401,501,601,701,801,902,00",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":649,\"width\":820,\"height\":56,\"top\":649,\"right\":845,\"bottom\":705,\"left\":25}"
+      },
+      {
+        "tag": "TH",
+        "text": "2,00",
+        "cls": "px-2 py-2 text-xs font-semibold tabular-nums transition-colors text-muted-foreground",
+        "rect": "{\"x\":799.515625,\"y\":649,\"width\":45.484375,\"height\":56,\"top\":649,\"right\":845,\"bottom\":705,\"left\":799.515625}"
+      },
+      {
+        "tag": "TBODY",
+        "text": "-2 °C2,432,592,762,923,093,253,423,593,753,924,094,264,434,604,774,945,11-1 °C2,332,492,65",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":705,\"width\":820,\"height\":868,\"top\":705,\"right\":845,\"bottom\":1573,\"left\":25}"
+      },
+      {
+        "tag": "TR",
+        "text": "-2 °C2,432,592,762,923,093,253,423,593,753,924,094,264,434,604,774,945,11",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":705,\"width\":820,\"height\":32,\"top\":705,\"right\":845,\"bottom\":737,\"left\":25}"
+      },
+      {
+        "tag": "TD",
+        "text": "5,11",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":799.515625,\"y\":705,\"width\":45.484375,\"height\":32,\"top\":705,\"right\":845,\"bottom\":737,\"left\":799.515625}"
+      },
+      {
+        "tag": "TR",
+        "text": "-1 °C2,332,492,652,812,973,133,293,453,613,773,944,104,264,424,594,754,92",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":737,\"width\":820,\"height\":32,\"top\":737,\"right\":845,\"bottom\":769,\"left\":25}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,92",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":799.515625,\"y\":737,\"width\":45.484375,\"height\":32,\"top\":737,\"right\":845,\"bottom\":769,\"left\":799.515625}"
+      },
+      {
+        "tag": "TR",
+        "text": "0 °C2,242,402,552,712,863,013,173,323,483,643,793,954,114,264,424,584,74",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":769,\"width\":820,\"height\":32,\"top\":769,\"right\":845,\"bottom\":801,\"left\":25}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,74",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":799.515625,\"y\":769,\"width\":45.484375,\"height\":32,\"top\":769,\"right\":845,\"bottom\":801,\"left\":799.515625}"
+      },
+      {
+        "tag": "TR",
+        "text": "1 °C2,162,312,462,612,762,903,053,203,353,503,663,813,964,114,264,424,57",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":801,\"width\":820,\"height\":32,\"top\":801,\"right\":845,\"bottom\":833,\"left\":25}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,57",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":799.515625,\"y\":801,\"width\":45.484375,\"height\":32,\"top\":801,\"right\":845,\"bottom\":833,\"left\":799.515625}"
+      },
+      {
+        "tag": "TR",
+        "text": "2 °C2,082,232,372,512,662,802,953,093,243,383,533,673,823,974,114,264,41",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":833,\"width\":820,\"height\":32,\"top\":833,\"right\":845,\"bottom\":865,\"left\":25}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,41",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":799.515625,\"y\":833,\"width\":45.484375,\"height\":32,\"top\":833,\"right\":845,\"bottom\":865,\"left\":799.515625}"
+      },
+      {
+        "tag": "TR",
+        "text": "3 °C2,012,152,282,422,562,702,842,983,133,273,413,553,693,833,974,124,26",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":865,\"width\":820,\"height\":32,\"top\":865,\"right\":845,\"bottom\":897,\"left\":25}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,26",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":799.515625,\"y\":865,\"width\":45.484375,\"height\":32,\"top\":865,\"right\":845,\"bottom\":897,\"left\":799.515625}"
+      },
+      {
+        "tag": "TR",
+        "text": "4 °C1,942,072,212,342,482,612,752,883,023,163,293,433,573,713,843,984,12",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":897,\"width\":820,\"height\":32,\"top\":897,\"right\":845,\"bottom\":929,\"left\":25}"
+      },
+      {
+        "tag": "TD",
+        "text": "4,12",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":799.515625,\"y\":897,\"width\":45.484375,\"height\":32,\"top\":897,\"right\":845,\"bottom\":929,\"left\":799.515625}"
+      },
+      {
+        "tag": "TR",
+        "text": "5 °C1,872,002,132,262,392,522,662,792,923,053,193,323,453,593,723,853,99",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":929,\"width\":820,\"height\":32,\"top\":929,\"right\":845,\"bottom\":961,\"left\":25}"
+      },
+      {
+        "tag": "TD",
+        "text": "3,99",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":799.515625,\"y\":929,\"width\":45.484375,\"height\":32,\"top\":929,\"right\":845,\"bottom\":961,\"left\":799.515625}"
+      },
+      {
+        "tag": "TR",
+        "text": "6 °C1,801,932,062,182,312,442,572,702,832,953,083,213,343,473,603,733,86",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":961,\"width\":820,\"height\":32,\"top\":961,\"right\":845,\"bottom\":993,\"left\":25}"
+      },
+      {
+        "tag": "TD",
+        "text": "3,86",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":799.515625,\"y\":961,\"width\":45.484375,\"height\":32,\"top\":961,\"right\":845,\"bottom\":993,\"left\":799.515625}"
+      },
+      {
+        "tag": "TR",
+        "text": "7 °C1,741,861,992,112,242,362,492,612,732,862,993,113,243,363,493,613,74",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":993,\"width\":820,\"height\":32,\"top\":993,\"right\":845,\"bottom\":1025,\"left\":25}"
+      },
+      {
+        "tag": "TD",
+        "text": "3,74",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":799.515625,\"y\":993,\"width\":45.484375,\"height\":32,\"top\":993,\"right\":845,\"bottom\":1025,\"left\":799.515625}"
+      },
+      {
+        "tag": "TR",
+        "text": "8 °C1,681,801,922,042,162,282,412,532,652,772,893,013,143,263,383,503,63",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":1025,\"width\":820,\"height\":32,\"top\":1025,\"right\":845,\"bottom\":1057,\"left\":25}"
+      },
+      {
+        "tag": "TD",
+        "text": "3,63",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":799.515625,\"y\":1025,\"width\":45.484375,\"height\":32,\"top\":1025,\"right\":845,\"bottom\":1057,\"left\":799.515625}"
+      },
+      {
+        "tag": "TR",
+        "text": "9 °C1,621,741,861,982,092,212,332,452,572,692,802,923,043,163,283,403,52",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":1057,\"width\":820,\"height\":32,\"top\":1057,\"right\":845,\"bottom\":1089,\"left\":25}"
+      },
+      {
+        "tag": "TD",
+        "text": "3,52",
+        "cls": "relative cursor-pointer px-2 py-1.5 tabular-nums transition-[opacity,box-shadow] bg-rose-100 dark:bg-rose-500/25  text-foreground   ",
+        "rect": "{\"x\":799.515625,\"y\":1057,\"width\":45.484375,\"height\":32,\"top\":1057,\"right\":845,\"bottom\":1089,\"left\":799.515625}"
+      },
+      {
+        "tag": "TR",
+        "text": "10 °C1,571,681,801,912,032,142,262,372,492,602,722,832,953,073,183,303,42",
+        "cls": "",
+        "rect": "{\"x\":25,\"y\":1089,\"width\":820,\"height\":44,\"top\":1089,\"right\":845,\"bottom\":1133,\"left\":25}"
+      }
+    ],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_keg_carbonation-iPad-Pro-11.png"
+  },
+  {
+    "route": "/calculators/keg-carbonation",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/calculators/keg-carbonation",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_keg_carbonation-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/calculators/bottling",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/calculators/bottling",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_bottling-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/calculators/bottling",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/calculators/bottling",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_bottling-iPad-Pro-11.png"
+  },
+  {
+    "route": "/calculators/bottling",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/calculators/bottling",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_bottling-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/calculators/speise-krausen",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/calculators/speise-krausen",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_speise_krausen-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/calculators/speise-krausen",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/calculators/speise-krausen",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_speise_krausen-iPad-Pro-11.png"
+  },
+  {
+    "route": "/calculators/speise-krausen",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/calculators/speise-krausen",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_calculators_speise_krausen-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/admin/articles/new",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/admin/articles/new",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_articles_new-iPhone-13.png"
+  },
+  {
+    "route": "/admin/articles/new",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/admin/articles/new",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_articles_new-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/admin/articles/new",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/admin/articles/new",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_articles_new-iPad-Pro-11.png"
+  },
+  {
+    "route": "/admin/articles/new",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/admin/articles/new",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_articles_new-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/admin/settings/currency",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/admin/settings/currency",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_settings_currency-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/admin/settings/currency",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/admin/settings/currency",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_settings_currency-iPad-Pro-11.png"
+  },
+  {
+    "route": "/admin/settings/currency",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/admin/settings/currency",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_admin_settings_currency-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/app/brew-batches/a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/app/brew-batches/a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "12px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_brew_batches_a42dbf9d_a841_4bba_b2a8_2f32a7e8481c-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/app/brew-batches/a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/app/brew-batches/a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "12px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_brew_batches_a42dbf9d_a841_4bba_b2a8_2f32a7e8481c-iPad-Pro-11.png"
+  },
+  {
+    "route": "/app/brew-batches/a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/app/brew-batches/a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "12px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_brew_batches_a42dbf9d_a841_4bba_b2a8_2f32a7e8481c-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/app/recipes/new",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/recipes/new",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_recipes_new-iPhone-13.png"
+  },
+  {
+    "route": "/app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_recipes_ae29d940_0b2a_4d2e_9995_c112b79e5955_edit-iPhone-13.png"
+  },
+  {
+    "route": "/catalog/new",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/login?next=%2Fcatalog%2Fnew",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "12px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_catalog_new-iPhone-13.png"
+  },
+  {
+    "route": "/catalog/new",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/login?next=%2Fcatalog%2Fnew",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "12px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_catalog_new-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/catalog/new",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/login?next=%2Fcatalog%2Fnew",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "12px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_catalog_new-iPad-Pro-11.png"
+  },
+  {
+    "route": "/catalog/new",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/login?next=%2Fcatalog%2Fnew",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "12px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_catalog_new-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/app/recipes/new",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/app/recipes/new",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_recipes_new-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/app/recipes/new",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/app/recipes/new",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_recipes_new-iPad-Pro-11.png"
+  },
+  {
+    "route": "/app/recipes/new",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/app/recipes/new",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_recipes_new-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_recipes_ae29d940_0b2a_4d2e_9995_c112b79e5955_edit-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_recipes_ae29d940_0b2a_4d2e_9995_c112b79e5955_edit-iPad-Pro-11.png"
+  },
+  {
+    "route": "/app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_recipes_ae29d940_0b2a_4d2e_9995_c112b79e5955_edit-iPad-Mini-landscape.png"
+  }
+]

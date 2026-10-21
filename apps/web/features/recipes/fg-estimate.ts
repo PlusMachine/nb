@@ -50,50 +50,51 @@ const normalizeText = (value: string) => value
 
 const includesAnyPattern = (value: string, patterns: RegExp[]) => patterns.some((pattern) => pattern.test(value));
 
+// \b в JavaScript не задаёт границы кириллических слов, даже с флагом u.
 const simpleSugarPatterns = [
-  /\bdextrose\b/u,
-  /\bglucose\b/u,
-  /\bsucrose\b/u,
-  /\bcorn sugar\b/u,
-  /\bcane sugar\b/u,
-  /\bbeet sugar\b/u,
-  /\btable sugar\b/u,
-  /\binvert sugar\b/u,
-  /\bcandi sugar\b/u,
-  /\bcandi syrup\b/u,
-  /\bglucose syrup\b/u,
-  /\bcorn syrup\b/u,
-  /\bsimple sugar\b/u,
-  /\bсахар\b/u,
-  /\bсахароза\b/u,
-  /\bдекстроз/u,
-  /\bглюкоз/u,
-  /\bинверт/u,
-  /\bкэнди/u,
-  /\bкукурузн(?:ый|ого)\s+сироп/u,
-  /\bглюкозн(?:ый|ого)\s+сироп/u
+  /(?<![\p{L}\p{N}])dextrose(?![\p{L}\p{N}])/u,
+  /(?<![\p{L}\p{N}])glucose(?![\p{L}\p{N}])/u,
+  /(?<![\p{L}\p{N}])sucrose(?![\p{L}\p{N}])/u,
+  /(?<![\p{L}\p{N}])corn sugar(?![\p{L}\p{N}])/u,
+  /(?<![\p{L}\p{N}])cane sugar(?![\p{L}\p{N}])/u,
+  /(?<![\p{L}\p{N}])beet sugar(?![\p{L}\p{N}])/u,
+  /(?<![\p{L}\p{N}])table sugar(?![\p{L}\p{N}])/u,
+  /(?<![\p{L}\p{N}])invert sugar(?![\p{L}\p{N}])/u,
+  /(?<![\p{L}\p{N}])candi sugar(?![\p{L}\p{N}])/u,
+  /(?<![\p{L}\p{N}])candi syrup(?![\p{L}\p{N}])/u,
+  /(?<![\p{L}\p{N}])glucose syrup(?![\p{L}\p{N}])/u,
+  /(?<![\p{L}\p{N}])corn syrup(?![\p{L}\p{N}])/u,
+  /(?<![\p{L}\p{N}])simple sugar(?![\p{L}\p{N}])/u,
+  /(?<![\p{L}\p{N}])сахар(?![\p{L}\p{N}])/u,
+  /(?<![\p{L}\p{N}])сахароза(?![\p{L}\p{N}])/u,
+  /(?<![\p{L}\p{N}])декстроз/u,
+  /(?<![\p{L}\p{N}])глюкоз/u,
+  /(?<![\p{L}\p{N}])инверт/u,
+  /(?<![\p{L}\p{N}])кэнди/u,
+  /(?<![\p{L}\p{N}])кукурузн(?:ый|ого)\s+сироп/u,
+  /(?<![\p{L}\p{N}])глюкозн(?:ый|ого)\s+сироп/u
 ];
 
 const lactosePatterns = [
-  /\blactose\b/u,
-  /\bmilk sugar\b/u,
-  /\bmaltodextrin\b/u,
-  /\bлактоз/u,
-  /\bмальтодекстрин/u
+  /(?<![\p{L}\p{N}])lactose(?![\p{L}\p{N}])/u,
+  /(?<![\p{L}\p{N}])milk sugar(?![\p{L}\p{N}])/u,
+  /(?<![\p{L}\p{N}])maltodextrin(?![\p{L}\p{N}])/u,
+  /(?<![\p{L}\p{N}])лактоз/u,
+  /(?<![\p{L}\p{N}])мальтодекстрин/u
 ];
 
 const crystalPatterns = [
-  /\bcrystal\b/u,
-  /\bcaramel\b/u,
-  /\bcarapils\b/u,
-  /\bcarafoam\b/u,
-  /\bdextrin\b/u,
-  /\bcara(?!fa)[\p{L}\p{N}_-]*/u,
-  /\bкристал/u,
-  /\bкарамел/u,
-  /\bкарапилс/u,
-  /\bкарафоам/u,
-  /\bдекстрин/u
+  /(?<![\p{L}\p{N}])crystal(?![\p{L}\p{N}])/u,
+  /(?<![\p{L}\p{N}])caramel(?![\p{L}\p{N}])/u,
+  /(?<![\p{L}\p{N}])carapils(?![\p{L}\p{N}])/u,
+  /(?<![\p{L}\p{N}])carafoam(?![\p{L}\p{N}])/u,
+  /(?<![\p{L}\p{N}])dextrin(?![\p{L}\p{N}])/u,
+  /(?<![\p{L}\p{N}])cara(?!fa)[\p{L}\p{N}_-]*/u,
+  /(?<![\p{L}\p{N}])кристал/u,
+  /(?<![\p{L}\p{N}])карамел/u,
+  /(?<![\p{L}\p{N}])карапилс/u,
+  /(?<![\p{L}\p{N}])карафоам/u,
+  /(?<![\p{L}\p{N}])декстрин/u
 ];
 
 const buildFermentableHeuristicText = (
@@ -438,11 +439,11 @@ export const resolveRecipeFgSourceLabel = (
   _fgEstimateDetails: RecipeFgEstimateDetails | null | undefined
 ) => {
   if (fgEstimateMode === "manual_fg_override") {
-    return "Ручной FG";
+    return "FG задана вручную";
   }
 
   if (fgEstimateMode === "manual_attenuation_override") {
-    return "Ручная attenuation";
+    return "Аттенюация задана вручную";
   }
 
   if (fgEstimateMode === "default_estimate") {
@@ -457,6 +458,6 @@ export const resolveRecipeFgHelperText = (
   predictedFg: number | null | undefined
 ) => (
   predictedFg == null && fgEstimateMode === "unavailable"
-    ? "Добавьте сбраживаемое"
+    ? "Добавьте сбраживаемые ингредиенты"
     : null
 );

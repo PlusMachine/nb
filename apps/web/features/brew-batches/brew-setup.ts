@@ -1,6 +1,7 @@
 import { getEquipmentProfile } from "../equipment-profiles/service";
 import { buildEquipmentProfileSnapshotFromDto } from "../equipment-profiles/snapshot";
 import type { RecipeDetailDto } from "../recipes/contracts";
+import { calculateRecipeDetailStats } from "../recipes/service";
 import { scaleRecipeDetailForBrew } from "../recipes/scale";
 
 /**
@@ -15,9 +16,9 @@ import { scaleRecipeDetailForBrew } from "../recipes/scale";
  *
  * Профиль подставляется целиком (объём, выпаривание, потери, впитывание зерна,
  * ЭФФЕКТИВНОСТЬ) — иначе водный план варочного дня остался бы посчитан по чужому
- * котлу. Эффективность вдобавок дожимает засыпь, чтобы попасть в авторский OG на
- * своём оборудовании (см. features/recipes/scale.ts) — цели OG/FG/ABV/IBU при этом
- * остаются авторскими и пересчёта не требуют.
+ * котлу. Эффективность корректирует засыпь, сохраняя расчётную плотность состава.
+ * Цели считаются тем же движком, что в копии и предпросмотре: импортированные
+ * авторские OG/ABV могут отличаться от расчёта по ингредиентам.
  *
  * Отдаёт рецепт, от которого считается ВСЁ остальное в createBrewBatchFromRecipe:
  * план варочного дня, слепок состава, водный план. Ничего не пишет в БД.
@@ -53,11 +54,9 @@ export const resolveBrewBatchRecipe = async (
     return { recipe: resolved, recipeEfficiencyPct };
   }
 
-  return {
-    recipe: scaleRecipeDetailForBrew(resolved, {
+  const scaled = scaleRecipeDetailForBrew(resolved, {
       targetLitres: targetBatchVolumeL,
       targetEfficiencyPct: profileEfficiencyPct
-    }),
-    recipeEfficiencyPct
-  };
+    });
+  return { recipe: scaled !== recipe || options.equipmentProfileId ? { ...scaled, ...calculateRecipeDetailStats(scaled) } : scaled, recipeEfficiencyPct };
 };

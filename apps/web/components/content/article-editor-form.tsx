@@ -27,7 +27,7 @@ import {
 type Capabilities = { canPublish: boolean; canFeatureOnHome: boolean; canDelete: boolean };
 
 const labelClass = "flex flex-col gap-1 text-sm";
-const inputClass = "h-10 rounded-lg border border-border px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring";
+const inputClass = "h-10 rounded-lg border border-border px-3 text-sm [@media(pointer:coarse)]:text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring";
 
 export function ArticleEditorForm({
   article,
@@ -128,7 +128,7 @@ export function ArticleEditorForm({
 
         <label className={labelClass}>
           <span className="text-muted-foreground">Аннотация (необязательно — иначе соберём из текста)</span>
-          <textarea className="min-h-[4rem] rounded-lg border border-border px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring" value={excerpt} onChange={(event) => setExcerpt(event.target.value)} maxLength={500} />
+          <textarea className="min-h-[4rem] rounded-lg border border-border px-3 py-2 text-sm [@media(pointer:coarse)]:text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring" value={excerpt} onChange={(event) => setExcerpt(event.target.value)} maxLength={500} />
         </label>
 
         <label className={labelClass}>
@@ -140,7 +140,7 @@ export function ArticleEditorForm({
           <span className="text-sm text-muted-foreground">Текст</span>
           {bodyBroken ? (
             <p role="alert" className="rounded-lg border border-destructive bg-destructive-subtle px-3 py-2 text-sm text-destructive-subtle-foreground">
-              Текст статьи не открылся: в нём есть блок, которого нет в схеме редактора. Сохранение отключено, чтобы не затереть текст.
+              Не удалось открыть текст статьи: он содержит блок, который редактор пока не поддерживает. Сохранение отключено, чтобы не потерять содержимое.
             </p>
           ) : null}
           <ContentBodyEditor
@@ -159,7 +159,7 @@ export function ArticleEditorForm({
             </label>
             <label className={labelClass}>
               <span className="text-muted-foreground">SEO-описание</span>
-              <textarea className="min-h-[3.5rem] rounded-lg border border-border px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring" value={seoDescription} onChange={(event) => setSeoDescription(event.target.value)} maxLength={500} />
+              <textarea className="min-h-[3.5rem] rounded-lg border border-border px-3 py-2 text-sm [@media(pointer:coarse)]:text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring" value={seoDescription} onChange={(event) => setSeoDescription(event.target.value)} maxLength={500} />
             </label>
           </div>
         </details>

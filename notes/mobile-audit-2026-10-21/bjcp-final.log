@@ -1,0 +1,32 @@
+
+Running 4 tests using 1 worker
+
+  ✓  1 [mobile] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (6.9s)
+  ✘  2 [mobile] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (9.1s)
+  ✓  3 [tablet] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (9.1s)
+  ✓  4 [tablet] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (5.1s)
+
+
+  1) [mobile] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it 
+
+    Error: expect(received).toBeNull()
+
+    Received: "несуществующийстильxyz"
+
+    Call Log:
+    - Timeout 5000ms exceeded while waiting on the predicate
+
+      20 |   await page.getByRole("button", { name: "Очистить поиск", exact: true }).click();
+      21 |   await expect(search).toHaveValue("");
+    > 22 |   await expect.poll(() => new URL(page.url()).searchParams.get("q")).toBeNull();
+         |                                                                      ^
+      23 |   await expect(page.getByRole("heading", { name: "По запросу ничего не найдено" })).toHaveCount(0);
+      24 | });
+      25 |
+        at /home/dopefish/projects/nb/apps/web/e2e/bjcp-search.spec.ts:22:70
+
+    Error Context: test-results/bjcp-search-closing-BJCP-s-5c709-arch-and-allows-clearing-it-mobile-repeat1/error-context.md
+
+  1 failed
+    [mobile] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it 
+  3 passed (38.7s)

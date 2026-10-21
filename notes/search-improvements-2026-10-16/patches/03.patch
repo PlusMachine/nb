@@ -1,0 +1,234 @@
+--- a/apps/web/components/ingredients/ingredient-picker.tsx
++++ b/apps/web/components/ingredients/ingredient-picker.tsx
+@@ -1978,7 +1978,37 @@
+   appliedCustomOnly: false
+ };
+ 
+-const defaultSearchIngredients = async ({
++export class IngredientSearchRequestError extends Error {
++  constructor(readonly status: number) {
++    super(`INGREDIENT_SEARCH_HTTP_${status}`);
++    this.name = "IngredientSearchRequestError";
++  }
++}
++
++export const resolveIngredientPickerSearchError = (error: unknown) => (
++  error instanceof IngredientSearchRequestError && error.status === 429
++    ? "Слишком много запросов. Подождите немного и повторите поиск."
++    : "Не удалось загрузить ингредиенты. Повторите поиск."
++);
++
++export const IngredientPickerSearchErrorState = ({ message, onRetry }: {
++  message: string;
++  onRetry: () => void;
++}) => (
++  <div role="alert" className="rounded-md border border-border bg-background px-3 py-3 text-sm shadow-sm">
++    <p>{message}</p>
++    <button
++      type="button"
++      onPointerDown={(event) => event.preventDefault()}
++      onClick={onRetry}
++      className="mt-2 font-medium underline underline-offset-2"
++    >
++      Повторить поиск
++    </button>
++  </div>
++);
++
++export const defaultSearchIngredients = async ({
+   q,
+   type,
+   category,
+@@ -2008,28 +2038,7 @@
+   const params = buildIngredientSearchParams({ q, type, category, subtype, family, group, manufacturer, favoritesOnly, customOnly, includeCustom, limit });
+   const response = await fetch(`/api/ingredients/search?${params.toString()}`, { signal });
+   if (!response.ok) {
+-    return {
+-      ...emptyIngredientSearchResult,
+-      appliedManufacturer: manufacturer ? {
+-        type: "manufacturer" as const,
+-        label: manufacturer,
+-        normalizedLabel: normalizeSearchText(manufacturer),
+-        value: manufacturer,
+-        count: 0,
+-        score: 0
+-      } : null,
+-      appliedGroup: group ? {
+-        type: "consumable_group" as const,
+-        label: group,
+-        normalizedLabel: normalizeSearchText(group),
+-        value: group,
+-        count: 0,
+-        score: 0
+-      } : null,
+-      appliedFamily: resolveIngredientPickerQuickStartFamilyScope(family ?? null),
+-      appliedFavoritesOnly: favoritesOnly ?? false,
+-      appliedCustomOnly: customOnly ?? false
+-    };
++    throw new IngredientSearchRequestError(response.status);
+   }
+   return await response.json() as IngredientSearchResult;
+ };
+@@ -2284,6 +2293,8 @@
+   const [isOpen, setIsOpen] = useState(false);
+   const [isExpanded, setIsExpanded] = useState(false);
+   const [isLoading, setIsLoading] = useState(false);
++  const [searchError, setSearchError] = useState<string | null>(null);
++  const [searchRetryCount, setSearchRetryCount] = useState(0);
+   const [hasResolvedQuery, setHasResolvedQuery] = useState(false);
+   const [emptyStateMessage, setEmptyStateMessage] = useState<string | null>(null);
+   const cacheRef = useRef(createIngredientPickerSearchCache());
+@@ -2493,6 +2504,7 @@
+       setActiveIndex(0);
+       setIsLoading(false);
+       setHasResolvedQuery(false);
++      setSearchError(null);
+       return;
+     }
+ 
+@@ -2516,6 +2528,7 @@
+     });
+     const cached = cacheRef.current.get(searchIngredients, cacheKey);
+     if (cached) {
++      setSearchError(null);
+       setSearchResult(cached);
+       setActiveIndex(0);
+       setIsLoading(false);
+@@ -2527,6 +2540,7 @@
+     const run = async () => {
+       try {
+         setIsLoading(true);
++        setSearchError(null);
+         setHasResolvedQuery(false);
+         const response = await searchIngredients({
+           q: effectiveSearchQuery,
+@@ -2563,7 +2577,11 @@
+         if (isAbortError(error) || controller.signal.aborted) {
+           return;
+         }
+-        throw error;
++        setSearchError(resolveIngredientPickerSearchError(error));
++        setSearchResult(emptyIngredientSearchResult);
++        setActiveIndex(0);
++        setIsLoading(false);
++        setHasResolvedQuery(true);
+       }
+     };
+ 
+@@ -2575,7 +2593,7 @@
+       clearTimeout(timer);
+       controller.abort();
+     };
+-  }, [activeCustomOnly, activeFavoritesOnly, activeGroup, activeGroupKey, activeGroupValue, activeManufacturer, activeManufacturerKey, activeManufacturerLabel, activeQuickStartFamily, appliedGroup, appliedQuickStartFamily?.key, category, effectiveSearchQuery, hasSearchScope, includeCustom, isExpanded, isOpen, limit, query, searchIngredients, searchOnEmptyQuery, subtype, type]);
++  }, [activeCustomOnly, activeFavoritesOnly, activeGroup, activeGroupKey, activeGroupValue, activeManufacturer, activeManufacturerKey, activeManufacturerLabel, activeQuickStartFamily, appliedGroup, appliedQuickStartFamily?.key, category, effectiveSearchQuery, hasSearchScope, includeCustom, isExpanded, isOpen, limit, query, searchIngredients, searchOnEmptyQuery, searchRetryCount, subtype, type]);
+ 
+   useEffect(() => {
+     if (!showQuickStart || !category) {
+@@ -2968,12 +2986,12 @@
+     });
+   };
+ 
+-  const showSuggestions = shouldShowIngredientSuggestions({
++  const showSuggestions = !searchError && shouldShowIngredientSuggestions({
+     isOpen,
+     itemsCount: visibleItems.length,
+     refinementsCount: refinementMode ? searchResult.refinements.length : 0
+   });
+-  const isLoadingVisible = shouldShowIngredientLoadingState({
++  const isLoadingVisible = !searchError && shouldShowIngredientLoadingState({
+     hasResolvedQuery,
+     isOpen,
+     query: effectiveSearchQuery,
+@@ -2985,7 +3003,7 @@
+     hasSearchScope,
+     searchOnEmptyQuery
+   });
+-  const showEmptyState = shouldShowIngredientEmptyState({
++  const showEmptyState = !searchError && shouldShowIngredientEmptyState({
+     hasResolvedQuery,
+     isLoading,
+     isOpen,
+@@ -3505,6 +3523,17 @@
+         </div>
+         {quickStartPanel}
+         {loadingPanel}
++        {isOpen && searchError ? (
++          <IngredientPickerSearchErrorState
++            message={searchError}
++            onRetry={() => {
++              setSearchError(null);
++              setHasResolvedQuery(false);
++              setSearchRetryCount((count) => count + 1);
++              inputRef.current?.focus();
++            }}
++          />
++        ) : null}
+         {showSuggestions ? suggestionsPanel : null}
+         {showEmptyState ? emptyStatePanel : null}
+       </div>
+--- /dev/null
++++ b/apps/web/tests/ingredient-picker-search-errors.test.tsx
+@@ -0,0 +1,54 @@
++import React from "react";
++import { renderToStaticMarkup } from "react-dom/server";
++import { afterEach, describe, expect, it, vi } from "vitest";
++
++import {
++  defaultSearchIngredients,
++  IngredientPickerSearchErrorState,
++  IngredientSearchRequestError,
++  resolveIngredientPickerSearchError
++} from "../components/ingredients/ingredient-picker";
++
++const params = () => ({ q: "citra", limit: 10, signal: new AbortController().signal });
++
++describe("ingredient picker search failures", () => {
++  afterEach(() => vi.unstubAllGlobals());
++
++  it.each([429, 500, 503])("rejects HTTP %s instead of returning a cacheable empty result", async (status) => {
++    vi.stubGlobal("fetch", vi.fn(async () => new Response("private server details", { status })));
++    await expect(defaultSearchIngredients(params())).rejects.toMatchObject({ status });
++  });
++
++  it("makes a new request after a failed attempt and accepts its successful result", async () => {
++    const result = { items: [{ id: "citra" }], total: 1 };
++    const fetch = vi.fn()
++      .mockResolvedValueOnce(new Response("", { status: 429 }))
++      .mockResolvedValueOnce(Response.json(result));
++    vi.stubGlobal("fetch", fetch);
++    await expect(defaultSearchIngredients(params())).rejects.toBeInstanceOf(IngredientSearchRequestError);
++    await expect(defaultSearchIngredients(params())).resolves.toEqual(result);
++    expect(fetch).toHaveBeenCalledTimes(2);
++  });
++
++  it("preserves a genuinely empty successful response", async () => {
++    const result = { items: [], total: 0 };
++    vi.stubGlobal("fetch", vi.fn(async () => Response.json(result)));
++    await expect(defaultSearchIngredients(params())).resolves.toEqual(result);
++  });
++
++  it("preserves cancellation for the effect to ignore instead of turning it into an empty result", async () => {
++    const error = new DOMException("cancelled", "AbortError");
++    vi.stubGlobal("fetch", vi.fn(async () => { throw error; }));
++    await expect(defaultSearchIngredients(params())).rejects.toBe(error);
++  });
++
++  it("shows a local retry action and a specific rate-limit message without server details", () => {
++    const message = resolveIngredientPickerSearchError(new IngredientSearchRequestError(429));
++    const html = renderToStaticMarkup(<IngredientPickerSearchErrorState message={message} onRetry={() => {}} />);
++    expect(html).toContain('role="alert"');
++    expect(html).toContain("Подождите немного");
++    expect(html).toContain("Повторить поиск");
++    expect(html).not.toContain("Ничего не найдено");
++    expect(resolveIngredientPickerSearchError(new Error("private server details"))).not.toContain("private server details");
++  });
++});
+--- a/apps/web/tests/ingredient-search-api.test.ts
++++ b/apps/web/tests/ingredient-search-api.test.ts
+@@ -1,4 +1,6 @@
+ import { beforeEach, describe, expect, it, vi } from "vitest";
++
++vi.mock("@nb/auth", () => ({ assertRateLimit: vi.fn(async () => {}) }));
+ 
+ vi.mock("../lib/auth", () => ({ getSessionUser: vi.fn(async () => ({ id: "u1" })) }));
+ import { getSessionUser } from "../lib/auth";

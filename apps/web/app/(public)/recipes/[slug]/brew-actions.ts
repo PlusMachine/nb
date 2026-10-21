@@ -6,7 +6,10 @@ import { z } from "zod";
 import { createBrewBatchFromRecipe } from "@/features/brew-batches/service";
 import { listEquipmentProfiles } from "@/features/equipment-profiles/service";
 import type { RecipeDetailDto } from "@/features/recipes/contracts";
-import { getRecipeById } from "@/features/recipes/service";
+import { calculateRecipeDetailStats, getPublicRecipeById, getRecipeById } from "@/features/recipes/service";
+import { resolveBrewBatchRecipe } from "@/features/brew-batches/brew-setup";
+import { buildBrewEquipmentPlan } from "@/features/brew-batches/equipment-plan";
+import { scaleRecipeDetailForBrew } from "@/features/recipes/scale";
 import { toBatchVolumeLiters } from "@/features/recipes/units";
 import { getSessionUser } from "@/lib/auth";
 
@@ -65,7 +68,7 @@ export const getBrewVolumeOptionsAction = async (recipeId: string): Promise<Brew
     // Тот же гейт доступа, что и у старта варки: свой любой статус / чужой published.
     const recipe = await getRecipeById(user.id, recipeId);
     const profiles = await listEquipmentProfiles(user.id);
-    const profile = profiles.find((item) => item.isDefault) ?? null;
+    const profile = profiles.find((item) => item.id === recipe.equipmentProfileId) ?? profiles.find((item) => item.isDefault) ?? null;
 
     return {
       recipeBatchVolumeL: readRecipeBatchVolumeL(recipe),
@@ -80,8 +83,33 @@ export const getBrewVolumeOptionsAction = async (recipeId: string): Promise<Brew
         : null
     };
   } catch {
-    // Рецепт недоступен — молча без выбора объёма: сам старт варки честно упрётся
-    // в тот же гейт и покажет ошибку.
+    // Ошибка чтения не означает отсутствие оборудования: клиент должен дать
+    // повтор, сохранив обязательный выбор объёма, а не молча взять литры автора.
+    throw new Error("BREW_VOLUME_OPTIONS_UNAVAILABLE");
+  }
+};
+
+export type BrewPreparationPreview = {
+  og: number | null; fg: number | null; abv: number | null; ibu: number | null; color: number | null;
+  mashWaterL: number; spargeWaterL: number; warnings: string[];
+};
+
+/** Предпросмотр и создание используют один пересчёт, выбранный профиль и ограничения. */
+export const getBrewPreparationPreviewAction = async (input: {
+  recipeId: string; targetBatchVolumeL?: number; equipmentProfileId?: string; targetEfficiencyPct?: number;
+}): Promise<BrewPreparationPreview | null> => {
+  const parsed = brewInputSchema.extend({ targetEfficiencyPct: z.number().positive().max(100).optional() }).safeParse(input);
+  if (!parsed.success) return null;
+  const user = await getSessionUser();
+  if (!user && parsed.data.equipmentProfileId) return null;
+  try {
+    const source = user ? await getRecipeById(user.id, parsed.data.recipeId) : await getPublicRecipeById(parsed.data.recipeId);
+    const resolved = await resolveBrewBatchRecipe(user?.id ?? "", source, parsed.data);
+    const recipe = parsed.data.targetEfficiencyPct == null ? resolved.recipe : scaleRecipeDetailForBrew(resolved.recipe, { targetEfficiencyPct: parsed.data.targetEfficiencyPct });
+    const stats = parsed.data.targetEfficiencyPct == null ? recipe : calculateRecipeDetailStats(recipe);
+    const plan = buildBrewEquipmentPlan(recipe);
+    return { og: stats.og, fg: stats.fg, abv: stats.abv, ibu: stats.ibu, color: stats.color, mashWaterL: plan.mashWaterL, spargeWaterL: plan.spargeWaterL, warnings: plan.warnings };
+  } catch {
     return null;
   }
 };

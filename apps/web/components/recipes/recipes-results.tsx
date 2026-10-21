@@ -40,7 +40,7 @@ const resultsCountLabel = (total: number): string => {
   } else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) {
     noun = "рецепта";
   }
-  return `Найдено ${total} ${noun}`;
+  return `${noun === "рецепт" ? "Найден" : "Найдено"} ${total} ${noun}`;
 };
 
 // Rescue-выдача (С4): ссылка «Показаны результаты для «…»» над счётчиком —

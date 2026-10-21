@@ -1,0 +1,10 @@
+
+ RUN  v4.0.18 /home/dopefish/projects/nb/packages/db
+
+ ✓ scripts/catalog-seed-data.test.ts (11 tests) 470ms
+
+ Test Files  1 passed (1)
+      Tests  11 passed (11)
+   Start at  22:32:48
+   Duration  1.08s (transform 213ms, setup 0ms, import 413ms, tests 470ms, environment 0ms)
+

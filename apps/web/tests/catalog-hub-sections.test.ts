@@ -299,11 +299,9 @@ describe("listCatalogHubSections: сквозной поиск (q)", () => {
         nameEn: "Citra Cryo",
         itemKind: "hop"
       }),
-      // «Экстра»/«Extra» — в пределах левенштейн-дистанции 2 от «citra», но не
-      // пересекается по префиксу/подстроке: единственный путь совпадения — tier
-      // 9 (fuzzy). При наличии сильных hop-совпадений должен быть отрезан
-      // filterRankedCatalogNoise ГЛОБАЛЬНО (как в listUserCatalogIngredients),
-      // а не только внутри своей секции.
+      // «Экстра»/«Extra» раньше ловился fuzzy (левенштейн ≤2 от «citra»).
+      // Теперь такое совпадение отсекается в calcFuzzyBonus; тест держит Extra
+      // в фикстуре как регрессию против возврата false-friend шума.
       buildCatalogItem({
         id: "malt-noise-fuzzy",
         type: "fermentable",

@@ -173,9 +173,9 @@ describe("equipment profiles page", () => {
     expect(html).not.toContain("Потери и кипячение");
     expect(html).not.toContain("Кипячение, мин");
     expect(html).not.toContain("Вода / затор");
-    expect(html).toContain("Ещё параметры (опционально)");
-    expect(html).toContain("Макс. объём котла, л (опц)");
-    expect(html).toContain("Макс. объём заторника, л (опц.)");
+    expect(html).toContain("Дополнительные параметры (необязательно)");
+    expect(html).toContain("Макс. объём котла, л (необязательно)");
+    expect(html).toContain("Макс. объём заторника, л (необязательно)");
     expect(html).not.toContain("Dead space заторника");
     expect(html).not.toContain("Dead space промывки");
     expect(html).not.toContain("Долив воды");
@@ -201,7 +201,7 @@ describe("equipment profiles page", () => {
     expect(html).toContain("Гидромодуль, л/кг");
     expect(html).not.toContain("Потери</h3>");
     expect(html).not.toContain("Вода / затор");
-    expect(html).toContain("Ещё параметры (опционально)");
+    expect(html).toContain("Дополнительные параметры (необязательно)");
     expect(html).not.toContain("Кипячение, мин");
     expect(html).not.toContain("Дополнительно");
     expect(html).not.toContain("Dead space заторника");
@@ -235,6 +235,16 @@ describe("equipment profiles page", () => {
       })
     );
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/app/equipment");
+  });
+
+  it("returns field errors for zero volume without writing a profile or redirecting", async () => {
+    const { saveEquipmentProfileFormAction } = await import("../app/(app)/app/equipment/actions");
+    const form = buildFormData();
+    form.set("targetBatchVolumeL", "0");
+    const result = await saveEquipmentProfileFormAction(null, {}, form);
+    expect(result.fieldErrors?.targetBatchVolumeL).toContain("больше 0");
+    expect(mocks.createEquipmentProfile).not.toHaveBeenCalled();
+    expect(mocks.redirect).not.toHaveBeenCalled();
   });
 
   it("updates equipment profile from the focused editor form", async () => {

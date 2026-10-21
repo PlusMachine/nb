@@ -1,0 +1,20 @@
+
+Running 15 tests using 8 workers
+
+  ✓   1 e2e/brew-day-progress.spec.ts:36:33 › an older response does not erase a newer confirmed step (timestamp 2) (695ms)
+  ✓   2 e2e/brew-day-progress.spec.ts:36:33 › an older response does not erase a newer confirmed step (timestamp 1) (690ms)
+  ✓   3 e2e/brew-day-progress.spec.ts:19:1 › a network failure rolls back only its step, preserving another pending mark (698ms)
+  ✓   8 e2e/brew-day-progress.spec.ts:29:1 › two clicks on one pending step send only one request (588ms)
+  ✓   4 e2e/brew-day-progress.spec.ts:10:1 › a saved step preserves another step's pending optimistic mark (633ms)
+  ✓   6 e2e/recipe-autosave.spec.ts:9:1 › saves the latest edit after a slow request without another keystroke (622ms)
+  ✓   5 e2e/brew-day-progress.spec.ts:45:1 › validation failure rolls back its own step without erasing a pending neighbour (650ms)
+  ✓   7 e2e/brew-day-progress.spec.ts:55:1 › a response from the previous batch does not change the current batch (662ms)
+  ✓  10 e2e/recipe-autosave.spec.ts:48:1 › serializes two explicit saves in the same event turn (376ms)
+  ✓   9 e2e/recipe-autosave.spec.ts:86:1 › deletion cancels the queued edit after the in-flight save completes (438ms)
+  ✓  11 e2e/recipe-autosave.spec.ts:30:1 › queues edits during initial creation as an update, without a second recipe (475ms)
+  ✓  12 e2e/recipe-autosave.spec.ts:55:3 › network failure stays actionable without an automatic retry loop (488ms)
+  ✓  14 e2e/recipe-autosave.spec.ts:72:1 › a failed older request does not block a newer valid edit (437ms)
+  ✓  15 e2e/recipe-autosave.spec.ts:97:1 › unmount cancels a scheduled save (392ms)
+  ✓  13 e2e/recipe-autosave.spec.ts:55:3 › validation failure stays actionable without an automatic retry loop (481ms)
+
+  15 passed (4.0s)

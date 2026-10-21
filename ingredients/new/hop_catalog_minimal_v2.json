@@ -1373,9 +1373,10 @@
   "id": "cz-saaz-beervingem-standard",
   "type": "hop",
   "name_en": "Saaz",
-  "name_ru": "Зааз",
+  "name_ru": "Сааз",
   "aliases_en": [],
   "aliases_ru": [
+   "Зааз",
    "Жатецкий",
    "Заац"
   ],
@@ -1448,7 +1449,11 @@
   "name_en": "Saaz",
   "name_ru": "Сааз",
   "aliases_en": [],
-  "aliases_ru": [],
+  "aliases_ru": [
+   "Зааз",
+   "Заац",
+   "Жатецкий"
+  ],
   "country_code": "CZ",
   "producer": "Hopsteiner",
   "producer_aliases": [],

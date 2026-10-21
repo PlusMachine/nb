@@ -287,7 +287,7 @@ export function FermentDashboardView({
 
   const stop = useCallback(() => {
     requestConfirm({
-      title: "Остановить ферментацию?",
+      title: "Остановить контроль брожения?",
       description: "Устройство завершит контроль температуры и выключит нагрев/охлаждение. Профиль потребуется задать заново.",
       confirmLabel: "Остановить",
       tone: "danger",
@@ -314,7 +314,7 @@ export function FermentDashboardView({
     </div>
   ) : configLoadStatus === "unavailable" ? (
     <div className="rounded-2xl border border-warning/30 bg-warning-subtle p-4 text-sm text-warning-subtle-foreground">
-      Конфиг устройства недоступен — не можем показать профиль брожения. Живая телеметрия работает как обычно.
+      Не удалось загрузить настройки устройства и показать профиль брожения. Текущие показания продолжают поступать.
     </div>
   ) : hasProfile ? (
     <FermentProfileCard
@@ -361,7 +361,7 @@ export function FermentDashboardView({
         </Button>
         <HoldToConfirmButton
           label="Аварийный останов"
-          holdingLabel="Держите для E-STOP…"
+          holdingLabel="Удерживайте для аварийной остановки…"
           disabled={pending || !hasDevice}
           onConfirm={() => void run(cmdEstop())}
           icon={<OctagonX className="h-4 w-4" aria-hidden />}

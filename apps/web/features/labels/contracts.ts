@@ -79,7 +79,7 @@ export const QR_SIZE_MM_BY_TIER: Record<LabelTier, number | null> = { S: null, M
 
 // Марка внизу наклейки. Строка-плейсхолдер: финальную формулировку (NB/hmelo)
 // утверждает владелец продукта.
-export const LABEL_BRAND_TEXT = "BREWED WITH NB";
+export const LABEL_BRAND_TEXT = "BEWED WITH NB";
 
 // A4-лист: сетка наклеек выбранного пресета с полями реза и метками.
 export const A4_SHEET = {

@@ -12,6 +12,7 @@ const { tableRefs, mockState } = vi.hoisted(() => ({
       userId: "userId",
       recipeId: "recipeId",
       recipeIngredientId: "recipeIngredientId",
+      recipeIngredientPersistentKey: "recipeIngredientPersistentKey",
       brewBatchId: "brewBatchId",
       status: "status"
     },
@@ -269,6 +270,7 @@ vi.mock("@nb/db", () => {
             const userId = getEqValue(where, "userId");
             const recipeId = getEqValue(where, "recipeId");
             const lineId = getEqValue(where, "recipeIngredientId");
+            const persistentKey = getEqValue(where, "recipeIngredientPersistentKey");
             const status = getEqValue(where, "status");
             const statuses = getInArrayValue(where, "status");
             // Область партии в UPDATE обязательна: release прежней аллокации строки
@@ -282,6 +284,7 @@ vi.mock("@nb/db", () => {
                 && (userId ? allocation.userId === userId : true)
                 && (recipeId ? allocation.recipeId === recipeId : true)
                 && (lineId ? allocation.recipeIngredientId === lineId : true)
+                && (persistentKey === undefined || allocation.recipeIngredientPersistentKey === persistentKey)
                 && inScope(allocation)
                 && (status === undefined || allocation.status === status)
                 && (!statuses || statuses.includes(allocation.status))

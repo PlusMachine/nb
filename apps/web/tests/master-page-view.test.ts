@@ -33,7 +33,7 @@ describe("MasterPageView", () => {
     const html = render(baseSnapshot());
     expect(html).toContain("Кузница Иванова");
     expect(html).toContain("Тюмень");
-    expect(html).toContain("Делает с 2018");
+    expect(html).toContain("С 2018 года");
     expect(html).toContain("Ёмкости и ЦКТ");
     expect(html).toContain("Договаривайтесь с мастером напрямую");
   });
@@ -166,7 +166,7 @@ describe("MasterPageView", () => {
     expect(html).toContain("disabled");
   });
 
-  it("renders the item description behind a line-clamp + expand/collapse disclosure", () => {
+  it("renders a short description without an unnecessary disclosure", () => {
     const html = render(
       baseSnapshot({
         items: [
@@ -181,10 +181,8 @@ describe("MasterPageView", () => {
         ]
       })
     );
-    expect(html).toContain("<details");
     expect(html).toContain("Нержавейка AISI304");
-    expect(html).toContain("Показать полностью");
-    expect(html).toContain("Свернуть");
+    expect(html).not.toContain("Показать полностью");
   });
 
   it("renders <main> by default and <div> when container=\"div\" (moderator preview embeds the page inside its own layout)", () => {

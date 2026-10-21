@@ -19,6 +19,10 @@ import {
   listSameBrandCatalogIngredients
 } from "@/features/ingredients/catalog-service";
 import { buildIngredientCatalogActionHref } from "@/features/ingredients/catalog-links";
+import {
+  formatHopAlphaAcidDetailValue,
+  isHopWithUserAlphaOverride
+} from "@/features/ingredients/derived-ingredient-presentation";
 import type { IngredientTechnicalData, UserCatalogIngredientDto } from "@/features/ingredients/contracts";
 import {
   resolveConsumableInventoryBroadGroup,
@@ -132,7 +136,13 @@ const renderTechnicalRows = (item: UserCatalogIngredientDto) => {
   const brandLabel = resolveIngredientBrandLabel(item);
 
   if (item.hopAlphaAcidPct != null) {
-    rows.push({ label: "Альфа-кислота", kind: "text", value: `${formatValue(item.hopAlphaAcidPct)}%` });
+    rows.push({
+      label: "Альфа-кислота",
+      kind: "text",
+      value: formatHopAlphaAcidDetailValue(item.hopAlphaAcidPct, {
+        userOverride: isHopWithUserAlphaOverride(item)
+      })
+    });
   }
   if (item.hopBetaAcidPct != null) {
     rows.push({ label: "Бета-кислота", kind: "text", value: `${formatValue(item.hopBetaAcidPct)}%` });
@@ -195,7 +205,7 @@ const renderTechnicalRows = (item: UserCatalogIngredientDto) => {
   }
   if (technicalData && technicalData.type === "yeast" && technicalData.alcoholToleranceAbvTypical != null) {
     const yeast = technicalData as Extract<IngredientTechnicalData, { type: "yeast" }>;
-    rows.push({ label: "Алк. толерантность", kind: "text", value: `${formatValue(yeast.alcoholToleranceAbvTypical ?? 0)}% ABV` });
+    rows.push({ label: "Устойчивость к алкоголю", kind: "text", value: `${formatValue(yeast.alcoholToleranceAbvTypical ?? 0)}% ABV` });
   }
   if (technicalData && technicalData.type === "yeast" && technicalData.flocculation) {
     const yeast = technicalData as Extract<IngredientTechnicalData, { type: "yeast" }>;
@@ -344,7 +354,7 @@ export default async function IngredientDetailPage({
   const packageVariants = item.packageVariants ?? [];
   const subtypeLabel = formatIngredientSubtypeLabel(item.category, item.subtype);
   const typeLabel = item.category === "fermentable"
-    ? (item.subtype === "malt" ? "Солод" : resolveIngredientFermentableKindLabel(item) ?? "Сбраживаемое сырье")
+    ? (item.subtype === "malt" ? "Солод" : resolveIngredientFermentableKindLabel(item) ?? "Сбраживаемое сырьё")
     // Подтип «другое» ничего не сообщает — показываем группу. У consumable это
     // broad group («Специи и добавки» / «Расходники»), а не категория целиком:
     // иначе на карточке специи чип говорил бы «Расходники» вопреки крошке.
@@ -465,7 +475,7 @@ export default async function IngredientDetailPage({
 
   return (
     <main className="space-y-6">
-      <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+      <nav aria-label="Навигационная цепочка" className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
         <ol className="flex flex-wrap items-center gap-2">
           <li><Link href="/catalog" className="hover:text-foreground">Каталог</Link></li>
           {landing ? (
@@ -531,7 +541,7 @@ export default async function IngredientDetailPage({
 
             {item.derivedFromDisplayName ? (
               <p className="text-sm text-muted-foreground">
-                Основан на системном ингредиенте <strong>{item.derivedFromDisplayName}</strong>.
+                На основе ингредиента из общего каталога <strong>{item.derivedFromDisplayName}</strong>.
               </p>
             ) : null}
 

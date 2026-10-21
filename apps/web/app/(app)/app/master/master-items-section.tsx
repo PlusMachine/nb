@@ -74,7 +74,7 @@ function ItemForm({
         />
       </label>
       <label className="flex flex-col gap-1 text-sm sm:w-64">
-        <span className="text-muted-foreground">Цена (свободный текст, опционально)</span>
+        <span className="text-muted-foreground">Цена (необязательно)</span>
         <input
           className={inputClassName}
           value={values.priceNote}

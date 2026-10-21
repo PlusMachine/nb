@@ -1007,7 +1007,7 @@ export const buildRecipeWaterPlanResult = (input: {
   const acidId = resolveAcid(input.waterPlanMeta);
   const targetMashPh = input.waterPlanMeta.targetMashPh;
   const mashAcidAddition =
-    mashPhEstimate && targetMashPh != null
+    mashPhEstimate && targetMashPh != null && input.waterPlanMeta.mashAcidificationEnabled !== false
       ? solveMashAcidAddition({
           unadjustedMashPh20C: mashPhEstimate.predictedMashPh20C,
           targetMashPh20C: targetMashPh,

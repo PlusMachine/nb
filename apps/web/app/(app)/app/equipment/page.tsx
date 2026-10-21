@@ -1,59 +1,24 @@
 import React from "react";
 import Link from "next/link";
-import { Copy, Pencil, Plus, Star, X } from "lucide-react";
+import { Copy, Pencil, Plus, Star } from "lucide-react";
 
 import { Button } from "@nb/ui";
 import {
   type EquipmentProfileDto,
   type EquipmentProfilePayload
 } from "@/features/equipment-profiles/contracts";
-import { EquipmentProfileFormFields } from "@/components/equipment/equipment-profile-form-basic";
+import { EquipmentProfileForm } from "@/components/equipment/equipment-profile-form";
 import { buildNextEquipmentProfileName, buildStarterEquipmentProfileDefaults } from "@/features/equipment/defaults";
 import { listEquipmentProfiles } from "@/features/equipment-profiles/service";
 import { requireUser } from "@/lib/auth";
 
 import { DeleteEquipmentProfileButton } from "./delete-equipment-profile-button";
 import {
-  createEquipmentProfileAction,
   duplicateEquipmentProfileAction,
   setDefaultEquipmentProfileAction,
-  updateEquipmentProfileAction
 } from "./actions";
 
 type ProfileFormValue = EquipmentProfilePayload & { id?: string };
-
-function EquipmentProfileForm({
-  profile,
-  mode,
-  existingNames = []
-}: {
-  profile: ProfileFormValue;
-  mode: "create" | "edit";
-  existingNames?: string[];
-}) {
-  const action = mode === "create"
-    ? createEquipmentProfileAction
-    : updateEquipmentProfileAction.bind(null, profile.id!);
-
-  return (
-    <form action={action} className="space-y-4">
-      <EquipmentProfileFormFields
-        profile={profile}
-        showPresets={mode === "create"}
-        existingNames={existingNames}
-      />
-      <div className="flex flex-wrap items-center gap-2 border-t border-border pt-4">
-        <Button type="submit" size="sm">
-          {mode === "create" ? "Создать профиль" : "Сохранить профиль"}
-        </Button>
-        <Link href="/app/equipment" className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground">
-          <X className="h-3.5 w-3.5" aria-hidden="true" />
-          Отменить
-        </Link>
-      </div>
-    </form>
-  );
-}
 
 const toProfileFormValue = (profile: EquipmentProfileDto): ProfileFormValue => ({
   id: profile.id,

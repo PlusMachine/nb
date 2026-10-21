@@ -36,7 +36,7 @@ export async function GET(
       return NextResponse.json(
         {
           error:
-            "Чтение рецепта с платы доступно, когда портал в одной сети с устройством (LAN).",
+            "Чтение рецепта с контроллера доступно, когда сервер NB и устройство находятся в одной локальной сети (LAN).",
           code: "CLOUD_UNSUPPORTED"
         },
         { status: 501 }

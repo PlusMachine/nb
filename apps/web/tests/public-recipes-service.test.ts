@@ -101,6 +101,7 @@ vi.mock("@nb/db", () => {
     return ["sql", out.trim()];
   };
   sql.raw = (value: unknown) => ({ raw: String(value) });
+  sql.join = (chunks: unknown[], separator: unknown) => sql`${chunks.map(String).join(String(separator))}`;
 
   return {
     db,

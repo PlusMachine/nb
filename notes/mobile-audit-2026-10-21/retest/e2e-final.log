@@ -1,0 +1,938 @@
+
+Running 198 tests using 2 workers
+
+  ✓    1 [phone-320] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла (3.4s)
+  ✓    2 [phone-320] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (3.4s)
+  ✓    4 [phone-320] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.6s)
+  ✘    3 [phone-320] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет (2.7s)
+  ✓    5 [phone-320] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (2.1s)
+  ✓    6 [phone-320] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла (2.1s)
+  ✘    7 [phone-320] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет (2.1s)
+  ✓    8 [phone-320] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.2s)
+  ✓    9 [phone-320] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (2.5s)
+  ✓   10 [phone-320] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла (2.5s)
+  ✓   12 [phone-320] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (3.5s)
+  ✘   11 [phone-320] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет (3.8s)
+  ✓   13 [phone-320] › e2e/beer-presentation.spec.ts:92:3 › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек (2.1s)
+  ✓   14 [phone-320] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (6.2s)
+  ✓   15 [phone-320] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query (6.3s)
+  ✓   16 [phone-320] › e2e/bjcp-search.spec.ts:46:1 › local search and view filters preserve browser history without RSC navigation (3.9s)
+  ✓   17 [phone-320] › e2e/bjcp-search.spec.ts:72:1 › choosing a family suggestion cancels pending text and keeps the chosen scope (3.7s)
+  ✓   19 [phone-320] › e2e/calculators-unit-converter.spec.ts:12:3 › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow) (2.9s)
+  ✓   18 [phone-320] › e2e/bjcp-search.spec.ts:86:1 › back cancels an uncommitted query instead of rewriting the restored history (5.6s)
+  ✓   20 [phone-320] › e2e/calculators-unit-converter.spec.ts:21:3 › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей (3.3s)
+  ✓   21 [phone-320] › e2e/calculators-unit-converter.spec.ts:34:3 › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением (2.7s)
+  -   22 [phone-320] › e2e/calculators-unit-converter.spec.ts:45:3 › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину
+  ✓   23 [phone-320] › e2e/calculators-unit-converter.spec.ts:61:3 › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой (2.6s)
+  ✓   24 [phone-320] › e2e/calculators-unit-converter.spec.ts:74:3 › Конвертер единиц пивовара › у каждой вкладки группы есть иконка (2.5s)
+  ✓   25 [phone-320] › e2e/calculators-unit-converter.spec.ts:86:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (2.7s)
+  ✓   26 [phone-320] › e2e/calculators-unit-converter.spec.ts:98:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (2.8s)
+  ✓   27 [phone-320] › e2e/calculators-unit-converter.spec.ts:111:3 › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки (2.8s)
+  ✓   28 [phone-320] › e2e/calculators-unit-converter.spec.ts:118:3 › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex) (2.8s)
+  ✓   30 [phone-320] › e2e/mobile-audit.spec.ts:53:1 › M02: public navigation and sign-in fit, including tablet breakpoint (2.7s)
+  ✘   29 [phone-320] › e2e/mobile-audit.spec.ts:34:1 › M01: label preview leaves data fields clickable in every format (8.0s)
+  ✓   31 [phone-320] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (14.8s)
+  ✓   33 [phone-320] › e2e/mobile-audit.spec.ts:124:1 › M05: every dilution operation fits on the narrow screen (11.5s)
+  ✘   32 [phone-320] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions (30.7s)
+  ✓   34 [phone-360] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (14.7s)
+  ✓   35 [phone-360] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла (5.7s)
+  ✓   36 [phone-360] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет (2.4s)
+  ✓   37 [phone-360] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.4s)
+  ✓   38 [phone-360] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (2.5s)
+  ✓   39 [phone-360] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла (2.3s)
+  ✓   40 [phone-360] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет (2.4s)
+  ✓   41 [phone-360] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.5s)
+  ✓   43 [phone-360] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла (3.3s)
+  ✓   42 [phone-360] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (3.4s)
+  ✓   44 [phone-360] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет (2.8s)
+  ✓   45 [phone-360] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (3.1s)
+  ✓   46 [phone-360] › e2e/beer-presentation.spec.ts:92:3 › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек (2.9s)
+  ✓   47 [phone-360] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (4.6s)
+  ✓   48 [phone-360] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query (5.4s)
+  ✓   49 [phone-360] › e2e/bjcp-search.spec.ts:46:1 › local search and view filters preserve browser history without RSC navigation (4.3s)
+  ✓   50 [phone-360] › e2e/bjcp-search.spec.ts:72:1 › choosing a family suggestion cancels pending text and keeps the chosen scope (3.9s)
+  ✓   51 [phone-360] › e2e/bjcp-search.spec.ts:86:1 › back cancels an uncommitted query instead of rewriting the restored history (4.7s)
+  ✓   52 [phone-360] › e2e/calculators-unit-converter.spec.ts:12:3 › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow) (8.4s)
+  ✓   53 [phone-360] › e2e/calculators-unit-converter.spec.ts:21:3 › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей (7.5s)
+  -   55 [phone-360] › e2e/calculators-unit-converter.spec.ts:45:3 › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину
+  ✓   54 [phone-360] › e2e/calculators-unit-converter.spec.ts:34:3 › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением (3.9s)
+  ✓   56 [phone-360] › e2e/calculators-unit-converter.spec.ts:61:3 › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой (3.2s)
+  ✓   57 [phone-360] › e2e/calculators-unit-converter.spec.ts:74:3 › Конвертер единиц пивовара › у каждой вкладки группы есть иконка (3.2s)
+  ✓   59 [phone-360] › e2e/calculators-unit-converter.spec.ts:98:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (3.3s)
+  ✓   58 [phone-360] › e2e/calculators-unit-converter.spec.ts:86:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (5.2s)
+  ✓   60 [phone-360] › e2e/calculators-unit-converter.spec.ts:111:3 › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки (3.5s)
+  ✓   61 [phone-360] › e2e/calculators-unit-converter.spec.ts:118:3 › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex) (2.9s)
+  ✓   63 [phone-360] › e2e/mobile-audit.spec.ts:53:1 › M02: public navigation and sign-in fit, including tablet breakpoint (3.1s)
+  ✓   62 [phone-360] › e2e/mobile-audit.spec.ts:34:1 › M01: label preview leaves data fields clickable in every format (5.3s)
+  ✓   64 [phone-360] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (4.3s)
+  ✓   65 [phone-360] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions (7.2s)
+  ✓   66 [phone-360] › e2e/mobile-audit.spec.ts:124:1 › M05: every dilution operation fits on the narrow screen (4.0s)
+  ✓   68 [phone-390] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла (12.1s)
+  ✓   67 [phone-390] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (12.2s)
+  ✓   70 [phone-390] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.8s)
+  ✓   69 [phone-390] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет (2.8s)
+  ✓   72 [phone-390] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла (3.2s)
+  ✓   71 [phone-390] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (3.3s)
+  ✓   73 [phone-390] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет (4.7s)
+  ✓   74 [phone-390] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (4.8s)
+  ✓   75 [phone-390] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (2.9s)
+  ✓   76 [phone-390] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла (2.8s)
+  ✓   77 [phone-390] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет (2.4s)
+  ✓   78 [phone-390] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.5s)
+  ✓   79 [phone-390] › e2e/beer-presentation.spec.ts:92:3 › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек (3.2s)
+  ✓   80 [phone-390] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (5.2s)
+  ✓   81 [phone-390] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query (5.4s)
+  ✓   82 [phone-390] › e2e/bjcp-search.spec.ts:46:1 › local search and view filters preserve browser history without RSC navigation (4.1s)
+  ✓   83 [phone-390] › e2e/bjcp-search.spec.ts:72:1 › choosing a family suggestion cancels pending text and keeps the chosen scope (5.2s)
+  ✓   84 [phone-390] › e2e/bjcp-search.spec.ts:86:1 › back cancels an uncommitted query instead of rewriting the restored history (5.4s)
+  ✓   85 [phone-390] › e2e/calculators-unit-converter.spec.ts:12:3 › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow) (2.8s)
+  ✓   86 [phone-390] › e2e/calculators-unit-converter.spec.ts:21:3 › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей (3.0s)
+  ✓   87 [phone-390] › e2e/calculators-unit-converter.spec.ts:34:3 › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением (2.9s)
+  -   88 [phone-390] › e2e/calculators-unit-converter.spec.ts:45:3 › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину
+  ✓   89 [phone-390] › e2e/calculators-unit-converter.spec.ts:61:3 › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой (2.7s)
+  ✓   90 [phone-390] › e2e/calculators-unit-converter.spec.ts:74:3 › Конвертер единиц пивовара › у каждой вкладки группы есть иконка (3.1s)
+  ✓   91 [phone-390] › e2e/calculators-unit-converter.spec.ts:86:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (2.8s)
+  ✓   92 [phone-390] › e2e/calculators-unit-converter.spec.ts:98:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (2.6s)
+  ✓   93 [phone-390] › e2e/calculators-unit-converter.spec.ts:111:3 › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки (2.6s)
+  ✓   94 [phone-390] › e2e/calculators-unit-converter.spec.ts:118:3 › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex) (2.8s)
+  ✓   96 [phone-390] › e2e/mobile-audit.spec.ts:53:1 › M02: public navigation and sign-in fit, including tablet breakpoint (3.0s)
+  ✓   95 [phone-390] › e2e/mobile-audit.spec.ts:34:1 › M01: label preview leaves data fields clickable in every format (5.7s)
+  ✓   97 [phone-390] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (3.9s)
+  ✓   99 [phone-390] › e2e/mobile-audit.spec.ts:124:1 › M05: every dilution operation fits on the narrow screen (3.6s)
+  ✓   98 [phone-390] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions (6.5s)
+  ✓  100 [tablet-768] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (6.2s)
+  ✓  101 [tablet-768] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла (5.6s)
+  ✓  102 [tablet-768] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет (3.1s)
+  ✓  103 [tablet-768] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (3.7s)
+  ✓  104 [tablet-768] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (2.3s)
+  ✓  105 [tablet-768] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла (2.7s)
+  ✓  106 [tablet-768] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет (2.8s)
+  ✓  107 [tablet-768] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.5s)
+  ✓  108 [tablet-768] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (2.3s)
+  ✓  109 [tablet-768] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла (2.2s)
+  ✓  110 [tablet-768] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет (2.4s)
+  ✓  111 [tablet-768] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.2s)
+  ✓  112 [tablet-768] › e2e/beer-presentation.spec.ts:92:3 › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек (3.2s)
+  ✓  113 [tablet-768] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (5.0s)
+  ✓  114 [tablet-768] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query (8.5s)
+  ✓  115 [tablet-768] › e2e/bjcp-search.spec.ts:46:1 › local search and view filters preserve browser history without RSC navigation (6.7s)
+  ✓  116 [tablet-768] › e2e/bjcp-search.spec.ts:72:1 › choosing a family suggestion cancels pending text and keeps the chosen scope (9.0s)
+  ✓  117 [tablet-768] › e2e/bjcp-search.spec.ts:86:1 › back cancels an uncommitted query instead of rewriting the restored history (9.3s)
+  ✓  118 [tablet-768] › e2e/calculators-unit-converter.spec.ts:12:3 › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow) (3.3s)
+  ✓  119 [tablet-768] › e2e/calculators-unit-converter.spec.ts:21:3 › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей (3.3s)
+  -  121 [tablet-768] › e2e/calculators-unit-converter.spec.ts:45:3 › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину
+  ✓  120 [tablet-768] › e2e/calculators-unit-converter.spec.ts:34:3 › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением (3.6s)
+  ✓  122 [tablet-768] › e2e/calculators-unit-converter.spec.ts:61:3 › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой (3.0s)
+  ✓  123 [tablet-768] › e2e/calculators-unit-converter.spec.ts:74:3 › Конвертер единиц пивовара › у каждой вкладки группы есть иконка (2.9s)
+  ✓  124 [tablet-768] › e2e/calculators-unit-converter.spec.ts:86:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (3.1s)
+  ✓  125 [tablet-768] › e2e/calculators-unit-converter.spec.ts:98:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (3.1s)
+  ✓  126 [tablet-768] › e2e/calculators-unit-converter.spec.ts:111:3 › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки (4.1s)
+  ✓  127 [tablet-768] › e2e/calculators-unit-converter.spec.ts:118:3 › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex) (4.4s)
+  ✓  129 [tablet-768] › e2e/mobile-audit.spec.ts:53:1 › M02: public navigation and sign-in fit, including tablet breakpoint (3.6s)
+  ✓  128 [tablet-768] › e2e/mobile-audit.spec.ts:34:1 › M01: label preview leaves data fields clickable in every format (6.3s)
+  ✓  130 [tablet-768] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (9.8s)
+  ✓  131 [tablet-768] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions (10.8s)
+  ✓  132 [tablet-768] › e2e/mobile-audit.spec.ts:124:1 › M05: every dilution operation fits on the narrow screen (4.2s)
+  ✓  133 [tablet-834] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (2.3s)
+  ✓  134 [tablet-834] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла (2.2s)
+  ✓  135 [tablet-834] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет (2.2s)
+  ✓  136 [tablet-834] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.2s)
+  ✓  137 [tablet-834] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (2.5s)
+  ✓  138 [tablet-834] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла (2.3s)
+  ✓  139 [tablet-834] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет (2.7s)
+  ✓  140 [tablet-834] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.4s)
+  ✓  142 [tablet-834] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла (2.6s)
+  ✓  141 [tablet-834] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (2.7s)
+  ✓  143 [tablet-834] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет (3.0s)
+  ✓  144 [tablet-834] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (3.1s)
+  ✓  145 [tablet-834] › e2e/beer-presentation.spec.ts:92:3 › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек (3.8s)
+  ✓  146 [tablet-834] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (5.5s)
+  ✓  147 [tablet-834] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query (5.3s)
+  ✓  148 [tablet-834] › e2e/bjcp-search.spec.ts:46:1 › local search and view filters preserve browser history without RSC navigation (4.3s)
+  ✓  149 [tablet-834] › e2e/bjcp-search.spec.ts:72:1 › choosing a family suggestion cancels pending text and keeps the chosen scope (4.0s)
+  ✓  150 [tablet-834] › e2e/bjcp-search.spec.ts:86:1 › back cancels an uncommitted query instead of rewriting the restored history (5.0s)
+  ✓  151 [tablet-834] › e2e/calculators-unit-converter.spec.ts:12:3 › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow) (2.9s)
+  ✓  152 [tablet-834] › e2e/calculators-unit-converter.spec.ts:21:3 › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей (3.3s)
+  ✓  153 [tablet-834] › e2e/calculators-unit-converter.spec.ts:34:3 › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением (2.6s)
+  -  154 [tablet-834] › e2e/calculators-unit-converter.spec.ts:45:3 › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину
+  ✓  155 [tablet-834] › e2e/calculators-unit-converter.spec.ts:61:3 › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой (7.7s)
+  ✓  156 [tablet-834] › e2e/calculators-unit-converter.spec.ts:74:3 › Конвертер единиц пивовара › у каждой вкладки группы есть иконка (6.5s)
+  ✓  158 [tablet-834] › e2e/calculators-unit-converter.spec.ts:98:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (7.2s)
+  ✓  157 [tablet-834] › e2e/calculators-unit-converter.spec.ts:86:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (8.7s)
+  ✓  160 [tablet-834] › e2e/calculators-unit-converter.spec.ts:118:3 › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex) (3.9s)
+  ✓  159 [tablet-834] › e2e/calculators-unit-converter.spec.ts:111:3 › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки (4.0s)
+  ✓  162 [tablet-834] › e2e/mobile-audit.spec.ts:53:1 › M02: public navigation and sign-in fit, including tablet breakpoint (3.7s)
+  ✓  161 [tablet-834] › e2e/mobile-audit.spec.ts:34:1 › M01: label preview leaves data fields clickable in every format (10.7s)
+  ✓  163 [tablet-834] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (8.2s)
+  ✓  165 [tablet-834] › e2e/mobile-audit.spec.ts:124:1 › M05: every dilution operation fits on the narrow screen (4.0s)
+  ✓  164 [tablet-834] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions (8.2s)
+  ✓  166 [tablet-landscape] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (3.0s)
+  ✓  167 [tablet-landscape] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла (2.7s)
+  ✓  168 [tablet-landscape] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет (2.5s)
+  ✓  170 [tablet-landscape] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (2.4s)
+  ✓  169 [tablet-landscape] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.6s)
+  ✓  171 [tablet-landscape] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла (2.4s)
+  ✓  172 [tablet-landscape] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет (2.4s)
+  ✓  174 [tablet-landscape] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (2.5s)
+  ✓  173 [tablet-landscape] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.6s)
+  ✓  175 [tablet-landscape] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла (2.7s)
+  ✓  176 [tablet-landscape] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет (2.8s)
+  ✓  178 [tablet-landscape] › e2e/beer-presentation.spec.ts:92:3 › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек (2.5s)
+  ✓  177 [tablet-landscape] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.6s)
+  ✓  179 [tablet-landscape] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (5.5s)
+  ✘  181 [tablet-landscape] › e2e/bjcp-search.spec.ts:46:1 › local search and view filters preserve browser history without RSC navigation (146ms)
+  ✓  180 [tablet-landscape] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query (6.6s)
+  ✘  183 [tablet-landscape] › e2e/bjcp-search.spec.ts:86:1 › back cancels an uncommitted query instead of rewriting the restored history (155ms)
+  ✘  182 [tablet-landscape] › e2e/bjcp-search.spec.ts:72:1 › choosing a family suggestion cancels pending text and keeps the chosen scope (244ms)
+  ✘  184 [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:12:3 › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow) (213ms)
+  ✘  185 [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:21:3 › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей (200ms)
+  ✘  186 [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:34:3 › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением (205ms)
+  ✘  187 [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:45:3 › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину (190ms)
+  ✘  188 [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:61:3 › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой (195ms)
+  ✘  189 [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:74:3 › Конвертер единиц пивовара › у каждой вкладки группы есть иконка (209ms)
+  ✘  190 [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:86:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (214ms)
+  ✘  191 [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:98:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (215ms)
+  ✘  192 [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:111:3 › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки (205ms)
+  ✘  193 [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:118:3 › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex) (202ms)
+  ✘  194 [tablet-landscape] › e2e/mobile-audit.spec.ts:34:1 › M01: label preview leaves data fields clickable in every format (214ms)
+  ✘  195 [tablet-landscape] › e2e/mobile-audit.spec.ts:53:1 › M02: public navigation and sign-in fit, including tablet breakpoint (214ms)
+  ✘  196 [tablet-landscape] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (210ms)
+  ✘  197 [tablet-landscape] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions (212ms)
+  ✘  198 [tablet-landscape] › e2e/mobile-audit.spec.ts:124:1 › M05: every dilution operation fits on the narrow screen (204ms)
+
+
+  1) [phone-320] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет 
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 742
+    Received:    785
+
+      75 |         }));
+      76 |         // Допуск на субпиксель/скроллбар — но не на «ещё чуть-чуть контента внизу».
+    > 77 |         expect(scrollHeight).toBeLessThanOrEqual(innerHeight + 2);
+         |                              ^
+      78 |       });
+      79 |
+      80 |       test("главное видно без прокрутки: имя, паспорт, ссылка на рецепт", async ({ page }) => {
+        at /home/dopefish/projects/nb/apps/web/e2e/beer-presentation.spec.ts:77:30
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/beer-presentation-Страница-6455f-—-вертикального-скролла-нет-phone-320/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/beer-presentation-Страница-6455f-—-вертикального-скролла-нет-phone-320/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/beer-presentation-Страница-6455f-—-вертикального-скролла-нет-phone-320/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/beer-presentation-Страница-6455f-—-вертикального-скролла-нет-phone-320/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [phone-320] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет 
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 742
+    Received:    801
+
+      75 |         }));
+      76 |         // Допуск на субпиксель/скроллбар — но не на «ещё чуть-чуть контента внизу».
+    > 77 |         expect(scrollHeight).toBeLessThanOrEqual(innerHeight + 2);
+         |                              ^
+      78 |       });
+      79 |
+      80 |       test("главное видно без прокрутки: имя, паспорт, ссылка на рецепт", async ({ page }) => {
+        at /home/dopefish/projects/nb/apps/web/e2e/beer-presentation.spec.ts:77:30
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/beer-presentation-Страница-262cb-—-вертикального-скролла-нет-phone-320/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/beer-presentation-Страница-262cb-—-вертикального-скролла-нет-phone-320/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/beer-presentation-Страница-262cb-—-вертикального-скролла-нет-phone-320/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/beer-presentation-Страница-262cb-—-вертикального-скролла-нет-phone-320/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [phone-320] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет 
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 742
+    Received:    773
+
+      75 |         }));
+      76 |         // Допуск на субпиксель/скроллбар — но не на «ещё чуть-чуть контента внизу».
+    > 77 |         expect(scrollHeight).toBeLessThanOrEqual(innerHeight + 2);
+         |                              ^
+      78 |       });
+      79 |
+      80 |       test("главное видно без прокрутки: имя, паспорт, ссылка на рецепт", async ({ page }) => {
+        at /home/dopefish/projects/nb/apps/web/e2e/beer-presentation.spec.ts:77:30
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/beer-presentation-Страница-78552-—-вертикального-скролла-нет-phone-320/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/beer-presentation-Страница-78552-—-вертикального-скролла-нет-phone-320/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/beer-presentation-Страница-78552-—-вертикального-скролла-нет-phone-320/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/beer-presentation-Страница-78552-—-вертикального-скролла-нет-phone-320/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [phone-320] › e2e/mobile-audit.spec.ts:34:1 › M01: label preview leaves data fields clickable in every format 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('img', { name: /Превью наклейки/ })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByRole('img', { name: /Превью наклейки/ })
+
+
+      38 |     await page.getByRole("button", { name: format, exact: true }).first().click();
+      39 |     const preview = page.getByRole("img", { name: /Превью наклейки/ });
+    > 40 |     await expect(preview).toBeVisible();
+         |                           ^
+      41 |     await expect.poll(() => preview.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
+      42 |     for (const field of ["Название", "Стиль", "Автор"]) {
+      43 |       const input = page.getByRole("textbox", { name: field, exact: true });
+        at /home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:40:27
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M01-label-pre-3cac3-s-clickable-in-every-format-phone-320/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M01-label-pre-3cac3-s-clickable-in-every-format-phone-320/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M01-label-pre-3cac3-s-clickable-in-every-format-phone-320/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M01-label-pre-3cac3-s-clickable-in-every-format-phone-320/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [phone-320] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('dialog', { name: 'Сварить рецепт', exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByRole('dialog', { name: 'Сварить рецепт', exact: true })
+
+
+      119 |   }
+      120 |   await toolbar.getByRole("button", { name: "Сварить", exact: true }).click();
+    > 121 |   await expect(page.getByRole("dialog", { name: "Сварить рецепт", exact: true })).toBeVisible();
+          |                                                                                   ^
+      122 | });
+      123 |
+      124 | test("M05: every dilution operation fits on the narrow screen", async ({ page }) => {
+        at /home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:121:83
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M04-filled-re-6b1a1-metrics-and-working-actions-phone-320/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M04-filled-re-6b1a1-metrics-and-working-actions-phone-320/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M04-filled-re-6b1a1-metrics-and-working-actions-phone-320/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M04-filled-re-6b1a1-metrics-and-working-actions-phone-320/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [tablet-landscape] › e2e/bjcp-search.spec.ts:46:1 › local search and view filters preserve browser history without RSC navigation 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:3100/bjcp
+    Call log:
+      - navigating to "http://127.0.0.1:3100/bjcp", waiting until "networkidle"
+
+
+      45 |
+      46 | test("local search and view filters preserve browser history without RSC navigation", async ({ page }) => {
+    > 47 |   await page.goto("/bjcp", { waitUntil: "networkidle" });
+         |              ^
+      48 |   const cookieButton = page.getByRole("button", { name: "Только необходимые", exact: true });
+      49 |   if (await cookieButton.isVisible()) await cookieButton.click();
+      50 |   const requests: string[] = [];
+        at /home/dopefish/projects/nb/apps/web/e2e/bjcp-search.spec.ts:47:14
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-local-search-a-db301-tory-without-RSC-navigation-tablet-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-local-search-a-db301-tory-without-RSC-navigation-tablet-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-local-search-a-db301-tory-without-RSC-navigation-tablet-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-local-search-a-db301-tory-without-RSC-navigation-tablet-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [tablet-landscape] › e2e/bjcp-search.spec.ts:72:1 › choosing a family suggestion cancels pending text and keeps the chosen scope 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:3100/bjcp
+    Call log:
+      - navigating to "http://127.0.0.1:3100/bjcp", waiting until "networkidle"
+
+
+      71 |
+      72 | test("choosing a family suggestion cancels pending text and keeps the chosen scope", async ({ page }) => {
+    > 73 |   await page.goto("/bjcp", { waitUntil: "networkidle" });
+         |              ^
+      74 |   const cookieButton = page.getByRole("button", { name: "Только необходимые", exact: true });
+      75 |   if (await cookieButton.isVisible()) await cookieButton.click();
+      76 |   const search = page.getByRole("combobox", { name: "Поиск стилей BJCP" });
+        at /home/dopefish/projects/nb/apps/web/e2e/bjcp-search.spec.ts:73:14
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-choosing-a-fam-be0d9--and-keeps-the-chosen-scope-tablet-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-choosing-a-fam-be0d9--and-keeps-the-chosen-scope-tablet-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-choosing-a-fam-be0d9--and-keeps-the-chosen-scope-tablet-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-choosing-a-fam-be0d9--and-keeps-the-chosen-scope-tablet-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [tablet-landscape] › e2e/bjcp-search.spec.ts:86:1 › back cancels an uncommitted query instead of rewriting the restored history 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:3100/bjcp
+    Call log:
+      - navigating to "http://127.0.0.1:3100/bjcp", waiting until "networkidle"
+
+
+      85 |
+      86 | test("back cancels an uncommitted query instead of rewriting the restored history", async ({ page }) => {
+    > 87 |   await page.goto("/bjcp", { waitUntil: "networkidle" });
+         |              ^
+      88 |   const cookieButton = page.getByRole("button", { name: "Только необходимые", exact: true });
+      89 |   if (await cookieButton.isVisible()) await cookieButton.click();
+      90 |   const search = page.getByRole("combobox", { name: "Поиск стилей BJCP" });
+        at /home/dopefish/projects/nb/apps/web/e2e/bjcp-search.spec.ts:87:14
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-back-cancels-a-74734-riting-the-restored-history-tablet-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-back-cancels-a-74734-riting-the-restored-history-tablet-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-back-cancels-a-74734-riting-the-restored-history-tablet-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-back-cancels-a-74734-riting-the-restored-history-tablet-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:12:3 › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow) 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:3100/calculators/unit-converter
+    Call log:
+      - navigating to "http://127.0.0.1:3100/calculators/unit-converter", waiting until "load"
+
+
+       7 | test.describe("Конвертер единиц пивовара", () => {
+       8 |   test.beforeEach(async ({ page }) => {
+    >  9 |     await page.goto("/calculators/unit-converter");
+         |                ^
+      10 |   });
+      11 |
+      12 |   test("не выходит за ширину вьюпорта (нет horizontal overflow)", async ({ page }) => {
+        at /home/dopefish/projects/nb/apps/web/e2e/calculators-unit-converter.spec.ts:9:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-46b79-та-нет-horizontal-overflow--tablet-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-46b79-та-нет-horizontal-overflow--tablet-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-46b79-та-нет-horizontal-overflow--tablet-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-46b79-та-нет-horizontal-overflow--tablet-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10) [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:21:3 › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:3100/calculators/unit-converter
+    Call log:
+      - navigating to "http://127.0.0.1:3100/calculators/unit-converter", waiting until "load"
+
+
+       7 | test.describe("Конвертер единиц пивовара", () => {
+       8 |   test.beforeEach(async ({ page }) => {
+    >  9 |     await page.goto("/calculators/unit-converter");
+         |                ^
+      10 |   });
+      11 |
+      12 |   test("не выходит за ширину вьюпорта (нет horizontal overflow)", async ({ page }) => {
+        at /home/dopefish/projects/nb/apps/web/e2e/calculators-unit-converter.spec.ts:9:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-4d22c-ктивную-карточку-без-дублей-tablet-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-4d22c-ктивную-карточку-без-дублей-tablet-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-4d22c-ктивную-карточку-без-дублей-tablet-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-4d22c-ктивную-карточку-без-дублей-tablet-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11) [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:34:3 › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:3100/calculators/unit-converter
+    Call log:
+      - navigating to "http://127.0.0.1:3100/calculators/unit-converter", waiting until "load"
+
+
+       7 | test.describe("Конвертер единиц пивовара", () => {
+       8 |   test.beforeEach(async ({ page }) => {
+    >  9 |     await page.goto("/calculators/unit-converter");
+         |                ^
+      10 |   });
+      11 |
+      12 |   test("не выходит за ширину вьюпорта (нет horizontal overflow)", async ({ page }) => {
+        at /home/dopefish/projects/nb/apps/web/e2e/calculators-unit-converter.spec.ts:9:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-4b9ff-ле-ввода-со-своим-значением-tablet-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-4b9ff-ле-ввода-со-своим-значением-tablet-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-4b9ff-ле-ввода-со-своим-значением-tablet-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-4b9ff-ле-ввода-со-своим-значением-tablet-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  12) [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:45:3 › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:3100/calculators/unit-converter
+    Call log:
+      - navigating to "http://127.0.0.1:3100/calculators/unit-converter", waiting until "load"
+
+
+       7 | test.describe("Конвертер единиц пивовара", () => {
+       8 |   test.beforeEach(async ({ page }) => {
+    >  9 |     await page.goto("/calculators/unit-converter");
+         |                ^
+      10 |   });
+      11 |
+      12 |   test("не выходит за ширину вьюпорта (нет horizontal overflow)", async ({ page }) => {
+        at /home/dopefish/projects/nb/apps/web/e2e/calculators-unit-converter.spec.ts:9:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-ae64e-ну-контейнера-а-не-половину-tablet-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-ae64e-ну-контейнера-а-не-половину-tablet-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-ae64e-ну-контейнера-а-не-половину-tablet-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-ae64e-ну-контейнера-а-не-половину-tablet-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  13) [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:61:3 › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:3100/calculators/unit-converter
+    Call log:
+      - navigating to "http://127.0.0.1:3100/calculators/unit-converter", waiting until "load"
+
+
+       7 | test.describe("Конвертер единиц пивовара", () => {
+       8 |   test.beforeEach(async ({ page }) => {
+    >  9 |     await page.goto("/calculators/unit-converter");
+         |                ^
+      10 |   });
+      11 |
+      12 |   test("не выходит за ширину вьюпорта (нет horizontal overflow)", async ({ page }) => {
+        at /home/dopefish/projects/nb/apps/web/e2e/calculators-unit-converter.spec.ts:9:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-8e472-рядом-а-не-боковой-колонкой-tablet-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-8e472-рядом-а-не-боковой-колонкой-tablet-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-8e472-рядом-а-не-боковой-колонкой-tablet-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-8e472-рядом-а-не-боковой-колонкой-tablet-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  14) [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:74:3 › Конвертер единиц пивовара › у каждой вкладки группы есть иконка 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:3100/calculators/unit-converter
+    Call log:
+      - navigating to "http://127.0.0.1:3100/calculators/unit-converter", waiting until "load"
+
+
+       7 | test.describe("Конвертер единиц пивовара", () => {
+       8 |   test.beforeEach(async ({ page }) => {
+    >  9 |     await page.goto("/calculators/unit-converter");
+         |                ^
+      10 |   });
+      11 |
+      12 |   test("не выходит за ширину вьюпорта (нет horizontal overflow)", async ({ page }) => {
+        at /home/dopefish/projects/nb/apps/web/e2e/calculators-unit-converter.spec.ts:9:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-5dfd1--вкладки-группы-есть-иконка-tablet-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-5dfd1--вкладки-группы-есть-иконка-tablet-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-5dfd1--вкладки-группы-есть-иконка-tablet-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-5dfd1--вкладки-группы-есть-иконка-tablet-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  15) [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:86:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:3100/calculators/unit-converter
+    Call log:
+      - navigating to "http://127.0.0.1:3100/calculators/unit-converter", waiting until "load"
+
+
+       7 | test.describe("Конвертер единиц пивовара", () => {
+       8 |   test.beforeEach(async ({ page }) => {
+    >  9 |     await page.goto("/calculators/unit-converter");
+         |                ^
+      10 |   });
+      11 |
+      12 |   test("не выходит за ширину вьюпорта (нет horizontal overflow)", async ({ page }) => {
+        at /home/dopefish/projects/nb/apps/web/e2e/calculators-unit-converter.spec.ts:9:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-95ccc-дный-десятичный-разделитель-tablet-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-95ccc-дный-десятичный-разделитель-tablet-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-95ccc-дный-десятичный-разделитель-tablet-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-95ccc-дный-десятичный-разделитель-tablet-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  16) [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:98:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:3100/calculators/unit-converter
+    Call log:
+      - navigating to "http://127.0.0.1:3100/calculators/unit-converter", waiting until "load"
+
+
+       7 | test.describe("Конвертер единиц пивовара", () => {
+       8 |   test.beforeEach(async ({ page }) => {
+    >  9 |     await page.goto("/calculators/unit-converter");
+         |                ^
+      10 |   });
+      11 |
+      12 |   test("не выходит за ширину вьюпорта (нет horizontal overflow)", async ({ page }) => {
+        at /home/dopefish/projects/nb/apps/web/e2e/calculators-unit-converter.spec.ts:9:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-17086-устыми-а-не-конверсией-нуля-tablet-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-17086-устыми-а-не-конверсией-нуля-tablet-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-17086-устыми-а-не-конверсией-нуля-tablet-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-17086-устыми-а-не-конверсией-нуля-tablet-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  17) [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:111:3 › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:3100/calculators/unit-converter
+    Call log:
+      - navigating to "http://127.0.0.1:3100/calculators/unit-converter", waiting until "load"
+
+
+       7 | test.describe("Конвертер единиц пивовара", () => {
+       8 |   test.beforeEach(async ({ page }) => {
+    >  9 |     await page.goto("/calculators/unit-converter");
+         |                ^
+      10 |   });
+      11 |
+      12 |   test("не выходит за ширину вьюпорта (нет horizontal overflow)", async ({ page }) => {
+        at /home/dopefish/projects/nb/apps/web/e2e/calculators-unit-converter.spec.ts:9:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-86e1d-не-уводит-с-текущей-вкладки-tablet-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-86e1d-не-уводит-с-текущей-вкладки-tablet-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-86e1d-не-уводит-с-текущей-вкладки-tablet-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-86e1d-не-уводит-с-текущей-вкладки-tablet-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  18) [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:118:3 › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex) 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:3100/calculators/unit-converter
+    Call log:
+      - navigating to "http://127.0.0.1:3100/calculators/unit-converter", waiting until "load"
+
+
+       7 | test.describe("Конвертер единиц пивовара", () => {
+       8 |   test.beforeEach(async ({ page }) => {
+    >  9 |     await page.goto("/calculators/unit-converter");
+         |                ^
+      10 |   });
+      11 |
+      12 |   test("не выходит за ширину вьюпорта (нет horizontal overflow)", async ({ page }) => {
+        at /home/dopefish/projects/nb/apps/web/e2e/calculators-unit-converter.spec.ts:9:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-0511e-клавиатуры-roving-tabindex--tablet-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-0511e-клавиатуры-roving-tabindex--tablet-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-0511e-клавиатуры-roving-tabindex--tablet-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/calculators-unit-converter-0511e-клавиатуры-roving-tabindex--tablet-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  19) [tablet-landscape] › e2e/mobile-audit.spec.ts:34:1 › M01: label preview leaves data fields clickable in every format 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:3100/labels
+    Call log:
+      - navigating to "http://127.0.0.1:3100/labels", waiting until "domcontentloaded"
+
+
+      4 |
+      5 | async function open(page: Page, path: string) {
+    > 6 |   const response = await page.goto(path, { waitUntil: "domcontentloaded" });
+        |                               ^
+      7 |   expect(response?.status()).toBe(200);
+      8 |   await expect(page.locator("main").first()).toBeVisible();
+      9 |   // Wait for Next to attach the client router before exercising server-rendered controls.
+        at open (/home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:6:31)
+        at /home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:35:9
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M01-label-pre-3cac3-s-clickable-in-every-format-tablet-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M01-label-pre-3cac3-s-clickable-in-every-format-tablet-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M01-label-pre-3cac3-s-clickable-in-every-format-tablet-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M01-label-pre-3cac3-s-clickable-in-every-format-tablet-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  20) [tablet-landscape] › e2e/mobile-audit.spec.ts:53:1 › M02: public navigation and sign-in fit, including tablet breakpoint 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:3100/calculators/abv-attenuation
+    Call log:
+      - navigating to "http://127.0.0.1:3100/calculators/abv-attenuation", waiting until "domcontentloaded"
+
+
+      4 |
+      5 | async function open(page: Page, path: string) {
+    > 6 |   const response = await page.goto(path, { waitUntil: "domcontentloaded" });
+        |                               ^
+      7 |   expect(response?.status()).toBe(200);
+      8 |   await expect(page.locator("main").first()).toBeVisible();
+      9 |   // Wait for Next to attach the client router before exercising server-rendered controls.
+        at open (/home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:6:31)
+        at /home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:55:9
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M02-public-na-2f789-including-tablet-breakpoint-tablet-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M02-public-na-2f789-including-tablet-breakpoint-tablet-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M02-public-na-2f789-including-tablet-breakpoint-tablet-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M02-public-na-2f789-including-tablet-breakpoint-tablet-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  21) [tablet-landscape] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:3100/admin/recipes
+    Call log:
+      - navigating to "http://127.0.0.1:3100/admin/recipes", waiting until "domcontentloaded"
+
+
+      4 |
+      5 | async function open(page: Page, path: string) {
+    > 6 |   const response = await page.goto(path, { waitUntil: "domcontentloaded" });
+        |                               ^
+      7 |   expect(response?.status()).toBe(200);
+      8 |   await expect(page.locator("main").first()).toBeVisible();
+      9 |   // Wait for Next to attach the client router before exercising server-rendered controls.
+        at open (/home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:6:31)
+        at /home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:74:9
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-tablet-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-tablet-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-tablet-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-tablet-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  22) [tablet-landscape] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:3100/app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit
+    Call log:
+      - navigating to "http://127.0.0.1:3100/app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit", waiting until "domcontentloaded"
+
+
+      4 |
+      5 | async function open(page: Page, path: string) {
+    > 6 |   const response = await page.goto(path, { waitUntil: "domcontentloaded" });
+        |                               ^
+      7 |   expect(response?.status()).toBe(200);
+      8 |   await expect(page.locator("main").first()).toBeVisible();
+      9 |   // Wait for Next to attach the client router before exercising server-rendered controls.
+        at open (/home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:6:31)
+        at /home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:101:9
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M04-filled-re-6b1a1-metrics-and-working-actions-tablet-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M04-filled-re-6b1a1-metrics-and-working-actions-tablet-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M04-filled-re-6b1a1-metrics-and-working-actions-tablet-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M04-filled-re-6b1a1-metrics-and-working-actions-tablet-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  23) [tablet-landscape] › e2e/mobile-audit.spec.ts:124:1 › M05: every dilution operation fits on the narrow screen 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:3100/calculators/dilution-boiloff
+    Call log:
+      - navigating to "http://127.0.0.1:3100/calculators/dilution-boiloff", waiting until "domcontentloaded"
+
+
+      4 |
+      5 | async function open(page: Page, path: string) {
+    > 6 |   const response = await page.goto(path, { waitUntil: "domcontentloaded" });
+        |                               ^
+      7 |   expect(response?.status()).toBe(200);
+      8 |   await expect(page.locator("main").first()).toBeVisible();
+      9 |   // Wait for Next to attach the client router before exercising server-rendered controls.
+        at open (/home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:6:31)
+        at /home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:125:9
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M05-every-dil-465fb-n-fits-on-the-narrow-screen-tablet-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M05-every-dil-465fb-n-fits-on-the-narrow-screen-tablet-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M05-every-dil-465fb-n-fits-on-the-narrow-screen-tablet-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M05-every-dil-465fb-n-fits-on-the-narrow-screen-tablet-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  23 failed
+    [phone-320] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет 
+    [phone-320] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет 
+    [phone-320] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет 
+    [phone-320] › e2e/mobile-audit.spec.ts:34:1 › M01: label preview leaves data fields clickable in every format 
+    [phone-320] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions 
+    [tablet-landscape] › e2e/bjcp-search.spec.ts:46:1 › local search and view filters preserve browser history without RSC navigation 
+    [tablet-landscape] › e2e/bjcp-search.spec.ts:72:1 › choosing a family suggestion cancels pending text and keeps the chosen scope 
+    [tablet-landscape] › e2e/bjcp-search.spec.ts:86:1 › back cancels an uncommitted query instead of rewriting the restored history 
+    [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:12:3 › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow) 
+    [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:21:3 › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей 
+    [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:34:3 › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением 
+    [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:45:3 › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину 
+    [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:61:3 › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой 
+    [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:74:3 › Конвертер единиц пивовара › у каждой вкладки группы есть иконка 
+    [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:86:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель 
+    [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:98:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля 
+    [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:111:3 › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки 
+    [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:118:3 › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex) 
+    [tablet-landscape] › e2e/mobile-audit.spec.ts:34:1 › M01: label preview leaves data fields clickable in every format 
+    [tablet-landscape] › e2e/mobile-audit.spec.ts:53:1 › M02: public navigation and sign-in fit, including tablet breakpoint 
+    [tablet-landscape] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document 
+    [tablet-landscape] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions 
+    [tablet-landscape] › e2e/mobile-audit.spec.ts:124:1 › M05: every dilution operation fits on the narrow screen 
+  5 skipped
+  170 passed (7.0m)

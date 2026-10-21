@@ -46,7 +46,7 @@ const mapCatalogCustomIngredientError = (error: unknown): CatalogCustomIngredien
     if (error.message === "CUSTOM_INGREDIENT_IN_USE") {
       return {
         ok: false,
-        message: "Ингредиент уже используется в складе или рецептах и не может быть удалён."
+        message: "Ингредиент уже используется на складе или в рецептах и не может быть удалён."
       };
     }
 
@@ -95,7 +95,7 @@ export const createCatalogCustomIngredientAction = async (
 
     return {
       ok: true,
-      message: "Ингредиент сохранён в «Пользовательские ингредиенты».",
+      message: "Ингредиент сохранён в вашем каталоге.",
       ingredientId: created.id
     };
   } catch (error) {

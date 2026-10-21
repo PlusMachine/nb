@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { BottleParams } from "@/features/beer-page/bottle-params";
 import type { BeerPresentationDto } from "@/features/beer-page/contracts";
 import { beerColorFromSrm, srmToGlassStops, srmToSoftGradient } from "@/features/recipes/beer-color";
+import styles from "./beer-presentation.module.css";
 
 // Гостевая страница пива (/beer/<slug>): человек отсканировал QR с бутылки —
 // показываем обложку в духе журнала, а не рабочую страницу рецепта. Страница
@@ -96,20 +97,20 @@ function StatTile({
 }) {
   return (
     <div
-      className={`flex flex-col rounded-xl border border-white/10 bg-white/[0.07] px-3 py-3 backdrop-blur-md sm:px-4 ${className}`}
+      className={`${styles.statTile} flex flex-col rounded-xl border border-white/10 bg-white/[0.07] px-3 py-3 backdrop-blur-md sm:px-4 ${className}`}
     >
       <dt className="text-[10px] font-medium uppercase tracking-[0.18em] text-white/50">{label}</dt>
       {/* Длинные названия цвета («Насыщенно-золотистый») в колонке ~80px на 360px
           рвались посреди слова — переносим по дефису, а не по буквам. */}
       {/* [hyphens:auto] — страховка для составных названий цвета
           («Насыщенно-золотистый»): рвутся по своему дефису, а не по буквам. */}
-      <dd className="mt-1 text-base font-semibold leading-tight [hyphens:auto] sm:text-lg" lang="ru" style={DISPLAY_FONT}>
+      <dd className={`${styles.statValue} mt-1 text-base font-semibold leading-tight [hyphens:auto] sm:text-lg`} lang="ru" style={DISPLAY_FONT}>
         {value}
       </dd>
       {detail ? <dd className="mt-0.5 text-[11px] leading-tight text-white/55">{detail}</dd> : null}
       {/* Шкала прижата к низу плитки: у названий цвета разная высота (одна-две
           строки), но шкалы соседних плиток должны стоять на одной линии. */}
-      <div aria-hidden className="mt-auto pt-3">
+      <div aria-hidden className={`${styles.statScale} mt-auto pt-3`}>
         <div className="relative h-1 rounded-full" style={{ background: gradient }}>
           <span
             className="absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-black/30 shadow-[0_1px_4px_rgba(0,0,0,0.6)]"
@@ -134,9 +135,21 @@ export function BeerPresentation({ beer, bottle }: { beer: BeerPresentationDto; 
   const abv = bottle?.abv ?? beer.abv;
   const hasStats = abv != null || beer.ibu != null || srm != null;
   const bottleLine = bottleLineRu(bottle);
+  const description = (
+    <div className="max-w-2xl space-y-3">
+      {beer.descriptionParagraphs.map((paragraph, index) => (
+        <p key={index} className="text-[15px] leading-relaxed text-white/85 sm:text-base">
+          {paragraph}
+        </p>
+      ))}
+      {beer.descriptionSource === "style" && beer.style ? (
+        <p className="text-xs text-white/40">Описание стиля {beer.style.name} по классификации BJCP</p>
+      ) : null}
+    </div>
+  );
 
   return (
-    <article className="relative flex min-h-svh flex-col overflow-hidden bg-[#0e0c0a] text-white">
+    <article className={`${styles.presentation} relative flex min-h-svh flex-col overflow-hidden bg-[#0e0c0a] text-white`}>
       {coverImage ? (
         <Image
           src={coverImage}
@@ -161,7 +174,7 @@ export function BeerPresentation({ beer, bottle }: { beer: BeerPresentationDto; 
           быть контраст на любой картинке, включая светлый лагер. */}
       <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/55 to-black/90" />
 
-      <div className="relative mx-auto w-full max-w-5xl px-6 pt-6">
+      <div className={`${styles.brand} relative mx-auto w-full max-w-5xl px-6 pt-6`}>
         <Link
           href="/"
           className="text-sm font-semibold tracking-[0.3em] text-white/70 transition-colors hover:text-white"
@@ -173,15 +186,15 @@ export function BeerPresentation({ beer, bottle }: { beer: BeerPresentationDto; 
 
       {/* Одна колонка, прижатая к низу: имя → паспорт → описание → действия.
           Контент короткий, поэтому на всех экранах помещается без скролла. */}
-      <div className="relative mx-auto flex w-full max-w-5xl flex-1 flex-col justify-end gap-6 px-6 pb-10 pt-12 sm:gap-7 sm:pb-12">
+      <div className={`${styles.content} relative mx-auto flex w-full max-w-5xl flex-1 flex-col justify-end gap-6 px-6 pb-10 pt-12 max-[359px]:gap-4 max-[359px]:px-4 max-[359px]:pb-6 max-[359px]:pt-10 sm:gap-7 sm:pb-12`}>
         <div>
           {beer.style ? (
-            <p className="text-[11px] font-medium uppercase tracking-[0.28em] sm:text-xs" style={{ color: accent }}>
+            <p className={`${styles.styleName} text-[11px] font-medium uppercase tracking-[0.28em] sm:text-xs`} style={{ color: accent }}>
               {beer.style.code} · {beer.style.name}
             </p>
           ) : null}
           <h1
-            className="mt-2 max-w-3xl text-balance text-4xl font-semibold leading-[1.02] sm:text-5xl lg:text-6xl"
+            className={`${styles.title} mt-2 max-w-3xl text-balance text-4xl font-semibold leading-[1.02] sm:text-5xl lg:text-6xl`}
             style={DISPLAY_FONT}
           >
             {beer.title}
@@ -193,7 +206,7 @@ export function BeerPresentation({ beer, bottle }: { beer: BeerPresentationDto; 
           // На мобиле цифры делят строку, а цвет идёт отдельной строкой: слово
           // «Золотистый» просит ~94px, а треть узкого экрана даёт 73 — в трёх
           // колонках название рвалось посреди слова.
-          <dl className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">
+          <dl className={`${styles.stats} grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3`}>
             {abv != null ? (
               <StatTile label="Крепость" value={formatAbvRu(abv)} share={scaleShare(abv, 12)} gradient={ABV_BAR} />
             ) : null}
@@ -213,7 +226,7 @@ export function BeerPresentation({ beer, bottle }: { beer: BeerPresentationDto; 
               <StatTile
                 label="Цвет"
                 value={color.label}
-                className="col-span-2 sm:col-span-1"
+                className={`${styles.colorTile} col-span-2 sm:col-span-1`}
                 share={scaleShare(srm, 40)}
                 gradient={SRM_BAR}
               />
@@ -222,19 +235,16 @@ export function BeerPresentation({ beer, bottle }: { beer: BeerPresentationDto; 
         ) : null}
 
         {beer.descriptionParagraphs.length > 0 ? (
-          <div className="max-w-2xl space-y-3">
-            {beer.descriptionParagraphs.map((paragraph, index) => (
-              <p key={index} className="text-[15px] leading-relaxed text-white/85 sm:text-base">
-                {paragraph}
-              </p>
-            ))}
-            {beer.descriptionSource === "style" && beer.style ? (
-              <p className="text-xs text-white/40">Описание стиля {beer.style.name} по классификации BJCP</p>
-            ) : null}
-          </div>
+          <>
+            <div className={styles.description}>{description}</div>
+            <details className={styles.compactDescription}>
+              <summary className="min-h-11 cursor-pointer py-3 text-sm text-white/80">Описание пива</summary>
+              <div className="pt-2">{description}</div>
+            </details>
+          </>
         ) : null}
 
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-4 border-t border-white/10 pt-5">
+        <div className={`${styles.footer} flex flex-wrap items-center gap-x-5 gap-y-4 border-t border-white/10 pt-5 max-[359px]:gap-y-3 max-[359px]:pt-4`}>
           {authorName ? (
             <div className="flex items-center gap-2.5">
               {beer.author.image ? (

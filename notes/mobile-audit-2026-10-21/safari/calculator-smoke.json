@@ -1,0 +1,274 @@
+[
+  {
+    "route": "/calculators/abv-attenuation",
+    "profile": "iPhone 13",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 1,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/refractometer-correction",
+    "profile": "iPhone 13",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 1,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/hydrometer-correction",
+    "profile": "iPhone 13",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/dilution-boiloff",
+    "profile": "iPhone 13",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/ibu",
+    "profile": "iPhone 13",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 2,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/brewing-water-volume",
+    "profile": "iPhone 13",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 1,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/mash-infusion",
+    "profile": "iPhone 13",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/water-ph",
+    "profile": "iPhone 13",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/yeast-starter",
+    "profile": "iPhone 13",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/priming-sugar",
+    "profile": "iPhone 13",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/keg-carbonation",
+    "profile": "iPhone 13",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 2
+  },
+  {
+    "route": "/calculators/bottling",
+    "profile": "iPhone 13",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 1,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/speise-krausen",
+    "profile": "iPhone 13",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/beer-color",
+    "profile": "iPhone 13",
+    "status": "passed",
+    "modifiedFields": 1,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/brewhouse-efficiency",
+    "profile": "iPhone 13",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/hop-freshness",
+    "profile": "iPhone 13",
+    "status": "passed",
+    "modifiedFields": 1,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/unit-converter",
+    "profile": "iPhone 13",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 7
+  },
+  {
+    "route": "/calculators/abv-attenuation",
+    "profile": "iPad Pro 11",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 1,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/refractometer-correction",
+    "profile": "iPad Pro 11",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 1,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/hydrometer-correction",
+    "profile": "iPad Pro 11",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/dilution-boiloff",
+    "profile": "iPad Pro 11",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/ibu",
+    "profile": "iPad Pro 11",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 2,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/brewing-water-volume",
+    "profile": "iPad Pro 11",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 1,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/mash-infusion",
+    "profile": "iPad Pro 11",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/water-ph",
+    "profile": "iPad Pro 11",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/yeast-starter",
+    "profile": "iPad Pro 11",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/priming-sugar",
+    "profile": "iPad Pro 11",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/keg-carbonation",
+    "profile": "iPad Pro 11",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 2
+  },
+  {
+    "route": "/calculators/bottling",
+    "profile": "iPad Pro 11",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 1,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/speise-krausen",
+    "profile": "iPad Pro 11",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/beer-color",
+    "profile": "iPad Pro 11",
+    "status": "passed",
+    "modifiedFields": 1,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/brewhouse-efficiency",
+    "profile": "iPad Pro 11",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/hop-freshness",
+    "profile": "iPad Pro 11",
+    "status": "passed",
+    "modifiedFields": 1,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "route": "/calculators/unit-converter",
+    "profile": "iPad Pro 11",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 7
+  }
+]

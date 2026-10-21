@@ -75,6 +75,7 @@ type Props = {
    * на /app/devices (там — управление самим подключением, F8-карточка).
    */
   isRaptDevice?: boolean;
+  isDemo?: boolean;
 };
 
 export function StreamDeviceConsole({
@@ -85,7 +86,8 @@ export function StreamDeviceConsole({
   preferredGravityUnit,
   chartSessions,
   sessionHistory,
-  isRaptDevice = false
+  isRaptDevice = false,
+  isDemo = false
 }: Props) {
   const router = useRouter();
   const { show } = useToast();
@@ -308,6 +310,10 @@ export function StreamDeviceConsole({
         </p>
       </header>
 
+      {isDemo ? (
+        <p className="text-sm text-muted-foreground">Демо-устройство: показания сгенерированы для примера.</p>
+      ) : null}
+
       {/* Живая зона: «Ждём первый пакет…» → «Данные пошли» → краткая строка последнего показания. */}
       <Card className="p-5">
         {status.readingsCount === 0 ? (
@@ -470,7 +476,7 @@ export function StreamDeviceConsole({
       <ConfirmActionDialog
         open={rotateOpen}
         title="Перевыпустить URL?"
-        description="Старый URL перестанет работать сразу — устройство, прошитое им, больше не сможет присылать данные, пока вы не пропишете новый."
+        description="Старый URL перестанет работать сразу — устройство с этим адресом в настройках не сможет присылать данные, пока вы не укажете новый адрес."
         confirmLabel="Перевыпустить"
         pendingLabel="Перевыпускаем…"
         tone="danger"

@@ -16,7 +16,7 @@
 export const PAIRING_ERROR_TEXT: Record<string, string> = {
   INVALID_REQUEST: "Проверьте введённые данные.",
   INVALID_CLAIM_CODE: "Код привязки неверен или истёк. Сгенерируйте новый на устройстве.",
-  CLAIM_CODE_REQUIRED: "Введите claim-код устройства — привязка по одному hardware ID отключена.",
+  CLAIM_CODE_REQUIRED: "Введите код привязки устройства — одного аппаратного идентификатора недостаточно.",
   CLAIM_CODE_OR_HARDWARE_ID_REQUIRED: "Укажите код привязки.",
   HARDWARE_ID_REQUIRED: "Для прямой привязки укажите hardware ID устройства.",
   CLAIM_CODE_OWNED_BY_OTHER_USER: "Этот код выпущен для другого аккаунта.",

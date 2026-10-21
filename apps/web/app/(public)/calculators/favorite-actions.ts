@@ -8,6 +8,7 @@ import {
   setFavoriteCalculator
 } from "@/features/calculators/favorites-service";
 import { getSessionUser } from "@/lib/auth";
+import { canViewCalculator } from "@/features/calculators/visibility";
 
 export type FavoriteCalculatorActionResult =
   | { ok: true; favorite: boolean }
@@ -32,6 +33,9 @@ export const toggleFavoriteCalculatorAction = async (input: {
   if (!user) {
     return { ok: false, code: "AUTH", message: "Войдите, чтобы добавлять калькуляторы в избранное." };
   }
+  if (input.next && !canViewCalculator(input.slug, user.role)) {
+    return { ok: false, code: "ERROR", message: "Калькулятор недоступен." };
+  }
 
   try {
     const { favorite } = await setFavoriteCalculator(user.id, input.slug, input.next);
@@ -48,6 +52,9 @@ export const loadFavoriteCalculatorState = async (slug: string): Promise<Favorit
   if (!user) {
     return { authenticated: false, favorite: false };
   }
+  if (!canViewCalculator(slug, user.role)) {
+    return { authenticated: true, favorite: false };
+  }
   const favorite = await isCalculatorFavorite(user.id, slug);
   return { authenticated: true, favorite };
 };
@@ -61,6 +68,6 @@ export const loadFavoriteCalculatorStates = async (slugs: string[]): Promise<str
   if (!user) {
     return [];
   }
-  const favorites = await getFavoriteCalculatorSlugs(user.id, slugs);
+  const favorites = await getFavoriteCalculatorSlugs(user.id, slugs.filter((slug) => canViewCalculator(slug, user.role)));
   return [...favorites];
 };

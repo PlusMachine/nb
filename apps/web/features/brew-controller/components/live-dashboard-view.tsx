@@ -93,7 +93,7 @@ const PROMPT_TITLES: Record<Prompt, string> = {
   CONTINUE_DOUGH: "Продолжить засыпку солода?",
   ADD_MALT: "Засыпьте солод",
   IODINE: "Йодная проба",
-  REMOVE_MALT: "Удалите солод",
+  REMOVE_MALT: "Извлеките дробину",
   RESUME_BREW: "Возобновить варку после перезагрузки?"
 };
 
@@ -254,14 +254,14 @@ export function LiveDashboardView({
 
       {!hasDevice ? (
         <div className="rounded-2xl border border-border bg-card p-6 text-sm text-muted-foreground shadow-sm">
-          К этой варке не привязан контроллер BrewForge. Запустите варку на устройстве, чтобы видеть живую телеметрию.
+          К этой варке не привязан контроллер BrewForge. Запустите варку на устройстве, чтобы видеть показания в реальном времени.
         </div>
       ) : null}
 
       {otherSessionControls ? (
         <div className="rounded-2xl border border-warning/30 bg-warning-subtle p-4 text-sm text-warning-subtle-foreground" role="status">
           Управляет другой сеанс — здесь только просмотр. Показатели могут быть неполными или обновляться с задержкой;
-          чтобы взять управление, запросите перехват в панели управления ниже.
+          чтобы взять управление, нажмите «Запросить управление» на панели ниже.
         </div>
       ) : null}
 

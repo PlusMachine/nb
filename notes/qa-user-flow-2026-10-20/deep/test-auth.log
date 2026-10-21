@@ -1,0 +1,10 @@
+
+ RUN  v4.0.18 /home/dopefish/projects/nb/packages/auth
+
+ ✓ src/crypto.test.ts (9 tests) 11ms
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  22:30:42
+   Duration  289ms (transform 54ms, setup 0ms, import 77ms, tests 11ms, environment 0ms)
+

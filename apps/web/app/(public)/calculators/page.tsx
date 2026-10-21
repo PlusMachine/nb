@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import React from "react";
 
 import { CalculatorsIndex } from "@/components/calculators/calculators-index";
+import { getViewerCalculatorSlugs } from "@/features/calculators/access";
+import { calculatorCardItems } from "@/features/calculators/catalog";
 import { getSectionOgImage } from "@/features/og/section";
 import { getServerEnv } from "@/lib/env";
 
@@ -24,6 +26,7 @@ export const metadata: Metadata = {
   }
 };
 
-export default function CalculatorsPage() {
-  return <CalculatorsIndex />;
+export default async function CalculatorsPage() {
+  const visibleSlugs = await getViewerCalculatorSlugs();
+  return <CalculatorsIndex calculators={calculatorCardItems.filter((item) => visibleSlugs.includes(item.slug))} />;
 }

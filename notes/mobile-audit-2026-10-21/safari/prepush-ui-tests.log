@@ -1,0 +1,8 @@
+
+ RUN  v4.0.18 /home/dopefish/projects/nb/packages/ui
+
+No test files found, exiting with code 0
+
+include: **/*.{test,spec}.?(c|m)[jt]s?(x)
+exclude:  **/node_modules/**, **/.git/**
+

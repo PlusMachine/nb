@@ -20,6 +20,34 @@ type PopoverProps = {
   contentClassName?: string;
 };
 
+type AnchoredPopoverProps = React.ComponentPropsWithoutRef<typeof RadixPopover.Content> & {
+  anchor: React.ReactElement;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+};
+
+/** Controlled content anchored to an input without moving focus away from it. */
+export function AnchoredPopover({
+  anchor,
+  open,
+  onOpenChange,
+  children,
+  onOpenAutoFocus = event => event.preventDefault(),
+  onCloseAutoFocus = event => event.preventDefault(),
+  ...contentProps
+}: AnchoredPopoverProps) {
+  return (
+    <RadixPopover.Root open={open} onOpenChange={onOpenChange}>
+      <RadixPopover.Anchor asChild>{anchor}</RadixPopover.Anchor>
+      <RadixPopover.Portal>
+        <RadixPopover.Content {...contentProps} onOpenAutoFocus={onOpenAutoFocus} onCloseAutoFocus={onCloseAutoFocus}>
+          {children}
+        </RadixPopover.Content>
+      </RadixPopover.Portal>
+    </RadixPopover.Root>
+  );
+}
+
 export function Popover({ trigger, children, align = "center", side = "bottom", onOpenChange, contentClassName }: PopoverProps) {
   const [open, setOpenState] = React.useState(false);
 

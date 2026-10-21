@@ -197,17 +197,51 @@ const hasAllTokens = (variant: string, haystack: string) => {
   return tokens.length > 0 && tokens.every((token) => haystack.includes(token));
 };
 
+/**
+ * Fuzzy (Левенштейн) — только для опечаток в похожих токенах, не для
+ * «хоть какого-нибудь» совпадения. Иначе «citra» в скоупе солодов цепляет
+ * «extra»/«экстра» (дистанция 2, другая первая буква) — мусор в пикере склада.
+ *
+ * Правила:
+ * - сравниваем с целыми полями и с отдельными токенами (≥5 символов);
+ * - длина цели близка к запросу (±maxDistance);
+ * - первая буква совпадает;
+ * - для коротких слов (≤6) допускаем 1 правку, длиннее — до 2.
+ */
 const calcFuzzyBonus = (variant: string, targets: string[]) => {
   if (variant.length < 5 || targets.length === 0) {
     return 0;
   }
 
-  const distance = Math.min(...targets.map((target) => levenshtein(variant, target)));
-  if (distance > 2) {
+  const maxDistance = variant.length <= 6 ? 1 : 2;
+  const pools = [
+    ...targets,
+    ...targets.flatMap((target) => tokenize(target))
+  ];
+
+  let bestDistance = Number.POSITIVE_INFINITY;
+  for (const target of pools) {
+    if (target.length < 5) {
+      continue;
+    }
+    if (Math.abs(target.length - variant.length) > maxDistance) {
+      continue;
+    }
+    if (target[0] !== variant[0]) {
+      continue;
+    }
+
+    const distance = levenshtein(variant, target);
+    if (distance > 0 && distance <= maxDistance && distance < bestDistance) {
+      bestDistance = distance;
+    }
+  }
+
+  if (!Number.isFinite(bestDistance) || bestDistance > maxDistance) {
     return 0;
   }
 
-  return Math.max(0, 50 - distance * 18);
+  return Math.max(0, 50 - bestDistance * 18);
 };
 
 const fieldContainsToken = (fields: string[], token: string) => fields.some((field) => field.includes(token));
@@ -468,6 +502,9 @@ const normalizeCandidate = (candidate: RankedCandidate): NormalizedCandidate => 
     searchTextNorm
   };
 };
+
+export type PreparedIngredientCandidate = ReturnType<typeof normalizeCandidate>;
+export const prepareIngredientCandidate = normalizeCandidate;
 
 const isConsumableCandidate = (candidate: RankedCandidate) => candidate.category === "consumable";
 
@@ -1489,49 +1526,63 @@ const buildConsumableRank = (
   };
 };
 
+// One query analysis per search pass. Keep the single-candidate entry point
+// below for callers that do not rank a collection.
+export const createIngredientRanker = (
+  query: string | string[],
+  options: RankingOptions = {}
+): ((candidate: RankedCandidate, prepared?: PreparedIngredientCandidate) => IngredientCandidateRank | null) => {
+  const queryText = Array.isArray(query) ? query[0] ?? "" : query;
+  const queryInfo = analyzeQuery(queryText, options);
+
+  return (candidate, prepared) => {
+    if (!queryInfo) {
+      return null;
+    }
+
+    const normalizedCandidate = prepared ?? normalizeCandidate(candidate);
+    const consumableRank = isConsumableCandidate(candidate)
+      ? buildConsumableRank(queryInfo, candidate, normalizedCandidate)
+      : null;
+    if (consumableRank) {
+      return consumableRank;
+    }
+    const intentAwareRank = queryInfo.intent === "default"
+      ? null
+      : buildIntentAwareRank(queryInfo, candidate, normalizedCandidate);
+
+    if (intentAwareRank) {
+      return intentAwareRank;
+    }
+
+    return buildFallbackRank(queryInfo, normalizedCandidate);
+  };
+};
+
 export const rankIngredientCandidate = (
   query: string | string[],
   candidate: RankedCandidate,
   options: RankingOptions = {}
-): IngredientCandidateRank | null => {
-  const queryText = Array.isArray(query) ? query[0] ?? "" : query;
-  const queryInfo = analyzeQuery(queryText, options);
-  if (!queryInfo) {
-    return null;
-  }
+): IngredientCandidateRank | null => createIngredientRanker(query, options)(candidate);
 
-  const normalizedCandidate = normalizeCandidate(candidate);
-  const consumableRank = isConsumableCandidate(candidate)
-    ? buildConsumableRank(queryInfo, candidate, normalizedCandidate)
-    : null;
-  if (consumableRank) {
-    return consumableRank;
-  }
-  const intentAwareRank = queryInfo.intent === "default"
-    ? null
-    : buildIntentAwareRank(queryInfo, candidate, normalizedCandidate);
+export const createIngredientFamilyMatcher = (familyQuery: string) => {
+  // Скоуп-фильтр quick-start НЕ двухпроходный — раскладка тут всегда учтена
+  // (прежнее поведение buildQueryVariants до вынесения раскладки в фолбэк).
+  const queryInfo = analyzeQuery(familyQuery, { includeLayoutVariants: true });
+  return (candidate: RankedCandidate, prepared?: PreparedIngredientCandidate) => {
+    if (!queryInfo?.family) {
+      return false;
+    }
 
-  if (intentAwareRank) {
-    return intentAwareRank;
-  }
-
-  return buildFallbackRank(queryInfo, normalizedCandidate);
+    const normalizedCandidate = prepared ?? normalizeCandidate(candidate);
+    return buildIntentAwareRank(queryInfo, candidate, normalizedCandidate) !== null;
+  };
 };
 
 export const matchesIngredientFamilyScope = (
   familyQuery: string,
   candidate: RankedCandidate
-) => {
-  // Скоуп-фильтр quick-start НЕ двухпроходный — раскладка тут всегда учтена
-  // (прежнее поведение buildQueryVariants до вынесения раскладки в фолбэк).
-  const queryInfo = analyzeQuery(familyQuery, { includeLayoutVariants: true });
-  if (!queryInfo?.family) {
-    return false;
-  }
-
-  const normalizedCandidate = normalizeCandidate(candidate);
-  return buildIntentAwareRank(queryInfo, candidate, normalizedCandidate) !== null;
-};
+) => createIngredientFamilyMatcher(familyQuery)(candidate);
 
 export const scoreIngredientCandidate = (
   query: string | string[],

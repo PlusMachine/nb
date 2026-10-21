@@ -21,7 +21,7 @@ export default async function MarketPage() {
       <section className="space-y-2">
         <h1 className="text-2xl font-semibold text-foreground sm:text-3xl">Маркет</h1>
         <p className="text-sm text-muted-foreground">
-          Оборудование для пивоварения ручной работы — от мастеров из комьюнити, напрямую и без комиссий.
+          Оборудование для пивоварения от мастеров. О цене и доставке договаривайтесь напрямую.
         </p>
       </section>
 
@@ -31,7 +31,9 @@ export default async function MarketPage() {
             <MarketItemCard key={item.itemId} item={item} />
           ))}
         </div>
-      ) : null}
+      ) : (
+        <p className="text-sm text-muted-foreground">Пока нет опубликованных изделий.</p>
+      )}
 
       <MasterShowcaseCta />
     </main>

@@ -1,0 +1,12 @@
+
+Running 7 tests using 1 worker
+
+  ✓  1 [iphone-se] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (5.1s)
+  ✓  2 [iphone-13] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (5.6s)
+  ✓  3 [iphone-landscape] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (3.7s)
+  ✓  4 [ipad-mini] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (5.8s)
+  ✓  5 [ipad-mini-landscape] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (3.3s)
+  ✓  6 [ipad-pro] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (4.8s)
+  ✓  7 [ipad-pro-landscape] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (4.0s)
+
+  7 passed (43.1s)

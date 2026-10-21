@@ -8,7 +8,7 @@ import { updateCurrencySettingsAction } from "@/app/(admin)/admin/settings/curre
 import { NumericInput } from "@/components/shared/numeric-input";
 
 const fieldClassName =
-  "mt-1 h-10 w-full rounded-md border border-input bg-card px-3 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 sm:text-sm";
+  "mt-1 h-10 w-full rounded-md border border-input bg-card px-3 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 sm:text-sm [@media(pointer:coarse)]:text-base";
 
 export function CurrencyRatesForm({
   initialUsdRate,

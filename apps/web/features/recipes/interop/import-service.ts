@@ -1,5 +1,5 @@
 import type { CanonicalRecipe } from "./canonical";
-import { createRecipe } from "../service";
+import { createRecipe, createRecipes } from "../service";
 import type { RecipeImportedIngredientSnapshot } from "../contracts";
 import { resolveIngredientSubtype } from "../../ingredients/taxonomy";
 import { buildCustomIngredientTechnicalData } from "../../inventory/custom-ingredient";
@@ -62,7 +62,7 @@ const buildImportedExternalImportMeta = (ingredient: ImportedIngredient) => ({
   importedIngredient: buildImportedIngredientSnapshot(ingredient)
 });
 
-export const createRecipeFromCanonicalImport = async (userId: string, canonical: CanonicalRecipe) => {
+export const buildCanonicalImportPayload = (canonical: CanonicalRecipe) => {
   if (!canonical.title.trim()) {
     throw new Error("INVALID_IMPORT_RECIPE");
   }
@@ -77,12 +77,12 @@ export const createRecipeFromCanonicalImport = async (userId: string, canonical:
     }
   }
 
-  return createRecipe(userId, {
+  return {
     title: canonical.title,
-    publicationState: "private",
+    publicationState: "private" as const,
     styleId: canonical.styleId ?? null,
     batchSizeEnteredQuantity: canonical.batchSizeL ?? 20,
-    batchSizeEnteredUnit: "l",
+    batchSizeEnteredUnit: "l" as const,
     efficiency: canonical.efficiency ?? null,
     boilTimeMinutes: canonical.boilTimeMinutes ?? 60,
     description: canonical.description ?? null,
@@ -90,6 +90,7 @@ export const createRecipeFromCanonicalImport = async (userId: string, canonical:
     processMeta: canonical.processMeta ?? null,
     calculationMeta: canonical.calculationMeta ?? null,
     waterPlanMeta: canonical.waterPlanMeta ?? null,
+    equipmentProfileSnapshot: canonical.equipmentProfileSnapshot ?? null,
     importMeta: canonical.importMeta ?? null,
     ingredients: canonical.ingredients.map((ingredient) => ({
       ingredientCatalogItemId: null,
@@ -102,8 +103,15 @@ export const createRecipeFromCanonicalImport = async (userId: string, canonical:
       stage: ingredient.stage,
       timeOffset: ingredient.timeOffset ?? null,
       stepMeta: ingredient.stepMeta ?? null,
-      inventoryIntentMode: "imported",
+      inventoryIntentMode: "imported" as const,
       externalImportMeta: buildImportedExternalImportMeta(ingredient)
     }))
-  });
+  };
 };
+
+export const createRecipeFromCanonicalImport = (userId: string, canonical: CanonicalRecipe) => (
+  createRecipe(userId, buildCanonicalImportPayload(canonical))
+);
+export const createRecipesFromCanonicalImport = (userId: string, canonical: CanonicalRecipe[]) => (
+  createRecipes(userId, canonical.map(buildCanonicalImportPayload))
+);

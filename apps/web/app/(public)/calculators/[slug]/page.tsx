@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { allCalculatorSlugs, getCalculatorDefinition } from "@/features/calculators/definitions";
+import { canAccessCalculator } from "@/features/calculators/access";
+import { getCalculatorDefinition } from "@/features/calculators/definitions";
 import { buildCalculatorMetadata } from "@/features/calculators/seo";
+import { getVisibleCalculatorSlugs, isCalculatorPublic } from "@/features/calculators/visibility";
 
 import { CalculatorPageView } from "./calculator-page-view";
 
@@ -11,21 +13,22 @@ type Props = {
 };
 
 export function generateStaticParams() {
-  return allCalculatorSlugs.map((slug) => ({ slug }));
+  return getVisibleCalculatorSlugs().map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const definition = getCalculatorDefinition(slug);
 
-  if (!definition) {
+  if (!definition || !(await canAccessCalculator(slug))) {
     notFound();
   }
 
   return buildCalculatorMetadata(definition.catalog);
 }
 
-// Страница не читает searchParams — она статическая (generateStaticParams).
+// Публичные калькуляторы статические; закрытые проверяют сессию на сервере.
+// Страница не читает searchParams.
 // Состояние из query (?og=…&fg=…) читает CalculatorPageClient через
 // useSearchParams() на клиенте, обёрнутый в Suspense внутри CalculatorPageView,
 // чтобы этот хук не опрокидывал весь роут в динамический рендеринг
@@ -43,9 +46,12 @@ export default async function CalculatorPage({ params }: Props) {
   const { slug } = await params;
   const definition = getCalculatorDefinition(slug);
 
-  if (!definition) {
+  if (!definition || !(await canAccessCalculator(slug))) {
     notFound();
   }
 
-  return <CalculatorPageView definition={definition} />;
+  return <CalculatorPageView
+    definition={definition}
+    visibleCalculatorSlugs={getVisibleCalculatorSlugs(isCalculatorPublic(definition.catalog.slug) ? undefined : "admin")}
+  />;
 }

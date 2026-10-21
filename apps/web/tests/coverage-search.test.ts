@@ -275,6 +275,24 @@ describe("ранжирование ингредиентов: устойчиво�
     expect(scoreIngredientCandidate("сааз", { displayName: "Saaz" })).toBeGreaterThan(0);
   });
 
+  // Сааз / Зааз — два русских написания одного сорта; без кросс-алиаса
+  // «зааз»→zaaz не матчит name_en Saaz (в отличие от «сааз»→saaz).
+  it("Saaz: зааз находит карточку Сааз через алиас", () => {
+    expect(scoreIngredientCandidate("зааз", {
+      displayName: "Сааз",
+      nameEn: "Saaz",
+      aliases: ["Зааз", "Заац", "Жатецкий"]
+    })).toBeGreaterThan(0);
+  });
+
+  it("Saaz: сааз находит карточку Сааз по основному имени", () => {
+    expect(scoreIngredientCandidate("сааз", {
+      displayName: "Сааз",
+      nameEn: "Saaz",
+      aliases: ["Зааз", "Жатецкий", "Заац"]
+    })).toBeGreaterThan(0);
+  });
+
   it("семейная транслитерация: кириллица «мюнхен» матчит латинский Munich Malt", () => {
     const ranked = rankIngredientCandidate("мюнхен", { displayName: "Munich Malt" });
     expect(ranked).not.toBeNull();

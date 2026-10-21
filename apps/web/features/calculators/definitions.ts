@@ -256,9 +256,9 @@ const formatSg = (value: number) => value.toFixed(3);
 export const coreWarningCopy: Record<string, { text: string; tone: "info" | "warning" }> = {
   mash_ph_ballpark_estimate: { text: "Оценка pH ориентировочная — не замена pH-метру.", tone: "info" },
   mash_acid_model_practical_approximation: { text: "Расчёт кислоты — практическое приближение, не точная лабораторная модель.", tone: "info" },
-  high_sodium: { text: "Высокий натрий (>150 ppm) — возможен солоноватый привкус.", tone: "warning" },
-  high_sulfate: { text: "Высокий сульфат (>350 ppm) — резкая, сухая горечь.", tone: "warning" },
-  high_chloride: { text: "Высокий хлорид (>250 ppm) — риск излишней полноты/солоноватости.", tone: "warning" },
+  high_sodium: { text: "Высокая концентрация натрия (>150 ppm) — возможен солоноватый привкус.", tone: "warning" },
+  high_sulfate: { text: "Высокая концентрация сульфатов (>350 ppm) — резкая, сухая горечь.", tone: "warning" },
+  high_chloride: { text: "Высокая концентрация хлоридов (>250 ppm) — риск излишней полноты/солоноватости.", tone: "warning" },
   target_already_reached: { text: "Целевой pH уже достигнут — кислота не нужна.", tone: "info" },
   target_not_reached_within_max_acid: { text: "Целевой pH не достигается разумной дозой кислоты — проверьте воду и засыпь.", tone: "warning" },
   dry_hop_ibu_ignored: { text: "Сухое охмеление почти не даёт горечи — в IBU не учитывается.", tone: "info" },
@@ -266,27 +266,27 @@ export const coreWarningCopy: Record<string, { text: string; tone: "info" | "war
   tinseth_classic_whirlpool_ignored: { text: "Классический Tinseth не считает вирпул — переключитесь на «Tinseth + вирпул».", tone: "warning" },
   whirlpool_unsupported_for_rager: { text: "Формула Rager не учитывает вирпул — это внесение не посчитано.", tone: "warning" },
   dry_hop_unsupported_for_rager: { text: "Формула Rager не учитывает сухое охмеление.", tone: "info" },
-  boil_carryover_whirlpool_approximation: { text: "Догорчение в вирпуле — приближённая оценка.", tone: "info" },
-  ibu_above_solubility_ceiling: { text: "Выше ~100 IBU модель завышает горечь — растворимость изо-альфа-кислот ограничена, реальная утилизация выходит на плато, и ощущаемая горечь ниже расчётной.", tone: "warning" },
+  boil_carryover_whirlpool_approximation: { text: "Дополнительная горечь от вирпула — приближённая оценка.", tone: "info" },
+  ibu_above_solubility_ceiling: { text: "Выше ~100 IBU модель завышает горечь — растворимость изо-альфа-кислот ограничена, дальнейший переход горьких веществ в сусло замедляется, и ощущаемая горечь ниже расчётной.", tone: "warning" },
   spunding_pressure_high: { text: "Давление выше 30 PSI — проверьте, на что рассчитан клапан и кег.", tone: "warning" },
   pressure_above_30_psi: { text: "Давление выше 30 PSI — проверьте, на что рассчитан клапан и кег.", tone: "warning" },
   target_volume_above_current: { text: "Целевой объём больше текущего — выкипанием его не получить. Проверьте «Целевой объём».", tone: "warning" },
   target_volume_below_current: { text: "Целевой объём меньше текущего — добавлением воды его не получить.", tone: "warning" },
   target_gravity_above_current: { text: "Целевая плотность выше текущей — разбавлением её не поднять, нужен экстракт.", tone: "warning" },
   target_gravity_below_current: { text: "Целевая плотность ниже текущей — уваривание её не снизит, нужна вода.", tone: "warning" },
-  hot_wort_volume_shrinkage_applied: { text: "Объём указан как замеренный сразу после кипячения — при остывании он усаживается примерно на 4%, дальше считаем уже от холодного объёма.", tone: "info" },
+  hot_wort_volume_shrinkage_applied: { text: "Объём указан как замеренный сразу после кипячения — при остывании он уменьшается примерно на 4%, дальше считаем уже от холодного объёма.", tone: "info" },
   high_carbonation_bottle_risk: { text: "Выше ~3.5 об. CO₂ — опасно для стандартной стеклянной бутылки.", tone: "warning" },
-  residual_exceeds_target: { text: "В пиве уже не меньше CO₂, чем цель — сахар не нужен.", tone: "info" },
+  residual_exceeds_target: { text: "В пиве уже достаточно CO₂ для выбранного уровня карбонизации — сахар не нужен.", tone: "info" },
   speise_target_already_reached: { text: "Пиво уже карбонизировано до цели — добавка не нужна.", tone: "info" },
   bottling_loss_exceeds_volume: { text: "Потери при розливе не меньше объёма пива — бутылок не получится. Проверьте «Потери при розливе».", tone: "warning" },
   shrinkage_suspiciously_high: { text: "Усадка больше 20% — похоже на опечатку (обычно ~4%).", tone: "warning" },
   mash_water_capped: { text: "Вся вода уходит в затор — на промывку не остаётся.", tone: "info" },
-  no_viable_cells: { text: "Живых клеток нет — стартеру не из чего расти.", tone: "warning" },
+  no_viable_cells: { text: "По расчёту живых клеток не осталось — для стартера нужны свежие дрожжи.", tone: "warning" },
   hops_too_old: { text: "Хмель на пределе модели — расчёту не стоит доверять.", tone: "warning" },
   strike_temp_above_boiling: { text: "Расчётная температура воды выше кипения — с таким объёмом и гидромодулем цель недостижима. Добавьте воды или снизьте целевую температуру.", tone: "warning" },
   strike_temp_near_boiling: { text: "Расчётная температура воды у самого кипения — проверьте объём воды и зерна.", tone: "warning" },
   mash_thickness_unusual: { text: "Гидромодуль вне обычного диапазона 2–5 л/кг — проверьте объём воды и вес зерна.", tone: "warning" },
-  infusion_temp_not_above_target: { text: "Долив не горячее целевой температуры — так затор не поднять. Увеличьте температуру долива.", tone: "warning" },
+  infusion_temp_not_above_target: { text: "Вода для долива не горячее целевой температуры — так затор не нагреть. Возьмите воду горячее.", tone: "warning" },
   infusion_volume_excessive: { text: "Долив больше 60% текущего объёма затора — проверьте температуры и объём воды.", tone: "warning" },
   infusion_step_downward: { text: "Следующая пауза не выше текущей — доливом температуру не снизить, долив не нужен.", tone: "info" },
   cooling_step_not_downward: { text: "Следующая пауза не ниже текущей — охлаждением температуру не поднять, долив не нужен.", tone: "info" },
@@ -299,7 +299,7 @@ export const coreWarningCopy: Record<string, { text: string; tone: "info" | "war
   measured_og_below_extras: { text: "Замеренная плотность ниже вклада одних только экстрактов и сахара — проверьте замер или состав засыпи.", tone: "warning" },
   no_measured_points: { text: "Замеренная OG не выше 1.000 — эффективность посчитать не из чего.", tone: "warning" },
   mash_water_required: { text: "Укажите объём заторной воды больше нуля — без него температуру не посчитать.", tone: "warning" },
-  salt_addition_capped: { text: "Подбор солей упёрся в лимит на одну соль — профиль достигнут не полностью.", tone: "warning" }
+  salt_addition_capped: { text: "Достигнуто ограничение по дозировке одной из солей — целевой профиль удалось получить лишь частично.", tone: "warning" }
 };
 
 export const translateCoreWarnings = (codes: string[]): CalculatorResultWarning[] => (
@@ -708,7 +708,7 @@ const sourceWaterCalcPresetProfile = (id: string): SourceWaterCalcPreset["profil
 );
 
 // Ф2-1: сверка фактических source-ионов состояния с каталогом пресетов — источник истины
-// для честной подписи чипа "Пресет", когда состояние само по себе не несёт sourceWaterPreset
+// для честной подписи чипа "Готовый профиль", когда состояние само по себе не несёт sourceWaterPreset
 // (старый localStorage без ключа — см. migrateStoredState; старая share-ссылка с ионами, но
 // без sourceWaterPreset в query — см. applyQuery). Ионы совпали с одним из пресетов —
 // возвращаем его id, иначе "custom" (ручные значения).
@@ -1011,7 +1011,7 @@ export type DilutionView = {
   extraBoilTimeMinutes: number;
   extractG: number;
   isSugar: boolean;
-  // К17: тумблер «Объём замерен горячим» и холодный объём, от которого реально считаем
+  // К17: тумблер «Объём измерен на горячем сусле» и холодный объём, от которого реально считаем
   // (= currentVolumeL, если тумблер выключен).
   currentVolumeMeasuredHot: boolean;
   effectiveCurrentVolumeL: number;
@@ -1329,7 +1329,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       targetVolumeL: 24,
       boilOffRateLPerHour: 4,
       additionType: "dme",
-      // К17: «Объём замерен горячим» — выключено по умолчанию (объём холодный, как раньше).
+      // К17: «Объём измерен на горячем сусле» — выключено по умолчанию (объём холодный, как раньше).
       // Старые сохранённые состояния без этого ключа мержатся с дефолтами в
       // CalculatorPageClient ДО чтения — получают "0" тем же путём, явной миграции не нужно.
       currentVolumeMeasuredHot: "0"
@@ -1378,7 +1378,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       // нужно только чтобы "1"/"0" попадало в serializeCalculatorStateToQuery/applyQuery
       // (шаренные ссылки) и в allowlist initialCalculatorStateFromQuery, как и остальные поля
       // ниже кастомной панели (ср. комментарий про fields у refractometer-correction).
-      selectField("currentVolumeMeasuredHot", "Объём замерен горячим", [
+      selectField("currentVolumeMeasuredHot", "Объём измерен на горячем сусле", [
         { value: "0", label: "Нет" },
         { value: "1", label: "Да" }
       ])
@@ -1423,7 +1423,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         stats,
         warnings: view.warnings,
         links: [
-          { label: "Взять объём и плотность в IBU", href: buildCalculatorHref("ibu", { postBoilVolumeL: view.resultingVolumeL, wortGravity: view.resultingGravitySg }) },
+          { label: "Использовать объём и плотность в расчёте IBU", href: buildCalculatorHref("ibu", { postBoilVolumeL: view.resultingVolumeL, wortGravity: view.resultingGravitySg }) },
           ...relatedLinks(["abv-attenuation", "brewing-water-volume", "unit-converter"])
         ]
       };
@@ -1520,7 +1520,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         { value: "post_fermentation", label: "Во время/после брожения" }
       ]),
       numberField("currentBrix", "Текущий Brix", "Brix", { min: 0, step: 0.1 }),
-      numberField("originalValue", "Начальное OG", "Brix", { min: 0, step: 0.1 }),
+      numberField("originalValue", "Начальная плотность (OG)", "Brix", { min: 0, step: 0.1 }),
       selectField("originalUnit", "Единица OG", refractometerOgUnitOptions),
       numberField("wortCorrectionFactor", "WCF", undefined, { min: 0.8, step: 0.01, advanced: true }),
       selectField("formula", "Формула после брожения", REFRACTOMETER_FORMULA_OPTIONS, { advanced: true })
@@ -1553,14 +1553,14 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       const links: CalculatorResultLink[] = [];
 
       if (mode === "post_fermentation") {
-        stats.push({ label: "ABV оценка", value: formatPercent(view.estimatedABV, 1) });
+        stats.push({ label: "Оценка ABV", value: formatPercent(view.estimatedABV, 1) });
         stats.push({
           label: "Сбраживание",
           value: formatPercent(view.attenuation),
           tone: view.attenuationBand === "normal" ? "good" : "warning"
         });
         links.push({
-          label: "Использовать как FG в ABV",
+          label: "Использовать как FG в расчёте крепости",
           href: buildCalculatorHref("abv-attenuation", { og: ogSg.toFixed(3), fg: corrected.sg.toFixed(3) })
         });
       }
@@ -1637,7 +1637,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
             ? ["Выше ~60 °C показания ареометра ненадёжны даже с поправкой — охладите пробу ближе к температуре калибровки."]
             : undefined,
         links: [
-          { label: "Использовать как OG в ABV", href: buildCalculatorHref("abv-attenuation", { og: view.correctedSg.toFixed(3) }) },
+          { label: "Использовать как OG в расчёте крепости", href: buildCalculatorHref("abv-attenuation", { og: view.correctedSg.toFixed(3) }) },
           ...relatedLinks(["refractometer-correction", "unit-converter"])
         ]
       };
@@ -1725,8 +1725,8 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
             label: "Хмель",
             fullWidth: true,
             ingredientCategory: "hop",
-            placeholder: "Хмель из базы или впишите своё название",
-            helper: "Нет в базе — оставьте своё название и укажите альфа-кислотность (AA) вручную.",
+            placeholder: "Выберите хмель из каталога или введите название",
+            helper: "Нет в каталоге — оставьте своё название и укажите альфа-кислотность (AA) вручную.",
             // typical AA сорта из каталога (Б2) — с фолбэком на середину диапазона, если
             // typical не задан (см. resolveHopEffectiveAlphaAcidPct в technical-fields.ts).
             // Ручной ввод AA остаётся: строка редактируема и после выбора из каталога.
@@ -1890,7 +1890,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       selectField("co2StylePreset", "Стиль", primingCo2StyleOptions, {
         variant: "chips",
         fullWidth: true,
-        helper: "Ориентировочные диапазоны по стилю — тап подставляет середину, поле остаётся редактируемым.",
+        helper: "Выберите стиль, чтобы подставить среднее значение его диапазона. Затем значение можно изменить вручную.",
         // Ф2-2: повторный тап по уже активному чипсу — не переустанавливаем targetCo2Volumes,
         // иначе молча затираем ручную правку "Целевого CO₂" серединой того же диапазона.
         // state — снимок ДО применения nextValue (см. transformOnChange в CalculatorState),
@@ -2015,14 +2015,14 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       selectField("colorCategory", "Цвет засыпи", [
         { value: "pale", label: "Светлая" },
         { value: "amber", label: "Янтарная" },
-        { value: "dark", label: "Темная" }
+        { value: "dark", label: "Тёмная" }
       ], { variant: "segmented", group: "Затор" }),
       numberField("spargeWaterVolumeL", "Промывочная вода", "л", { min: 0, advanced: true }),
-      selectField("sourceWaterPreset", "Пресет", SOURCE_WATER_CALC_PRESET_OPTIONS, {
+      selectField("sourceWaterPreset", "Готовый профиль", SOURCE_WATER_CALC_PRESET_OPTIONS, {
         variant: "chips",
         fullWidth: true,
         group: "Исходная вода",
-        helper: "Пресеты — примерные профили; точный состав дадут анализ воды или отчёт водоканала.",
+        helper: "Готовые профили приведены для примера. Точный состав воды можно узнать из анализа или отчёта водоканала.",
         transformOnChange: (nextValue) => {
           const profile = sourceWaterCalcPresetProfile(nextValue);
           return profile
@@ -2042,7 +2042,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         group: "Соли и кислота",
         fullWidth: true,
         visibleWhen: isWaterPhTargetMode,
-        helper: "Ориентировочные ppm — солвер подберёт соли из вашей воды под этот профиль"
+        helper: "Целевые концентрации в ppm — калькулятор подберёт добавки солей с учётом состава исходной воды"
       }),
       numberField("cacl2G", "CaCl₂", "г", { min: 0, step: 0.1, group: "Соли и кислота", helper: "Хлорид кальция", visibleWhen: isWaterPhManualMode }),
       numberField("caso4G", "CaSO₄", "г", { min: 0, step: 0.1, group: "Соли и кислота", helper: "Гипс (сульфат кальция)", visibleWhen: isWaterPhManualMode }),
@@ -2120,7 +2120,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       // поля spargeWaterVolumeL из "Дополнительно".
       const totalWaterL = mashWaterVolumeL + spargeWaterVolumeL;
       stats.push({
-        label: "Соли разведены на",
+        label: "Дозировка солей рассчитана на",
         value: formatLiters(totalWaterL),
         helper: spargeWaterVolumeL > 0
           ? `Затор ${formatLiters(mashWaterVolumeL)} + промывка ${formatLiters(spargeWaterVolumeL)}`
@@ -2262,7 +2262,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       numberField("cellsPerPackBillion", "Клеток в пакете", "млрд", {
         min: 0,
         step: 10,
-        helper: "Жидкая пачка ~100 млрд, сухая 11 г ~200 млрд",
+        helper: "В упаковке жидких дрожжей около 100 млрд клеток, в 11 г сухих — около 200 млрд",
         transformOnChange: () => [["cellsPerPackBillionTouched", true]]
       }),
       dateField("manufactureDate", "Дата производства"),
@@ -2459,7 +2459,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         step: 0.1,
         helper: "Обычно 3–5 л/ч — уточните по своим варкам"
       }),
-      numberField("grainAbsorptionLPerKg", "Впитывание зерна", "л/кг", {
+      numberField("grainAbsorptionLPerKg", "Поглощение воды зерном", "л/кг", {
         min: 0,
         step: 0.05,
         advanced: true,
@@ -2472,7 +2472,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         helper: "Мёртвый объём котла/фильтра — что не сливается",
         transformOnChange: () => [["kettleLossLTouched", true]]
       }),
-      numberField("trubChillerLossL", "Осадок/чиллер", "л", { min: 0, advanced: true, helper: "Остается с хмелевым осадком и в чиллере после кипячения" }),
+      numberField("trubChillerLossL", "Осадок/чиллер", "л", { min: 0, advanced: true, helper: "Остаётся с хмелевым осадком и в чиллере после кипячения" }),
       numberField("coolingShrinkagePercent", "Усадка при охлаждении", "%", { min: 0, advanced: true })
     ],
     calculate: (state) => {
@@ -2514,7 +2514,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         stats,
         warnings: translateCoreWarnings(result.warnings),
         links: [
-          { label: "Использовать объёмы в воде и pH", href: buildCalculatorHref("water-ph", { mashWater: result.mashWaterL, spargeWater: result.spargeWaterL }) },
+          { label: "Перенести объёмы в расчёт воды и pH", href: buildCalculatorHref("water-ph", { mashWater: result.mashWaterL, spargeWater: result.spargeWaterL }) },
           ...relatedLinks(["dilution-boiloff", "ibu", "unit-converter"])
         ]
       };
@@ -2702,7 +2702,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
           ],
           warnings: translateCoreWarnings(view.warnings),
           links: [
-            { label: "Учесть объём в воде на варку", href: buildCalculatorHref("brewing-water-volume", { grainWeightKg: view.grainKg, mashThicknessLPerKg: view.newThicknessLPerKg }) },
+            { label: "Учесть объём в расчёте воды на варку", href: buildCalculatorHref("brewing-water-volume", { grainWeightKg: view.grainKg, mashThicknessLPerKg: view.newThicknessLPerKg }) },
             ...relatedLinks(["water-ph", "brewhouse-efficiency", "unit-converter"])
           ]
         };
@@ -2731,7 +2731,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
           ],
           warnings: translateCoreWarnings(view.warnings),
           links: [
-            { label: "Учесть объём в воде на варку", href: buildCalculatorHref("brewing-water-volume", { grainWeightKg: view.grainKg, mashThicknessLPerKg: view.finalThicknessLPerKg }) },
+            { label: "Учесть объём в расчёте воды на варку", href: buildCalculatorHref("brewing-water-volume", { grainWeightKg: view.grainKg, mashThicknessLPerKg: view.finalThicknessLPerKg }) },
             ...relatedLinks(["water-ph", "brewhouse-efficiency", "unit-converter"])
           ]
         };
@@ -2751,7 +2751,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         warnings: translateCoreWarnings(view.warnings),
         links: [
           {
-            label: "Учесть объём в воде на варку",
+            label: "Учесть объём в расчёте воды на варку",
             // В невалидном состоянии (объём воды 0) гидромодуль тоже 0 — передавать его дальше
             // значило бы открыть «Воду на варку» с затором 0 л; шлём только вес зерна.
             href: buildCalculatorHref("brewing-water-volume", view.invalid
@@ -2815,8 +2815,8 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
             label: "Солод",
             fullWidth: true,
             ingredientCategory: "fermentable",
-            placeholder: "Солод из базы или впишите своё название",
-            helper: "Нет в базе — оставьте своё название и укажите цвет солода вручную.",
+            placeholder: "Выберите солод из каталога или введите название",
+            helper: "Нет в каталоге — оставьте своё название и укажите цвет солода вручную.",
             // Цвет солода из каталога — в Lovibond (см. getIngredientColorLovibond); строка
             // хранит цвет в ТЕКУЩЕЙ выбранной шкале (EBC/°L, см. colorUnit выше и toLovibond
             // в calculate ниже), поэтому конвертируем перед записью в colorLovibond.
@@ -2919,7 +2919,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       ], { variant: "segmented" }),
       numberField("batchVolumeL", "Объём сусла", "л", {
         min: 0.1,
-        helper: "В который замеряете плотность — обычно в ферментере"
+        helper: "Объём сусла, в котором измерена плотность, — обычно в ферментере"
       }),
       {
         kind: "array",
@@ -2935,8 +2935,8 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
             label: "Ингредиент",
             fullWidth: true,
             ingredientCategory: "fermentable",
-            placeholder: "Солод из базы или впишите своё название",
-            helper: "Нет в базе — оставьте своё название и укажите потенциал (PPG) вручную.",
+            placeholder: "Выберите солод из каталога или введите название",
+            helper: "Нет в каталоге — оставьте своё название и укажите потенциал (PPG) вручную.",
             onPick: (item) => [
               ["name", item.primaryLabelRu ?? item.displayName],
               ["ppg", getIngredientPotentialPpg({ technicalData: item.technicalData }, 36)],
@@ -2952,7 +2952,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
           numberField("ppg", "Потенциал (PPG)", undefined, {
             min: 0,
             step: 1,
-            helper: "Базовый солод ~34–38, сахар/DME ~44–46 — это не проценты с мешка"
+            helper: "Базовый солод ~34–38, сахар/DME ~44–46 — это не экстрактивность в процентах на упаковке"
           }),
           selectField("mashed", "Тип", [
             { value: "1", label: "Солод и зерно" },
@@ -3292,7 +3292,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       const stats: CalculatorResultStat[] = [];
       if (targetAmountG > 0) {
         stats.push({
-          label: "Масса для той же IBU",
+          label: "Навеска для той же горечи (IBU)",
           value: formatGrams(result.suggestedAmountForSameIbuG),
           helper: "вместо навески по рецепту"
         });

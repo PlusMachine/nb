@@ -14,6 +14,7 @@ const baseLine = (overrides: Partial<RecipeMatchLineDto> = {}): RecipeMatchLineD
   ingredientDisplayName: "Кориандр молотый",
   category: "consumable",
   brand: null,
+  countryCode: null,
   status: "missing",
   coveragePercent: 0,
   requiredQuantityNormalized: 10,
@@ -85,12 +86,12 @@ describe("RecipeMatchPanelView — П3: строки-нехватки без п�
 
 describe("RecipeMatchPanelView — П2: вердикт ведёт в список покупок", () => {
   it("делает «не хватает K» ссылкой на /app/shopping, когда нехватки есть", () => {
-    // Ф25: счётчик в шапке равен gapLines.length (реальным строкам-нехваткам),
-    // а не отдельно выставленному missingCount — фикстура несёт 3 gap-строки.
+    // Ф25: счётчик в шапке равен числу уникальных ингредиентов-нехваток
+    // (после схлопывания повторных добавок), а не сырых строк рецепта.
     const html = render(baseMatch([
-      baseLine({ recipeIngredientId: "ri-1", displayOrder: 0 }),
-      baseLine({ recipeIngredientId: "ri-2", displayOrder: 1 }),
-      baseLine({ recipeIngredientId: "ri-3", displayOrder: 2 })
+      baseLine({ recipeIngredientId: "ri-1", displayOrder: 0, ingredientDisplayName: "A", ingredientCatalogItemId: "cat-a" }),
+      baseLine({ recipeIngredientId: "ri-2", displayOrder: 1, ingredientDisplayName: "B", ingredientCatalogItemId: "cat-b" }),
+      baseLine({ recipeIngredientId: "ri-3", displayOrder: 2, ingredientDisplayName: "C", ingredientCatalogItemId: "cat-c" })
     ], { coveredLines: 2, totalLines: 5 }));
 
     expect(html).toMatch(/<a[^>]+href="\/app\/shopping"[^>]*>\s*не хватает 3\s*<\/a>/);
@@ -110,5 +111,74 @@ describe("RecipeMatchPanelView — П2: вердикт ведёт в списо�
     expect(html).not.toContain('href="/app/shopping"');
     expect(html).toContain("Есть 0 из 1");
     expect(html).not.toContain("Есть 0 из 1 · ");
+  });
+});
+
+describe("RecipeMatchPanelView — бренд, флаг и hover «На склад»", () => {
+  it("показывает бренд и флаг страны у строки нехватки", () => {
+    const html = render(baseMatch([
+      baseLine({
+        ingredientCatalogItemId: "cat-1",
+        brand: "Weyermann",
+        countryCode: "DE",
+        category: "fermentable"
+      })
+    ]));
+
+    expect(html).toContain("Weyermann");
+    expect(html).toContain("Сбраживаемые");
+    expect(html).toMatch(/viewBox="0 0 18 12"/);
+    expect(html).toContain("#DD0000");
+  });
+
+  it("кнопка «На склад» скрыта до наведения на карточку (sm+)", () => {
+    const html = render(baseMatch([
+      baseLine({ ingredientCatalogItemId: "cat-1", userCustomIngredientId: null })
+    ]));
+
+    expect(html).toContain("group rounded-lg");
+    expect(html).toContain("sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100");
+    expect(html).toContain("На склад");
+  });
+
+  it("схлопывает повторные добавки одного хмеля в одну строку нехватки", () => {
+    const html = render(baseMatch([
+      baseLine({
+        recipeIngredientId: "ri-mosaic-boil",
+        displayOrder: 0,
+        ingredientDisplayName: "Мозаик",
+        category: "hop",
+        brand: "Beervingem",
+        countryCode: "US",
+        ingredientCatalogItemId: "us-mosaic",
+        suggestedAddQuantity: 57
+      }),
+      baseLine({
+        recipeIngredientId: "ri-mosaic-whirl",
+        displayOrder: 1,
+        ingredientDisplayName: "Мозаик",
+        category: "hop",
+        brand: "Beervingem",
+        countryCode: "US",
+        ingredientCatalogItemId: "us-mosaic",
+        suggestedAddQuantity: 57
+      }),
+      baseLine({
+        recipeIngredientId: "ri-mosaic-dry",
+        displayOrder: 2,
+        ingredientDisplayName: "Мозаик",
+        category: "hop",
+        brand: "Beervingem",
+        countryCode: "US",
+        ingredientCatalogItemId: "us-mosaic",
+        suggestedAddQuantity: 115
+      })
+    ], { coveredLines: 0, totalLines: 1 }));
+
+    // Одна кнопка «На склад», не три; счётчик нехватки = 1.
+    expect(html.match(/На склад/g)?.length).toBe(1);
+    expect(html).toMatch(/<a[^>]+href="\/app\/shopping"[^>]*>\s*не хватает 1\s*<\/a>/);
+    expect(html).toContain("Beervingem");
+    expect(html).toContain("#3C3B6E");
   });
 });

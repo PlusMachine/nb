@@ -1,0 +1,318 @@
+--- a/apps/web/features/ingredients/ranking.ts
++++ b/apps/web/features/ingredients/ranking.ts
+@@ -502,6 +502,9 @@
+     searchTextNorm
+   };
+ };
++
++export type PreparedIngredientCandidate = ReturnType<typeof normalizeCandidate>;
++export const prepareIngredientCandidate = normalizeCandidate;
+ 
+ const isConsumableCandidate = (candidate: RankedCandidate) => candidate.category === "consumable";
+ 
+@@ -1528,16 +1531,16 @@
+ export const createIngredientRanker = (
+   query: string | string[],
+   options: RankingOptions = {}
+-): ((candidate: RankedCandidate) => IngredientCandidateRank | null) => {
++): ((candidate: RankedCandidate, prepared?: PreparedIngredientCandidate) => IngredientCandidateRank | null) => {
+   const queryText = Array.isArray(query) ? query[0] ?? "" : query;
+   const queryInfo = analyzeQuery(queryText, options);
+ 
+-  return (candidate) => {
++  return (candidate, prepared) => {
+     if (!queryInfo) {
+       return null;
+     }
+ 
+-    const normalizedCandidate = normalizeCandidate(candidate);
++    const normalizedCandidate = prepared ?? normalizeCandidate(candidate);
+     const consumableRank = isConsumableCandidate(candidate)
+       ? buildConsumableRank(queryInfo, candidate, normalizedCandidate)
+       : null;
+@@ -1566,12 +1569,12 @@
+   // Скоуп-фильтр quick-start НЕ двухпроходный — раскладка тут всегда учтена
+   // (прежнее поведение buildQueryVariants до вынесения раскладки в фолбэк).
+   const queryInfo = analyzeQuery(familyQuery, { includeLayoutVariants: true });
+-  return (candidate: RankedCandidate) => {
++  return (candidate: RankedCandidate, prepared?: PreparedIngredientCandidate) => {
+     if (!queryInfo?.family) {
+       return false;
+     }
+ 
+-    const normalizedCandidate = normalizeCandidate(candidate);
++    const normalizedCandidate = prepared ?? normalizeCandidate(candidate);
+     return buildIntentAwareRank(queryInfo, candidate, normalizedCandidate) !== null;
+   };
+ };
+--- a/apps/web/features/ingredients/catalog-service.ts
++++ b/apps/web/features/ingredients/catalog-service.ts
+@@ -103,7 +103,7 @@
+   resolveIngredientSubtype,
+   type IngredientSubtype
+ } from "./taxonomy";
+-import { createIngredientFamilyMatcher, createIngredientRanker, rankQueryTwoPass } from "./ranking";
++import { createIngredientFamilyMatcher, createIngredientRanker, prepareIngredientCandidate, rankQueryTwoPass, type PreparedIngredientCandidate, type RankedCandidate } from "./ranking";
+ import {
+   applyFavoriteStateToCatalogItems,
+   listIngredientPurchaseLinksByReference
+@@ -168,18 +168,27 @@
+   }))
+ );
+ 
+-const mapSystemIngredient = (item: Awaited<ReturnType<typeof loadIngredients>>[number]): UserCatalogIngredientDto => ({
+-  ...item,
+-  source: "catalog",
+-  notes: null,
+-  properties: null,
+-  derivedFromIngredientId: null,
+-  derivedFromDisplayName: null,
+-  inventoryUsageCount: 0,
+-  recipeUsageCount: 0,
+-  inventoryInUse: false,
+-  recipeInUse: false
+-});
++// The underlying DTO is an immutable snapshot from loadIngredients. Weak keys
++// release prepared data once TTL/invalidation replaces that snapshot.
++const mappedSystemIngredients = new WeakMap<Awaited<ReturnType<typeof loadIngredients>>[number], UserCatalogIngredientDto>();
++const mapSystemIngredient = (item: Awaited<ReturnType<typeof loadIngredients>>[number]): UserCatalogIngredientDto => {
++  const cached = mappedSystemIngredients.get(item);
++  if (cached) return cached;
++  const mapped: UserCatalogIngredientDto = {
++    ...item,
++    source: "catalog",
++    notes: null,
++    properties: null,
++    derivedFromIngredientId: null,
++    derivedFromDisplayName: null,
++    inventoryUsageCount: 0,
++    recipeUsageCount: 0,
++    inventoryInUse: false,
++    recipeInUse: false
++  };
++  mappedSystemIngredients.set(item, mapped);
++  return mapped;
++};
+ 
+ const mapCustomIngredient = (
+   item: typeof userCustomIngredients.$inferSelect
+@@ -737,13 +746,25 @@
+   return counts;
+ };
+ 
+-const buildRankedItem = (
+-  item: UserCatalogIngredientDto,
+-  rankCandidate: ReturnType<typeof createIngredientRanker>,
+-  brandMarketCounts?: Map<string, number>
+-): RankedCatalogItem | null => {
+-  const normalizedBrand = normalizeSearchText(resolveManufacturerLabel(item) ?? "");
+-  const rank = rankCandidate({
++type CatalogSearchDocument = {
++  candidate: RankedCandidate;
++  prepared: PreparedIngredientCandidate;
++  normalizedBrand: string;
++};
++const catalogSearchDocuments = new WeakMap<UserCatalogIngredientDto, CatalogSearchDocument>();
++const catalogSearchOrigins = new WeakMap<UserCatalogIngredientDto, UserCatalogIngredientDto>();
++
++const getCatalogSearchDocument = (item: UserCatalogIngredientDto): CatalogSearchDocument => {
++  const origin = catalogSearchOrigins.get(item) ?? item;
++  const cached = catalogSearchDocuments.get(origin);
++  if (cached) return cached;
++  const document = buildCatalogSearchDocument(origin);
++  catalogSearchDocuments.set(origin, document);
++  return document;
++};
++
++const buildCatalogSearchDocument = (item: UserCatalogIngredientDto): CatalogSearchDocument => {
++  const candidate: RankedCandidate = {
+     displayName: item.displayName,
+     displayNameRu: item.nameRu ?? item.displayNameRu,
+     displayNameEn: item.nameEn ?? item.displayNameEn,
+@@ -761,11 +782,7 @@
+     brandName: item.brand ?? item.brandName,
+     manufacturer: item.producer ?? item.manufacturer,
+     productCode: item.productCode,
+-    isFavorite: item.isFavorite,
+     source: item.source,
+-    inventoryUsageCount: item.inventoryUsageCount,
+-    recipeUsageCount: item.recipeUsageCount,
+-    brandMarketCount: normalizedBrand ? brandMarketCounts?.get(normalizedBrand) ?? 0 : 0,
+     sourcesCount: item.sources.length,
+     packageVariantsCount: item.packageVariants.length,
+     packageVariants: item.packageVariants.map((variant) => ({
+@@ -778,18 +795,33 @@
+       stockContentAmount: variant.stockContentAmount,
+       stockContentUnit: variant.stockContentUnit
+     }))
+-  });
+-
+-  if (!rank || rank.score <= 0) {
+-    return null;
+-  }
+-
++  };
+   return {
+-    item,
+-    tier: rank.tier,
+-    score: rank.score,
+-    familyFallback: rank.familyFallback
++    candidate,
++    prepared: prepareIngredientCandidate(candidate),
++    normalizedBrand: normalizeSearchText(resolveManufacturerLabel(item) ?? "")
+   };
++};
++
++// Personal and scope-dependent boosts are always read from the current request.
++const buildCatalogRankContext = (item: UserCatalogIngredientDto, document: CatalogSearchDocument, brandMarketCount = 0): RankedCandidate => ({
++  ...document.candidate,
++  isFavorite: item.isFavorite,
++  inventoryUsageCount: item.inventoryUsageCount,
++  recipeUsageCount: item.recipeUsageCount,
++  brandMarketCount
++});
++
++const buildRankedItem = (
++  item: UserCatalogIngredientDto,
++  rankCandidate: ReturnType<typeof createIngredientRanker>,
++  brandMarketCounts?: Map<string, number>
++): RankedCatalogItem | null => {
++  const document = getCatalogSearchDocument(item);
++  const brandMarketCount = document.normalizedBrand ? brandMarketCounts?.get(document.normalizedBrand) ?? 0 : 0;
++  const rank = rankCandidate(buildCatalogRankContext(item, document, brandMarketCount), document.prepared);
++  if (!rank || rank.score <= 0) return null;
++  return { item, tier: rank.tier, score: rank.score, familyFallback: rank.familyFallback };
+ };
+ 
+ const applyUsageCounts = async (
+@@ -1039,6 +1071,12 @@
+     ? await applyFavoriteStateToCatalogItems(userId, combinedItems)
+     : combinedItems;
+ 
++  const originsByReference = new Map(combinedItems.map((item) => [`${item.source}:${item.id}`, item]));
++  allItems.forEach((item) => {
++    const origin = originsByReference.get(`${item.source}:${item.id}`);
++    if (origin && item !== origin) catalogSearchOrigins.set(item, origin);
++  });
++
+   return {
+     catalogItems: allItems.filter((item) => item.source === "catalog"),
+     customItems: allItems.filter((item) => item.source === "custom"),
+@@ -1161,42 +1199,10 @@
+   }
+ 
+   const matchesFamily = createIngredientFamilyMatcher(family.presetQuery);
+-  return items.filter((item) => matchesFamily({
+-    displayName: item.displayName,
+-    displayNameRu: item.nameRu ?? item.displayNameRu,
+-    displayNameEn: item.nameEn ?? item.displayNameEn,
+-    nameRu: item.nameRu,
+-    nameEn: item.nameEn,
+-    category: item.category,
+-    sourceCategory: item.sourceCategory,
+-    aliases: item.aliases.map((alias) => ({
+-      alias: alias.alias,
+-      aliasNormalized: alias.aliasNormalized,
+-      source: alias.source,
+-      isEnabled: alias.isEnabled
+-    })),
+-    searchTextNorm: buildSearchText(item),
+-    brandName: item.brand ?? item.brandName,
+-    manufacturer: item.producer ?? item.manufacturer,
+-    productCode: item.productCode,
+-    isFavorite: item.isFavorite,
+-    source: item.source,
+-    inventoryUsageCount: item.inventoryUsageCount,
+-    recipeUsageCount: item.recipeUsageCount,
+-    brandMarketCount: 0,
+-    sourcesCount: item.sources.length,
+-    packageVariantsCount: item.packageVariants.length,
+-    packageVariants: item.packageVariants.map((variant) => ({
+-      id: variant.id,
+-      brand: variant.brand,
+-      productNameEn: variant.productNameEn,
+-      productNameRu: variant.productNameRu,
+-      packageAmount: variant.packageAmount,
+-      packageUnit: variant.packageUnit,
+-      stockContentAmount: variant.stockContentAmount,
+-      stockContentUnit: variant.stockContentUnit
+-    }))
+-  }));
++  return items.filter((item) => {
++    const document = getCatalogSearchDocument(item);
++    return matchesFamily(buildCatalogRankContext(item, document), document.prepared);
++  });
+ };
+ 
+ const sortQuickStartItems = (items: UserCatalogIngredientDto[]) => items.slice().sort((left, right) => (
+--- a/apps/web/tests/ingredient-ranking-prepared.test.ts
++++ b/apps/web/tests/ingredient-ranking-prepared.test.ts
+@@ -1,22 +1,26 @@
+ import { describe, expect, it } from "vitest";
+ 
+-import { createIngredientFamilyMatcher, createIngredientRanker, matchesIngredientFamilyScope, rankIngredientCandidate } from "../features/ingredients/ranking";
++import { createIngredientFamilyMatcher, createIngredientRanker, prepareIngredientCandidate, matchesIngredientFamilyScope, rankIngredientCandidate } from "../features/ingredients/ranking";
+ import baseline from "./fixtures/ingredient-ranking-baseline.json";
+ import { rankingCandidates } from "./fixtures/ingredient-ranking-corpus";
++
++const preparedCandidates = rankingCandidates.map(prepareIngredientCandidate);
+ 
+ describe("prepared ingredient search preserves the pre-optimization ranking", () => {
+   it.each(baseline)("$query (layout=$includeLayoutVariants)", ({ query, includeLayoutVariants, ranks }) => {
+     const rank = createIngredientRanker(query, { includeLayoutVariants });
+     expect(rankingCandidates.map((candidate) => ({ id: candidate.id, rank: rank(candidate) }))).toEqual(ranks);
++    expect(rankingCandidates.map((candidate, index) => ({ id: candidate.id, rank: rank(candidate, preparedCandidates[index]) }))).toEqual(ranks);
+   });
+ 
+   it("keeps user context on each candidate instead of capturing it in the query", () => {
+     const rank = createIngredientRanker("пилснер");
+     const plain = { displayName: "Пилснер", source: "catalog" as const };
+     const favorite = { ...plain, isFavorite: true, inventoryUsageCount: 5 };
+-    expect(rank(plain)).toEqual(rankIngredientCandidate("пилснер", plain));
+-    expect(rank(favorite)).toEqual(rankIngredientCandidate("пилснер", favorite));
+-    expect(rank(plain)).toEqual(rankIngredientCandidate("пилснер", plain));
++    const prepared = prepareIngredientCandidate(plain);
++    expect(rank(plain, prepared)).toEqual(rankIngredientCandidate("пилснер", plain));
++    expect(rank(favorite, prepared)).toEqual(rankIngredientCandidate("пилснер", favorite));
++    expect(rank(plain, prepared)).toEqual(rankIngredientCandidate("пилснер", plain));
+   });
+ 
+   it("preserves the legacy array-query contract and family scope matching", () => {
+--- a/apps/web/tests/user-catalog-ingredient-search.test.ts
++++ b/apps/web/tests/user-catalog-ingredient-search.test.ts
+@@ -2311,3 +2311,35 @@
+     expect(result.items.map((item) => item.id)).toEqual(["citra-disabled-alias"]);
+   });
+ });
++
++describe("prepared catalog snapshots keep request context fresh", () => {
++  beforeEach(() => {
++    mockState.catalogItems = [];
++    mockState.customItems = [];
++    mockState.favoriteKeys = new Set();
++  });
++
++  it("reuses public search data while favorites change between users and requests", async () => {
++    mockState.catalogItems = ["pils-a", "pils-b"].map((id) => buildCatalogItem({
++      id, primaryLabelRu: "Пилснер", displayName: "Пилснер", nameRu: "Пилснер", nameEn: "Pilsner"
++    }));
++    const search = (userId: string) => searchUserCatalogIngredients(userId, { q: "пилснер", favoritesOnly: true });
++    mockState.favoriteKeys = new Set(["catalog:pils-a"]);
++    expect((await search("user-a")).items.map((item) => item.id)).toEqual(["pils-a"]);
++    mockState.favoriteKeys = new Set(["catalog:pils-b"]);
++    expect((await search("user-b")).items.map((item) => item.id)).toEqual(["pils-b"]);
++    const broad = await searchUserCatalogIngredients("user-b", { q: "пилснер" });
++    expect(broad.items[0].id).toBe("pils-b");
++    mockState.favoriteKeys = new Set();
++    expect((await search("user-a")).items).toEqual([]);
++  });
++
++  it("prepares a new search document when a refreshed catalog snapshot disables an alias", async () => {
++    const alias = { id: "refresh-alias", locale: "en", alias: "zzqrefreshalias", aliasNormalized: "zzqrefreshalias", source: "manual", isEnabled: true };
++    const row = buildCatalogItem({ id: "refreshed-item", aliases: [alias] });
++    mockState.catalogItems = [row];
++    expect((await searchUserCatalogIngredients(null, { q: "zzqrefreshalias" })).items.map((item) => item.id)).toEqual(["refreshed-item"]);
++    mockState.catalogItems = [{ ...row, aliases: [{ ...alias, isEnabled: false }] }];
++    expect((await searchUserCatalogIngredients(null, { q: "zzqrefreshalias" })).items).toEqual([]);
++  });
++});

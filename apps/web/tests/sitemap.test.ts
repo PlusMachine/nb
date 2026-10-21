@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { allCalculatorSlugs } from "@/features/calculators/catalog";
+import { isCalculatorPublic } from "@/features/calculators/visibility";
 
 const mocks = vi.hoisted(() => ({
   listArticles: vi.fn(),
@@ -19,6 +20,7 @@ vi.mock("@/features/content-articles/service", () => ({
 vi.mock("@/features/recipes/service", () => ({
   listRecipeSitemapEntries: mocks.listRecipeSitemapEntries
 }));
+vi.mock("@/features/masters/service", () => ({ listMasterSitemapEntries: vi.fn(async () => []) }));
 
 import sitemap from "../app/sitemap";
 
@@ -46,10 +48,11 @@ describe("sitemap", () => {
     expect(recipeEntry).toBeDefined();
     expect(recipeEntry?.lastModified).toEqual(recipeUpdatedAt);
 
-    // Каждый калькулятор реестра присутствует и БЕЗ lastModified.
+    // В sitemap только проверенные и опубликованные калькуляторы.
     for (const slug of allCalculatorSlugs) {
       const entry = byUrl.get(`http://localhost:3000/calculators/${slug}`);
-      expect(entry, `calculators/${slug} должен быть в sitemap`).toBeDefined();
+      if (isCalculatorPublic(slug)) expect(entry, slug).toBeDefined();
+      else expect(entry, slug).toBeUndefined();
       expect(entry?.lastModified).toBeUndefined();
     }
 

@@ -1,0 +1,19 @@
+{
+  "raw": {
+    "cookies": [
+      "nb_cookie_consent=1:necessary",
+      "nb_age_ok=1",
+      "nb_dev_guest=1"
+    ],
+    "spaces": true,
+    "banner": false
+  },
+  "encoded": {
+    "cookies": [
+      "nb_cookie_consent=1%3Anecessary",
+      "nb_age_ok=1",
+      "nb_dev_guest=1"
+    ],
+    "banner": false
+  }
+}

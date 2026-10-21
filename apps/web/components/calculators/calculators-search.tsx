@@ -34,6 +34,7 @@ export function CalculatorsSearch({
 }) {
   const [query, setQuery] = useState("");
   const normalizedQuery = normalize(query.trim());
+  const visibleHints = calculatorSearchHints.filter((hint) => calculators.some((item) => matchesCalculatorQuery(item, hint)));
 
   const filtered = useMemo(() => {
     if (!normalizedQuery) {
@@ -54,8 +55,8 @@ export function CalculatorsSearch({
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder={`Название или термин: ${calculatorSearchHints.join(", ")}…`}
-          className="h-11 w-full rounded-xl border border-border bg-card pl-10 pr-10 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:text-sm"
+          placeholder={visibleHints.length ? `Название или термин: ${visibleHints.join(", ")}…` : "Название или термин"}
+          className="h-11 w-full rounded-xl border border-border bg-card pl-10 pr-10 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:text-sm [@media(pointer:coarse)]:text-base"
         />
         {query ? (
           <button
@@ -70,7 +71,7 @@ export function CalculatorsSearch({
       </div>
 
       {filtered === null ? (
-        calculatorSections.map((section) => (
+        calculatorSections.filter((section) => calculators.some((item) => item.section === section)).map((section) => (
           <section key={section} aria-label={section} className="mb-6 last:mb-0 sm:mb-7">
             <h2 className="mb-2.5 text-sm font-semibold uppercase tracking-[0.08em] text-muted-foreground sm:mb-3">
               {section}
@@ -86,9 +87,9 @@ export function CalculatorsSearch({
         ))
       ) : filtered.length === 0 ? (
         <section className="rounded-2xl border border-dashed border-border bg-muted p-10 text-center">
-          <h2 className="text-lg font-semibold text-foreground">Ничего не нашлось</h2>
+          <h2 className="text-lg font-semibold text-foreground">Ничего не найдено</h2>
           <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-            Не нашли калькулятор по запросу «{query.trim()}». Попробуйте другое слово или сбросьте поиск.
+            Попробуйте другое слово или сбросьте поиск.
           </p>
           <button
             type="button"

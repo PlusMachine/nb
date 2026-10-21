@@ -44,12 +44,14 @@ const profileToFormValues = (profile: MasterProfileDto): MasterProfileFormValues
 function StatusPanel({
   profile,
   busy,
+  hasUnsavedProfile,
   onSubmit,
   onWithdraw,
   onToggleListed
 }: {
   profile: MasterProfileDto;
   busy: boolean;
+  hasUnsavedProfile: boolean;
   onSubmit: () => void;
   onWithdraw: () => void;
   onToggleListed: (next: boolean) => void;
@@ -105,13 +107,19 @@ function StatusPanel({
               Отозвать
             </Button>
           ) : (
-            <Button type="button" size="sm" disabled={busy} onClick={onSubmit}>
+            <Button type="button" size="sm" disabled={busy || hasUnsavedProfile} onClick={onSubmit}>
               {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
-              {profile.hasPublished ? "Опубликовать изменения" : "Отправить на модерацию"}
+              Отправить на модерацию
             </Button>
           )}
         </div>
       </div>
+
+      {hasUnsavedProfile && !isPending ? (
+        <p className="text-sm text-muted-foreground">
+          Сохраните изменения профиля перед отправкой на модерацию.
+        </p>
+      ) : null}
 
       {isRejected && profile.moderationNote ? (
         <p className="rounded-lg bg-destructive-subtle px-3 py-2 text-sm text-destructive-subtle-foreground">
@@ -155,6 +163,8 @@ export function MasterCabinet({
   const [confirmEmptySubmitOpen, setConfirmEmptySubmitOpen] = useState(false);
 
   const isLocked = profile.reviewStatus === "pending";
+  const hasUnsavedProfile = JSON.stringify(buildMasterProfileFormPayload(profileFormValues))
+    !== JSON.stringify(buildMasterProfileFormPayload(profileToFormValues(profile)));
 
   const activeImageCount = useMemo(() => images.filter((image) => !image.isLocalOnly).length, [images]);
   const atProfileLimit = activeImageCount >= MASTER_IMAGE_MAX_COUNT;
@@ -177,6 +187,7 @@ export function MasterCabinet({
     }
 
     setProfile(result.profile);
+    setProfileFormValues(profileToFormValues(result.profile));
     toast.show({ title: "Профиль сохранён", tone: "success" });
   };
 
@@ -195,6 +206,7 @@ export function MasterCabinet({
   };
 
   const requestSubmit = () => {
+    if (hasUnsavedProfile || profileBusy || statusBusy) return;
     if (!hasReadyImages) {
       setConfirmEmptySubmitOpen(true);
       return;
@@ -236,7 +248,8 @@ export function MasterCabinet({
 
       <StatusPanel
         profile={profile}
-        busy={statusBusy}
+        busy={statusBusy || profileBusy}
+        hasUnsavedProfile={hasUnsavedProfile}
         onSubmit={requestSubmit}
         onWithdraw={() => void handleWithdraw()}
         onToggleListed={(next) => void handleToggleListed(next)}
@@ -244,11 +257,11 @@ export function MasterCabinet({
 
       <section className="space-y-3 rounded-2xl border border-border bg-card p-4 shadow-sm">
         <h2 className="text-base font-semibold text-foreground">Профиль</h2>
-        <MasterProfileFormFields values={profileFormValues} onChange={setProfileFormValues} disabled={isLocked || profileBusy} />
+        <MasterProfileFormFields values={profileFormValues} onChange={setProfileFormValues} disabled={isLocked || profileBusy || statusBusy} />
         {profileError ? <p role="alert" className="text-sm text-destructive">{profileError}</p> : null}
         {!isLocked ? (
           <div className="flex items-center gap-2 border-t border-border pt-4">
-            <Button type="button" size="sm" disabled={profileBusy} onClick={() => void handleProfileSave()}>
+            <Button type="button" size="sm" disabled={profileBusy || statusBusy} onClick={() => void handleProfileSave()}>
               {profileBusy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
               Сохранить профиль
             </Button>

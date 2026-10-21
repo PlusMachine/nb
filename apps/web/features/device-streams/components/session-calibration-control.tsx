@@ -176,7 +176,7 @@ export function SessionCalibrationControl({
             </Select>
           </label>
           <p className="text-xs leading-5 text-muted-foreground">
-            Кривая устройства сдвинется так, чтобы в этот момент совпасть с выбранным замером — офсет применяется ко всей кривой сеанса.
+            Кривая устройства сдвинется так, чтобы в этот момент совпасть с выбранным замером — поправка применяется ко всем показаниям за этот сеанс.
           </p>
           {error ? (
             <p role="alert" className="text-xs text-destructive">

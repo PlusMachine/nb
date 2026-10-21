@@ -1,0 +1,15 @@
+Command: cd apps/web && vitest run
+ ✓ tests/style-picker.test.ts (9 tests) 6ms
+ ✓ tests/recipe-save-button.test.ts (5 tests) 6ms
+
+ Test Files  294 passed (294)
+      Tests  4063 passed (4063)
+   Start at  22:25:26
+   Duration  24.11s (transform 55.76s, setup 14.52s, import 144.05s, tests 75.38s, environment 104ms)
+
+
+Command: tsc -p apps/web/tsconfig.json --noEmit
+Exit status: 0
+
+Command: git diff --check
+Exit status: 0

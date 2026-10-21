@@ -128,9 +128,8 @@ describe("admin ingredient form", () => {
 
     expect(html).toContain("Варианты упаковки");
     expect(html).toContain("Количества по умолчанию");
-    expect(html).toContain("Рецепт / Склад");
-    expect(html).toContain("package_variants");
-    expect(html).toContain("quantity_defaults");
+    expect(html).toContain('id="json-quantity-defaults"');
+    expect(html).not.toContain("Основные поля:");
     // Фасовка редактируется полями: значения вариантов приходят в inputs.
     expect(html).toContain('value="Five Star"');
     expect(html).toContain('value="946"');

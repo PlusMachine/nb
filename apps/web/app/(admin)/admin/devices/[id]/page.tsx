@@ -12,6 +12,8 @@ import {
   type AdminDeviceTelemetrySample
 } from "@/features/devices/admin";
 import { devicePresenceLabels } from "@/features/devices/contracts";
+import { isDemoDevice } from "@/features/devices/service";
+import { isDemoStreamDevice } from "@/features/device-streams/demo";
 import { formatFirmwareSize } from "@/features/firmware/contracts";
 import { requireRole } from "@/lib/auth";
 
@@ -29,14 +31,14 @@ function PropertyRow({ label, children }: { label: string; children: React.React
   return (
     <div className="flex flex-wrap items-baseline justify-between gap-2 py-2">
       <dt className="text-sm text-muted-foreground">{label}</dt>
-      <dd className="text-sm text-foreground">{children}</dd>
+      <dd className="min-w-0 break-words text-sm text-foreground">{children}</dd>
     </div>
   );
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+    <section className="min-w-0 rounded-2xl border border-border bg-card p-5 shadow-sm">
       <h2 className="mb-3 text-sm font-semibold text-foreground">{title}</h2>
       {children}
     </section>
@@ -119,7 +121,7 @@ function EventsList({ events }: { events: AdminDeviceEvent[] }) {
 
 function LogFilesList({ files }: { files: AdminDeviceLogFile[] }) {
   if (files.length === 0) {
-    return <EmptyNote>Журналов варки с устройства не догружено.</EmptyNote>;
+    return <EmptyNote>Журналы варки с устройства пока не загружены.</EmptyNote>;
   }
 
   return (
@@ -129,7 +131,7 @@ function LogFilesList({ files }: { files: AdminDeviceLogFile[] }) {
           <span className="font-mono text-sm text-foreground">{file.name}</span>
           <span className="text-xs text-muted-foreground">
             {formatFirmwareSize(file.sizeBytes)} · {file.samplesImported} точек · {file.eventsImported} событий
-            {file.malformedLines > 0 ? ` · ${file.malformedLines} битых строк` : ""} · {formatDateTime(file.importedAt)}
+            {file.malformedLines > 0 ? ` · ${file.malformedLines} повреждённых строк` : ""} · {formatDateTime(file.importedAt)}
           </span>
         </li>
       ))}
@@ -156,6 +158,10 @@ export default async function AdminDeviceDetailPage({ params }: { params: Promis
         backLabel="К устройствам"
         actions={<DeviceRevokeButton deviceId={device.id} deviceName={device.name} />}
       />
+
+      {isDemoDevice(device) || isDemoStreamDevice(device) ? (
+        <p className="text-sm text-muted-foreground">Демо-устройство: показания сгенерированы для примера.</p>
+      ) : null}
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Section title="Свойства">

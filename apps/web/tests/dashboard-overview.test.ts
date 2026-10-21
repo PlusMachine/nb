@@ -133,4 +133,17 @@ describe("buildDashboardOnboarding", () => {
     expect(onboarding.complete).toBe(true);
     expect(onboarding.currentKey).toBeNull();
   });
+
+  it("points the stock step at inventory add, not the public catalog hub", () => {
+    const onboarding = buildDashboardOnboarding({
+      inventoryTotalItems: 0,
+      recipeCount: 0,
+      savedRecipeCount: 0,
+      brewBatchCount: 0
+    });
+
+    const stock = onboarding.steps.find((s) => s.key === "stock");
+    expect(stock?.links).toEqual([{ href: "/app/ingredients", label: "Добавить на склад" }]);
+    expect(stock?.links.some((link) => link.href.startsWith("/catalog"))).toBe(false);
+  });
 });

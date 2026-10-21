@@ -1,0 +1,62 @@
+[
+  {
+    "route": "/app",
+    "status": 200
+  },
+  {
+    "route": "/beer/sample-american-stout",
+    "status": 200
+  },
+  {
+    "route": "/beer/pilsner-urquell",
+    "status": 200
+  },
+  {
+    "route": "/beer/bell-s-two-hearted-ale",
+    "status": 200
+  },
+  {
+    "route": "/bjcp",
+    "status": 200
+  },
+  {
+    "route": "/calculators/unit-converter",
+    "status": 200
+  },
+  {
+    "route": "/labels",
+    "status": 200
+  },
+  {
+    "route": "/calculators/abv-attenuation",
+    "status": 200
+  },
+  {
+    "route": "/calculators/dilution-boiloff",
+    "status": 200
+  },
+  {
+    "route": "/admin/recipes",
+    "status": 200
+  },
+  {
+    "route": "/app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit",
+    "status": 200
+  },
+  {
+    "route": "/recipes/pilsner-urquell",
+    "status": 200
+  },
+  {
+    "route": "/api/recipes/water-profiles",
+    "status": 200
+  },
+  {
+    "route": "/api/labels/custom?template=craft&preset=L&dpi=203&gravityUnit=plato&title=QA&qr=0&format=png&preview=1",
+    "status": 200
+  },
+  {
+    "route": "/api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&format=png&preview=1",
+    "status": 200
+  }
+]

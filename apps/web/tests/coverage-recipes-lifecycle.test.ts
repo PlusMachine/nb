@@ -146,6 +146,7 @@ vi.mock("@nb/db", () => {
     const state: any = { selection, table: null, where: undefined, group: null, limitN: null, offsetN: null };
     const builder: any = {
       from(table: any) { state.table = table; return builder; },
+      for() { return builder; },
       leftJoin() { return builder; },
       innerJoin() { return builder; },
       where(cond: any) { state.where = cond; return builder; },
@@ -165,6 +166,17 @@ vi.mock("@nb/db", () => {
   };
 
   const db: any = {
+    transaction: async (work: (tx: any) => Promise<unknown>) => {
+      const recipes = structuredClone(mockState.recipesById);
+      const ingredients = structuredClone(mockState.ingredientsByRecipeId);
+      try {
+        return await work(db);
+      } catch (error) {
+        mockState.recipesById = recipes;
+        mockState.ingredientsByRecipeId = ingredients;
+        throw error;
+      }
+    },
     query: {
       recipes: {
         findFirst: async (arg: any) => {
@@ -739,6 +751,16 @@ describe("жизненный цикл рецептов", () => {
     expect(clone.ibu).not.toBe(authoritative.ibu);
   });
 
+  it("explicit preparation at the same volume keeps the preview's engine stats", async () => {
+    const source = await createRecipe("u-other", buildPublicPayload({ title: "Same volume preparation" }));
+    const engineStats = { og: source.og, abv: source.abv, ibu: source.ibu };
+    mockState.recipesById.set(source.id, { ...mockState.recipesById.get(source.id), og: 1.099, abv: 9.9, ibu: 99 });
+
+    const clone = await cloneRecipeFromPublic("u-me", source.id, { targetBatchVolumeLitres: source.batchSizeEnteredQuantity });
+
+    expect({ og: clone.og, abv: clone.abv, ibu: clone.ibu }).toEqual(engineStats);
+  });
+
   // ── Клон-с-объёмом мёржит масштабированную строку целиком (Ф9) ─────────────
   it("clone-at-volume конвертирует дрожжи «в пачках» в граммы вместе с единицей, а не только числом", async () => {
     const source = await createRecipe("u-other", buildPublicPayload({
@@ -792,7 +814,7 @@ describe("жизненный цикл рецептов", () => {
     const clone = await cloneRecipeFromPublic("u-me", source.id);
 
     expect(clone.equipmentProfileId).toBeNull();
-    expect(clone.equipmentProfileSnapshot).toEqual(equipmentProfileSnapshot);
+    expect(clone.equipmentProfileSnapshot).toEqual({ ...equipmentProfileSnapshot, id: null, name: "Оборудование рецепта", notes: null });
   });
 
   it("cloneRecipe своего рецепта сохраняет equipmentProfileId", async () => {

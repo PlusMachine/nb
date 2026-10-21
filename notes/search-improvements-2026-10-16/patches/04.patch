@@ -1,0 +1,175 @@
+--- a/apps/web/features/ingredients/service.ts
++++ b/apps/web/features/ingredients/service.ts
+@@ -35,6 +35,7 @@
+   type IngredientType
+ } from "./contracts";
+ import { normalizeSearchText } from "./normalization";
++import { createCatalogSnapshotCache } from "./catalog-cache";
+ import {
+   buildIngredientTypedSummary,
+   resolveIngredientDisplayNames,
+@@ -342,11 +343,6 @@
+     .filter((row) => params?.category ? row.category === params.category : true);
+ };
+ 
+-type CachedCatalogEntry = {
+-  items: IngredientCatalogItemDto[];
+-  loadedAt: number;
+-};
+-
+ // Процессный in-memory TTL-кэш анонимной части каталога (без includeInactive —
+ // тот путь админский, listCatalogIngredients, всегда идёт напрямую в БД).
+ // Раньше здесь был unstable_cache, но полный каталог сериализуется в ~3.78MB,
+@@ -366,7 +362,7 @@
+ // listSameBrandCatalogIngredients) и поиск (searchCatalogItems /
+ // searchIngredientSuggestions).
+ const CATALOG_CACHE_TTL_MS = 5 * 60 * 1000;
+-const catalogCache = new Map<string, CachedCatalogEntry>();
++const catalogCache = createCatalogSnapshotCache<IngredientCatalogItemDto[]>({ ttlMs: CATALOG_CACHE_TTL_MS });
+ 
+ const buildCatalogCacheKey = (params: { type?: string; category?: string }) => (
+   JSON.stringify({ type: params.type ?? null, category: params.category ?? null })
+@@ -392,13 +388,7 @@
+   }
+ 
+   const cacheKey = buildCatalogCacheKey(cacheParams);
+-  const cached = catalogCache.get(cacheKey);
+-  if (cached && Date.now() - cached.loadedAt < CATALOG_CACHE_TTL_MS) {
+-    return cached.items.slice();
+-  }
+-
+-  const items = await loadIngredientsUncached(cacheParams);
+-  catalogCache.set(cacheKey, { items, loadedAt: Date.now() });
++  const items = await catalogCache.get(cacheKey, () => loadIngredientsUncached(cacheParams));
+   return items.slice();
+ };
+ 
+--- /dev/null
++++ b/apps/web/features/ingredients/catalog-cache.ts
+@@ -0,0 +1,48 @@
++// Process-local snapshots; the cache contains public catalog data only.
++export const createCatalogSnapshotCache = <T>({ ttlMs, maxEntries = 32, now = Date.now }: {
++  ttlMs: number;
++  maxEntries?: number;
++  now?: () => number;
++}) => {
++  const entries = new Map<string, { value: T; loadedAt: number }>();
++  const pending = new Map<string, Promise<T>>();
++  let generation = 0;
++
++  return {
++    clear() {
++      generation += 1;
++      entries.clear();
++      pending.clear();
++    },
++    async get(key: string, load: () => Promise<T>): Promise<T> {
++      const cached = entries.get(key);
++      if (cached && now() - cached.loadedAt < ttlMs) {
++        return cached.value;
++      }
++      const inFlight = pending.get(key);
++      if (inFlight) {
++        return inFlight;
++      }
++
++      const startedInGeneration = generation;
++      const promise = Promise.resolve().then(load).then((value) => {
++        // An invalidated loader may still finish for its original callers,
++        // but must never republish an obsolete snapshot for new requests.
++        if (generation === startedInGeneration) {
++          entries.delete(key);
++          entries.set(key, { value, loadedAt: now() });
++          while (entries.size > maxEntries) {
++            entries.delete(entries.keys().next().value!);
++          }
++        }
++        return value;
++      }).finally(() => {
++        if (pending.get(key) === promise) {
++          pending.delete(key);
++        }
++      });
++      pending.set(key, promise);
++      return promise;
++    }
++  };
++};
+--- /dev/null
++++ b/apps/web/tests/ingredient-catalog-cache.test.ts
+@@ -0,0 +1,75 @@
++import { describe, expect, it, vi } from "vitest";
++
++import { createCatalogSnapshotCache } from "../features/ingredients/catalog-cache";
++
++const deferred = <T>() => {
++  let resolve!: (value: T) => void;
++  let reject!: (reason: Error) => void;
++  const promise = new Promise<T>((yes, no) => { resolve = yes; reject = no; });
++  return { promise, resolve, reject };
++};
++
++describe("catalog snapshot cache", () => {
++  it("shares one cold load among concurrent requests and preserves Date objects", async () => {
++    const cache = createCatalogSnapshotCache<Date[]>({ ttlMs: 100 });
++    const pending = deferred<Date[]>();
++    const load = vi.fn(() => pending.promise);
++    const requests = Array.from({ length: 10 }, () => cache.get("all", load));
++    await Promise.resolve();
++    expect(load).toHaveBeenCalledTimes(1);
++    const dates = [new Date("2026-10-16T10:00:00Z")];
++    pending.resolve(dates);
++    expect(await Promise.all(requests)).toEqual(Array.from({ length: 10 }, () => dates));
++    expect((await cache.get("all", load))[0]).toBe(dates[0]);
++  });
++
++  it("starts TTL when loading finishes and reloads on expiry", async () => {
++    let now = 0;
++    const cache = createCatalogSnapshotCache<string>({ ttlMs: 100, now: () => now });
++    const pending = deferred<string>();
++    const first = cache.get("all", () => pending.promise);
++    now = 500;
++    pending.resolve("first");
++    await first;
++    const load = vi.fn(async () => "next");
++    now = 599;
++    expect(await cache.get("all", load)).toBe("first");
++    now = 600;
++    expect(await cache.get("all", load)).toBe("next");
++    expect(load).toHaveBeenCalledTimes(1);
++  });
++
++  it("does not republish an old snapshot or clear a newer loader after invalidation", async () => {
++    const cache = createCatalogSnapshotCache<string>({ ttlMs: 100 });
++    const old = deferred<string>();
++    const current = deferred<string>();
++    const first = cache.get("all", () => old.promise);
++    cache.clear();
++    const load = vi.fn(() => current.promise);
++    const second = cache.get("all", load);
++    old.resolve("old");
++    expect(await first).toBe("old");
++    const third = cache.get("all", load);
++    current.resolve("current");
++    expect(await second).toBe("current");
++    expect(await third).toBe("current");
++    expect(await cache.get("all", async () => "unexpected")).toBe("current");
++    expect(load).toHaveBeenCalledTimes(1);
++  });
++
++  it("retries a failed load and keeps separate filter keys", async () => {
++    const cache = createCatalogSnapshotCache<string>({ ttlMs: 100 });
++    await expect(cache.get("hop", async () => { throw new Error("DB down"); })).rejects.toThrow("DB down");
++    expect(await cache.get("hop", async () => "hops")).toBe("hops");
++    expect(await cache.get("yeast", async () => "yeasts")).toBe("yeasts");
++    cache.clear();
++    expect(await cache.get("hop", async () => "updated")).toBe("updated");
++  });
++
++  it("bounds completed snapshots instead of keeping every filter key forever", async () => {
++    const cache = createCatalogSnapshotCache<string>({ ttlMs: 100, maxEntries: 2 });
++    for (const key of ["hop", "malt", "yeast"]) await cache.get(key, async () => key);
++    expect(await cache.get("hop", async () => "reloaded")).toBe("reloaded");
++    expect(await cache.get("yeast", async () => "unexpected")).toBe("yeast");
++  });
++});

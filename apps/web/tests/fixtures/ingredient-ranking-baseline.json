@@ -1,0 +1,5910 @@
+[
+  {
+    "query": "citra",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": {
+          "tier": 0,
+          "score": 100980,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "citra-cryo",
+        "rank": {
+          "tier": 1,
+          "score": 99890,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "citra",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": {
+          "tier": 0,
+          "score": 100980,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "citra-cryo",
+        "rank": {
+          "tier": 1,
+          "score": 99890,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "цитра",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": {
+          "tier": 0,
+          "score": 100980,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "цитра",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": {
+          "tier": 0,
+          "score": 100980,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "citta",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": {
+          "tier": 9,
+          "score": 91632,
+          "matchType": "token"
+        }
+      },
+      {
+        "id": "citra-cryo",
+        "rank": {
+          "tier": 9,
+          "score": 91632,
+          "matchType": "token"
+        }
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "citta",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": {
+          "tier": 9,
+          "score": 91632,
+          "matchType": "token"
+        }
+      },
+      {
+        "id": "citra-cryo",
+        "rank": {
+          "tier": 9,
+          "score": 91632,
+          "matchType": "token"
+        }
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "citro",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": {
+          "tier": 9,
+          "score": 91632,
+          "matchType": "token"
+        }
+      },
+      {
+        "id": "citra-cryo",
+        "rank": {
+          "tier": 9,
+          "score": 91632,
+          "matchType": "token"
+        }
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "citro",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": {
+          "tier": 9,
+          "score": 91632,
+          "matchType": "token"
+        }
+      },
+      {
+        "id": "citra-cryo",
+        "rank": {
+          "tier": 9,
+          "score": 91632,
+          "matchType": "token"
+        }
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "HBC 394",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": {
+          "tier": 3,
+          "score": 97988,
+          "matchType": "alias",
+          "matchedAlias": "HBC 394"
+        }
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "HBC 394",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": {
+          "tier": 3,
+          "score": 97988,
+          "matchType": "alias",
+          "matchedAlias": "HBC 394"
+        }
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "мозаик",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": {
+          "tier": 0,
+          "score": 100984,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "мозаик",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": {
+          "tier": 0,
+          "score": 100984,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "mosaic",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": {
+          "tier": 0,
+          "score": 100984,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "mosaic",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": {
+          "tier": 0,
+          "score": 100984,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "мозайк",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": {
+          "tier": 3,
+          "score": 97984,
+          "matchType": "alias",
+          "matchedAlias": "мозайк"
+        }
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "мозайк",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": {
+          "tier": 3,
+          "score": 97984,
+          "matchType": "alias",
+          "matchedAlias": "мозайк"
+        }
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "vjpfbr",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "vjpfbr",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": {
+          "tier": 5,
+          "score": 95984,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "пилс",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": {
+          "tier": 0,
+          "score": 101036.88888888889,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": {
+          "tier": 0,
+          "score": 101015.22222222222,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "best-pilsen",
+        "rank": {
+          "tier": 0,
+          "score": 101050.44444444444,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": {
+          "tier": 0,
+          "score": 101008.77777777778,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": {
+          "tier": 0,
+          "score": 101054.88888888889,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "support-alias",
+        "rank": {
+          "tier": 1,
+          "score": 99881.81818181818,
+          "matchType": "alias",
+          "matchedAlias": "пилснер база"
+        }
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "пилс",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": {
+          "tier": 0,
+          "score": 101036.88888888889,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": {
+          "tier": 0,
+          "score": 101015.22222222222,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "best-pilsen",
+        "rank": {
+          "tier": 0,
+          "score": 101050.44444444444,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": {
+          "tier": 0,
+          "score": 101008.77777777778,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": {
+          "tier": 0,
+          "score": 101054.88888888889,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "support-alias",
+        "rank": {
+          "tier": 1,
+          "score": 99881.81818181818,
+          "matchType": "alias",
+          "matchedAlias": "пилснер база"
+        }
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "pils",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": {
+          "tier": 0,
+          "score": 101036.88888888889,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": {
+          "tier": 0,
+          "score": 101015.22222222222,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "best-pilsen",
+        "rank": {
+          "tier": 0,
+          "score": 101054.44444444444,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": {
+          "tier": 0,
+          "score": 101012.77777777778,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": {
+          "tier": 0,
+          "score": 101054.88888888889,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "support-alias",
+        "rank": {
+          "tier": 1,
+          "score": 99879.81818181818,
+          "matchType": "alias",
+          "matchedAlias": "пилснер база"
+        }
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "pils",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": {
+          "tier": 0,
+          "score": 101036.88888888889,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": {
+          "tier": 0,
+          "score": 101015.22222222222,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "best-pilsen",
+        "rank": {
+          "tier": 0,
+          "score": 101054.44444444444,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": {
+          "tier": 0,
+          "score": 101012.77777777778,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": {
+          "tier": 0,
+          "score": 101054.88888888889,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "support-alias",
+        "rank": {
+          "tier": 1,
+          "score": 99879.81818181818,
+          "matchType": "alias",
+          "matchedAlias": "пилснер база"
+        }
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "пилснер",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": {
+          "tier": 0,
+          "score": 101036.88888888889,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": {
+          "tier": 0,
+          "score": 101015.22222222222,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "best-pilsen",
+        "rank": {
+          "tier": 0,
+          "score": 101050.44444444444,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": {
+          "tier": 0,
+          "score": 101008.77777777778,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": {
+          "tier": 0,
+          "score": 101054.88888888889,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "support-alias",
+        "rank": {
+          "tier": 1,
+          "score": 99881.81818181818,
+          "matchType": "alias",
+          "matchedAlias": "пилснер база"
+        }
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "пилснер",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": {
+          "tier": 0,
+          "score": 101036.88888888889,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": {
+          "tier": 0,
+          "score": 101015.22222222222,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "best-pilsen",
+        "rank": {
+          "tier": 0,
+          "score": 101050.44444444444,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": {
+          "tier": 0,
+          "score": 101008.77777777778,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": {
+          "tier": 0,
+          "score": 101054.88888888889,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "support-alias",
+        "rank": {
+          "tier": 1,
+          "score": 99881.81818181818,
+          "matchType": "alias",
+          "matchedAlias": "пилснер база"
+        }
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "pilsner",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": {
+          "tier": 0,
+          "score": 101036.88888888889,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": {
+          "tier": 0,
+          "score": 101015.22222222222,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "best-pilsen",
+        "rank": {
+          "tier": 0,
+          "score": 101054.44444444444,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": {
+          "tier": 0,
+          "score": 101012.77777777778,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": {
+          "tier": 0,
+          "score": 101054.88888888889,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "support-alias",
+        "rank": {
+          "tier": 1,
+          "score": 99879.81818181818,
+          "matchType": "alias",
+          "matchedAlias": "пилснер база"
+        }
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "pilsner",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": {
+          "tier": 0,
+          "score": 101036.88888888889,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": {
+          "tier": 0,
+          "score": 101015.22222222222,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "best-pilsen",
+        "rank": {
+          "tier": 0,
+          "score": 101054.44444444444,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": {
+          "tier": 0,
+          "score": 101012.77777777778,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": {
+          "tier": 0,
+          "score": 101054.88888888889,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "support-alias",
+        "rank": {
+          "tier": 1,
+          "score": 99879.81818181818,
+          "matchType": "alias",
+          "matchedAlias": "пилснер база"
+        }
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "курский пилс",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": {
+          "tier": 0,
+          "score": 101006,
+          "matchType": "brand"
+        }
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": {
+          "tier": 0,
+          "score": 100995,
+          "matchType": "brand"
+        }
+      },
+      {
+        "id": "best-pilsen",
+        "rank": {
+          "tier": 2,
+          "score": 98922,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": {
+          "tier": 2,
+          "score": 98896,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": {
+          "tier": 2,
+          "score": 98918,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "support-alias",
+        "rank": {
+          "tier": 3,
+          "score": 97815,
+          "matchType": "alias",
+          "matchedAlias": "пилснер база",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "курский пилс",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": {
+          "tier": 0,
+          "score": 101006,
+          "matchType": "brand"
+        }
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": {
+          "tier": 0,
+          "score": 100995,
+          "matchType": "brand"
+        }
+      },
+      {
+        "id": "best-pilsen",
+        "rank": {
+          "tier": 2,
+          "score": 98922,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": {
+          "tier": 2,
+          "score": 98896,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": {
+          "tier": 2,
+          "score": 98918,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "support-alias",
+        "rank": {
+          "tier": 3,
+          "score": 97815,
+          "matchType": "alias",
+          "matchedAlias": "пилснер база",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "чешский пилснер",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": {
+          "tier": 2,
+          "score": 98908,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": {
+          "tier": 2,
+          "score": 98898,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "best-pilsen",
+        "rank": {
+          "tier": 2,
+          "score": 98922,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": {
+          "tier": 2,
+          "score": 98896,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": {
+          "tier": 2,
+          "score": 98918,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "support-alias",
+        "rank": {
+          "tier": 3,
+          "score": 97815,
+          "matchType": "alias",
+          "matchedAlias": "пилснер база",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "чешский пилснер",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": {
+          "tier": 2,
+          "score": 98908,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": {
+          "tier": 2,
+          "score": 98898,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "best-pilsen",
+        "rank": {
+          "tier": 2,
+          "score": 98922,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": {
+          "tier": 2,
+          "score": 98896,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": {
+          "tier": 2,
+          "score": 98918,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "support-alias",
+        "rank": {
+          "tier": 3,
+          "score": 97815,
+          "matchType": "alias",
+          "matchedAlias": "пилснер база",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "пилснер премиум",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": {
+          "tier": 2,
+          "score": 98908,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": {
+          "tier": 1,
+          "score": 100017.66666666667,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "best-pilsen",
+        "rank": {
+          "tier": 2,
+          "score": 98922,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": {
+          "tier": 2,
+          "score": 98896,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": {
+          "tier": 2,
+          "score": 98918,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "support-alias",
+        "rank": {
+          "tier": 3,
+          "score": 97815,
+          "matchType": "alias",
+          "matchedAlias": "пилснер база",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "пилснер премиум",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": {
+          "tier": 2,
+          "score": 98908,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": {
+          "tier": 1,
+          "score": 100017.66666666667,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "best-pilsen",
+        "rank": {
+          "tier": 2,
+          "score": 98922,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": {
+          "tier": 2,
+          "score": 98896,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": {
+          "tier": 2,
+          "score": 98918,
+          "matchType": "name",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "support-alias",
+        "rank": {
+          "tier": 3,
+          "score": 97815,
+          "matchType": "alias",
+          "matchedAlias": "пилснер база",
+          "familyFallback": true
+        }
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "BESTMALZ",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": {
+          "tier": 7,
+          "score": 93992,
+          "matchType": "brand"
+        }
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "BESTMALZ",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": {
+          "tier": 7,
+          "score": 93992,
+          "matchType": "brand"
+        }
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "Weyermann",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": {
+          "tier": 7,
+          "score": 93996,
+          "matchType": "brand"
+        }
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "Weyermann",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": {
+          "tier": 7,
+          "score": 93996,
+          "matchType": "brand"
+        }
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "US-05",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": {
+          "tier": 0,
+          "score": 100980,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "US-05",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": {
+          "tier": 0,
+          "score": 100980,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "US 05",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": {
+          "tier": 0,
+          "score": 100980,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "US 05",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": {
+          "tier": 0,
+          "score": 100980,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "US05",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": {
+          "tier": 3,
+          "score": 97976,
+          "matchType": "alias",
+          "matchedAlias": "US05"
+        }
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "US05",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": {
+          "tier": 3,
+          "score": 97976,
+          "matchType": "alias",
+          "matchedAlias": "US05"
+        }
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "wlp002",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": {
+          "tier": 0,
+          "score": 100980,
+          "matchType": "code"
+        }
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "wlp002",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": {
+          "tier": 0,
+          "score": 100980,
+          "matchType": "code"
+        }
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "мед",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": {
+          "tier": 0,
+          "score": 100972,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "мед",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": {
+          "tier": 0,
+          "score": 100972,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "мёд",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": {
+          "tier": 0,
+          "score": 100972,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "мёд",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": {
+          "tier": 0,
+          "score": 100972,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "munich",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": {
+          "tier": 0,
+          "score": 101025.77777777778,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "munich",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": {
+          "tier": 0,
+          "score": 101025.77777777778,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "pbw",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": {
+          "tier": 1,
+          "score": 99870,
+          "matchType": "package",
+          "matchedPackageVariantId": "pbw-500",
+          "matchedPackageVariantName": "Five Star PBW Cleaner"
+        }
+      },
+      {
+        "id": "cleaner",
+        "rank": {
+          "tier": 8,
+          "score": 92715,
+          "matchType": "token"
+        }
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "pbw",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": {
+          "tier": 1,
+          "score": 99870,
+          "matchType": "package",
+          "matchedPackageVariantId": "pbw-500",
+          "matchedPackageVariantName": "Five Star PBW Cleaner"
+        }
+      },
+      {
+        "id": "cleaner",
+        "rank": {
+          "tier": 8,
+          "score": 92715,
+          "matchType": "token"
+        }
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "alkaline cleaner",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": {
+          "tier": 0,
+          "score": 101020,
+          "matchType": "alias",
+          "matchedAlias": "alkaline cleaner"
+        }
+      },
+      {
+        "id": "cleaner",
+        "rank": {
+          "tier": 1,
+          "score": 100020,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "alkaline cleaner",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": {
+          "tier": 0,
+          "score": 101020,
+          "matchType": "alias",
+          "matchedAlias": "alkaline cleaner"
+        }
+      },
+      {
+        "id": "cleaner",
+        "rank": {
+          "tier": 1,
+          "score": 100020,
+          "matchType": "name"
+        }
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "five star 500 g",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": {
+          "tier": 8,
+          "score": 92832,
+          "matchType": "token"
+        }
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "five star 500 g",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": {
+          "tier": 8,
+          "score": 92832,
+          "matchType": "token"
+        }
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "хлорид кальция",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": {
+          "tier": 0,
+          "score": 101016,
+          "matchType": "name"
+        }
+      }
+    ]
+  },
+  {
+    "query": "хлорид кальция",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": {
+          "tier": 0,
+          "score": 101016,
+          "matchType": "name"
+        }
+      }
+    ]
+  },
+  {
+    "query": "zzqhiddenalias",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "zzqhiddenalias",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "qqqzzz",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "qqqzzz",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "!!!",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "!!!",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "  ",
+    "includeLayoutVariants": false,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  },
+  {
+    "query": "  ",
+    "includeLayoutVariants": true,
+    "ranks": [
+      {
+        "id": "citra",
+        "rank": null
+      },
+      {
+        "id": "citra-cryo",
+        "rank": null
+      },
+      {
+        "id": "extra",
+        "rank": null
+      },
+      {
+        "id": "mosaic",
+        "rank": null
+      },
+      {
+        "id": "pilsner",
+        "rank": null
+      },
+      {
+        "id": "pilsner-premium",
+        "rank": null
+      },
+      {
+        "id": "best-pilsen",
+        "rank": null
+      },
+      {
+        "id": "caramel-pilsen",
+        "rank": null
+      },
+      {
+        "id": "custom-pilsner",
+        "rank": null
+      },
+      {
+        "id": "support-alias",
+        "rank": null
+      },
+      {
+        "id": "disabled-alias",
+        "rank": null
+      },
+      {
+        "id": "us-05",
+        "rank": null
+      },
+      {
+        "id": "wlp002",
+        "rank": null
+      },
+      {
+        "id": "honey",
+        "rank": null
+      },
+      {
+        "id": "munich",
+        "rank": null
+      },
+      {
+        "id": "pbw",
+        "rank": null
+      },
+      {
+        "id": "cleaner",
+        "rank": null
+      },
+      {
+        "id": "salt",
+        "rank": null
+      }
+    ]
+  }
+]

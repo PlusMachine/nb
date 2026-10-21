@@ -2235,4 +2235,111 @@ describe("user catalog ingredient search", () => {
     const match = result.items.find((item) => item.id === "hop-citra");
     expect(match?.matchRescue).toBe("fuzzy");
   });
+
+  it("в скоупе солодов «citra» не подсовывает Extra/Экстра через fuzzy", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "malt-extra",
+        type: "fermentable",
+        category: "fermentable",
+        subtype: "malt",
+        primaryLabelRu: "Экстра",
+        displayName: "Extra",
+        displayNameRu: "Extra",
+        displayNameEn: "Extra",
+        nameRu: "Экстра",
+        nameEn: "Extra",
+        itemKind: "malt"
+      }),
+      buildCatalogItem({
+        id: "malt-pils",
+        type: "fermentable",
+        category: "fermentable",
+        subtype: "malt",
+        primaryLabelRu: "Pilsner",
+        displayName: "Pilsner",
+        displayNameRu: "Pilsner",
+        displayNameEn: "Pilsner",
+        nameRu: "Пилснер",
+        nameEn: "Pilsner",
+        itemKind: "malt"
+      })
+    ];
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "citra",
+      category: "fermentable",
+      subtype: "malt",
+      limit: 10
+    });
+
+    expect(result.items).toEqual([]);
+    expect(result.total).toBe(0);
+  });
+});
+
+
+describe("disabled aliases in picker search", () => {
+  beforeEach(() => {
+    mockState.catalogItems = [];
+    mockState.customItems = [];
+    mockState.favoriteKeys = new Set();
+  });
+
+  const citraWithAlias = (isEnabled: boolean) => buildCatalogItem({
+    id: "citra-disabled-alias", type: "hop", category: "hop", subtype: null,
+    primaryLabelRu: "Citra", secondaryLabelRu: null, displayName: "Citra",
+    displayNameRu: "Citra", displayNameEn: "Citra", nameRu: "Citra", nameEn: "Citra",
+    aliases: [{ id: "alias-hidden", locale: "en", alias: "zzqhiddenalias", aliasNormalized: "zzqhiddenalias", source: "manual", isEnabled }]
+  });
+
+  it("does not find a disabled unique alias through the shared search text", async () => {
+    mockState.catalogItems = [citraWithAlias(false)];
+    const result = await searchUserCatalogIngredients(null, { q: "zzqhiddenalias", category: "hop" });
+    expect(result.items).toEqual([]);
+  });
+
+  it("keeps enabled aliases searchable", async () => {
+    mockState.catalogItems = [citraWithAlias(true)];
+    const result = await searchUserCatalogIngredients(null, { q: "zzqhiddenalias", category: "hop" });
+    expect(result.items.map((item) => item.id)).toEqual(["citra-disabled-alias"]);
+  });
+
+  it("still matches the product name when the same spelling is disabled as an alias", async () => {
+    mockState.catalogItems = [{ ...citraWithAlias(false), aliases: [{ id: "alias-citra", locale: "en", alias: "Citra", aliasNormalized: "citra", source: "manual", isEnabled: false }] }];
+    const result = await searchUserCatalogIngredients(null, { q: "citra", category: "hop" });
+    expect(result.items.map((item) => item.id)).toEqual(["citra-disabled-alias"]);
+  });
+});
+
+describe("prepared catalog snapshots keep request context fresh", () => {
+  beforeEach(() => {
+    mockState.catalogItems = [];
+    mockState.customItems = [];
+    mockState.favoriteKeys = new Set();
+  });
+
+  it("reuses public search data while favorites change between users and requests", async () => {
+    mockState.catalogItems = ["pils-a", "pils-b"].map((id) => buildCatalogItem({
+      id, primaryLabelRu: "Пилснер", displayName: "Пилснер", nameRu: "Пилснер", nameEn: "Pilsner"
+    }));
+    const search = (userId: string) => searchUserCatalogIngredients(userId, { q: "пилснер", favoritesOnly: true });
+    mockState.favoriteKeys = new Set(["catalog:pils-a"]);
+    expect((await search("user-a")).items.map((item) => item.id)).toEqual(["pils-a"]);
+    mockState.favoriteKeys = new Set(["catalog:pils-b"]);
+    expect((await search("user-b")).items.map((item) => item.id)).toEqual(["pils-b"]);
+    const broad = await searchUserCatalogIngredients("user-b", { q: "пилснер" });
+    expect(broad.items[0].id).toBe("pils-b");
+    mockState.favoriteKeys = new Set();
+    expect((await search("user-a")).items).toEqual([]);
+  });
+
+  it("prepares a new search document when a refreshed catalog snapshot disables an alias", async () => {
+    const alias = { id: "refresh-alias", locale: "en", alias: "zzqrefreshalias", aliasNormalized: "zzqrefreshalias", source: "manual", isEnabled: true };
+    const row = buildCatalogItem({ id: "refreshed-item", aliases: [alias] });
+    mockState.catalogItems = [row];
+    expect((await searchUserCatalogIngredients(null, { q: "zzqrefreshalias" })).items.map((item) => item.id)).toEqual(["refreshed-item"]);
+    mockState.catalogItems = [{ ...row, aliases: [{ ...alias, isEnabled: false }] }];
+    expect((await searchUserCatalogIngredients(null, { q: "zzqrefreshalias" })).items).toEqual([]);
+  });
 });

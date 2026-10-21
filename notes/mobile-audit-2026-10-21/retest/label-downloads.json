@@ -1,0 +1,30 @@
+[
+  {
+    "width": 320,
+    "format": "PNG",
+    "file": "qa-mobile-audit-21-10-l-203dpi.png",
+    "bytes": 5890,
+    "signature": true
+  },
+  {
+    "width": 320,
+    "format": "PDF",
+    "file": "qa-mobile-audit-21-10-l-203dpi.pdf",
+    "bytes": 22492,
+    "signature": true
+  },
+  {
+    "width": 834,
+    "format": "PNG",
+    "file": "qa-mobile-audit-21-10-l-203dpi.png",
+    "bytes": 5890,
+    "signature": true
+  },
+  {
+    "width": 834,
+    "format": "PDF",
+    "file": "qa-mobile-audit-21-10-l-203dpi.pdf",
+    "bytes": 22493,
+    "signature": true
+  }
+]

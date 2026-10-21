@@ -43,6 +43,58 @@ const rangeYeast = [{
 }];
 
 describe("recipe FG estimate", () => {
+  it.each([
+    ["Lactose", "Лактоза"],
+    ["Lactose", "Молочная лактоза (порошок)"],
+    ["Maltodextrin", "Мальтодекстрин"],
+    ["Dextrose", "Декстроза"],
+    ["Glucose", "Глюкоза"],
+    ["Sucrose", "Сахароза"],
+    ["Table sugar", "Сахар"],
+    ["Invert sugar", "Инвертный сахар"],
+    ["Candi sugar", "Кэнди"],
+    ["Corn syrup", "Кукурузный сироп"],
+    ["Glucose syrup", "Глюкозный сироп"],
+    ["Caramel malt", "Карамельный солод"],
+    ["Crystal malt", "Кристаллический солод"],
+    ["Carapils", "Карапилс"],
+    ["Carafoam", "Карафоам"]
+  ])("predicts the same FG and ABV for %s and %s without catalog metadata", (english, russian) => {
+    const estimate = (name: string) => calculateRecipeFgEstimate({
+      og: 1.060,
+      fermentables: [...baseFermentables, { name, weightKg: 0.5, potentialPpg: 36 }],
+      yeasts: rangeYeast,
+      processMeta: buildMashProfile(67)
+    });
+    const original = estimate(english);
+    const translated = estimate(russian);
+    expect(translated).toEqual(original);
+    expect(calculateAbv(1.060, translated.predictedFg!)).toBe(calculateAbv(1.060, original.predictedFg!));
+  });
+
+  it("recognizes Russian technical descriptions with an opaque ingredient name", () => {
+    const result = calculateRecipeFgEstimate({
+      og: OG,
+      fermentables: [...baseFermentables, {
+        name: "Добавка №1",
+        weightKg: 0.5,
+        potentialPpg: 36,
+        technicalData: { type: "fermentable", displayTypeRu: "Лактоза" }
+      }],
+      yeasts: rangeYeast
+    });
+    expect(result.fgEstimateDetails?.lactoseSharePct).toBeGreaterThan(0);
+  });
+
+  it("does not match sugar names embedded inside a different Unicode word", () => {
+    const result = calculateRecipeFgEstimate({
+      og: OG,
+      fermentables: [{ name: "Несахарный солод", weightKg: 4, potentialPpg: 37 }],
+      yeasts: rangeYeast
+    });
+    expect(result.fgEstimateDetails?.simpleSugarSharePct).toBe(0);
+  });
+
   it("returns unavailable when there are no fermentables", () => {
     const result = calculateRecipeFgEstimate({
       og: null,
@@ -423,8 +475,8 @@ describe("recipe FG estimate", () => {
   });
 
   it("uses short manual override labels", () => {
-    expect(resolveRecipeFgSourceLabel("manual_attenuation_override", null)).toBe("Ручная attenuation");
-    expect(resolveRecipeFgSourceLabel("manual_fg_override", null)).toBe("Ручной FG");
+    expect(resolveRecipeFgSourceLabel("manual_attenuation_override", null)).toBe("Аттенюация задана вручную");
+    expect(resolveRecipeFgSourceLabel("manual_fg_override", null)).toBe("FG задана вручную");
   });
 
   it("updates ABV when the new FG estimate changes", () => {

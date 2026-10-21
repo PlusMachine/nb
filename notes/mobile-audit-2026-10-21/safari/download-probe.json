@@ -1,0 +1,30 @@
+[
+  {
+    "profile": "Desktop Safari",
+    "name": "Attachment",
+    "download": false,
+    "url": "http://127.0.0.1:3100/__download-probe/file",
+    "contentType": "image/png"
+  },
+  {
+    "profile": "Desktop Safari",
+    "name": "Download attribute",
+    "download": false,
+    "url": "http://127.0.0.1:3100/__download-probe/page",
+    "contentType": "text/html"
+  },
+  {
+    "profile": "iPhone 13",
+    "name": "Attachment",
+    "download": false,
+    "url": "http://127.0.0.1:3100/__download-probe/file",
+    "contentType": "image/png"
+  },
+  {
+    "profile": "iPhone 13",
+    "name": "Download attribute",
+    "download": false,
+    "url": "http://127.0.0.1:3100/__download-probe/page",
+    "contentType": "text/html"
+  }
+]

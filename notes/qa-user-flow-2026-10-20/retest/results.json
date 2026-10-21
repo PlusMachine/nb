@@ -1,0 +1,165 @@
+{
+  "results": [
+    {
+      "name": "Новый аккаунт и пустой склад",
+      "status": "passed"
+    },
+    {
+      "name": "Каталог: дробные килограммы, граммы, пачки",
+      "status": "passed"
+    },
+    {
+      "name": "Свой ингредиент: ошибка нуля сохраняет форму",
+      "status": "passed"
+    },
+    {
+      "name": "Профиль: ноль не рушит ввод; 10 л и 65% сохраняются",
+      "status": "passed"
+    },
+    {
+      "name": "Рецепт из рекомендаций и валидация пересчёта",
+      "status": "passed"
+    },
+    {
+      "name": "Копия сохраняет свой профиль и показанные показатели",
+      "status": "passed"
+    },
+    {
+      "name": "Партия из копии: оборудование видно при одинаковом объёме",
+      "status": "passed"
+    },
+    {
+      "name": "Списание предлагает все аналоги Cascade и солода",
+      "status": "passed"
+    },
+    {
+      "name": "09 Fractional yeast remaining shown as weight",
+      "status": "passed"
+    },
+    {
+      "name": "10 Return and repeat consumption",
+      "status": "passed"
+    },
+    {
+      "name": "11 Start guide and basic water volumes",
+      "status": "passed"
+    },
+    {
+      "name": "12 Timers progress reload undo and OG",
+      "status": "passed"
+    },
+    {
+      "name": "13 Timer survives reload and undo works",
+      "status": "failed",
+      "error": "\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: 'Сбросить таймер' }).first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"to.be.visible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'Сбросить таймер' }).first()\u001b[22m\n"
+    },
+    {
+      "name": "13 Timer persists reload undo and OG verified",
+      "status": "failed",
+      "error": "locator.fill: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel('Плотность (°P)', { exact: true })\u001b[22m\n"
+    },
+    {
+      "name": "14 OG input and mobile guide",
+      "status": "passed"
+    },
+    {
+      "name": "15 Complete mash boil hops and cooling",
+      "status": "failed",
+      "error": "\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('8 / 10', { exact: true })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"to.be.visible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('8 / 10', { exact: true })\u001b[22m\n"
+    },
+    {
+      "name": "16 Finish brew day and enter fermentation",
+      "status": "failed",
+      "error": "\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('Бродит', { exact: true })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"to.be.visible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Бродит', { exact: true })\u001b[22m\n"
+    },
+    {
+      "name": "17 FG dry hop and early finish warning",
+      "status": "passed"
+    },
+    {
+      "name": "18 Complete party and persistent results",
+      "status": "passed"
+    },
+    {
+      "name": "19 Direct public start matches clone targets",
+      "status": "passed"
+    },
+    {
+      "name": "20 Direct public party without duplicate",
+      "status": "failed",
+      "error": "\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText(/цель OG 13.1/)\nExpected: visible\nTimeout: 20000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"to.be.visible\" with timeout 20000ms\u001b[22m\n\u001b[2m  - waiting for getByText(/цель OG 13.1/)\u001b[22m\n"
+    },
+    {
+      "name": "21 Direct party keeps calculated targets",
+      "status": "passed"
+    },
+    {
+      "name": "22 Shared short hop lot preview on mobile",
+      "status": "passed"
+    },
+    {
+      "name": "23 Partial consume short lot succeeds",
+      "status": "passed"
+    },
+    {
+      "name": "24 Partial return restores short lot and retry preview",
+      "status": "passed"
+    },
+    {
+      "name": "25 Capacity warning requires acknowledgement on mobile",
+      "status": "passed"
+    },
+    {
+      "name": "26 Capacity warnings persist on planned batch",
+      "status": "passed"
+    },
+    {
+      "name": "27 Partial summary shows whole requirement and exact return",
+      "status": "passed"
+    },
+    {
+      "name": "28 Final direct flow: preparation consumption and water",
+      "status": "failed",
+      "error": "\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('7.98 л · до ≈70 °C', { exact: true }).first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"to.be.visible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText('7.98 л · до ≈70 °C', { exact: true }).first()\u001b[22m\n"
+    },
+    {
+      "name": "29 Final direct water and timer reload",
+      "status": "passed"
+    },
+    {
+      "name": "30 Final direct OG and all brewing steps",
+      "status": "passed"
+    },
+    {
+      "name": "31 Final direct fermentation and completed summary",
+      "status": "passed"
+    },
+    {
+      "name": "32 Correct completed stage and finish again",
+      "status": "passed"
+    },
+    {
+      "name": "33 Completed to fermenting and completed again",
+      "status": "passed"
+    },
+    {
+      "name": "34 Scale validation negative blank zero excessive and decimal mobile",
+      "status": "failed",
+      "error": "\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('dialog').getByText(/Введите объём больше 0/)\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"to.be.visible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('dialog').getByText(/Введите объём больше 0/)\u001b[22m\n"
+    },
+    {
+      "name": "35 Scale invalid values stay invalid and decimal is accepted",
+      "status": "failed",
+      "error": "locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('dialog').getByText(/Введите объём больше 0/) to be visible\u001b[22m\n"
+    },
+    {
+      "name": "36 Final negative zero empty excessive and decimal scale validation",
+      "status": "passed"
+    },
+    {
+      "name": "37 Editor resize 10 to 20 and back retains equipment",
+      "status": "passed"
+    }
+  ],
+  "errors": []
+}

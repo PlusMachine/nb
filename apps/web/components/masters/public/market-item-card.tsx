@@ -29,7 +29,7 @@ export function MarketItemCard({ item }: { item: MarketItemCardDto }) {
             {item.title}
           </h2>
           {item.priceNote ? (
-            <span className="shrink-0 rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-foreground">
+            <span className="max-w-full break-words rounded-xl bg-muted px-2.5 py-1 text-xs font-medium text-foreground">
               {item.priceNote}
             </span>
           ) : null}

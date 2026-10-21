@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Fragment, useDeferredValue, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import React, { Fragment, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
@@ -14,6 +14,7 @@ import {
   X
 } from "lucide-react";
 import type { BjcpCatalogData, BjcpCatalogStyle } from "@nb/content";
+import { AnchoredPopover } from "@nb/ui";
 
 import {
   getBjcpCardColorInfo,
@@ -159,7 +160,7 @@ export function BjcpCatalog({ catalog }: Props) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const searchParamsKey = searchParams.toString();
   const state = useMemo(
@@ -168,20 +169,39 @@ export function BjcpCatalog({ catalog }: Props) {
   );
   const suggestionListId = "bjcp-search-suggestions";
   const [searchInput, setSearchInput] = useState(state.q);
+  const [isSearchReady, setIsSearchReady] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [draftFilters, setDraftFilters] = useState<BjcpAdvancedFilters>(state.filters);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
   const deferredSearch = useDeferredValue(searchInput);
   const searchRef = useRef<HTMLDivElement | null>(null);
+  const previousQueryRef = useRef(state.q);
 
   useEffect(() => {
-    if (isSearchFocused) {
-      return;
-    }
+    // SSR уже показывает поле, но до гидратации ранний ввод может потеряться.
+    // Разрешаем ввод, когда React подключил обработчики этого компонента.
+    setIsSearchReady(true);
+  }, []);
 
-    setSearchInput(state.q);
-  }, [isSearchFocused, state.q]);
+  useEffect(() => {
+    const previousQuery = previousQueryRef.current;
+    previousQueryRef.current = state.q;
+    // Смена фокуса не отменяет ввод, ожидающий debounce. При навигации
+    // синхронизируем URL только с полем, в котором нет более свежего запроса.
+    setSearchInput((current) => current.trim() === previousQuery ? state.q : current);
+  }, [state.q]);
+
+  useEffect(() => {
+    const restoreSearch = () => {
+      // Назад/вперёд отменяет ещё не применённый ввод, иначе debounce мог бы
+      // переписать только что восстановленную запись истории старым черновиком.
+      setSearchInput(new URL(window.location.href).searchParams.get("q") ?? "");
+      setIsSearchFocused(false);
+    };
+    window.addEventListener("popstate", restoreSearch);
+    return () => window.removeEventListener("popstate", restoreSearch);
+  }, []);
 
   useEffect(() => {
     if (!isFiltersOpen) {
@@ -193,26 +213,24 @@ export function BjcpCatalog({ catalog }: Props) {
     setActiveSuggestionIndex(0);
   }, [deferredSearch]);
 
-  const currentHref = buildBjcpCatalogHref(pathname, state);
-
-  const navigateHref = (href: string, mode: "push" | "replace" = "push") => {
-    if (href === currentHref) {
+  const navigateHref = useCallback((href: string, mode: "push" | "replace" = "push") => {
+    if (href === `${window.location.pathname}${window.location.search}`) {
       return;
     }
 
-    startTransition(() => {
-      if (mode === "replace") {
-        router.replace(href, { scroll: false });
-        return;
-      }
+    // Весь каталог уже загружен в props. Меняем только клиентские фильтры:
+    // History API обновляет useSearchParams без RSC-запроса и поздних ответов,
+    // которые могли возвращать старый запрос после нового ввода или очистки.
+    if (mode === "replace") {
+      window.history.replaceState(null, "", href);
+    } else {
+      window.history.pushState(null, "", href);
+    }
+  }, []);
 
-      router.push(href, { scroll: false });
-    });
-  };
-
-  const navigateState = (nextState: BjcpCatalogState, mode: "push" | "replace" = "push") => {
+  const navigateState = useCallback((nextState: BjcpCatalogState, mode: "push" | "replace" = "push") => {
     navigateHref(buildBjcpCatalogHref(pathname, nextState), mode);
-  };
+  }, [navigateHref, pathname]);
 
   useEffect(() => {
     const trimmedInput = searchInput.trim();
@@ -234,6 +252,16 @@ export function BjcpCatalog({ catalog }: Props) {
   const suggestions = getBjcpSearchSuggestions(deferredSearch, catalog);
   const flatSuggestions = flattenSuggestions(suggestions);
   const shouldShowSuggestions = isSearchFocused && flatSuggestions.length > 0 && deferredSearch.trim().length >= 2;
+  const activeSuggestion = flatSuggestions[activeSuggestionIndex];
+  const activeSuggestionId = activeSuggestion ? `bjcp-suggestion-${activeSuggestion.kind}-${activeSuggestion.id}` : null;
+
+  useEffect(() => {
+    if (!shouldShowSuggestions || !activeSuggestionId) return;
+    const frame = requestAnimationFrame(() => {
+      document.getElementById(activeSuggestionId)?.scrollIntoView({ block: "nearest", inline: "nearest" });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [activeSuggestionId, shouldShowSuggestions]);
   const quickChips = getQuickChips(catalog);
   const displayState = state.view === "bjcp" && state.chips.length
     ? updateState(state, { chips: [] })
@@ -301,21 +329,6 @@ export function BjcpCatalog({ catalog }: Props) {
 
     navigateState(updateState(state, { chips: [] }), "replace");
   }, [navigateState, state]);
-
-  useEffect(() => {
-    if (!shouldShowSuggestions) {
-      return undefined;
-    }
-
-    const handlePointerDown = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setIsSearchFocused(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handlePointerDown);
-    return () => document.removeEventListener("mousedown", handlePointerDown);
-  }, [shouldShowSuggestions]);
 
   const handleSuggestionSelect = (suggestion: BjcpSuggestion) => {
     setIsSearchFocused(false);
@@ -414,7 +427,7 @@ export function BjcpCatalog({ catalog }: Props) {
   return (
     <div className="space-y-6">
       <section className="relative z-30 space-y-5 rounded-[2rem] border border-card/80 bg-card/90 p-5 shadow-[0_36px_100px_-72px_rgba(15,23,42,0.45)] backdrop-blur sm:p-6">
-        <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
+        <nav aria-label="Навигационная цепочка" className="text-sm text-muted-foreground">
           <ol className="flex flex-wrap items-center gap-2">
             <li><Link href="/" className="transition hover:text-foreground">Главная</Link></li>
             <li aria-hidden="true">/</li>
@@ -427,22 +440,42 @@ export function BjcpCatalog({ catalog }: Props) {
         </h1>
 
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-          <div ref={searchRef} className="relative z-[70]">
+          <AnchoredPopover
+            open={shouldShowSuggestions}
+            onOpenChange={setIsSearchFocused}
+            id={suggestionListId}
+            role="listbox"
+            aria-label="Подсказки BJCP"
+            align="start"
+            side="bottom"
+            sideOffset={8}
+            hideWhenDetached
+            collisionPadding={{ top: 64, bottom: 8, left: 8, right: 8 }}
+            onInteractOutside={event => {
+              if (searchRef.current?.contains(event.target as Node)) event.preventDefault();
+            }}
+            className="z-[80] max-h-[min(20rem,var(--radix-popover-content-available-height))] w-[var(--radix-popover-trigger-width)] max-w-[calc(100vw-1rem)] overflow-y-auto overscroll-contain rounded-[1.5rem] border border-border bg-card shadow-2xl outline-none"
+            anchor={<div ref={searchRef} className="relative z-[70]">
             <label className="sr-only" htmlFor="bjcp-search">Поиск стилей BJCP</label>
             <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
             <input
               id="bjcp-search"
               value={searchInput}
-              onChange={(event) => setSearchInput(event.target.value)}
+              disabled={!isSearchReady}
+              aria-busy={!isSearchReady}
+              onChange={(event) => {
+                setSearchInput(event.target.value);
+                setIsSearchFocused(true);
+              }}
               onFocus={() => setIsSearchFocused(true)}
               autoComplete="off"
               placeholder="Код BJCP, русское или английское название, синоним"
-              className="h-[3.25rem] w-full rounded-[1.4rem] border border-border bg-card px-12 pr-12 text-base text-foreground outline-none transition focus:border-ring focus:ring-4 focus:ring-ring/70"
+              className="h-[3.25rem] w-full rounded-[1.4rem] border border-border bg-card px-12 pr-12 text-base text-foreground outline-none transition focus:border-ring focus:ring-4 focus:ring-ring/70 disabled:cursor-wait disabled:opacity-60"
               role="combobox"
               aria-expanded={shouldShowSuggestions}
               aria-autocomplete="list"
               aria-controls={shouldShowSuggestions ? suggestionListId : undefined}
-              aria-activedescendant={shouldShowSuggestions ? `bjcp-suggestion-${flatSuggestions[activeSuggestionIndex]?.kind ?? "style"}-${flatSuggestions[activeSuggestionIndex]?.id ?? "0"}` : undefined}
+              aria-activedescendant={shouldShowSuggestions ? activeSuggestionId ?? undefined : undefined}
               onKeyDown={(event) => {
                 if (event.key === "Escape") {
                   setIsSearchFocused(false);
@@ -450,6 +483,11 @@ export function BjcpCatalog({ catalog }: Props) {
                 }
 
                 if (!shouldShowSuggestions) {
+                  if ((event.key === "ArrowDown" || event.key === "ArrowUp") && flatSuggestions.length && deferredSearch.trim().length >= 2) {
+                    event.preventDefault();
+                    setIsSearchFocused(true);
+                    setActiveSuggestionIndex(event.key === "ArrowUp" ? flatSuggestions.length - 1 : 0);
+                  }
                   return;
                 }
 
@@ -475,6 +513,7 @@ export function BjcpCatalog({ catalog }: Props) {
             {searchInput ? (
               <button
                 type="button"
+                onMouseDown={event => event.preventDefault()}
                 onClick={handleClearSearch}
                 className="absolute right-3 top-1/2 flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition hover:bg-accent hover:text-foreground"
                 aria-label="Очистить поиск"
@@ -483,12 +522,8 @@ export function BjcpCatalog({ catalog }: Props) {
               </button>
             ) : null}
 
-            {shouldShowSuggestions ? (
-              <div
-                id={suggestionListId}
-                role="listbox"
-                className="absolute inset-x-0 top-[calc(100%+0.5rem)] z-[80] overflow-hidden rounded-[1.5rem] border border-border bg-card shadow-2xl"
-              >
+            </div>}
+          >
                 {([
                   ["Стили", suggestions.styles],
                   ["Семейства", suggestions.families],
@@ -512,8 +547,9 @@ export function BjcpCatalog({ catalog }: Props) {
                             id={`bjcp-suggestion-${item.kind}-${item.id}`}
                             type="button"
                             role="option"
+                            tabIndex={-1}
                             aria-selected={flatIndex === activeSuggestionIndex}
-                            onPointerDown={(event) => event.preventDefault()}
+                            onMouseDown={(event) => event.preventDefault()}
                             onClick={() => handleSuggestionSelect(item)}
                             className={`flex w-full items-start justify-between gap-4 px-4 py-3 text-left transition hover:bg-accent ${flatIndex === activeSuggestionIndex ? "bg-accent" : "bg-card"
                               }`}
@@ -529,9 +565,7 @@ export function BjcpCatalog({ catalog }: Props) {
                     </section>
                   );
                 })}
-              </div>
-            ) : null}
-          </div>
+          </AnchoredPopover>
 
           <div className="flex flex-wrap items-center gap-2 lg:flex-nowrap lg:justify-end">
             <div className="flex flex-wrap gap-2 rounded-full bg-muted p-1">
@@ -707,7 +741,7 @@ export function BjcpCatalog({ catalog }: Props) {
               </h2>
 
               <span className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground">
-                {results.styles.length} стилей
+                {formatStyleCountLabel(results.styles.length)}
               </span>
             </div>
 
@@ -808,7 +842,7 @@ export function BjcpCatalog({ catalog }: Props) {
             </h2>
 
             <span className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground">
-              {results.styles.length} стилей
+              {formatStyleCountLabel(results.styles.length)}
             </span>
           </div>
 

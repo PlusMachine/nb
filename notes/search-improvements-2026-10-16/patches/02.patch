@@ -1,0 +1,53 @@
+--- a/apps/web/features/ingredients/catalog-service.ts
++++ b/apps/web/features/ingredients/catalog-service.ts
+@@ -320,7 +320,9 @@
+ };
+ 
+ const buildSearchText = (item: UserCatalogIngredientDto) => {
+-  const aliases = item.aliases.map((alias) => alias.aliasNormalized);
++  const aliases = item.aliases
++    .filter((alias) => alias.isEnabled !== false)
++    .map((alias) => alias.aliasNormalized);
+   const variantNames = item.packageVariants.flatMap((variant) => buildConsumablePackageSearchLabels(variant));
+   const consumable = resolveConsumableTechnicalData(item.technicalData);
+ 
+--- a/apps/web/tests/user-catalog-ingredient-search.test.ts
++++ b/apps/web/tests/user-catalog-ingredient-search.test.ts
+@@ -2277,3 +2277,37 @@
+     expect(result.total).toBe(0);
+   });
+ });
++
++
++describe("disabled aliases in picker search", () => {
++  beforeEach(() => {
++    mockState.catalogItems = [];
++    mockState.customItems = [];
++    mockState.favoriteKeys = new Set();
++  });
++
++  const citraWithAlias = (isEnabled: boolean) => buildCatalogItem({
++    id: "citra-disabled-alias", type: "hop", category: "hop", subtype: null,
++    primaryLabelRu: "Citra", secondaryLabelRu: null, displayName: "Citra",
++    displayNameRu: "Citra", displayNameEn: "Citra", nameRu: "Citra", nameEn: "Citra",
++    aliases: [{ id: "alias-hidden", locale: "en", alias: "zzqhiddenalias", aliasNormalized: "zzqhiddenalias", source: "manual", isEnabled }]
++  });
++
++  it("does not find a disabled unique alias through the shared search text", async () => {
++    mockState.catalogItems = [citraWithAlias(false)];
++    const result = await searchUserCatalogIngredients(null, { q: "zzqhiddenalias", category: "hop" });
++    expect(result.items).toEqual([]);
++  });
++
++  it("keeps enabled aliases searchable", async () => {
++    mockState.catalogItems = [citraWithAlias(true)];
++    const result = await searchUserCatalogIngredients(null, { q: "zzqhiddenalias", category: "hop" });
++    expect(result.items.map((item) => item.id)).toEqual(["citra-disabled-alias"]);
++  });
++
++  it("still matches the product name when the same spelling is disabled as an alias", async () => {
++    mockState.catalogItems = [{ ...citraWithAlias(false), aliases: [{ id: "alias-citra", locale: "en", alias: "Citra", aliasNormalized: "citra", source: "manual", isEnabled: false }] }];
++    const result = await searchUserCatalogIngredients(null, { q: "citra", category: "hop" });
++    expect(result.items.map((item) => item.id)).toEqual(["citra-disabled-alias"]);
++  });
++});

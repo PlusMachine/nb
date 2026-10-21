@@ -27,14 +27,14 @@ function StatTile({
   return (
     <div className="rounded-xl bg-muted px-3 py-2">
       <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</div>
-      <div className="flex items-baseline gap-1.5">
-        <div className="text-lg font-semibold tabular-nums text-foreground">{value}</div>
-        {secondary ? <div className="text-[11px] text-muted-foreground">{secondary}</div> : null}
+      <div className="flex flex-wrap items-baseline gap-x-1.5">
+        <div className="whitespace-nowrap text-lg font-semibold tabular-nums text-foreground">{value}</div>
+        {secondary ? <div className="whitespace-nowrap text-[11px] text-muted-foreground">{secondary}</div> : null}
       </div>
       {target ? (
         <div className="text-[11px] text-muted-foreground">
-          цель {target}
-          {targetSecondary ? <span className="text-muted-foreground"> · {targetSecondary}</span> : null}
+          цель <span className="whitespace-nowrap">{target}</span>
+          {targetSecondary ? <span className="whitespace-nowrap text-muted-foreground"> · {targetSecondary}</span> : null}
         </div>
       ) : null}
     </div>

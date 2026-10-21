@@ -191,6 +191,7 @@ export function BrewVolumeChoice({
             max={1000}
             disabled={disabled}
             aria-label="Объём варки, л"
+            allowNegative
             autoFocus
             className="h-9 w-28 rounded-md border border-border px-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
@@ -199,11 +200,11 @@ export function BrewVolumeChoice({
       ) : null}
       {targetVolumeL != null && targetVolumeL > 0 ? (
         <p className="text-xs leading-5 text-muted-foreground">
-          Количества ингредиентов пересчитаны на {formatBrewVolumeL(targetVolumeL)}.
+          Количество ингредиентов пересчитано на {formatBrewVolumeL(targetVolumeL)}.
           {efficiencyDiffers ? (
             <>
               {" "}Засыпь — под вашу эффективность {formatPercent(profile.brewhouseEfficiencyPct)}
-              {" "}(у автора {formatPercent(recipeEfficiencyPct as number)}), чтобы попасть в его OG.
+              {" "}(у автора {formatPercent(recipeEfficiencyPct as number)}), чтобы сохранить расчётную начальную плотность.
             </>
           ) : null}
         </p>

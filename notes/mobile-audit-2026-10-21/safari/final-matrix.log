@@ -1,0 +1,728 @@
+
+Running 273 tests using 2 workers
+
+  ✓    1 [iphone-se] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (12.8s)
+  ✓    2 [iphone-se] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла (13.2s)
+  ✓    3 [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет (3.1s)
+  ✓    4 [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.9s)
+  ✓    5 [iphone-se] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (2.2s)
+  ✓    6 [iphone-se] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла (2.0s)
+  ✓    7 [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет (2.8s)
+  ✓    8 [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.8s)
+  ✓    9 [iphone-se] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (2.1s)
+  ✓   10 [iphone-se] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла (2.1s)
+  ✓   11 [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет (2.1s)
+  ✓   12 [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.3s)
+  ✓   13 [iphone-se] › e2e/beer-presentation.spec.ts:92:3 › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек (4.0s)
+  ✓   14 [iphone-se] › e2e/bjcp-search.spec.ts:10:1 › closing BJCP suggestions preserves a pending search and allows clearing it (5.9s)
+  ✓   15 [iphone-se] › e2e/bjcp-search.spec.ts:33:1 › clearing before debounce cannot restore a stale query (5.4s)
+  ✓   16 [iphone-se] › e2e/bjcp-search.spec.ts:53:1 › local search and view filters preserve browser history without RSC navigation (3.5s)
+  ✓   17 [iphone-se] › e2e/bjcp-search.spec.ts:79:1 › choosing a family suggestion cancels pending text and keeps the chosen scope (4.6s)
+  ✓   18 [iphone-se] › e2e/bjcp-search.spec.ts:93:1 › back cancels an uncommitted query instead of rewriting the restored history (5.1s)
+  ✓   19 [iphone-se] › e2e/calculators-unit-converter.spec.ts:16:3 › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow) (3.5s)
+  ✓   20 [iphone-se] › e2e/calculators-unit-converter.spec.ts:25:3 › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей (4.1s)
+  ✓   21 [iphone-se] › e2e/calculators-unit-converter.spec.ts:38:3 › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением (4.4s)
+  -   22 [iphone-se] › e2e/calculators-unit-converter.spec.ts:49:3 › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину
+  ✓   23 [iphone-se] › e2e/calculators-unit-converter.spec.ts:65:3 › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой (4.3s)
+  ✓   24 [iphone-se] › e2e/calculators-unit-converter.spec.ts:78:3 › Конвертер единиц пивовара › у каждой вкладки группы есть иконка (4.2s)
+  ✓   26 [iphone-se] › e2e/calculators-unit-converter.spec.ts:102:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (12.6s)
+  ✓   25 [iphone-se] › e2e/calculators-unit-converter.spec.ts:90:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (12.6s)
+  ✓   27 [iphone-se] › e2e/calculators-unit-converter.spec.ts:115:3 › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки (7.5s)
+  ✓   28 [iphone-se] › e2e/calculators-unit-converter.spec.ts:122:3 › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex) (7.6s)
+  ✓   30 [iphone-se] › e2e/mobile-audit.spec.ts:53:1 › M02: public navigation and sign-in fit, including tablet breakpoint (21.1s)
+  ✓   29 [iphone-se] › e2e/mobile-audit.spec.ts:34:1 › M01: label preview leaves data fields clickable in every format (35.1s)
+  ✓   31 [iphone-se] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (14.6s)
+  ✓   33 [iphone-se] › e2e/mobile-audit.spec.ts:124:1 › M05: every dilution operation fits on the narrow screen (4.5s)
+  ✘   34 [iphone-se] › e2e/safari-interactions.spec.ts:18:1 › QR description remains readable and collapses back to the short viewport (7.9s)
+  ✓   32 [iphone-se] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions (16.8s)
+  ✓   36 [iphone-se] › e2e/safari-interactions.spec.ts:74:1 › label date and description remain editable with readable touch fields (9.0s)
+  ✓   35 [iphone-se] › e2e/safari-interactions.spec.ts:45:1 › QR feedback leaves recipe actions uncovered and can be opened twice (12.5s)
+  ✓   37 [iphone-se] › e2e/safari-interactions.spec.ts:96:1 › BJCP waits for its handlers before accepting the first query (6.0s)
+  ✓   39 [iphone-se] › e2e/safari-interactions.spec.ts:150:1 › cookie choice closes the banner and survives a reload (4.7s)
+  ✓   40 [iphone-13] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (2.3s)
+  ✓   41 [iphone-13] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла (2.4s)
+  ✓   42 [iphone-13] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет (2.3s)
+  ✓   43 [iphone-13] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.9s)
+  ✓   44 [iphone-13] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (2.2s)
+  ✓   45 [iphone-13] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла (2.4s)
+  ✓   46 [iphone-13] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет (3.2s)
+  ✓   47 [iphone-13] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.8s)
+  ✓   48 [iphone-13] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (3.1s)
+  ✓   49 [iphone-13] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла (3.0s)
+  ✓   50 [iphone-13] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет (3.8s)
+  ✓   51 [iphone-13] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (3.5s)
+  ✓   52 [iphone-13] › e2e/beer-presentation.spec.ts:92:3 › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек (8.5s)
+  ✓   53 [iphone-13] › e2e/bjcp-search.spec.ts:10:1 › closing BJCP suggestions preserves a pending search and allows clearing it (3.9s)
+  ✘   38 [iphone-se] › e2e/safari-interactions.spec.ts:119:1 › BJCP suggestions fit the viewport and keyboard selection scrolls inside (1.0m)
+  ✓   54 [iphone-13] › e2e/bjcp-search.spec.ts:33:1 › clearing before debounce cannot restore a stale query (5.5s)
+  ✓   56 [iphone-13] › e2e/bjcp-search.spec.ts:79:1 › choosing a family suggestion cancels pending text and keeps the chosen scope (5.5s)
+  ✓   55 [iphone-13] › e2e/bjcp-search.spec.ts:53:1 › local search and view filters preserve browser history without RSC navigation (5.8s)
+  ✓   58 [iphone-13] › e2e/calculators-unit-converter.spec.ts:16:3 › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow) (3.1s)
+  ✓   57 [iphone-13] › e2e/bjcp-search.spec.ts:93:1 › back cancels an uncommitted query instead of rewriting the restored history (6.1s)
+  ✓   59 [iphone-13] › e2e/calculators-unit-converter.spec.ts:25:3 › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей (4.0s)
+  -   61 [iphone-13] › e2e/calculators-unit-converter.spec.ts:49:3 › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину
+  ✓   60 [iphone-13] › e2e/calculators-unit-converter.spec.ts:38:3 › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением (7.4s)
+  ✓   62 [iphone-13] › e2e/calculators-unit-converter.spec.ts:65:3 › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой (4.5s)
+  ✓   63 [iphone-13] › e2e/calculators-unit-converter.spec.ts:78:3 › Конвертер единиц пивовара › у каждой вкладки группы есть иконка (4.7s)
+  ✓   65 [iphone-13] › e2e/calculators-unit-converter.spec.ts:102:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (7.2s)
+  ✓   64 [iphone-13] › e2e/calculators-unit-converter.spec.ts:90:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (7.7s)
+  ✓   67 [iphone-13] › e2e/calculators-unit-converter.spec.ts:122:3 › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex) (6.3s)
+  ✓   66 [iphone-13] › e2e/calculators-unit-converter.spec.ts:115:3 › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки (6.5s)
+  ✓   69 [iphone-13] › e2e/mobile-audit.spec.ts:53:1 › M02: public navigation and sign-in fit, including tablet breakpoint (4.9s)
+  ✓   68 [iphone-13] › e2e/mobile-audit.spec.ts:34:1 › M01: label preview leaves data fields clickable in every format (12.3s)
+  ✓   70 [iphone-13] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (10.3s)
+  ✓   72 [iphone-13] › e2e/mobile-audit.spec.ts:124:1 › M05: every dilution operation fits on the narrow screen (7.8s)
+  ✓   71 [iphone-13] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions (12.2s)
+  ✓   74 [iphone-13] › e2e/safari-interactions.spec.ts:45:1 › QR feedback leaves recipe actions uncovered and can be opened twice (10.7s)
+  ✓   73 [iphone-13] › e2e/safari-interactions.spec.ts:18:1 › QR description remains readable and collapses back to the short viewport (12.3s)
+  ✓   75 [iphone-13] › e2e/safari-interactions.spec.ts:74:1 › label date and description remain editable with readable touch fields (3.9s)
+  ✓   76 [iphone-13] › e2e/safari-interactions.spec.ts:96:1 › BJCP waits for its handlers before accepting the first query (4.2s)
+  ✓   78 [iphone-13] › e2e/safari-interactions.spec.ts:150:1 › cookie choice closes the banner and survives a reload (5.7s)
+  ✓   79 [iphone-landscape] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (2.5s)
+  ✓   80 [iphone-landscape] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла (2.0s)
+  ✓   81 [iphone-landscape] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет (2.0s)
+  ✓   82 [iphone-landscape] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.5s)
+  ✓   83 [iphone-landscape] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (3.9s)
+  ✓   84 [iphone-landscape] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла (3.0s)
+  ✓   85 [iphone-landscape] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет (2.7s)
+  ✓   86 [iphone-landscape] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.8s)
+  ✓   87 [iphone-landscape] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (2.1s)
+  ✓   88 [iphone-landscape] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла (2.8s)
+  ✓   89 [iphone-landscape] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет (2.1s)
+  ✓   90 [iphone-landscape] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.3s)
+  ✓   91 [iphone-landscape] › e2e/beer-presentation.spec.ts:92:3 › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек (2.1s)
+  ✓   92 [iphone-landscape] › e2e/bjcp-search.spec.ts:10:1 › closing BJCP suggestions preserves a pending search and allows clearing it (3.8s)
+  ✓   93 [iphone-landscape] › e2e/bjcp-search.spec.ts:33:1 › clearing before debounce cannot restore a stale query (5.6s)
+  ✓   94 [iphone-landscape] › e2e/bjcp-search.spec.ts:53:1 › local search and view filters preserve browser history without RSC navigation (7.3s)
+  ✘   77 [iphone-13] › e2e/safari-interactions.spec.ts:119:1 › BJCP suggestions fit the viewport and keyboard selection scrolls inside (1.0m)
+  ✓   95 [iphone-landscape] › e2e/bjcp-search.spec.ts:79:1 › choosing a family suggestion cancels pending text and keeps the chosen scope (22.8s)
+  ✓   96 [iphone-landscape] › e2e/bjcp-search.spec.ts:93:1 › back cancels an uncommitted query instead of rewriting the restored history (23.2s)
+  ✓   97 [iphone-landscape] › e2e/calculators-unit-converter.spec.ts:16:3 › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow) (10.6s)
+  ✓   98 [iphone-landscape] › e2e/calculators-unit-converter.spec.ts:25:3 › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей (7.5s)
+  ✓   99 [iphone-landscape] › e2e/calculators-unit-converter.spec.ts:38:3 › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением (5.9s)
+  -  100 [iphone-landscape] › e2e/calculators-unit-converter.spec.ts:49:3 › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину
+  ✓  101 [iphone-landscape] › e2e/calculators-unit-converter.spec.ts:65:3 › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой (3.5s)
+  ✓  102 [iphone-landscape] › e2e/calculators-unit-converter.spec.ts:78:3 › Конвертер единиц пивовара › у каждой вкладки группы есть иконка (2.8s)
+  ✓  103 [iphone-landscape] › e2e/calculators-unit-converter.spec.ts:90:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (5.0s)
+  ✓  104 [iphone-landscape] › e2e/calculators-unit-converter.spec.ts:102:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (3.9s)
+  ✓  105 [iphone-landscape] › e2e/calculators-unit-converter.spec.ts:115:3 › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки (5.2s)
+  ✓  106 [iphone-landscape] › e2e/calculators-unit-converter.spec.ts:122:3 › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex) (5.2s)
+  ✓  108 [iphone-landscape] › e2e/mobile-audit.spec.ts:53:1 › M02: public navigation and sign-in fit, including tablet breakpoint (10.8s)
+  ✓  107 [iphone-landscape] › e2e/mobile-audit.spec.ts:34:1 › M01: label preview leaves data fields clickable in every format (31.3s)
+  ✓  109 [iphone-landscape] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (29.9s)
+  ✓  111 [iphone-landscape] › e2e/mobile-audit.spec.ts:124:1 › M05: every dilution operation fits on the narrow screen (9.5s)
+  ✓  110 [iphone-landscape] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions (23.2s)
+  ✘  112 [iphone-landscape] › e2e/safari-interactions.spec.ts:18:1 › QR description remains readable and collapses back to the short viewport (12.1s)
+  ✓  114 [iphone-landscape] › e2e/safari-interactions.spec.ts:74:1 › label date and description remain editable with readable touch fields (11.3s)
+  ✓  113 [iphone-landscape] › e2e/safari-interactions.spec.ts:45:1 › QR feedback leaves recipe actions uncovered and can be opened twice (22.5s)
+  ✓  115 [iphone-landscape] › e2e/safari-interactions.spec.ts:96:1 › BJCP waits for its handlers before accepting the first query (10.3s)
+  ✓  116 [iphone-landscape] › e2e/safari-interactions.spec.ts:119:1 › BJCP suggestions fit the viewport and keyboard selection scrolls inside (11.5s)
+  ✓  118 [ipad-mini] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (4.6s)
+  ✓  117 [iphone-landscape] › e2e/safari-interactions.spec.ts:150:1 › cookie choice closes the banner and survives a reload (9.3s)
+  ✓  119 [ipad-mini] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла (5.0s)
+  ✓  120 [ipad-mini] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет (3.3s)
+  ✓  122 [ipad-mini] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (3.6s)
+  ✓  121 [ipad-mini] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (4.4s)
+  ✓  124 [ipad-mini] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет (4.1s)
+  ✓  123 [ipad-mini] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла (4.5s)
+  ✓  126 [ipad-mini] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (3.3s)
+  ✓  125 [ipad-mini] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (3.5s)
+  ✓  127 [ipad-mini] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла (3.3s)
+  ✓  128 [ipad-mini] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет (3.2s)
+  ✓  130 [ipad-mini] › e2e/beer-presentation.spec.ts:92:3 › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек (3.7s)
+  ✓  129 [ipad-mini] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (3.9s)
+  ✓  131 [ipad-mini] › e2e/bjcp-search.spec.ts:10:1 › closing BJCP suggestions preserves a pending search and allows clearing it (5.4s)
+  ✓  132 [ipad-mini] › e2e/bjcp-search.spec.ts:33:1 › clearing before debounce cannot restore a stale query (7.6s)
+  ✓  133 [ipad-mini] › e2e/bjcp-search.spec.ts:53:1 › local search and view filters preserve browser history without RSC navigation (6.2s)
+  ✓  134 [ipad-mini] › e2e/bjcp-search.spec.ts:79:1 › choosing a family suggestion cancels pending text and keeps the chosen scope (4.5s)
+  ✓  136 [ipad-mini] › e2e/calculators-unit-converter.spec.ts:16:3 › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow) (2.5s)
+  ✓  135 [ipad-mini] › e2e/bjcp-search.spec.ts:93:1 › back cancels an uncommitted query instead of rewriting the restored history (5.9s)
+  ✓  137 [ipad-mini] › e2e/calculators-unit-converter.spec.ts:25:3 › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей (3.3s)
+  ✓  138 [ipad-mini] › e2e/calculators-unit-converter.spec.ts:38:3 › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением (2.7s)
+  -  139 [ipad-mini] › e2e/calculators-unit-converter.spec.ts:49:3 › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину
+  ✓  140 [ipad-mini] › e2e/calculators-unit-converter.spec.ts:65:3 › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой (4.3s)
+  ✓  141 [ipad-mini] › e2e/calculators-unit-converter.spec.ts:78:3 › Конвертер единиц пивовара › у каждой вкладки группы есть иконка (3.8s)
+  ✓  143 [ipad-mini] › e2e/calculators-unit-converter.spec.ts:102:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (2.7s)
+  ✓  142 [ipad-mini] › e2e/calculators-unit-converter.spec.ts:90:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (2.8s)
+  ✓  145 [ipad-mini] › e2e/calculators-unit-converter.spec.ts:122:3 › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex) (2.7s)
+  ✓  144 [ipad-mini] › e2e/calculators-unit-converter.spec.ts:115:3 › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки (2.8s)
+  ✓  147 [ipad-mini] › e2e/mobile-audit.spec.ts:53:1 › M02: public navigation and sign-in fit, including tablet breakpoint (5.1s)
+  ✓  146 [ipad-mini] › e2e/mobile-audit.spec.ts:34:1 › M01: label preview leaves data fields clickable in every format (9.2s)
+  ✓  148 [ipad-mini] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (9.1s)
+  ✓  150 [ipad-mini] › e2e/mobile-audit.spec.ts:124:1 › M05: every dilution operation fits on the narrow screen (16.0s)
+  ✘  149 [ipad-mini] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions (24.4s)
+  ✘  151 [ipad-mini] › e2e/safari-interactions.spec.ts:18:1 › QR description remains readable and collapses back to the short viewport (9.8s)
+  ✓  153 [ipad-mini] › e2e/safari-interactions.spec.ts:74:1 › label date and description remain editable with readable touch fields (12.6s)
+  ✓  152 [ipad-mini] › e2e/safari-interactions.spec.ts:45:1 › QR feedback leaves recipe actions uncovered and can be opened twice (20.3s)
+  ✓  154 [ipad-mini] › e2e/safari-interactions.spec.ts:96:1 › BJCP waits for its handlers before accepting the first query (6.8s)
+  ✓  155 [ipad-mini] › e2e/safari-interactions.spec.ts:119:1 › BJCP suggestions fit the viewport and keyboard selection scrolls inside (9.1s)
+  ✓  157 [ipad-mini-landscape] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (4.2s)
+  ✓  156 [ipad-mini] › e2e/safari-interactions.spec.ts:150:1 › cookie choice closes the banner and survives a reload (10.2s)
+  ✓  158 [ipad-mini-landscape] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла (3.4s)
+  ✓  159 [ipad-mini-landscape] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет (2.9s)
+  ✓  160 [ipad-mini-landscape] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (4.8s)
+  ✓  161 [ipad-mini-landscape] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (3.6s)
+  ✓  162 [ipad-mini-landscape] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла (3.2s)
+  ✓  163 [ipad-mini-landscape] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет (3.2s)
+  ✓  165 [ipad-mini-landscape] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (4.2s)
+  ✓  164 [ipad-mini-landscape] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (4.5s)
+  ✓  166 [ipad-mini-landscape] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла (3.9s)
+  ✓  167 [ipad-mini-landscape] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет (3.8s)
+  ✓  169 [ipad-mini-landscape] › e2e/beer-presentation.spec.ts:92:3 › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек (3.5s)
+  ✓  168 [ipad-mini-landscape] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (3.6s)
+  ✓  170 [ipad-mini-landscape] › e2e/bjcp-search.spec.ts:10:1 › closing BJCP suggestions preserves a pending search and allows clearing it (7.9s)
+  ✓  171 [ipad-mini-landscape] › e2e/bjcp-search.spec.ts:33:1 › clearing before debounce cannot restore a stale query (10.1s)
+  ✓  172 [ipad-mini-landscape] › e2e/bjcp-search.spec.ts:53:1 › local search and view filters preserve browser history without RSC navigation (5.6s)
+  ✓  173 [ipad-mini-landscape] › e2e/bjcp-search.spec.ts:79:1 › choosing a family suggestion cancels pending text and keeps the chosen scope (8.8s)
+  ✓  174 [ipad-mini-landscape] › e2e/bjcp-search.spec.ts:93:1 › back cancels an uncommitted query instead of rewriting the restored history (6.6s)
+  ✓  175 [ipad-mini-landscape] › e2e/calculators-unit-converter.spec.ts:16:3 › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow) (7.3s)
+  ✓  176 [ipad-mini-landscape] › e2e/calculators-unit-converter.spec.ts:25:3 › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей (8.0s)
+  ✓  177 [ipad-mini-landscape] › e2e/calculators-unit-converter.spec.ts:38:3 › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением (4.7s)
+  ✓  178 [ipad-mini-landscape] › e2e/calculators-unit-converter.spec.ts:49:3 › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину (3.1s)
+  -  179 [ipad-mini-landscape] › e2e/calculators-unit-converter.spec.ts:65:3 › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой
+  ✓  180 [ipad-mini-landscape] › e2e/calculators-unit-converter.spec.ts:78:3 › Конвертер единиц пивовара › у каждой вкладки группы есть иконка (4.5s)
+  ✓  182 [ipad-mini-landscape] › e2e/calculators-unit-converter.spec.ts:102:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (3.4s)
+  ✓  181 [ipad-mini-landscape] › e2e/calculators-unit-converter.spec.ts:90:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (3.6s)
+  ✓  184 [ipad-mini-landscape] › e2e/calculators-unit-converter.spec.ts:122:3 › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex) (3.3s)
+  ✓  183 [ipad-mini-landscape] › e2e/calculators-unit-converter.spec.ts:115:3 › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки (3.4s)
+  ✓  186 [ipad-mini-landscape] › e2e/mobile-audit.spec.ts:53:1 › M02: public navigation and sign-in fit, including tablet breakpoint (6.1s)
+  ✓  185 [ipad-mini-landscape] › e2e/mobile-audit.spec.ts:34:1 › M01: label preview leaves data fields clickable in every format (9.9s)
+  ✘  187 [ipad-mini-landscape] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (5.0s)
+  ✓  188 [ipad-mini-landscape] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions (10.1s)
+  ✓  189 [ipad-mini-landscape] › e2e/mobile-audit.spec.ts:124:1 › M05: every dilution operation fits on the narrow screen (8.5s)
+  ✓  190 [ipad-mini-landscape] › e2e/safari-interactions.spec.ts:18:1 › QR description remains readable and collapses back to the short viewport (17.4s)
+  ✓  191 [ipad-mini-landscape] › e2e/safari-interactions.spec.ts:45:1 › QR feedback leaves recipe actions uncovered and can be opened twice (18.3s)
+  ✓  192 [ipad-mini-landscape] › e2e/safari-interactions.spec.ts:74:1 › label date and description remain editable with readable touch fields (3.9s)
+  ✓  193 [ipad-mini-landscape] › e2e/safari-interactions.spec.ts:96:1 › BJCP waits for its handlers before accepting the first query (7.7s)
+  ✓  194 [ipad-mini-landscape] › e2e/safari-interactions.spec.ts:119:1 › BJCP suggestions fit the viewport and keyboard selection scrolls inside (9.4s)
+  ✓  195 [ipad-mini-landscape] › e2e/safari-interactions.spec.ts:150:1 › cookie choice closes the banner and survives a reload (10.1s)
+  ✓  196 [ipad-pro] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (4.6s)
+  ✓  197 [ipad-pro] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет (4.3s)
+  ✓  198 [ipad-pro] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла (4.6s)
+  ✓  199 [ipad-pro] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (3.3s)
+  ✓  200 [ipad-pro] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (3.7s)
+  ✓  201 [ipad-pro] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла (3.5s)
+  ✓  202 [ipad-pro] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет (3.3s)
+  ✓  203 [ipad-pro] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (3.9s)
+  ✓  204 [ipad-pro] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (4.7s)
+  ✓  205 [ipad-pro] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла (4.0s)
+  ✓  206 [ipad-pro] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет (3.6s)
+  ✓  207 [ipad-pro] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (6.2s)
+  ✓  208 [ipad-pro] › e2e/beer-presentation.spec.ts:92:3 › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек (4.0s)
+  ✓  209 [ipad-pro] › e2e/bjcp-search.spec.ts:10:1 › closing BJCP suggestions preserves a pending search and allows clearing it (7.5s)
+  ✓  210 [ipad-pro] › e2e/bjcp-search.spec.ts:33:1 › clearing before debounce cannot restore a stale query (10.5s)
+  ✓  212 [ipad-pro] › e2e/bjcp-search.spec.ts:79:1 › choosing a family suggestion cancels pending text and keeps the chosen scope (11.3s)
+  ✓  211 [ipad-pro] › e2e/bjcp-search.spec.ts:53:1 › local search and view filters preserve browser history without RSC navigation (15.2s)
+  ✓  214 [ipad-pro] › e2e/calculators-unit-converter.spec.ts:16:3 › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow) (4.4s)
+  ✓  213 [ipad-pro] › e2e/bjcp-search.spec.ts:93:1 › back cancels an uncommitted query instead of rewriting the restored history (8.6s)
+  ✓  216 [ipad-pro] › e2e/calculators-unit-converter.spec.ts:38:3 › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением (3.0s)
+  ✓  215 [ipad-pro] › e2e/calculators-unit-converter.spec.ts:25:3 › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей (7.4s)
+  -  217 [ipad-pro] › e2e/calculators-unit-converter.spec.ts:49:3 › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину
+  ✓  218 [ipad-pro] › e2e/calculators-unit-converter.spec.ts:65:3 › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой (3.9s)
+  ✓  219 [ipad-pro] › e2e/calculators-unit-converter.spec.ts:78:3 › Конвертер единиц пивовара › у каждой вкладки группы есть иконка (3.1s)
+  ✘  221 [ipad-pro] › e2e/calculators-unit-converter.spec.ts:102:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (1.9s)
+  ✘  220 [ipad-pro] › e2e/calculators-unit-converter.spec.ts:90:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (2.0s)
+  ✓  222 [ipad-pro] › e2e/calculators-unit-converter.spec.ts:122:3 › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex) (27.0s)
+  ✓  223 [ipad-pro] › e2e/calculators-unit-converter.spec.ts:115:3 › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки (27.2s)
+  ✓  225 [ipad-pro] › e2e/mobile-audit.spec.ts:53:1 › M02: public navigation and sign-in fit, including tablet breakpoint (8.8s)
+  ✓  226 [ipad-pro] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (16.6s)
+  ✓  224 [ipad-pro] › e2e/mobile-audit.spec.ts:34:1 › M01: label preview leaves data fields clickable in every format (26.7s)
+  ✓  228 [ipad-pro] › e2e/mobile-audit.spec.ts:124:1 › M05: every dilution operation fits on the narrow screen (26.2s)
+  ✓  227 [ipad-pro] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions (32.4s)
+  ✓  229 [ipad-pro] › e2e/safari-interactions.spec.ts:18:1 › QR description remains readable and collapses back to the short viewport (12.0s)
+  ✓  231 [ipad-pro] › e2e/safari-interactions.spec.ts:74:1 › label date and description remain editable with readable touch fields (3.5s)
+  ✓  230 [ipad-pro] › e2e/safari-interactions.spec.ts:45:1 › QR feedback leaves recipe actions uncovered and can be opened twice (11.9s)
+  ✓  232 [ipad-pro] › e2e/safari-interactions.spec.ts:96:1 › BJCP waits for its handlers before accepting the first query (6.5s)
+  ✓  233 [ipad-pro] › e2e/safari-interactions.spec.ts:119:1 › BJCP suggestions fit the viewport and keyboard selection scrolls inside (9.0s)
+  ✓  234 [ipad-pro] › e2e/safari-interactions.spec.ts:150:1 › cookie choice closes the banner and survives a reload (8.8s)
+  ✓  235 [ipad-pro-landscape] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (3.5s)
+  ✓  236 [ipad-pro-landscape] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет (3.8s)
+  ✓  237 [ipad-pro-landscape] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла (3.0s)
+  ✓  238 [ipad-pro-landscape] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (3.1s)
+  ✓  239 [ipad-pro-landscape] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (2.7s)
+  ✓  241 [ipad-pro-landscape] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет (3.8s)
+  ✓  240 [ipad-pro-landscape] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла (4.4s)
+  ✓  243 [ipad-pro-landscape] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (4.0s)
+  ✓  242 [ipad-pro-landscape] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (4.1s)
+  ✓  244 [ipad-pro-landscape] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла (3.7s)
+  ✓  245 [ipad-pro-landscape] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет (3.7s)
+  ✓  247 [ipad-pro-landscape] › e2e/beer-presentation.spec.ts:92:3 › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек (4.6s)
+  ✓  246 [ipad-pro-landscape] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (5.0s)
+  ✓  248 [ipad-pro-landscape] › e2e/bjcp-search.spec.ts:10:1 › closing BJCP suggestions preserves a pending search and allows clearing it (7.3s)
+  ✓  249 [ipad-pro-landscape] › e2e/bjcp-search.spec.ts:33:1 › clearing before debounce cannot restore a stale query (10.4s)
+  ✓  250 [ipad-pro-landscape] › e2e/bjcp-search.spec.ts:53:1 › local search and view filters preserve browser history without RSC navigation (6.1s)
+  ✓  251 [ipad-pro-landscape] › e2e/bjcp-search.spec.ts:79:1 › choosing a family suggestion cancels pending text and keeps the chosen scope (9.5s)
+  ✓  252 [ipad-pro-landscape] › e2e/bjcp-search.spec.ts:93:1 › back cancels an uncommitted query instead of rewriting the restored history (8.4s)
+  ✓  253 [ipad-pro-landscape] › e2e/calculators-unit-converter.spec.ts:16:3 › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow) (2.5s)
+  ✓  255 [ipad-pro-landscape] › e2e/calculators-unit-converter.spec.ts:38:3 › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением (2.5s)
+  ✓  254 [ipad-pro-landscape] › e2e/calculators-unit-converter.spec.ts:25:3 › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей (4.4s)
+  ✓  256 [ipad-pro-landscape] › e2e/calculators-unit-converter.spec.ts:49:3 › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину (2.3s)
+  -  257 [ipad-pro-landscape] › e2e/calculators-unit-converter.spec.ts:65:3 › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой
+  ✓  258 [ipad-pro-landscape] › e2e/calculators-unit-converter.spec.ts:78:3 › Конвертер единиц пивовара › у каждой вкладки группы есть иконка (3.8s)
+  ✓  259 [ipad-pro-landscape] › e2e/calculators-unit-converter.spec.ts:90:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (3.3s)
+  ✓  260 [ipad-pro-landscape] › e2e/calculators-unit-converter.spec.ts:102:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (3.3s)
+  ✓  261 [ipad-pro-landscape] › e2e/calculators-unit-converter.spec.ts:115:3 › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки (3.6s)
+  ✓  262 [ipad-pro-landscape] › e2e/calculators-unit-converter.spec.ts:122:3 › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex) (4.0s)
+  ✓  264 [ipad-pro-landscape] › e2e/mobile-audit.spec.ts:53:1 › M02: public navigation and sign-in fit, including tablet breakpoint (4.2s)
+  ✓  263 [ipad-pro-landscape] › e2e/mobile-audit.spec.ts:34:1 › M01: label preview leaves data fields clickable in every format (10.0s)
+  ✘  265 [ipad-pro-landscape] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (5.5s)
+  ✓  267 [ipad-pro-landscape] › e2e/mobile-audit.spec.ts:124:1 › M05: every dilution operation fits on the narrow screen (6.1s)
+  ✓  266 [ipad-pro-landscape] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions (11.4s)
+  ✓  268 [ipad-pro-landscape] › e2e/safari-interactions.spec.ts:18:1 › QR description remains readable and collapses back to the short viewport (4.6s)
+  ✓  269 [ipad-pro-landscape] › e2e/safari-interactions.spec.ts:45:1 › QR feedback leaves recipe actions uncovered and can be opened twice (6.3s)
+  ✓  270 [ipad-pro-landscape] › e2e/safari-interactions.spec.ts:74:1 › label date and description remain editable with readable touch fields (3.7s)
+  ✓  271 [ipad-pro-landscape] › e2e/safari-interactions.spec.ts:96:1 › BJCP waits for its handlers before accepting the first query (6.8s)
+  ✓  272 [ipad-pro-landscape] › e2e/safari-interactions.spec.ts:119:1 › BJCP suggestions fit the viewport and keyboard selection scrolls inside (9.0s)
+  ✓  273 [ipad-pro-landscape] › e2e/safari-interactions.spec.ts:150:1 › cookie choice closes the banner and survives a reload (8.2s)
+
+
+  1) [iphone-se] › e2e/safari-interactions.spec.ts:18:1 › QR description remains readable and collapses back to the short viewport 
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected pattern: /\/recipes\/pilsner-urquell$/
+    Received string:  "http://127.0.0.1:3100/beer/pilsner-urquell"
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 5000ms
+        14 × unexpected value "http://127.0.0.1:3100/beer/pilsner-urquell"
+
+
+      40 |   await page.setViewportSize(originalViewport);
+      41 |   await page.getByRole("link", { name: "Рецепт этого пива", exact: true }).tap();
+    > 42 |   await expect(page).toHaveURL(/\/recipes\/pilsner-urquell$/);
+         |                      ^
+      43 | });
+      44 |
+      45 | test("QR feedback leaves recipe actions uncovered and can be opened twice", async ({ page }) => {
+        at /home/dopefish/projects/nb/apps/web/e2e/safari-interactions.spec.ts:42:22
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-se/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-se/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [iphone-se] › e2e/safari-interactions.spec.ts:119:1 › BJCP suggestions fit the viewport and keyboard selection scrolls inside 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: locator.tap: Test timeout of 60000ms exceeded.
+    Call log:
+      - waiting for getByRole('listbox', { name: 'Подсказки BJCP', exact: true }).getByRole('option', { name: /^IPA, APA и хмелевые стили/ })
+        - locator resolved to <button type="button" role="option" tabindex="-1" aria-selected="false" id="bjcp-suggestion-family-ipa_hoppy" class="flex w-full items-start justify-between gap-4 px-4 py-3 text-left transition hover:bg-accent bg-card">…</button>
+      - attempting tap action
+        - waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-2xl border border-warning/30 bg-warning-subtle px-4 py-2 text-sm text-warning-subtle-foreground shadow-lg">…</div> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+      - retrying tap action
+        - waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - <span class="inline-flex flex-wrap items-center gap-1.5">…</span> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+      - retrying tap action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-2xl border border-warning/30 bg-warning-subtle px-4 py-2 text-sm text-warning-subtle-foreground shadow-lg">…</div> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+        - retrying tap action
+          - waiting 100ms
+        25 × waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-2xl border border-warning/30 bg-warning-subtle px-4 py-2 text-sm text-warning-subtle-foreground shadow-lg">…</div> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+         - retrying tap action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <span class="inline-flex flex-wrap items-center gap-1.5">…</span> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+         - retrying tap action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-2xl border border-warning/30 bg-warning-subtle px-4 py-2 text-sm text-warning-subtle-foreground shadow-lg">…</div> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+         - retrying tap action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-2xl border border-warning/30 bg-warning-subtle px-4 py-2 text-sm text-warning-subtle-foreground shadow-lg">…</div> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+         - retrying tap action
+           - waiting 500ms
+        - waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-2xl border border-warning/30 bg-warning-subtle px-4 py-2 text-sm text-warning-subtle-foreground shadow-lg">…</div> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+      - retrying tap action
+        - waiting 500ms
+
+
+      138 |   await search.press("ArrowDown");
+      139 |   await expect(list).toBeVisible();
+    > 140 |   await list.getByRole("option", { name: /^IPA, APA и хмелевые стили/ }).tap();
+          |                                                                          ^
+      141 |   await expect(list).toBeHidden();
+      142 |   await expect.poll(() => new URL(page.url()).searchParams.get("family")).not.toBeNull();
+      143 |   await search.fill("pilsner");
+        at /home/dopefish/projects/nb/apps/web/e2e/safari-interactions.spec.ts:140:74
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-BJCP-s-ec1ec-rd-selection-scrolls-inside-iphone-se/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-BJCP-s-ec1ec-rd-selection-scrolls-inside-iphone-se/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-BJCP-s-ec1ec-rd-selection-scrolls-inside-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-BJCP-s-ec1ec-rd-selection-scrolls-inside-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [iphone-13] › e2e/safari-interactions.spec.ts:119:1 › BJCP suggestions fit the viewport and keyboard selection scrolls inside 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: locator.tap: Test timeout of 60000ms exceeded.
+    Call log:
+      - waiting for getByRole('listbox', { name: 'Подсказки BJCP', exact: true }).getByRole('option', { name: /^IPA, APA и хмелевые стили/ })
+        - locator resolved to <button type="button" role="option" tabindex="-1" aria-selected="false" id="bjcp-suggestion-family-ipa_hoppy" class="flex w-full items-start justify-between gap-4 px-4 py-3 text-left transition hover:bg-accent bg-card">…</button>
+      - attempting tap action
+        - waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - <span class="inline-flex items-center gap-1.5 font-medium">…</span> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+      - retrying tap action
+        - waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - <button type="button" class="rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 border border-amber-900/40 bg-amber-900/10 text-amber-900 hover:bg-amber-900/20 dark:text-amber-100">qa.deep.main.20261020</button> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+      - retrying tap action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <span class="inline-flex items-center gap-1.5 font-medium">…</span> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+        - retrying tap action
+          - waiting 100ms
+        25 × waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <span class="inline-flex items-center gap-1.5 font-medium">…</span> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+         - retrying tap action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <button type="button" class="rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 border border-amber-900/40 bg-amber-900/10 text-amber-900 hover:bg-amber-900/20 dark:text-amber-100">qa.deep.main.20261020</button> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+         - retrying tap action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <span class="inline-flex items-center gap-1.5 font-medium">…</span> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+         - retrying tap action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <span class="inline-flex items-center gap-1.5 font-medium">…</span> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+         - retrying tap action
+           - waiting 500ms
+        - waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - <span class="inline-flex items-center gap-1.5 font-medium">…</span> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+      - retrying tap action
+        - waiting 500ms
+
+
+      138 |     return !!box && box.x >= 0 && box.y >= 0 && box.x + box.width <= viewport.width + 1 && box.y + box.height <= viewport.height + 1;
+      139 |   }).toBe(true);
+    > 140 |   expect((await list.boundingBox())!.height).toBeLessThanOrEqual(320);
+          |                                                                       ^
+      141 |   const options = list.getByRole("option");
+      142 |   for (let index = 1; index < await options.count(); index++) await search.press("ArrowDown");
+      143 |   await expect(options.last()).toHaveAttribute("aria-selected", "true");
+        at /home/dopefish/projects/nb/apps/web/e2e/safari-interactions.spec.ts:140:74
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-BJCP-s-ec1ec-rd-selection-scrolls-inside-iphone-13/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-BJCP-s-ec1ec-rd-selection-scrolls-inside-iphone-13/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-BJCP-s-ec1ec-rd-selection-scrolls-inside-iphone-13/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-BJCP-s-ec1ec-rd-selection-scrolls-inside-iphone-13/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [iphone-landscape] › e2e/safari-interactions.spec.ts:18:1 › QR description remains readable and collapses back to the short viewport 
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected pattern: /\/recipes\/pilsner-urquell$/
+    Received string:  "http://127.0.0.1:3100/beer/pilsner-urquell"
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 5000ms
+        14 × unexpected value "http://127.0.0.1:3100/beer/pilsner-urquell"
+
+
+      40 |     await expect(disclosure).toBeHidden();
+      41 |     await expect(description).toBeVisible();
+    > 42 |   }
+         |    ^
+      43 |   const originalViewport = page.viewportSize()!;
+      44 |   await page.setViewportSize({ width: 375, height: 715 });
+      45 |   await expect(disclosure.locator("summary")).toBeVisible();
+        at /home/dopefish/projects/nb/apps/web/e2e/safari-interactions.spec.ts:42:22
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [ipad-mini] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('recipe-toolbar')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByTestId('recipe-toolbar')
+
+
+      101 |   await open(page, `/app/recipes/${recipeId}/edit`);
+      102 |   const toolbar = page.getByTestId("recipe-toolbar");
+    > 103 |   await expect(toolbar).toBeVisible();
+          |                         ^
+      104 |   await expectDocumentFits(page);
+      105 |   expect((await toolbar.boundingBox())!.height).toBeLessThanOrEqual(130);
+      106 |   if (page.viewportSize()!.width < 640) {
+        at /home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:103:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M04-filled-re-6b1a1-metrics-and-working-actions-ipad-mini/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M04-filled-re-6b1a1-metrics-and-working-actions-ipad-mini/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M04-filled-re-6b1a1-metrics-and-working-actions-ipad-mini/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M04-filled-re-6b1a1-metrics-and-working-actions-ipad-mini/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [ipad-mini] › e2e/safari-interactions.spec.ts:18:1 › QR description remains readable and collapses back to the short viewport 
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected pattern: /\/recipes\/pilsner-urquell$/
+    Received string:  "http://127.0.0.1:3100/beer/pilsner-urquell"
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 5000ms
+        14 × unexpected value "http://127.0.0.1:3100/beer/pilsner-urquell"
+
+
+      40 |     await expect(disclosure).toBeHidden();
+      41 |     await expect(description).toBeVisible();
+    > 42 |   }
+         |    ^
+      43 |   const originalViewport = page.viewportSize()!;
+      44 |   await page.setViewportSize({ width: 375, height: 715 });
+      45 |   await expect(disclosure.locator("summary")).toBeVisible();
+        at /home/dopefish/projects/nb/apps/web/e2e/safari-interactions.spec.ts:42:22
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-ipad-mini/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-ipad-mini/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-ipad-mini/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-ipad-mini/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [ipad-mini-landscape] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document 
+
+    Error: mouse.wheel: Mouse wheel is not supported in mobile WebKit
+
+      91 |     const scroller = table.locator("..");
+      92 |     await scroller.hover({ position: { x: 100, y: 70 } });
+    > 93 |     await page.mouse.wheel(600, 0);
+         |                      ^
+      94 |     await expect.poll(() => scroller.evaluate(el => el.scrollLeft)).toBeGreaterThan(0);
+      95 |     await expectDocumentFits(page);
+      96 |   }
+        at /home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:93:22
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-ipad-mini-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-ipad-mini-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-ipad-mini-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-ipad-mini-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [ipad-pro] › e2e/calculators-unit-converter.spec.ts:90:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель 
+
+    Error: page.goto: Connection terminated unexpectedly
+    Call log:
+      - navigating to "http://127.0.0.1:3100/calculators/unit-converter", waiting until "load"
+
+
+      11 |       { name: "nb_age_ok", value: "1", url: baseURL! }
+      12 |     ]);
+    > 13 |     await page.goto("/calculators/unit-converter");
+         |                ^
+      14 |   });
+      15 |
+      16 |   test("не выходит за ширину вьюпорта (нет horizontal overflow)", async ({ page }) => {
+        at /home/dopefish/projects/nb/apps/web/e2e/calculators-unit-converter.spec.ts:13:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/calculators-unit-converter-95ccc-дный-десятичный-разделитель-ipad-pro/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/calculators-unit-converter-95ccc-дный-десятичный-разделитель-ipad-pro/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/calculators-unit-converter-95ccc-дный-десятичный-разделитель-ipad-pro/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/calculators-unit-converter-95ccc-дный-десятичный-разделитель-ipad-pro/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) [ipad-pro] › e2e/calculators-unit-converter.spec.ts:102:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля 
+
+    Error: page.goto: Error receiving data: Connection reset by peer
+    Call log:
+      - navigating to "http://127.0.0.1:3100/calculators/unit-converter", waiting until "load"
+
+
+      11 |       { name: "nb_age_ok", value: "1", url: baseURL! }
+      12 |     ]);
+    > 13 |     await page.goto("/calculators/unit-converter");
+         |                ^
+      14 |   });
+      15 |
+      16 |   test("не выходит за ширину вьюпорта (нет horizontal overflow)", async ({ page }) => {
+        at /home/dopefish/projects/nb/apps/web/e2e/calculators-unit-converter.spec.ts:13:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/calculators-unit-converter-17086-устыми-а-не-конверсией-нуля-ipad-pro/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/calculators-unit-converter-17086-устыми-а-не-конверсией-нуля-ipad-pro/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/calculators-unit-converter-17086-устыми-а-не-конверсией-нуля-ipad-pro/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/calculators-unit-converter-17086-устыми-а-не-конверсией-нуля-ipad-pro/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10) [ipad-pro-landscape] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document 
+
+    Error: mouse.wheel: Mouse wheel is not supported in mobile WebKit
+
+      91 |     const scroller = table.locator("..");
+      92 |     // Mobile WebKit has no mouse wheel. Reaching the last column through an
+    > 93 |     // actual action also verifies that the clipped table controls remain usable.
+         |                      ^
+      94 |     await table.getByRole("button", { name: /^Действия с/ }).first().click();
+      95 |     await expect(page.getByRole("menu")).toBeVisible();
+      96 |     await page.keyboard.press("Escape");
+        at /home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:93:22
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-ipad-pro-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-ipad-pro-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-ipad-pro-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-ipad-pro-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10 failed
+    [iphone-se] › e2e/safari-interactions.spec.ts:18:1 › QR description remains readable and collapses back to the short viewport 
+    [iphone-se] › e2e/safari-interactions.spec.ts:119:1 › BJCP suggestions fit the viewport and keyboard selection scrolls inside 
+    [iphone-13] › e2e/safari-interactions.spec.ts:119:1 › BJCP suggestions fit the viewport and keyboard selection scrolls inside 
+    [iphone-landscape] › e2e/safari-interactions.spec.ts:18:1 › QR description remains readable and collapses back to the short viewport 
+    [ipad-mini] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions 
+    [ipad-mini] › e2e/safari-interactions.spec.ts:18:1 › QR description remains readable and collapses back to the short viewport 
+    [ipad-mini-landscape] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document 
+    [ipad-pro] › e2e/calculators-unit-converter.spec.ts:90:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель 
+    [ipad-pro] › e2e/calculators-unit-converter.spec.ts:102:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля 
+    [ipad-pro-landscape] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document 
+  7 skipped
+  256 passed (17.0m)

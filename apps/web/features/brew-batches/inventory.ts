@@ -21,8 +21,9 @@ import {
   loadInventoryItemPackEquivalent,
   type InventoryDbClient
 } from "../recipes/inventory-service";
-import { readBrewPlanBatchVolumeL, readBrewPlanEfficiencyFactor } from "../recipes/batch-scale";
+import { readBrewInventorySnapshot } from "./inventory-snapshot";
 import { formatInventoryQuantityForDisplay } from "../inventory/display";
+import { planInventoryLotUse } from "../inventory/lot-plan";
 import { parseInventoryUnit } from "../inventory/units";
 import type { IngredientCategory, IngredientTechnicalData, IngredientType } from "../ingredients/contracts";
 import { getBrewBatchById } from "./service";
@@ -40,7 +41,7 @@ import type {
 // Списание склада на варку: партия — точка, где списание ингредиентов становится
 // частью жизненного цикла. Переиспользуем движок аллокаций/транзакций
 // (recipes/inventory-service), привязывая транзакции и сами аллокации к
-// brew_batch_id и давая откат (release) при отмене.
+// brew_batch_id. Возврат (release) выполняется отдельным явным действием.
 //
 // Учёт ведётся ПО ПАРТИИ, а не по рецепту: один рецепт можно варить сколько угодно
 // раз, в том числе пока прошлая варка ещё бродит. Каждая партия подбирает и
@@ -119,13 +120,16 @@ const loadBatchTransactions = async (
 const loadBatchConsumedAllocations = async (
   userId: string,
   brewBatchId: string,
-  client: InventoryDbClient = db
+  client: InventoryDbClient = db,
+  includePending = false
 ) =>
   client.query.recipeInventoryAllocations.findMany({
     where: and(
       eq(recipeInventoryAllocations.userId, userId),
       eq(recipeInventoryAllocations.brewBatchId, brewBatchId),
-      eq(recipeInventoryAllocations.status, "consumed")
+      includePending
+        ? inArray(recipeInventoryAllocations.status, ["consumed", "allocated", "reserved"])
+        : eq(recipeInventoryAllocations.status, "consumed")
     )
   });
 
@@ -205,16 +209,20 @@ const loadInventoryNames = async (userId: string, itemIds: string[]) => {
 const buildView = async (
   userId: string,
   brewBatchId: string,
-  recipeId: string | null
+  recipeId: string | null,
+  hasInventorySnapshot: boolean
 ): Promise<BrewBatchInventoryView> => {
-  const [transactions, consumedAllocations] = await Promise.all([
+  const [transactions, allocations] = await Promise.all([
     loadBatchTransactions(userId, brewBatchId),
     // Списывала ли ЭТА партия (и не вернула). Списания соседних партий того же
     // рецепта сюда не относятся и кнопку не гасят.
-    loadBatchConsumedAllocations(userId, brewBatchId)
+    loadBatchConsumedAllocations(userId, brewBatchId, db, true)
   ]);
+  const consumedAllocations = allocations.filter((allocation) => allocation.status === "consumed");
   const net = netByInventoryItem(transactions);
-  const requirements = buildRequirementsByItem(consumedAllocations);
+  // Включаем внесения, которым не достался общий лот: иначе 7.5 из 26 г
+  // ошибочно превращается в 7.5 из 12 г (только три затронутые строки).
+  const requirements = buildRequirementsByItem(allocations);
   const itemIds = [...new Set(transactions.map((txn) => txn.inventoryItemId))];
   const names = await loadInventoryNames(userId, itemIds);
 
@@ -256,6 +264,7 @@ const buildView = async (
   return {
     brewBatchId,
     recipeId,
+    hasInventorySnapshot,
     hasConsumed: consumed.length > 0,
     canRestore: consumed.length > 0,
     batchAlreadyConsumed: consumedAllocations.length > 0,
@@ -273,7 +282,7 @@ export const getBrewBatchInventoryView = async (
   if (!batch) {
     return null;
   }
-  return buildView(userId, brewBatchId, batch.recipeId);
+  return buildView(userId, brewBatchId, batch.recipeId, Boolean(readBrewInventorySnapshot(batch.recipeSnapshot)));
 };
 
 // --- Ф2: предпросмотр списания с заменами по match-group ---------------------
@@ -362,26 +371,27 @@ export const previewBrewBatchConsumption = async (
   }
 
   const alreadyConsumed = await hasConsumedAllocationsForBatch(userId, brewBatchId);
-  const recipeId = batch.recipeId;
-  if (!recipeId) {
-    // Источник рецепта недоступен (варка без клона, рецепт удалён/скрыт) —
-    // авто-списание невозможно в принципе, строить план нечего.
-    return { brewBatchId, alreadyConsumed, lines: [], exactCount: 0, substituteOnlyCount: 0, missingCount: 0 };
-  }
+  const batchSnapshot = readBrewInventorySnapshot(batch.recipeSnapshot);
+  if (!batchSnapshot) throw new Error("BATCH_INVENTORY_SNAPSHOT_REQUIRED");
 
-  const targetBatchVolumeL = readBrewPlanBatchVolumeL(batch.brewPlanSnapshot);
-  const efficiencyFactor = readBrewPlanEfficiencyFactor(batch.brewPlanSnapshot);
-
-  const { entries, inventoryItemsById } = await buildBrewBatchConsumeLinePlanEntries(userId, recipeId, {
-    targetBatchVolumeL,
-    efficiencyFactor
+  const { entries, inventoryItemsById } = await buildBrewBatchConsumeLinePlanEntries(userId, batchSnapshot.recipeId, {
+    brewBatchId,
+    batchSnapshot
   });
 
+  const exactBudget = new Map<string, number>();
   const lines: BrewBatchConsumePlanLine[] = entries.map((entry) => {
     const displayName = entry.line.ingredientDisplayNameSnapshot ?? "—";
     const category = entry.lineProfile.category ?? null;
     const type = entry.lineProfile.type ?? null;
     const lineTechnicalData = entry.lineProfile.technicalData ?? null;
+    const exactLots = entry.exactItems?.filter(item => item.normalizedQuantity > 0 && item.normalizedUnit === entry.line.amountNormalizedUnit);
+    const exactAvailable = exactLots && exactLots.length > 1
+      ? exactLots.reduce((sum, item) => sum + item.normalizedQuantity, 0)
+      : entry.exactItem?.normalizedQuantity ?? 0;
+    const exactBalances = exactLots && exactLots.length > 1 ? exactLots : entry.exactItem ? [entry.exactItem] : [];
+    const exactTake = planInventoryLotUse(entry.exactRequiredInItemUnit ?? entry.requiredQuantityNormalized,
+      exactBalances.map(item => ({ inventoryItemId: item.id, availableQuantity: item.normalizedQuantity })), exactBudget);
 
     const requiredLabel = formatPlanQuantityLabel(
       entry.requiredQuantityNormalized,
@@ -403,16 +413,15 @@ export const previewBrewBatchConsumption = async (
       ? {
         inventoryItemId: entry.exactItem.id,
         name: entry.exactItem.ingredientDisplayNameSnapshot ?? displayName,
-        availableQuantity: entry.exactItem.normalizedQuantity,
+        availableQuantity: exactAvailable,
         availableLabel: formatPlanQuantityLabel(
-          entry.exactItem.normalizedQuantity,
+          exactAvailable,
           entry.exactItem.normalizedUnit,
           category,
           type,
           lineTechnicalData
         ),
-        isShort: entry.exactRequiredInItemUnit != null
-          && entry.exactItem.normalizedQuantity + CONSUME_EPSILON < entry.exactRequiredInItemUnit,
+        isShort: exactTake.shortfall > CONSUME_EPSILON,
         comparison: null
       }
       : null;
@@ -445,6 +454,7 @@ export const previewBrewBatchConsumption = async (
       category,
       requiredLabel,
       requiredQuantityNormalized: entry.requiredQuantityNormalized,
+      normalizedUnit: parseInventoryUnit(entry.line.amountNormalizedUnit) ?? undefined,
       kind,
       // Тот же предикат, что и у самого списания (consumeRecipeInventoryAllocations):
       // короткий exact дрожжей клампится (спишем остаток) БЕЗУСЛОВНО — у прочих
@@ -455,6 +465,7 @@ export const previewBrewBatchConsumption = async (
       // ConsumeLineRow), а не сам факт клампа, который в partial-режиме общий для всех.
       exactClamps: isPresenceBasedRecipeLine(entry.line),
       exact,
+      ...(exactLots && exactLots.length > 1 ? { exactLots: exactLots.map(item => ({ inventoryItemId: item.id, availableQuantity: item.normalizedQuantity })) } : {}),
       substitutes,
       catalogSearchHref: kind === "missing"
         ? buildCatalogSearchHref(entry.line.ingredientCatalogItemId, entry.line.userCustomIngredientId, displayName)
@@ -518,29 +529,14 @@ export const consumeBrewBatchInventory = async (
   if (batch.status === "cancelled" || batch.status === "completed") {
     throw new Error("INVALID_STATUS");
   }
-  // Списание тянет состав из рецепта-источника. Если его больше нет (варка без
-  // клона, источник удалён/скрыт) — авто-списание невозможно; варочный день/
-  // журнал при этом продолжают работать от снапшота.
-  const recipeId = batch.recipeId;
-  if (!recipeId) {
-    throw new Error("RECIPE_UNAVAILABLE");
-  }
+  const batchSnapshot = readBrewInventorySnapshot(batch.recipeSnapshot);
+  if (!batchSnapshot) throw new Error("BATCH_INVENTORY_SNAPSHOT_REQUIRED");
+  const recipeId = batchSnapshot.recipeId;
 
-  const targetBatchVolumeL = readBrewPlanBatchVolumeL(batch.brewPlanSnapshot);
-  // Дожим засыпи под эффективность оборудования варщика — тот же множитель, что уже
-  // зашит в план варочного дня и слепок состава (см. features/recipes/scale.ts).
-  // Не передать его сюда = списать засыпь по авторской эффективности, а варить по
-  // своей: гид сказал бы «засыпьте 3.85 кг», а со склада ушло бы 3.33 кг.
-  const efficiencyFactor = readBrewPlanEfficiencyFactor(batch.brewPlanSnapshot);
-
-  // План считается ДО транзакции: он же — источник валидации замен (ownership +
-  // groupKey уже встроены в buildBrewBatchConsumeLinePlanEntries, см. там) и счётчика
-  // "ещё остались строки, которые можно закрыть заменой" (substituteAvailableCount).
-  // Гонка с самим списанием не страшна: реальную нехватку всё равно ловит
-  // INSUFFICIENT_STOCK внутри транзакции — здесь только легитимность выбора.
+  // Количества уже рассчитаны при планировании партии. Рецепт-источник здесь не читаем.
   const { entries } = await buildBrewBatchConsumeLinePlanEntries(userId, recipeId, {
-    targetBatchVolumeL,
-    efficiencyFactor
+    brewBatchId,
+    batchSnapshot
   });
   const entryByLineId = new Map(entries.map((entry) => [entry.line.id, entry]));
 
@@ -574,21 +570,6 @@ export const consumeBrewBatchInventory = async (
     return !exactSufficient && entry.substitutes.length > 0;
   }).length;
 
-  // Ф4/П2: строки, которые списание не тронет вовсе — нет утверждённой замены И
-  // (либо нет точной позиции на складе вовсе — exactItem == null, kind="missing"
-  // /"substitute_available", — либо она есть, но остаток == 0: запись не удалена,
-  // но consumeRecipeInventoryAllocations на ней тоже молча делает continue при
-  // consumedQuantity<=0, аллокация в consumed не переходит). Предикат ЗЕРКАЛИТ
-  // классификацию previewBrewBatchConsumption (см. там же) — иначе превью обещало
-  // бы «спишем остаток», а результат тихо не засчитывал бы строку никуда: ни в
-  // consumed, ни в skipped.
-  const skippedEntries = entries.filter((entry) => (
-    !substitutionOverrides?.has(entry.line.id)
-    && (entry.exactItem == null || entry.exactItem.normalizedQuantity <= CONSUME_EPSILON)
-  ));
-  const skippedLineCount = skippedEntries.length;
-  const skippedLineNames = skippedEntries.map((entry) => entry.line.ingredientDisplayNameSnapshot ?? "—");
-
   await db.transaction(async (tx) => {
     const locked = await lockBrewBatchRow(tx, userId, brewBatchId);
     // Статус перечитываем ПОД блокировкой: прочитанный до транзакции он мог
@@ -603,28 +584,45 @@ export const consumeBrewBatchInventory = async (
       throw new Error("ALREADY_CONSUMED");
     }
 
+    // Выбираем доли лотов по актуальному остатку. Один порядок захвата строк
+    // согласован с возвратом; FK-совместимая блокировка не мешает аллокациям.
+    await tx.select({ id: userIngredients.id }).from(userIngredients)
+      .where(eq(userIngredients.userId, userId)).orderBy(asc(userIngredients.id))
+      .for("no key update");
+
+    // Сначала склад, затем его аллокации — тот же порядок, что у удаления лота.
+    // Неисполненные доли после частичного списания/возврата перестраиваем по
+    // текущему остатку, сохраняя неизменяемое требование снимка.
+    await tx.update(recipeInventoryAllocations).set({ status: "released", releasedAt: new Date(), updatedAt: new Date() })
+      .where(and(eq(recipeInventoryAllocations.userId, userId), eq(recipeInventoryAllocations.brewBatchId, brewBatchId), inArray(recipeInventoryAllocations.status, ["allocated", "reserved"])));
+
     await autoAllocateRecipeInventoryFromStock(userId, recipeId, {
       brewBatchId,
-      targetBatchVolumeL,
-      efficiencyFactor,
+      batchSnapshot,
       substitutionOverrides,
       client: tx
     });
     await consumeRecipeInventoryAllocations(userId, recipeId, {
       brewBatchId,
-      targetBatchVolumeL,
-      efficiencyFactor,
+      batchSnapshot,
       allowPartialConsume: opts.allowPartial === true,
       client: tx
     });
   });
 
-  const view = await buildView(userId, brewBatchId, recipeId);
+  // Итог, а не первоначальное наличие: предыдущие внесения могли исчерпать
+  // общий лот. Такие строки тоже должны попасть в сообщение о пропусках.
+  const consumedKeys = new Set((await loadBatchConsumedAllocations(userId, brewBatchId))
+    .map((allocation) => allocation.recipeIngredientPersistentKey));
+  const skippedEntries = entries.filter((entry) => !consumedKeys.has(entry.line.persistentKey));
+  const skippedLineCount = skippedEntries.length;
+  const skippedLineNames = skippedEntries.map((entry) => entry.line.ingredientDisplayNameSnapshot ?? "—");
+  const view = await buildView(userId, brewBatchId, batch.recipeId, true);
   return { ...view, substituteAvailableCount, skippedLineCount, skippedLineNames };
 };
 
 /**
- * Вернуть списанное этой партией на склад (откат при отмене/по кнопке). Реверс
+ * Вернуть списанное этой партией на склад по явному действию пользователя. Реверс
  * нетто-списания: каждой позиции добавляем недостающее, пишем компенсирующую
  * release-транзакцию, и возвращаем потреблённые этой партией аллокации в
  * released (чтобы покрытие рецепта согласовалось и повторное списание было
@@ -698,7 +696,7 @@ export const restoreBrewBatchInventory = async (
         })
         .from(userIngredients)
         .where(and(eq(userIngredients.id, inventoryItemId), eq(userIngredients.userId, userId)))
-        .for("update");
+        .for("no key update");
       if (!item) {
         continue;
       }
@@ -774,6 +772,6 @@ export const restoreBrewBatchInventory = async (
     }
   });
 
-  const view = await buildView(userId, brewBatchId, batch.recipeId);
+  const view = await buildView(userId, brewBatchId, batch.recipeId, Boolean(readBrewInventorySnapshot(batch.recipeSnapshot)));
   return { view, restoredItemCount };
 };

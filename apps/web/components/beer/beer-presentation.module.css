@@ -1,0 +1,75 @@
+.compactDescription {
+  display: none;
+}
+
+/* Safari's browser bars leave less room than the device's physical screen.
+   Keep the passport and recipe link visible; the full text stays expandable. */
+@media (max-height: 760px) and (max-width: 639px), (max-height: 450px) {
+  .presentation .brand {
+    padding-top: 0.75rem;
+  }
+
+  .presentation .content {
+    gap: 0.75rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .presentation .title {
+    font-size: 1.875rem;
+  }
+
+  .presentation .styleName {
+    font-size: 0.625rem;
+    letter-spacing: 0.2em;
+  }
+
+  .presentation .statTile {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .presentation .statValue {
+    font-size: 1rem;
+  }
+
+  .presentation .statScale {
+    padding-top: 0.5rem;
+  }
+
+  .presentation .description {
+    display: none;
+  }
+
+  .presentation .compactDescription {
+    display: block;
+    min-width: 0;
+  }
+
+  .presentation .footer {
+    gap: 0.5rem 1rem;
+    padding-top: 0.75rem;
+  }
+}
+
+@media (max-height: 450px) and (min-width: 640px) {
+  .presentation .content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-content: end;
+    gap: 0.5rem 1.5rem;
+  }
+
+  .presentation .stats {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-self: center;
+    gap: 0.5rem;
+  }
+
+  .presentation .colorTile,
+  .presentation .footer {
+    grid-column: 1 / -1;
+  }
+}

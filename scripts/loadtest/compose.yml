@@ -1,0 +1,81 @@
+name: nb-loadtest
+
+# Disposable local test stack. Ports are never exposed beyond loopback.
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: nb-loadtest-postgres-20261013
+    cpus: 0.75
+    mem_limit: 1g
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: loadtest-local-only
+      POSTGRES_DB: nb_loadtest
+    ports:
+      - "127.0.0.1:55432:5432"
+    command: ["postgres", "-c", "shared_buffers=256MB", "-c", "max_connections=60", "-c", "track_io_timing=on"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d nb_loadtest"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+  mqtt:
+    image: eclipse-mosquitto:2
+    container_name: nb-loadtest-mqtt-20261013
+    cpus: 0.1
+    mem_limit: 128m
+    ports:
+      - "127.0.0.1:51883:1883"
+    volumes:
+      - ../../infra/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+
+  web:
+    image: node:24-bookworm-slim
+    container_name: nb-loadtest-web-20261013
+    cpus: 0.9
+    mem_limit: 1536m
+    user: "${LOADTEST_UID:-1000}:${LOADTEST_GID:-1000}"
+    working_dir: /work/apps/web
+    environment:
+      NODE_ENV: production
+      APP_URL: https://nb-loadtest.invalid
+      DATABASE_URL: postgresql://postgres:loadtest-local-only@postgres:5432/nb_loadtest
+      NEXT_DIST_DIR: .next-loadtest
+      NEXT_TELEMETRY_DISABLED: "1"
+      TRUSTED_PROXY_HOPS: "1"
+    ports:
+      - "127.0.0.1:3300:3300"
+    volumes:
+      - ../..:/work:ro
+      - ../../apps/web/.next-loadtest:/work/apps/web/.next-loadtest:rw
+    command: ["node", "../../node_modules/next/dist/bin/next", "start", "-H", "0.0.0.0", "-p", "3300"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  bridge:
+    image: node:24-bookworm-slim
+    container_name: nb-loadtest-bridge-20261013
+    cpus: 0.25
+    mem_limit: 256m
+    user: "${LOADTEST_UID:-1000}:${LOADTEST_GID:-1000}"
+    working_dir: /work/apps/bridge
+    environment:
+      NODE_ENV: production
+      APP_URL: https://nb-loadtest.invalid
+      DATABASE_URL: postgresql://postgres:loadtest-local-only@postgres:5432/nb_loadtest
+      MQTT_URL: mqtt://mqtt:1883
+      BRIDGE_WS_PORT: "8090"
+      VAPID_PUBLIC_KEY: ""
+      VAPID_PRIVATE_KEY: ""
+    ports:
+      - "127.0.0.1:58090:8090"
+    volumes:
+      - ../..:/work:ro
+    command: ["node", "../../node_modules/tsx/dist/cli.mjs", "src/main.ts"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mqtt:
+        condition: service_started

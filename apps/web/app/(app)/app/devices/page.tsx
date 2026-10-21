@@ -23,7 +23,7 @@ export default async function DevicesPage({
           Устройства
         </h1>
         <p className="text-sm text-muted-foreground">
-          Раздел в разработке: подключение BrewForge и цифровых ареометров скоро откроется.
+          Раздел в разработке. Подключение BrewForge и цифровых ареометров пока недоступно.
         </p>
       </div>
     );

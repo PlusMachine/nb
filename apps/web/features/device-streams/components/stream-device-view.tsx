@@ -33,12 +33,14 @@ export async function StreamDeviceView({
   userId,
   device,
   preferredGravityUnit,
-  isRaptDevice = false
+  isRaptDevice = false,
+  isDemo = false
 }: {
   userId: string;
   device: StreamDeviceViewDevice;
   preferredGravityUnit: PreferredGravityUnit;
   isRaptDevice?: boolean;
+  isDemo?: boolean;
 }) {
   const [ingestUrl, status, dataCounts, sessions, seriesResult] = await Promise.all([
     getStreamIngestUrl(userId, device.id),
@@ -100,6 +102,7 @@ export async function StreamDeviceView({
       chartSessions={chartSessions}
       sessionHistory={history}
       isRaptDevice={isRaptDevice}
+      isDemo={isDemo}
     />
   );
 }

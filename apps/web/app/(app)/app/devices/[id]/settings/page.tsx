@@ -104,7 +104,7 @@ export default async function DeviceSettingsPage({
       value: device.capabilities.length > 0 ? device.capabilities.join(", ") : "—"
     },
     {
-      label: "Последний heartbeat",
+      label: "Последний сигнал устройства",
       value: device.lastSeenAt ? device.lastSeenAt.toLocaleString("ru-RU") : "—"
     },
     { label: "Привязано", value: device.createdAt.toLocaleString("ru-RU") }

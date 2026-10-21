@@ -160,7 +160,7 @@ export function SectionRow({
               onChange={(event) => onQuantityChange(ingredient.localId, event.target.value)}
               onBlur={() => setQuantityTouched(true)}
               aria-invalid={showQuantityError || undefined}
-              className={`h-9 w-[72px] rounded-md border bg-muted px-2 text-right text-base tabular-nums text-foreground transition-colors focus:bg-card focus:outline-none focus:ring-1 focus:ring-ring sm:text-sm ${showQuantityError ? "border-destructive-border focus:border-destructive" : "border-border focus:border-ring"}`}
+              className={`h-9 w-[72px] rounded-md border bg-muted px-2 text-right text-base tabular-nums text-foreground transition-colors focus:bg-card focus:outline-none focus:ring-1 focus:ring-ring sm:text-sm [@media(pointer:coarse)]:text-base ${showQuantityError ? "border-destructive-border focus:border-destructive" : "border-border focus:border-ring"}`}
               min={quantityStep}
               step={quantityStep}
             />
@@ -177,7 +177,7 @@ export function SectionRow({
                 onChange={(event) => onTimeChange(ingredient.localId, event.target.value)}
                 onBlur={() => setTimeTouched(true)}
                 aria-invalid={showTimeError || undefined}
-                className={`h-9 w-[64px] rounded-md border bg-muted px-2 text-right text-base tabular-nums text-foreground transition-colors focus:bg-card focus:outline-none focus:ring-1 focus:ring-ring sm:text-sm ${showTimeError ? "border-destructive-border focus:border-destructive" : "border-border focus:border-ring"}`}
+                className={`h-9 w-[64px] rounded-md border bg-muted px-2 text-right text-base tabular-nums text-foreground transition-colors focus:bg-card focus:outline-none focus:ring-1 focus:ring-ring sm:text-sm [@media(pointer:coarse)]:text-base ${showTimeError ? "border-destructive-border focus:border-destructive" : "border-border focus:border-ring"}`}
                 min={0}
                 max={600}
                 step={1}
@@ -279,7 +279,7 @@ export function WaterTreatmentSectionRow({
               onChange={(event) => onQuantityChange(ingredient.localId, event.target.value)}
               onBlur={() => setQuantityTouched(true)}
               aria-invalid={showQuantityError || undefined}
-              className={`h-9 w-[72px] rounded-md border bg-muted px-2 text-right text-base tabular-nums text-foreground transition-colors focus:bg-card focus:outline-none focus:ring-1 focus:ring-ring sm:text-sm ${showQuantityError ? "border-destructive-border focus:border-destructive" : "border-border focus:border-ring"}`}
+              className={`h-9 w-[72px] rounded-md border bg-muted px-2 text-right text-base tabular-nums text-foreground transition-colors focus:bg-card focus:outline-none focus:ring-1 focus:ring-ring sm:text-sm [@media(pointer:coarse)]:text-base ${showQuantityError ? "border-destructive-border focus:border-destructive" : "border-border focus:border-ring"}`}
               min={quantityStep}
               step={quantityStep}
             />

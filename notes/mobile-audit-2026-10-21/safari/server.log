@@ -1,0 +1,629 @@
+   ▲ Next.js 15.5.12
+   - Local:        http://127.0.0.1:3100
+   - Network:      http://127.0.0.1:3100
+   - Experiments (use with caution):
+     · serverActions
+
+ ✓ Starting...
+
+   We detected TypeScript in your project and reconfigured your tsconfig.json file for you. Strict-mode is set to false by default.
+   The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+
+   	- include was updated to add '.next-mobile-audit/types/**/*.ts'
+
+ ○ Compiling /instrumentation ...
+ ✓ Compiled /instrumentation in 1731ms (1155 modules)
+ ✓ Ready in 4.6s
+ ✓ Compiled /middleware in 408ms (504 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 7.2s (2822 modules)
+ HEAD / 307 in 8825ms
+ GET / 307 in 328ms
+ ○ Compiling /app ...
+ ✓ Compiled /app in 6.9s (3472 modules)
+ GET /app 200 in 8441ms
+ GET / 307 in 259ms
+ GET /app 200 in 264ms
+ GET / 307 in 226ms
+ GET /app 200 in 324ms
+ GET / 307 in 180ms
+ GET /app 200 in 259ms
+ GET / 307 in 227ms
+ GET /app 200 in 320ms
+ GET / 307 in 184ms
+ GET /app 200 in 246ms
+ ○ Compiling /beer/[slug] ...
+ ✓ Compiled /beer/[slug] in 3.3s (3485 modules)
+ GET /beer/pilsner-urquell 200 in 5173ms
+ ○ Compiling /manifest.webmanifest ...
+ ✓ Compiled /manifest.webmanifest in 1153ms (3507 modules)
+ GET /manifest.webmanifest 200 in 1404ms
+ GET / 307 in 756ms
+ GET /app 200 in 787ms
+ GET / 307 in 168ms
+ GET /app 200 in 242ms
+ GET /beer/sample-american-stout 200 in 364ms
+ GET /manifest.webmanifest 200 in 74ms
+ GET /beer/sample-american-stout 200 in 416ms
+ GET /manifest.webmanifest 200 in 100ms
+ GET /beer/sample-american-stout 200 in 632ms
+ GET /manifest.webmanifest 200 in 136ms
+ GET /beer/sample-american-stout 200 in 396ms
+ GET /manifest.webmanifest 200 in 96ms
+ GET /beer/pilsner-urquell 200 in 445ms
+ GET /manifest.webmanifest 200 in 100ms
+ GET /beer/pilsner-urquell 200 in 426ms
+ GET /manifest.webmanifest 200 in 82ms
+ GET /beer/pilsner-urquell 200 in 382ms
+ GET /manifest.webmanifest 200 in 73ms
+ GET /beer/pilsner-urquell 200 in 330ms
+ GET /manifest.webmanifest 200 in 97ms
+ GET /beer/bell-s-two-hearted-ale 200 in 380ms
+ GET /manifest.webmanifest 200 in 85ms
+ GET /beer/bell-s-two-hearted-ale 200 in 369ms
+ GET /manifest.webmanifest 200 in 202ms
+ GET /beer/bell-s-two-hearted-ale 200 in 341ms
+ GET /manifest.webmanifest 200 in 86ms
+ GET /beer/bell-s-two-hearted-ale 200 in 357ms
+ GET /manifest.webmanifest 200 in 68ms
+ GET /beer/sample-american-stout 200 in 322ms
+ GET /manifest.webmanifest 200 in 87ms
+ ○ Compiling /bjcp ...
+ ✓ Compiled /bjcp in 3.5s (3541 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ○ Compiling /labels ...
+ GET /bjcp 200 in 6900ms
+ ✓ Compiled /labels in 6.9s (3575 modules)
+ GET /manifest.webmanifest 200 in 3800ms
+ GET /beer/pilsner-urquell 200 in 7504ms
+ GET /manifest.webmanifest 200 in 87ms
+ GET /bjcp 200 in 872ms
+ GET /manifest.webmanifest 200 in 80ms
+ GET /manifest.webmanifest 200 in 103ms
+ GET /labels 200 in 194ms
+ GET /manifest.webmanifest 200 in 53ms
+ GET /bjcp 200 in 5460ms
+ ○ Compiling /api/labels/custom ...
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-21&qr=0&format=png&preview=1 200 in 5473ms
+ GET /bjcp 200 in 3485ms
+ GET /manifest.webmanifest 200 in 84ms
+ GET /bjcp 200 in 637ms
+ GET /manifest.webmanifest 200 in 72ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /calculators/unit-converter 200 in 7071ms
+ GET /manifest.webmanifest 200 in 95ms
+ POST /calculators/unit-converter 200 in 385ms
+ GET /calculators/unit-converter 200 in 253ms
+ GET /manifest.webmanifest 200 in 80ms
+ POST /calculators/unit-converter 200 in 176ms
+ POST /calculators/unit-converter 200 in 71ms
+ GET /calculators/unit-converter 200 in 342ms
+ GET /manifest.webmanifest 200 in 118ms
+ POST /calculators/unit-converter 200 in 192ms
+ POST /calculators/unit-converter 200 in 90ms
+ GET /calculators/unit-converter 200 in 276ms
+ GET /manifest.webmanifest 200 in 98ms
+ POST /calculators/unit-converter 200 in 179ms
+ GET /calculators/unit-converter 200 in 298ms
+ GET /manifest.webmanifest 200 in 106ms
+ POST /calculators/unit-converter 200 in 192ms
+ GET /calculators/unit-converter 200 in 266ms
+ GET /manifest.webmanifest 200 in 69ms
+ POST /calculators/unit-converter 200 in 181ms
+[Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException: [Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException:  [Error: aborted] { code: 'ECONNRESET' }
+ GET /calculators/unit-converter 200 in 254ms
+ GET /manifest.webmanifest 200 in 73ms
+ POST /calculators/unit-converter 200 in 170ms
+ POST /calculators/unit-converter 200 in 85ms
+ GET /calculators/unit-converter 200 in 263ms
+ GET /manifest.webmanifest 200 in 340ms
+ POST /calculators/unit-converter 200 in 203ms
+ GET /calculators/unit-converter 200 in 252ms
+ GET /manifest.webmanifest 200 in 71ms
+ POST /calculators/unit-converter 200 in 177ms
+ POST /calculators/unit-converter 200 in 75ms
+ GET /calculators/unit-converter 200 in 257ms
+ GET /manifest.webmanifest 200 in 75ms
+ POST /calculators/unit-converter 200 in 177ms
+ POST /calculators/unit-converter 200 in 78ms
+ GET /labels 200 in 356ms
+ GET /manifest.webmanifest 200 in 69ms
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-21&qr=0&format=png&preview=1 200 in 336ms
+ GET /calculators/abv-attenuation 200 in 315ms
+ GET /manifest.webmanifest 200 in 71ms
+Browserslist: browsers data (caniuse-lite) is 8 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+ ⨯ [Error: aborted]
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /labels 200 in 1118ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /admin/recipes 200 in 10957ms
+ GET /labels 200 in 232ms
+ GET /labels 200 in 300ms
+ GET /manifest.webmanifest 200 in 131ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 11545ms
+ GET /manifest.webmanifest 200 in 95ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /api/recipes/water-profiles 200 in 8837ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 8349ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+[Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException: [Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException:  [Error: aborted] { code: 'ECONNRESET' }
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 1363ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /calculators/dilution-boiloff 200 in 5313ms
+ GET /manifest.webmanifest 200 in 116ms
+ POST /calculators/dilution-boiloff 200 in 489ms
+ POST /calculators/dilution-boiloff 200 in 84ms
+ GET /beer/sample-american-stout 200 in 462ms
+ GET /manifest.webmanifest 200 in 89ms
+ GET /beer/sample-american-stout 200 in 409ms
+ GET /manifest.webmanifest 200 in 74ms
+ GET /beer/sample-american-stout 200 in 375ms
+ GET /manifest.webmanifest 200 in 68ms
+ GET /beer/sample-american-stout 200 in 395ms
+ GET /manifest.webmanifest 200 in 89ms
+ GET /beer/pilsner-urquell 200 in 378ms
+ GET /manifest.webmanifest 200 in 76ms
+ GET /beer/sample-american-stout 200 in 688ms
+ GET /beer/pilsner-urquell 200 in 416ms
+ GET /manifest.webmanifest 200 in 565ms
+ GET /manifest.webmanifest 200 in 66ms
+ GET /beer/pilsner-urquell 200 in 427ms
+ GET /beer/pilsner-urquell 200 in 346ms
+ GET /manifest.webmanifest 200 in 80ms
+ GET /manifest.webmanifest 200 in 74ms
+ GET /beer/bell-s-two-hearted-ale 200 in 378ms
+ GET /manifest.webmanifest 200 in 89ms
+ GET /beer/pilsner-urquell 200 in 287ms
+ GET /manifest.webmanifest 200 in 83ms
+ GET /beer/bell-s-two-hearted-ale 200 in 390ms
+ GET /manifest.webmanifest 200 in 73ms
+ GET /beer/bell-s-two-hearted-ale 200 in 364ms
+ GET /manifest.webmanifest 200 in 61ms
+ GET /beer/bell-s-two-hearted-ale 200 in 372ms
+ GET /manifest.webmanifest 200 in 77ms
+ GET /beer/bell-s-two-hearted-ale 200 in 382ms
+ GET /manifest.webmanifest 200 in 72ms
+ GET /beer/sample-american-stout 200 in 391ms
+ GET /manifest.webmanifest 200 in 586ms
+ GET /bjcp 200 in 777ms
+ GET /manifest.webmanifest 200 in 80ms
+ ✓ Compiled /api/devices in 4.6s (2959 modules)
+ GET /beer/bell-s-two-hearted-ale 200 in 888ms
+ ○ Compiling /app ...
+ ✓ Compiled /app in 3.1s (2917 modules)
+ GET /app 200 in 5030ms
+ ○ Compiling /manifest.webmanifest ...
+ ✓ Compiled /manifest.webmanifest in 1191ms (2938 modules)
+ GET /manifest.webmanifest 200 in 1470ms
+ GET /app 200 in 1487ms
+ GET /manifest.webmanifest 200 in 87ms
+ GET /app 200 in 414ms
+ GET /manifest.webmanifest 200 in 84ms
+ GET /app 200 in 545ms
+ GET /manifest.webmanifest 200 in 134ms
+ ○ Compiling /app/ingredients ...
+ ✓ Compiled /app/ingredients in 7s (4099 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /app/ingredients 200 in 7396ms
+ GET /app 200 in 2268ms
+ GET /manifest.webmanifest 200 in 72ms
+ GET /app/ingredients 200 in 433ms
+ GET /manifest.webmanifest 200 in 98ms
+ ○ Compiling /api/recipe-images/[imageId]/[variant] ...
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled /api/recipe-images/[imageId]/[variant] in 4s (4103 modules)
+ GET /api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb 200 in 6143ms
+ GET /app 200 in 3298ms
+ GET /manifest.webmanifest 200 in 73ms
+ GET /app/ingredients 200 in 364ms
+ GET /manifest.webmanifest 200 in 73ms
+ GET /api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb 200 in 242ms
+ GET /app/ingredients 200 in 418ms
+ GET /manifest.webmanifest 200 in 58ms
+ GET /api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb 200 in 220ms
+ GET /app/ingredients 200 in 438ms
+ GET /api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb 200 in 215ms
+ GET /manifest.webmanifest 200 in 68ms
+ ○ Compiling /app/shopping ...
+ ✓ Compiled /app/shopping in 3s (4148 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /app/shopping 200 in 3039ms
+ GET /app/ingredients 200 in 1167ms
+ GET /manifest.webmanifest 200 in 75ms
+ GET /api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb 200 in 251ms
+ GET /app/shopping 200 in 268ms
+ GET /manifest.webmanifest 200 in 65ms
+ GET /app/shopping 200 in 330ms
+ GET /manifest.webmanifest 200 in 97ms
+ ○ Compiling / ...
+ ✓ Compiled / in 2.9s (3139 modules)
+ GET / 307 in 4899ms
+ GET /app 200 in 1135ms
+ GET /app/shopping 200 in 5071ms
+ GET / 307 in 224ms
+ GET /app 200 in 287ms
+ GET /manifest.webmanifest 200 in 88ms
+ GET /app/shopping 200 in 365ms
+ GET /beer/pilsner-urquell 200 in 591ms
+ GET /manifest.webmanifest 200 in 664ms
+ GET /manifest.webmanifest 200 in 329ms
+ ○ Compiling /app/equipment ...
+ ✓ Compiled /app/equipment in 2.6s (4254 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /app/equipment 200 in 2621ms
+ GET /app/shopping 200 in 1129ms
+ GET /manifest.webmanifest 200 in 81ms
+ GET /app/equipment 200 in 251ms
+ GET /manifest.webmanifest 200 in 57ms
+ GET /app/equipment 200 in 324ms
+ GET /manifest.webmanifest 200 in 80ms
+ GET /app/equipment 200 in 310ms
+ GET /manifest.webmanifest 200 in 67ms
+ GET /app/equipment 200 in 262ms
+ GET /manifest.webmanifest 200 in 57ms
+ ○ Compiling /app/devices ...
+ ✓ Compiled /app/devices in 11.2s (4345 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /app/devices 200 in 11242ms
+ GET /app/equipment 200 in 2559ms
+ GET /manifest.webmanifest 200 in 102ms
+ GET /manifest.webmanifest 200 in 79ms
+ GET /app/devices 200 in 4072ms
+ POST /app/devices 200 in 738ms
+ GET /app/devices 200 in 405ms
+ GET /manifest.webmanifest 200 in 167ms
+ POST /app/devices 200 in 156ms
+ GET /app/devices 200 in 413ms
+ GET /manifest.webmanifest 200 in 71ms
+ POST /app/devices 200 in 155ms
+ GET /app/devices 200 in 399ms
+ GET /manifest.webmanifest 200 in 87ms
+ POST /app/devices 200 in 157ms
+ ○ Compiling /app/saved ...
+ ✓ Compiled /app/saved in 5.5s (4340 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /app/saved 200 in 5629ms
+ GET /app/devices 200 in 994ms
+ GET /manifest.webmanifest 200 in 86ms
+ POST /app/devices 200 in 448ms
+ ○ Compiling /api/devices/tiles ...
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled /api/devices/tiles in 5.6s (4342 modules)
+ GET /api/devices/tiles 200 in 1740ms
+ GET /api/devices/tiles 200 in 4818ms
+ GET /api/devices/tiles 200 in 7541ms
+ GET /app/devices 200 in 3495ms
+ GET /beer/pilsner-urquell 200 in 564ms
+ GET /manifest.webmanifest 200 in 129ms
+ GET /manifest.webmanifest 200 in 123ms
+ POST /app/devices 200 in 433ms
+ GET /app/saved 200 in 278ms
+ GET /manifest.webmanifest 200 in 93ms
+ GET /app/saved 200 in 269ms
+ GET /manifest.webmanifest 200 in 73ms
+ GET /app/saved 200 in 711ms
+ GET /beer/pilsner-urquell 200 in 687ms
+ GET /manifest.webmanifest 200 in 120ms
+ GET /manifest.webmanifest 200 in 119ms
+ GET /app/saved 200 in 416ms
+ GET /manifest.webmanifest 200 in 789ms
+ ○ Compiling /app/master ...
+ ✓ Compiled /app/master in 3.1s (3924 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /app/master 200 in 3314ms
+ GET /app/saved 200 in 931ms
+ GET /manifest.webmanifest 200 in 81ms
+ GET /app/master 200 in 313ms
+ GET /manifest.webmanifest 200 in 111ms
+ GET /app/master 200 in 345ms
+ GET /manifest.webmanifest 200 in 80ms
+ GET /app/master 200 in 356ms
+ GET /manifest.webmanifest 200 in 69ms
+ GET /app/master 200 in 308ms
+ GET /manifest.webmanifest 200 in 97ms
+ ○ Compiling /profile ...
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled /profile in 19.3s (3971 modules)
+ GET /app/master 200 in 14674ms
+ GET /app/master 200 in 2338ms
+ GET /app/master 200 in 2352ms
+ GET /app/master 200 in 2361ms
+ GET /app/master 200 in 2257ms
+ GET /beer/pilsner-urquell 200 in 2229ms
+ GET /manifest.webmanifest 200 in 200ms
+ GET /profile 200 in 280ms
+ GET /manifest.webmanifest 200 in 115ms
+ GET /profile 200 in 422ms
+ GET /manifest.webmanifest 200 in 98ms
+ GET /profile 200 in 326ms
+ GET /manifest.webmanifest 200 in 81ms
+ GET /profile 200 in 2038ms
+ GET /manifest.webmanifest 200 in 69ms
+ ○ Compiling /settings ...
+ ✓ Compiled /settings in 4.3s (3842 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /settings 200 in 4907ms
+ GET /profile 200 in 722ms
+ GET /manifest.webmanifest 200 in 86ms
+ GET /beer/pilsner-urquell 200 in 492ms
+ GET /manifest.webmanifest 200 in 87ms
+ GET /settings 307 in 338ms
+ GET /profile 200 in 288ms
+ GET /manifest.webmanifest 200 in 122ms
+ GET /settings 307 in 340ms
+ GET /profile 200 in 305ms
+ GET /manifest.webmanifest 200 in 163ms
+ GET /settings 307 in 286ms
+ GET /profile 200 in 226ms
+ GET /manifest.webmanifest 200 in 96ms
+ GET /beer/pilsner-urquell 200 in 535ms
+ GET /manifest.webmanifest 200 in 84ms
+ GET /settings 307 in 273ms
+ GET /profile 200 in 332ms
+ GET /manifest.webmanifest 200 in 87ms
+ ○ Compiling / ...
+ ✓ Compiled / in 872ms (2748 modules)
+ GET / 200 in 2438ms
+ GET /manifest.webmanifest 200 in 105ms
+ POST / 200 in 433ms
+ POST / 200 in 92ms
+ GET / 200 in 679ms
+ GET /manifest.webmanifest 200 in 77ms
+ POST / 200 in 98ms
+ POST / 200 in 85ms
+ ○ Compiling /api/recipe-images/[imageId]/[variant] ...
+ GET / 200 in 1280ms
+ ✓ Compiled /api/recipe-images/[imageId]/[variant] in 2.2s (2752 modules)
+ ✓ Compiled in 0ms (2752 modules)
+ ✓ Compiled in 1ms (2752 modules)
+ ✓ Compiled in 0ms (2752 modules)
+ GET /manifest.webmanifest 200 in 8055ms
+ GET /api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb 200 in 9456ms
+ POST / 200 in 7791ms
+ POST / 200 in 428ms
+ GET / 200 in 3182ms
+ GET /manifest.webmanifest 200 in 130ms
+ GET /api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb 200 in 382ms
+ POST / 200 in 218ms
+ POST / 200 in 163ms
+ ○ Compiling /recipes ...
+ ✓ Compiled /recipes in 6.1s (3666 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /recipes 200 in 6667ms
+ GET / 200 in 7172ms
+ ⨯ SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>) {
+  page: '/recipes'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 10.9s (3762 modules)
+ GET /recipes 500 in 4440ms
+ GET / 200 in 2085ms
+ GET / 200 in 2088ms
+ GET / 200 in 2092ms
+ GET /manifest.webmanifest 200 in 121ms
+ GET /recipes 200 in 1947ms
+ GET /api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb 200 in 362ms
+ POST /recipes 200 in 416ms
+ POST /recipes 200 in 289ms
+ GET /manifest.webmanifest 200 in 134ms
+ GET /recipes 200 in 1561ms
+ GET /api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb 200 in 449ms
+ POST /recipes 200 in 129ms
+ POST /recipes 200 in 129ms
+ GET /manifest.webmanifest 200 in 183ms
+ GET /recipes 200 in 2827ms
+ POST /recipes 200 in 106ms
+ POST /recipes 200 in 97ms
+ GET /manifest.webmanifest 200 in 113ms
+ GET /recipes 200 in 2680ms
+ POST /recipes 200 in 84ms
+ POST /recipes 200 in 88ms
+ ○ Compiling /catalog ...
+ ✓ Compiled /catalog in 4.4s (3806 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /catalog 200 in 4481ms
+ GET /recipes 200 in 8101ms
+ GET /manifest.webmanifest 200 in 139ms
+ GET /catalog 200 in 2939ms
+ GET /catalog 200 in 1105ms
+ GET /manifest.webmanifest 200 in 99ms
+ GET /manifest.webmanifest 200 in 88ms
+ GET /catalog 200 in 1942ms
+ GET /manifest.webmanifest 200 in 137ms
+ GET /catalog 200 in 2135ms
+ ○ Compiling /articles ...
+ ✓ Compiled /articles in 3.4s (3774 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /articles 200 in 3585ms
+ GET /catalog 200 in 7284ms
+ ✓ Compiled in 1930ms (3785 modules)
+ ○ Compiling /app ...
+ ✓ Compiled /app in 2.9s (3153 modules)
+ GET /app 200 in 4816ms
+ GET /app 200 in 344ms
+ ○ Compiling /manifest.webmanifest ...
+ ✓ Compiled /manifest.webmanifest in 948ms (3172 modules)
+ GET /manifest.webmanifest 200 in 1345ms
+ GET /app 200 in 1234ms
+ GET /manifest.webmanifest 200 in 245ms
+ GET /app 200 in 365ms
+ GET /manifest.webmanifest 200 in 88ms
+ GET /app 200 in 333ms
+ GET /manifest.webmanifest 200 in 96ms
+ ○ Compiling /app/ingredients ...
+ ✓ Compiled /app/ingredients in 2.6s (3240 modules)
+ GET /app/ingredients 200 in 5005ms
+ GET /app/ingredients 200 in 411ms
+ GET /manifest.webmanifest 200 in 108ms
+ ○ Compiling /api/recipe-images/[imageId]/[variant] ...
+ ✓ Compiled /api/recipe-images/[imageId]/[variant] in 1456ms (3244 modules)
+ GET /app/ingredients 200 in 1497ms
+ GET /manifest.webmanifest 200 in 74ms
+ GET /api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb 200 in 217ms
+ GET /app/ingredients 200 in 471ms
+ GET /manifest.webmanifest 200 in 133ms
+ GET /api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb 200 in 316ms
+ GET /app/ingredients 200 in 428ms
+ GET /manifest.webmanifest 200 in 86ms
+ GET /api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb 200 in 294ms
+ ○ Compiling /app/shopping ...
+ ✓ Compiled /app/shopping in 1112ms (3279 modules)
+ GET / 307 in 579ms
+ GET /app/shopping 200 in 2599ms
+ GET /app 200 in 630ms
+ GET / 307 in 392ms
+ GET /app/shopping 200 in 712ms
+ GET /app 200 in 428ms
+ GET /manifest.webmanifest 200 in 1095ms
+ GET /beer/sample-american-stout 200 in 870ms
+ GET /manifest.webmanifest 200 in 112ms
+ GET /app/shopping 200 in 632ms
+ GET /manifest.webmanifest 200 in 166ms
+ GET /beer/sample-american-stout 200 in 1050ms
+ GET /app/shopping 200 in 930ms
+ GET /manifest.webmanifest 200 in 335ms
+ GET /manifest.webmanifest 200 in 161ms
+ GET /app/shopping 200 in 1767ms
+ GET /beer/sample-american-stout 200 in 1346ms
+ GET /manifest.webmanifest 200 in 183ms
+ GET /manifest.webmanifest 200 in 96ms
+ ○ Compiling /app/equipment ...
+ ✓ Compiled /app/equipment in 2s (3309 modules)
+ GET /app/equipment 200 in 4585ms
+ GET /beer/sample-american-stout 200 in 3289ms
+ GET /manifest.webmanifest 200 in 111ms
+ GET /app/equipment 200 in 340ms
+ GET /manifest.webmanifest 200 in 78ms
+ GET /beer/pilsner-urquell 200 in 3777ms
+ GET /app/equipment 200 in 3197ms
+ GET /manifest.webmanifest 200 in 1251ms
+ GET /manifest.webmanifest 200 in 93ms
+ GET /app/equipment 200 in 1516ms
+ GET /beer/pilsner-urquell 200 in 1538ms
+ GET /manifest.webmanifest 200 in 136ms
+ GET /manifest.webmanifest 200 in 113ms
+ GET /app/equipment 200 in 1024ms
+ GET /beer/pilsner-urquell 200 in 941ms
+ GET /manifest.webmanifest 200 in 160ms
+ GET /manifest.webmanifest 200 in 180ms
+ ○ Compiling /app/devices ...
+ ✓ Compiled /app/devices in 1542ms (3371 modules)
+ GET /app/devices 200 in 4626ms
+ GET /beer/pilsner-urquell 200 in 3816ms
+ GET /manifest.webmanifest 200 in 117ms
+ GET /app/devices 200 in 357ms
+ GET /manifest.webmanifest 200 in 796ms
+ GET /beer/bell-s-two-hearted-ale 200 in 703ms
+ POST /app/devices 200 in 648ms
+ GET /manifest.webmanifest 200 in 88ms
+ GET /app/devices 200 in 410ms
+ GET /manifest.webmanifest 200 in 132ms
+ GET /beer/bell-s-two-hearted-ale 200 in 916ms
+ POST /app/devices 200 in 266ms
+ GET /manifest.webmanifest 200 in 118ms
+ GET /app/devices 200 in 414ms
+ GET /manifest.webmanifest 200 in 158ms
+ GET /beer/pilsner-urquell 200 in 1322ms
+ GET /beer/bell-s-two-hearted-ale 200 in 997ms
+ GET /manifest.webmanifest 200 in 1446ms
+ POST /app/devices 200 in 340ms
+ GET /app/devices 200 in 373ms
+ GET /manifest.webmanifest 200 in 101ms
+ GET /beer/bell-s-two-hearted-ale 200 in 657ms
+ POST /app/devices 200 in 145ms
+ GET /manifest.webmanifest 200 in 182ms
+ ○ Compiling /app/saved ...
+ ✓ Compiled /app/saved in 5.3s (3310 modules)
+ GET /app/saved 200 in 7724ms
+ GET /beer/sample-american-stout 200 in 991ms
+ GET /manifest.webmanifest 200 in 155ms
+ GET /app/saved 200 in 417ms
+ GET /manifest.webmanifest 200 in 108ms
+ ○ Compiling /bjcp ...
+ ✓ Compiled /bjcp in 3.4s (3328 modules)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              

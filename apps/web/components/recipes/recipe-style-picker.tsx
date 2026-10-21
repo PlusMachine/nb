@@ -137,7 +137,7 @@ export function RecipeStylePicker({
   );
 }
 
-/** Строка семейства во всю ширину; усечение длинных названий внутри сайдбара. */
+/** Строка семейства во всю ширину с переносом длинных названий. */
 function FamilyRow({
   label,
   count,
@@ -160,7 +160,7 @@ function FamilyRow({
           : "border-border bg-card text-foreground hover:border-border hover:bg-muted"
       }`}
     >
-      <span className="min-w-0 flex-1 truncate text-sm font-medium">{label}</span>
+      <span className="min-w-0 flex-1 break-words text-sm font-medium">{label}</span>
       {count != null ? (
         <span
           className={`shrink-0 text-xs font-medium tabular-nums ${active ? "text-background/70" : "text-muted-foreground"}`}

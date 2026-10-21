@@ -1,0 +1,17 @@
+
+Running 12 tests using 1 worker
+
+  ✓   1 [iphone-se] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (14.0s)
+  ✓   2 [iphone-se] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query (9.2s)
+  ✓   3 [iphone-se] › e2e/bjcp-search.spec.ts:46:1 › local search and view filters preserve browser history without RSC navigation (5.1s)
+  ✓   4 [iphone-se] › e2e/bjcp-search.spec.ts:72:1 › choosing a family suggestion cancels pending text and keeps the chosen scope (4.5s)
+  ✓   5 [iphone-se] › e2e/bjcp-search.spec.ts:86:1 › back cancels an uncommitted query instead of rewriting the restored history (5.8s)
+  ✓   6 [iphone-se] › e2e/safari-interactions.spec.ts:96:1 › BJCP waits for its handlers before accepting the first query (6.2s)
+  ✓   7 [ipad-pro] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (6.3s)
+  ✓   8 [ipad-pro] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query (13.9s)
+  ✓   9 [ipad-pro] › e2e/bjcp-search.spec.ts:46:1 › local search and view filters preserve browser history without RSC navigation (6.8s)
+  ✓  10 [ipad-pro] › e2e/bjcp-search.spec.ts:72:1 › choosing a family suggestion cancels pending text and keeps the chosen scope (6.2s)
+  ✓  11 [ipad-pro] › e2e/bjcp-search.spec.ts:86:1 › back cancels an uncommitted query instead of rewriting the restored history (7.2s)
+  ✓  12 [ipad-pro] › e2e/safari-interactions.spec.ts:96:1 › BJCP waits for its handlers before accepting the first query (5.9s)
+
+  12 passed (2.2m)

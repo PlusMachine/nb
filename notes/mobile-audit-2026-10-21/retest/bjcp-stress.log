@@ -1,0 +1,17 @@
+
+Running 12 tests using 1 worker
+
+  ✓   1 [phone-390] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (9.1s)
+  ✓   2 [phone-390] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query (11.3s)
+  ✓   3 [phone-390] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (7.2s)
+  ✓   4 [phone-390] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query (8.7s)
+  ✓   5 [phone-390] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (7.7s)
+  ✓   6 [phone-390] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query (8.1s)
+  ✓   7 [tablet-834] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (7.1s)
+  ✓   8 [tablet-834] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query (11.9s)
+  ✓   9 [tablet-834] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (6.4s)
+  ✓  10 [tablet-834] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query (6.2s)
+  ✓  11 [tablet-834] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (4.6s)
+  ✓  12 [tablet-834] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query (6.6s)
+
+  12 passed (1.9m)

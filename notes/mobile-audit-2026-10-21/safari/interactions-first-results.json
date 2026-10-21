@@ -1,0 +1,671 @@
+{
+  "config": {
+    "argv": [
+      "/usr/bin/node",
+      "/home/dopefish/projects/nb/node_modules/.bin/playwright",
+      "test",
+      "--config=e2e/safari-audit.config.ts",
+      "e2e/safari-interactions.spec.ts",
+      "--workers=1"
+    ],
+    "configFile": "/home/dopefish/projects/nb/apps/web/e2e/safari-audit.config.ts",
+    "rootDir": "/home/dopefish/projects/nb/apps/web/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "iphone-se",
+        "name": "iphone-se",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "iphone-13",
+        "name": "iphone-13",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "iphone-landscape",
+        "name": "iphone-landscape",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "ipad-mini",
+        "name": "ipad-mini",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "ipad-mini-landscape",
+        "name": "ipad-mini-landscape",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "ipad-pro",
+        "name": "ipad-pro",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "ipad-pro-landscape",
+        "name": "ipad-pro-landscape",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "../../../notes/mobile-audit-2026-10-21/safari/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.1",
+    "workers": 1,
+    "webServer": {
+      "command": "pnpm run dev",
+      "url": "http://127.0.0.1:3100",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "safari-interactions.spec.ts",
+      "file": "safari-interactions.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "QR description remains readable and collapses back to the short viewport",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-se",
+              "projectName": "iphone-se",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 61089,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "/home/dopefish/projects/nb/apps/web/e2e/safari-interactions.spec.ts",
+                        "column": 76,
+                        "line": 29
+                      },
+                      "message": "Error: locator.tap: Test timeout of 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('link', { name: 'Рецепт этого пива', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <a href=\"/recipes/pilsner-urquell\" class=\"rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur transition-colors hover:bg-white/20\">Рецепт этого пива</a>\u001b[22m\n\u001b[2m  - attempting tap action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <button type=\"button\" class=\"rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800\">qa.mobile.20261021</button> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying tap action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <button type=\"button\" class=\"rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 border border-amber-900/40 bg-amber-900/10 text-amber-900 hover:bg-amber-900/20 dark:text-amber-100\">qa.deep.main.20261020</button> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying tap action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <button type=\"button\" class=\"rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800\">qa.mobile.20261021</button> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying tap action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    24 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <button type=\"button\" class=\"rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800\">qa.mobile.20261021</button> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying tap action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <button type=\"button\" class=\"rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 border border-amber-900/40 bg-amber-900/10 text-amber-900 hover:bg-amber-900/20 dark:text-amber-100\">qa.deep.main.20261020</button> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying tap action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <button type=\"button\" class=\"rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800\">qa.mobile.20261021</button> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying tap action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <button type=\"button\" class=\"rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800\">qa.mobile.20261021</button> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying tap action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <button type=\"button\" class=\"rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800\">qa.mobile.20261021</button> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying tap action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <button type=\"button\" class=\"rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 border border-amber-900/40 bg-amber-900/10 text-amber-900 hover:bg-amber-900/20 dark:text-amber-100\">qa.deep.main.20261020</button> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying tap action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\n\n  27 |     await expect(description).toBeVisible();\n  28 |   }\n> 29 |   await page.getByRole(\"link\", { name: \"Рецепт этого пива\", exact: true }).tap();\n     |                                                                            ^\n  30 |   await expect(page).toHaveURL(/\\/recipes\\/pilsner-urquell$/);\n  31 | });\n  32 |\n    at /home/dopefish/projects/nb/apps/web/e2e/safari-interactions.spec.ts:29:76"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T19:46:26.130Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-se/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-se/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-se/trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-f1833f6b6afb621d0d66",
+          "file": "safari-interactions.spec.ts",
+          "line": 11,
+          "column": 1
+        },
+        {
+          "title": "QR feedback leaves recipe actions uncovered and can be opened twice",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-se",
+              "projectName": "iphone-se",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5296,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T19:47:29.143Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-f78549ddaa38bc0df10e",
+          "file": "safari-interactions.spec.ts",
+          "line": 33,
+          "column": 1
+        },
+        {
+          "title": "QR description remains readable and collapses back to the short viewport",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-13",
+              "projectName": "iphone-13",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 62783,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "/home/dopefish/projects/nb/apps/web/e2e/safari-interactions.spec.ts",
+                        "column": 76,
+                        "line": 29
+                      },
+                      "message": "Error: locator.tap: Test timeout of 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('link', { name: 'Рецепт этого пива', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <a href=\"/recipes/pilsner-urquell\" class=\"rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur transition-colors hover:bg-white/20\">Рецепт этого пива</a>\u001b[22m\n\u001b[2m  - attempting tap action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <button type=\"button\" class=\"rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800\">qa.mobile.20261021</button> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying tap action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <button type=\"button\" class=\"rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 border border-amber-900/40 bg-amber-900/10 text-amber-900 hover:bg-amber-900/20 dark:text-amber-100\">qa.deep.main.20261020</button> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying tap action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <button type=\"button\" class=\"rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800\">qa.mobile.20261021</button> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying tap action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    23 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <button type=\"button\" class=\"rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800\">qa.mobile.20261021</button> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying tap action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <button type=\"button\" class=\"rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 border border-amber-900/40 bg-amber-900/10 text-amber-900 hover:bg-amber-900/20 dark:text-amber-100\">qa.deep.main.20261020</button> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying tap action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <button type=\"button\" class=\"rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800\">qa.mobile.20261021</button> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying tap action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <button type=\"button\" class=\"rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800\">qa.mobile.20261021</button> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying tap action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <button type=\"button\" class=\"rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800\">qa.mobile.20261021</button> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying tap action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <button type=\"button\" class=\"rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 border border-amber-900/40 bg-amber-900/10 text-amber-900 hover:bg-amber-900/20 dark:text-amber-100\">qa.deep.main.20261020</button> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying tap action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\n\n  27 |     await expect(description).toBeVisible();\n  28 |   }\n> 29 |   await page.getByRole(\"link\", { name: \"Рецепт этого пива\", exact: true }).tap();\n     |                                                                            ^\n  30 |   await expect(page).toHaveURL(/\\/recipes\\/pilsner-urquell$/);\n  31 | });\n  32 |\n    at /home/dopefish/projects/nb/apps/web/e2e/safari-interactions.spec.ts:29:76"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T19:47:35.901Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-13/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-13/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-13/trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-f12453323b6395651b24",
+          "file": "safari-interactions.spec.ts",
+          "line": 11,
+          "column": 1
+        },
+        {
+          "title": "QR feedback leaves recipe actions uncovered and can be opened twice",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-13",
+              "projectName": "iphone-13",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5890,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T19:48:41.157Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-3769b155d30d1a38b9be",
+          "file": "safari-interactions.spec.ts",
+          "line": 33,
+          "column": 1
+        },
+        {
+          "title": "QR description remains readable and collapses back to the short viewport",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-landscape",
+              "projectName": "iphone-landscape",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "interrupted",
+                  "duration": 28270,
+                  "error": {
+                    "message": "Error: locator.tap: Test ended.\nCall log:\n\u001b[2m  - waiting for getByRole('link', { name: 'Рецепт этого пива', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <a href=\"/recipes/pilsner-urquell\" class=\"rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur transition-colors hover:bg-white/20\">Рецепт этого пива</a>\u001b[22m\n\u001b[2m  - attempting tap action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div class=\"flex flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-2xl border border-warning/30 bg-warning-subtle px-4 py-2 text-sm text-warning-subtle-foreground shadow-lg\">…</div> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying tap action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <span class=\"inline-flex flex-wrap items-center gap-1.5\">…</span> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying tap action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    11 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <span class=\"inline-flex flex-wrap items-center gap-1.5\">…</span> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying tap action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <div class=\"flex flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-2xl border border-warning/30 bg-warning-subtle px-4 py-2 text-sm text-warning-subtle-foreground shadow-lg\">…</div> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying tap action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <span class=\"inline-flex flex-wrap items-center gap-1.5\">…</span> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying tap action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <span class=\"inline-flex flex-wrap items-center gap-1.5\">…</span> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying tap action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n",
+                    "stack": "Error: locator.tap: Test ended.\nCall log:\n\u001b[2m  - waiting for getByRole('link', { name: 'Рецепт этого пива', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <a href=\"/recipes/pilsner-urquell\" class=\"rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur transition-colors hover:bg-white/20\">Рецепт этого пива</a>\u001b[22m\n\u001b[2m  - attempting tap action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div class=\"flex flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-2xl border border-warning/30 bg-warning-subtle px-4 py-2 text-sm text-warning-subtle-foreground shadow-lg\">…</div> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying tap action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <span class=\"inline-flex flex-wrap items-center gap-1.5\">…</span> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying tap action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    11 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <span class=\"inline-flex flex-wrap items-center gap-1.5\">…</span> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying tap action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <div class=\"flex flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-2xl border border-warning/30 bg-warning-subtle px-4 py-2 text-sm text-warning-subtle-foreground shadow-lg\">…</div> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying tap action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <span class=\"inline-flex flex-wrap items-center gap-1.5\">…</span> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying tap action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <span class=\"inline-flex flex-wrap items-center gap-1.5\">…</span> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying tap action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at /home/dopefish/projects/nb/apps/web/e2e/safari-interactions.spec.ts:29:76",
+                    "location": {
+                      "file": "/home/dopefish/projects/nb/apps/web/e2e/safari-interactions.spec.ts",
+                      "column": 76,
+                      "line": 29
+                    },
+                    "snippet": "  27 |     await expect(description).toBeVisible();\n  28 |   }\n> 29 |   await page.getByRole(\"link\", { name: \"Рецепт этого пива\", exact: true }).tap();\n     |                                                                            ^\n  30 |   await expect(page).toHaveURL(/\\/recipes\\/pilsner-urquell$/);\n  31 | });\n  32 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/dopefish/projects/nb/apps/web/e2e/safari-interactions.spec.ts",
+                        "column": 76,
+                        "line": 29
+                      },
+                      "message": "Error: locator.tap: Test ended.\nCall log:\n\u001b[2m  - waiting for getByRole('link', { name: 'Рецепт этого пива', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <a href=\"/recipes/pilsner-urquell\" class=\"rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur transition-colors hover:bg-white/20\">Рецепт этого пива</a>\u001b[22m\n\u001b[2m  - attempting tap action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div class=\"flex flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-2xl border border-warning/30 bg-warning-subtle px-4 py-2 text-sm text-warning-subtle-foreground shadow-lg\">…</div> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying tap action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <span class=\"inline-flex flex-wrap items-center gap-1.5\">…</span> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying tap action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    11 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <span class=\"inline-flex flex-wrap items-center gap-1.5\">…</span> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying tap action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <div class=\"flex flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-2xl border border-warning/30 bg-warning-subtle px-4 py-2 text-sm text-warning-subtle-foreground shadow-lg\">…</div> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying tap action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <span class=\"inline-flex flex-wrap items-center gap-1.5\">…</span> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying tap action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <span class=\"inline-flex flex-wrap items-center gap-1.5\">…</span> from <div class=\"fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying tap action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n\n  27 |     await expect(description).toBeVisible();\n  28 |   }\n> 29 |   await page.getByRole(\"link\", { name: \"Рецепт этого пива\", exact: true }).tap();\n     |                                                                            ^\n  30 |   await expect(page).toHaveURL(/\\/recipes\\/pilsner-urquell$/);\n  31 | });\n  32 |\n    at /home/dopefish/projects/nb/apps/web/e2e/safari-interactions.spec.ts:29:76"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T19:48:48.514Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-landscape/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-landscape/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-landscape/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/dopefish/projects/nb/apps/web/e2e/safari-interactions.spec.ts",
+                    "column": 76,
+                    "line": 29
+                  }
+                }
+              ],
+              "status": "skipped"
+            }
+          ],
+          "id": "0def5a99993eff87b618-a989b5837be91a95b715",
+          "file": "safari-interactions.spec.ts",
+          "line": 11,
+          "column": 1
+        },
+        {
+          "title": "QR feedback leaves recipe actions uncovered and can be opened twice",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-landscape",
+              "projectName": "iphone-landscape",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "0def5a99993eff87b618-abc889eaeb09e928045d",
+          "file": "safari-interactions.spec.ts",
+          "line": 33,
+          "column": 1
+        },
+        {
+          "title": "QR description remains readable and collapses back to the short viewport",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini",
+              "projectName": "ipad-mini",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "0def5a99993eff87b618-6704c6ea4bc697eed026",
+          "file": "safari-interactions.spec.ts",
+          "line": 11,
+          "column": 1
+        },
+        {
+          "title": "QR feedback leaves recipe actions uncovered and can be opened twice",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini",
+              "projectName": "ipad-mini",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "0def5a99993eff87b618-6761b0755f173325f6c4",
+          "file": "safari-interactions.spec.ts",
+          "line": 33,
+          "column": 1
+        },
+        {
+          "title": "QR description remains readable and collapses back to the short viewport",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini-landscape",
+              "projectName": "ipad-mini-landscape",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "0def5a99993eff87b618-08251a3970e1d733725b",
+          "file": "safari-interactions.spec.ts",
+          "line": 11,
+          "column": 1
+        },
+        {
+          "title": "QR feedback leaves recipe actions uncovered and can be opened twice",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini-landscape",
+              "projectName": "ipad-mini-landscape",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "0def5a99993eff87b618-745d99d4cbc739b529c1",
+          "file": "safari-interactions.spec.ts",
+          "line": 33,
+          "column": 1
+        },
+        {
+          "title": "QR description remains readable and collapses back to the short viewport",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro",
+              "projectName": "ipad-pro",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "0def5a99993eff87b618-8d2b5674515e1a71aeda",
+          "file": "safari-interactions.spec.ts",
+          "line": 11,
+          "column": 1
+        },
+        {
+          "title": "QR feedback leaves recipe actions uncovered and can be opened twice",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro",
+              "projectName": "ipad-pro",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "0def5a99993eff87b618-4920aa773fe106922874",
+          "file": "safari-interactions.spec.ts",
+          "line": 33,
+          "column": 1
+        },
+        {
+          "title": "QR description remains readable and collapses back to the short viewport",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro-landscape",
+              "projectName": "ipad-pro-landscape",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "0def5a99993eff87b618-99c0c9788a999a3dc7cb",
+          "file": "safari-interactions.spec.ts",
+          "line": 11,
+          "column": 1
+        },
+        {
+          "title": "QR feedback leaves recipe actions uncovered and can be opened twice",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro-landscape",
+              "projectName": "ipad-pro-landscape",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "0def5a99993eff87b618-2d46ffbf83d4adfba77b",
+          "file": "safari-interactions.spec.ts",
+          "line": 33,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-21T19:46:18.413Z",
+    "duration": 179017.90699999998,
+    "expected": 2,
+    "skipped": 10,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

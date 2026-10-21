@@ -2,11 +2,14 @@
 
 import React, { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Loader2, MoreHorizontal, Pencil, RotateCcw, Sticker, XCircle } from "lucide-react";
+import { Check, Loader2, MoreHorizontal, Pencil, RotateCcw, Sticker, Trash2, XCircle } from "lucide-react";
 
 import { Button, Dialog, DialogFooter, DropdownMenu, type DropdownMenuItem } from "@nb/ui";
 import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
-import { setBrewBatchStatusAction } from "@/app/(app)/app/brew-batches/[id]/actions";
+import {
+  deleteBrewBatchAction,
+  setBrewBatchStatusAction
+} from "@/app/(app)/app/brew-batches/[id]/actions";
 import {
   brewBatchStatusLabels,
   type BrewBatchStatus
@@ -17,23 +20,27 @@ import {
 const MANUAL_STATUSES: BrewBatchStatus[] = ["planned", "brewing", "fermenting", "completed"];
 
 /**
- * Меню партии (⋯) в шапке: ручная смена этапа и отмена варки. Заменяет собой
- * доминировавший на странице виджет жизненного цикла — статус двигается гидом, а
- * ручной путь спрятан под меню. Отмена — только через подтверждение.
+ * Меню партии (⋯): ручная смена этапа, отмена и удаление. На списке
+ * (`compact`) оставляем только отмену/восстановление и удаление — без
+ * ручной смены этапа и наклеек.
  */
 export function BatchMenu({
   brewBatchId,
   status,
-  labelsHref
+  labelsHref,
+  variant = "full"
 }: {
   brewBatchId: string;
   status: BrewBatchStatus;
   /** Ссылка на наклейки; null — посчитать некуда (нет ни рецепта, ни снапшота) либо этап не подходит. */
   labelsHref?: string | null;
+  /** `full` — на странице детали; `compact` — на списке партий. */
+  variant?: "full" | "compact";
 }) {
   const router = useRouter();
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inFlight = useRef(false);
@@ -51,6 +58,34 @@ export function BatchMenu({
         setError(result.message);
         return false;
       }
+      if (variant === "compact") {
+        router.refresh();
+      }
+      return true;
+    } finally {
+      inFlight.current = false;
+      setBusy(false);
+    }
+  };
+
+  const remove = async (): Promise<boolean> => {
+    if (inFlight.current) {
+      return false;
+    }
+    inFlight.current = true;
+    setBusy(true);
+    setError(null);
+    try {
+      const result = await deleteBrewBatchAction(brewBatchId);
+      if (!result.ok) {
+        setError(result.message);
+        return false;
+      }
+      if (variant === "full") {
+        router.push("/app/brew-batches");
+      } else {
+        router.refresh();
+      }
       return true;
     } finally {
       inFlight.current = false;
@@ -63,20 +98,24 @@ export function BatchMenu({
   const showLabels = Boolean(labelsHref) && (status === "fermenting" || status === "completed");
 
   const items: DropdownMenuItem[] = [
-    {
-      key: "edit-stage",
-      label: "Изменить этап…",
-      icon: <Pencil className="h-4 w-4" aria-hidden />,
-      onSelect: () => setStatusDialogOpen(true)
-    },
-    ...(showLabels
+    ...(variant === "full"
       ? [
           {
-            key: "labels",
-            label: "Наклейки",
-            icon: <Sticker className="h-4 w-4" aria-hidden />,
-            onSelect: () => router.push(labelsHref as string)
-          }
+            key: "edit-stage",
+            label: "Изменить этап…",
+            icon: <Pencil className="h-4 w-4" aria-hidden />,
+            onSelect: () => setStatusDialogOpen(true)
+          } satisfies DropdownMenuItem,
+          ...(showLabels
+            ? [
+                {
+                  key: "labels",
+                  label: "Наклейки",
+                  icon: <Sticker className="h-4 w-4" aria-hidden />,
+                  onSelect: () => router.push(labelsHref as string)
+                } satisfies DropdownMenuItem
+              ]
+            : [])
         ]
       : []),
     status === "cancelled"
@@ -91,8 +130,15 @@ export function BatchMenu({
           label: "Отменить партию",
           icon: <XCircle className="h-4 w-4" aria-hidden />,
           tone: "danger" as const,
-          onSelect: () => setCancelOpen(true)
-        }
+          onSelect: () => { setError(null); setCancelOpen(true); }
+        },
+    {
+      key: "delete",
+      label: "Удалить",
+      icon: <Trash2 className="h-4 w-4" aria-hidden />,
+      tone: "danger",
+      onSelect: () => { setError(null); setDeleteOpen(true); }
+    }
   ];
 
   return (
@@ -112,54 +158,68 @@ export function BatchMenu({
         items={items}
       />
 
-      <Dialog
-        open={statusDialogOpen}
-        onOpenChange={(next) => { if (!next && !busy) { setStatusDialogOpen(false); setError(null); } }}
-        title="Изменить этап"
-        size="md"
-      >
-        <div className="space-y-3 p-5">
-          <p className="text-sm text-muted-foreground">Обычно этап двигают кнопки на странице. Здесь можно выставить его вручную — например, чтобы исправить ошибку.</p>
-          <div className="grid grid-cols-2 gap-2">
-            {MANUAL_STATUSES.map((option) => {
-              const isCurrent = option === status;
-              return (
-                <button
-                  key={option}
-                  type="button"
-                  disabled={busy || isCurrent}
-                  onClick={async () => { if (await apply(option)) { setStatusDialogOpen(false); } }}
-                  className={`inline-flex items-center justify-between gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition disabled:opacity-60 ${
-                    isCurrent
-                      ? "border-foreground bg-foreground text-background"
-                      : "border-border bg-card text-foreground hover:bg-muted"
-                  }`}
-                >
-                  {brewBatchStatusLabels[option]}
-                  {isCurrent ? <Check className="h-4 w-4" aria-hidden /> : busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
-                </button>
-              );
-            })}
+      {variant === "full" ? (
+        <Dialog
+          open={statusDialogOpen}
+          onOpenChange={(next) => { if (!next && !busy) { setStatusDialogOpen(false); setError(null); } }}
+          title="Изменить этап"
+          size="md"
+        >
+          <div className="space-y-3 p-5">
+            <p className="text-sm text-muted-foreground">Обычно переход к следующему этапу выполняется кнопками на странице. Здесь можно выбрать этап вручную — например, чтобы исправить ошибку.</p>
+            <div className="grid grid-cols-2 gap-2">
+              {MANUAL_STATUSES.map((option) => {
+                const isCurrent = option === status;
+                return (
+                  <button
+                    key={option}
+                    type="button"
+                    disabled={busy || isCurrent}
+                    onClick={async () => { if (await apply(option)) { setStatusDialogOpen(false); } }}
+                    className={`inline-flex items-center justify-between gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition disabled:opacity-60 ${
+                      isCurrent
+                        ? "border-foreground bg-foreground text-background"
+                        : "border-border bg-card text-foreground hover:bg-muted"
+                    }`}
+                  >
+                    {brewBatchStatusLabels[option]}
+                    {isCurrent ? <Check className="h-4 w-4" aria-hidden /> : busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
+                  </button>
+                );
+              })}
+            </div>
+            {error ? <p role="alert" className="text-xs text-destructive">{error}</p> : null}
           </div>
-          {error ? <p role="alert" className="text-xs text-destructive">{error}</p> : null}
-        </div>
-        <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => { if (!busy) { setStatusDialogOpen(false); setError(null); } }} disabled={busy}>
-            Закрыть
-          </Button>
-        </DialogFooter>
-      </Dialog>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => { if (!busy) { setStatusDialogOpen(false); setError(null); } }} disabled={busy}>
+              Закрыть
+            </Button>
+          </DialogFooter>
+        </Dialog>
+      ) : null}
 
       <ConfirmActionDialog
         open={cancelOpen}
         title="Отменить партию?"
-        description="Партия будет помечена отменённой. Списанные на неё ингредиенты вернутся на склад. Это действие можно откатить («Вернуть в план»)."
+        description="Партия будет помечена отменённой. Остатки на складе не изменятся. Неиспользованные ингредиенты можно вернуть отдельно. Партию можно вернуть в план."
         confirmLabel="Отменить партию"
         tone="danger"
         pending={busy}
         error={error}
         onConfirm={async () => { if (await apply("cancelled")) { setCancelOpen(false); } }}
         onClose={() => { if (!busy) { setCancelOpen(false); setError(null); } }}
+      />
+
+      <ConfirmActionDialog
+        open={deleteOpen}
+        title="Удалить партию?"
+        description="Партия будет удалена безвозвратно вместе с журналом замеров. Остатки на складе не изменятся. Если ингредиенты не были использованы, верните их на склад до удаления партии."
+        confirmLabel="Удалить партию"
+        tone="danger"
+        pending={busy}
+        error={error}
+        onConfirm={async () => { if (await remove()) { setDeleteOpen(false); } }}
+        onClose={() => { if (!busy) { setDeleteOpen(false); setError(null); } }}
       />
     </>
   );

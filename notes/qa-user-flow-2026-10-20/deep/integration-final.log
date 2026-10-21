@@ -1,0 +1,38 @@
+
+ RUN  v4.0.18 /home/dopefish/projects/nb/apps/web
+
+ ✓ integration/recovery-browser.integration.test.ts > live Chromium: recovery and consistency > equipment loading failure blocks start, retry restores required choice 6180ms
+ ✓ integration/recovery-browser.integration.test.ts > live Chromium: recovery and consistency > a late failure from a closed brew dialog does not corrupt the reopened dialog 7553ms
+ ✓ integration/recovery-browser.integration.test.ts > live Chromium: recovery and consistency > preparation calculation can fail and recover without changing chosen volume 9023ms
+ ✓ integration/recovery-browser.integration.test.ts > live Chromium: recovery and consistency > consumption preview recovers after network failure and consumes both exact lots 4250ms
+ ✓ integration/recovery-browser.integration.test.ts > live Chromium: recovery and consistency > an in-flight consumption cannot be dismissed or submitted twice 1890ms
+ ✓ integration/recovery-browser.integration.test.ts > live Chromium: recovery and consistency > guest browsing cannot read a private batch 1112ms
+ ✓ integration/recovery-browser.integration.test.ts > live Chromium: recovery and consistency > manual inventory adjustment preserves input and recovers from a network failure 2555ms
+ ✓ integration/user-flow.integration.test.ts > real PostgreSQL: warehouse and batch invariants > serializes two consumes for the same batch 250ms
+ ✓ integration/user-flow.integration.test.ts > real PostgreSQL: warehouse and batch invariants > two batches cannot consume more than the shared lot 179ms
+ ✓ integration/user-flow.integration.test.ts > real PostgreSQL: warehouse and batch invariants > does not deadlock when both allocations hold the foreign key's KEY SHARE lock 137ms
+ ✓ integration/user-flow.integration.test.ts > real PostgreSQL: warehouse and batch invariants > serializes two returns without doubling stock 113ms
+ ✓ integration/user-flow.integration.test.ts > real PostgreSQL: warehouse and batch invariants > consuming and returning concurrently conserves stock 143ms
+ ✓ integration/user-flow.integration.test.ts > real PostgreSQL: warehouse and batch invariants > clamps against changed stock after preview, then returns only the actual amount 124ms
+ ✓ integration/user-flow.integration.test.ts > real PostgreSQL: warehouse and batch invariants > without partial opt-in a shortage rolls back every write 101ms
+(node:169060) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ integration/user-flow.integration.test.ts > real PostgreSQL: warehouse and batch invariants > uses recipe addition order for shared short stock 203ms
+ ✓ integration/user-flow.integration.test.ts > real PostgreSQL: warehouse and batch invariants > uses multiple exact lots when together they cover a recipe line 144ms
+ ✓ integration/user-flow.integration.test.ts > real PostgreSQL: warehouse and batch invariants > repeated additions share both lots without double booking 251ms
+ ✓ integration/user-flow.integration.test.ts > real PostgreSQL: warehouse and batch invariants > respects an explicitly pinned lot rather than pooling it with other lots 128ms
+ ✓ integration/user-flow.integration.test.ts > real PostgreSQL: warehouse and batch invariants > concurrent batches use both lots without losing available stock 170ms
+ ✓ integration/user-flow.integration.test.ts > real PostgreSQL: warehouse and batch invariants > a returned partial batch can use replenished lots rather than stale pending allocations 212ms
+ ✓ integration/user-flow.integration.test.ts > real PostgreSQL: warehouse and batch invariants > completed batch cannot consume stock 74ms
+ ✓ integration/user-flow.integration.test.ts > real PostgreSQL: warehouse and batch invariants > cancelled batch cannot consume stock 76ms
+ ✓ integration/user-flow.integration.test.ts > real PostgreSQL: warehouse and batch invariants > a changed or deleted source cannot change planned consumption and targets 136ms
+ ✓ integration/user-flow.integration.test.ts > real PostgreSQL: warehouse and batch invariants > archiving stock after preview prevents accidental consumption 100ms
+ ✓ integration/user-flow.integration.test.ts > real PostgreSQL: warehouse and batch invariants > concurrent creation with one idempotency key creates one batch 66ms
+ ✓ integration/user-flow.integration.test.ts > real PostgreSQL: warehouse and batch invariants > deleting equipment preserves the batch's selected snapshot 81ms
+ ✓ integration/user-flow.integration.test.ts > real PostgreSQL: warehouse and batch invariants > other users cannot inspect or mutate private recipe, profile, stock or batch 89ms
+
+ Test Files  2 passed (2)
+      Tests  27 passed (27)
+   Start at  23:09:43
+   Duration  38.08s (transform 1.03s, setup 75ms, import 1.97s, tests 35.58s, environment 0ms)
+

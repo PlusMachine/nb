@@ -386,7 +386,7 @@ describe("ShoppingListView", () => {
   it("рендерит полный EmptyState при nothing_to_do", () => {
     const html = render(baseDto({ emptyReason: "nothing_to_do" }));
 
-    expect(html).toContain("Нехваток пока нет");
+    expect(html).toContain("Список покупок пока пуст");
     expect(html).toContain("К рецептам");
     expect(html).toContain("Мои партии");
     expect(html).not.toContain("Почти хватает на:");
@@ -404,7 +404,7 @@ describe("ShoppingListView", () => {
 
     expect(html).toContain("Всё нужное уже на складе");
     expect(html).toContain("Почти хватает на:");
-    expect(html).not.toContain("Нехваток пока нет");
+    expect(html).not.toContain("Список покупок пока пуст");
   });
 });
 
@@ -458,7 +458,7 @@ describe("ShoppingListView — П1: ручные позиции («Своё»)",
   it("EmptyState (nothing_to_do) содержит кнопку «Добавить позицию»", () => {
     const html = render(baseDto({ emptyReason: "nothing_to_do" }));
 
-    expect(html).toContain("Нехваток пока нет");
+    expect(html).toContain("Список покупок пока пуст");
     expect(html).toContain("Добавить позицию");
   });
 

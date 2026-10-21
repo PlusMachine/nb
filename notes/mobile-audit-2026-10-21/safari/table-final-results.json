@@ -1,0 +1,457 @@
+{
+  "config": {
+    "argv": [
+      "/usr/bin/node",
+      "/home/dopefish/projects/nb/node_modules/.bin/playwright",
+      "test",
+      "e2e/mobile-audit.spec.ts",
+      "--config=e2e/safari-audit.config.ts",
+      "--workers=1",
+      "--grep=M03",
+      "--output=../../notes/mobile-audit-2026-10-21/safari/table-final-playwright"
+    ],
+    "configFile": "/home/dopefish/projects/nb/apps/web/e2e/safari-audit.config.ts",
+    "rootDir": "/home/dopefish/projects/nb/apps/web/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/table-final-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "iphone-se",
+        "name": "iphone-se",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/table-final-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "iphone-13",
+        "name": "iphone-13",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/table-final-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "iphone-landscape",
+        "name": "iphone-landscape",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/table-final-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "ipad-mini",
+        "name": "ipad-mini",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/table-final-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "ipad-mini-landscape",
+        "name": "ipad-mini-landscape",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/table-final-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "ipad-pro",
+        "name": "ipad-pro",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/table-final-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "ipad-pro-landscape",
+        "name": "ipad-pro-landscape",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "../../../notes/mobile-audit-2026-10-21/safari/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.1",
+    "workers": 1,
+    "webServer": {
+      "command": "pnpm run dev",
+      "url": "http://127.0.0.1:3100",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "mobile-audit.spec.ts",
+      "file": "mobile-audit.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "M03/M06: admin navigation and table do not widen document",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-se",
+              "projectName": "iphone-se",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5100,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:28:37.032Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-caa798a1331781b6a45b",
+          "file": "mobile-audit.spec.ts",
+          "line": 72,
+          "column": 1
+        },
+        {
+          "title": "M03/M06: admin navigation and table do not widen document",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-13",
+              "projectName": "iphone-13",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5644,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:28:43.144Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-8090a6462f73aaa381d2",
+          "file": "mobile-audit.spec.ts",
+          "line": 72,
+          "column": 1
+        },
+        {
+          "title": "M03/M06: admin navigation and table do not widen document",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-landscape",
+              "projectName": "iphone-landscape",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3720,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:28:49.931Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-fbaf62c6d4d670d481da",
+          "file": "mobile-audit.spec.ts",
+          "line": 72,
+          "column": 1
+        },
+        {
+          "title": "M03/M06: admin navigation and table do not widen document",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini",
+              "projectName": "ipad-mini",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5771,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:28:54.773Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-7d0197354f230440841f",
+          "file": "mobile-audit.spec.ts",
+          "line": 72,
+          "column": 1
+        },
+        {
+          "title": "M03/M06: admin navigation and table do not widen document",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini-landscape",
+              "projectName": "ipad-mini-landscape",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3271,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:29:01.817Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-4d10642425cd2109aa44",
+          "file": "mobile-audit.spec.ts",
+          "line": 72,
+          "column": 1
+        },
+        {
+          "title": "M03/M06: admin navigation and table do not widen document",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro",
+              "projectName": "ipad-pro",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4817,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:29:06.261Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-c80a20b20052244cf4d3",
+          "file": "mobile-audit.spec.ts",
+          "line": 72,
+          "column": 1
+        },
+        {
+          "title": "M03/M06: admin navigation and table do not widen document",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro-landscape",
+              "projectName": "ipad-pro-landscape",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4040,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:29:12.807Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-041471ac2825c5b5ab7e",
+          "file": "mobile-audit.spec.ts",
+          "line": 72,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-21T21:28:33.966Z",
+    "duration": 43120.001,
+    "expected": 7,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

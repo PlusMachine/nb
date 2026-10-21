@@ -113,6 +113,8 @@ describe("admin ingredients page model", () => {
 
     expect(buildIngredientAliasesPreview([])).toBeNull();
     expect(buildIngredientAliasesPreview([alias("а"), alias("б")])).toBe("а, б");
+    expect(buildIngredientAliasesPreview([alias("а"), alias("а"), alias("б"), alias("б"), alias("в")], 2))
+      .toBe("а, б +1");
     expect(buildIngredientAliasesPreview([alias("а"), alias("б"), alias("в"), alias("г"), alias("д")]))
       .toBe("а, б, в, г +1");
   });

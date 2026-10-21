@@ -32,6 +32,30 @@ describe("ingredient ranking", () => {
     expect(scoreIngredientCandidate("пильзнер", candidate)).toBeGreaterThan(scoreIngredientCandidate("пильзнер", noiseCandidate));
   });
 
+  it("fuzzy принимает опечатку citta→citra, но не ложные друзья citra→extra", () => {
+    const citra = {
+      displayName: "Citra",
+      displayNameEn: "Citra",
+      nameEn: "Citra",
+      category: "hop" as const
+    };
+    const extra = {
+      displayName: "Extra",
+      displayNameEn: "Extra",
+      nameEn: "Extra",
+      nameRu: "Экстра",
+      displayNameRu: "Экстра",
+      category: "fermentable" as const
+    };
+
+    const typoRank = rankIngredientCandidate("citta", citra);
+    expect(typoRank?.tier).toBe(9);
+    expect(typoRank?.score ?? 0).toBeGreaterThan(0);
+
+    expect(rankIngredientCandidate("citra", extra)).toBeNull();
+    expect(scoreIngredientCandidate("citra", extra)).toBe(0);
+  });
+
   it("keeps direct family names and pure canonical family aliases in the same strong generic-family bucket", () => {
     const primaryName = rankIngredientCandidate("пилснер", {
       displayName: "Пилснер",

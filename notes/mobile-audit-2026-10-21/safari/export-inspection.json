@@ -1,0 +1,53 @@
+[
+  {
+    "file": "recipe-label-iPad-Mini-landscape.pdf",
+    "pages": 1,
+    "sizes": [
+      {
+        "width": 212.59842519685043,
+        "height": 340.15748031496065
+      }
+    ],
+    "bytes": 22532
+  },
+  {
+    "file": "recipe-label-iPad-Mini-landscape.png",
+    "width": 600,
+    "height": 960,
+    "bytes": 5931
+  },
+  {
+    "file": "recipe-label-iPad-Pro-11.pdf",
+    "pages": 1,
+    "sizes": [
+      {
+        "width": 212.59842519685043,
+        "height": 340.15748031496065
+      }
+    ],
+    "bytes": 22532
+  },
+  {
+    "file": "recipe-label-iPad-Pro-11.png",
+    "width": 600,
+    "height": 960,
+    "bytes": 5931
+  },
+  {
+    "file": "recipe-label-iPhone-13.pdf",
+    "pages": 1,
+    "sizes": [
+      {
+        "width": 212.59842519685043,
+        "height": 340.15748031496065
+      }
+    ],
+    "bytes": 22532
+  },
+  {
+    "file": "recipe-label-iPhone-13.png",
+    "width": 600,
+    "height": 960,
+    "bytes": 5931
+  }
+]

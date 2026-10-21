@@ -1,0 +1,6 @@
+[
+  {
+    "url": "http://127.0.0.1:3100/recipes/pilsner-urquell",
+    "message": "Switched to client rendering because the server rendering errored:\n\nCannot read properties of undefined (reading 'call')"
+  }
+]

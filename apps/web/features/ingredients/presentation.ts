@@ -55,7 +55,7 @@ type IngredientPresentationSource = {
 // Где показывается конкретный ингредиент, а не вся категория, лейбл берётся по
 // broad group — resolveConsumableInventoryBroadGroupLabel в consumables.ts.
 export const ingredientCategoryLabels: Record<IngredientCategory, string> = {
-  fermentable: "Ферментируемые",
+  fermentable: "Сбраживаемые",
   hop: "Хмель",
   yeast: "Дрожжи",
   consumable: "Расходники и добавки",
@@ -64,7 +64,7 @@ export const ingredientCategoryLabels: Record<IngredientCategory, string> = {
 
 const subtypeLabels: Record<string, string> = {
   malt: "солод",
-  fermentable: "другое ферментируемое",
+  fermentable: "другое сбраживаемое сырьё",
   hop: "хмель",
   yeast: "дрожжи",
   technical_additives: "техдобавка",
@@ -372,7 +372,7 @@ export const resolveFermentableTypeBadgeRu = (input: FermentableTypeBadgeInput):
   }
 
   if (subtypeKey === "body_builder") {
-    return "Добавка для тела";
+    return "Добавка для полноты вкуса";
   }
 
   if (subtypeKey === "malt_extract") {

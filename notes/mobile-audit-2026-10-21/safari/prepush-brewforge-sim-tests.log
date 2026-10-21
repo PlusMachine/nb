@@ -1,0 +1,12 @@
+
+ RUN  v4.0.18 /home/dopefish/projects/nb/packages/brewforge-sim
+
+ ✓ src/sim-device.mash.test.ts (2 tests) 64ms
+ ✓ src/sim-device.ferment.test.ts (7 tests) 23ms
+ ✓ src/sim-device.distill.test.ts (4 tests) 18ms
+
+ Test Files  3 passed (3)
+      Tests  13 passed (13)
+   Start at  00:36:53
+   Duration  1.01s (transform 197ms, setup 0ms, import 341ms, tests 104ms, environment 1ms)
+

@@ -42,13 +42,13 @@ export function MasterOnboarding() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-        <h1 className="text-xl font-semibold text-foreground">Станьте мастером</h1>
+      <header>
+        <h1 className="text-xl font-semibold text-foreground">Новая витрина</h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Бесплатная витрина ваших работ: страница с контактами, галереей и карточками изделий.
-          Покупатели из комьюнити находят вас напрямую — без комиссий и посредников.
+          Укажите контакты мастерской. После создания витрины можно добавить изделия и фотографии.
+          Перед публикацией витрина проходит модерацию.
         </p>
-      </section>
+      </header>
 
       <form onSubmit={handleSubmit} className="space-y-5 rounded-2xl border border-border bg-card p-5 shadow-sm">
         <MasterProfileFormFields values={values} onChange={setValues} disabled={busy} />

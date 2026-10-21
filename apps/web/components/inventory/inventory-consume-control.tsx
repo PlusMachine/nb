@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState, useTransition } from "react";
+import React, { useMemo, useRef, useState } from "react";
 
 import { Button, Dialog, DialogCloseButton } from "@nb/ui";
 import { updateInventoryInlineAction } from "@/app/(app)/app/ingredients/actions";
@@ -40,7 +40,8 @@ export function InventoryConsumeControl({ item, onAction, defaultMode = "consume
   const [amount, setAmount] = useState("");
   const [unit, setUnit] = useState<InventoryUnit>(context.defaultUnit);
   const [feedback, setFeedback] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
+  const inFlight = useRef(false);
 
   const remainingLabel = useMemo(
     () => formatInventoryQuantityForDisplay(buildInventoryDisplayInput(item)),
@@ -84,6 +85,7 @@ export function InventoryConsumeControl({ item, onAction, defaultMode = "consume
   };
 
   const closeSheet = () => {
+    if (inFlight.current) return;
     setOpen(false);
     setFeedback(null);
   };
@@ -108,12 +110,15 @@ export function InventoryConsumeControl({ item, onAction, defaultMode = "consume
     setAmount("1");
   };
 
-  const submit = () => {
-    if (!canSubmit) {
+  const submit = async () => {
+    if (!canSubmit || inFlight.current) {
       return;
     }
 
-    startTransition(async () => {
+    inFlight.current = true;
+    setIsPending(true);
+    setFeedback(null);
+    try {
       const result = await updateInventoryInlineAction({
         inventoryItemId: item.id,
         enteredQuantity: state.submitQuantity,
@@ -128,7 +133,12 @@ export function InventoryConsumeControl({ item, onAction, defaultMode = "consume
       }
 
       setFeedback(result.message);
-    });
+    } catch {
+      setFeedback("Не удалось сохранить количество. Проверьте соединение и повторите попытку.");
+    } finally {
+      inFlight.current = false;
+      setIsPending(false);
+    }
   };
 
   const previewValue = hasInput && !state.error
@@ -150,21 +160,23 @@ export function InventoryConsumeControl({ item, onAction, defaultMode = "consume
       title={`Изменить количество: ${primaryName}`}
       hideTitle
       size="md"
+      guard={{ isDirty: () => isPending, onGuardedClose: () => {} }}
     >
       <div className="flex items-center justify-between border-b border-border px-5 py-4">
         <h2 className="text-base font-semibold text-foreground">
           {isConsume ? "Сколько использовали?" : "Сколько докупили?"}
         </h2>
-        <DialogCloseButton />
+        <DialogCloseButton disabled={isPending} />
       </div>
 
       <form
         className="space-y-4 p-5"
         onSubmit={(event) => {
           event.preventDefault();
-          submit();
+          void submit();
         }}
       >
+        <fieldset disabled={isPending} className="min-w-0 space-y-4">
         <div className="flex gap-1 rounded-xl bg-muted p-1">
           <button type="button" onClick={() => switchDirection("consume")} className={segmentClassName(isConsume)}>
             − Списал
@@ -262,6 +274,7 @@ export function InventoryConsumeControl({ item, onAction, defaultMode = "consume
             Отмена
           </Button>
         </div>
+        </fieldset>
       </form>
     </Dialog>
   );

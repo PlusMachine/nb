@@ -34,7 +34,7 @@ const fullSlots: LabelSlots = {
   description: null,
   showLogo: true,
   showIbuScale: true,
-  brandText: "BREWED WITH NB"
+  brandText: "BEWED WITH NB"
 };
 
 const emptySlots: LabelSlots = {
@@ -57,7 +57,7 @@ const emptySlots: LabelSlots = {
   description: null,
   showLogo: true,
   showIbuScale: true,
-  brandText: "BREWED WITH NB"
+  brandText: "BEWED WITH NB"
 };
 
 describe("раскладка A4", () => {
@@ -187,7 +187,7 @@ describe("tier-логика и переполнение текста", () => {
   it("полные данные рендерят все блоки на L", () => {
     for (const template of ["typographic", "craft"] as const) {
       const { svg } = renderLabelSvg({ template, preset: "L", dpi: 203, slots: fullSlots });
-      for (const marker of ["ABV", "IBU", "ЦВЕТ", "СОЛОД", "ХМЕЛЬ", "ДРОЖЖИ", "РОЗЛИВ", "BREWED WITH NB"]) {
+      for (const marker of ["ABV", "IBU", "ЦВЕТ", "СОЛОД", "ХМЕЛЬ", "ДРОЖЖИ", "РОЗЛИВ", "BEWED WITH NB"]) {
         expect(svg, `${template}: ${marker}`).toContain(marker);
       }
     }
@@ -460,7 +460,7 @@ describe("горизонтальная большая наклейка (120×75 
   it("несёт тот же набор блоков, что и вертикальная", () => {
     for (const template of ["typographic", "craft"] as const) {
       const { svg } = renderLabelSvg({ template, preset: "LW", dpi: 203, slots: withDescription });
-      for (const marker of ["ABV", "IBU", "ЦВЕТ", "СОЛОД", "ХМЕЛЬ", "ДРОЖЖИ", "РОЗЛИВ", "BREWED WITH NB", "рецепт"]) {
+      for (const marker of ["ABV", "IBU", "ЦВЕТ", "СОЛОД", "ХМЕЛЬ", "ДРОЖЖИ", "РОЗЛИВ", "BEWED WITH NB", "рецепт"]) {
         expect(svg, `${template}: ${marker}`).toContain(marker);
       }
     }

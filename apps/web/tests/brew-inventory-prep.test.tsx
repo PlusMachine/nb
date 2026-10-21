@@ -18,6 +18,7 @@ import type { BrewBatchInventoryView } from "../features/brew-batches/contracts"
 const emptyView: BrewBatchInventoryView = {
   brewBatchId: "bb-1",
   recipeId: "r-1",
+  hasInventorySnapshot: true,
   hasConsumed: false,
   canRestore: false,
   batchAlreadyConsumed: false,
@@ -130,6 +131,7 @@ describe("BrewInventory — Ф5: коверидж склада у кнопки �
     const consumedView: BrewBatchInventoryView = {
       brewBatchId: "bb-1",
       recipeId: "r-1",
+  hasInventorySnapshot: true,
       hasConsumed: true,
       canRestore: true,
       batchAlreadyConsumed: true,
@@ -167,6 +169,7 @@ describe("BrewInventory — завершённая партия (акт «Ито
   const consumedView: BrewBatchInventoryView = {
     brewBatchId: "bb-1",
     recipeId: "r-1",
+  hasInventorySnapshot: true,
     hasConsumed: true,
     canRestore: true,
     batchAlreadyConsumed: true,
@@ -200,7 +203,7 @@ describe("BrewInventory — завершённая партия (акт «Ито
     expect(html).toContain("Склад");
     expect(html).toContain("Списано");
     expect(html).toContain("Пильзнер");
-    expect(html).toContain("История движений");
+    expect(html).toContain("История запасов");
     expect(html).not.toContain("Списать со склада");
   });
 
@@ -220,6 +223,7 @@ describe("BrewInventory — правда про списание этой пар
   const freshBatchView: BrewBatchInventoryView = {
     brewBatchId: "bb-2",
     recipeId: "r-1",
+  hasInventorySnapshot: true,
     hasConsumed: false,
     canRestore: false,
     // По ЭТОЙ партии не списывалось — хотя по рецепту (другой партией) списание было.
@@ -268,13 +272,13 @@ describe("BrewInventory — правда про списание этой пар
     expect(html).toContain("Cascade");
   });
 
-  it("рецепт-источник удалён: списывать нечем — кнопки нет, текст честный", () => {
+  it("состав партии сохранён: удаление рецепта не блокирует списание", () => {
     const html = renderToStaticMarkup(
       <BrewInventory brewBatchId="bb-2" view={{ ...freshBatchView, recipeId: null }} status="planned" />
     );
 
-    expect(html).not.toContain("Списать со склада");
-    expect(html).toContain("Рецепт этой варки удалён");
+    expect(html).toContain("Списать со склада");
+    expect(html).toContain("ингредиенты рецепта");
   });
 });
 
@@ -285,6 +289,7 @@ describe("BrewInventory — списали меньше, чем нужно (кл
   const clampedView: BrewBatchInventoryView = {
     brewBatchId: "bb-3",
     recipeId: "r-1",
+  hasInventorySnapshot: true,
     hasConsumed: true,
     canRestore: true,
     batchAlreadyConsumed: true,
@@ -334,6 +339,7 @@ describe("BrewInventory — Ф2: кнопка открывает предпро�
   const freshView: BrewBatchInventoryView = {
     brewBatchId: "bb-4",
     recipeId: "r-1",
+  hasInventorySnapshot: true,
     hasConsumed: false,
     canRestore: false,
     batchAlreadyConsumed: false,
@@ -356,6 +362,7 @@ describe("BrewInventory — Ф2: пометка «вместо ...» у спис
   const substitutedView: BrewBatchInventoryView = {
     brewBatchId: "bb-5",
     recipeId: "r-1",
+  hasInventorySnapshot: true,
     hasConsumed: true,
     canRestore: true,
     batchAlreadyConsumed: true,
@@ -393,4 +400,13 @@ describe("BrewInventory — Ф2: пометка «вместо ...» у спис
 
     expect(html).not.toContain("вместо «");
   });
+});
+
+
+it("legacy batch without a full snapshot explains manual stock accounting", () => {
+  const html = renderToStaticMarkup(
+    <BrewInventory brewBatchId="bb-legacy" view={{ ...emptyView, hasInventorySnapshot: false }} status="planned" />
+  );
+  expect(html).not.toContain("Списать со склада");
+  expect(html).toContain("не сохранён полный состав");
 });

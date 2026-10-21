@@ -1,0 +1,106 @@
+[
+  {
+    "package": "@nb/auth",
+    "directory": "packages/auth",
+    "command": "tsc -p tsconfig.json --noEmit",
+    "exitCode": 0,
+    "seconds": 3.37,
+    "log": "prepush-auth-types.log"
+  },
+  {
+    "package": "@nb/brewforge-protocol",
+    "directory": "packages/brewforge-protocol",
+    "command": "tsc -p tsconfig.json --noEmit",
+    "exitCode": 0,
+    "seconds": 1.88,
+    "log": "prepush-brewforge-protocol-types.log"
+  },
+  {
+    "package": "@nb/brewforge-sim",
+    "directory": "packages/brewforge-sim",
+    "command": "tsc -p tsconfig.json --noEmit",
+    "exitCode": 0,
+    "seconds": 2.04,
+    "log": "prepush-brewforge-sim-types.log"
+  },
+  {
+    "package": "@nb/brewing-core",
+    "directory": "packages/brewing-core",
+    "command": "tsc -p tsconfig.json --noEmit",
+    "exitCode": 0,
+    "seconds": 2.31,
+    "log": "prepush-brewing-core-types.log"
+  },
+  {
+    "package": "@nb/content",
+    "directory": "packages/content",
+    "command": "tsc -p tsconfig.json --noEmit",
+    "exitCode": 0,
+    "seconds": 1.38,
+    "log": "prepush-content-types.log"
+  },
+  {
+    "package": "@nb/db",
+    "directory": "packages/db",
+    "command": "tsc -p tsconfig.json --noEmit",
+    "exitCode": 0,
+    "seconds": 3.84,
+    "log": "prepush-db-types.log"
+  },
+  {
+    "package": "@nb/push",
+    "directory": "packages/push",
+    "command": "tsc -p tsconfig.json --noEmit",
+    "exitCode": 0,
+    "seconds": 3.17,
+    "log": "prepush-push-types.log"
+  },
+  {
+    "package": "@nb/search",
+    "directory": "packages/search",
+    "command": "tsc -p tsconfig.json --noEmit",
+    "exitCode": 0,
+    "seconds": 1.17,
+    "log": "prepush-search-types.log"
+  },
+  {
+    "package": "@nb/shared",
+    "directory": "packages/shared",
+    "command": "tsc -p tsconfig.json --noEmit",
+    "exitCode": 0,
+    "seconds": 1.35,
+    "log": "prepush-shared-types.log"
+  },
+  {
+    "package": "@nb/ui",
+    "directory": "packages/ui",
+    "command": "tsc -p tsconfig.json --noEmit",
+    "exitCode": 0,
+    "seconds": 1.84,
+    "log": "prepush-ui-types.log"
+  },
+  {
+    "package": "@nb/bridge",
+    "directory": "apps/bridge",
+    "command": "tsc -p tsconfig.json --noEmit",
+    "exitCode": 0,
+    "seconds": 3.49,
+    "log": "prepush-bridge-types.log"
+  },
+  {
+    "package": "@nb/device-sim",
+    "directory": "apps/device-sim",
+    "command": "tsc -p tsconfig.json --noEmit",
+    "exitCode": 0,
+    "seconds": 1.83,
+    "log": "prepush-device-sim-types.log"
+  },
+  {
+    "package": "@nb/web",
+    "directory": "apps/web",
+    "command": "tsc -p tsconfig.json --noEmit",
+    "exitCode": 0,
+    "seconds": 4.93,
+    "log": "prepush-web-types.log"
+  }
+]

@@ -16,6 +16,8 @@
 // =============================================================================
 import type { DeviceStatus } from "./contracts";
 
+export const DEVICE_ONLINE_WITHIN_MS = 5 * 60_000;
+
 export type DeviceConnectionTone = "online" | "offline" | "unknown";
 
 export type DeviceConnectionSummary = {
@@ -70,6 +72,10 @@ export function summarizeDeviceConnection(
   // не выдаём его за «В сети».
   if (input.status === "online" && lastContactMs == null) {
     return { tone: "unknown", label: "Ожидает подключения", lastContactLabel: null };
+  }
+
+  if (input.status === "online" && lastContactMs != null && nowMs - lastContactMs > DEVICE_ONLINE_WITHIN_MS) {
+    return { tone: "offline", label: STATUS_LABEL.offline, lastContactLabel };
   }
 
   return { tone: STATUS_TONE[input.status], label: STATUS_LABEL[input.status], lastContactLabel };

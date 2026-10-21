@@ -519,6 +519,8 @@ export type IngredientSuggestionItem = {
   score?: number;
   derivedFromIngredientId?: string | null;
   derivedFromDisplayName?: string | null;
+  derivedFromHopAlphaAcidPct?: number | null;
+  hopAlphaAcidPct?: number | null;
   isFavorite?: boolean;
   source: "catalog" | "custom";
 };
@@ -653,6 +655,7 @@ export type UserCatalogIngredientDto = IngredientTechnicalFields & {
   unitPreferred: string | null;
   derivedFromIngredientId: string | null;
   derivedFromDisplayName: string | null;
+  derivedFromHopAlphaAcidPct?: number | null;
   isFavorite?: boolean;
   purchaseLinks?: IngredientPurchaseLinkDto[];
   inventoryUsageCount: number;

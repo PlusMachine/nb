@@ -1,0 +1,287 @@
+
+Running 14 tests using 1 worker
+
+  ✘   1 [iphone-se] › e2e/safari-interactions.spec.ts:11:1 › QR description remains readable and collapses back to the short viewport (1.0m)
+  ✓   2 [iphone-se] › e2e/safari-interactions.spec.ts:33:1 › QR feedback leaves recipe actions uncovered and can be opened twice (5.3s)
+  ✘   3 [iphone-13] › e2e/safari-interactions.spec.ts:11:1 › QR description remains readable and collapses back to the short viewport (1.0m)
+  ✓   4 [iphone-13] › e2e/safari-interactions.spec.ts:33:1 › QR feedback leaves recipe actions uncovered and can be opened twice (5.9s)
+  ✘   5 [iphone-landscape] › e2e/safari-interactions.spec.ts:11:1 › QR description remains readable and collapses back to the short viewport (28.3s)
+
+
+  1) [iphone-se] › e2e/safari-interactions.spec.ts:11:1 › QR description remains readable and collapses back to the short viewport 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: locator.tap: Test timeout of 60000ms exceeded.
+    Call log:
+      - waiting for getByRole('link', { name: 'Рецепт этого пива', exact: true })
+        - locator resolved to <a href="/recipes/pilsner-urquell" class="rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur transition-colors hover:bg-white/20">Рецепт этого пива</a>
+      - attempting tap action
+        - waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - <button type="button" class="rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800">qa.mobile.20261021</button> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+      - retrying tap action
+        - waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - <button type="button" class="rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 border border-amber-900/40 bg-amber-900/10 text-amber-900 hover:bg-amber-900/20 dark:text-amber-100">qa.deep.main.20261020</button> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+      - retrying tap action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <button type="button" class="rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800">qa.mobile.20261021</button> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+        - retrying tap action
+          - waiting 100ms
+        24 × waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <button type="button" class="rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800">qa.mobile.20261021</button> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+         - retrying tap action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <button type="button" class="rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 border border-amber-900/40 bg-amber-900/10 text-amber-900 hover:bg-amber-900/20 dark:text-amber-100">qa.deep.main.20261020</button> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+         - retrying tap action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <button type="button" class="rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800">qa.mobile.20261021</button> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+         - retrying tap action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <button type="button" class="rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800">qa.mobile.20261021</button> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+         - retrying tap action
+           - waiting 500ms
+        - waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - <button type="button" class="rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800">qa.mobile.20261021</button> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+      - retrying tap action
+        - waiting 500ms
+        - waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - <button type="button" class="rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 border border-amber-900/40 bg-amber-900/10 text-amber-900 hover:bg-amber-900/20 dark:text-amber-100">qa.deep.main.20261020</button> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+      - retrying tap action
+        - waiting 500ms
+        - waiting for element to be visible, enabled and stable
+
+
+      27 |     await expect(description).toBeVisible();
+      28 |   }
+    > 29 |   await page.getByRole("link", { name: "Рецепт этого пива", exact: true }).tap();
+         |                                                                            ^
+      30 |   await expect(page).toHaveURL(/\/recipes\/pilsner-urquell$/);
+      31 | });
+      32 |
+        at /home/dopefish/projects/nb/apps/web/e2e/safari-interactions.spec.ts:29:76
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-se/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-se/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [iphone-13] › e2e/safari-interactions.spec.ts:11:1 › QR description remains readable and collapses back to the short viewport 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: locator.tap: Test timeout of 60000ms exceeded.
+    Call log:
+      - waiting for getByRole('link', { name: 'Рецепт этого пива', exact: true })
+        - locator resolved to <a href="/recipes/pilsner-urquell" class="rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur transition-colors hover:bg-white/20">Рецепт этого пива</a>
+      - attempting tap action
+        - waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - <button type="button" class="rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800">qa.mobile.20261021</button> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+      - retrying tap action
+        - waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - <button type="button" class="rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 border border-amber-900/40 bg-amber-900/10 text-amber-900 hover:bg-amber-900/20 dark:text-amber-100">qa.deep.main.20261020</button> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+      - retrying tap action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <button type="button" class="rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800">qa.mobile.20261021</button> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+        - retrying tap action
+          - waiting 100ms
+        23 × waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <button type="button" class="rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800">qa.mobile.20261021</button> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+         - retrying tap action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <button type="button" class="rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 border border-amber-900/40 bg-amber-900/10 text-amber-900 hover:bg-amber-900/20 dark:text-amber-100">qa.deep.main.20261020</button> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+         - retrying tap action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <button type="button" class="rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800">qa.mobile.20261021</button> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+         - retrying tap action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <button type="button" class="rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800">qa.mobile.20261021</button> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+         - retrying tap action
+           - waiting 500ms
+        - waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - <button type="button" class="rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 bg-amber-900 text-amber-50 hover:bg-amber-800">qa.mobile.20261021</button> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+      - retrying tap action
+        - waiting 500ms
+        - waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - <button type="button" class="rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-60 border border-amber-900/40 bg-amber-900/10 text-amber-900 hover:bg-amber-900/20 dark:text-amber-100">qa.deep.main.20261020</button> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+      - retrying tap action
+        - waiting 500ms
+        - waiting for element to be visible, enabled and stable
+
+
+      27 |     await expect(description).toBeVisible();
+      28 |   }
+    > 29 |   await page.getByRole("link", { name: "Рецепт этого пива", exact: true }).tap();
+         |                                                                            ^
+      30 |   await expect(page).toHaveURL(/\/recipes\/pilsner-urquell$/);
+      31 | });
+      32 |
+        at /home/dopefish/projects/nb/apps/web/e2e/safari-interactions.spec.ts:29:76
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-13/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-13/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-13/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-13/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [iphone-landscape] › e2e/safari-interactions.spec.ts:11:1 › QR description remains readable and collapses back to the short viewport 
+
+    Test was interrupted.
+
+    Error: locator.tap: Test ended.
+    Call log:
+      - waiting for getByRole('link', { name: 'Рецепт этого пива', exact: true })
+        - locator resolved to <a href="/recipes/pilsner-urquell" class="rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur transition-colors hover:bg-white/20">Рецепт этого пива</a>
+      - attempting tap action
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-2xl border border-warning/30 bg-warning-subtle px-4 py-2 text-sm text-warning-subtle-foreground shadow-lg">…</div> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+        - retrying tap action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <span class="inline-flex flex-wrap items-center gap-1.5">…</span> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+        - retrying tap action
+          - waiting 100ms
+        11 × waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <span class="inline-flex flex-wrap items-center gap-1.5">…</span> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+         - retrying tap action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-2xl border border-warning/30 bg-warning-subtle px-4 py-2 text-sm text-warning-subtle-foreground shadow-lg">…</div> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+         - retrying tap action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <span class="inline-flex flex-wrap items-center gap-1.5">…</span> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+         - retrying tap action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <span class="inline-flex flex-wrap items-center gap-1.5">…</span> from <div class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px))] left-1/2 z-[100] -translate-x-1/2">…</div> subtree intercepts pointer events
+         - retrying tap action
+           - waiting 500ms
+
+
+      27 |     await expect(description).toBeVisible();
+      28 |   }
+    > 29 |   await page.getByRole("link", { name: "Рецепт этого пива", exact: true }).tap();
+         |                                                                            ^
+      30 |   await expect(page).toHaveURL(/\/recipes\/pilsner-urquell$/);
+      31 | });
+      32 |
+        at /home/dopefish/projects/nb/apps/web/e2e/safari-interactions.spec.ts:29:76
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-iphone-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [iphone-se] › e2e/safari-interactions.spec.ts:11:1 › QR description remains readable and collapses back to the short viewport 
+    [iphone-13] › e2e/safari-interactions.spec.ts:11:1 › QR description remains readable and collapses back to the short viewport 
+  1 interrupted
+    [iphone-landscape] › e2e/safari-interactions.spec.ts:11:1 › QR description remains readable and collapses back to the short viewport 
+  9 did not run
+  2 passed (3.0m)

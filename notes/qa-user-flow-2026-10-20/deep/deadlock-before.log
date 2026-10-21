@@ -1,0 +1,61 @@
+
+ RUN  v4.0.18 /home/dopefish/projects/nb/apps/web
+
+ ❯ integration/user-flow.integration.test.ts (13 tests | 1 failed | 12 skipped) 2348ms
+     ↓ serializes two consumes for the same batch
+     ↓ two batches cannot consume more than the shared lot
+     × does not deadlock when both allocations hold the foreign key's KEY SHARE lock 1288ms
+     ↓ serializes two returns without doubling stock
+     ↓ consuming and returning concurrently conserves stock
+     ↓ clamps against changed stock after preview, then returns only the actual amount
+     ↓ without partial opt-in a shortage rolls back every write
+     ↓ uses recipe addition order for shared short stock
+     ↓ a changed or deleted source cannot change planned consumption and targets
+     ↓ archiving stock after preview prevents accidental consumption
+     ↓ concurrent creation with one idempotency key creates one batch
+     ↓ deleting equipment preserves the batch's selected snapshot
+     ↓ other users cannot inspect or mutate private recipe, profile, stock or batch
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  integration/user-flow.integration.test.ts [ integration/user-flow.integration.test.ts ]
+error: deadlock detected
+ ❯ ../../node_modules/pg-pool/index.js:45:11
+ ❯ integration/user-flow.integration.test.ts:40:26
+     38| });
+     39| afterAll(async () => {
+     40|   if (ownedUsers.length) await db.delete(users).where(inArray(users.id…
+       |                          ^
+     41|   await pool.end();
+     42| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  integration/user-flow.integration.test.ts > real PostgreSQL: warehouse and batch invariants > does not deadlock when both allocations hold the foreign key's KEY SHARE lock
+error: deadlock detected
+ ❯ ../../node_modules/pg/lib/client.js:631:17
+ ❯ ../../node_modules/drizzle-orm/node-postgres/session.js:83:22
+ ❯ features/recipes/inventory-service.ts:1073:24
+    1071|       // Остаток — ПОД блокировкой строки: до коммита конкурента мы сю…
+    1072|       // а пройдя — прочитаем уже его результат (как в features/invent…
+    1073|       const [locked] = await tx
+       |                        ^
+    1074|         .select({
+    1075|           id: userIngredients.id,
+ ❯ NodePgTransaction.transaction ../../node_modules/drizzle-orm/node-postgres/session.js:173:22
+ ❯ consumeRecipeInventoryAllocations features/recipes/inventory-service.ts:1021:3
+ ❯ integration/user-flow.integration.test.ts:78:7
+ ❯ NodePgSession.transaction ../../node_modules/drizzle-orm/node-postgres/session.js:142:22
+ ❯ integration/user-flow.integration.test.ts:73:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 12 skipped (13)
+   Start at  22:39:14
+   Duration  4.76s (transform 1.41s, setup 86ms, import 1.94s, tests 2.35s, environment 0ms)
+

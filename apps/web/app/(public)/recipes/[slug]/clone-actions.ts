@@ -10,9 +10,12 @@ import { assertRateLimit } from "@nb/auth";
 
 const cloneInputSchema = z.object({
   recipeId: z.string().uuid(),
-  // Опционально: целевой объём партии (л) из предпросмотра «Пересчитать под объём»
-  // (RecipeScalePanel) — клон сразу заводится в этом объёме, без ручной правки после.
-  targetBatchVolumeLitres: z.coerce.number().positive().max(1000).optional().nullable()
+  equipmentProfileId: z.string().uuid().optional().nullable(),
+  // Опционально: целевой объём (л) и/или efficiency (%) из предпросмотра
+  // «Пересчитать под свои параметры» (RecipeScalePanel) — клон сразу в этих
+  // цифрах, без ручной правки после.
+  targetBatchVolumeLitres: z.coerce.number().positive().max(1000).optional().nullable(),
+  targetEfficiencyPct: z.coerce.number().positive().max(100).optional().nullable()
 });
 
 const mapCloneError = (error: unknown): RecipeCloneActionResult => {
@@ -36,7 +39,9 @@ const mapCloneError = (error: unknown): RecipeCloneActionResult => {
  */
 export const cloneRecipeFromPublicAction = async (input: {
   recipeId: string;
+  equipmentProfileId?: string | null;
   targetBatchVolumeLitres?: number | null;
+  targetEfficiencyPct?: number | null;
 }): Promise<RecipeCloneActionResult> => {
   const user = await getSessionUser();
   if (!user) {
@@ -52,7 +57,9 @@ export const cloneRecipeFromPublicAction = async (input: {
     // Антиспам: копирование создаёт записи во владении юзера, ограничиваем частоту.
     await assertRateLimit(user.id, "recipe_clone", 10, 60 * 60);
     const recipe = await cloneRecipeFromPublic(user.id, parsed.data.recipeId, {
-      targetBatchVolumeLitres: parsed.data.targetBatchVolumeLitres ?? null
+      targetBatchVolumeLitres: parsed.data.targetBatchVolumeLitres ?? null,
+      targetEfficiencyPct: parsed.data.targetEfficiencyPct ?? null,
+      ...(parsed.data.equipmentProfileId ? { equipmentProfileId: parsed.data.equipmentProfileId } : {})
     });
     revalidatePath("/app/recipes");
     return { ok: true, recipeId: recipe.id };

@@ -40,7 +40,7 @@ const slots = (overrides: Partial<LabelSlots> = {}): LabelSlots => ({
   description: null,
   showLogo: true,
   showIbuScale: true,
-  brandText: "BREWED WITH NB",
+  brandText: "BEWED WITH NB",
   ...overrides
 });
 
@@ -133,7 +133,7 @@ describe("приоритет вёрстки: заголовок ужимаетс
       expect(svg).toContain("crispEdges"); // QR отрисован
       expect(svg).toContain("рецепт");
       expect(svg).toContain("РОЗЛИВ");
-      expect(svg).toContain("BREWED WITH NB");
+      expect(svg).toContain("BEWED WITH NB");
     });
   }
 });

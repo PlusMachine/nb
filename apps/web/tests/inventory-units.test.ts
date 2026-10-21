@@ -183,7 +183,7 @@ describe("inventory unit normalization", () => {
   it("formats inventory quantities with unit-specific precision", () => {
     expect(formatInventoryQuantityInputValue(0.925, "kg")).toBe("0.93");
     expect(formatInventoryQuantityInputValue(120.24, "g")).toBe("120.2");
-    expect(formatInventoryQuantityInputValue(2.4, "pack")).toBe("2");
+    expect(formatInventoryQuantityInputValue(2.4, "pack")).toBe("2.4");
   });
 
   it("forces human-facing fermentable defaults to kilograms even when source default is grams", () => {

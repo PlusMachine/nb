@@ -1,0 +1,12 @@
+
+ RUN  v4.0.18 /home/dopefish/projects/nb/apps/web
+
+ ✓ tests/gravity-units.test.ts (13 tests) 8ms
+ ✓ tests/brew-completion.test.ts (14 tests) 17ms
+ ✓ tests/brew-measurements.test.ts (15 tests) 26ms
+
+ Test Files  3 passed (3)
+      Tests  42 passed (42)
+   Start at  23:15:05
+   Duration  1.22s (transform 1.20s, setup 179ms, import 1.87s, tests 51ms, environment 1ms)
+

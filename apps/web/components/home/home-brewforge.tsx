@@ -8,8 +8,7 @@ import { Cpu, ListChecks } from "lucide-react";
  * работает уже сейчас) или отдать контроллеру (Автомат — в разработке, «скоро»).
  * CTA ведёт на промо-страницу /brewforge, а не в онбординг устройств: контроллер
  * пока не продаётся. Статичная серверная секция; телеметрия и график — иллюстрация
- * формата данных, а не живые показания (никаких запросов к устройствам). Пульс
- * «связи» — CSS под prefers-reduced-motion.
+ * формата данных, а не живые показания (никаких запросов к устройствам).
  */
 
 // Профиль затирания для иллюстративного графика: подъёмы и полки-паузы, выход к
@@ -59,7 +58,7 @@ function MashChart() {
         <text key={t} x={xAt(t)} y={CHART.h - 6} textAnchor="middle" fontSize={10} fill="#8b8b94">{t}</text>
       ))}
       <line x1={CHART.padL} y1={yAt(TARGET_C)} x2={CHART.w - CHART.padR} y2={yAt(TARGET_C)} stroke="#71717a" strokeWidth={1.5} strokeDasharray="5 5" />
-      <text x={CHART.w - CHART.padR} y={yAt(TARGET_C) - 6} textAnchor="end" fontSize={10.5} fill="#a1a1aa">цель 67.0</text>
+      <text x={CHART.w - CHART.padR} y={yAt(TARGET_C) - 6} textAnchor="end" fontSize={10.5} fill="#a1a1aa">цель 67,0</text>
       <polyline points={linePoints} fill="none" stroke="#fbbf24" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
       <circle cx={xAt(last[0])} cy={yAt(last[1])} r={4} fill="#fbbf24" stroke="#1d1d22" strokeWidth={2} />
     </svg>
@@ -85,9 +84,8 @@ export function HomeBrewforge() {
   return (
     <section className="nb-grain relative grid items-center gap-8 rounded-[2rem] bg-[#141417] p-6 text-zinc-100 sm:p-9 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12 skin-hop:bg-[#0e1713]">
       <div className="relative z-10">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">BrewForge</p>
-        <h2 className="mt-3 text-balance text-2xl font-semibold leading-tight sm:text-3xl" style={{ fontFamily: "var(--font-display)" }}>
-          Наш проект автоматики варки
+        <h2 className="text-balance text-2xl font-semibold leading-tight sm:text-3xl" style={{ fontFamily: "var(--font-display)" }}>
+          BrewForge — автоматика варки
         </h2>
         <div className="mt-6 flex flex-col gap-3">
           {modes.map((mode) => {
@@ -102,7 +100,7 @@ export function HomeBrewforge() {
                     {mode.title}
                     {mode.soon ? (
                       <span className="rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-amber-300">
-                        скоро
+                        в разработке
                       </span>
                     ) : null}
                   </div>
@@ -123,14 +121,11 @@ export function HomeBrewforge() {
       <div className="relative z-10 rounded-[1.25rem] border border-white/10 bg-[#1d1d22] p-5 skin-hop:bg-[#16221c]">
         <div className="flex items-center justify-between gap-3">
           <span className="text-xs font-semibold uppercase tracking-[0.06em] text-zinc-400">Затирание · пауза 2 из 3</span>
-          <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-400">
-            <span className="home-live-dot h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden />
-            связь
-          </span>
+          <span className="text-xs text-zinc-400">Пример</span>
         </div>
         <div className="mt-4 flex flex-wrap items-baseline gap-3">
-          <span className="text-[44px] font-extrabold leading-none tabular-nums" style={{ fontFamily: "var(--font-display)" }}>66.8 °C</span>
-          <span className="text-sm tabular-nums text-zinc-400">цель 67.0 °C · осталось 18 мин</span>
+          <span className="text-[44px] font-extrabold leading-none tabular-nums" style={{ fontFamily: "var(--font-display)" }}>66,8 °C</span>
+          <span className="text-sm tabular-nums text-zinc-400">цель 67,0 °C · осталось 18 мин</span>
         </div>
         <p className="mt-2 text-sm text-zinc-400">
           Дальше: <span className="font-semibold text-zinc-100">осахаривание 72 °C</span> → кипячение <span className="tabular-nums">60 мин</span>

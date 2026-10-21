@@ -1,0 +1,1711 @@
+{
+  "config": {
+    "argv": [
+      "/usr/bin/node",
+      "/home/dopefish/projects/nb/node_modules/.bin/playwright",
+      "test",
+      "--config=e2e/safari-audit.config.ts",
+      "--workers=1",
+      "--grep=M03|M04|M05|запятая|пустой ввод|QR description",
+      "--output=../../notes/mobile-audit-2026-10-21/safari/verification-final-playwright"
+    ],
+    "configFile": "/home/dopefish/projects/nb/apps/web/e2e/safari-audit.config.ts",
+    "rootDir": "/home/dopefish/projects/nb/apps/web/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/verification-final-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "iphone-se",
+        "name": "iphone-se",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/verification-final-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "iphone-13",
+        "name": "iphone-13",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/verification-final-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "iphone-landscape",
+        "name": "iphone-landscape",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/verification-final-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "ipad-mini",
+        "name": "ipad-mini",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/verification-final-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "ipad-mini-landscape",
+        "name": "ipad-mini-landscape",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/verification-final-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "ipad-pro",
+        "name": "ipad-pro",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/verification-final-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "ipad-pro-landscape",
+        "name": "ipad-pro-landscape",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "../../../notes/mobile-audit-2026-10-21/safari/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.1",
+    "workers": 1,
+    "webServer": {
+      "command": "pnpm run dev",
+      "url": "http://127.0.0.1:3100",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "calculators-unit-converter.spec.ts",
+      "file": "calculators-unit-converter.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Конвертер единиц пивовара",
+          "file": "calculators-unit-converter.spec.ts",
+          "line": 7,
+          "column": 6,
+          "specs": [
+            {
+              "title": "запятая — валидный десятичный разделитель",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iphone-se",
+                  "projectName": "iphone-se",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2665,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-21T21:23:59.727Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4759f0ecf04d8cd263b0-36a920c01e00c5a2087c",
+              "file": "calculators-unit-converter.spec.ts",
+              "line": 90,
+              "column": 3
+            },
+            {
+              "title": "пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iphone-se",
+                  "projectName": "iphone-se",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2438,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-21T21:24:02.524Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4759f0ecf04d8cd263b0-830438d090af2a382e0f",
+              "file": "calculators-unit-converter.spec.ts",
+              "line": 102,
+              "column": 3
+            },
+            {
+              "title": "запятая — валидный десятичный разделитель",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iphone-13",
+                  "projectName": "iphone-13",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4168,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-21T21:24:33.676Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4759f0ecf04d8cd263b0-f9fb15d76a576c9dc352",
+              "file": "calculators-unit-converter.spec.ts",
+              "line": 90,
+              "column": 3
+            },
+            {
+              "title": "пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iphone-13",
+                  "projectName": "iphone-13",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3259,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-21T21:24:37.948Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4759f0ecf04d8cd263b0-458560ad0cae6f288b74",
+              "file": "calculators-unit-converter.spec.ts",
+              "line": 102,
+              "column": 3
+            },
+            {
+              "title": "запятая — валидный десятичный разделитель",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iphone-landscape",
+                  "projectName": "iphone-landscape",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4103,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-21T21:25:08.857Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4759f0ecf04d8cd263b0-4ac851ef92341b870870",
+              "file": "calculators-unit-converter.spec.ts",
+              "line": 90,
+              "column": 3
+            },
+            {
+              "title": "пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iphone-landscape",
+                  "projectName": "iphone-landscape",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2412,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-21T21:25:13.067Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4759f0ecf04d8cd263b0-fc1619e2407fff49ff33",
+              "file": "calculators-unit-converter.spec.ts",
+              "line": 102,
+              "column": 3
+            },
+            {
+              "title": "запятая — валидный десятичный разделитель",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "ipad-mini",
+                  "projectName": "ipad-mini",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3282,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-21T21:25:53.183Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4759f0ecf04d8cd263b0-c09dbf7c963107967df0",
+              "file": "calculators-unit-converter.spec.ts",
+              "line": 90,
+              "column": 3
+            },
+            {
+              "title": "пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "ipad-mini",
+                  "projectName": "ipad-mini",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3126,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-21T21:25:56.571Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4759f0ecf04d8cd263b0-88636970a970970a53c0",
+              "file": "calculators-unit-converter.spec.ts",
+              "line": 102,
+              "column": 3
+            },
+            {
+              "title": "запятая — валидный десятичный разделитель",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "ipad-mini-landscape",
+                  "projectName": "ipad-mini-landscape",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3269,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-21T21:26:24.264Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4759f0ecf04d8cd263b0-6b35d3c5b504c044bc46",
+              "file": "calculators-unit-converter.spec.ts",
+              "line": 90,
+              "column": 3
+            },
+            {
+              "title": "пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "ipad-mini-landscape",
+                  "projectName": "ipad-mini-landscape",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3816,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-21T21:26:27.646Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4759f0ecf04d8cd263b0-06e8dbed32ca11291363",
+              "file": "calculators-unit-converter.spec.ts",
+              "line": 102,
+              "column": 3
+            },
+            {
+              "title": "запятая — валидный десятичный разделитель",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "ipad-pro",
+                  "projectName": "ipad-pro",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2480,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-21T21:26:56.741Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4759f0ecf04d8cd263b0-480b6964db74474090b1",
+              "file": "calculators-unit-converter.spec.ts",
+              "line": 90,
+              "column": 3
+            },
+            {
+              "title": "пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "ipad-pro",
+                  "projectName": "ipad-pro",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3406,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-21T21:26:59.353Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4759f0ecf04d8cd263b0-377022fc8c0449841480",
+              "file": "calculators-unit-converter.spec.ts",
+              "line": 102,
+              "column": 3
+            },
+            {
+              "title": "запятая — валидный десятичный разделитель",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "ipad-pro-landscape",
+                  "projectName": "ipad-pro-landscape",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3231,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-21T21:27:26.502Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4759f0ecf04d8cd263b0-2f31fce651a3b819e877",
+              "file": "calculators-unit-converter.spec.ts",
+              "line": 90,
+              "column": 3
+            },
+            {
+              "title": "пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "ipad-pro-landscape",
+                  "projectName": "ipad-pro-landscape",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3399,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-21T21:27:29.843Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4759f0ecf04d8cd263b0-56e78cd3cf031092141f",
+              "file": "calculators-unit-converter.spec.ts",
+              "line": 102,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "mobile-audit.spec.ts",
+      "file": "mobile-audit.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "M03/M06: admin navigation and table do not widen document",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-se",
+              "projectName": "iphone-se",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3085,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:24:05.000Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-caa798a1331781b6a45b",
+          "file": "mobile-audit.spec.ts",
+          "line": 72,
+          "column": 1
+        },
+        {
+          "title": "M04: filled recipe has compact metrics and working actions",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-se",
+              "projectName": "iphone-se",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8413,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:24:08.105Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-a90005edea2dd3570510",
+          "file": "mobile-audit.spec.ts",
+          "line": 102,
+          "column": 1
+        },
+        {
+          "title": "M05: every dilution operation fits on the narrow screen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-se",
+              "projectName": "iphone-se",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 9856,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:24:16.539Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-c967564304748a5ce242",
+          "file": "mobile-audit.spec.ts",
+          "line": 127,
+          "column": 1
+        },
+        {
+          "title": "M03/M06: admin navigation and table do not widen document",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-13",
+              "projectName": "iphone-13",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4713,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:24:41.245Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-8090a6462f73aaa381d2",
+          "file": "mobile-audit.spec.ts",
+          "line": 72,
+          "column": 1
+        },
+        {
+          "title": "M04: filled recipe has compact metrics and working actions",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-13",
+              "projectName": "iphone-13",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 12113,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:24:45.994Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-6a20cc66ab8584de764b",
+          "file": "mobile-audit.spec.ts",
+          "line": 102,
+          "column": 1
+        },
+        {
+          "title": "M05: every dilution operation fits on the narrow screen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-13",
+              "projectName": "iphone-13",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4637,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:24:58.135Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-28aa2b19d83ff6c4ddb7",
+          "file": "mobile-audit.spec.ts",
+          "line": 127,
+          "column": 1
+        },
+        {
+          "title": "M03/M06: admin navigation and table do not widen document",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-landscape",
+              "projectName": "iphone-landscape",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 13887,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:25:15.532Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-fbaf62c6d4d670d481da",
+          "file": "mobile-audit.spec.ts",
+          "line": 72,
+          "column": 1
+        },
+        {
+          "title": "M04: filled recipe has compact metrics and working actions",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-landscape",
+              "projectName": "iphone-landscape",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 13109,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:25:29.439Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-3a7e1c769505321ea653",
+          "file": "mobile-audit.spec.ts",
+          "line": 102,
+          "column": 1
+        },
+        {
+          "title": "M05: every dilution operation fits on the narrow screen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-landscape",
+              "projectName": "iphone-landscape",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5135,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:25:42.567Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-d112c1c0ca6c8e8c0e84",
+          "file": "mobile-audit.spec.ts",
+          "line": 127,
+          "column": 1
+        },
+        {
+          "title": "M03/M06: admin navigation and table do not widen document",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini",
+              "projectName": "ipad-mini",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4443,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:25:59.741Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-7d0197354f230440841f",
+          "file": "mobile-audit.spec.ts",
+          "line": 72,
+          "column": 1
+        },
+        {
+          "title": "M04: filled recipe has compact metrics and working actions",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini",
+              "projectName": "ipad-mini",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 9115,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:26:04.204Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-5d0c54b6e2b1bdb40dcc",
+          "file": "mobile-audit.spec.ts",
+          "line": 102,
+          "column": 1
+        },
+        {
+          "title": "M05: every dilution operation fits on the narrow screen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini",
+              "projectName": "ipad-mini",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4109,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:26:13.335Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-1e0303c90051f0228e57",
+          "file": "mobile-audit.spec.ts",
+          "line": 127,
+          "column": 1
+        },
+        {
+          "title": "M03/M06: admin navigation and table do not widen document",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini-landscape",
+              "projectName": "ipad-mini-landscape",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6360,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:26:31.509Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-4d10642425cd2109aa44",
+          "file": "mobile-audit.spec.ts",
+          "line": 72,
+          "column": 1
+        },
+        {
+          "title": "M04: filled recipe has compact metrics and working actions",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini-landscape",
+              "projectName": "ipad-mini-landscape",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8757,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:26:37.892Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-a343deedb7de5e2da5a1",
+          "file": "mobile-audit.spec.ts",
+          "line": 102,
+          "column": 1
+        },
+        {
+          "title": "M05: every dilution operation fits on the narrow screen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini-landscape",
+              "projectName": "ipad-mini-landscape",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4050,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:26:46.689Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-4f042b9c26ba14db1072",
+          "file": "mobile-audit.spec.ts",
+          "line": 127,
+          "column": 1
+        },
+        {
+          "title": "M03/M06: admin navigation and table do not widen document",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro",
+              "projectName": "ipad-pro",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3942,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:27:02.811Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-c80a20b20052244cf4d3",
+          "file": "mobile-audit.spec.ts",
+          "line": 72,
+          "column": 1
+        },
+        {
+          "title": "M04: filled recipe has compact metrics and working actions",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro",
+              "projectName": "ipad-pro",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8916,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:27:06.779Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-b1efc58797c9271d8d03",
+          "file": "mobile-audit.spec.ts",
+          "line": 102,
+          "column": 1
+        },
+        {
+          "title": "M05: every dilution operation fits on the narrow screen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro",
+              "projectName": "ipad-pro",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5585,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:27:15.718Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-16801edd773ed63a361c",
+          "file": "mobile-audit.spec.ts",
+          "line": 127,
+          "column": 1
+        },
+        {
+          "title": "M03/M06: admin navigation and table do not widen document",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro-landscape",
+              "projectName": "ipad-pro-landscape",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 7390,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate\n    at /home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:97:69",
+                    "location": {
+                      "file": "/home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts",
+                      "column": 69,
+                      "line": 97
+                    },
+                    "snippet": "   95 |     await expect(page.getByRole(\"menu\")).toBeVisible();\n   96 |     await page.keyboard.press(\"Escape\");\n>  97 |     await expect.poll(() => scroller.evaluate(el => el.scrollLeft)).toBeGreaterThan(0);\n      |                                                                     ^\n   98 |     await expectDocumentFits(page);\n   99 |   }\n  100 | });"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts",
+                        "column": 69,
+                        "line": 97
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate\n\n   95 |     await expect(page.getByRole(\"menu\")).toBeVisible();\n   96 |     await page.keyboard.press(\"Escape\");\n>  97 |     await expect.poll(() => scroller.evaluate(el => el.scrollLeft)).toBeGreaterThan(0);\n      |                                                                     ^\n   98 |     await expectDocumentFits(page);\n   99 |   }\n  100 | });\n    at /home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:97:69"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:27:33.288Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/verification-final-playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-ipad-pro-landscape/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/verification-final-playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-ipad-pro-landscape/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/verification-final-playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-ipad-pro-landscape/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts",
+                    "column": 69,
+                    "line": 97
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-041471ac2825c5b5ab7e",
+          "file": "mobile-audit.spec.ts",
+          "line": 72,
+          "column": 1
+        },
+        {
+          "title": "M04: filled recipe has compact metrics and working actions",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro-landscape",
+              "projectName": "ipad-pro-landscape",
+              "results": [
+                {
+                  "workerIndex": 7,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 10163,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:27:41.653Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-e75b39522214ad535679",
+          "file": "mobile-audit.spec.ts",
+          "line": 102,
+          "column": 1
+        },
+        {
+          "title": "M05: every dilution operation fits on the narrow screen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro-landscape",
+              "projectName": "ipad-pro-landscape",
+              "results": [
+                {
+                  "workerIndex": 7,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4866,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:27:51.929Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-dd633cc1d36e502ff0c8",
+          "file": "mobile-audit.spec.ts",
+          "line": 127,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "safari-interactions.spec.ts",
+      "file": "safari-interactions.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "QR description remains readable and collapses back to the short viewport",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-se",
+              "projectName": "iphone-se",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6383,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:24:26.433Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-f1833f6b6afb621d0d66",
+          "file": "safari-interactions.spec.ts",
+          "line": 25,
+          "column": 1
+        },
+        {
+          "title": "QR description remains readable and collapses back to the short viewport",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-13",
+              "projectName": "iphone-13",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5078,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:25:02.840Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-f12453323b6395651b24",
+          "file": "safari-interactions.spec.ts",
+          "line": 25,
+          "column": 1
+        },
+        {
+          "title": "QR description remains readable and collapses back to the short viewport",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-landscape",
+              "projectName": "iphone-landscape",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4327,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:25:47.745Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-a989b5837be91a95b715",
+          "file": "safari-interactions.spec.ts",
+          "line": 25,
+          "column": 1
+        },
+        {
+          "title": "QR description remains readable and collapses back to the short viewport",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini",
+              "projectName": "ipad-mini",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5764,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:26:17.479Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-6704c6ea4bc697eed026",
+          "file": "safari-interactions.spec.ts",
+          "line": 25,
+          "column": 1
+        },
+        {
+          "title": "QR description remains readable and collapses back to the short viewport",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini-landscape",
+              "projectName": "ipad-mini-landscape",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4810,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:26:50.780Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-08251a3970e1d733725b",
+          "file": "safari-interactions.spec.ts",
+          "line": 25,
+          "column": 1
+        },
+        {
+          "title": "QR description remains readable and collapses back to the short viewport",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro",
+              "projectName": "ipad-pro",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4057,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:27:21.340Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-8d2b5674515e1a71aeda",
+          "file": "safari-interactions.spec.ts",
+          "line": 25,
+          "column": 1
+        },
+        {
+          "title": "QR description remains readable and collapses back to the short viewport",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro-landscape",
+              "projectName": "ipad-pro-landscape",
+              "results": [
+                {
+                  "workerIndex": 7,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5492,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:27:56.841Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-99c0c9788a999a3dc7cb",
+          "file": "safari-interactions.spec.ts",
+          "line": 25,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-21T21:23:44.786Z",
+    "duration": 257919.773,
+    "expected": 41,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

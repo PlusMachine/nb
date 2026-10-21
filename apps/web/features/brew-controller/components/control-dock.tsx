@@ -56,10 +56,7 @@ export function ControlDock({
 }: Props) {
   return (
     <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-      <div className="flex items-center justify-between">
-        <p className="text-sm font-semibold text-foreground">Управление</p>
-        <span className="text-xs text-muted-foreground">совещательное · решает устройство</span>
-      </div>
+      <p className="text-sm font-semibold text-foreground">Управление</p>
 
       {/* TransportBar: рутина в один тап (conditional visibility по стадии). */}
       <div className="mt-3">
@@ -80,13 +77,13 @@ export function ControlDock({
       <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-border pt-4">
         <HoldToConfirmButton
           label="Аварийный останов"
-          holdingLabel="Держите для E-STOP…"
+          holdingLabel="Удерживайте для остановки…"
           disabled={pending || !hasDevice}
           onConfirm={onEstop}
           icon={<OctagonX className="h-4 w-4" aria-hidden />}
         />
         <span className="text-xs text-muted-foreground">
-          Программная кнопка ≠ аппаратный E-stop. Реальная защита — интерлоки и watchdog на плате.
+          Кнопка в приложении не заменяет аппаратный аварийный выключатель.
         </span>
       </div>
 
@@ -94,12 +91,12 @@ export function ControlDock({
       {transportError ? <p role="alert" className="mt-1 text-sm text-destructive">Телеметрия: {transportError}</p> : null}
       {noFreshTelemetry ? (
         <p className="mt-1 text-sm text-warning-subtle-foreground">
-          Нет свежей телеметрии — рутинное управление заблокировано до восстановления связи.
+          Нет свежих показаний — обычные команды управления недоступны до восстановления связи.
         </p>
       ) : null}
       {otherSessionHolds ? (
         <p className="mt-1 text-sm text-warning-subtle-foreground">
-          Управляет другой сеанс — запросите перехват, чтобы взять контроль.
+          Устройством управляют из другого сеанса. Запросите передачу управления.
         </p>
       ) : null}
     </div>

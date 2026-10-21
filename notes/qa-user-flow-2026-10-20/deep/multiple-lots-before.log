@@ -1,0 +1,43 @@
+
+ RUN  v4.0.18 /home/dopefish/projects/nb/apps/web
+
+ ❯ integration/user-flow.integration.test.ts (14 tests | 1 failed | 13 skipped) 285ms
+     ↓ serializes two consumes for the same batch
+     ↓ two batches cannot consume more than the shared lot
+     ↓ does not deadlock when both allocations hold the foreign key's KEY SHARE lock
+     ↓ serializes two returns without doubling stock
+     ↓ consuming and returning concurrently conserves stock
+     ↓ clamps against changed stock after preview, then returns only the actual amount
+     ↓ without partial opt-in a shortage rolls back every write
+     ↓ uses recipe addition order for shared short stock
+     × uses multiple exact lots when together they cover a recipe line 220ms
+     ↓ a changed or deleted source cannot change planned consumption and targets
+     ↓ archiving stock after preview prevents accidental consumption
+     ↓ concurrent creation with one idempotency key creates one batch
+     ↓ deleting equipment preserves the batch's selected snapshot
+     ↓ other users cannot inspect or mutate private recipe, profile, stock or batch
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  integration/user-flow.integration.test.ts > real PostgreSQL: warehouse and batch invariants > uses multiple exact lots when together they cover a recipe line
+AssertionError: expected 'exact_short' to be 'exact' // Object.is equality
+
+Expected: "exact"
+Received: "exact_short"
+
+ ❯ integration/user-flow.integration.test.ts:141:37
+    139|     const batch = await createBrewBatchFromRecipe(user, recipe.id);
+    140|     const preview = await previewBrewBatchConsumption(user, batch.id);
+    141|     expect(preview!.lines[0]!.kind).toBe("exact");
+       |                                     ^
+    142|     const result = await consumeBrewBatchInventory(user, batch.id, { a…
+    143|     expect(result.consumed.reduce((sum, line) => sum + line.quantityNo…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 13 skipped (14)
+   Start at  22:42:36
+   Duration  2.80s (transform 1.38s, setup 112ms, import 1.83s, tests 285ms, environment 1ms)
+

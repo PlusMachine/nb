@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { listArticles } from "@nb/content";
 
 import { allCalculatorSlugs } from "@/features/calculators/catalog";
+import { isCalculatorPublic } from "@/features/calculators/visibility";
 import { listPublishedContentArticles } from "@/features/content-articles/service";
 import { catalogCategoryLandings } from "@/features/ingredients/seo";
 import { listCatalogSitemapEntries } from "@/features/ingredients/service";
@@ -80,7 +81,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: entry.publishedAt
     })),
     // Калькуляторы — статичные страницы без честной даты изменения.
-    ...allCalculatorSlugs.map((slug) => ({
+    ...allCalculatorSlugs.filter(isCalculatorPublic).map((slug) => ({
       url: `${APP_URL}/calculators/${slug}`
     }))
   ];

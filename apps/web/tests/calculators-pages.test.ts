@@ -1,8 +1,9 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({ navState: { searchParams: "" } }));
+vi.mock("@/lib/auth", () => ({ getSessionUser: vi.fn(async () => null) }));
 
 // CalculatorPageClient — единственный потребитель next/navigation в этом дереве
 // (useSearchParams, читает shared-ссылки вида ?og=…&fg=…). notFound нужен только
@@ -37,8 +38,10 @@ const calculatorIndexTitles = [
 ];
 
 beforeEach(() => {
+  vi.stubEnv("NODE_ENV", "development");
   mocks.navState.searchParams = "";
 });
+afterEach(() => vi.unstubAllEnvs());
 
 // CalculatorPageClient рендерит кнопку «Скопировать ссылку на расчёт», которая читает
 // useToast() — в реальном приложении ToastProvider смонтирован глобально
@@ -64,12 +67,11 @@ describe("calculator catalog seoTitle", () => {
 });
 
 describe("calculator pages", () => {
-  it("/calculators renders all calculators grouped into section headings with an intro paragraph", async () => {
+  it("/calculators renders all calculators grouped into section headings", async () => {
     const { default: CalculatorsPage } = await import("../app/(public)/calculators/page");
-    const html = renderToStaticMarkup(React.createElement(CalculatorsPage));
+    const html = renderToStaticMarkup(await CalculatorsPage());
 
     expect(html).toContain("Калькуляторы для пивоварения");
-    expect(html).toContain("Расчёты для домашнего пивоварения");
     expect(html).not.toContain("Что хотите рассчитать?");
     expect(html).not.toContain("Фильтры калькуляторов");
     expect(html).not.toContain("Быстрые переходы");
@@ -153,7 +155,7 @@ describe("calculator pages", () => {
       }
 
       // Видимые крошки + синхронный BreadcrumbList JSON-LD с той же сущностью.
-      expect(html).toContain('aria-label="Breadcrumb"');
+      expect(html).toContain('aria-label="Навигационная цепочка"');
       expect(html).toContain("Калькуляторы");
       expect(html).toContain(calculator.shortTitle);
       expect(html).toContain('"@type":"BreadcrumbList"');

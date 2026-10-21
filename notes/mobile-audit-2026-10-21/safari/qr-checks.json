@@ -1,0 +1,146 @@
+[
+  {
+    "slug": "sample-american-stout",
+    "width": 320,
+    "height": 568,
+    "scroll": 568,
+    "recipe": {
+      "x": 48.15625,
+      "y": 474,
+      "width": 162.25,
+      "height": 38,
+      "top": 474,
+      "right": 210.40625,
+      "bottom": 512,
+      "left": 48.15625
+    }
+  },
+  {
+    "slug": "sample-american-stout",
+    "width": 390,
+    "height": 664,
+    "scroll": 664,
+    "recipe": {
+      "x": 110.15625,
+      "y": 586,
+      "width": 162.25,
+      "height": 38,
+      "top": 586,
+      "right": 272.40625,
+      "bottom": 624,
+      "left": 110.15625
+    }
+  },
+  {
+    "slug": "sample-american-stout",
+    "width": 750,
+    "height": 342,
+    "scroll": 342,
+    "recipe": {
+      "x": 470.15625,
+      "y": 264,
+      "width": 162.25,
+      "height": 38,
+      "top": 264,
+      "right": 632.40625,
+      "bottom": 302,
+      "left": 470.15625
+    }
+  },
+  {
+    "slug": "pilsner-urquell",
+    "width": 320,
+    "height": 568,
+    "scroll": 568,
+    "recipe": {
+      "x": 48.15625,
+      "y": 474,
+      "width": 162.25,
+      "height": 38,
+      "top": 474,
+      "right": 210.40625,
+      "bottom": 512,
+      "left": 48.15625
+    }
+  },
+  {
+    "slug": "pilsner-urquell",
+    "width": 390,
+    "height": 664,
+    "scroll": 664,
+    "recipe": {
+      "x": 110.15625,
+      "y": 586,
+      "width": 162.25,
+      "height": 38,
+      "top": 586,
+      "right": 272.40625,
+      "bottom": 624,
+      "left": 110.15625
+    }
+  },
+  {
+    "slug": "pilsner-urquell",
+    "width": 750,
+    "height": 342,
+    "scroll": 342,
+    "recipe": {
+      "x": 470.15625,
+      "y": 264,
+      "width": 162.25,
+      "height": 38,
+      "top": 264,
+      "right": 632.40625,
+      "bottom": 302,
+      "left": 470.15625
+    }
+  },
+  {
+    "slug": "bell-s-two-hearted-ale",
+    "width": 320,
+    "height": 568,
+    "scroll": 568,
+    "recipe": {
+      "x": 48.15625,
+      "y": 474,
+      "width": 162.25,
+      "height": 38,
+      "top": 474,
+      "right": 210.40625,
+      "bottom": 512,
+      "left": 48.15625
+    }
+  },
+  {
+    "slug": "bell-s-two-hearted-ale",
+    "width": 390,
+    "height": 664,
+    "scroll": 664,
+    "recipe": {
+      "x": 110.15625,
+      "y": 586,
+      "width": 162.25,
+      "height": 38,
+      "top": 586,
+      "right": 272.40625,
+      "bottom": 624,
+      "left": 110.15625
+    }
+  },
+  {
+    "slug": "bell-s-two-hearted-ale",
+    "width": 750,
+    "height": 342,
+    "scroll": 342,
+    "recipe": {
+      "x": 470.15625,
+      "y": 264,
+      "width": 162.25,
+      "height": 38,
+      "top": 264,
+      "right": 632.40625,
+      "bottom": 302,
+      "left": 470.15625
+    }
+  }
+]

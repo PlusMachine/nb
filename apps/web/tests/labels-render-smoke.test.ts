@@ -24,7 +24,7 @@ const slots: LabelSlots = {
   description: null,
   showLogo: true,
   showIbuScale: true,
-  brandText: "BREWED WITH NB"
+  brandText: "BEWED WITH NB"
 };
 
 describe("рендер-smoke PNG", () => {

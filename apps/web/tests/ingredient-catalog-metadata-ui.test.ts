@@ -719,7 +719,7 @@ describe("ingredient catalog metadata ui", () => {
       params: Promise.resolve({ source: "system", id: "catalog-hop-1" })
     }));
 
-    expect(html).toContain('aria-label="Breadcrumb"');
+    expect(html).toContain('aria-label="Навигационная цепочка"');
     expect(html).toContain('aria-current="page"');
     expect(html).toContain("BreadcrumbList");
   });

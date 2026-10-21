@@ -1,60 +1,17 @@
 import { calculateEquipmentVolumePlan } from "../equipment-profiles/volume-plan";
 import { resolveInventoryPackEquivalent } from "../inventory/pack";
-import { buildRecipeWaterPlanResult, type RecipeWaterPlanFermentableInput } from "../recipes/water-plan";
+import { buildRecipeWaterPlanResult } from "../recipes/water-plan";
+import { buildRecipeWaterPlanFermentables } from "../recipes/water-plan-ingredients";
 import { toBatchVolumeLiters } from "../recipes/units";
 import type { RecipeDetailDto } from "../recipes/contracts";
 import type { BrewPlanSnapshot } from "./contracts";
+import { buildBrewEquipmentPlan } from "./equipment-plan";
 
 const isRecord = (value: unknown): value is Record<string, unknown> => (
   typeof value === "object"
   && value !== null
   && !Array.isArray(value)
 );
-
-// Дублирует buildFermentablesForWaterPlan из
-// components/recipes/public-recipe-water-section.tsx: там это внутренний
-// хелпер серверного компонента, а сюда, в сервисный слой, тянуть React ради
-// одной чистой функции неуместно.
-const isFermentableIngredientForWaterPlan = (ingredient: RecipeDetailDto["ingredients"][number]): boolean => (
-  ingredient.ingredientCategory === "fermentable" || ingredient.type === "malt" || ingredient.type === "fermentable"
-);
-
-// Класс/цвет солода для модели pH затора (Ф6/Ф7) несут только "малтовые" технические
-// данные (MaltTechnicalData) — у ферментируемых-не-солодов (сахар, экстракт и т.п.)
-// эти поля не заполняются, там классификатор падает на ключевые слова имени.
-const resolveMaltFieldsForWaterPlan = (
-  technicalData: RecipeDetailDto["ingredients"][number]["ingredientTechnicalData"]
-): Pick<RecipeWaterPlanFermentableInput, "maltType" | "colorEbcMin" | "colorEbcMax"> => {
-  if (!technicalData || technicalData.type !== "malt") {
-    return { maltType: null, colorEbcMin: null, colorEbcMax: null };
-  }
-
-  const malt = technicalData as Extract<
-    NonNullable<typeof technicalData>,
-    { type: "malt" }
-  >;
-  return {
-    maltType: malt.maltType ?? null,
-    colorEbcMin: malt.colorEbcMin ?? null,
-    colorEbcMax: malt.colorEbcMax ?? null
-  };
-};
-
-const buildFermentablesForWaterPlan = (
-  ingredients: RecipeDetailDto["ingredients"]
-): RecipeWaterPlanFermentableInput[] => ingredients
-  .filter(isFermentableIngredientForWaterPlan)
-  .map((ingredient) => {
-    const unit = ingredient.amountNormalizedUnit;
-    const qty = ingredient.amountNormalizedQuantity;
-    const weightKg = unit === "kg" ? qty : unit === "g" ? qty / 1000 : 0;
-    return {
-      name: ingredient.ingredientDisplayName ?? ingredient.ingredientDisplayNameRu ?? ingredient.ingredientDisplayNameSnapshot ?? null,
-      subtype: ingredient.ingredientSubtype ?? null,
-      weightKg,
-      ...resolveMaltFieldsForWaterPlan(ingredient.ingredientTechnicalData)
-    };
-  });
 
 // Аккуратное число для граммов/миллилитров добавки воды: без хвостовых нулей.
 const roundDose = (value: number): number => Number(value.toFixed(1));
@@ -92,7 +49,7 @@ const buildWaterSchedule = (
   }
 
   try {
-    const fermentables = buildFermentablesForWaterPlan(recipe.ingredients);
+    const fermentables = buildRecipeWaterPlanFermentables(recipe.ingredients);
     const grainKg = fermentables.reduce((sum, item) => sum + (item.weightKg ?? 0), 0);
     const equipmentVolumePlan = recipe.equipmentProfileSnapshot
       ? calculateEquipmentVolumePlan(
@@ -222,6 +179,8 @@ export const buildBrewPlanSnapshot = (
     ? toBatchVolumeLiters(recipe.batchSizeNormalizedQuantity, recipe.batchSizeNormalizedUnit)
     : null;
 
+  const equipmentPlan = batchSizeL != null ? buildBrewEquipmentPlan(recipe) : null;
+
   return {
     version: "brew_plan_v1",
     recipe: {
@@ -233,7 +192,12 @@ export const buildBrewPlanSnapshot = (
       recipeEfficiencyPct: options.recipeEfficiencyPct ?? recipe.efficiency ?? null
     },
     equipmentProfileSnapshot: recipe.equipmentProfileSnapshot ?? null,
-    waterPlanMeta: recipe.waterPlanMeta ?? null,
+    waterPlanMeta: equipmentPlan ? {
+      ...recipe.waterPlanMeta,
+      mashWaterVolumeL: equipmentPlan.mashWaterL,
+      spargeWaterVolumeL: equipmentPlan.spargeWaterL
+    } : recipe.waterPlanMeta ?? null,
+    equipmentWarnings: equipmentPlan?.warnings ?? [],
     waterSchedule: buildWaterSchedule(recipe, batchSizeL),
     mashSteps,
     boilPlan: {

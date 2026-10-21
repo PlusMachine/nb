@@ -18,7 +18,7 @@ import { FgSettingsPopover } from "./fg-settings-popover";
 // Числовые поля партии держат 3 знака — ширину колонки задаёт подпись, а не поле,
 // поэтому остаток строки достаётся селекту оборудования с длинными именами профилей.
 const numericFieldWidthClass = "w-[92px]";
-const numericInputClass = "h-9 w-full rounded-lg border border-border bg-card px-2.5 pr-7 text-base tabular-nums text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm";
+const numericInputClass = "h-9 w-full rounded-lg border border-border bg-card px-2.5 pr-7 text-base tabular-nums text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm [@media(pointer:coarse)]:text-base";
 
 // Ф11: «+ Создать профиль…» — сентинел-значение опции селекта, а не profileId.
 const CREATE_EQUIPMENT_PROFILE_OPTION_VALUE = "__create__";
@@ -257,7 +257,7 @@ export function RecipeBatchParametersBlock({
                   }
                   onSelectEquipmentProfile(event.target.value || null);
                 }}
-                className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-base normal-case tracking-normal text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
+                className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-base normal-case tracking-normal text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm [@media(pointer:coarse)]:text-base"
               >
                 <option value={equipmentProfileSelectValue} hidden>{selectedEquipmentProfileLabel}</option>
                 <option value="">Без профиля — ручной ввод параметров</option>

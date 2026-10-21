@@ -29,14 +29,14 @@ export function PublicationReadinessDialog({
           onClose();
         }
       }}
-      title="Для публичного показа рецепта необходимо заполнить"
+      title="Для публикации рецепта заполните"
       hideTitle
       size="lg"
     >
       <DialogHeader>
         <div className="space-y-1">
-          <h3 className="text-base font-semibold text-foreground">Для публичного показа рецепта необходимо заполнить:</h3>
-          <p className="text-sm leading-6 text-muted-foreground">Публикация станет доступна, когда все обязательные пункты будут отмечены как готовые.</p>
+          <h3 className="text-base font-semibold text-foreground">Для публикации рецепта заполните:</h3>
+          <p className="text-sm leading-6 text-muted-foreground">Рецепт можно будет опубликовать, когда будут заполнены все обязательные поля.</p>
         </div>
         <DialogCloseButton />
       </DialogHeader>

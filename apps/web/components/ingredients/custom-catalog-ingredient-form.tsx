@@ -21,7 +21,7 @@ import { ingredientCategorySubtypes, resolveLegacyIngredientType } from "@/featu
 import {
   buildCustomIngredientTechnicalData,
   customHopFormLabels,
-  customHopForms,
+  customHopSelectableForms,
   customPhysicalFormLabels,
   customPhysicalForms,
   customYeastFormLabels,
@@ -34,6 +34,7 @@ import {
   type CustomPhysicalForm,
   type CustomYeastForm
 } from "@/features/inventory/custom-ingredient";
+import { buildHopHarvestYearOptions } from "@/features/inventory/hop-harvest-year";
 import { inventoryUnitLabels, type InventoryUnit } from "@/features/inventory/units";
 
 export type CustomCatalogIngredientFormInitialValue = {
@@ -265,8 +266,6 @@ const resolveKindToneClasses = (category: IngredientCategory): ToneClasses => {
   };
 };
 
-const recentHarvestYears = Array.from({ length: 8 }, (_, index) => String(new Date().getFullYear() - index));
-
 const maltTypeOptions: ChoiceOption[] = [
   { value: "unspecified", label: "Не указано" },
   { value: "base", label: "Базовый" },
@@ -285,7 +284,7 @@ function FieldBadge({ required }: { required: boolean }) {
   );
 }
 
-const hopFormChoiceOptions: ChoiceOption[] = customHopForms.map((value) => ({
+const hopFormChoiceOptions: ChoiceOption[] = customHopSelectableForms.map((value) => ({
   value,
   label: customHopFormLabels[value]
 }));
@@ -322,6 +321,7 @@ function ChoicePills({
           <button
             key={option.value}
             type="button"
+            aria-pressed={active}
             onClick={() => onChange(option.value)}
             className={`rounded-2xl border text-left transition ${
               compact ? "px-3 py-2.5" : "px-4 py-3"
@@ -458,16 +458,10 @@ export function CustomCatalogIngredientForm({
     })),
     [unitProfile.allowedUnits]
   );
-  const harvestYearOptions = useMemo(() => {
-    const options = [...recentHarvestYears];
-    const currentValue = harvestYear.trim();
-
-    if (currentValue && !options.includes(currentValue)) {
-      options.unshift(currentValue);
-    }
-
-    return options;
-  }, [harvestYear]);
+  const harvestYearOptions = useMemo(
+    () => buildHopHarvestYearOptions(harvestYear),
+    [harvestYear]
+  );
 
   useEffect(() => {
     if (previousCategoryRef.current === category) {
@@ -491,21 +485,13 @@ export function CustomCatalogIngredientForm({
 
   return (
     <div className="space-y-6 rounded-[28px] border border-border bg-card p-6 shadow-sm">
-      <div className="space-y-2">
-        <div className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-          {mode === "create" ? "Новый пользовательский ингредиент" : "Редактирование пользовательского ингредиента"}
-        </div>
-        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-          {mode === "create" ? "Свой ингредиент" : "Редактирование"}
-        </h1>
-        <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
-          Только базовые поля и параметры, которые реально пригодятся потом в складе, рецептах и калькуляторах.
-        </p>
-      </div>
+      <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+        {mode === "create" ? "Свой ингредиент" : "Редактировать ингредиент"}
+      </h1>
 
       {initial.derivedFromDisplayName ? (
-        <div className="rounded-2xl border border-warning/30 bg-warning-subtle px-4 py-3 text-sm text-warning-subtle-foreground">
-          Базовый системный ингредиент: <strong>{initial.derivedFromDisplayName}</strong>. При сохранении будет создана отдельная приватная версия, не влияющая на общий каталог.
+        <div className="rounded-2xl bg-muted px-4 py-3 text-sm text-muted-foreground">
+          Ваш вариант на основе <strong>{initial.derivedFromDisplayName}</strong>. Изменения будут видны только вам.
         </div>
       ) : null}
 
@@ -520,10 +506,7 @@ export function CustomCatalogIngredientForm({
 
       <div className="space-y-4">
         <section className="rounded-3xl border border-border bg-muted/80 p-5">
-          <div className="flex flex-wrap items-center gap-3">
-            <h2 className="text-lg font-semibold text-foreground">Тип ингредиента</h2>
-            <span className="text-xs text-muted-foreground">Минимум для заполнения: название и поля с меткой «обязательно».</span>
-          </div>
+          <h2 className="text-lg font-semibold text-foreground">Тип ингредиента</h2>
 
           <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {userFacingIngredientKindOptions.map((option) => {
@@ -535,6 +518,7 @@ export function CustomCatalogIngredientForm({
                 <button
                   key={option.value}
                   type="button"
+                  aria-pressed={isActive}
                   onClick={() => {
                     setCategory(option.category);
                     setSubtype(option.subtype ?? "");
@@ -583,9 +567,7 @@ export function CustomCatalogIngredientForm({
         </section>
 
         <section className="rounded-3xl border border-border bg-card p-5">
-          <h2 className="text-lg font-semibold text-foreground">Карточка ингредиента</h2>
-
-          <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(220px,1fr)_minmax(180px,0.8fr)]">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(220px,1fr)_minmax(180px,0.8fr)]">
             <label className="block text-sm">
               <div className="flex items-center gap-2">
                 <span>Название ингредиента</span>
@@ -594,7 +576,7 @@ export function CustomCatalogIngredientForm({
               <input
                 value={displayName}
                 onChange={(event) => setDisplayName(event.target.value)}
-                className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm"
+                className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base"
                 placeholder={resolveDisplayNamePlaceholder(activeKind)}
               />
               {fieldErrors.displayName ? <span className="mt-1 block text-xs text-destructive">{fieldErrors.displayName}</span> : null}
@@ -607,7 +589,7 @@ export function CustomCatalogIngredientForm({
               <input
                 value={brand}
                 onChange={(event) => setBrand(event.target.value)}
-                className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm"
+                className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base"
                 placeholder="Например, Fermentis"
               />
             </label>
@@ -619,8 +601,8 @@ export function CustomCatalogIngredientForm({
               <input
                 value={country}
                 onChange={(event) => setCountry(event.target.value)}
-                className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm"
-                placeholder="Например, USA"
+                className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base"
+                placeholder="Например, США"
               />
             </label>
           </div>
@@ -634,7 +616,7 @@ export function CustomCatalogIngredientForm({
                       <span>Альфа-кислота, %</span>
                       <FieldBadge required />
                     </div>
-                    <input type="number" min="0" max="100" step="0.1" value={hopAlphaAcidPct} onChange={(event) => setHopAlphaAcidPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm" />
+                    <input type="number" min="0" max="100" step="0.1" value={hopAlphaAcidPct} onChange={(event) => setHopAlphaAcidPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base" />
                     {fieldErrors.hopAlphaAcidPct ? <span className="mt-1 block text-xs text-destructive">{fieldErrors.hopAlphaAcidPct}</span> : null}
                   </label>
                   <label className="text-sm">
@@ -642,14 +624,14 @@ export function CustomCatalogIngredientForm({
                       <span>Бета-кислота, %</span>
                       <FieldBadge required={false} />
                     </div>
-                    <input type="number" min="0" max="100" step="0.1" value={hopBetaAcidPct} onChange={(event) => setHopBetaAcidPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm" />
+                    <input type="number" min="0" max="100" step="0.1" value={hopBetaAcidPct} onChange={(event) => setHopBetaAcidPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base" />
                   </label>
                   <label className="text-sm">
                     <div className="flex items-center gap-2">
                       <span>Год урожая</span>
                       <FieldBadge required={false} />
                     </div>
-                    <select value={harvestYear} onChange={(event) => setHarvestYear(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm">
+                    <select value={harvestYear} onChange={(event) => setHarvestYear(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base">
                       <option value="">Не указан</option>
                       {harvestYearOptions.map((year) => (
                         <option key={year} value={year}>{year}</option>
@@ -664,7 +646,7 @@ export function CustomCatalogIngredientForm({
                   </div>
                   <ChoicePills
                     options={hopFormChoiceOptions}
-                    value={hopForm}
+                    value={hopForm === "standard" ? "pellet" : hopForm}
                     onChange={(nextValue) => setHopForm(nextValue as CustomHopForm)}
                     columnsClassName="sm:grid-cols-2 xl:grid-cols-5"
                     compact
@@ -681,7 +663,7 @@ export function CustomCatalogIngredientForm({
                       <span>Цвет, EBC</span>
                       <FieldBadge required />
                     </div>
-                    <input type="number" min="0" step="0.1" value={fermentableColorEbc} onChange={(event) => setFermentableColorEbc(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm" />
+                    <input type="number" min="0" step="0.1" value={fermentableColorEbc} onChange={(event) => setFermentableColorEbc(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base" />
                     {fieldErrors.fermentableColorEbc ? <span className="mt-1 block text-xs text-destructive">{fieldErrors.fermentableColorEbc}</span> : null}
                   </label>
                   <label className="text-sm">
@@ -689,7 +671,7 @@ export function CustomCatalogIngredientForm({
                       <span>Экстрактивность, %</span>
                       <FieldBadge required />
                     </div>
-                    <input type="number" min="0" max="100" step="0.1" value={fermentableExtractYieldPct} onChange={(event) => setFermentableExtractYieldPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm" />
+                    <input type="number" min="0" max="100" step="0.1" value={fermentableExtractYieldPct} onChange={(event) => setFermentableExtractYieldPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base" />
                     {fieldErrors.fermentableExtractYieldPct ? <span className="mt-1 block text-xs text-destructive">{fieldErrors.fermentableExtractYieldPct}</span> : null}
                   </label>
                   {activeKind === "malt" ? (
@@ -698,7 +680,7 @@ export function CustomCatalogIngredientForm({
                         <span>Белок, %</span>
                         <FieldBadge required={false} />
                       </div>
-                      <input type="number" min="0" max="100" step="0.1" value={fermentableProteinPct} onChange={(event) => setFermentableProteinPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm" />
+                      <input type="number" min="0" max="100" step="0.1" value={fermentableProteinPct} onChange={(event) => setFermentableProteinPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base" />
                     </label>
                   ) : null}
                 </div>
@@ -723,7 +705,7 @@ export function CustomCatalogIngredientForm({
                         <span>Макс. засыпь, %</span>
                         <FieldBadge required={false} />
                       </div>
-                      <input type="number" min="0" max="100" step="0.1" value={fermentableMaxUsagePct} onChange={(event) => setFermentableMaxUsagePct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm" placeholder="Не указано" />
+                      <input type="number" min="0" max="100" step="0.1" value={fermentableMaxUsagePct} onChange={(event) => setFermentableMaxUsagePct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base" placeholder="Не указано" />
                     </label>
                   </div>
                 ) : null}
@@ -752,7 +734,7 @@ export function CustomCatalogIngredientForm({
                       <span>Аттенюация, %</span>
                       <FieldBadge required />
                     </div>
-                    <input type="number" min="0" max="100" step="0.1" value={yeastAttenuationPct} onChange={(event) => setYeastAttenuationPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm" />
+                    <input type="number" min="0" max="100" step="0.1" value={yeastAttenuationPct} onChange={(event) => setYeastAttenuationPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base" />
                     {fieldErrors.yeastAttenuationPct ? <span className="mt-1 block text-xs text-destructive">{fieldErrors.yeastAttenuationPct}</span> : null}
                   </label>
                   <label className="text-sm">
@@ -760,28 +742,28 @@ export function CustomCatalogIngredientForm({
                       <span>Флокуляция</span>
                       <FieldBadge required={false} />
                     </div>
-                    <input value={yeastFlocculation} onChange={(event) => setYeastFlocculation(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm" />
+                    <input value={yeastFlocculation} onChange={(event) => setYeastFlocculation(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base" />
                   </label>
                   <label className="text-sm">
                     <div className="flex items-center gap-2">
                       <span>Мин. температура, °C</span>
                       <FieldBadge required={false} />
                     </div>
-                    <input type="number" min="-20" max="60" step="0.1" value={yeastMinFermentationTempC} onChange={(event) => setYeastMinFermentationTempC(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm" />
+                    <input type="number" min="-20" max="60" step="0.1" value={yeastMinFermentationTempC} onChange={(event) => setYeastMinFermentationTempC(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base" />
                   </label>
                   <label className="text-sm">
                     <div className="flex items-center gap-2">
                       <span>Макс. температура, °C</span>
                       <FieldBadge required={false} />
                     </div>
-                    <input type="number" min="-20" max="60" step="0.1" value={yeastMaxFermentationTempC} onChange={(event) => setYeastMaxFermentationTempC(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm" />
+                    <input type="number" min="-20" max="60" step="0.1" value={yeastMaxFermentationTempC} onChange={(event) => setYeastMaxFermentationTempC(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base" />
                   </label>
                   <label className="text-sm">
                     <div className="flex items-center gap-2">
-                      <span>Толерантность к алкоголю, % ABV</span>
+                      <span>Устойчивость к алкоголю, % ABV</span>
                       <FieldBadge required={false} />
                     </div>
-                    <input type="number" min="0" max="100" step="0.1" value={alcoholToleranceAbvTypical} onChange={(event) => setAlcoholToleranceAbvTypical(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm" />
+                    <input type="number" min="0" max="100" step="0.1" value={alcoholToleranceAbvTypical} onChange={(event) => setAlcoholToleranceAbvTypical(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base" />
                   </label>
                 </div>
               </div>
@@ -807,7 +789,7 @@ export function CustomCatalogIngredientForm({
                     <span>Концентрация / дозировка</span>
                     <FieldBadge required={false} />
                   </div>
-                  <input value={concentration} onChange={(event) => setConcentration(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm" placeholder="Например, 80% / 1 мл на 10 л" />
+                  <input value={concentration} onChange={(event) => setConcentration(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base" placeholder="Например, 80% / 1 мл на 10 л" />
                 </label>
               </div>
             ) : null}

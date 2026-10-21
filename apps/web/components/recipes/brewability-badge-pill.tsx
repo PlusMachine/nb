@@ -55,7 +55,7 @@ export function BrewabilityBadgePill({
     return (
       <span
         className={`${base} ${tone} ${className ?? ""}`}
-        title={badge.qtyShort ? "Все ингредиенты есть, но количества под партию может не хватить" : undefined}
+        title={badge.qtyShort ? "Все ингредиенты есть, но их может не хватить на весь объём партии" : undefined}
       >
         <CircleCheck className={sizing.icon} aria-hidden />
         {badge.qtyShort ? "Почти хватает" : "Хватает всего"}

@@ -1,0 +1,128 @@
+[
+  {
+    "mode": "fresh",
+    "url": "http://127.0.0.1:3100/recipes/pilsner-urquell",
+    "events": [
+      {
+        "type": "touchstart",
+        "target": "Описание пива"
+      },
+      {
+        "type": "touchend",
+        "target": "Описание пива"
+      },
+      {
+        "type": "click",
+        "target": "Описание пива"
+      },
+      {
+        "type": "touchstart",
+        "target": "Описание пива"
+      },
+      {
+        "type": "touchend",
+        "target": "Описание пива"
+      },
+      {
+        "type": "click",
+        "target": "Описание пива"
+      },
+      {
+        "type": "touchstart",
+        "target": "Рецепт этого пива"
+      },
+      {
+        "type": "touchend",
+        "target": "Рецепт этого пива"
+      },
+      {
+        "type": "click",
+        "target": "Рецепт этого пива"
+      }
+    ]
+  },
+  {
+    "mode": "resize",
+    "url": "http://127.0.0.1:3100/recipes/pilsner-urquell",
+    "events": [
+      {
+        "type": "touchstart",
+        "target": "Описание пива"
+      },
+      {
+        "type": "touchend",
+        "target": "Описание пива"
+      },
+      {
+        "type": "click",
+        "target": "Описание пива"
+      },
+      {
+        "type": "touchstart",
+        "target": "Описание пива"
+      },
+      {
+        "type": "touchend",
+        "target": "Описание пива"
+      },
+      {
+        "type": "click",
+        "target": "Описание пива"
+      },
+      {
+        "type": "touchstart",
+        "target": "Рецепт этого пива"
+      },
+      {
+        "type": "touchend",
+        "target": "Рецепт этого пива"
+      },
+      {
+        "type": "click",
+        "target": "Рецепт этого пива"
+      }
+    ]
+  },
+  {
+    "mode": "manipulation",
+    "url": "http://127.0.0.1:3100/recipes/pilsner-urquell",
+    "events": [
+      {
+        "type": "touchstart",
+        "target": "Описание пива"
+      },
+      {
+        "type": "touchend",
+        "target": "Описание пива"
+      },
+      {
+        "type": "click",
+        "target": "Описание пива"
+      },
+      {
+        "type": "touchstart",
+        "target": "Описание пива"
+      },
+      {
+        "type": "touchend",
+        "target": "Описание пива"
+      },
+      {
+        "type": "click",
+        "target": "Описание пива"
+      },
+      {
+        "type": "touchstart",
+        "target": "Рецепт этого пива"
+      },
+      {
+        "type": "touchend",
+        "target": "Рецепт этого пива"
+      },
+      {
+        "type": "click",
+        "target": "Рецепт этого пива"
+      }
+    ]
+  }
+]

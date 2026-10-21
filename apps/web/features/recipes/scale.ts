@@ -5,20 +5,33 @@ import type { IngredientTechnicalData } from "../ingredients/contracts";
 import { fermentableAppliesMashEfficiency } from "../ingredients/technical-fields";
 import { resolveInventoryPackEquivalent } from "../inventory/pack";
 import { getInventoryUnitQuantityPrecision } from "../inventory/units";
-import type { RecipeDetailDto } from "./contracts";
+import type { RecipeDetailDto, RecipeWaterPlanMeta } from "./contracts";
 import { toBatchVolumeLiters } from "./units";
 
 /**
- * Пересчёт рецепта под целевой объём партии — ЧИСТАЯ, немутирующая функция.
- * Масштабирует АБСОЛЮТНЫЕ величины (количества ингредиентов и объём партии)
- * множителем `factor = targetLitres / baseLitres`. Интенсивные свойства
- * (OG/FG/ABV/IBU/SRM/эффективность/время кипячения) НЕ масштабируются: при
- * пропорциональном изменении гриста/хмеля те же показатели достигаются на другом
- * объёме — это корректное приближение. Ничего не пишет в БД и не создаёт копий.
+ * Эфемерный пересчёт рецепта под объём и/или эффективность — ЧИСТЫЕ функции
+ * (`scaleRecipeToParams` / `scaleRecipeToVolume`). Масштабируют АБСОЛЮТНЫЕ
+ * величины (количества и объём партии); интенсивные свойства (OG/FG/ABV/IBU/SRM/
+ * время кипячения) не трогают: при пропорциональном изменении гриста/хмеля и
+ * дожиме засыпи под чужую efficiency те же цели достигаются на другом оборудовании.
+ * Ничего не пишут в БД и не создают копий.
  */
 
 const MAX_TARGET_BATCH_LITRES = 1000;
 const SCALE_PRECISION = 3;
+
+/** Scale doses and explicit volumes; ion concentrations, pH and ratios stay fixed. */
+export const scaleRecipeWaterPlan = <T extends RecipeWaterPlanMeta | null | undefined>(meta: T, factor: number): T => {
+  if (!meta || factor === 1 || !Number.isFinite(factor) || factor <= 0) return meta;
+  return {
+    ...meta,
+    ...Object.fromEntries(["mashWaterVolumeL", "spargeWaterVolumeL", "totalWaterVolumeL"].map((key) => {
+      const value = meta[key as keyof RecipeWaterPlanMeta];
+      return [key, typeof value === "number" ? roundTo(value * factor, SCALE_PRECISION) : value];
+    })),
+    manualSaltAdditions: meta.manualSaltAdditions?.map((dose) => ({ ...dose, grams: roundTo(dose.grams * factor, SCALE_PRECISION) })) ?? [],
+  } as T;
+};
 
 type RecipeIngredient = RecipeDetailDto["ingredients"][number];
 type RecipeIngredientStage = RecipeIngredient["stage"];
@@ -124,13 +137,19 @@ export type ScaledRecipeIngredient = {
 };
 
 export type ScaledRecipeView = {
-  /** Множитель масштабирования (1 = без изменений). */
+  /** Множитель объёма (1 = без изменений объёма). */
   factor: number;
   /** Базовый объём рецепта, л. */
   baseBatchLitres: number;
   /** Применённый целевой объём, л (после клампов). */
   targetBatchLitres: number;
-  /** true, если масштаб реально применён (factor ≠ 1). */
+  /** Множитель дожима засыпи recipeEff/targetEff (1 = без дожима). */
+  efficiencyFactor: number;
+  /** Эффективность автора (fallback — дефолт движка). */
+  baseEfficiencyPct: number;
+  /** Целевая эффективность, под которую считали (после валидации). */
+  targetEfficiencyPct: number;
+  /** true, если менялся объём и/или эффективность (количества могли сдвинуться). */
   scaled: boolean;
   batchSizeEnteredQuantity: number;
   batchSizeEnteredUnit: InventoryUnit;
@@ -147,55 +166,8 @@ const safeBaseBatchLitres = (recipe: RecipeDetailDto): number => {
   }
 };
 
-export const scaleRecipeToVolume = (recipe: RecipeDetailDto, targetLitres: number): ScaledRecipeView => {
-  const baseBatchLitres = safeBaseBatchLitres(recipe);
-
-  // Невалидный/непозитивный/пустой target или нулевой базовый объём → factor = 1
-  // (показываем оригинал без масштабирования). Верхний кламп — защита от абсурда.
-  const isValidTarget = Number.isFinite(targetLitres) && targetLitres > 0;
-  const targetBatchLitres = isValidTarget
-    ? Math.min(targetLitres, MAX_TARGET_BATCH_LITRES)
-    : baseBatchLitres;
-  const factor = baseBatchLitres > 0 ? targetBatchLitres / baseBatchLitres : 1;
-
-  return {
-    factor,
-    baseBatchLitres,
-    targetBatchLitres: baseBatchLitres > 0 ? targetBatchLitres : baseBatchLitres,
-    scaled: factor !== 1,
-    batchSizeEnteredQuantity: roundTo(recipe.batchSizeEnteredQuantity * factor, getInventoryUnitQuantityPrecision(recipe.batchSizeEnteredUnit)),
-    batchSizeEnteredUnit: recipe.batchSizeEnteredUnit,
-    ingredients: recipe.ingredients.map((ingredient) => {
-      const scaledAmount = scaleIngredientAmount(
-        { quantity: ingredient.amountEnteredQuantity, unit: ingredient.amountEnteredUnit },
-        { quantity: ingredient.amountNormalizedQuantity, unit: ingredient.amountNormalizedUnit },
-        ingredient.ingredientTechnicalData,
-        factor
-      );
-      return {
-        id: ingredient.id,
-        persistentKey: ingredient.persistentKey,
-        type: ingredient.type,
-        ingredientCategory: ingredient.ingredientCategory ?? null,
-        ingredientSubtype: ingredient.ingredientSubtype ?? null,
-        displayName: ingredient.ingredientDisplayName ?? ingredient.ingredientDisplayNameSnapshot ?? null,
-        displayNameRu: ingredient.ingredientDisplayNameRu ?? null,
-        displayNameEn: ingredient.ingredientDisplayNameEn ?? null,
-        technicalData: ingredient.ingredientTechnicalData ?? null,
-        ...scaledAmount,
-        // Профиль единицы берём как в основной секции рецепта, чтобы окно
-        // пересчёта показывало те же единицы, что и страница (мл/г/пачки, не сырой код).
-        defaultDisplayUnit: ingredient.ingredientDefaultDisplayUnit ?? ingredient.ingredientDefaultDisplayUnitSnapshot ?? null,
-        allowedUnits: ingredient.ingredientAllowedUnits ?? null,
-        measurementDimension: ingredient.ingredientMeasurementDimension ?? ingredient.ingredientMeasurementDimensionSnapshot ?? null,
-        stage: ingredient.stage
-      };
-    })
-  };
-};
-
 // =============================================================================
-//  Пересчёт под ЧУЖУЮ ЭФФЕКТИВНОСТЬ (варка чужого рецепта на своём оборудовании)
+//  Пересчёт под ЧУЖУЮ ЭФФЕКТИВНОСТЬ (варка / предпросмотр / клон под своё)
 //
 //  Эффективность затирания — свойство ПИВОВАРНИ, а не рецепта. Рецепт на 75%
 //  сваренный на 65%-оборудовании недоберёт сахаров: тот же солод даст меньший OG.
@@ -212,8 +184,9 @@ export const scaleRecipeToVolume = (recipe: RecipeDetailDto, targetLitres: numbe
 //  ТОЧНО тот же OG (и, следовательно, те же FG/ABV/IBU) — авторские цели остаются
 //  верными, пересчитывать их не нужно. Цвет чуть темнее: солода на литр больше.
 //
-//  Единый источник истины для трёх потребителей: слепка партии (brew-setup),
-//  списания склада (inventory-service) и матча «сколько нужно» (match-service).
+//  Единый источник истины для четырёх потребителей: слепка партии (brew-setup),
+//  списания склада (inventory-service), матча «сколько нужно» (match-service) и
+//  эфемерного предпросмотра/клона на публичной странице (RecipeScalePanel).
 //  Разъедутся — вернётся дефект «карточка обещает, склад не сходится».
 // =============================================================================
 
@@ -252,6 +225,90 @@ export const resolveLineScaleFactor = (
     : volumeFactor
 );
 
+const toScaledIngredient = (
+  ingredient: RecipeIngredient,
+  lineFactor: number
+): ScaledRecipeIngredient => {
+  const scaledAmount = scaleIngredientAmount(
+    { quantity: ingredient.amountEnteredQuantity, unit: ingredient.amountEnteredUnit },
+    { quantity: ingredient.amountNormalizedQuantity, unit: ingredient.amountNormalizedUnit },
+    ingredient.ingredientTechnicalData,
+    lineFactor
+  );
+  return {
+    id: ingredient.id,
+    persistentKey: ingredient.persistentKey,
+    type: ingredient.type,
+    ingredientCategory: ingredient.ingredientCategory ?? null,
+    ingredientSubtype: ingredient.ingredientSubtype ?? null,
+    displayName: ingredient.ingredientDisplayName ?? ingredient.ingredientDisplayNameSnapshot ?? null,
+    displayNameRu: ingredient.ingredientDisplayNameRu ?? null,
+    displayNameEn: ingredient.ingredientDisplayNameEn ?? null,
+    technicalData: ingredient.ingredientTechnicalData ?? null,
+    ...scaledAmount,
+    // Профиль единицы берём как в основной секции рецепта, чтобы окно
+    // пересчёта показывало те же единицы, что и страница (мл/г/пачки, не сырой код).
+    defaultDisplayUnit: ingredient.ingredientDefaultDisplayUnit ?? ingredient.ingredientDefaultDisplayUnitSnapshot ?? null,
+    allowedUnits: ingredient.ingredientAllowedUnits ?? null,
+    measurementDimension: ingredient.ingredientMeasurementDimension ?? ingredient.ingredientMeasurementDimensionSnapshot ?? null,
+    stage: ingredient.stage
+  };
+};
+
+/**
+ * Эфемерный пересчёт под объём и/или эффективность оборудования.
+ * Объём — пропорционально всем строкам; efficiency — дожим только засыпи
+ * (см. resolveLineScaleFactor). Интенсивные свойства (OG/FG/…) не трогаем.
+ */
+export const scaleRecipeToParams = (
+  recipe: RecipeDetailDto,
+  options: { targetLitres?: number | null; targetEfficiencyPct?: number | null } = {}
+): ScaledRecipeView => {
+  const baseBatchLitres = safeBaseBatchLitres(recipe);
+  const targetLitres = options.targetLitres ?? Number.NaN;
+
+  // Невалидный/непозитивный/пустой target или нулевой базовый объём → factor = 1
+  // (показываем оригинал без масштабирования). Верхний кламп — защита от абсурда.
+  const isValidTarget = Number.isFinite(targetLitres) && targetLitres > 0;
+  const targetBatchLitres = isValidTarget
+    ? Math.min(targetLitres, MAX_TARGET_BATCH_LITRES)
+    : baseBatchLitres;
+  const volumeFactor = baseBatchLitres > 0 ? targetBatchLitres / baseBatchLitres : 1;
+  const efficiencyFactor = resolveEfficiencyFactor(recipe.efficiency, options.targetEfficiencyPct);
+  const baseEfficiencyPct = recipe.efficiency ?? DEFAULT_BREWHOUSE_EFFICIENCY_PCT;
+  const targetEfficiencyPct = efficiencyFactor !== 1 && options.targetEfficiencyPct != null
+    ? options.targetEfficiencyPct
+    : baseEfficiencyPct;
+
+  return {
+    factor: volumeFactor,
+    baseBatchLitres,
+    targetBatchLitres: baseBatchLitres > 0 ? targetBatchLitres : baseBatchLitres,
+    efficiencyFactor,
+    baseEfficiencyPct,
+    targetEfficiencyPct,
+    scaled: volumeFactor !== 1 || efficiencyFactor !== 1,
+    batchSizeEnteredQuantity: roundTo(
+      recipe.batchSizeEnteredQuantity * volumeFactor,
+      getInventoryUnitQuantityPrecision(recipe.batchSizeEnteredUnit)
+    ),
+    batchSizeEnteredUnit: recipe.batchSizeEnteredUnit,
+    ingredients: recipe.ingredients.map((ingredient) => toScaledIngredient(
+      ingredient,
+      resolveLineScaleFactor(
+        { type: ingredient.type, technicalData: ingredient.ingredientTechnicalData ?? null },
+        volumeFactor,
+        efficiencyFactor
+      )
+    ))
+  };
+};
+
+/** Пересчёт только под объём — обёртка над {@link scaleRecipeToParams}. */
+export const scaleRecipeToVolume = (recipe: RecipeDetailDto, targetLitres: number): ScaledRecipeView => (
+  scaleRecipeToParams(recipe, { targetLitres })
+);
+
 /**
  * Пересчёт рецепта под варку: полноценный RecipeDetailDto с батчем и КАЖДЫМ
  * количеством в обеих величинах (entered — для слепков и показа, normalized — для
@@ -286,6 +343,7 @@ export const scaleRecipeDetailForBrew = (
     // Эффективность варки — оборудования, на котором варим: с ней движок статистики
     // и водный план должны получить тот же OG, что у автора (засыпь уже дожата).
     efficiency: targetEfficiency,
+    waterPlanMeta: scaleRecipeWaterPlan(recipe.waterPlanMeta, volumeFactor),
     batchSizeEnteredQuantity: scaled.scaled
       ? scaled.batchSizeEnteredQuantity
       : recipe.batchSizeEnteredQuantity,

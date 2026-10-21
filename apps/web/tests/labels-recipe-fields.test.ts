@@ -29,7 +29,7 @@ const recipeSlots = (overrides: Partial<LabelSlots> = {}): LabelSlots => ({
   description: "Хмелевой и питкий.",
   showLogo: true,
   showIbuScale: true,
-  brandText: "BREWED WITH NB",
+  brandText: "BEWED WITH NB",
   ...overrides
 });
 

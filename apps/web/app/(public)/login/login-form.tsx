@@ -334,7 +334,6 @@ export function LoginForm({
         <h1 className="text-2xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
           Вход и регистрация
         </h1>
-        <p className="text-sm text-muted-foreground">Новый аккаунт создастся автоматически при первом успешном входе.</p>
       </div>
 
       <label className="flex items-start gap-2.5 rounded-lg bg-muted p-3 text-xs leading-5 text-muted-foreground">

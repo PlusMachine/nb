@@ -6,6 +6,7 @@ import type { BjcpCatalogStyle, ContentArticle } from "@nb/content";
 
 import { getBjcpCardColorInfo } from "@/features/content/bjcp-card-stats";
 import { calculators, type CalculatorSlug } from "@/features/calculators/catalog";
+import { canViewCalculator } from "@/features/calculators/visibility";
 import { jsonLdScriptProps } from "@/features/ingredients/seo";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
 import {
@@ -28,6 +29,7 @@ const toAbsoluteUrl = (baseUrl: string, path: string) => `${baseUrl.replace(/\/$
 // для расчёта любого рецепта в стиле, персонализация по стилю — не в этой итерации.
 const bjcpRelatedCalculatorSlugs: CalculatorSlug[] = ["ibu", "abv-attenuation", "beer-color", "priming-sugar"];
 const bjcpRelatedCalculators = bjcpRelatedCalculatorSlugs
+  .filter((slug) => canViewCalculator(slug))
   .map((slug) => calculators.find((calculator) => calculator.slug === slug))
   .filter((calculator): calculator is (typeof calculators)[number] => Boolean(calculator));
 
@@ -252,7 +254,7 @@ const resolveLocalizedDescriptor = (key: PassportStatKey, value: string) => {
   if (normalized.startsWith("variable by type, see individual styles")) {
     return {
       value: "Зависит от подстиля IPA",
-      supportingText: "Параметры отличаются у Session, Standard и Double версий."
+      supportingText: "Параметры отличаются у сессионной, стандартной и двойной версий."
     };
   }
 
@@ -485,7 +487,7 @@ export function BjcpArticlePage({
       <ArticleStructuredData article={article} baseUrl={APP_URL} hasRealHeroImage={hasRealHeroImage} />
       <script {...jsonLdScriptProps(breadcrumbJsonLd)} />
 
-      <nav aria-label="Breadcrumb" className="px-1 text-sm text-muted-foreground">
+      <nav aria-label="Навигационная цепочка" className="px-1 text-sm text-muted-foreground">
         <ol className="flex flex-wrap items-center gap-2">
           <li>
             <Link href="/bjcp" className="transition hover:text-foreground">

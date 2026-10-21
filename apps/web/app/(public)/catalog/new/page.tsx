@@ -54,7 +54,7 @@ export default async function NewCustomIngredientPage({
       <CustomCatalogIngredientForm
         mode="create"
         initial={initial}
-        submitLabel="Сохранить в пользовательские ингредиенты"
+        submitLabel="Сохранить ингредиент"
         onSubmit={createCatalogCustomIngredientAction}
       />
     </main>

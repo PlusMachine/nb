@@ -180,7 +180,7 @@ const createUserCustomIngredientBaseSchema = z.object({
   yeastFlocculation: z.string().trim().max(80).optional().nullable(),
   yeastMinFermentationTempC: nullableNumber(numberField().min(-20, "Температура брожения не может быть ниже -20 °C.").max(60, "Температура брожения не может быть выше 60 °C.")),
   yeastMaxFermentationTempC: nullableNumber(numberField().min(-20, "Температура брожения не может быть ниже -20 °C.").max(60, "Температура брожения не может быть выше 60 °C.")),
-  alcoholToleranceAbvTypical: nullableNumber(numberField().min(0, "Толерантность к алкоголю не может быть меньше 0%.").max(100, "Толерантность к алкоголю не может быть больше 100%.")),
+  alcoholToleranceAbvTypical: nullableNumber(numberField().min(0, "Устойчивость к алкоголю не может быть меньше 0%.").max(100, "Устойчивость к алкоголю не может быть больше 100%.")),
   physicalForm: z.preprocess((value) => {
     if (value == null) {
       return null;
@@ -219,7 +219,7 @@ const buildCreateUserCustomIngredientSchema = ({
     if (resolvedCategory !== value.category) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Категория и subtype конфликтуют.",
+        message: "Подтип не соответствует выбранной категории.",
         path: ["category"]
       });
     }
@@ -234,7 +234,7 @@ const buildCreateUserCustomIngredientSchema = ({
     if (!resolvedSubtype) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Subtype не распознан для выбранной категории.",
+        message: "Подтип не найден в выбранной категории.",
         path: ["subtype"]
       });
     }
@@ -244,7 +244,7 @@ const buildCreateUserCustomIngredientSchema = ({
     if (resolvedType !== value.type) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Тип ингредиента конфликтует с taxonomy.",
+        message: "Тип ингредиента не соответствует выбранной категории и подтипу.",
         path: ["type"]
       });
     }
@@ -315,6 +315,7 @@ export const catalogInventoryTechnicalOverrideSchema = z.object({
   fermentableColorEbc: nullableNumber(numberField().min(0, "Цвет EBC не может быть меньше 0.").max(9999, "Цвет EBC не может быть больше 9999.")),
   fermentableExtractYieldPct: nullableNumber(numberField().min(0, "Экстрактивность не может быть меньше 0%.").max(100, "Экстрактивность не может быть больше 100%.")),
   hopAlphaAcidPct: nullableNumber(numberField().min(0, "Альфа-кислота не может быть меньше 0%.").max(100, "Альфа-кислота не может быть больше 100%.")),
+  harvestYear: nullableNumber(numberField().int("Год урожая должен быть целым числом.").min(1900, "Год урожая не может быть раньше 1900.").max(2100, "Год урожая не может быть позже 2100.")),
   waterTreatmentConcentrationPct: nullableNumber(numberField().positive("Концентрация кислоты должна быть больше 0%.").max(100, "Концентрация кислоты не может быть больше 100%."))
 });
 
@@ -339,7 +340,9 @@ export const updateInventoryItemSchema = withPurchaseValidation(baseInventoryFie
   ingredientCatalogItemId: z.string().trim().min(1).optional().nullable(),
   userCustomIngredientId: z.string().uuid().optional().nullable(),
   packageVariantId: z.string().trim().min(1).optional().nullable(),
-  waterTreatmentConcentrationPct: nullableNumber(numberField().positive("Концентрация кислоты должна быть больше 0%.").max(100, "Концентрация кислоты не может быть больше 100%."))
+  waterTreatmentConcentrationPct: nullableNumber(numberField().positive("Концентрация кислоты должна быть больше 0%.").max(100, "Концентрация кислоты не может быть больше 100%.")),
+  hopAlphaAcidPct: nullableNumber(numberField().min(0, "Альфа-кислота не может быть меньше 0%.").max(100, "Альфа-кислота не может быть больше 100%.")),
+  harvestYear: nullableNumber(numberField().int("Год урожая должен быть целым числом.").min(1900, "Год урожая не может быть раньше 1900.").max(2100, "Год урожая не может быть позже 2100."))
 })).superRefine((value, ctx) => {
   const linkage = inventorySourceLinkageSchema.safeParse({
     ingredientCatalogItemId: value.ingredientCatalogItemId,
@@ -402,6 +405,7 @@ export type InventorySourceDto = {
   packageVariantName?: string | null;
   derivedFromIngredientId?: string | null;
   derivedFromDisplayName?: string | null;
+  derivedFromHopAlphaAcidPct?: number | null;
   summary?: string | null;
   purchaseLinks?: IngredientPurchaseLinkSummaryDto;
 } & IngredientTechnicalFields;

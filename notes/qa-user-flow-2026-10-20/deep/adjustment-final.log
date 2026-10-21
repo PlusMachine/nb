@@ -1,0 +1,11 @@
+
+ RUN  v4.0.18 /home/dopefish/projects/nb/apps/web
+
+ ✓ integration/recovery-browser.integration.test.ts (7 tests | 6 skipped) 3188ms
+     ✓ manual inventory adjustment preserves input and recovers from a network failure  3051ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 6 skipped (7)
+   Start at  23:05:27
+   Duration  5.00s (transform 860ms, setup 56ms, import 1.49s, tests 3.19s, environment 0ms)
+

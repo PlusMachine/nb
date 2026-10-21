@@ -1,54 +1,13 @@
+import { RECIPE_IMPORT_MAX_INPUT_BYTES, RECIPE_IMPORT_MAX_RECIPES } from "../contracts";
 import type { BitternessFormula } from "@nb/brewing-core";
 
 import type { CanonicalRecipe, CanonicalRecipeIngredient } from "./canonical";
 import { lovibondToEbc } from "../../ingredients/technical-fields";
 import type { CustomHopForm, CustomPhysicalForm, CustomYeastForm } from "../../inventory/custom-ingredient";
-import { inventoryUnits, type InventoryUnit } from "../../inventory/units";
-
-const isRecord = (value: unknown): value is Record<string, unknown> => (
-  typeof value === "object"
-  && value !== null
-  && !Array.isArray(value)
-);
-
-const readNumber = (value: unknown) => {
-  const parsed = typeof value === "number" ? value : Number(value);
-  return Number.isFinite(parsed) ? parsed : null;
-};
-
-const readString = (value: unknown) => typeof value === "string" ? value : null;
-
-const readFirstNumber = (record: Record<string, unknown>, keys: string[]) => {
-  for (const key of keys) {
-    const value = readNumber(record[key]);
-    if (value != null) {
-      return value;
-    }
-  }
-
-  return null;
-};
-
-const readFirstString = (record: Record<string, unknown>, keys: string[]) => {
-  for (const key of keys) {
-    const value = readString(record[key]);
-    if (value != null) {
-      return value;
-    }
-  }
-
-  return null;
-};
-
-const readUnit = (value: unknown, fallback: InventoryUnit): InventoryUnit => {
-  if (typeof value !== "string") return fallback;
-  const normalized = value.trim().toLowerCase();
-  const singular = normalized.endsWith("s") ? normalized.slice(0, -1) : normalized;
-  if ((inventoryUnits as readonly string[]).includes(singular)) {
-    return singular as InventoryUnit;
-  }
-  return fallback;
-};
+import { isRecord, readNumber, readString, readFirstNumber, readFirstString, readUnit } from "./readers";
+import { buildImportedFermentationProfile } from "./process";
+import { importBrewfatherEquipment, importBrewfatherWater } from "./brewfather-profiles";
+import { RecipeImportError } from "./errors";
 
 const mapHopUse = (use: string | null): CanonicalRecipeIngredient["stage"] => {
   const normalized = use?.toLowerCase() ?? "";
@@ -77,17 +36,19 @@ const mapBrewfatherFermentable = (
 
 const mapFermentableStage = (use: string | null): CanonicalRecipeIngredient["stage"] => {
   const normalized = use?.toLowerCase() ?? "";
-  if (normalized.includes("boil")) return "boil";
+  if (normalized.includes("boil") || normalized.includes("flame")) return "boil";
+  if (/primary|secondary|ferment/.test(normalized)) return "fermentation";
+  if (/bott|pack/.test(normalized)) return "packaging";
   return "mash";
 };
 
 const mapBrewfatherHopForm = (rawForm: string | null): CustomHopForm | null => {
   const normalized = rawForm?.toLowerCase() ?? "";
   if (!normalized) return null;
-  if (normalized.includes("pellet")) return "pellet";
   if (normalized.includes("leaf") || normalized.includes("whole")) return "whole_cone";
   if (normalized.includes("cryo")) return "cryo";
   if (normalized.includes("lupulin") || normalized.includes("lupomax")) return "lupulin";
+  if (normalized.includes("pellet")) return "pellet";
   return "standard";
 };
 
@@ -125,10 +86,21 @@ const readBrewfatherFermentableColorEbc = (item: Record<string, unknown>) => {
     return directEbc;
   }
 
-  return lovibondToEbc(readFirstNumber(item, ["lovibond", "color"]));
+  const lovibond = readNumber(item.lovibond);
+  if (lovibond != null) return lovibondToEbc(lovibond);
+  const srm = readNumber(item.color);
+  return srm == null ? null : srm * 1.97;
 };
 
-const buildBrewfatherProcessMeta = (payload: Record<string, unknown>): Record<string, unknown> | null => {
+const readBrewfatherAmount = (item: Record<string, unknown>, fallbackUnit: CanonicalRecipeIngredient["unit"], fallbackAmount: number) => {
+  const amount = readNumber(item.amount) ?? readNumber(item.weight) ?? fallbackAmount;
+  const unit = readString(item.unit)?.toLowerCase();
+  if (unit === "qt" || unit === "pt") return { amount: amount * (unit === "qt" ? 0.946352946 : 0.473176473), unit: "l" as const };
+  if (unit === "tsp" || unit === "tbsp" || unit === "cup") return { amount: amount * ({ tsp: 4.928921594, tbsp: 14.78676478, cup: 236.5882365 }[unit]!), unit: "ml" as const };
+  return { amount, unit: readUnit(item.unit, fallbackUnit) };
+};
+
+const buildBrewfatherProcessMeta = (payload: Record<string, unknown>, warnings: string[]): Record<string, unknown> | null => {
   const mash = isRecord(payload.mash) ? payload.mash : null;
   const rawSteps = mash && Array.isArray(mash.steps) ? mash.steps : [];
   const mashSteps = rawSteps
@@ -150,16 +122,27 @@ const buildBrewfatherProcessMeta = (payload: Record<string, unknown>): Record<st
     .filter((step): step is NonNullable<typeof step> => step !== null)
     .slice(0, 10);
 
-  return mashSteps.length
-    ? { mashProfile: { steps: mashSteps } }
-    : null;
+  const fermentation = isRecord(payload.fermentation) ? payload.fermentation : null;
+  const fermentationSteps = fermentation && Array.isArray(fermentation.steps) ? fermentation.steps.filter(isRecord) : [];
+  if (fermentationSteps.some((step) => readNumber(step.pressure) || readNumber(step.ramp))) warnings.push("Давление и плавное изменение температуры брожения сохранены в исходном JSON; настройте их перед варкой.");
+  if (rawSteps.some((step) => isRecord(step) && (readNumber(step.rampTime) || readNumber(step.infuseAmount)))) warnings.push("Скорость нагрева и объёмы инфузий сохранены в исходном JSON; проверьте затирание.");
+  const profile = buildImportedFermentationProfile(fermentationSteps.map((step, index) => ({
+    name: readFirstString(step, ["name", "type"]) ?? `Этап ${index + 1}`,
+    temperatureC: readFirstNumber(step, ["stepTemp", "temperatureC", "temperature", "temp"]),
+    durationDays: readFirstNumber(step, ["stepTime", "durationDays", "duration", "time"]) || null,
+  })), warnings);
+  if (rawSteps.length > 10) warnings.push("Перенесены первые 10 шагов затирания. Полный профиль сохранён в исходных данных.");
+  return mashSteps.length || profile ? {
+    ...(mashSteps.length ? { mashProfile: { steps: mashSteps } } : {}),
+    ...(profile ? { fermentationProfile: profile } : {}),
+  } : null;
 };
 
 const mapMiscStage = (use: string | null): CanonicalRecipeIngredient["stage"] => {
   const normalized = use?.toLowerCase() ?? "";
-  if (normalized.includes("mash")) return "mash";
+  if (/mash|steep|sparge/.test(normalized)) return "mash";
   if (normalized.includes("boil")) return "boil";
-  if (normalized.includes("ferment")) return "fermentation";
+  if (/ferment|primary|secondary/.test(normalized)) return "fermentation";
   if (normalized.includes("bott") || normalized.includes("pack")) return "packaging";
   return "other";
 };
@@ -197,38 +180,48 @@ const readBrewfatherStyleHint = (style: unknown) => {
   return { name, categoryNumber, styleLetter };
 };
 
-export const importBrewfatherJsonToCanonicalRecipe = (payload: unknown): CanonicalRecipe => {
+const importBrewfatherRecipe = (payload: unknown): CanonicalRecipe => {
   if (!isRecord(payload)) {
     throw new Error("INVALID_BREWFATHER_JSON");
   }
 
-  const fermentables = Array.isArray(payload.fermentables) ? payload.fermentables : [];
-  const hops = Array.isArray(payload.hops) ? payload.hops : [];
-  const yeasts = Array.isArray(payload.yeasts) ? payload.yeasts : [];
-  const miscs = Array.isArray(payload.miscs) ? payload.miscs : [];
+  const readIngredients = (key: string): Record<string, unknown>[] => {
+    const value = payload[key];
+    if (value == null) return [];
+    if (!Array.isArray(value) || !value.every(isRecord)) throw new Error("INVALID_BREWFATHER_JSON");
+    return value;
+  };
+  const fermentables = readIngredients("fermentables");
+  const hops = readIngredients("hops");
+  const yeasts = readIngredients("yeasts");
+  const miscs = readIngredients("miscs");
   const ingredients: CanonicalRecipeIngredient[] = [];
+  const warnings: string[] = ["OG, FG, IBU и цвет пересчитываются в NB и могут отличаться от Brewfather. Исходные значения показаны в сводке и сохранены в исходном JSON."];
 
   if (!fermentables.length && !hops.length && !yeasts.length && !miscs.length && !readString(payload.name) && !readString(payload.title)) {
     throw new Error("INVALID_BREWFATHER_JSON");
   }
+  if (!readString(payload.name) && !readString(payload.title)) throw new Error("INVALID_IMPORT_RECIPE");
 
   for (const item of fermentables) {
     if (!isRecord(item)) continue;
     const rawType = readString(item.type);
     const colorEbc = readBrewfatherFermentableColorEbc(item);
-    const extractYieldPct = readFirstNumber(item, ["yield", "yieldPct", "yieldPercent", "extractYield", "extractPct"]);
+    const potential = readNumber(item.potential);
+    const extractYieldPct = readFirstNumber(item, ["yield", "yieldPct", "yieldPercent", "extractYield", "extractPct"])
+      ?? (potential != null && potential > 1 ? Math.round((potential - 1) * 1000 / 46.214 * 10000) / 100 : null);
     ingredients.push({
       name: readString(item.name) ?? "Imported fermentable",
       ...mapBrewfatherFermentable(rawType),
-      amount: readNumber(item.amount) ?? readNumber(item.weight) ?? 0,
-      unit: readUnit(item.unit, "kg"),
+      ...readBrewfatherAmount(item, "kg", 0),
       stage: mapFermentableStage(readString(item.use)),
-      timeOffset: readBrewfatherTimeMinutes(item),
+      stepMeta: { use: /steep/i.test(readString(item.use) ?? "") ? "steep" : mapFermentableStage(readString(item.use)) },
+      timeOffset: readBrewfatherTimeMinutes(item) == null ? null : Math.round(readBrewfatherTimeMinutes(item)!),
       fermentableColorEbc: colorEbc,
       fermentableExtractYieldPct: extractYieldPct,
       externalImportMeta: {
         source: "brewfather_json",
-        rawId: readString(item.id),
+        rawId: readString(item._id) ?? readString(item.id),
         rawType,
         colorEbc,
         extractYieldPct
@@ -242,28 +235,29 @@ export const importBrewfatherJsonToCanonicalRecipe = (payload: unknown): Canonic
     const stage = mapHopUse(use);
     const alphaAcidPct = readNumber(item.alpha);
     const hopForm = mapBrewfatherHopForm(readString(item.type) ?? readString(item.form));
-    const timeMinutes = readBrewfatherTimeMinutes(item);
+    const hopTiming = stage === "fermentation" && !readString(item.timeUnit) ? { ...item, timeUnit: "day" } : item;
+    if (stage === "fermentation" && !readString(item.timeUnit) && readNumber(item.time) != null) warnings.push(`«${readString(item.name) ?? "Хмель"}»: для сухого охмеления без указания единицы времени длительность считается в днях; проверьте длительность.`);
+    const timeMinutes = readBrewfatherTimeMinutes(hopTiming);
     ingredients.push({
       name: readString(item.name) ?? "Imported hop",
       type: "hop",
       category: "hop",
-      amount: readNumber(item.amount) ?? 0,
-      unit: readUnit(item.unit, "g"),
+      ...readBrewfatherAmount(item, "g", 0),
       stage,
-      timeOffset: timeMinutes,
+      timeOffset: timeMinutes == null ? null : Math.round(timeMinutes),
       hopAlphaAcidPct: alphaAcidPct,
       hopForm,
       stepMeta: {
         useType: mapHopUseType(use, stage),
         timeMinutes,
         durationDays: stage === "fermentation" && timeMinutes != null ? timeMinutes / 1440 : null,
-        temperatureC: readNumber(item.temp),
+        temperatureC: readFirstNumber(item, ["temp", "temperature", "hopstandTemperature"]) ?? (stage === "whirlpool" && isRecord(payload.equipment) ? readNumber(payload.equipment.hopstandTemperature) : null),
         hopForm
       },
       externalImportMeta: {
         source: "brewfather_json",
         rawUse: use,
-        rawId: readString(item.id),
+        rawId: readString(item._id) ?? readString(item.id),
         rawType: readString(item.type),
         alphaAcidPct
       }
@@ -274,16 +268,18 @@ export const importBrewfatherJsonToCanonicalRecipe = (payload: unknown): Canonic
     if (!isRecord(item)) continue;
     const rawForm = readString(item.form);
     const attenuationPct = readNumber(item.attenuation);
+    const unit = readUnit(item.unit, "pack");
+    const defaultAmount = unit === "pack" ? 1 : 0;
+    if (readNumber(item.amount) == null && defaultAmount === 1) warnings.push(`«${readString(item.name) ?? "Дрожжи"}»: количество не указано, установлена 1 упаковка. Проверьте дозировку.`);
     ingredients.push({
       name: readString(item.name) ?? "Imported yeast",
       type: "yeast",
       category: "yeast",
-      amount: readNumber(item.amount) ?? 1,
-      unit: readUnit(item.unit, "pack"),
+      ...readBrewfatherAmount(item, "pack", defaultAmount),
       stage: "fermentation",
       yeastAttenuationPct: attenuationPct,
       yeastForm: mapBrewfatherYeastForm(rawForm),
-      externalImportMeta: { source: "brewfather_json", rawId: readString(item.id), rawForm, attenuationPct }
+      externalImportMeta: { source: "brewfather_json", rawId: readString(item._id) ?? readString(item.id), rawForm, attenuationPct }
     });
   }
 
@@ -294,12 +290,11 @@ export const importBrewfatherJsonToCanonicalRecipe = (payload: unknown): Canonic
     ingredients.push({
       name: name ?? "Imported misc",
       ...mapMiscCategory(type, name),
-      amount: readNumber(item.amount) ?? 1,
-      unit: readUnit(item.unit, "item"),
+      ...readBrewfatherAmount(item, "item", 0),
       stage: mapMiscStage(readString(item.use)),
-      timeOffset: readBrewfatherTimeMinutes(item),
+      timeOffset: readBrewfatherTimeMinutes(item) == null ? null : Math.round(readBrewfatherTimeMinutes(item)!),
       physicalForm: mapBrewfatherPhysicalForm(type, name),
-      externalImportMeta: { source: "brewfather_json", rawId: readString(item.id), rawUse: readString(item.use), rawType: type }
+      externalImportMeta: { source: "brewfather_json", rawId: readString(item._id) ?? readString(item.id), rawUse: readString(item.use), rawType: type, rawWaterAdjustment: item.waterAdjustment === true }
     });
   }
 
@@ -311,6 +306,13 @@ export const importBrewfatherJsonToCanonicalRecipe = (payload: unknown): Canonic
   const bitternessFormula = mapBrewfatherBitternessFormula(importedFormulaPreference);
   const styleHint = readBrewfatherStyleHint(payload.style);
 
+  const processMeta = buildBrewfatherProcessMeta(payload, warnings);
+  const equipmentProfileSnapshot = importBrewfatherEquipment(payload, warnings);
+  const waterPlanMeta = importBrewfatherWater(payload, warnings, ingredients);
+  if (ingredients.some((ingredient) => !Number.isFinite(ingredient.amount) || ingredient.amount <= 0)) throw new Error("INVALID_IMPORT_INGREDIENT_AMOUNT");
+  if (Array.isArray(payload.tags) && payload.tags.length || readString(payload.path) && payload.path !== "/") warnings.push("Папки и метки Brewfather сохранены в исходном JSON.");
+  if (payload.img_url || payload.attachmentCount) warnings.push("Фотографии и вложения не переносятся автоматически.");
+  if (payload.carbonation != null) warnings.push("Целевая карбонизация сохранена в исходных данных; проверьте её при розливе.");
   return {
     title: readString(payload.name) ?? readString(payload.title) ?? "Imported Brewfather recipe",
     batchSizeL: readNumber(payload.batchSize) ?? readNumber(payload.batchSizeL) ?? null,
@@ -319,6 +321,8 @@ export const importBrewfatherJsonToCanonicalRecipe = (payload: unknown): Canonic
     description: readString(payload.notes),
     importMeta: {
       source: "brewfather_json_beta",
+      warnings,
+      originalRecipe: payload,
       importedAt: new Date().toISOString(),
       importedFormulaPreference,
       styleHint,
@@ -333,7 +337,38 @@ export const importBrewfatherJsonToCanonicalRecipe = (payload: unknown): Canonic
     calculationMeta: bitternessFormula
       ? { bitternessFormula, bitternessSettings: {} }
       : null,
-    processMeta: buildBrewfatherProcessMeta(payload),
+    processMeta,
+    equipmentProfileSnapshot,
+    waterPlanMeta,
     ingredients
   };
+};
+
+/** Single recipe, API array, or the recipes section of a full data backup. */
+export const importBrewfatherJsonToCanonicalRecipes = (input: unknown): CanonicalRecipe[] => {
+  if (new TextEncoder().encode(JSON.stringify(input ?? null)).length > RECIPE_IMPORT_MAX_INPUT_BYTES) throw new Error("IMPORT_INPUT_TOO_LARGE");
+  const root = isRecord(input) && isRecord(input.data) && input.data.recipes != null ? input.data : input;
+  const collection = isRecord(root) && root.recipes != null ? root.recipes : root;
+  const items = Array.isArray(collection) ? collection
+    : isRecord(root) && root.recipes != null && isRecord(collection) ? Object.values(collection) : [collection];
+  if (!items.length) throw new Error("IMPORT_RECIPE_EMPTY");
+  if (items.length > RECIPE_IMPORT_MAX_RECIPES) throw new Error("IMPORT_TOO_MANY_RECIPES");
+  return items.map((item, index) => {
+    try {
+      const isBatch = isRecord(item) && isRecord(item.recipe);
+      const canonical = importBrewfatherRecipe(isBatch ? item.recipe : item);
+      const warnings = canonical.importMeta!.warnings as string[];
+      if (isBatch) warnings.push("Переносится рецепт из варки; журнал, замеры и история варки не импортируются.");
+      if (isRecord(root) && root.recipes != null && (root.batches || root.inventory || root.settings)) warnings.push("Из резервной копии импортируются рецепты. Склад, настройки и история варок не импортируются.");
+      return canonical;
+    } catch (error) {
+      if (items.length === 1) throw error;
+      throw new RecipeImportError(index + 1, isRecord(item) ? readString(item.name) ?? "Без названия" : "Без названия", error);
+    }
+  });
+};
+export const importBrewfatherJsonToCanonicalRecipe = (payload: unknown): CanonicalRecipe => {
+  const recipes = importBrewfatherJsonToCanonicalRecipes(payload);
+  if (recipes.length !== 1) throw new Error("IMPORT_MULTIPLE_RECIPES");
+  return recipes[0]!;
 };

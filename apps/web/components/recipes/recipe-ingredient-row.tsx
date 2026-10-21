@@ -42,7 +42,7 @@ export const recipeIngredientStageLabels: Record<RecipeIngredientStage, string> 
   mash: "Затирание",
   boil: "Кипячение",
   whirlpool: "Вирпул",
-  fermentation: "Ферментация",
+  fermentation: "Брожение",
   packaging: "Розлив",
   other: "Другое"
 };
@@ -299,7 +299,7 @@ export function RecipeIngredientRow({
             value={value.timeOffset}
             onChange={(event) => onChange({ ...value, timeOffset: event.target.value })}
             className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
-            placeholder="опционально"
+            placeholder="необязательно"
           />
         </div>
       </div>

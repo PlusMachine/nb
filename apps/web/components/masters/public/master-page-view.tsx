@@ -6,6 +6,7 @@ import type { MasterPublishedSnapshot } from "@/features/masters/contracts";
 
 import { MasterGallery } from "./master-gallery";
 import { MasterItemCover } from "./master-item-cover";
+import { MasterItemDescription } from "./master-item-description";
 
 /**
  * Чистый рендер страницы мастера (§6 ТЗ) — только из пропса `snapshot`
@@ -47,7 +48,7 @@ export function MasterPageView({
 
   return (
     <Container className="space-y-8 py-6">
-      <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
+      <nav aria-label="Навигационная цепочка" className="text-sm text-muted-foreground">
         <ol className="flex flex-wrap items-center gap-2">
           <li>
             <Link href="/" className="transition hover:text-foreground">Главная</Link>
@@ -69,7 +70,7 @@ export function MasterPageView({
               <MapPin className="h-4 w-4 shrink-0" aria-hidden />
               {snapshot.city}
             </span>
-            {snapshot.craftSince ? <span>Делает с {snapshot.craftSince}</span> : null}
+            {snapshot.craftSince ? <span>С {snapshot.craftSince} года</span> : null}
           </div>
         </div>
 
@@ -140,21 +141,11 @@ export function MasterPageView({
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <h3 className="text-base font-semibold leading-snug text-foreground">{item.title}</h3>
                     {item.priceNote ? (
-                      <span className="shrink-0 rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-foreground">{item.priceNote}</span>
+                      <span className="max-w-full break-words rounded-xl bg-muted px-2.5 py-1 text-xs font-medium text-foreground">{item.priceNote}</span>
                     ) : null}
                   </div>
                   {item.description ? (
-                    <details className="group/desc text-sm text-muted-foreground">
-                      <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                        <span className="line-clamp-4 whitespace-pre-line group-open/desc:line-clamp-none">{item.description}</span>
-                        <span className="mt-1 inline-block text-xs font-medium text-foreground group-open/desc:hidden">
-                          Показать полностью
-                        </span>
-                        <span className="mt-1 hidden text-xs font-medium text-foreground group-open/desc:inline-block">
-                          Свернуть
-                        </span>
-                      </summary>
-                    </details>
+                    <MasterItemDescription text={item.description} />
                   ) : null}
                 </div>
               </article>

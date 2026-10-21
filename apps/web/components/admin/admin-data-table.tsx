@@ -109,7 +109,7 @@ export function AdminDataTable<T>({
 
   return (
     <div className={className}>
-      <div className="hidden overflow-x-auto rounded-lg border border-border bg-card lg:block">
+      <div className="relative hidden overflow-x-auto rounded-lg border border-border bg-card lg:block">
         <Table>
           <TableHeader>
             <TableRow>

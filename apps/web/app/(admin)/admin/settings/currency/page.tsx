@@ -12,7 +12,7 @@ export default async function AdminCurrencySettingsPage() {
     <div className="space-y-6">
       <AdminPageHeader
         title="Курсы валют"
-        description="Базовая валюта системы — RUB. Курсы используются для конвертации и расчёта себестоимости склада."
+        description="Базовая валюта системы — RUB. Курсы используются для конвертации и расчёта стоимости запасов."
       />
 
       <CurrencyRatesForm

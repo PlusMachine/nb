@@ -1,0 +1,912 @@
+
+ RUN  v4.0.18 /home/dopefish/projects/nb/apps/web
+
+ ❯ tests/calculators-pages.test.ts (12 tests | 1 failed) 1950ms
+     ✓ every calculator has a seoTitle starting with «Калькулятор» and within 60 chars 4ms
+     ✓ /calculators renders all calculators grouped into section headings  893ms
+     ✓ /calculators metadata has a self-canonical 1ms
+     ✓ /calculators openGraph carries locale/siteName (страница замещает openGraph layout целиком) и обложку раздела 2ms
+     × calculator routes render through the dynamic route with seoTitle metadata, canonical and visible/JSON-LD breadcrumbs 728ms
+     ✓ generateMetadata throws notFound() for an unknown calculator slug 2ms
+     ✓ formula and common mistakes render in the server HTML even when the client component renders nothing (static-generation fallback case) 90ms
+     ✓ calculator route canonical stays on the clean slug regardless of shared-link query state 175ms
+     ✓ query param prefill works for scalar fields via useSearchParams 16ms
+     ✓ yeast-starter, speise-krausen and ibu expose a gravity scale switcher including Brix 30ms
+     ✓ localStorage fallback code does not run during SSR 5ms
+     ✓ every calculator has a seoDescription (120-220 chars) used as the metadata/OG description 2ms
+ ✓ tests/bjcp-style-page-seo.test.ts (9 tests) 1511ms
+     ✓ redirects generateMetadata for a legacy alias slug to the canonical /bjcp/<slug>  1172ms
+ ❯ tests/articles-detail-page-wiring.test.ts (5 tests | 1 failed) 468ms
+     ✓ builds metadata from the CMS article: seoTitle, canonical, OG article  435ms
+     ✓ calls notFound for a slug that matches neither the CMS nor legacy content 2ms
+     ✓ redirects permanently to /bjcp/<slug> for a legacy @nb/content slug 1ms
+     × renders the article body, breadcrumb and JSON-LD without throwing 27ms
+     ✓ throws notFound for a missing slug in the page body too 1ms
+ ❯ tests/recipe-fg-estimate.test.ts (37 tests | 1 failed) 75ms
+     ✓ predicts the same FG and ABV for Lactose and Лактоза without catalog metadata 23ms
+     ✓ predicts the same FG and ABV for Lactose and Молочная лактоза (порошок) without catalog metadata 1ms
+     ✓ predicts the same FG and ABV for Maltodextrin and Мальтодекстрин without catalog metadata 1ms
+     ✓ predicts the same FG and ABV for Dextrose and Декстроза without catalog metadata 8ms
+     ✓ predicts the same FG and ABV for Glucose and Глюкоза without catalog metadata 1ms
+     ✓ predicts the same FG and ABV for Sucrose and Сахароза without catalog metadata 0ms
+     ✓ predicts the same FG and ABV for Table sugar and Сахар without catalog metadata 1ms
+     ✓ predicts the same FG and ABV for Invert sugar and Инвертный сахар without catalog metadata 0ms
+     ✓ predicts the same FG and ABV for Candi sugar and Кэнди without catalog metadata 2ms
+     ✓ predicts the same FG and ABV for Corn syrup and Кукурузный сироп without catalog metadata 1ms
+     ✓ predicts the same FG and ABV for Glucose syrup and Глюкозный сироп without catalog metadata 1ms
+     ✓ predicts the same FG and ABV for Caramel malt and Карамельный солод without catalog metadata 4ms
+     ✓ predicts the same FG and ABV for Crystal malt and Кристаллический солод without catalog metadata 0ms
+     ✓ predicts the same FG and ABV for Carapils and Карапилс without catalog metadata 1ms
+     ✓ predicts the same FG and ABV for Carafoam and Карафоам without catalog metadata 1ms
+     ✓ recognizes Russian technical descriptions with an opaque ingredient name 0ms
+     ✓ does not match sugar names embedded inside a different Unicode word 0ms
+     ✓ returns unavailable when there are no fermentables 0ms
+     ✓ uses the default 75% attenuation when no yeast is selected 1ms
+     ✓ lowers FG at 65C compared with 67C 0ms
+     ✓ raises FG at 69C compared with 67C 0ms
+     ✓ changes FG when yeast attenuation is available 0ms
+     ✓ uses the yeast midpoint for the main estimate 0ms
+     ✓ builds FG range from min and max yeast attenuation 0ms
+     ✓ lowers FG when simple sugars contribute gravity points 0ms
+     ✓ raises FG when crystal or dextrin fermentables contribute gravity points 0ms
+     ✓ raises FG more strongly for lactose than for dextrin malt 0ms
+     ✓ keeps effective attenuation exactly at base when the grain bill has no special classes 0ms
+     ✓ computes weighted effective attenuation for a sugar-heavy tripel 0ms
+     ✓ computes weighted effective attenuation for a lactose-heavy milk stout 0ms
+     ✓ never lets the effective attenuation exceed the 98% ceiling, even with a heavy sugar share 0ms
+     ✓ gives manual attenuation override priority over yeast attenuation 0ms
+     ✓ gives manual FG override priority over every other driver 0ms
+     ✓ keeps fallback labels compact 0ms
+     ✓ hides normal yeast estimate labels 0ms
+     × uses short manual override labels 19ms
+     ✓ updates ABV when the new FG estimate changes 0ms
+ ❯ tests/consume-preview-dialog.test.tsx (15 tests | 2 failed) 62ms
+     ✓ ни open=false, ни open=true не дают содержимого в статическом рендере (портал вне DOM-окружения) 16ms
+     ✓ exact: имя + требуемое количество, без чекбокса и предупреждения 5ms
+     × exact_short + exactClamps=true (дрожжи): показывает фактический остаток и потребность без замены 18ms
+     × exact_short + exactClamps=false (солод): показывает фактический остаток и предлагает замену 7ms
+     ✓ substitute_available: чекбокс снят по умолчанию (opt-in), показывает «вместо» и EBC/α-сравнение 2ms
+     ✓ substitute_available: несколько кандидатов — есть выбор, дефолт первый из отсортированных сервером 3ms
+     ✓ missing: имя + «будет пропущено» + ссылки «Найти в каталоге» и «Чего не хватает» 3ms
+     ✓ missing без привязки к каталогу: только «Чего не хватает», без битой ссылки поиска 1ms
+     ✓ две строки замен указывают на одну и ту же позицию склада, спрос превышает остаток — overbooked 1ms
+     ✓ exact-строка и отмеченная замена другой строки указывают на одну позицию — суммируется 1ms
+     ✓ спрос в пределах остатка — не overbooked 1ms
+     ✓ дрожжевая (exactClamps=true) строка не участвует в гарде, даже если ссылается на ту же позицию 0ms
+     ✓ substitute_available без отмеченной замены не создаёт спроса 0ms
+     ✓ одиночная короткая exact_short строка без замены — спрос клампуется остатком, НЕ overbooked 1ms
+     ✓ две короткие exact_short строки бронируют одну и ту же позицию — сумма клампов превышает остаток, overbooked 1ms
+ ❯ tests/brew-batches-page-wiring.test.ts (17 tests | 2 failed) 176ms
+     ✓ offers the primary Сварить entry and a clean empty state when there are no brews 17ms
+     ✓ lists brew batches with statuses and links when non-empty 25ms
+     ✓ sorts active statuses before completed ones 11ms
+     × показывает склад партии: что списано и историю движений 47ms
+     ✓ держит рядом два поля: «Заметки о варке» и «Дегустация» 6ms
+     ✓ в итоге у поля плотности нет подсказки (A6) 6ms
+     × отменённая партия не предлагает дегустацию 12ms
+     ✓ в варочный день журнал ждёт OG 9ms
+     ✓ на брожении журнал ждёт FG 6ms
+     ✓ отдаёт доске брожения день и план числами, а не только строкой 4ms
+     ✓ план без длительности → plannedDays = null (не «из null» в подтверждении) 4ms
+     ✓ считает покрытие склада по составу ЭТОЙ партии 10ms
+     ✓ не считает покрытие, когда партия уже списала себя (batchAlreadyConsumed) 3ms
+     ✓ не считает покрытие без своего инвентарного вида партии (getBrewBatchInventoryView → null) 3ms
+     ✓ считает покрытие в акте «Варочный день» (status brewing) 5ms
+     ✓ считает покрытие в акте «Брожение» (status fermenting) 3ms
+   ✓ a deleted recipe does not hide snapshot-based stock coverage 3ms
+ ❯ tests/brew-inventory-prep.test.tsx (18 tests | 1 failed) 67ms
+     ✓ пустой склад: кнопки «Списать со склада» нет, есть объяснение и ссылка в покупки 9ms
+     ✓ частичное покрытие: кнопка остаётся, рядом честная подпись «N из M позиций» 15ms
+     ✓ presentCount врёт полным покрытием, coveredCount честно показывает нехватку (Находка 1) 2ms
+     ✓ coveredCount === totalLines при !fullyCovered (закрыто целиком заменами): подписи и ссылки в покупки нет 1ms
+     ✓ полное покрытие: заметный призыв «Все ингредиенты есть на складе — списать?» 1ms
+     ✓ stockCoverage=null: ни одна из коверидж-строк не рендерится 1ms
+     ✓ canConsume=false (партия уже списана): коверидж-строки не рендерятся, даже если пришёл полный stockCoverage 2ms
+     × показывает списанное и историю движений, но не предлагает списать снова 22ms
+     ✓ оставляет возврат на склад доступным (паритет с device-путём) 2ms
+     ✓ вторая партия того же рецепта: кнопка списания доступна, текста «уже списаны» нет 1ms
+     ✓ своё списание уже сделано: кнопки списания нет, есть возврат 1ms
+     ✓ состав партии сохранён: удаление рецепта не блокирует списание 1ms
+     ✓ строка недосписанной позиции показывает «списано из нужного» 1ms
+     ✓ позиция, списанная полностью, второго числа не показывает 1ms
+     ✓ кнопка «Списать со склада» видна, содержимое диалога-предпросмотра в разметку не попадает (диалог закрыт по умолчанию) 1ms
+     ✓ показывает и списанную позицию, и исходную строку рецепта, которую она закрыла 1ms
+     ✓ не показывает пометку, если substitutedFor не пришёл (списано с точной позиции) 0ms
+   ✓ legacy batch without a full snapshot explains manual stock accounting 1ms
+ ❯ tests/recipe-match-panel.test.ts (9 tests | 1 failed) 71ms
+     ✓ renders the inline «На склад» form for a gap line with only a custom-ingredient link 22ms
+     ✓ renders two links (catalog search + add-custom deeplink) for a gap line with no link at all 3ms
+     ✓ no gap section renders when every line is covered 1ms
+     ✓ делает «не хватает K» ссылкой на /app/shopping, когда нехватки есть 4ms
+     ✓ Ф25: partial-строка тоже считается нехваткой в счётчике 2ms
+     ✓ не рендерит ссылку на /app/shopping, когда нехваток нет 1ms
+     × показывает бренд и флаг страны у строки нехватки 29ms
+     ✓ кнопка «На склад» скрыта до наведения на карточку (sm+) 2ms
+     ✓ схлопывает повторные добавки одного хмеля в одну строку нехватки 4ms
+stdout | features/device-streams/alerts.test.ts > processIngestAlerts — батарея > вольты < 3.4 В → battery_low, впервые за сеанс (alert_state пуст)
+[device-streams:analytics] alert_sent { type: 'battery_low' }
+
+stdout | features/device-streams/alerts.test.ts > processIngestAlerts — батарея > проценты < 20% → battery_low
+[device-streams:analytics] alert_sent { type: 'battery_low' }
+
+stdout | features/device-streams/alerts.test.ts > processIngestAlerts — дедуп 12ч > не шлёт повторно раньше 12ч, шлёт снова после
+[device-streams:analytics] alert_sent { type: 'battery_low' }
+
+stdout | features/device-streams/alerts.test.ts > processIngestAlerts — дедуп 12ч > не шлёт повторно раньше 12ч, шлёт снова после
+[device-streams:analytics] alert_sent { type: 'battery_low' }
+
+stdout | features/device-streams/alerts.test.ts > processIngestAlerts — вердикт брожения (§5 F5, через сглаживание) > not_started: текст с советом проверить дрожжи
+[device-streams:analytics] alert_sent { type: 'not_started' }
+
+stdout | features/device-streams/alerts.test.ts > processIngestAlerts — вердикт брожения (§5 F5, через сглаживание) > likely_done: заголовок «Похоже, добродило: …» + фраза П5 в теле
+[device-streams:analytics] verdict_likely_done { sessionId: 'session-1' }
+[device-streams:analytics] alert_sent { type: 'likely_done' }
+
+stdout | features/device-streams/alerts.test.ts > processIngestAlerts — температурный коридор (§5 F6) > первая точка «вне» 31 минуту назад → temp_out
+[device-streams:analytics] alert_sent { type: 'temp_out' }
+
+stdout | features/device-streams/alerts.test.ts > processIngestAlerts — устойчивость к сбоям и запись alert_state > падение sendPushToUser не валит процесс (best-effort)
+[device-streams:analytics] alert_sent { type: 'battery_low' }
+
+stderr | features/device-streams/alerts.test.ts > processIngestAlerts — устойчивость к сбоям и запись alert_state > падение sendPushToUser не валит процесс (best-effort)
+[device-streams] processIngestAlerts: sendPushToUser упал: Error: push failed
+    at /home/dopefish/projects/nb/apps/web/features/device-streams/alerts.test.ts:381:48
+    at file:///home/dopefish/projects/nb/node_modules/@vitest/runner/dist/index.js:145:11
+    at file:///home/dopefish/projects/nb/node_modules/@vitest/runner/dist/index.js:915:26
+    at file:///home/dopefish/projects/nb/node_modules/@vitest/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///home/dopefish/projects/nb/node_modules/@vitest/runner/dist/index.js:1209:10)
+    at file:///home/dopefish/projects/nb/node_modules/@vitest/runner/dist/index.js:1653:37
+    at Traces.$ (file:///home/dopefish/projects/nb/node_modules/vitest/dist/chunks/traces.CCmnQaNT.js:142:27)
+    at trace (file:///home/dopefish/projects/nb/node_modules/vitest/dist/chunks/test.B8ej_ZHS.js:239:21)
+    at runTest (file:///home/dopefish/projects/nb/node_modules/@vitest/runner/dist/index.js:1653:12)
+
+stdout | features/device-streams/alerts.test.ts > processIngestAlerts — устойчивость к сбоям и запись alert_state > несколько кандидатов разом (батарея+температура) → один UPDATE alert_state на оба типа
+[device-streams:analytics] alert_sent { type: 'temp_out' }
+[device-streams:analytics] alert_sent { type: 'battery_low' }
+
+ ❯ features/device-streams/alerts.test.ts (13 tests | 2 failed) 47ms
+     ✓ sessionId=null → ничего не делает (нет активного сеанса) 2ms
+     ✓ alertsMuted=true → ничего не шлёт, alert_state не трогает 2ms
+     ✓ вольты < 3.4 В → battery_low, впервые за сеанс (alert_state пуст) 8ms
+     ✓ проценты < 20% → battery_low 2ms
+     ✓ батарея в норме → не шлёт 1ms
+     ✓ не шлёт повторно раньше 12ч, шлёт снова после 3ms
+     × not_started: текст с советом проверить дрожжи 14ms
+     × likely_done: заголовок «Похоже, добродило: …» + фраза П5 в теле 6ms
+     ✓ первая точка «вне» ровно 29 мин назад → не слать (строго граничный случай) 1ms
+     ✓ первая точка «вне» 31 минуту назад → temp_out 1ms
+     ✓ коридор не задан (tempMinC/tempMaxC null) → температура не проверяется 0ms
+     ✓ падение sendPushToUser не валит процесс (best-effort) 4ms
+     ✓ несколько кандидатов разом (батарея+температура) → один UPDATE alert_state на оба типа 1ms
+ ❯ features/brew-controller/ferment-profile.test.ts (33 tests | 1 failed) 27ms
+     ✓ план нечитаем (не объект) → честная ошибка 3ms
+     ✓ нет температуры главного брожения → честная ошибка (нечего мапить) 0ms
+     ✓ только главное брожение: дни×24 в часы 0ms
+     ✓ нет primaryDurationDays → hours=0 (держать вручную) 0ms
+     ✓ extraSteps: с температурой попадают в маппинг, без температуры пропускаются 1ms
+     ✓ extraStep без имени получает дефолтное «Шаг N» 0ms
+     ✓ coldCrash.enabled=true добавляет «Холодная выдержка» 0ms
+     ✓ coldCrash.enabled=false — не добавляется 1ms
+     ✓ conditioning НЕ грузится, даже если enabled=true (после розлива) 1ms
+     ✓ больше 6 ступеней → честная ошибка, не обрезка 1ms
+     ✓ ровно 6 ступеней — ok 1ms
+     ✓ совпадает число ступеней и температуры в допуске 0.25° → true 0ms
+     ✓ разное число ступеней → false 0ms
+     ✓ температура за пределами допуска → false 0ms
+     ✓ пустые ступени прибора → false (нечего сопоставлять) 0ms
+     ✓ план опознан → имена плана 0ms
+     ✓ план не передан → «Ступень N» 0ms
+     ✓ план не совпадает → «Ступень N», не гадаем 0ms
+     ✓ нет ступеней → пустой прогресс 0ms
+     ✓ currentIndex=null → все ступени future, текущей/следующей нет 0ms
+     ✓ currentIndex вне диапазона (-1, за пределами) трактуется как «нет текущей» 0ms
+     ✓ done/current/future расставлены по индексу 0ms
+     ✓ последняя ступень текущая → next=null 0ms
+     ✓ «день N из M»: elapsed 3 полных дня на 7-дневной ступени → день 4 из 7 0ms
+     ✓ день не превышает M даже при переработке (устройство не перешло само) 0ms
+     × hours=0 (держать вручную) → dayLabel без счётчика дней 12ms
+     ✓ подписи ступеней берутся из плана, когда он опознан 0ms
+     ✓ 168 часов → «7 дн» 0ms
+     ✓ 36 часов → «1.5 дн» 0ms
+     ✓ 0 часов → «до ручного перехода» 0ms
+     ✓ режет по nSteps, отбрасывая слоты-заполнители 0ms
+     ✓ nSteps=6 — весь массив активен 0ms
+     ✓ nSteps больше длины массива — не выходит за границы 0ms
+ ❯ features/brew-controller/brew-recipe-flow.test.ts (5 tests | 1 failed) 27ms
+     ✓ создаёт партию из рецепта и честно отражает запущенный нагрев 5ms
+     ✓ REMOTE_DISABLED: партия создана и id не теряется, но не уходит молча (heatingStarted=false) 1ms
+     × прочий nack: варка не начата, но партия уже создана (id партии наружу для честного UI) 16ms
+     ✓ рецепт недоступен: партия не создаётся, устройство не трогаем, id партии — null 2ms
+     ✓ устройство недоступно ПОСЛЕ создания партии: id партии не теряется, даже если startBrewOnDevice бросает 1ms
+ ✓ tests/recipes-page.test.ts (6 tests) 43ms
+ ❯ tests/ingredient-proposal-moderation-actions.test.ts (9 tests | 1 failed) 29ms
+     ✓ одобряет заявку, пишет аудит и ревалидирует очередь 8ms
+     ✓ пишет отклонение отдельным действием аудита 0ms
+     ✓ не объединяет заявку без выбранного ингредиента 1ms
+     ✓ объединяет заявку с выбранным ингредиентом 1ms
+     ✓ возвращает русскую ошибку вместо кода сервиса 1ms
+     ✓ пробрасывает NEXT_REDIRECT из requireRole 2ms
+     × переводит известные поля заявки в человекочитаемые подписи 13ms
+     ✓ не падает на пустой заявке 0ms
+     ✓ подписывает источник заявки, неизвестный — как есть 0ms
+ ✓ tests/public-recipes-pages-wiring.test.ts (10 tests) 1318ms
+     ✓ uses getPublicRecipeBySlug and renders read-only recipe  1301ms
+ ✓ tests/recipe-editor-pages-wiring.test.ts (5 tests) 2043ms
+     ✓ edit form renders from owner-safe service  1860ms
+ ✓ tests/recipes-pages-wiring.test.ts (5 tests) 964ms
+     ✓ list page uses listAuthorRecipeCards  942ms
+ ✓ tests/labels-layout.test.ts (37 tests) 2370ms
+     ✓ стилевые тайглайны печатаются на большой наклейке (не выбрасываются)  2006ms
+ ✓ tests/og-render-smoke.test.ts (4 tests) 1713ms
+     ✓ текстовая карточка: PNG-сигнатура, 1200×630, ≤ 300 КБ  428ms
+     ✓ карточка с фото-врезкой: 1200×630, ≤ 300 КБ, PNG или JPEG (смотря сработал ли весовой гейт)  748ms
+     ✓ весовой гейт: PNG > 300 КБ дожимается в JPEG меньшего размера  493ms
+ ✓ tests/bjcp-hub-page-seo.test.ts (4 tests) 822ms
+     ✓ has a canonical /bjcp and an openGraph block  553ms
+ ✓ tests/masters-public-notfound.test.ts (7 tests) 615ms
+     ✓ рендерит страницу мастера, когда getPublishedMasterBySlug находит слаг  571ms
+ ✓ tests/labels-render-smoke.test.ts (10 tests) 1535ms
+ ✓ tests/recipe-editor-actions.test.ts (4 tests) 608ms
+     ✓ create action uses service layer and returns stats payload  594ms
+ ✓ tests/coverage-recipes-lifecycle.test.ts (29 tests) 399ms
+ ✓ tests/recipe-service.test.ts (45 tests) 555ms
+     ✓ автоимя из сервиса распознаётся редактором как автоматическое  307ms
+ ✓ tests/admin-users-auth-gates.test.ts (13 tests) 720ms
+ ✓ tests/og-photo.test.ts (7 tests) 645ms
+     ✓ вход webp тоже перекодируется в JPEG (Satori не ест webp)  324ms
+ ✓ tests/home-data-cache.test.ts (3 tests) 167ms
+ ✓ tests/public-recipe-query.test.ts (29 tests) 539ms
+ ✓ tests/coverage-search.test.ts (37 tests) 328ms
+ ✓ tests/equipment-profiles-page.test.ts (10 tests) 607ms
+     ✓ renders summary-first profile cards without open edit forms by default  524ms
+ ✓ tests/recipe-interop.test.ts (17 tests) 256ms
+ ✓ tests/brew-batch-consume-substitution.test.ts (21 tests) 242ms
+ ✓ tests/ingredient-ranking-prepared.test.ts (70 tests) 207ms
+ ✓ tests/bjcp-style-page-placeholder-image.test.ts (1 test) 799ms
+     ✓ serves the generated OG card when heroImageUrl is only the shared BJCP placeholder  797ms
+ ✓ tests/password-signup.test.ts (5 tests) 421ms
+ ✓ tests/public-recipes-service.test.ts (14 tests) 256ms
+ ✓ tests/coverage-recipe-match-journeys.test.ts (44 tests) 138ms
+ ✓ tests/recipe-editor-components.test.ts (44 tests) 493ms
+ ✓ tests/app-dashboard-wiring.test.ts (28 tests) 207ms
+ ✓ tests/bridge-ws-command-gate.test.ts (4 tests) 265ms
+ ✓ tests/labels-overrides.test.ts (18 tests) 100ms
+ ✓ tests/coverage-brew-batches-lifecycle.test.ts (68 tests) 145ms
+ ✓ tests/recipe-water-ingredients.test.ts (11 tests) 81ms
+ ✓ tests/my-recipes-gallery.test.tsx (21 tests) 134ms
+ ✓ tests/recipe-water-plan.test.ts (45 tests) 76ms
+ ✓ tests/masters-upload-route.test.ts (18 tests) 118ms
+ ✓ tests/inventory-usability-components.test.ts (25 tests) 111ms
+ ✓ tests/ingredient-picker.test.ts (78 tests) 83ms
+ ✓ tests/user-catalog-ingredient-search.test.ts (44 tests) 114ms
+ ✓ tests/recipe-water-flow-ui.test.ts (36 tests) 191ms
+ ✓ tests/inventory-page-filters.test.ts (5 tests) 70ms
+ ✓ tests/keg-carbonation-table.test.tsx (5 tests) 67ms
+stderr | tests/recipe-match-service.test.ts > computeRecipeMatchesForUser — batch > FIX-3: isolates a per-recipe match failure instead of failing the whole batch
+[recipes] computeRecipeMatchesForUser: skipping recipe after match error {
+  recipeId: 'r-broken',
+  error: Error: [test] simulated corrupt recipe line
+      at roundTo (/home/dopefish/projects/nb/apps/web/tests/recipe-match-service.test.ts:48:15)
+      at matchLineAgainstInventory (/home/dopefish/projects/nb/apps/web/features/recipes/match-service.ts:424:20)
+      at /home/dopefish/projects/nb/apps/web/features/recipes/match-service.ts:584:20
+      at Array.map (<anonymous>)
+      at matchRecipeLinesAgainstInventory (/home/dopefish/projects/nb/apps/web/features/recipes/match-service.ts:584:6)
+      at computeMatchForRecipeRow (/home/dopefish/projects/nb/apps/web/features/recipes/match-service.ts:959:17)
+      at Module.computeRecipeMatchesForUser (/home/dopefish/projects/nb/apps/web/features/recipes/match-service.ts:1223:27)
+      at processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at /home/dopefish/projects/nb/apps/web/tests/recipe-match-service.test.ts:862:20
+      at file:///home/dopefish/projects/nb/node_modules/@vitest/runner/dist/index.js:915:20
+}
+
+ ✓ tests/recipe-match-service.test.ts (62 tests) 77ms
+ ✓ tests/inventory-add-flow.test.ts (74 tests) 161ms
+ ✓ tests/calculators-access.test.tsx (9 tests) 96ms
+ ✓ tests/labels-fonts.test.ts (1 test) 83ms
+ ✓ tests/labels-slots.test.ts (31 tests) 85ms
+ ✓ tests/recipe-designer-equipment-snapshot.test.ts (21 tests) 111ms
+ ✓ tests/inventory-lot-plan.test.ts (2 tests) 53ms
+ ✓ tests/inventory-service.test.ts (33 tests) 82ms
+ ✓ tests/equipment-presets.test.ts (165 tests) 76ms
+ ✓ tests/recipe-migration.test.ts (39 tests) 86ms
+ ✓ tests/labels-input-limits.test.ts (14 tests) 63ms
+ ✓ tests/coverage-masters-lifecycle.test.ts (45 tests) 87ms
+ ✓ tests/shopping-page-view.test.ts (31 tests) 121ms
+ ✓ tests/ingredient-catalog-metadata-ui.test.ts (26 tests) 76ms
+ ✓ tests/recipes-read-components.test.ts (22 tests) 90ms
+stderr | tests/recipe-inventory-service.test.ts > recipe inventory allocation service > гонка списания > дубли аллокаций на одну строку (след гонки подбора) не списывают склад дважды
+[recipes] consume: duplicate active allocations for one recipe line, releasing extras {
+  recipeId: '00000000-0000-4000-8000-000000000001',
+  brewBatchId: '00000000-0000-4000-8000-000000000402',
+  duplicateIds: [ '00000000-0000-4000-8000-000000000999' ]
+}
+
+ ✓ tests/recipe-inventory-service.test.ts (39 tests) 65ms
+ ✓ features/brew-controller/transport.test.ts (23 tests) 73ms
+ ✓ tests/recipe-ingredient-links.test.ts (5 tests) 89ms
+ ✓ tests/bjcp-card-stats.test.ts (9 tests) 116ms
+ ✓ tests/recipe-clone-bridge.test.ts (10 tests) 73ms
+ ✓ tests/content-articles.test.ts (13 tests) 36ms
+ ✓ tests/master-page-view.test.ts (12 tests) 47ms
+ ✓ tests/admin-ingredient-form.test.tsx (7 tests) 54ms
+ ✓ tests/recipe-card.test.ts (12 tests) 44ms
+ ✓ tests/catalog-hub-sections.test.ts (11 tests) 39ms
+ ✓ tests/owner-recipe-card.test.tsx (13 tests) 54ms
+ ✓ tests/masters-contracts.test.ts (47 tests) 26ms
+ ✓ tests/recipe-image-upload-route.test.ts (2 tests) 28ms
+ ✓ tests/ingredient-service-foundation.test.ts (10 tests) 35ms
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — автообнаружение устройства и маппинг hardware_kind > новое устройство создаётся: providerId=rapt-cloud, hardwareId=rapt-<device_id>, name из device_name
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — автообнаружение устройства и маппинг hardware_kind > без device_name имя — 'RAPT ' + device_type
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — автообнаружение устройства и маппинг hardware_kind > device_type=RAPT Pill → hardware_kind=rapt-pill
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — автообнаружение устройства и маппинг hardware_kind > device_type=Fermentation Chamber → hardware_kind=rapt-chamber
+[device-streams:analytics] device_connected { kind: 'rapt-chamber', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — автообнаружение устройства и маппинг hardware_kind > device_type=Temperature Controller → hardware_kind=rapt-chamber
+[device-streams:analytics] device_connected { kind: 'rapt-chamber', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — автообнаружение устройства и маппинг hardware_kind > device_type=Mini Fridge → hardware_kind=rapt-chamber
+[device-streams:analytics] device_connected { kind: 'rapt-chamber', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — автообнаружение устройства и маппинг hardware_kind > device_type=BrewZilla Gen 4 → hardware_kind=rapt-brewzilla
+[device-streams:analytics] device_connected { kind: 'rapt-brewzilla', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — автообнаружение устройства и маппинг hardware_kind > device_type=Неизвестный тип → hardware_kind=other
+[device-streams:analytics] device_connected { kind: 'other', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — автообнаружение устройства и маппинг hardware_kind > device_type=null → hardware_kind=other
+[device-streams:analytics] device_connected { kind: 'other', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — автообнаружение устройства и маппинг hardware_kind > повторный пакет того же device_id НЕ создаёт дубль устройства
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — квота (стрим+RAPT ≤ 10) > устройство, уже существующее ДО достижения квоты, продолжает принимать данные
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — строковые числа и нормализация > значения-строки (@-подстановки RAPT) парсятся в числа и нормализуются
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — строковые числа и нормализация > плаузибилити-клампы: мусорные значения → NULL, но точка пишется с сырым payload
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — время точки (ts) > ts вне окна ±48ч → используем receivedAt
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — время точки (ts) > ts в разумном окне → используем sourceTs, а не receivedAt
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — время точки (ts) > невалидная строка ts → используем receivedAt (не бросает)
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — персист-гейт (§8.5) > первая точка пишется; вторая через минуту — гейтится
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — персист-гейт (§8.5) > точка через 5+ минут проходит гейт
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — денормализация сеанса > активный сеанс устройства денормализуется в sessionId показания
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — вызов processIngestAlerts (F6/M5-A) > вызывается ПОСЛЕ успешной записи, с sessionId активного сеанса
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — вызов processIngestAlerts (F6/M5-A) > вызывается с sessionId=null, когда активного сеанса нет
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+ ✓ features/device-streams/ingest-rapt.test.ts (27 tests) 35ms
+ ✓ tests/ingredient-search-service.test.ts (5 tests) 29ms
+ ✓ tests/recipes-url.test.ts (12 tests) 11ms
+ ✓ features/device-streams/connect-instructions.test.ts (4 tests) 6ms
+ ✓ tests/shopping-list-service.test.ts (47 tests) 41ms
+ ✓ tests/catalog-search-noise-and-sort.test.ts (26 tests) 42ms
+ ✓ tests/recipes-filter-sheet.test.ts (3 tests) 35ms
+ ✓ features/device-streams/sessions.test.ts (32 tests) 44ms
+ ✓ tests/coverage-inventory-crud.test.ts (18 tests) 38ms
+ ✓ tests/custom-catalog-ingredient-form.test.ts (2 tests) 30ms
+ ✓ tests/inventory-page-foundation.test.ts (6 tests) 53ms
+ ✓ features/notifications/push-events.test.ts (46 tests) 17ms
+ ✓ tests/coverage-custom-ingredients.test.ts (28 tests) 46ms
+ ✓ tests/site-shell.test.ts (5 tests) 31ms
+ ✓ tests/brew-day.test.ts (58 tests) 47ms
+ ✓ tests/coverage-content-articles-crud.test.ts (24 tests) 35ms
+stdout | features/device-streams/ingest.test.ts > ingestStreamPacket — персист-гейт (§8.5) > первая точка пишется; вторая через минуту — гейтится, но lastSeenAt обновляется
+[device-streams:analytics] first_packet { provider: 'stream' }
+
+stdout | features/device-streams/ingest.test.ts > ingestStreamPacket — персист-гейт (§8.5) > точка через 5+ минут проходит гейт и пишется
+[device-streams:analytics] first_packet { provider: 'stream' }
+
+stdout | features/device-streams/ingest.test.ts > ingestStreamPacket — дедуп (deviceId, ts) > два пакета с одинаковым вычисленным ts никогда не дают двух строк
+[device-streams:analytics] first_packet { provider: 'stream' }
+[device-streams:analytics] first_packet { provider: 'stream' }
+
+stdout | features/device-streams/ingest.test.ts > ingestStreamPacket — плаузибилити-клампы > мусорные значения клампуются в NULL, но точка пишется вместе с сырым payload
+[device-streams:analytics] first_packet { provider: 'stream' }
+
+stdout | features/device-streams/ingest.test.ts > ingestStreamPacket — время точки (ts) > Tilt Timepoint вне окна ±48ч (битые часы) → используем receivedAt
+[device-streams:analytics] first_packet { provider: 'stream' }
+
+stdout | features/device-streams/ingest.test.ts > ingestStreamPacket — время точки (ts) > Tilt Timepoint в разумном окне → используем sourceTs, а не receivedAt
+[device-streams:analytics] first_packet { provider: 'stream' }
+
+stdout | features/device-streams/ingest.test.ts > ingestStreamPacket — денормализация сеанса > активный сеанс устройства денормализуется в sessionId показания
+[device-streams:analytics] first_packet { provider: 'stream' }
+
+stdout | features/device-streams/ingest.test.ts > ingestStreamPacket — денормализация сеанса > завершённый сеанс не подхватывается — sessionId остаётся null
+[device-streams:analytics] first_packet { provider: 'stream' }
+
+stdout | features/device-streams/ingest.test.ts > ingestStreamPacket — вызов processIngestAlerts (F6/M5-A) > вызывается ПОСЛЕ успешной записи, с sessionId активного сеанса
+[device-streams:analytics] first_packet { provider: 'stream' }
+
+stdout | features/device-streams/ingest.test.ts > ingestStreamPacket — вызов processIngestAlerts (F6/M5-A) > вызывается с sessionId=null, когда активного сеанса нет
+[device-streams:analytics] first_packet { provider: 'stream' }
+
+ ✓ features/device-streams/ingest.test.ts (16 tests) 25ms
+ ✓ tests/recipe-style-search.test.ts (11 tests) 12ms
+ ✓ tests/coverage-catalog-browse.test.ts (21 tests) 35ms
+ ✓ tests/coverage-masters-images.test.ts (28 tests) 32ms
+ ✓ tests/admin-users-last-admin.test.ts (14 tests) 29ms
+ ✓ tests/calculators-hydrometer-view.test.ts (11 tests) 8ms
+ ✓ tests/master-cabinet-client-logic.test.ts (7 tests) 8ms
+ ✓ tests/shopping-transfer-dialog-derive.test.ts (8 tests) 8ms
+ ✓ tests/my-recipes-url.test.ts (14 tests) 10ms
+ ✓ tests/login-form.test.tsx (13 tests) 36ms
+ ✓ tests/ingredient-catalog-cross-links.test.ts (13 tests) 27ms
+ ✓ tests/rating-score.test.ts (5 tests) 5ms
+ ✓ tests/admin-recipes-visibility.test.ts (11 tests) 13ms
+ ✓ tests/public-recipe-process-section.test.ts (12 tests) 29ms
+ ✓ tests/og-entity-views.test.ts (19 tests) 24ms
+ ✓ tests/shopping-contracts.test.ts (14 tests) 32ms
+ ✓ tests/ingredient-purchase-links.test.ts (7 tests) 30ms
+ ✓ tests/inventory-search-scope.test.ts (12 tests) 29ms
+ ✓ tests/brewable-recipe-card.test.tsx (9 tests) 26ms
+ ✓ tests/admin-recipes-service.test.ts (15 tests) 20ms
+ ✓ tests/recipe-style-picker.test.ts (6 tests) 22ms
+ ✓ tests/market-item-card.test.ts (6 tests) 21ms
+ ✓ tests/admin-firmware.test.ts (16 tests) 24ms
+ ✓ tests/middleware.test.ts (2 tests) 9ms
+ ✓ features/device-streams/parse-core.test.ts (18 tests) 14ms
+ ✓ tests/recipe-publication-validation.test.ts (5 tests) 6ms
+ ✓ tests/ingredient-ranking.test.ts (11 tests) 18ms
+ ✓ tests/ingredient-picker-search-errors.test.tsx (7 tests) 22ms
+ ✓ tests/pack-rounding.test.ts (22 tests) 10ms
+ ✓ tests/calculators-mash-infusion-view.test.ts (22 tests) 16ms
+ ✓ tests/audit-service.test.ts (19 tests) 21ms
+ ✓ tests/error-handling.test.ts (5 tests) 6ms
+ ✓ tests/labels-density.test.ts (6 tests) 18ms
+ ✓ tests/calculators-beer-color-scale.test.ts (8 tests) 6ms
+ ✓ tests/push-subscription-toggle.test.ts (10 tests) 17ms
+ ✓ tests/recipe-seo.test.ts (33 tests) 21ms
+ ✓ tests/recipe-rating-form.test.ts (5 tests) 25ms
+ ✓ tests/recipe-ratings-service.test.ts (17 tests) 21ms
+ ✓ tests/ingredient-seo.test.ts (36 tests) 25ms
+ ✓ tests/inventory-purchase-cost.test.ts (5 tests) 7ms
+ ✓ tests/admin-devices.test.ts (16 tests) 21ms
+ ✓ features/device-streams/normalize-core.test.ts (30 tests) 12ms
+ ✓ tests/inventory-units.test.ts (15 tests) 19ms
+ ✓ tests/recipe-tabs.test.tsx (5 tests) 23ms
+ ✓ tests/shopping-transfer-service.test.ts (10 tests) 20ms
+ ✓ tests/inventory-price-input.test.tsx (2 tests) 22ms
+ ✓ features/devices/log-sync-core.test.ts (9 tests) 12ms
+ ✓ tests/admin-recipes-actions.test.ts (10 tests) 18ms
+ ✓ features/device-streams/integrations.test.ts (12 tests) 17ms
+ ✓ tests/pwa-manifest.test.ts (5 tests) 14ms
+ ✓ features/brew-controller/command-gate.test.ts (6 tests) 7ms
+ ✓ features/device-streams/chart-scale.test.ts (7 tests) 5ms
+ ✓ features/brew-controller/translator.test.ts (11 tests) 19ms
+ ✓ tests/calculators-visibility.test.tsx (13 tests) 13ms
+ ✓ tests/masters-admin-actions.test.ts (11 tests) 15ms
+ ✓ tests/beer-bottle-params.test.ts (17 tests) 11ms
+ ✓ tests/recipe-clone-service.test.ts (17 tests) 23ms
+ ✓ tests/catalog-legacy-redirects.test.ts (8 tests) 17ms
+ ✓ features/brew-controller/device-mode.test.ts (26 tests) 11ms
+ ✓ tests/masters-seo.test.ts (8 tests) 11ms
+ ✓ tests/imported-catalog-match.test.ts (5 tests) 7ms
+ ✓ tests/calculators-brewing-water-method-preset.test.ts (17 tests) 11ms
+ ✓ tests/brew-measurements.test.ts (15 tests) 27ms
+ ✓ tests/ingredient-normalization.test.ts (7 tests) 14ms
+ ✓ tests/calculators-serialize-query.test.ts (15 tests) 16ms
+ ✓ tests/article-cover.test.ts (5 tests) 7ms
+ ✓ features/brew-controller/cloud-transport.test.ts (9 tests) 23ms
+ ✓ tests/recipe-match-mobile-badge.test.ts (5 tests) 16ms
+ ✓ features/brew-controller/sim-transport.test.ts (8 tests) 17ms
+ ✓ tests/brew-completion.test.ts (14 tests) 18ms
+ ✓ tests/calculators-water-ph-preset-query.test.ts (6 tests) 6ms
+ ✓ tests/admin-recipes-sitemap.test.ts (2 tests) 7ms
+ ✓ tests/masters-image-route.test.ts (7 tests) 31ms
+ ✓ tests/cookie-consent-kiosk.test.ts (13 tests) 11ms
+ ✓ tests/calculators-ingredient-picker-rows.test.ts (8 tests) 12ms
+ ✓ tests/ingredient-search-api.test.ts (2 tests) 22ms
+ ✓ features/devices/tiles.test.ts (9 tests) 6ms
+ ✓ tests/recipe-designer-alpha-override.test.ts (10 tests) 11ms
+ ✓ tests/og-recipe-view.test.ts (17 tests) 12ms
+ ✓ tests/admin-currency-settings-actions.test.ts (3 tests) 15ms
+ ✓ tests/content-editor-schema.test.ts (8 tests) 16ms
+ ✓ tests/ingredient-match-group.test.ts (10 tests) 12ms
+ ✓ tests/money-display.test.ts (3 tests) 25ms
+ ✓ features/device-streams/reading-summary.test.ts (5 tests) 5ms
+ ✓ tests/inventory-pack.test.ts (20 tests) 12ms
+ ✓ tests/brew-nudge.test.ts (20 tests) 10ms
+ ✓ tests/calculators-silent-zero-warnings.test.ts (4 tests) 9ms
+ ✓ features/firmware/versions.test.ts (15 tests) 11ms
+ ✓ tests/brew-notes.test.tsx (4 tests) 18ms
+ ✓ tests/admin-users-actions.test.ts (14 tests) 17ms
+ ✓ tests/calculators-ibu-whirlpool-time-fallback.test.ts (4 tests) 9ms
+ ✓ tests/ingredients-search-api.test.ts (4 tests) 17ms
+ ✓ tests/admin-catalog-bulk-actions.test.ts (8 tests) 12ms
+ ✓ tests/admin-page-models.test.ts (9 tests) 11ms
+ ✓ tests/admin-recipes-hidden-access.test.ts (11 tests) 20ms
+ ✓ tests/navigation.test.ts (33 tests) 13ms
+ ✓ tests/ingredient-metadata-actions.test.ts (2 tests) 13ms
+ ✓ tests/currency-rates.test.ts (3 tests) 5ms
+ ✓ tests/calculators-ibu-solubility-ceiling.test.ts (2 tests) 6ms
+ ✓ tests/push-subscription-state-api.test.ts (4 tests) 23ms
+ ✓ tests/ingredient-presentation.test.ts (17 tests) 17ms
+ ✓ tests/email-policy.test.ts (3 tests) 6ms
+ ✓ features/device-streams/stream-device-core.test.ts (10 tests) 6ms
+ ✓ tests/catalog-links.test.ts (8 tests) 5ms
+ ✓ tests/shopping-copy-text.test.ts (8 tests) 6ms
+ ✓ tests/recipe-scale-volume.test.ts (22 tests) 18ms
+ ✓ tests/ingredient-family-backfill.test.ts (2 tests) 7ms
+ ✓ tests/brewability-badge.test.ts (13 tests) 8ms
+ ✓ tests/recipe-clone-action.test.ts (10 tests) 14ms
+ ✓ tests/inventory-pack-count-hint.test.ts (11 tests) 7ms
+ ✓ tests/labels-recipe-fields.test.ts (7 tests) 8ms
+ ✓ tests/brew-volume-choice.test.tsx (17 tests) 18ms
+ ✓ tests/inventory-consume.test.ts (12 tests) 12ms
+ ✓ tests/calculators-gravity-unit-migration.test.ts (28 tests) 12ms
+ ✓ tests/og-section-views.test.ts (11 tests) 15ms
+ ✓ tests/admin-catalog-bulk.test.ts (7 tests) 12ms
+ ✓ features/devices/return-recipe-core.test.ts (8 tests) 6ms
+ ✓ features/brew-controller/distill-console.test.ts (31 tests) 11ms
+ ✓ tests/og-calculator-share.test.ts (14 tests) 15ms
+ ✓ tests/push-subscriptions-admin.test.ts (9 tests) 15ms
+ ✓ tests/calculators-refractometer-view.test.ts (11 tests) 8ms
+ ✓ tests/recipe-water-profiles.test.ts (7 tests) 14ms
+ ✓ features/device-streams/verdict-core.test.ts (27 tests) 18ms
+ ✓ tests/ios-install-hint.test.ts (7 tests) 5ms
+ ✓ tests/inventory-inline-actions.test.ts (8 tests) 15ms
+ ✓ tests/devices-route.test.ts (2 tests) 13ms
+ ✓ features/devices/fermenter-binding-core.test.ts (6 tests) 8ms
+ ✓ tests/user-flow-regressions.test.ts (5 tests) 12ms
+ ✓ features/device-streams/series-core.test.ts (16 tests) 11ms
+ ✓ tests/ingredient-moderation-api.test.ts (1 test) 13ms
+ ✓ tests/brew-batch-lifecycle-actions.test.ts (6 tests) 11ms
+ ✓ tests/feedback-admin-actions.test.ts (3 tests) 15ms
+ ✓ tests/recipe-designer-yeast-default-quantity.test.ts (3 tests) 6ms
+ ✓ tests/ingredient-contracts.test.ts (5 tests) 14ms
+ ✓ tests/calculators-gravity-fallback-fields.test.ts (5 tests) 10ms
+ ✓ tests/recipe-saves-service.test.ts (9 tests) 13ms
+ ✓ tests/recipes-color-scale.test.ts (3 tests) 20ms
+ ✓ tests/recipe-rating-action.test.ts (9 tests) 11ms
+ ✓ tests/gravity-units.test.ts (13 tests) 8ms
+ ✓ tests/masters-cabinet-actions.test.ts (14 tests) 17ms
+ ✓ tests/ingredient-catalog-cache.test.ts (5 tests) 9ms
+ ✓ tests/country-flag.test.ts (1 test) 12ms
+ ✓ tests/ingredient-technical-fields.test.ts (20 tests) 15ms
+ ✓ tests/sitemap.test.ts (1 test) 9ms
+ ✓ features/brew-controller/telemetry-annotations.test.ts (4 tests) 6ms
+ ✓ features/brew-controller/kiosk-status.test.ts (9 tests) 9ms
+ ✓ tests/recipe-master-docs.test.ts (1 test) 11ms
+ ✓ tests/server-env-app-url-guard.test.ts (6 tests) 14ms
+ ✓ tests/admin-users-permissions.test.ts (18 tests) 9ms
+ ✓ features/brew-controller/stage-timeline.test.ts (18 tests) 11ms
+ ✓ tests/style-picker.test.ts (9 tests) 6ms
+ ✓ tests/ingredient-taxonomy.test.ts (3 tests) 5ms
+ ✓ tests/inventory-suggestions-api.test.ts (1 test) 11ms
+ ✓ tests/auth-phone.test.ts (3 tests) 6ms
+ ✓ features/brew-controller/stage-labels.test.ts (5 tests) 8ms
+ ✓ tests/labels-url.test.ts (10 tests) 9ms
+ ✓ tests/dashboard-onboarding.test.ts (2 tests) 4ms
+ ✓ tests/home-style-vitals.test.ts (8 tests) 14ms
+ ✓ tests/brew-inventory-snapshot.test.ts (5 tests) 16ms
+ ✓ tests/numeric-input.test.ts (15 tests) 12ms
+ ✓ tests/dashboard-overview.test.ts (9 tests) 11ms
+ ✓ tests/ingredient-workflows.test.ts (3 tests) 5ms
+ ✓ tests/beer-color.test.ts (4 tests) 7ms
+ ✓ features/devices/onboard-recipes-merge.test.ts (5 tests) 7ms
+ ✓ tests/admin-users-device-token.test.ts (4 tests) 11ms
+ ✓ tests/calculators-bottling-mixed-sizes.test.ts (5 tests) 13ms
+ ✓ features/device-streams/session-format.test.ts (4 tests) 4ms
+ ✓ tests/recipes-range-slider.test.ts (11 tests) 8ms
+ ✓ features/brew-controller/stream-provider.test.ts (5 tests) 6ms
+ ✓ tests/robots.test.ts (4 tests) 11ms
+ ✓ tests/recipe-save-button.test.ts (5 tests) 6ms
+ ✓ tests/equipment-profile-volume-plan.test.ts (3 tests) 5ms
+ ✓ tests/beer-share-key.test.ts (3 tests) 6ms
+ ✓ features/brew-batches/fermenter-status.test.ts (8 tests) 8ms
+ ✓ features/brew-controller/telemetry-source.test.ts (3 tests) 5ms
+ ✓ features/device-streams/series.test.ts (4 tests) 10ms
+ ✓ tests/calculators-yeast-starter-stats.test.ts (4 tests) 8ms
+ ✓ tests/derived-ingredient-presentation.test.ts (3 tests) 6ms
+ ✓ features/devices/stream-tile.test.ts (5 tests) 6ms
+ ✓ tests/recipe-sitemap-service.test.ts (9 tests) 14ms
+ ✓ features/devices/connection.test.ts (5 tests) 9ms
+ ✓ tests/smoke.test.ts (1 test) 4ms
+ ✓ tests/calculators-favorites-visibility.test.ts (3 tests) 5ms
+ ✓ tests/calculators-yeast-pitch-preset.test.ts (12 tests) 8ms
+ ✓ tests/hop-harvest-year.test.ts (2 tests) 6ms
+ ✓ features/brew-controller/faults.test.ts (5 tests) 5ms
+ ✓ tests/calculators-search.test.ts (4 tests) 7ms
+ ✓ features/device-streams/demo.test.ts (1 test) 3ms
+ ✓ tests/ingredient-catalog-toolbar-href.test.ts (8 tests) 8ms
+ ✓ tests/calculators-abv-view.test.ts (6 tests) 6ms
+ ✓ tests/search-sql-normalization.test.ts (1 test) 5ms
+ ✓ tests/audit-page-model.test.ts (3 tests) 5ms
+ ✓ tests/calculators-priming-co2-preset.test.ts (3 tests) 6ms
+ ✓ tests/pairing-error-text.test.ts (3 tests) 4ms
+ ✓ tests/recipe-format.test.ts (3 tests) 5ms
+ ✓ tests/consumable-picker-group.test.ts (3 tests) 7ms
+ ✓ features/brew-controller/mqtt-client.test.ts (2 tests) 4ms
+ ✓ features/device-streams/corrections.test.ts (30 tests) -10905884ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 14 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/articles-detail-page-wiring.test.ts > article detail page — render > renders the article body, breadcrumb and JSON-LD without throwing
+AssertionError: expected '<main class="mx-auto w-full max-w-3xl…' to contain 'aria-label="Breadcrumb"'
+
+Expected: "aria-label="Breadcrumb""
+Received: "<main class="mx-auto w-full max-w-3xl space-y-8 px-4 py-10"><nav aria-label="Навигационная цепочка" class="text-sm text-muted-foreground"><ol class="flex flex-wrap items-center gap-2"><li><a class="transition hover:text-foreground" href="/">Главная</a></li><li aria-hidden="true">/</li><li><a class="transition hover:text-foreground" href="/articles">Статьи</a></li><li aria-hidden="true">/</li><li class="text-foreground">Как сварить первое пиво</li></ol></nav><header class="space-y-4"><span class="text-[11px] font-semibold uppercase tracking-wider text-warning-subtle-foreground">Гайд</span><h1 class="text-3xl font-semibold leading-tight text-foreground sm:text-4xl">Как сварить первое пиво</h1><div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground"><span>Редакция NB</span><span aria-hidden="true">·</span><span>1 июня 2026 г.</span><span aria-hidden="true">·</span><span>8 мин</span></div></header><div class="overflow-hidden rounded-2xl border border-border bg-muted" style="aspect-ratio:16 / 9"><img src="/images/articles/kak-svarit-pervoe-pivo.jpg" alt="Как сварить первое пиво" class="h-full w-full object-cover"/></div><div class="space-y-4"><p class="leading-7 text-foreground">Первый шаг — санитайзинг оборудования.</p></div><section class="space-y-3 rounded-2xl border border-border bg-card p-6"><h2 class="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">Дальше</h2><ul class="space-y-2"><li><a class="text-sm font-medium text-link underline underline-offset-4" href="/calculators/abv-attenuation">Крепость и сбраживание</a></li><li><a class="text-sm font-medium text-link underline underline-offset-4" href="/recipes">Рецепты сообщества</a></li></ul></section><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Как сварить первое пиво","description":"Разбираем первую варку по шагам: оборудование, санитайзинг, затирание, брожение.","datePublished":"2026-06-01T10:00:00.000Z","dateModified":"2026-06-15T10:00:00.000Z","author":{"@type":"Person","name":"Редакция NB"},"mainEntityOfPage":"http://localhost:3000/articles/kak-svarit-pervoe-pivo","publisher":{"@type":"Organization","name":"NB"},"image":"http://localhost:3000/images/articles/kak-svarit-pervoe-pivo.jpg"}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Главная","item":"http://localhost:3000"},{"@type":"ListItem","position":2,"name":"Статьи","item":"http://localhost:3000/articles"},{"@type":"ListItem","position":3,"name":"Как сварить первое пиво","item":"http://localhost:3000/articles/kak-svarit-pervoe-pivo"}]}</script></main>"
+
+ ❯ tests/articles-detail-page-wiring.test.ts:128:18
+    126|     expect(html).toContain("Как сварить первое пиво");
+    127|     expect(html).toContain("санитайзинг оборудования");
+    128|     expect(html).toContain('aria-label="Breadcrumb"');
+       |                  ^
+    129|     expect(html).toContain("application/ld+json");
+    130|     expect(html).toContain("BlogPosting");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/14]⎯
+
+ FAIL  tests/brew-batches-page-wiring.test.ts > Страница партии — акт «Итог» (A4) > показывает склад партии: что списано и историю движений
+AssertionError: expected '<div class="space-y-6"><div><a class=…' to contain 'История движений'
+
+Expected: "История движений"
+Received: "<div class="space-y-6"><div><a class="inline-flex items-center gap-1 text-sm text-muted-foreground transition hover:text-foreground" href="/app/brew-batches"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left h-4 w-4" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>Все партии</a></div><header class="flex items-start justify-between gap-3"><div class="min-w-0 space-y-1"><div class="flex flex-wrap items-center gap-3"><h1 class="min-w-0 flex-1 truncate text-2xl font-semibold text-foreground">Летний пилснер · партия 1 · партия №1</h1><span class="shrink-0 inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-success-subtle text-success-subtle-foreground">Завершена</span></div><p class="text-sm text-muted-foreground">Летний пилснер · завершена 4 июля 2026 г.</p></div><button type="button" aria-label="Действия с партией" class="relative inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground before:absolute before:-inset-1 before:content-[&#x27;&#x27;]" id="radix-:R39:" aria-haspopup="menu" aria-expanded="false" data-state="closed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ellipsis h-5 w-5" aria-hidden="true"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg></button></header><section class="space-y-4 rounded-2xl border border-border bg-card p-5 shadow-sm"><h2 class="text-base font-semibold text-foreground">Итог партии</h2><div class="grid grid-cols-2 gap-2 sm:grid-cols-5"><div class="rounded-xl bg-muted px-3 py-2"><div class="text-[11px] uppercase tracking-wider text-muted-foreground">OG</div><div class="flex flex-wrap items-baseline gap-x-1.5"><div class="whitespace-nowrap text-lg font-semibold tabular-nums text-foreground">—</div></div><div class="text-[11px] text-muted-foreground">цель <span class="whitespace-nowrap">12.9 °P</span><span class="whitespace-nowrap text-muted-foreground"> · 1.052 SG</span></div></div><div class="rounded-xl bg-muted px-3 py-2"><div class="text-[11px] uppercase tracking-wider text-muted-foreground">FG</div><div class="flex flex-wrap items-baseline gap-x-1.5"><div class="whitespace-nowrap text-lg font-semibold tabular-nums text-foreground">—</div></div><div class="text-[11px] text-muted-foreground">цель <span class="whitespace-nowrap">3.1 °P</span><span class="whitespace-nowrap text-muted-foreground"> · 1.012 SG</span></div></div><div class="rounded-xl bg-muted px-3 py-2"><div class="text-[11px] uppercase tracking-wider text-muted-foreground">ABV</div><div class="flex flex-wrap items-baseline gap-x-1.5"><div class="whitespace-nowrap text-lg font-semibold tabular-nums text-foreground">—</div></div><div class="text-[11px] text-muted-foreground">цель <span class="whitespace-nowrap">5.2%</span></div></div><div class="rounded-xl bg-muted px-3 py-2"><div class="text-[11px] uppercase tracking-wider text-muted-foreground">Сбраживание</div><div class="flex flex-wrap items-baseline gap-x-1.5"><div class="whitespace-nowrap text-lg font-semibold tabular-nums text-foreground">—</div></div></div><div class="rounded-xl bg-muted px-3 py-2"><div class="text-[11px] uppercase tracking-wider text-muted-foreground">Объём</div><div class="flex flex-wrap items-baseline gap-x-1.5"><div class="whitespace-nowrap text-lg font-semibold tabular-nums text-foreground">20.0 л</div></div></div></div><div class="space-y-3 border-t border-border pt-4"><a class="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 border border-border bg-card hover:bg-accent min-h-[44px] px-4 py-2 text-sm" href="/app/recipes/r-9/labels?bottlingDate=2026-07-04&amp;batch=1&amp;batchId=bb-9"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sticker h-4 w-4 text-muted-foreground"><path d="M15.5 3H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3Z"></path><path d="M14 3v4a2 2 0 0 0 2 2h4"></path><path d="M8 13h.01"></path><path d="M16 13h.01"></path><path d="M10 16s.8 1 2 1c1.3 0 2-1 2-1"></path></svg>Наклейки</a></div></section><details class="group rounded-2xl border border-border bg-card p-4 shadow-sm"><summary class="flex cursor-pointer list-none items-center gap-2 text-base font-semibold text-foreground [&amp;::-webkit-details-marker]:hidden"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-4 w-4 shrink-0 text-muted-foreground transition group-open:rotate-90" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>Как прошла варка</summary><div class="mt-4"><div class="space-y-3"><details class="group rounded-xl border border-border bg-muted/40"><summary class="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-sm text-muted-foreground [&amp;::-webkit-details-marker]:hidden"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-4 w-4 shrink-0 text-muted-foreground transition group-open:rotate-90" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg><span class="font-medium">Кипячение</span><span class="text-xs text-muted-foreground tabular-nums">0 / 1</span></summary><div class="px-3 pb-3"><ul class="space-y-1.5"><li class="flex items-start gap-3 rounded-xl border px-3 py-2.5 transition border-border bg-card"><button type="button" disabled="" aria-pressed="false" aria-label="Отметить шаг выполненным" class="relative mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md border transition disabled:opacity-50 before:absolute before:-inset-2.5 before:content-[&#x27;&#x27;] border-border bg-card text-transparent hover:border-muted-foreground"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check h-4 w-4" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></button><div class="min-w-0 flex-1"><p class="text-sm font-medium text-foreground">Кипячение сусла</p><p class="text-xs text-muted-foreground">1 ч</p></div><div class="flex shrink-0 items-center gap-2"><span class="text-xs text-muted-foreground tabular-nums">60:00</span></div></li></ul></div></details><details class="group rounded-xl border border-border bg-muted/40"><summary class="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-sm text-muted-foreground [&amp;::-webkit-details-marker]:hidden"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-4 w-4 shrink-0 text-muted-foreground transition group-open:rotate-90" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg><span class="font-medium">Охлаждение</span><span class="text-xs text-muted-foreground tabular-nums">0 / 1</span></summary><div class="px-3 pb-3"><ul class="space-y-1.5"><li class="flex items-start gap-3 rounded-xl border px-3 py-2.5 transition border-border bg-card"><button type="button" disabled="" aria-pressed="false" aria-label="Отметить шаг выполненным" class="relative mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md border transition disabled:opacity-50 before:absolute before:-inset-2.5 before:content-[&#x27;&#x27;] border-border bg-card text-transparent hover:border-muted-foreground"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check h-4 w-4" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></button><div class="min-w-0 flex-1"><p class="text-sm font-medium text-foreground">Охладите сусло</p><p class="text-xs text-muted-foreground">до 19 °C</p></div></li></ul></div></details></div></div></details><section>Журнал замеров</section><section class="space-y-4 rounded-2xl border border-border bg-card p-4 shadow-sm"><div class="flex flex-wrap items-center justify-between gap-2"><h2 class="text-base font-semibold text-foreground">Склад</h2><span class="inline-flex items-center rounded-full bg-success-subtle px-2 py-0.5 text-xs font-medium text-success-subtle-foreground">Списано</span></div><ul class="divide-y divide-border"><li class="flex items-center justify-between gap-3 py-2"><span class="min-w-0 flex-1"><span class="block truncate text-sm text-foreground">Пильзнер</span></span><span class="shrink-0 text-sm font-medium tabular-nums text-muted-foreground">−4 кг</span></li></ul><div class="flex flex-wrap gap-2"><button class="inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 border border-border bg-card hover:bg-accent min-h-[36px] px-3 py-1.5 text-xs" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-undo2 h-4 w-4" aria-hidden="true"><path d="M9 14 4 9l5-5"></path><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"></path></svg>Вернуть на склад</button></div><details class="group rounded-xl border border-border bg-muted/40"><summary class="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-sm text-muted-foreground [&amp;::-webkit-details-marker]:hidden"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-4 w-4 shrink-0 text-muted-foreground transition group-open:rotate-90" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg><span class="font-medium">История запасов</span><span class="text-xs text-muted-foreground tabular-nums">1</span></summary><ul class="divide-y divide-border px-3 pb-3"><li class="flex items-center justify-between gap-3 py-2"><div class="min-w-0 flex-1"><p class="truncate text-sm text-foreground">Пильзнер</p><p class="text-xs text-muted-foreground">20 июн., 11:00 · списание</p></div><span class="shrink-0 text-sm font-medium tabular-nums text-muted-foreground">−4 кг</span></li></ul></details></section><section id="tasting-notes" class="space-y-2 rounded-2xl border border-border bg-card p-4 shadow-sm"><h2 class="text-base font-semibold text-foreground">Дегустация</h2><textarea rows="4" placeholder="Аромат, вкус, тело, карбонизация — что удалось и что поменять…" class="w-full resize-y rounded-lg border border-border p-2.5 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"></textarea><div class="flex items-center gap-3"><button class="inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 bg-foreground text-background hover:bg-foreground/90 min-h-[36px] px-3 py-1.5 text-xs" type="button" disabled="">Сохранить</button></div></section><section id="brew-notes" class="space-y-2 rounded-2xl border border-border bg-card p-4 shadow-sm"><h2 class="text-base font-semibold text-foreground">Заметки о варке</h2><textarea rows="4" placeholder="Как прошла варка: отклонения от плана, температуры, что учесть в следующий раз…" class="w-full resize-y rounded-lg border border-border p-2.5 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm">Затор держал 66 °C</textarea><div class="flex items-center gap-3"><button class="inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 bg-foreground text-background hover:bg-foreground/90 min-h-[36px] px-3 py-1.5 text-xs" type="button" disabled="">Сохранить</button></div></section></div><div role="region" aria-label="Notifications (F8)" tabindex="-1" style="pointer-events:none"><ol tabindex="-1" class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px)+var(--nb-sticky-bar-h,0px)+var(--nb-fab-h,0px))] left-4 right-4 z-[120] flex max-w-sm flex-col gap-2 outline-none"></ol></div>"
+
+ ❯ tests/brew-batches-page-wiring.test.ts:269:18
+    267|     expect(html).toContain("Склад");
+    268|     expect(html).toContain("Пильзнер");
+    269|     expect(html).toContain("История движений");
+       |                  ^
+    270|     expect(html).toContain("партия №1");
+    271|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/14]⎯
+
+ FAIL  tests/brew-batches-page-wiring.test.ts > Страница партии — акт «Итог» (A4) > отменённая партия не предлагает дегустацию
+AssertionError: expected '<div class="space-y-6"><div><a class=…' to contain 'История движений'
+
+Expected: "История движений"
+Received: "<div class="space-y-6"><div><a class="inline-flex items-center gap-1 text-sm text-muted-foreground transition hover:text-foreground" href="/app/brew-batches"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left h-4 w-4" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>Все партии</a></div><header class="flex items-start justify-between gap-3"><div class="min-w-0 space-y-1"><div class="flex flex-wrap items-center gap-3"><h1 class="min-w-0 flex-1 truncate text-2xl font-semibold text-foreground">Летний пилснер · партия 1 · партия №1</h1><span class="shrink-0 inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-muted text-muted-foreground">Отменена</span></div><p class="text-sm text-muted-foreground">Летний пилснер · начата 20 июня 2026 г.</p></div><button type="button" aria-label="Действия с партией" class="relative inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground before:absolute before:-inset-1 before:content-[&#x27;&#x27;]" id="radix-:R39:" aria-haspopup="menu" aria-expanded="false" data-state="closed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ellipsis h-5 w-5" aria-hidden="true"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg></button></header><p class="rounded-2xl border border-border bg-muted p-4 text-sm text-muted-foreground">Варка отменена. Вернуть её в план можно через меню в шапке.</p><details class="group rounded-2xl border border-border bg-card p-4 shadow-sm"><summary class="flex cursor-pointer list-none items-center gap-2 text-base font-semibold text-foreground [&amp;::-webkit-details-marker]:hidden"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-4 w-4 shrink-0 text-muted-foreground transition group-open:rotate-90" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>Как прошла варка</summary><div class="mt-4"><div class="space-y-3"><details class="group rounded-xl border border-border bg-muted/40"><summary class="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-sm text-muted-foreground [&amp;::-webkit-details-marker]:hidden"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-4 w-4 shrink-0 text-muted-foreground transition group-open:rotate-90" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg><span class="font-medium">Кипячение</span><span class="text-xs text-muted-foreground tabular-nums">0 / 1</span></summary><div class="px-3 pb-3"><ul class="space-y-1.5"><li class="flex items-start gap-3 rounded-xl border px-3 py-2.5 transition border-border bg-card"><button type="button" disabled="" aria-pressed="false" aria-label="Отметить шаг выполненным" class="relative mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md border transition disabled:opacity-50 before:absolute before:-inset-2.5 before:content-[&#x27;&#x27;] border-border bg-card text-transparent hover:border-muted-foreground"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check h-4 w-4" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></button><div class="min-w-0 flex-1"><p class="text-sm font-medium text-foreground">Кипячение сусла</p><p class="text-xs text-muted-foreground">1 ч</p></div><div class="flex shrink-0 items-center gap-2"><span class="text-xs text-muted-foreground tabular-nums">60:00</span></div></li></ul></div></details><details class="group rounded-xl border border-border bg-muted/40"><summary class="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-sm text-muted-foreground [&amp;::-webkit-details-marker]:hidden"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-4 w-4 shrink-0 text-muted-foreground transition group-open:rotate-90" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg><span class="font-medium">Охлаждение</span><span class="text-xs text-muted-foreground tabular-nums">0 / 1</span></summary><div class="px-3 pb-3"><ul class="space-y-1.5"><li class="flex items-start gap-3 rounded-xl border px-3 py-2.5 transition border-border bg-card"><button type="button" disabled="" aria-pressed="false" aria-label="Отметить шаг выполненным" class="relative mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md border transition disabled:opacity-50 before:absolute before:-inset-2.5 before:content-[&#x27;&#x27;] border-border bg-card text-transparent hover:border-muted-foreground"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check h-4 w-4" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></button><div class="min-w-0 flex-1"><p class="text-sm font-medium text-foreground">Охладите сусло</p><p class="text-xs text-muted-foreground">до 19 °C</p></div></li></ul></div></details></div></div></details><section>Журнал замеров</section><section class="space-y-4 rounded-2xl border border-border bg-card p-4 shadow-sm"><div class="flex flex-wrap items-center justify-between gap-2"><h2 class="text-base font-semibold text-foreground">Склад</h2><span class="inline-flex items-center rounded-full bg-success-subtle px-2 py-0.5 text-xs font-medium text-success-subtle-foreground">Списано</span></div><ul class="divide-y divide-border"><li class="flex items-center justify-between gap-3 py-2"><span class="min-w-0 flex-1"><span class="block truncate text-sm text-foreground">Пильзнер</span></span><span class="shrink-0 text-sm font-medium tabular-nums text-muted-foreground">−4 кг</span></li></ul><div class="flex flex-wrap gap-2"><button class="inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 border border-border bg-card hover:bg-accent min-h-[36px] px-3 py-1.5 text-xs" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-undo2 h-4 w-4" aria-hidden="true"><path d="M9 14 4 9l5-5"></path><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"></path></svg>Вернуть на склад</button></div><details class="group rounded-xl border border-border bg-muted/40"><summary class="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-sm text-muted-foreground [&amp;::-webkit-details-marker]:hidden"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-4 w-4 shrink-0 text-muted-foreground transition group-open:rotate-90" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg><span class="font-medium">История запасов</span><span class="text-xs text-muted-foreground tabular-nums">1</span></summary><ul class="divide-y divide-border px-3 pb-3"><li class="flex items-center justify-between gap-3 py-2"><div class="min-w-0 flex-1"><p class="truncate text-sm text-foreground">Пильзнер</p><p class="text-xs text-muted-foreground">20 июн., 11:00 · списание</p></div><span class="shrink-0 text-sm font-medium tabular-nums text-muted-foreground">−4 кг</span></li></ul></details></section><section id="brew-notes" class="space-y-2 rounded-2xl border border-border bg-card p-4 shadow-sm"><h2 class="text-base font-semibold text-foreground">Заметки о варке</h2><textarea rows="4" placeholder="Как прошла варка: отклонения от плана, температуры, что учесть в следующий раз…" class="w-full resize-y rounded-lg border border-border p-2.5 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm">Затор держал 66 °C</textarea><div class="flex items-center gap-3"><button class="inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 bg-foreground text-background hover:bg-foreground/90 min-h-[36px] px-3 py-1.5 text-xs" type="button" disabled="">Сохранить</button></div></section></div><div role="region" aria-label="Notifications (F8)" tabindex="-1" style="pointer-events:none"><ol tabindex="-1" class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px)+var(--nb-sticky-bar-h,0px)+var(--nb-fab-h,0px))] left-4 right-4 z-[120] flex max-w-sm flex-col gap-2 outline-none"></ol></div>"
+
+ ❯ tests/brew-batches-page-wiring.test.ts:300:18
+    298|     expect(html).not.toContain('id="tasting-notes"');
+    299|     // Склад остаётся доступным и в архиве — что списано и что вернуло…
+    300|     expect(html).toContain("История движений");
+       |                  ^
+    301|   });
+    302| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/14]⎯
+
+ FAIL  tests/brew-inventory-prep.test.tsx > BrewInventory — завершённая партия (акт «Итог») > показывает списанное и историю движений, но не предлагает списать снова
+AssertionError: expected '<section class="space-y-4 rounded-2xl…' to contain 'История движений'
+
+Expected: "История движений"
+Received: "<section class="space-y-4 rounded-2xl border border-border bg-card p-4 shadow-sm"><div class="flex flex-wrap items-center justify-between gap-2"><h2 class="text-base font-semibold text-foreground">Склад</h2><span class="inline-flex items-center rounded-full bg-success-subtle px-2 py-0.5 text-xs font-medium text-success-subtle-foreground">Списано</span></div><ul class="divide-y divide-border"><li class="flex items-center justify-between gap-3 py-2"><span class="min-w-0 flex-1"><span class="block truncate text-sm text-foreground">Пильзнер</span></span><span class="shrink-0 text-sm font-medium tabular-nums text-muted-foreground">−4 кг</span></li></ul><div class="flex flex-wrap gap-2"><button class="inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 border border-border bg-card hover:bg-accent min-h-[36px] px-3 py-1.5 text-xs" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-undo2 h-4 w-4" aria-hidden="true"><path d="M9 14 4 9l5-5"></path><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"></path></svg>Вернуть на склад</button></div><details class="group rounded-xl border border-border bg-muted/40"><summary class="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-sm text-muted-foreground [&amp;::-webkit-details-marker]:hidden"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-4 w-4 shrink-0 text-muted-foreground transition group-open:rotate-90" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg><span class="font-medium">История запасов</span><span class="text-xs text-muted-foreground tabular-nums">1</span></summary><ul class="divide-y divide-border px-3 pb-3"><li class="flex items-center justify-between gap-3 py-2"><div class="min-w-0 flex-1"><p class="truncate text-sm text-foreground">Пильзнер</p><p class="text-xs text-muted-foreground">1 июл., 13:00 · списание</p></div><span class="shrink-0 text-sm font-medium tabular-nums text-muted-foreground">−4 кг</span></li></ul></details></section>"
+
+ ❯ tests/brew-inventory-prep.test.tsx:206:18
+    204|     expect(html).toContain("Списано");
+    205|     expect(html).toContain("Пильзнер");
+    206|     expect(html).toContain("История движений");
+       |                  ^
+    207|     expect(html).not.toContain("Списать со склада");
+    208|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/14]⎯
+
+ FAIL  tests/calculators-pages.test.ts > calculator pages > calculator routes render through the dynamic route with seoTitle metadata, canonical and visible/JSON-LD breadcrumbs
+AssertionError: expected '<nav aria-label="Навигационная цепочк…' to contain 'aria-label="Breadcrumb"'
+
+Expected: "aria-label="Breadcrumb""
+Received: "<nav aria-label="Навигационная цепочка" class="pt-6 text-sm text-muted-foreground"><ol class="flex flex-wrap items-center gap-2"><li><a class="transition hover:text-foreground" href="/">Главная</a></li><li aria-hidden="true">/</li><li><a class="transition hover:text-foreground" href="/calculators">Калькуляторы</a></li><li aria-hidden="true">/</li><li class="text-foreground">Крепость и сбраживание</li></ol></nav><main class="space-y-5 pt-8 pb-44 lg:pb-24 "><a class="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground" href="/calculators"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left h-4 w-4"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg>Все калькуляторы</a><section class="relative rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6"><button type="button" aria-label="В избранное" aria-pressed="false" class="rounded-full p-2 bg-card/85 text-muted-foreground shadow-sm ring-1 ring-black/5 backdrop-blur transition-colors hover:text-amber-500 disabled:opacity-60  absolute right-4 top-4"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star h-5 w-5"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg></button><div class="max-w-3xl space-y-2 pr-10"><span class="inline-flex w-fit items-center gap-1 rounded-full bg-success-subtle px-2 py-0.5 text-[10px] font-semibold text-success-subtle-foreground">✓ проверен</span><h1 class="text-2xl font-semibold leading-tight text-foreground sm:text-3xl">Крепость, сбраживание и калории</h1><p class="text-sm leading-6 text-muted-foreground">Используйте после замера начальной и конечной плотности или для быстрой проверки прогноза рецепта.</p></div></section><div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_22rem]"><section class="min-w-0 space-y-4"><div class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"><div class="flex items-center justify-between gap-3 border-b border-border px-5 py-3.5"><h2 class="text-sm font-semibold text-foreground">Замеры плотности</h2><button type="button" class="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rotate-ccw h-3.5 w-3.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>Сбросить</button></div><div class="space-y-5 p-5"><div class="grid gap-x-4 gap-y-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"><label class="block min-w-0 text-xs font-medium text-muted-foreground"><span class="flex items-center justify-between gap-2"><span>Начальная плотность (OG)</span><span class="font-normal text-muted-foreground">°P</span></span><input class="mt-1 h-10 w-full rounded-lg border border-border bg-card px-3 text-base tabular-nums text-foreground shadow-sm focus:border-border focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm" type="text" inputMode="decimal" min="0" step="0.1" value="12.4"/></label><label class="block min-w-0 text-xs font-medium text-muted-foreground"><span class="flex items-center justify-between gap-2"><span>Конечная плотность (FG)</span><span class="font-normal text-muted-foreground">°P</span></span><input class="mt-1 h-10 w-full rounded-lg border border-border bg-card px-3 text-base tabular-nums text-foreground shadow-sm focus:border-border focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm" type="text" inputMode="decimal" min="-5" step="0.1" value="3.1"/></label><div class="min-w-0"><span class="block text-xs font-medium text-muted-foreground">Шкала плотности</span><div class="mt-1"><div role="group" aria-label="Шкала плотности" class="inline-flex  gap-1 rounded-xl bg-muted p-1"><button type="button" aria-pressed="false" class="  rounded-lg px-3 font-medium transition-colors h-8 text-xs text-muted-foreground hover:text-foreground">SG</button><button type="button" aria-pressed="true" class="  rounded-lg px-3 font-medium transition-colors h-8 text-xs bg-card text-foreground shadow-sm">°P</button></div></div></div></div><p class="text-xs leading-5 text-muted-foreground">Меряете рефрактометром? <a class="font-medium text-foreground underline underline-offset-2 hover:text-foreground" href="/calculators/refractometer-correction">Сначала поправка рефрактометра</a> — показание Brix после брожения занижает крепость.</p><div class="grid gap-x-4 gap-y-4 sm:grid-cols-2"><label class="block min-w-0 text-xs font-medium text-muted-foreground"><span>Формула крепости</span><select class="mt-1 h-10 w-full rounded-lg border border-border bg-card px-3 text-base text-foreground shadow-sm focus:border-border focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"><option value="standard" selected="">Стандартная</option><option value="alternate">Альтернативная (крепкое пиво)</option></select><span class="mt-1 block text-[11px] font-normal leading-4 text-muted-foreground">Альтернативная точнее для крепкого пива (выше ~1.070 (17 °P)).</span></label><label class="block min-w-0 text-xs font-medium text-muted-foreground"><span class="flex items-center justify-between gap-2"><span>Объём порции для расчёта калорий</span><span class="font-normal text-muted-foreground">мл</span></span><input class="mt-1 h-10 w-full rounded-lg border border-border bg-card px-3 text-base tabular-nums text-foreground shadow-sm focus:border-border focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm" type="text" inputMode="decimal" min="1" step="50" value="100"/></label></div></div></div></section><div class="space-y-3"><aside id="calculator-result" class="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]"><div class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"><div class="border-b border-border bg-gradient-to-b from-muted to-card px-5 py-5"><p class="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Крепость</p><div class="mt-1.5 flex items-baseline gap-1.5"><span class="text-4xl font-semibold leading-none tabular-nums text-foreground">5.0</span><span class="text-sm font-medium text-muted-foreground">% ABV</span></div><div class="mt-3 flex flex-wrap gap-2"><span class="rounded-md bg-card px-2.5 py-1 text-xs font-medium tabular-nums text-muted-foreground ring-1 ring-ring">ABW 3.9%</span><span class="rounded-md bg-card px-2.5 py-1 text-xs font-medium tabular-nums text-muted-foreground ring-1 ring-ring">OG 12.4 °P · 1.050 SG</span><span class="rounded-md bg-card px-2.5 py-1 text-xs font-medium tabular-nums text-muted-foreground ring-1 ring-ring">FG 3.1 °P · 1.012 SG</span></div></div><div class="space-y-3 p-5"><dl class="grid grid-cols-2 gap-3"><div class="min-w-0 rounded-xl border px-3 py-2.5 border-success/30 bg-success-subtle text-success-subtle-foreground"><dt class="truncate text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Сбраживание</dt><dd class="mt-1 text-lg font-semibold tabular-nums">76%</dd></div><div class="min-w-0 rounded-xl border border-border bg-muted/70 px-3 py-2.5"><dt class="truncate text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Калории</dt><dd class="mt-1 text-lg font-semibold tabular-nums text-foreground">46 <span class="text-xs font-normal text-muted-foreground">ккал / 100 мл</span></dd></div></dl><p class="rounded-xl border border-border bg-muted/70 px-3 py-2.5 text-xs leading-5 text-muted-foreground">Видимое сбраживание: 65–80% — нормально для большинства элей.</p></div></div></aside><button type="button" class="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:bg-accent hover:text-foreground"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link2 h-3.5 w-3.5"><path d="M9 17H7A5 5 0 0 1 7 7h2"></path><path d="M15 7h2a5 5 0 1 1 0 10h-2"></path><line x1="8" x2="16" y1="12" y2="12"></line></svg>Скопировать ссылку на расчёт</button></div></div><section class="rounded-2xl border border-border bg-card p-4 shadow-sm"><h2 class="text-sm font-semibold text-foreground">Дальше</h2><div class="mt-3 flex flex-wrap gap-2"><a class="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:bg-muted" href="/calculators/priming-sugar">Карбонизация сахаром<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-3.5 w-3.5"><path d="m9 18 6-6-6-6"></path></svg></a><a class="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:bg-muted" href="/calculators/keg-carbonation">Карбонизация в кеге<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-3.5 w-3.5"><path d="m9 18 6-6-6-6"></path></svg></a><a class="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:bg-muted" href="/calculators/refractometer-correction">Поправка рефрактометра<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-3.5 w-3.5"><path d="m9 18 6-6-6-6"></path></svg></a><a class="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:bg-muted" href="/calculators/hydrometer-correction">Поправка ареометра<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-3.5 w-3.5"><path d="m9 18 6-6-6-6"></path></svg></a><a class="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:bg-muted" href="/calculators/brewhouse-efficiency">Эффективность<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-3.5 w-3.5"><path d="m9 18 6-6-6-6"></path></svg></a><a class="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:bg-muted" href="/recipes">Рецепты сообщества<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-3.5 w-3.5"><path d="m9 18 6-6-6-6"></path></svg></a></div></section><details class="group rounded-2xl border border-border bg-card p-4 shadow-sm"><summary class="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-foreground"><div class="flex h-7 w-7 items-center justify-center rounded-md bg-muted"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90"><path d="m9 18 6-6-6-6"></path></svg></div>Как считаем?<span class="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-muted text-[11px] font-semibold text-muted-foreground">?</span></summary><div class="mt-3 space-y-2"><p class="text-sm leading-6 text-muted-foreground">ABV ≈ (OG − FG) × 131,25. Альтернативная формула точнее для крепкого пива — вносит поправку на плотность спирта.</p><p class="text-sm leading-6 text-muted-foreground">ABV показывает объёмную долю спирта.</p><p class="text-sm leading-6 text-muted-foreground">Видимое сбраживание помогает понять, насколько глубоко дрожжи переработали сусло.</p><div class="pt-1"><p class="text-xs font-medium text-muted-foreground">Допущения</p><ul class="mt-1 list-disc space-y-1 pl-4"><li class="text-xs leading-5 text-muted-foreground">Калькулятор даёт практическую оценку для домашнего пивоварения, а не лабораторную точность.</li><li class="text-xs leading-5 text-muted-foreground">Перед тем как переносить цифры в рецепт или журнал варки, проверьте единицы измерения.</li></ul></div></div></details><details class="group rounded-2xl border border-border bg-card p-4 shadow-sm"><summary class="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-foreground"><div class="flex h-7 w-7 items-center justify-center rounded-md bg-muted"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90"><path d="m9 18 6-6-6-6"></path></svg></div>Частые ошибки</summary><ul class="mt-3 list-disc space-y-1.5 pl-4"><li class="text-sm leading-6 text-muted-foreground">FG снята рефрактометром без поправки на спирт — ABV получится заниженным. Сначала пересчитайте показание в калькуляторе поправки рефрактометра.</li></ul></details></main><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Главная","item":"http://localhost:3000"},{"@type":"ListItem","position":2,"name":"Калькуляторы","item":"http://localhost:3000/calculators"},{"@type":"ListItem","position":3,"name":"Крепость и сбраживание","item":"http://localhost:3000/calculators/abv-attenuation"}]}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Калькулятор ABV — крепость, сбраживание и калории","url":"http://localhost:3000/calculators/abv-attenuation","description":"Считает крепость пива (ABV и ABW), степень сбраживания и калорийность порции по начальной и конечной плотности (OG и FG) — по стандартной формуле или уточнённой для крепкого пива.","applicationCategory":"UtilityApplication","operatingSystem":"Web","inLanguage":"ru","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"RUB"}}</script><div role="region" aria-label="Notifications (F8)" tabindex="-1" style="pointer-events:none"><ol tabindex="-1" class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px)+var(--nb-sticky-bar-h,0px)+var(--nb-fab-h,0px))] left-4 right-4 z-[120] flex max-w-sm flex-col gap-2 outline-none"></ol></div>"
+
+ ❯ tests/calculators-pages.test.ts:158:20
+    156| 
+    157|       // Видимые крошки + синхронный BreadcrumbList JSON-LD с той же с…
+    158|       expect(html).toContain('aria-label="Breadcrumb"');
+       |                    ^
+    159|       expect(html).toContain("Калькуляторы");
+    160|       expect(html).toContain(calculator.shortTitle);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/14]⎯
+
+ FAIL  tests/consume-preview-dialog.test.tsx > ConsumeLineRow — рендер по видам строки предпросмотра (Ф2/Ф1) > exact_short + exactClamps=true (дрожжи): показывает фактический остаток и потребность без замены
+AssertionError: expected '<ul><li class="space-y-2 py-2.5"><div…' to contain 'В лоте 11 г'
+
+Expected: "В лоте 11 г"
+Received: "<ul><li class="space-y-2 py-2.5"><div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1"><span class="flex min-w-0 items-center gap-2 text-sm text-foreground"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check h-4 w-4 shrink-0 text-warning" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span class="truncate">US-05</span></span><span class="shrink-0 text-sm font-medium tabular-nums text-warning">−11 г</span><p class="w-full pl-6 text-xs text-muted-foreground">В партии закупки 11 г; остаток распределяется между внесениями.</p></div><p class="w-full text-xs text-warning-subtle-foreground">Нужно 22 г; спишем 11 г. Недостающую часть пропустим.</p></li></ul>"
+
+ ❯ tests/consume-preview-dialog.test.tsx:87:18
+     85|     expect(html).toContain("US-05");
+     86|     expect(html).toContain("−11 г");
+     87|     expect(html).toContain("В лоте 11 г");
+       |                  ^
+     88|     expect(html).toContain("Нужно 22 г; спишем 11 г");
+     89|     expect(html).toContain("text-warning");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/14]⎯
+
+ FAIL  tests/consume-preview-dialog.test.tsx > ConsumeLineRow — рендер по видам строки предпросмотра (Ф2/Ф1) > exact_short + exactClamps=false (солод): показывает фактический остаток и предлагает замену
+AssertionError: expected '<ul><li class="space-y-2 py-2.5"><div…' to contain 'В лоте 500 г'
+
+Expected: "В лоте 500 г"
+Received: "<ul><li class="space-y-2 py-2.5"><div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1"><span class="flex min-w-0 items-center gap-2 text-sm text-foreground"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check h-4 w-4 shrink-0 text-warning" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span class="truncate">Munich BrandA</span></span><span class="shrink-0 text-sm font-medium tabular-nums text-warning">−500 г</span><p class="w-full pl-6 text-xs text-muted-foreground">В партии закупки 500 г; остаток распределяется между внесениями.</p></div><p class="pl-6 text-xs text-muted-foreground">Заменить на <span class="font-medium text-foreground">Munich BrandB</span></p><label class="flex min-h-11 items-center gap-2 pl-6 text-sm text-foreground"><span class="relative inline-flex h-5 w-5 shrink-0"><input type="checkbox" class="peer h-5 w-5 cursor-pointer appearance-none rounded border border-input bg-card transition-colors checked:border-primary checked:bg-primary indeterminate:border-primary indeterminate:bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"/><span class="pointer-events-none absolute inset-0 flex items-center justify-center text-primary-foreground opacity-0 peer-checked:opacity-100 peer-indeterminate:opacity-100"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check h-3.5 w-3.5" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></span></span>вместо «Munich BrandA»</label><p class="pl-6 text-xs text-muted-foreground">EBC 16 ↔ 18</p><p class="w-full text-xs text-warning-subtle-foreground">Нужно 2 кг; спишем 500 г. Недостающую часть пропустим.</p></li></ul>"
+
+ ❯ tests/consume-preview-dialog.test.tsx:111:27
+    109| 
+    110|     const uncheckedHtml = renderRow(line, { checked: false, inventoryI…
+    111|     expect(uncheckedHtml).toContain("В лоте 500 г");
+       |                           ^
+    112|     // Формулировка одна на оба значения exactClamps — сервер клампит …
+    113|     // строку в любом случае (Ф4, partial-режим), замена лишь предпочт…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/14]⎯
+
+ FAIL  tests/ingredient-proposal-moderation-actions.test.ts > describeIngredientProposalPayload > переводит известные поля заявки в человекочитаемые подписи
+AssertionError: expected [ { key: 'category', …(2) }, …(4) ] to deeply equal [ { key: 'category', …(2) }, …(4) ]
+
+- Expected
++ Received
+
+@@ -1,10 +1,10 @@
+  [
+    {
+      "key": "category",
+      "label": "Категория",
+-     "value": "Ферментируемые",
++     "value": "Сбраживаемые",
+    },
+    {
+      "key": "type",
+      "label": "Тип",
+      "value": "Хмель",
+
+ ❯ tests/ingredient-proposal-moderation-actions.test.ts:131:20
+    129|     });
+    130| 
+    131|     expect(fields).toEqual([
+       |                    ^
+    132|       { key: "category", label: "Категория", value: "Ферментируемые" },
+    133|       { key: "type", label: "Тип", value: "Хмель" },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/14]⎯
+
+ FAIL  tests/recipe-fg-estimate.test.ts > recipe FG estimate > uses short manual override labels
+AssertionError: expected 'Аттенюация задана вручную' to be 'Ручная attenuation' // Object.is equality
+
+Expected: "Ручная attenuation"
+Received: "Аттенюация задана вручную"
+
+ ❯ tests/recipe-fg-estimate.test.ts:478:77
+    476| 
+    477|   it("uses short manual override labels", () => {
+    478|     expect(resolveRecipeFgSourceLabel("manual_attenuation_override", n…
+       |                                                                             ^
+    479|     expect(resolveRecipeFgSourceLabel("manual_fg_override", null)).toB…
+    480|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/14]⎯
+
+ FAIL  tests/recipe-match-panel.test.ts > RecipeMatchPanelView — бренд, флаг и hover «На склад» > показывает бренд и флаг страны у строки нехватки
+AssertionError: expected '<section id="match-panel" class="scro…' to contain 'Ферментируемые'
+
+Expected: "Ферментируемые"
+Received: "<section id="match-panel" class="scroll-mt-[calc(var(--chrome-top,0px)+1rem)] space-y-3 rounded-2xl border border-border bg-card p-4 shadow-sm"><div class="flex items-center gap-3"><div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-muted text-lg font-semibold tabular-nums ring-2 ring-current text-warning-subtle-foreground">50%</div><div class="min-w-0"><h2 class="text-base font-semibold text-foreground">Наличие на складе</h2><p class="text-sm font-medium text-warning-subtle-foreground">Часть ингредиентов уже есть</p><p class="mt-0.5 text-xs text-muted-foreground">Есть 0 из 1 · <a class="underline decoration-dotted underline-offset-2 transition-colors hover:text-foreground" href="/app/shopping">не хватает 1</a></p></div></div><div class="space-y-1.5 border-t border-border pt-3"><h3 class="text-xs font-medium text-muted-foreground">Не хватает на складе</h3><ul class="space-y-1.5"><li class="group rounded-lg bg-muted px-3 py-2"><div class="flex items-center justify-between gap-3"><div class="min-w-0"><a class="relative block truncate text-sm font-medium text-foreground before:absolute before:-inset-x-2 before:-inset-y-3 before:content-[&#x27;&#x27;] hover:underline" href="/catalog/system/cat-1">Кориандр молотый</a><p class="flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground"><span class="truncate">Сбраживаемые</span><span aria-hidden="true">·</span><span class="truncate font-medium text-foreground">Weyermann</span><span aria-hidden="true" class="inline-flex shrink-0 overflow-hidden rounded-[3px] ring-1 ring-black/10 h-3 w-4 shrink-0"><svg viewBox="0 0 18 12" class="h-full w-full" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="18" height="4.1" fill="#000000"></rect><rect x="0" y="4" width="18" height="4.1" fill="#DD0000"></rect><rect x="0" y="8" width="18" height="4.1" fill="#FFCE00"></rect></svg></span></p></div><button type="button" class="inline-flex shrink-0 items-center gap-1 rounded-full bg-card px-2.5 py-1 text-xs font-medium text-foreground ring-1 ring-border transition hover:bg-accent sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus h-3.5 w-3.5" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>На склад</button></div></li></ul></div><details class="group border-t border-border pt-3"><summary class="flex cursor-pointer list-none items-center justify-between gap-2 text-xs font-medium text-muted-foreground transition hover:text-foreground"><span>Что есть и чего не хватает</span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down h-4 w-4 shrink-0 transition-transform group-open:rotate-180" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary><ul class="mt-2 space-y-1"><li class="flex items-start justify-between gap-3 text-sm"><span class="min-w-0"><span class="block truncate text-foreground">Кориандр молотый</span><p class="flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground"><span class="truncate">Сбраживаемые</span><span aria-hidden="true">·</span><span class="truncate font-medium text-foreground">Weyermann</span><span aria-hidden="true" class="inline-flex shrink-0 overflow-hidden rounded-[3px] ring-1 ring-black/10 h-3 w-4 shrink-0"><svg viewBox="0 0 18 12" class="h-full w-full" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="18" height="4.1" fill="#000000"></rect><rect x="0" y="4" width="18" height="4.1" fill="#DD0000"></rect><rect x="0" y="8" width="18" height="4.1" fill="#FFCE00"></rect></svg></span></p></span><span class="inline-flex shrink-0 items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ring-1 bg-destructive-subtle text-destructive-subtle-foreground ring-destructive-border">Нет</span></li></ul></details></section><div role="region" aria-label="Notifications (F8)" tabindex="-1" style="pointer-events:none"><ol tabindex="-1" class="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px)+var(--nb-sticky-bar-h,0px)+var(--nb-fab-h,0px))] left-4 right-4 z-[120] flex max-w-sm flex-col gap-2 outline-none"></ol></div>"
+
+ ❯ tests/recipe-match-panel.test.ts:129:18
+    127| 
+    128|     expect(html).toContain("Weyermann");
+    129|     expect(html).toContain("Ферментируемые");
+       |                  ^
+    130|     expect(html).toMatch(/viewBox="0 0 18 12"/);
+    131|     expect(html).toContain("#DD0000");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/14]⎯
+
+ FAIL  features/brew-controller/brew-recipe-flow.test.ts > startBrewOnDeviceFromRecipeAction > прочий nack: варка не начата, но партия уже создана (id партии наружу для честного UI)
+AssertionError: expected 'Запуск заблокирован защитой устройств…' to contain 'интерлок'
+
+Expected: "интерлок"
+Received: "Запуск заблокирован защитой устройства: проверьте датчики, температуру, уровень жидкости и аварийный выключатель. Устраните причину и повторите запуск."
+
+ ❯ features/brew-controller/brew-recipe-flow.test.ts:109:28
+    107|     expect(result.brewBatchId).toBe("batch-3");
+    108|     expect(result.reason).toBe("REJECTED_INTERLOCK");
+    109|     expect(result.message).toContain("интерлок");
+       |                            ^
+    110|   });
+    111| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/14]⎯
+
+ FAIL  features/brew-controller/ferment-profile.test.ts > buildFermentProgress > hours=0 (держать вручную) → dayLabel без счётчика дней
+AssertionError: expected 'до ручного перехода' to be 'держится вручную' // Object.is equality
+
+Expected: "держится вручную"
+Received: "до ручного перехода"
+
+ ❯ features/brew-controller/ferment-profile.test.ts:245:31
+    243|   it("hours=0 (держать вручную) → dayLabel без счётчика дней", () => {
+    244|     const progress = buildFermentProgress({ steps, currentIndex: 2, el…
+    245|     expect(progress.dayLabel).toBe("держится вручную");
+       |                               ^
+    246|   });
+    247| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/14]⎯
+
+ FAIL  features/device-streams/alerts.test.ts > processIngestAlerts — вердикт брожения (§5 F5, через сглаживание) > not_started: текст с советом проверить дрожжи
+AssertionError: expected 'Брожение не началось? IPA №7' to be 'Брожение не началось?: IPA №7' // Object.is equality
+
+Expected: "Брожение не началось?: IPA №7"
+Received: "Брожение не началось? IPA №7"
+
+ ❯ features/device-streams/alerts.test.ts:302:27
+    300|     expect(mocks.sendPushToUser).toHaveBeenCalledTimes(1);
+    301|     const [, payload] = mocks.sendPushToUser.mock.calls[0]!;
+    302|     expect(payload.title).toBe("Брожение не началось?: IPA №7");
+       |                           ^
+    303|     expect(payload.body).toContain("проверьте дрожжи");
+    304|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/14]⎯
+
+ FAIL  features/device-streams/alerts.test.ts > processIngestAlerts — вердикт брожения (§5 F5, через сглаживание) > likely_done: заголовок «Похоже, добродило: …» + фраза П5 в теле
+AssertionError: expected 'Брожение, похоже, завершилось: IPA №7' to be 'Похоже, добродило: IPA №7' // Object.is equality
+
+Expected: "Похоже, добродило: IPA №7"
+Received: "Брожение, похоже, завершилось: IPA №7"
+
+ ❯ features/device-streams/alerts.test.ts:325:27
+    323|     expect(mocks.sendPushToUser).toHaveBeenCalledTimes(1);
+    324|     const [, payload] = mocks.sendPushToUser.mock.calls[0]!;
+    325|     expect(payload.title).toBe("Похоже, добродило: IPA №7");
+       |                           ^
+    326|     expect(payload.body).toBe("Стабильно 3 дн. Перед розливом подтверд…
+    327|     expect(payload.tag).toBe(`ferment-likely_done-${SESSION_ID}`);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/14]⎯
+
+
+ Test Files  11 failed | 284 passed (295)
+      Tests  14 failed | 4051 passed (4065)
+   Start at  22:05:19
+   Duration  92.52s (transform 15.21s, setup 7.24s, import 68.98s, tests 30.29s, environment 66ms)
+

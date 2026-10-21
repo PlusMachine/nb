@@ -2,7 +2,7 @@
 
 // =============================================================================
 //  features/device-streams/components/rapt-integration-card.tsx
-//  Компактная карточка «RAPT Cloud подключение» на /app/devices (§5 F8, M4-B):
+//  Компактная карточка «Подключение RAPT Cloud» на /app/devices (§5 F8, M4-B):
 //  показывает URL вебхука (или предлагает перевыпустить, если ключ шифрования
 //  не позволил показать его повторно — Д1), «Перевыпустить URL» и «Удалить
 //  подключение». Рендерится ТОЛЬКО когда подключение уже существует (интеграция
@@ -81,7 +81,7 @@ export function RaptIntegrationCard({ integration, deviceCount, onIntegrationCha
   return (
     <Card className="flex flex-wrap items-center justify-between gap-3 p-4">
       <div className="min-w-0 space-y-1">
-        <p className="text-sm font-semibold text-foreground">RAPT Cloud подключение</p>
+        <p className="text-sm font-semibold text-foreground">Подключение RAPT Cloud</p>
         {integration.webhookUrl ? (
           <p className="truncate font-mono text-xs text-muted-foreground">{integration.webhookUrl}</p>
         ) : (

@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { EQUIPMENT_PROFILE_MAX_COUNT_PER_USER } from "@/features/equipment-profiles/contracts";
+import { EQUIPMENT_PROFILE_MAX_COUNT_PER_USER, equipmentProfilePayloadSchema } from "@/features/equipment-profiles/contracts";
 import {
   createEquipmentProfile,
   deleteEquipmentProfile,
@@ -65,6 +65,31 @@ const buildEquipmentProfilePayload = (formData: FormData) => ({
 const refreshEquipmentPaths = () => {
   revalidatePath("/app/equipment");
   revalidatePath("/app/recipes/new");
+};
+
+export type EquipmentFormState = { saved?: boolean; message?: string; fieldErrors?: Record<string, string> };
+
+export const saveEquipmentProfileFormAction = async (
+  profileId: string | null,
+  _previous: EquipmentFormState,
+  formData: FormData
+): Promise<EquipmentFormState> => {
+  const user = await requireUser();
+  const parsed = equipmentProfilePayloadSchema.safeParse(buildEquipmentProfilePayload(formData));
+  if (!parsed.success) {
+    return { message: "Проверьте параметры профиля.", fieldErrors: Object.fromEntries(parsed.error.issues.map((issue) => [String(issue.path[0]), issue.message])) };
+  }
+  try {
+    if (profileId) await updateEquipmentProfile(user.id, profileId, parsed.data);
+    else await createEquipmentProfile(user.id, parsed.data);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "";
+    return { message: message === "RATE_LIMITED" ? "Слишком много профилей подряд. Немного подождите."
+      : message === "EQUIPMENT_PROFILE_QUOTA_REACHED" ? `Достигнут предел числа профилей (${EQUIPMENT_PROFILE_MAX_COUNT_PER_USER}).`
+      : "Не удалось сохранить профиль. Проверьте название и попробуйте ещё раз." };
+  }
+  refreshEquipmentPaths();
+  return { saved: true };
 };
 
 export const createEquipmentProfileAction = async (formData: FormData) => {

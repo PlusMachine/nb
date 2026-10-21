@@ -1,0 +1,182 @@
+{
+  "routes": 65,
+  "viewport_captures": 219,
+  "unique_route_width_pairs": 213,
+  "document_overflows": [
+    {
+      "route": "/calculators/abv-attenuation",
+      "client": 1024,
+      "scroll": 1039
+    },
+    {
+      "route": "/calculators/refractometer-correction",
+      "client": 1024,
+      "scroll": 1039
+    },
+    {
+      "route": "/calculators/hydrometer-correction",
+      "client": 1024,
+      "scroll": 1039
+    },
+    {
+      "route": "/calculators/dilution-boiloff",
+      "client": 320,
+      "scroll": 351
+    },
+    {
+      "route": "/calculators/dilution-boiloff",
+      "client": 1024,
+      "scroll": 1039
+    },
+    {
+      "route": "/calculators/ibu",
+      "client": 1024,
+      "scroll": 1039
+    },
+    {
+      "route": "/calculators/brewing-water-volume",
+      "client": 1024,
+      "scroll": 1039
+    },
+    {
+      "route": "/calculators/mash-infusion",
+      "client": 1024,
+      "scroll": 1039
+    },
+    {
+      "route": "/calculators/water-ph",
+      "client": 1024,
+      "scroll": 1039
+    },
+    {
+      "route": "/calculators/yeast-starter",
+      "client": 1024,
+      "scroll": 1039
+    },
+    {
+      "route": "/calculators/priming-sugar",
+      "client": 1024,
+      "scroll": 1039
+    },
+    {
+      "route": "/calculators/keg-carbonation",
+      "client": 1024,
+      "scroll": 1039
+    },
+    {
+      "route": "/calculators/bottling",
+      "client": 1024,
+      "scroll": 1039
+    },
+    {
+      "route": "/calculators/speise-krausen",
+      "client": 1024,
+      "scroll": 1039
+    },
+    {
+      "route": "/calculators/beer-color",
+      "client": 1024,
+      "scroll": 1039
+    },
+    {
+      "route": "/calculators/brewhouse-efficiency",
+      "client": 1024,
+      "scroll": 1039
+    },
+    {
+      "route": "/calculators/hop-freshness",
+      "client": 1024,
+      "scroll": 1039
+    },
+    {
+      "route": "/calculators/unit-converter",
+      "client": 1024,
+      "scroll": 1039
+    },
+    {
+      "route": "/admin",
+      "client": 360,
+      "scroll": 383
+    },
+    {
+      "route": "/admin/users",
+      "client": 360,
+      "scroll": 383
+    },
+    {
+      "route": "/admin/recipes",
+      "client": 360,
+      "scroll": 383
+    },
+    {
+      "route": "/admin/recipes",
+      "client": 1024,
+      "scroll": 1075
+    },
+    {
+      "route": "/admin/ingredients",
+      "client": 360,
+      "scroll": 383
+    },
+    {
+      "route": "/admin/ingredients/new",
+      "client": 360,
+      "scroll": 383
+    },
+    {
+      "route": "/admin/ingredients/moderation",
+      "client": 360,
+      "scroll": 383
+    },
+    {
+      "route": "/admin/ingredients/merge",
+      "client": 360,
+      "scroll": 383
+    },
+    {
+      "route": "/admin/articles",
+      "client": 360,
+      "scroll": 383
+    },
+    {
+      "route": "/admin/articles/new",
+      "client": 360,
+      "scroll": 383
+    },
+    {
+      "route": "/admin/masters",
+      "client": 360,
+      "scroll": 383
+    },
+    {
+      "route": "/admin/devices",
+      "client": 360,
+      "scroll": 383
+    },
+    {
+      "route": "/admin/firmware",
+      "client": 360,
+      "scroll": 383
+    },
+    {
+      "route": "/admin/feedback",
+      "client": 360,
+      "scroll": 383
+    },
+    {
+      "route": "/admin/audit",
+      "client": 360,
+      "scroll": 383
+    },
+    {
+      "route": "/admin/settings/currency",
+      "client": 360,
+      "scroll": 383
+    },
+    {
+      "route": "/admin/push",
+      "client": 360,
+      "scroll": 383
+    }
+  ]
+}

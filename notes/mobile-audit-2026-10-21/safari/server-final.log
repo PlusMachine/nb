@@ -1,0 +1,2588 @@
+   ▲ Next.js 15.5.12
+   - Local:        http://127.0.0.1:3100
+   - Network:      http://127.0.0.1:3100
+   - Experiments (use with caution):
+     · serverActions
+
+ ✓ Starting...
+ ○ Compiling /instrumentation ...
+ ✓ Compiled /instrumentation in 1377ms (1155 modules)
+ ✓ Ready in 4.2s
+ ✓ Compiled /middleware in 326ms (504 modules)
+ ○ Compiling /app ...
+ ✓ Compiled /app in 6.8s (3352 modules)
+ GET /app 200 in 8729ms
+ ○ Compiling /beer/[slug] ...
+ ✓ Compiled /beer/[slug] in 4.3s (3368 modules)
+ GET /beer/sample-american-stout 200 in 5905ms
+ GET /beer/pilsner-urquell 200 in 275ms
+ GET /beer/bell-s-two-hearted-ale 200 in 214ms
+ ○ Compiling /bjcp ...
+ ✓ Compiled /bjcp in 3.8s (3406 modules)
+ GET /bjcp 200 in 5615ms
+ ○ Compiling /calculators/[slug] ...
+ ✓ Compiled /calculators/[slug] in 2.7s (3498 modules)
+ GET /calculators/unit-converter 200 in 4690ms
+ ○ Compiling /labels ...
+ ✓ Compiled /labels in 1922ms (3526 modules)
+ GET /labels 200 in 2768ms
+ GET /calculators/abv-attenuation 200 in 528ms
+ GET /calculators/dilution-boiloff 200 in 224ms
+ ○ Compiling /admin/recipes ...
+ ✓ Compiled /admin/recipes in 2.3s (3640 modules)
+ GET /admin/recipes 200 in 3468ms
+ ○ Compiling /app/recipes/[id]/edit ...
+ ✓ Compiled /app/recipes/[id]/edit in 3s (3993 modules)
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 5724ms
+ ○ Compiling /recipes/[slug] ...
+ ✓ Compiled /recipes/[slug] in 2.1s (4118 modules)
+ GET /recipes/pilsner-urquell 200 in 4898ms
+ ○ Compiling /api/recipes/water-profiles ...
+ ✓ Compiled /api/recipes/water-profiles in 1317ms (4135 modules)
+ GET /api/recipes/water-profiles 200 in 6022ms
+ ○ Compiling /api/labels/custom ...
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /api/labels/custom?template=craft&preset=L&dpi=203&gravityUnit=plato&title=QA&qr=0&format=png&preview=1 200 in 2024ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&format=png&preview=1 200 in 2719ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET / 307 in 6930ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /app 200 in 3156ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 1600ms
+ GET / 307 in 394ms
+ GET /app 200 in 364ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /manifest.webmanifest 200 in 1637ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /api/recipes/water-profiles 200 in 9301ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/labels 200 in 7914ms
+ GET /api/recipes/water-profiles 200 in 9652ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 9229ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/labels 200 in 953ms
+ GET /beer/sample-american-stout 200 in 10750ms
+ GET /beer/sample-american-stout 200 in 10764ms
+ GET /manifest.webmanifest 200 in 190ms
+ GET /manifest.webmanifest 200 in 251ms
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA&abv=~4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=png&preview=1 200 in 781ms
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA&abv=~4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=png&preview=1 200 in 518ms
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=Safari+QA&abv=~4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=png&preview=1 200 in 462ms
+ GET /beer/sample-american-stout 200 in 1293ms
+ GET /beer/sample-american-stout 200 in 929ms
+ GET /manifest.webmanifest 200 in 102ms
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=Safari+QA&abv=~4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=png&download=1 200 in 572ms
+ GET /manifest.webmanifest 200 in 112ms
+ GET /beer/pilsner-urquell 200 in 699ms
+ GET /beer/pilsner-urquell 200 in 408ms
+ GET /manifest.webmanifest 200 in 84ms
+ GET /manifest.webmanifest 200 in 91ms
+ GET /beer/pilsner-urquell 200 in 857ms
+ GET /beer/pilsner-urquell 200 in 767ms
+ GET /manifest.webmanifest 200 in 479ms
+ GET /manifest.webmanifest 200 in 60ms
+ GET /beer/bell-s-two-hearted-ale 200 in 733ms
+ GET /beer/bell-s-two-hearted-ale 200 in 526ms
+ GET /manifest.webmanifest 200 in 74ms
+ GET /manifest.webmanifest 200 in 79ms
+ GET /beer/bell-s-two-hearted-ale 200 in 540ms
+ GET /manifest.webmanifest 200 in 230ms
+ GET /beer/bell-s-two-hearted-ale 200 in 856ms
+ GET /manifest.webmanifest 200 in 73ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /beer/sample-american-stout 200 in 647ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /manifest.webmanifest 200 in 451ms
+ GET /bjcp 200 in 2585ms
+ GET /manifest.webmanifest 200 in 83ms
+ GET /bjcp 200 in 677ms
+ GET /manifest.webmanifest 200 in 85ms
+ GET /bjcp 200 in 718ms
+ GET /manifest.webmanifest 200 in 82ms
+ GET /bjcp 200 in 1420ms
+ GET /manifest.webmanifest 200 in 329ms
+ GET /bjcp 200 in 1333ms
+ GET /manifest.webmanifest 200 in 72ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ GET /calculators/unit-converter 200 in 2045ms
+ GET /calculators/unit-converter 200 in 1193ms
+ GET /manifest.webmanifest 200 in 121ms
+ GET /manifest.webmanifest 200 in 92ms
+ POST /calculators/unit-converter 200 in 501ms
+ POST /calculators/unit-converter 200 in 168ms
+ POST /calculators/unit-converter 200 in 161ms
+ GET /calculators/unit-converter 200 in 548ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 1642ms
+ GET /calculators/unit-converter 200 in 635ms
+ GET /manifest.webmanifest 200 in 161ms
+ GET /manifest.webmanifest 200 in 109ms
+ GET /manifest.webmanifest 200 in 104ms
+ POST /calculators/unit-converter 200 in 322ms
+ POST /calculators/unit-converter 200 in 174ms
+ GET /api/recipes/water-profiles 200 in 198ms
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /calculators/unit-converter 200 in 1412ms
+ GET /calculators/unit-converter 200 in 1391ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/labels 200 in 977ms
+ GET /manifest.webmanifest 200 in 168ms
+ GET /manifest.webmanifest 200 in 159ms
+ GET /manifest.webmanifest 200 in 80ms
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA&abv=~4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=png&preview=1 200 in 589ms
+ ⨯ [Error: aborted]
+ ⨯ [Error: aborted]
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA&abv=~4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=png&preview=1 200 in 609ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=Safari+QA&abv=~4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=png&download=1 200 in 561ms
+ GET /calculators/unit-converter 200 in 2362ms
+ GET /calculators/unit-converter 200 in 2365ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/labels?preset=L&style=Safari+QA 200 in 8241ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ GET /manifest.webmanifest 200 in 6668ms
+ GET /manifest.webmanifest 200 in 6629ms
+ POST /calculators/unit-converter 200 in 5962ms
+ POST /calculators/unit-converter 200 in 5960ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /manifest.webmanifest 200 in 527ms
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=Safari+QA&abv=~4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=png&preview=1 200 in 3905ms
+ GET /calculators/unit-converter 200 in 5363ms
+ GET /calculators/unit-converter 200 in 5363ms
+ GET /manifest.webmanifest 200 in 98ms
+ GET /manifest.webmanifest 200 in 103ms
+ POST /calculators/unit-converter 200 in 528ms
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ POST /calculators/unit-converter 200 in 668ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 3681ms
+ GET /labels 200 in 16225ms
+ GET /calculators/abv-attenuation 200 in 16279ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ GET /manifest.webmanifest 200 in 94ms
+ GET /manifest.webmanifest 200 in 78ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /api/labels/custom?template=craft&preset=S&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 10731ms
+ GET /admin/recipes 200 in 11902ms
+ GET /manifest.webmanifest 200 in 71ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 1262ms
+ GET /calculators/dilution-boiloff 200 in 710ms
+ GET /manifest.webmanifest 200 in 86ms
+ GET /manifest.webmanifest 200 in 79ms
+ POST /calculators/dilution-boiloff 200 in 654ms
+ GET /api/recipes/water-profiles 200 in 143ms
+ POST /calculators/dilution-boiloff 200 in 94ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 611ms
+ GET /beer/pilsner-urquell 200 in 539ms
+ GET /manifest.webmanifest 200 in 113ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 7758ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ GET /__download-probe/file 404 in 6491ms
+ GET /__download-probe/file 404 in 10363ms
+ GET /labels 200 in 6737ms
+ GET /beer/pilsner-urquell 200 in 8666ms
+ GET /manifest.webmanifest 200 in 98ms
+ GET /manifest.webmanifest 200 in 90ms
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 399ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /manifest.webmanifest 200 in 100ms
+ GET /bjcp 200 in 1660ms
+ GET /bjcp 200 in 3305ms
+ GET /manifest.webmanifest 200 in 105ms
+ GET /bjcp 200 in 684ms
+ GET /manifest.webmanifest 200 in 79ms
+ GET /bjcp 200 in 624ms
+ GET /manifest.webmanifest 200 in 80ms
+ GET /beer/sample-american-stout 200 in 484ms
+ GET /manifest.webmanifest 200 in 100ms
+ GET /beer/sample-american-stout 200 in 442ms
+ GET /manifest.webmanifest 200 in 83ms
+ GET /beer/sample-american-stout 200 in 404ms
+ GET /manifest.webmanifest 200 in 90ms
+ GET /beer/pilsner-urquell 200 in 335ms
+ GET /manifest.webmanifest 200 in 85ms
+ GET /beer/pilsner-urquell 200 in 720ms
+ GET /beer/sample-american-stout 200 in 484ms
+ GET /manifest.webmanifest 200 in 109ms
+ GET /manifest.webmanifest 200 in 106ms
+ GET /beer/pilsner-urquell 200 in 419ms
+ GET /manifest.webmanifest 200 in 94ms
+ GET /beer/pilsner-urquell 200 in 440ms
+ GET /manifest.webmanifest 200 in 76ms
+ GET /beer/pilsner-urquell 200 in 504ms
+ GET /beer/pilsner-urquell 200 in 411ms
+ GET /manifest.webmanifest 200 in 87ms
+ GET /manifest.webmanifest 200 in 114ms
+ GET /beer/pilsner-urquell 200 in 673ms
+ GET /beer/pilsner-urquell 200 in 672ms
+ GET /manifest.webmanifest 200 in 66ms
+ GET /manifest.webmanifest 200 in 84ms
+ GET /beer/pilsner-urquell 200 in 710ms
+ GET /beer/pilsner-urquell 200 in 661ms
+ GET /manifest.webmanifest 200 in 89ms
+ GET /manifest.webmanifest 200 in 113ms
+ GET /calculators/abv-attenuation 200 in 1036ms
+ GET /beer/bell-s-two-hearted-ale 200 in 591ms
+ GET /manifest.webmanifest 200 in 80ms
+ GET /manifest.webmanifest 200 in 85ms
+ POST /calculators/abv-attenuation 200 in 560ms
+ POST /calculators/abv-attenuation 200 in 89ms
+ GET /calculators/abv-attenuation 200 in 760ms
+ GET /beer/bell-s-two-hearted-ale 200 in 840ms
+ GET /manifest.webmanifest 200 in 100ms
+ GET /manifest.webmanifest 200 in 103ms
+ POST /calculators/abv-attenuation 200 in 304ms
+ POST /calculators/abv-attenuation 200 in 88ms
+ GET /beer/bell-s-two-hearted-ale 200 in 1305ms
+ GET /admin/recipes 200 in 964ms
+ GET /manifest.webmanifest 200 in 609ms
+ GET /manifest.webmanifest 200 in 66ms
+ GET /admin/recipes 200 in 1044ms
+ GET /beer/bell-s-two-hearted-ale 200 in 1046ms
+ GET /manifest.webmanifest 200 in 157ms
+ GET /manifest.webmanifest 200 in 184ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /profile 200 in 7085ms
+ GET /beer/sample-american-stout 200 in 6079ms
+ GET /manifest.webmanifest 200 in 117ms
+ GET /manifest.webmanifest 200 in 83ms
+ GET /bjcp 200 in 820ms
+ GET /manifest.webmanifest 200 in 74ms
+ GET /bjcp 200 in 603ms
+ GET /manifest.webmanifest 200 in 74ms
+ GET /bjcp 200 in 2159ms
+ GET /manifest.webmanifest 200 in 84ms
+ GET /bjcp 200 in 2063ms
+ GET /manifest.webmanifest 200 in 71ms
+ GET /calculators/unit-converter 200 in 866ms
+ GET /bjcp 200 in 1629ms
+ GET /manifest.webmanifest 200 in 125ms
+ GET /manifest.webmanifest 200 in 65ms
+ POST /calculators/unit-converter 200 in 617ms
+ GET /calculators/unit-converter 200 in 353ms
+ GET /manifest.webmanifest 200 in 121ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ✓ Compiled /app/master in 4.9s (4081 modules)
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /app/master 200 in 6473ms
+ GET /calculators/unit-converter 200 in 4550ms
+ GET /calculators/unit-converter 200 in 3218ms
+ GET /manifest.webmanifest 200 in 171ms
+ GET /manifest.webmanifest 200 in 150ms
+ GET /manifest.webmanifest 200 in 121ms
+ POST /calculators/unit-converter 200 in 684ms
+[Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException: [Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException:  [Error: aborted] { code: 'ECONNRESET' }
+ GET /calculators/unit-converter 200 in 1935ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 1896ms
+ GET /calculators/unit-converter 200 in 1706ms
+ GET /manifest.webmanifest 200 in 84ms
+ GET /manifest.webmanifest 200 in 105ms
+ GET /manifest.webmanifest 200 in 71ms
+ POST /calculators/unit-converter 200 in 417ms
+ ○ Compiling /api/recipes/water-profiles ...
+ ✓ Compiled /api/recipes/water-profiles in 1754ms (3015 modules)
+ GET /profile 200 in 3800ms
+ GET /calculators/unit-converter 200 in 3812ms
+ GET /calculators/unit-converter 200 in 4393ms
+ GET /manifest.webmanifest 200 in 142ms
+ GET /manifest.webmanifest 200 in 112ms
+ GET /manifest.webmanifest 200 in 86ms
+ POST /calculators/unit-converter 200 in 728ms
+ POST /calculators/unit-converter 200 in 606ms
+ ⨯ [Error: aborted]
+ ○ Compiling /_error ...
+ GET /calculators/unit-converter 200 in 2236ms
+ GET /calculators/unit-converter 200 in 2244ms
+ ✓ Compiled /_error in 4.3s (4179 modules)
+ GET /manifest.webmanifest 200 in 241ms
+ GET /manifest.webmanifest 200 in 245ms
+ POST /calculators/unit-converter 200 in 801ms
+ POST /calculators/unit-converter 200 in 813ms
+ GET /labels 200 in 1332ms
+ GET /calculators/abv-attenuation 200 in 853ms
+ GET /manifest.webmanifest 200 in 109ms
+ GET /manifest.webmanifest 200 in 127ms
+ ○ Compiling /api/labels/custom ...
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /api/labels/custom?template=craft&preset=S&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 4952ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /admin/recipes 200 in 5372ms
+ GET /manifest.webmanifest 200 in 588ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 1816ms
+ GET /app/master 200 in 1155ms
+ GET /manifest.webmanifest 200 in 127ms
+ GET /manifest.webmanifest 200 in 96ms
+ GET /api/recipes/water-profiles 200 in 235ms
+ GET /calculators/dilution-boiloff 200 in 1994ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 1651ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 1116ms
+ GET /manifest.webmanifest 200 in 117ms
+ GET /manifest.webmanifest 200 in 105ms
+ POST /calculators/dilution-boiloff 200 in 379ms
+ GET /api/recipes/water-profiles 200 in 238ms
+ POST /calculators/dilution-boiloff 200 in 352ms
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 648ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+[Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException: [Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException:  [Error: aborted] { code: 'ECONNRESET' }
+ GET /beer/pilsner-urquell 200 in 1207ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /beer/pilsner-urquell 200 in 5139ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /manifest.webmanifest 200 in 5092ms
+ GET /manifest.webmanifest 200 in 81ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /recipes/pilsner-urquell 200 in 3817ms
+ GET /labels 200 in 502ms
+ GET /manifest.webmanifest 200 in 103ms
+ GET /bjcp 200 in 933ms
+ GET /manifest.webmanifest 200 in 103ms
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 390ms
+ GET /bjcp 200 in 836ms
+ GET /manifest.webmanifest 200 in 82ms
+ GET /bjcp 200 in 875ms
+ GET /manifest.webmanifest 200 in 88ms
+ GET /bjcp 200 in 819ms
+ GET /manifest.webmanifest 200 in 98ms
+ GET /beer/sample-american-stout 200 in 461ms
+ GET /beer/sample-american-stout 200 in 458ms
+ GET /manifest.webmanifest 200 in 79ms
+ GET /beer/sample-american-stout 200 in 424ms
+ GET /manifest.webmanifest 200 in 71ms
+ GET /beer/sample-american-stout 200 in 579ms
+ GET /manifest.webmanifest 200 in 75ms
+ GET /beer/pilsner-urquell 200 in 689ms
+ GET /manifest.webmanifest 200 in 76ms
+ GET /beer/pilsner-urquell 200 in 410ms
+ GET /manifest.webmanifest 200 in 99ms
+ GET /beer/pilsner-urquell 200 in 908ms
+ GET /recipes/pilsner-urquell 200 in 628ms
+ GET /manifest.webmanifest 200 in 88ms
+ GET /beer/pilsner-urquell 200 in 449ms
+ GET /manifest.webmanifest 200 in 94ms
+ GET /beer/pilsner-urquell 200 in 952ms
+ GET /recipes/pilsner-urquell 200 in 568ms
+ GET /manifest.webmanifest 200 in 78ms
+ GET /beer/pilsner-urquell 200 in 484ms
+ GET /manifest.webmanifest 200 in 91ms
+ GET /beer/pilsner-urquell 200 in 635ms
+ GET /recipes/pilsner-urquell 200 in 499ms
+ GET /manifest.webmanifest 200 in 72ms
+ GET /beer/bell-s-two-hearted-ale 200 in 396ms
+ GET /manifest.webmanifest 200 in 74ms
+ GET /beer/bell-s-two-hearted-ale 200 in 404ms
+ GET /manifest.webmanifest 200 in 886ms
+ GET /beer/bell-s-two-hearted-ale 200 in 445ms
+ GET /manifest.webmanifest 200 in 78ms
+ GET /beer/bell-s-two-hearted-ale 200 in 433ms
+ GET /manifest.webmanifest 200 in 72ms
+ GET /beer/sample-american-stout 200 in 427ms
+ GET /manifest.webmanifest 200 in 90ms
+ GET /bjcp 200 in 646ms
+ GET /manifest.webmanifest 200 in 99ms
+ GET /bjcp 200 in 593ms
+ GET /manifest.webmanifest 200 in 111ms
+ GET /bjcp 200 in 624ms
+ GET /manifest.webmanifest 200 in 977ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 1334ms
+ GET /manifest.webmanifest 200 in 108ms
+ GET /api/recipes/water-profiles 200 in 983ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 1545ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /bjcp 200 in 2133ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /manifest.webmanifest 200 in 17435ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/labels 200 in 20047ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/labels 200 in 517ms
+ GET /bjcp 200 in 16837ms
+ GET /manifest.webmanifest 200 in 170ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA&abv=~4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=png&preview=1 200 in 6085ms
+ GET /calculators/unit-converter 200 in 7851ms
+ GET /calculators/unit-converter 200 in 1892ms
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=Safari+QA&abv=~4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=png&preview=1 200 in 520ms
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=Safari+QA&abv=~4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=png&download=1 200 in 397ms
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=Safari+QA&abv=%7E4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=png&download=1 200 in 293ms
+ GET /manifest.webmanifest 200 in 110ms
+ GET /manifest.webmanifest 200 in 217ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/labels?preset=L&style=Safari+QA 200 in 777ms
+ GET /manifest.webmanifest 200 in 130ms
+ GET /calculators/unit-converter 200 in 1577ms
+ POST /calculators/unit-converter 200 in 1109ms
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=Safari+QA&abv=~4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=pdf&download=1 200 in 1290ms
+ POST /calculators/unit-converter 200 in 673ms
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=Safari+QA&abv=%7E4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=pdf&download=1 200 in 738ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/labels?preset=L&style=Safari+QA 200 in 981ms
+ GET /manifest.webmanifest 200 in 290ms
+ GET /calculators/unit-converter 200 in 551ms
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /manifest.webmanifest 200 in 204ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 2275ms
+ GET /calculators/unit-converter 200 in 613ms
+ GET /manifest.webmanifest 200 in 128ms
+ GET /manifest.webmanifest 200 in 135ms
+ GET /calculators/unit-converter 200 in 642ms
+ GET /manifest.webmanifest 200 in 177ms
+ GET /api/recipes/water-profiles 200 in 243ms
+ GET /api/recipes/water-profiles 200 in 249ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 138ms
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /calculators/unit-converter 200 in 836ms
+ POST /calculators/unit-converter 200 in 113ms
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/labels 200 in 1235ms
+ GET /calculators/unit-converter 200 in 583ms
+ GET /manifest.webmanifest 200 in 129ms
+ GET /manifest.webmanifest 200 in 124ms
+ GET /manifest.webmanifest 200 in 142ms
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA&abv=~4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=png&preview=1 200 in 663ms
+ POST /calculators/unit-converter 200 in 885ms
+ POST /calculators/unit-converter 200 in 375ms
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA&abv=~4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=png&preview=1 200 in 694ms
+ GET /calculators/unit-converter 200 in 1000ms
+ GET /calculators/unit-converter 200 in 1036ms
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=Safari+QA&abv=~4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=png&download=1 200 in 522ms
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=Safari+QA&abv=%7E4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=png&download=1 200 in 306ms
+ GET /manifest.webmanifest 200 in 107ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/labels?preset=L&style=Safari+QA 200 in 543ms
+ GET /manifest.webmanifest 200 in 1341ms
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=Safari+QA&abv=~4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=pdf&download=1 200 in 1081ms
+ POST /calculators/unit-converter 200 in 670ms
+ POST /calculators/unit-converter 200 in 784ms
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=Safari+QA&abv=%7E4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=pdf&download=1 200 in 400ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ GET /labels 200 in 7087ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/labels?preset=L&style=Safari+QA 200 in 7072ms
+ GET /calculators/abv-attenuation 200 in 6923ms
+ GET /manifest.webmanifest 200 in 134ms
+ GET /manifest.webmanifest 200 in 122ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 1916ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /api/labels/custom?template=craft&preset=S&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 16182ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ GET /admin/recipes 200 in 20216ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/labels 200 in 11641ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 8254ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ GET /manifest.webmanifest 200 in 6989ms
+ GET /manifest.webmanifest 200 in 4275ms
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA&abv=~4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=png&preview=1 200 in 4348ms
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA&abv=~4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=png&preview=1 200 in 1748ms
+ GET /calculators/dilution-boiloff 200 in 1757ms
+ GET /manifest.webmanifest 200 in 1434ms
+ GET /manifest.webmanifest 200 in 125ms
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=Safari+QA&abv=~4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=png&download=1 200 in 953ms
+ GET /api/recipes/water-profiles 200 in 374ms
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=Safari+QA&abv=%7E4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=png&download=1 200 in 808ms
+ GET /api/recipes/water-profiles 200 in 488ms
+ POST /calculators/dilution-boiloff 200 in 1982ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 2075ms
+ POST /calculators/dilution-boiloff 200 in 515ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/labels?preset=L&style=Safari+QA 200 in 2711ms
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=Safari+QA&abv=~4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=pdf&download=1 200 in 839ms
+ GET /api/labels/ae29d940-0b2a-4d2e-9995-c112b79e5955?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=QA+mobile+audit+21.10&style=Safari+QA&abv=%7E4.7%25&ibu=&ebc=10&og=11.9&fg=3.1&malts=%D0%9F%D1%8D%D0%B9%D0%BB+%D0%AD%D0%BB%D1%8C&hops=&yeast=&description=%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9+IPA%3A+%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%2C+%D1%85%D0%B2%D0%BE%D1%8F%2C+%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5+%D1%84%D1%80%D1%83%D0%BA%D1%82%D1%8B+%E2%80%94+%D0%B8+%D1%81%D1%83%D1%85%D0%B0%D1%8F+%D0%B3%D0%BE%D1%80%D0%B5%D1%87%D1%8C%2C+%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D1%8F+%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D1%82+%D0%B2%D0%B5%D1%81%D1%8C+%D1%8D%D1%82%D0%BE%D1%82+%D1%85%D0%BC%D0%B5%D0%BB%D0%B5%D0%B2%D0%BE%D0%B9+%D0%BD%D0%B0%D0%BF%D0%BE%D1%80.&author=qa.mobile.20261021&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&format=pdf&download=1 200 in 867ms
+ GET /beer/pilsner-urquell 200 in 1913ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/labels?preset=L&style=Safari+QA 200 in 1306ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 773ms
+ GET /manifest.webmanifest 200 in 127ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⨯ [Error: aborted]
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ GET /labels 200 in 7799ms
+ GET /beer/pilsner-urquell 200 in 17539ms
+ GET /manifest.webmanifest 200 in 93ms
+ GET /manifest.webmanifest 200 in 120ms
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 458ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ GET /manifest.webmanifest 200 in 118ms
+ GET /profile 200 in 5326ms
+ GET /manifest.webmanifest 200 in 112ms
+ GET /manifest.webmanifest 200 in 163ms
+ GET /bjcp 200 in 6802ms
+ GET /bjcp 200 in 4142ms
+ GET /profile 200 in 339ms
+ GET /manifest.webmanifest 200 in 131ms
+ GET /bjcp 200 in 2839ms
+ GET /manifest.webmanifest 200 in 87ms
+ GET /bjcp 200 in 2346ms
+ GET /manifest.webmanifest 200 in 79ms
+ GET /beer/sample-american-stout 200 in 778ms
+ GET /manifest.webmanifest 200 in 101ms
+ GET /manifest.webmanifest 200 in 128ms
+ GET /bjcp 200 in 1817ms
+ GET /bjcp 200 in 1223ms
+ GET /manifest.webmanifest 200 in 92ms
+ GET /beer/sample-american-stout 200 in 596ms
+ GET /manifest.webmanifest 200 in 1065ms
+ GET /bjcp 200 in 2461ms
+ GET /beer/sample-american-stout 200 in 542ms
+ GET /manifest.webmanifest 200 in 83ms
+ GET /manifest.webmanifest 200 in 91ms
+ GET /beer/sample-american-stout 200 in 1658ms
+ GET /calculators/dilution-boiloff 200 in 1361ms
+ GET /beer/pilsner-urquell 200 in 1314ms
+ GET /manifest.webmanifest 200 in 124ms
+ GET /manifest.webmanifest 200 in 114ms
+ GET /manifest.webmanifest 200 in 109ms
+ POST /calculators/dilution-boiloff 200 in 574ms
+ POST /calculators/dilution-boiloff 200 in 147ms
+ GET /beer/pilsner-urquell 200 in 1191ms
+ GET /beer/pilsner-urquell 200 in 1145ms
+ GET /beer/pilsner-urquell 200 in 739ms
+ GET /manifest.webmanifest 200 in 752ms
+ GET /manifest.webmanifest 200 in 72ms
+ GET /manifest.webmanifest 200 in 75ms
+ GET /beer/pilsner-urquell 200 in 979ms
+ GET /beer/pilsner-urquell 200 in 738ms
+ GET /beer/bell-s-two-hearted-ale 200 in 754ms
+ GET /manifest.webmanifest 200 in 107ms
+ GET /manifest.webmanifest 200 in 133ms
+ GET /manifest.webmanifest 200 in 160ms
+ GET /beer/pilsner-urquell 200 in 1019ms
+ GET /beer/bell-s-two-hearted-ale 200 in 801ms
+ GET /beer/bell-s-two-hearted-ale 200 in 714ms
+ GET /manifest.webmanifest 200 in 125ms
+ GET /manifest.webmanifest 200 in 121ms
+ GET /manifest.webmanifest 200 in 147ms
+ GET /beer/bell-s-two-hearted-ale 200 in 679ms
+ GET /beer/sample-american-stout 200 in 640ms
+ GET /manifest.webmanifest 200 in 993ms
+ GET /manifest.webmanifest 200 in 424ms
+ GET /bjcp 200 in 1543ms
+ GET /manifest.webmanifest 200 in 138ms
+ GET /bjcp 200 in 1300ms
+ GET /manifest.webmanifest 200 in 132ms
+ GET /bjcp 200 in 2009ms
+ GET /manifest.webmanifest 200 in 86ms
+ GET /bjcp 200 in 753ms
+ GET /manifest.webmanifest 200 in 97ms
+ GET /bjcp 200 in 1210ms
+ GET /calculators/unit-converter 200 in 580ms
+ GET /manifest.webmanifest 200 in 128ms
+ GET /manifest.webmanifest 200 in 118ms
+ POST /calculators/unit-converter 200 in 285ms
+ GET /calculators/unit-converter 200 in 355ms
+ GET /manifest.webmanifest 200 in 96ms
+ POST /calculators/unit-converter 200 in 327ms
+ POST /calculators/unit-converter 200 in 125ms
+ GET /calculators/unit-converter 200 in 308ms
+ GET /calculators/unit-converter 200 in 500ms
+ GET /manifest.webmanifest 200 in 82ms
+ GET /manifest.webmanifest 200 in 702ms
+ POST /calculators/unit-converter 200 in 294ms
+ GET /calculators/unit-converter 200 in 2240ms
+ GET /calculators/unit-converter 200 in 687ms
+ GET /manifest.webmanifest 200 in 111ms
+ GET /manifest.webmanifest 200 in 75ms
+ POST /calculators/unit-converter 200 in 324ms
+ ⨯ [Error: aborted]
+ POST /calculators/unit-converter 200 in 109ms
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /calculators/unit-converter 200 in 516ms
+ GET /calculators/unit-converter 200 in 494ms
+ GET /manifest.webmanifest 200 in 196ms
+ GET /manifest.webmanifest 200 in 140ms
+ POST /calculators/unit-converter 200 in 437ms
+ POST /calculators/unit-converter 200 in 380ms
+ ⨯ [Error: aborted]
+[Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException: [Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException:  [Error: aborted] { code: 'ECONNRESET' }
+ GET /calculators/unit-converter 200 in 559ms
+ GET /calculators/unit-converter 200 in 549ms
+ GET /manifest.webmanifest 200 in 131ms
+ GET /manifest.webmanifest 200 in 118ms
+ POST /calculators/unit-converter 200 in 399ms
+ POST /calculators/unit-converter 200 in 360ms
+ POST /calculators/unit-converter 200 in 121ms
+ GET /labels 200 in 682ms
+ GET /calculators/abv-attenuation 200 in 632ms
+ GET /manifest.webmanifest 200 in 627ms
+ GET /manifest.webmanifest 200 in 94ms
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 482ms
+ POST /calculators/abv-attenuation 200 in 347ms
+ GET /api/labels/custom?template=craft&preset=S&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 232ms
+ POST /calculators/abv-attenuation 200 in 282ms
+ GET /api/labels/custom?template=craft&preset=S&dpi=203&gravityUnit=plato&title=QA+%D0%9D%D0%B0%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5+43%C3%9725+%D0%BC%D0%BC&style=QA+%D0%A1%D1%82%D0%B8%D0%BB%D1%8C+43%C3%9725+%D0%BC%D0%BC&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 168ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/[recipeId]/route.ts
+ GET /admin/recipes 200 in 1303ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET / 307 in 13717ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 12139ms
+ GET /calculators/dilution-boiloff 200 in 6629ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /manifest.webmanifest 200 in 1298ms
+ GET /manifest.webmanifest 200 in 1323ms
+ POST /calculators/dilution-boiloff 200 in 1146ms
+ GET /app 200 in 10752ms
+ GET /beer/pilsner-urquell 200 in 829ms
+ GET /manifest.webmanifest 200 in 109ms
+ GET / 307 in 1274ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /app 200 in 520ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /beer/pilsner-urquell 200 in 13514ms
+ GET /beer/pilsner-urquell 200 in 14794ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /labels 200 in 8793ms
+ GET /manifest.webmanifest 200 in 304ms
+ GET /manifest.webmanifest 200 in 449ms
+ GET /manifest.webmanifest 200 in 73ms
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 426ms
+ GET /recipes/pilsner-urquell 200 in 587ms
+ GET /manifest.webmanifest 200 in 97ms
+ GET /beer/pilsner-urquell 200 in 1268ms
+ GET /manifest.webmanifest 200 in 1248ms
+ GET /bjcp 200 in 2768ms
+ GET /bjcp 200 in 777ms
+ GET /manifest.webmanifest 200 in 107ms
+ GET /labels 200 in 382ms
+ GET /manifest.webmanifest 200 in 701ms
+ GET /bjcp 200 in 2943ms
+ GET /manifest.webmanifest 200 in 180ms
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 194ms
+ GET /manifest.webmanifest 200 in 307ms
+ GET /beer/sample-american-stout 200 in 1356ms
+ GET /bjcp 200 in 2172ms
+ GET /manifest.webmanifest 200 in 136ms
+ GET /bjcp 200 in 1812ms
+ GET /beer/sample-american-stout 200 in 1080ms
+ GET /manifest.webmanifest 200 in 102ms
+ GET /bjcp 200 in 932ms
+ GET /manifest.webmanifest 200 in 93ms
+ GET /beer/sample-american-stout 200 in 553ms
+ GET /manifest.webmanifest 200 in 95ms
+ GET /beer/sample-american-stout 200 in 594ms
+ GET /manifest.webmanifest 200 in 1177ms
+ GET /beer/pilsner-urquell 200 in 484ms
+ GET /manifest.webmanifest 200 in 100ms
+ GET /bjcp 200 in 872ms
+ GET /manifest.webmanifest 200 in 76ms
+ GET /beer/pilsner-urquell 200 in 893ms
+ GET /beer/pilsner-urquell 200 in 487ms
+ GET /manifest.webmanifest 200 in 109ms
+ GET /manifest.webmanifest 200 in 125ms
+ GET /bjcp 200 in 794ms
+ GET /manifest.webmanifest 200 in 91ms
+ GET /beer/pilsner-urquell 200 in 858ms
+ GET /beer/bell-s-two-hearted-ale 200 in 489ms
+ GET /manifest.webmanifest 200 in 929ms
+ GET /manifest.webmanifest 200 in 76ms
+ GET /beer/pilsner-urquell 200 in 500ms
+ GET /manifest.webmanifest 200 in 97ms
+ GET /beer/bell-s-two-hearted-ale 200 in 1089ms
+ GET /beer/bell-s-two-hearted-ale 200 in 1076ms
+ GET /manifest.webmanifest 200 in 110ms
+ GET /manifest.webmanifest 200 in 99ms
+ GET /recipes/pilsner-urquell 200 in 1117ms
+ GET /beer/pilsner-urquell 200 in 512ms
+ GET /manifest.webmanifest 200 in 75ms
+ GET /beer/bell-s-two-hearted-ale 200 in 942ms
+ GET /beer/sample-american-stout 200 in 852ms
+ GET /manifest.webmanifest 200 in 141ms
+ GET /manifest.webmanifest 200 in 124ms
+ GET /labels 200 in 1170ms
+ GET /manifest.webmanifest 200 in 164ms
+ GET /manifest.webmanifest 200 in 172ms
+ GET /bjcp 200 in 3643ms
+ GET /manifest.webmanifest 200 in 169ms
+ GET /bjcp 200 in 3579ms
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 218ms
+ GET /api/labels/custom?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-02-28&qr=0&format=png&preview=1 200 in 241ms
+ GET /manifest.webmanifest 200 in 105ms
+ GET /bjcp 200 in 988ms
+ GET /bjcp 200 in 887ms
+ GET /manifest.webmanifest 200 in 138ms
+ GET /manifest.webmanifest 200 in 136ms
+ GET /bjcp 200 in 3401ms
+ GET /manifest.webmanifest 200 in 349ms
+ GET /bjcp 200 in 3342ms
+ GET /bjcp 200 in 873ms
+ GET /manifest.webmanifest 200 in 111ms
+ GET /calculators/unit-converter 200 in 4052ms
+ GET /calculators/unit-converter 200 in 1861ms
+ GET /manifest.webmanifest 200 in 193ms
+ GET /manifest.webmanifest 200 in 126ms
+ GET /bjcp 200 in 2528ms
+ GET /manifest.webmanifest 200 in 104ms
+ POST /calculators/unit-converter 200 in 689ms
+ POST /calculators/unit-converter 200 in 213ms
+ POST /calculators/unit-converter 200 in 434ms
+ GET /calculators/unit-converter 200 in 1289ms
+ GET /bjcp 200 in 1748ms
+ GET /manifest.webmanifest 200 in 117ms
+ GET /calculators/unit-converter 200 in 774ms
+ GET /manifest.webmanifest 200 in 111ms
+ GET /manifest.webmanifest 200 in 183ms
+ POST /calculators/unit-converter 200 in 404ms
+ POST /calculators/unit-converter 200 in 184ms
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ ⨯ [Error: aborted]
+ GET /calculators/unit-converter 200 in 748ms
+ GET /calculators/unit-converter 200 in 668ms
+ GET /manifest.webmanifest 200 in 131ms
+ GET /manifest.webmanifest 200 in 118ms
+ GET /beer/pilsner-urquell 200 in 664ms
+ GET /manifest.webmanifest 200 in 101ms
+ POST /calculators/unit-converter 200 in 382ms
+ POST /calculators/unit-converter 200 in 323ms
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /calculators/unit-converter 200 in 683ms
+ GET /calculators/unit-converter 200 in 472ms
+ GET /manifest.webmanifest 200 in 110ms
+ GET /recipes/pilsner-urquell 200 in 935ms
+ GET /manifest.webmanifest 200 in 123ms
+ POST /calculators/unit-converter 200 in 542ms
+ GET /beer/pilsner-urquell 200 in 1135ms
+ POST /calculators/unit-converter 200 in 458ms
+[Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException: [Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException:  [Error: aborted] { code: 'ECONNRESET' }
+ GET /manifest.webmanifest 200 in 114ms
+ GET /calculators/unit-converter 200 in 642ms
+ GET /calculators/unit-converter 200 in 567ms
+ GET /manifest.webmanifest 200 in 154ms
+ GET /manifest.webmanifest 200 in 94ms
+ POST /calculators/unit-converter 200 in 521ms
+ POST /calculators/unit-converter 200 in 394ms
+ POST /calculators/unit-converter 200 in 259ms
+ POST /calculators/unit-converter 200 in 159ms
+ GET /labels 200 in 614ms
+ GET /calculators/abv-attenuation 200 in 375ms
+ GET /manifest.webmanifest 200 in 167ms
+ GET /labels 200 in 1325ms
+ GET /manifest.webmanifest 200 in 133ms
+ GET /manifest.webmanifest 200 in 113ms
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 274ms
+ POST /calculators/abv-attenuation 200 in 459ms
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 416ms
+ POST /calculators/abv-attenuation 200 in 160ms
+ GET /api/labels/custom?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 259ms
+ GET /api/labels/custom?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-02-28&qr=0&format=png&preview=1 200 in 258ms
+ GET /admin/recipes 200 in 1768ms
+ GET /manifest.webmanifest 200 in 126ms
+ GET /manifest.webmanifest 200 in 230ms
+ GET /bjcp 200 in 2184ms
+ GET /api/labels/custom?template=craft&preset=M&dpi=300&gravityUnit=plato&title=QA+%D0%9D%D0%B0%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5+120%C3%9775+%D0%BC%D0%BC&style=QA+%D0%A1%D1%82%D0%B8%D0%BB%D1%8C+120%C3%9775+%D0%BC%D0%BC&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=QA+%D0%90%D0%B2%D1%82%D0%BE%D1%80+120%C3%9775+%D0%BC%D0%BC&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 349ms
+ GET /api/labels/custom?template=craft&preset=M&dpi=300&gravityUnit=plato&title=QA+%D0%9D%D0%B0%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5+%D0%9B%D0%B8%D1%81%D1%82+A4&style=QA+%D0%A1%D1%82%D0%B8%D0%BB%D1%8C+120%C3%9775+%D0%BC%D0%BC&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=QA+%D0%90%D0%B2%D1%82%D0%BE%D1%80+120%C3%9775+%D0%BC%D0%BC&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 245ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 1414ms
+ GET /manifest.webmanifest 200 in 161ms
+ GET /api/recipes/water-profiles 200 in 392ms
+ GET /calculators/dilution-boiloff 200 in 1574ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 836ms
+ GET /manifest.webmanifest 200 in 531ms
+ GET /bjcp 200 in 4042ms
+ GET /manifest.webmanifest 200 in 90ms
+ POST /calculators/dilution-boiloff 200 in 369ms
+ POST /calculators/dilution-boiloff 200 in 160ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 657ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /beer/pilsner-urquell 200 in 12367ms
+ GET /beer/pilsner-urquell 200 in 12599ms
+ GET /manifest.webmanifest 200 in 212ms
+ GET /manifest.webmanifest 200 in 234ms
+ GET /manifest.webmanifest 200 in 128ms
+ GET /bjcp 200 in 11601ms
+ GET /recipes/pilsner-urquell 200 in 1598ms
+ GET /bjcp 200 in 1750ms
+ GET /labels 200 in 511ms
+ GET /manifest.webmanifest 200 in 113ms
+ GET /manifest.webmanifest 200 in 96ms
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 521ms
+ GET /manifest.webmanifest 200 in 511ms
+ GET /api/labels/custom?template=typographic&preset=L&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 346ms
+ GET /bjcp 200 in 3713ms
+ GET /beer/pilsner-urquell 200 in 665ms
+ GET /bjcp 200 in 1705ms
+ GET /manifest.webmanifest 200 in 140ms
+ GET /manifest.webmanifest 200 in 161ms
+ GET /recipes/pilsner-urquell 200 in 775ms
+ GET /beer/pilsner-urquell 200 in 759ms
+ GET /bjcp 200 in 1751ms
+ GET /manifest.webmanifest 200 in 225ms
+ GET /manifest.webmanifest 200 in 195ms
+ GET /bjcp 200 in 2820ms
+ GET /manifest.webmanifest 200 in 162ms
+ GET /labels 200 in 400ms
+ GET /beer/sample-american-stout 200 in 905ms
+ GET /manifest.webmanifest 200 in 123ms
+ GET /manifest.webmanifest 200 in 118ms
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 186ms
+ GET /beer/sample-american-stout 200 in 1114ms
+ GET /manifest.webmanifest 200 in 121ms
+ GET /manifest.webmanifest 200 in 225ms
+ GET /bjcp 200 in 1789ms
+ GET /beer/sample-american-stout 200 in 710ms
+ GET /manifest.webmanifest 200 in 818ms
+ GET /beer/sample-american-stout 200 in 647ms
+ GET /manifest.webmanifest 200 in 116ms
+ GET /beer/pilsner-urquell 200 in 655ms
+ GET /manifest.webmanifest 200 in 119ms
+ GET /bjcp 200 in 1346ms
+ GET /manifest.webmanifest 200 in 149ms
+ GET /beer/pilsner-urquell 200 in 817ms
+ GET /manifest.webmanifest 200 in 117ms
+ GET /beer/pilsner-urquell 200 in 590ms
+ GET /manifest.webmanifest 200 in 108ms
+ GET /beer/pilsner-urquell 200 in 647ms
+ GET /manifest.webmanifest 200 in 114ms
+ GET /beer/bell-s-two-hearted-ale 200 in 1001ms
+ GET /manifest.webmanifest 200 in 120ms
+ GET /beer/bell-s-two-hearted-ale 200 in 711ms
+ GET /bjcp 200 in 1708ms
+ GET /manifest.webmanifest 200 in 217ms
+ GET /manifest.webmanifest 200 in 255ms
+ GET /beer/bell-s-two-hearted-ale 200 in 613ms
+ GET /manifest.webmanifest 200 in 128ms
+ GET /beer/bell-s-two-hearted-ale 200 in 1319ms
+ GET /manifest.webmanifest 200 in 1155ms
+ GET /bjcp 200 in 3483ms
+ GET /manifest.webmanifest 200 in 96ms
+ GET /beer/sample-american-stout 200 in 609ms
+ GET /manifest.webmanifest 200 in 82ms
+ GET /beer/pilsner-urquell 200 in 801ms
+ GET /manifest.webmanifest 200 in 165ms
+ GET /bjcp 200 in 2283ms
+ GET /bjcp 200 in 2262ms
+ GET /manifest.webmanifest 200 in 185ms
+ GET /manifest.webmanifest 200 in 127ms
+ GET /recipes/pilsner-urquell 200 in 794ms
+ GET /beer/pilsner-urquell 200 in 648ms
+ GET /manifest.webmanifest 200 in 929ms
+ GET /manifest.webmanifest 200 in 155ms
+ GET /bjcp 200 in 9079ms
+ GET /manifest.webmanifest 200 in 125ms
+ GET /bjcp 200 in 5067ms
+ GET /labels 200 in 1363ms
+ GET /calculators/unit-converter 200 in 1245ms
+ GET /manifest.webmanifest 200 in 149ms
+ GET /bjcp 200 in 2632ms
+ GET /manifest.webmanifest 200 in 135ms
+ GET /manifest.webmanifest 200 in 148ms
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 382ms
+ ⨯ [Error: aborted]
+ GET /calculators/unit-converter 200 in 1262ms
+ GET /manifest.webmanifest 200 in 105ms
+ GET /bjcp 200 in 3027ms
+ GET /calculators/unit-converter 200 in 594ms
+ GET /manifest.webmanifest 200 in 122ms
+ GET /manifest.webmanifest 200 in 161ms
+ POST /calculators/unit-converter 200 in 828ms
+ POST /calculators/unit-converter 200 in 228ms
+ POST /calculators/unit-converter 200 in 133ms
+ ⨯ [Error: aborted]
+ GET /calculators/unit-converter 200 in 451ms
+ GET /manifest.webmanifest 200 in 122ms
+ GET /calculators/unit-converter 200 in 1436ms
+ GET /calculators/unit-converter 200 in 670ms
+ GET /manifest.webmanifest 200 in 126ms
+ GET /bjcp 200 in 2049ms
+ GET /manifest.webmanifest 200 in 136ms
+ GET /manifest.webmanifest 200 in 77ms
+ POST /calculators/unit-converter 200 in 426ms
+ POST /calculators/unit-converter 200 in 150ms
+ ⨯ [Error: aborted]
+ ⚠ Server is approaching the used memory threshold, restarting...
+   ▲ Next.js 15.5.12
+   - Local:        http://127.0.0.1:3100
+   - Network:      http://127.0.0.1:3100
+   - Experiments (use with caution):
+     · serverActions
+
+ ✓ Starting...
+ ○ Compiling /instrumentation ...
+ ✓ Compiled /instrumentation in 1463ms (1155 modules)
+ ✓ Ready in 5.3s
+ ✓ Compiled /middleware in 194ms (504 modules)
+ ○ Compiling /calculators/[slug] ...
+ ✓ Compiled /calculators/[slug] in 16.2s (2740 modules)
+ GET /calculators/unit-converter 200 in 18467ms
+ GET /calculators/unit-converter 200 in 18528ms
+ GET /bjcp 200 in 19496ms
+ ○ Compiling /manifest.webmanifest ...
+ ✓ Compiled /manifest.webmanifest in 1139ms (2762 modules)
+ GET /manifest.webmanifest 200 in 834ms
+ GET /manifest.webmanifest 200 in 780ms
+ GET /manifest.webmanifest 200 in 1532ms
+ POST /calculators/unit-converter 200 in 785ms
+ POST /calculators/unit-converter 200 in 785ms
+[Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException: [Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException:  [Error: aborted] { code: 'ECONNRESET' }
+[Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException: [Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException:  [Error: aborted] { code: 'ECONNRESET' }
+ ○ Compiling /labels ...
+ GET /bjcp 200 in 2364ms
+ ✓ Compiled /labels in 2.9s (2812 modules)
+ GET /manifest.webmanifest 200 in 3132ms
+ GET /calculators/abv-attenuation 200 in 4953ms
+ GET /labels 200 in 5453ms
+ GET /manifest.webmanifest 200 in 106ms
+ GET /manifest.webmanifest 200 in 106ms
+ ○ Compiling /api/labels/custom ...
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /api/labels/custom?template=craft&preset=S&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 11691ms
+ GET /admin/recipes 200 in 12241ms
+ GET /beer/pilsner-urquell 200 in 12884ms
+ GET /api/labels/custom?template=craft&preset=M&dpi=203&gravityUnit=plato&title=QA+%D0%9D%D0%B0%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5+43%C3%9725+%D0%BC%D0%BC&style=QA+%D0%A1%D1%82%D0%B8%D0%BB%D1%8C+43%C3%9725+%D0%BC%D0%BC&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=QA+%D0%90%D0%B2%D1%82%D0%BE%D1%80+43%C3%9725+%D0%BC%D0%BC&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 323ms
+ GET /manifest.webmanifest 200 in 239ms
+ GET /manifest.webmanifest 200 in 247ms
+ GET /api/labels/custom?template=craft&preset=M&dpi=203&gravityUnit=plato&title=QA+%D0%9D%D0%B0%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5+58%C3%9740+%D0%BC%D0%BC&style=QA+%D0%A1%D1%82%D0%B8%D0%BB%D1%8C+43%C3%9725+%D0%BC%D0%BC&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=QA+%D0%90%D0%B2%D1%82%D0%BE%D1%80+43%C3%9725+%D0%BC%D0%BC&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 215ms
+ GET /api/labels/custom?template=craft&preset=L&dpi=203&gravityUnit=plato&title=QA+%D0%9D%D0%B0%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5+75%C3%97120+%D0%BC%D0%BC&style=QA+%D0%A1%D1%82%D0%B8%D0%BB%D1%8C+58%C3%9740+%D0%BC%D0%BC&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=QA+%D0%90%D0%B2%D1%82%D0%BE%D1%80+58%C3%9740+%D0%BC%D0%BC&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 312ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /calculators/dilution-boiloff 200 in 19622ms
+ GET /beer/pilsner-urquell 200 in 14851ms
+ GET /manifest.webmanifest 200 in 301ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 22105ms
+ GET /manifest.webmanifest 200 in 93ms
+ GET /manifest.webmanifest 200 in 90ms
+ POST /calculators/dilution-boiloff 200 in 629ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ POST /calculators/dilution-boiloff 200 in 255ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /api/recipes/water-profiles 200 in 4948ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 5035ms
+ GET /labels 200 in 1439ms
+ GET /beer/pilsner-urquell 200 in 2633ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 876ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /manifest.webmanifest 200 in 2963ms
+ GET /manifest.webmanifest 200 in 3664ms
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 2711ms
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /beer/pilsner-urquell 200 in 5731ms
+ GET /manifest.webmanifest 200 in 231ms
+ GET /recipes/pilsner-urquell 200 in 2320ms
+ GET /manifest.webmanifest 200 in 186ms
+ GET /bjcp 200 in 2518ms
+ GET /labels 200 in 394ms
+ GET /manifest.webmanifest 200 in 127ms
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 207ms
+ GET /manifest.webmanifest 200 in 91ms
+ GET /bjcp 200 in 2593ms
+ GET /manifest.webmanifest 200 in 191ms
+ GET /bjcp 200 in 2315ms
+ GET /bjcp 200 in 1459ms
+ GET /manifest.webmanifest 200 in 129ms
+ GET /bjcp 200 in 1120ms
+ GET /manifest.webmanifest 200 in 147ms
+ GET /bjcp 200 in 1755ms
+ GET /manifest.webmanifest 200 in 410ms
+ GET /bjcp 200 in 1960ms
+ GET /manifest.webmanifest 200 in 396ms
+ GET /beer/sample-american-stout 200 in 658ms
+ GET /beer/sample-american-stout 200 in 658ms
+ GET /manifest.webmanifest 200 in 196ms
+ GET /bjcp 200 in 1648ms
+ GET /manifest.webmanifest 200 in 181ms
+ GET /beer/sample-american-stout 200 in 500ms
+ GET /manifest.webmanifest 200 in 108ms
+ GET /beer/sample-american-stout 200 in 411ms
+ GET /manifest.webmanifest 200 in 108ms
+ GET /beer/pilsner-urquell 200 in 283ms
+ GET /manifest.webmanifest 200 in 83ms
+ GET /beer/pilsner-urquell 200 in 513ms
+ GET /manifest.webmanifest 200 in 80ms
+ GET /beer/pilsner-urquell 200 in 643ms
+ GET /beer/pilsner-urquell 200 in 488ms
+ GET /manifest.webmanifest 200 in 382ms
+ GET /manifest.webmanifest 200 in 173ms
+ GET /recipes/pilsner-urquell 200 in 637ms
+ GET /beer/pilsner-urquell 200 in 567ms
+ GET /manifest.webmanifest 200 in 79ms
+ GET /beer/pilsner-urquell 200 in 1068ms
+ GET /beer/bell-s-two-hearted-ale 200 in 1012ms
+ GET /manifest.webmanifest 200 in 152ms
+ GET /manifest.webmanifest 200 in 179ms
+ GET /labels 200 in 537ms
+ GET /beer/bell-s-two-hearted-ale 200 in 909ms
+ GET /beer/bell-s-two-hearted-ale 200 in 650ms
+ GET /manifest.webmanifest 200 in 121ms
+ GET /manifest.webmanifest 200 in 126ms
+ GET /manifest.webmanifest 200 in 123ms
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 176ms
+ GET /manifest.webmanifest 200 in 129ms
+ GET /beer/bell-s-two-hearted-ale 200 in 1364ms
+ GET /beer/sample-american-stout 200 in 1214ms
+ GET /manifest.webmanifest 200 in 130ms
+ GET /manifest.webmanifest 200 in 115ms
+ GET /bjcp 200 in 2188ms
+ GET /manifest.webmanifest 200 in 161ms
+ GET /bjcp 200 in 2443ms
+ GET /manifest.webmanifest 200 in 187ms
+ GET /bjcp 200 in 2172ms
+ GET /bjcp 200 in 1650ms
+ GET /manifest.webmanifest 200 in 131ms
+ GET /bjcp 200 in 1274ms
+ GET /manifest.webmanifest 200 in 158ms
+ GET /bjcp 200 in 1112ms
+ GET /manifest.webmanifest 200 in 89ms
+ GET /manifest.webmanifest 200 in 1184ms
+ GET /bjcp 200 in 4362ms
+ GET /manifest.webmanifest 200 in 144ms
+ GET /manifest.webmanifest 200 in 182ms
+ GET /bjcp 200 in 3658ms
+ GET /bjcp 200 in 2708ms
+ GET /calculators/unit-converter 200 in 770ms
+ GET /manifest.webmanifest 200 in 90ms
+ POST /calculators/unit-converter 200 in 378ms
+ GET /calculators/unit-converter 200 in 935ms
+ GET /calculators/unit-converter 200 in 303ms
+ GET /manifest.webmanifest 200 in 88ms
+ GET /manifest.webmanifest 200 in 92ms
+ POST /calculators/unit-converter 200 in 412ms
+ POST /calculators/unit-converter 200 in 287ms
+ POST /calculators/unit-converter 200 in 144ms
+[Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException: [Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException:  [Error: aborted] { code: 'ECONNRESET' }
+ GET /calculators/unit-converter 200 in 382ms
+ GET /manifest.webmanifest 200 in 82ms
+ GET /calculators/unit-converter 200 in 593ms
+ POST /calculators/unit-converter 200 in 160ms
+ GET /manifest.webmanifest 200 in 149ms
+ GET /calculators/unit-converter 200 in 1332ms
+ GET /calculators/abv-attenuation 200 in 1453ms
+ GET /calculators/unit-converter 200 in 512ms
+ GET /manifest.webmanifest 200 in 120ms
+ GET /manifest.webmanifest 200 in 123ms
+ GET /manifest.webmanifest 200 in 85ms
+ POST /calculators/abv-attenuation 200 in 449ms
+ POST /calculators/unit-converter 200 in 474ms
+ POST /calculators/unit-converter 200 in 279ms
+ POST /calculators/abv-attenuation 200 in 190ms
+ POST /calculators/unit-converter 200 in 227ms
+ GET /calculators/unit-converter 200 in 380ms
+ GET /calculators/unit-converter 200 in 450ms
+ GET /manifest.webmanifest 200 in 104ms
+ GET /calculators/refractometer-correction 200 in 561ms
+ GET /manifest.webmanifest 200 in 138ms
+ POST /calculators/unit-converter 200 in 186ms
+ GET /manifest.webmanifest 200 in 120ms
+ POST /calculators/unit-converter 200 in 117ms
+ POST /calculators/unit-converter 200 in 372ms
+ POST /calculators/refractometer-correction 200 in 331ms
+ POST /calculators/unit-converter 200 in 489ms
+ POST /calculators/refractometer-correction 200 in 191ms
+ GET /calculators/unit-converter 200 in 725ms
+ POST /calculators/refractometer-correction 200 in 170ms
+ GET /labels 200 in 386ms
+ GET /manifest.webmanifest 200 in 145ms
+ GET /manifest.webmanifest 200 in 88ms
+ GET /calculators/hydrometer-correction 200 in 753ms
+ POST /calculators/unit-converter 200 in 186ms
+ POST /calculators/unit-converter 200 in 153ms
+ GET /manifest.webmanifest 200 in 634ms
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 450ms
+ POST /calculators/hydrometer-correction 200 in 198ms
+ GET /calculators/abv-attenuation 200 in 904ms
+ POST /calculators/hydrometer-correction 200 in 194ms
+ GET /manifest.webmanifest 200 in 167ms
+ GET /api/labels/custom?template=craft&preset=M&dpi=203&gravityUnit=plato&title=QA+%D0%9D%D0%B0%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5+43%C3%9725+%D0%BC%D0%BC&style=QA+%D0%A1%D1%82%D0%B8%D0%BB%D1%8C+43%C3%9725+%D0%BC%D0%BC&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=QA+%D0%90%D0%B2%D1%82%D0%BE%D1%80+43%C3%9725+%D0%BC%D0%BC&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 252ms
+ GET /api/labels/custom?template=craft&preset=M&dpi=203&gravityUnit=plato&title=QA+%D0%9D%D0%B0%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5+58%C3%9740+%D0%BC%D0%BC&style=QA+%D0%A1%D1%82%D0%B8%D0%BB%D1%8C+43%C3%9725+%D0%BC%D0%BC&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=QA+%D0%90%D0%B2%D1%82%D0%BE%D1%80+43%C3%9725+%D0%BC%D0%BC&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 193ms
+ GET /api/labels/custom?template=craft&preset=M&dpi=203&gravityUnit=plato&title=QA+%D0%9D%D0%B0%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5+58%C3%9740+%D0%BC%D0%BC&style=QA+%D0%A1%D1%82%D0%B8%D0%BB%D1%8C+58%C3%9740+%D0%BC%D0%BC&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=QA+%D0%90%D0%B2%D1%82%D0%BE%D1%80+43%C3%9725+%D0%BC%D0%BC&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 280ms
+ POST /calculators/abv-attenuation 200 in 180ms
+ GET /calculators/dilution-boiloff 200 in 953ms
+ GET /api/labels/custom?template=craft&preset=L&dpi=203&gravityUnit=plato&title=QA+%D0%9D%D0%B0%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5+58%C3%9740+%D0%BC%D0%BC&style=QA+%D0%A1%D1%82%D0%B8%D0%BB%D1%8C+58%C3%9740+%D0%BC%D0%BC&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=QA+%D0%90%D0%B2%D1%82%D0%BE%D1%80+58%C3%9740+%D0%BC%D0%BC&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 388ms
+ POST /calculators/abv-attenuation 200 in 251ms
+ GET /api/labels/custom?template=craft&preset=L&dpi=203&gravityUnit=plato&title=QA+%D0%9D%D0%B0%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5+75%C3%97120+%D0%BC%D0%BC&style=QA+%D0%A1%D1%82%D0%B8%D0%BB%D1%8C+58%C3%9740+%D0%BC%D0%BC&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=QA+%D0%90%D0%B2%D1%82%D0%BE%D1%80+58%C3%9740+%D0%BC%D0%BC&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 310ms
+ GET /api/labels/custom?template=craft&preset=L&dpi=203&gravityUnit=plato&title=QA+%D0%9D%D0%B0%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5+75%C3%97120+%D0%BC%D0%BC&style=QA+%D0%A1%D1%82%D0%B8%D0%BB%D1%8C+75%C3%97120+%D0%BC%D0%BC&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=QA+%D0%90%D0%B2%D1%82%D0%BE%D1%80+58%C3%9740+%D0%BC%D0%BC&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 290ms
+ GET /manifest.webmanifest 200 in 113ms
+ GET /admin/recipes 200 in 1492ms
+ GET /api/labels/custom?template=craft&preset=M&dpi=300&gravityUnit=plato&title=QA+%D0%9D%D0%B0%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5+120%C3%9775+%D0%BC%D0%BC&style=QA+%D0%A1%D1%82%D0%B8%D0%BB%D1%8C+120%C3%9775+%D0%BC%D0%BC&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=QA+%D0%90%D0%B2%D1%82%D0%BE%D1%80+120%C3%9775+%D0%BC%D0%BC&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 414ms
+ POST /calculators/dilution-boiloff 200 in 569ms
+ GET /api/labels/custom?template=craft&preset=M&dpi=300&gravityUnit=plato&title=QA+%D0%9D%D0%B0%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5+%D0%9B%D0%B8%D1%81%D1%82+A4&style=QA+%D0%A1%D1%82%D0%B8%D0%BB%D1%8C+120%C3%9775+%D0%BC%D0%BC&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=QA+%D0%90%D0%B2%D1%82%D0%BE%D1%80+120%C3%9775+%D0%BC%D0%BC&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 327ms
+ POST /calculators/dilution-boiloff 200 in 233ms
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /api/labels/custom?template=craft&preset=M&dpi=300&gravityUnit=plato&title=QA+%D0%9D%D0%B0%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5+%D0%9B%D0%B8%D1%81%D1%82+A4&style=QA+%D0%A1%D1%82%D0%B8%D0%BB%D1%8C+%D0%9B%D0%B8%D1%81%D1%82+A4&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=QA+%D0%90%D0%B2%D1%82%D0%BE%D1%80+120%C3%9775+%D0%BC%D0%BC&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 271ms
+ GET /manifest.webmanifest 200 in 120ms
+ GET /calculators/ibu 200 in 855ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 1130ms
+ GET /manifest.webmanifest 200 in 147ms
+ GET /manifest.webmanifest 200 in 142ms
+ POST /calculators/ibu 200 in 379ms
+ POST /calculators/ibu 200 in 189ms
+ GET /api/recipes/water-profiles 200 in 165ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 745ms
+ GET /calculators/dilution-boiloff 200 in 979ms
+ GET /calculators/brewing-water-volume 200 in 491ms
+ GET /manifest.webmanifest 200 in 130ms
+ GET /manifest.webmanifest 200 in 107ms
+ POST /calculators/dilution-boiloff 200 in 323ms
+ POST /calculators/dilution-boiloff 200 in 262ms
+ POST /calculators/brewing-water-volume 200 in 127ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 1140ms
+ GET /api/devices 200 in 278ms
+ GET /calculators/mash-infusion 200 in 973ms
+ GET /api/devices 200 in 304ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 209ms
+ GET /beer/pilsner-urquell 200 in 955ms
+ GET /manifest.webmanifest 200 in 138ms
+ GET /beer/pilsner-urquell 200 in 527ms
+ GET /manifest.webmanifest 200 in 119ms
+ GET /manifest.webmanifest 200 in 106ms
+ POST /calculators/mash-infusion 200 in 283ms
+ GET /recipes/pilsner-urquell 200 in 1138ms
+ GET /calculators/water-ph 200 in 760ms
+ GET /labels 200 in 376ms
+ GET /manifest.webmanifest 200 in 142ms
+ GET /manifest.webmanifest 200 in 112ms
+ POST /calculators/water-ph 200 in 266ms
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 227ms
+ GET /manifest.webmanifest 200 in 155ms
+ GET /bjcp 200 in 2317ms
+ GET /calculators/yeast-starter 200 in 1303ms
+ GET /manifest.webmanifest 200 in 121ms
+ GET /bjcp 200 in 1779ms
+ GET /manifest.webmanifest 200 in 90ms
+ POST /calculators/yeast-starter 200 in 330ms
+ POST /calculators/yeast-starter 200 in 172ms
+ GET /calculators/priming-sugar 200 in 601ms
+ GET /manifest.webmanifest 200 in 161ms
+ GET /bjcp 200 in 1260ms
+ GET /manifest.webmanifest 200 in 116ms
+ POST /calculators/priming-sugar 200 in 331ms
+ GET /calculators/keg-carbonation 200 in 1026ms
+ GET /manifest.webmanifest 200 in 469ms
+ GET /bjcp 200 in 2092ms
+ GET /manifest.webmanifest 200 in 84ms
+ POST /calculators/keg-carbonation 200 in 297ms
+ GET /calculators/bottling 200 in 338ms
+ GET /manifest.webmanifest 200 in 75ms
+ POST /calculators/bottling 200 in 219ms
+ GET /calculators/speise-krausen 200 in 236ms
+ GET /manifest.webmanifest 200 in 76ms
+ POST /calculators/speise-krausen 200 in 238ms
+ POST /calculators/speise-krausen 200 in 92ms
+ GET /calculators/beer-color 200 in 257ms
+ GET /manifest.webmanifest 200 in 105ms
+ POST /calculators/beer-color 200 in 241ms
+ GET /calculators/brewhouse-efficiency 200 in 271ms
+ GET /manifest.webmanifest 200 in 104ms
+ POST /calculators/brewhouse-efficiency 200 in 278ms
+ POST /calculators/brewhouse-efficiency 200 in 108ms
+ GET /calculators/hop-freshness 200 in 262ms
+ GET /manifest.webmanifest 200 in 93ms
+ POST /calculators/hop-freshness 200 in 238ms
+ GET /calculators/unit-converter 200 in 219ms
+ GET /manifest.webmanifest 200 in 58ms
+ POST /calculators/unit-converter 200 in 242ms
+ POST /calculators/unit-converter 200 in 92ms
+ GET /calculators/abv-attenuation 200 in 349ms
+ GET /manifest.webmanifest 200 in 234ms
+ POST /calculators/abv-attenuation 200 in 216ms
+ POST /calculators/abv-attenuation 200 in 81ms
+ GET /calculators/refractometer-correction 200 in 215ms
+ GET /manifest.webmanifest 200 in 85ms
+ POST /calculators/refractometer-correction 200 in 222ms
+ POST /calculators/refractometer-correction 200 in 78ms
+ POST /calculators/refractometer-correction 200 in 82ms
+ GET /calculators/hydrometer-correction 200 in 219ms
+ GET /manifest.webmanifest 200 in 95ms
+ POST /calculators/hydrometer-correction 200 in 219ms
+ POST /calculators/hydrometer-correction 200 in 85ms
+ GET /calculators/dilution-boiloff 200 in 228ms
+ GET /manifest.webmanifest 200 in 77ms
+ POST /calculators/dilution-boiloff 200 in 226ms
+ POST /calculators/dilution-boiloff 200 in 79ms
+ GET /calculators/ibu 200 in 257ms
+ GET /manifest.webmanifest 200 in 89ms
+ POST /calculators/ibu 200 in 233ms
+ POST /calculators/ibu 200 in 69ms
+ GET /calculators/brewing-water-volume 200 in 329ms
+ GET /manifest.webmanifest 200 in 76ms
+ POST /calculators/brewing-water-volume 200 in 221ms
+ GET /calculators/mash-infusion 200 in 233ms
+ GET /manifest.webmanifest 200 in 67ms
+ POST /calculators/mash-infusion 200 in 236ms
+ GET /calculators/water-ph 200 in 257ms
+ GET /manifest.webmanifest 200 in 78ms
+ POST /calculators/water-ph 200 in 225ms
+ GET /calculators/yeast-starter 200 in 206ms
+ GET /manifest.webmanifest 200 in 173ms
+ POST /calculators/yeast-starter 200 in 244ms
+ POST /calculators/yeast-starter 200 in 80ms
+ GET /calculators/priming-sugar 200 in 274ms
+ GET /manifest.webmanifest 200 in 97ms
+ POST /calculators/priming-sugar 200 in 239ms
+ GET /calculators/keg-carbonation 200 in 331ms
+ GET /manifest.webmanifest 200 in 105ms
+ POST /calculators/keg-carbonation 200 in 250ms
+ GET /calculators/bottling 200 in 320ms
+ GET /manifest.webmanifest 200 in 76ms
+ POST /calculators/bottling 200 in 222ms
+ GET /calculators/speise-krausen 200 in 220ms
+ GET /manifest.webmanifest 200 in 79ms
+ POST /calculators/speise-krausen 200 in 210ms
+ POST /calculators/speise-krausen 200 in 80ms
+ GET /calculators/beer-color 200 in 232ms
+ GET /manifest.webmanifest 200 in 71ms
+ POST /calculators/beer-color 200 in 231ms
+ GET /calculators/brewhouse-efficiency 200 in 218ms
+ GET /manifest.webmanifest 200 in 87ms
+ POST /calculators/brewhouse-efficiency 200 in 235ms
+ POST /calculators/brewhouse-efficiency 200 in 80ms
+ GET /calculators/hop-freshness 200 in 226ms
+ GET /manifest.webmanifest 200 in 76ms
+ POST /calculators/hop-freshness 200 in 218ms
+ GET /calculators/unit-converter 200 in 208ms
+ GET /manifest.webmanifest 200 in 166ms
+ POST /calculators/unit-converter 200 in 208ms
+ POST /calculators/unit-converter 200 in 76ms
+Browserslist: browsers data (caniuse-lite) is 8 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+ ✓ Compiled / in 8.7s (3749 modules)
+ ✓ Compiled in 2.1s (887 modules)
+ GET / 307 in 6346ms
+ GET /admin/recipes 200 in 7456ms
+ ○ Compiling /app ...
+ ✓ Compiled /app in 3.9s (4102 modules)
+ GET /manifest.webmanifest 200 in 2704ms
+ GET /app 200 in 5563ms
+ GET / 307 in 805ms
+ GET /calculators/abv-attenuation 200 in 1019ms
+ GET /app 200 in 425ms
+ GET /manifest.webmanifest 200 in 64ms
+ POST /calculators/abv-attenuation 200 in 485ms
+ POST /calculators/abv-attenuation 200 in 73ms
+ GET /calculators/unit-converter 200 in 653ms
+ GET /calculators/dilution-boiloff 200 in 483ms
+ GET /manifest.webmanifest 200 in 86ms
+ GET /manifest.webmanifest 200 in 92ms
+ POST /calculators/unit-converter 200 in 445ms
+ POST /calculators/dilution-boiloff 200 in 156ms
+ POST /calculators/unit-converter 200 in 69ms
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ POST /calculators/dilution-boiloff 200 in 136ms
+ GET /calculators/unit-converter 200 in 393ms
+ GET /manifest.webmanifest 200 in 238ms
+ POST /calculators/unit-converter 200 in 305ms
+ POST /calculators/unit-converter 200 in 108ms
+ GET /admin/recipes 200 in 745ms
+ GET /manifest.webmanifest 200 in 55ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 904ms
+ GET /manifest.webmanifest 200 in 73ms
+ ○ Compiling /api/recipes/water-profiles ...
+ ✓ Compiled /api/recipes/water-profiles in 1873ms (3204 modules)
+ GET /api/recipes/water-profiles 200 in 4706ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 3822ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 679ms
+[Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException: [Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException:  [Error: aborted] { code: 'ECONNRESET' }
+ ○ Compiling /api/devices ...
+ ✓ Compiled /api/devices in 1894ms (3207 modules)
+ GET /calculators/dilution-boiloff 200 in 6757ms
+ GET /manifest.webmanifest 200 in 89ms
+ POST /calculators/dilution-boiloff 200 in 410ms
+ POST /calculators/dilution-boiloff 200 in 99ms
+ GET /beer/pilsner-urquell 200 in 485ms
+ GET /manifest.webmanifest 200 in 76ms
+ ○ Compiling /recipes/[slug] ...
+ ✓ Compiled /recipes/[slug] in 3s (3274 modules)
+ GET /recipes/pilsner-urquell 200 in 4298ms
+ GET / 307 in 489ms
+ GET /app 200 in 1372ms
+ GET /calculators/unit-converter 200 in 1434ms
+ GET / 307 in 280ms
+ GET /app 200 in 294ms
+ GET /manifest.webmanifest 200 in 73ms
+ POST /calculators/unit-converter 200 in 532ms
+[Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException: [Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException:  [Error: aborted] { code: 'ECONNRESET' }
+ GET /calculators/unit-converter 200 in 1061ms
+ GET /beer/sample-american-stout 200 in 948ms
+ GET /beer/sample-american-stout 200 in 953ms
+ GET /manifest.webmanifest 200 in 192ms
+ POST /calculators/unit-converter 200 in 325ms
+ POST /calculators/unit-converter 200 in 140ms
+ GET /beer/sample-american-stout 200 in 1572ms
+ GET /admin/recipes 200 in 1180ms
+ GET /beer/sample-american-stout 200 in 1194ms
+ GET /manifest.webmanifest 200 in 68ms
+ GET /beer/pilsner-urquell 200 in 973ms
+ GET /beer/pilsner-urquell 200 in 541ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 1062ms
+ GET /manifest.webmanifest 200 in 192ms
+ GET /beer/pilsner-urquell 200 in 1110ms
+ GET /beer/pilsner-urquell 200 in 1011ms
+ GET /api/recipes/water-profiles 200 in 231ms
+ GET /api/recipes/water-profiles 200 in 215ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 744ms
+ GET /beer/bell-s-two-hearted-ale 200 in 1135ms
+ GET /beer/bell-s-two-hearted-ale 200 in 789ms
+ GET /beer/bell-s-two-hearted-ale 200 in 2554ms
+ GET /beer/bell-s-two-hearted-ale 200 in 2656ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 668ms
+ GET /api/devices 200 in 251ms
+ GET /api/devices 200 in 255ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 155ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 129ms
+ GET /calculators/dilution-boiloff 200 in 447ms
+ GET /manifest.webmanifest 200 in 97ms
+ POST /calculators/dilution-boiloff 200 in 383ms
+ GET /beer/sample-american-stout 200 in 1765ms
+ POST /calculators/dilution-boiloff 200 in 173ms
+ GET /bjcp 200 in 2047ms
+ GET /beer/pilsner-urquell 200 in 1122ms
+ GET /manifest.webmanifest 200 in 82ms
+ GET /bjcp 200 in 1597ms
+ GET /bjcp 200 in 739ms
+ GET /recipes/pilsner-urquell 200 in 533ms
+ POST /recipes/pilsner-urquell 200 in 148ms
+[Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException: [Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException:  [Error: aborted] { code: 'ECONNRESET' }
+ GET /calculators/unit-converter 200 in 1071ms
+ GET /bjcp 200 in 2083ms
+ GET /manifest.webmanifest 200 in 86ms
+ GET /bjcp 200 in 1501ms
+ POST /calculators/unit-converter 200 in 449ms
+[Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException: [Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException:  [Error: aborted] { code: 'ECONNRESET' }
+ GET /calculators/unit-converter 200 in 337ms
+ GET /manifest.webmanifest 200 in 114ms
+ GET /labels 200 in 504ms
+ POST /calculators/unit-converter 200 in 339ms
+ ⨯ [Error: aborted]
+ ○ Compiling /_error ...
+ GET /admin/recipes 200 in 2419ms
+ GET /calculators/abv-attenuation 200 in 2532ms
+ ✓ Compiled /api/labels/custom in 5.2s (4519 modules)
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /manifest.webmanifest 200 in 8554ms
+ GET /api/labels/custom?template=craft&preset=S&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 10182ms
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ ⚠ ./features/labels/fonts.ts
+Attempted import error: 'opentype.js' does not contain a default export (imported as 'opentypeModule').
+
+Import trace for requested module:
+./features/labels/fonts.ts
+./features/labels/render.ts
+./app/api/labels/custom/route.ts
+ GET /admin/recipes 200 in 7313ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 5079ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 2238ms
+ GET /manifest.webmanifest 200 in 112ms
+ GET /api/recipes/water-profiles 200 in 126ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 935ms
+ GET /api/recipes/water-profiles 200 in 639ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 390ms
+ GET /calculators/dilution-boiloff 200 in 1357ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 461ms
+ GET /api/devices 200 in 315ms
+ GET /api/devices 200 in 312ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 993ms
+ GET /api/devices 200 in 272ms
+ GET /api/devices 200 in 490ms
+[Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException: [Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException:  [Error: aborted] { code: 'ECONNRESET' }
+ POST /calculators/dilution-boiloff 200 in 564ms
+ POST /calculators/dilution-boiloff 200 in 113ms
+ GET /calculators/dilution-boiloff 200 in 888ms
+ GET /beer/sample-american-stout 200 in 734ms
+ GET /manifest.webmanifest 200 in 77ms
+ POST /calculators/dilution-boiloff 200 in 335ms
+ GET /beer/sample-american-stout 200 in 945ms
+ POST /calculators/dilution-boiloff 200 in 127ms
+ GET /beer/sample-american-stout 200 in 412ms
+ GET /beer/sample-american-stout 200 in 981ms
+ GET /beer/pilsner-urquell 200 in 595ms
+ GET /beer/pilsner-urquell 200 in 605ms
+ GET /manifest.webmanifest 200 in 87ms
+ GET /recipes/pilsner-urquell 200 in 1216ms
+ GET /beer/pilsner-urquell 200 in 1642ms
+ GET /beer/pilsner-urquell 200 in 1613ms
+ GET /calculators/unit-converter 200 in 441ms
+ GET /beer/pilsner-urquell 200 in 876ms
+ GET /beer/bell-s-two-hearted-ale 200 in 818ms
+ GET /manifest.webmanifest 200 in 74ms
+ POST /calculators/unit-converter 200 in 328ms
+ POST /calculators/unit-converter 200 in 123ms
+ GET /beer/bell-s-two-hearted-ale 200 in 1186ms
+ GET /calculators/unit-converter 200 in 1146ms
+ GET /beer/bell-s-two-hearted-ale 200 in 1175ms
+ GET /manifest.webmanifest 200 in 112ms
+ POST /calculators/unit-converter 200 in 275ms
+ POST /calculators/unit-converter 200 in 111ms
+ GET /beer/bell-s-two-hearted-ale 200 in 1322ms
+ GET /admin/recipes 200 in 958ms
+ GET /beer/sample-american-stout 200 in 1139ms
+ GET /manifest.webmanifest 200 in 242ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 926ms
+ GET /bjcp 200 in 2408ms
+ GET /bjcp 200 in 2376ms
+ GET /manifest.webmanifest 200 in 99ms
+ GET /api/recipes/water-profiles 200 in 130ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 322ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 1250ms
+ GET /api/devices 200 in 237ms
+ GET /api/devices 200 in 273ms
+ GET /bjcp 200 in 3274ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 224ms
+ GET /bjcp 200 in 1942ms
+[Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException: [Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException:  [Error: aborted] { code: 'ECONNRESET' }
+ GET /calculators/dilution-boiloff 200 in 427ms
+ GET /manifest.webmanifest 200 in 138ms
+ POST /calculators/dilution-boiloff 200 in 342ms
+ POST /calculators/dilution-boiloff 200 in 137ms
+ GET /labels 200 in 1627ms
+ GET /beer/pilsner-urquell 200 in 1911ms
+ GET /bjcp 200 in 3166ms
+ GET /manifest.webmanifest 200 in 109ms
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 674ms
+ GET /recipes/pilsner-urquell 200 in 950ms
+ POST /recipes/pilsner-urquell 200 in 166ms
+[Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException: [Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException:  [Error: aborted] { code: 'ECONNRESET' }
+ GET /calculators/abv-attenuation 200 in 1203ms
+ GET /admin/recipes 200 in 985ms
+ GET /calculators/unit-converter 200 in 963ms
+ GET /manifest.webmanifest 200 in 99ms
+ POST /calculators/unit-converter 200 in 313ms
+ POST /calculators/unit-converter 200 in 137ms
+ POST /calculators/abv-attenuation 200 in 88ms
+ POST /calculators/abv-attenuation 200 in 177ms
+ GET /calculators/unit-converter 200 in 366ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 1177ms
+ GET /manifest.webmanifest 200 in 114ms
+ GET /calculators/dilution-boiloff 200 in 665ms
+ POST /calculators/unit-converter 200 in 265ms
+[Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException: [Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException:  [Error: aborted] { code: 'ECONNRESET' }
+ GET /api/recipes/water-profiles 200 in 1353ms
+ GET /admin/recipes 200 in 3402ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 398ms
+ GET /beer/sample-american-stout 200 in 704ms
+ GET /manifest.webmanifest 200 in 121ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 478ms
+ GET /api/devices 200 in 201ms
+ GET /api/devices 200 in 183ms
+ ⨯ [Error: aborted]
+ GET /beer/sample-american-stout 200 in 998ms
+ GET /beer/sample-american-stout 200 in 1036ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 855ms
+ GET /manifest.webmanifest 200 in 89ms
+ GET /api/recipes/water-profiles 200 in 277ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 537ms
+ GET /beer/sample-american-stout 200 in 1238ms
+ GET /beer/pilsner-urquell 200 in 1179ms
+ GET /beer/pilsner-urquell 200 in 1326ms
+ GET /beer/pilsner-urquell 200 in 1008ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 892ms
+ GET /api/devices 200 in 176ms
+ GET /api/devices 200 in 227ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 161ms
+[Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException: [Error: aborted] { code: 'ECONNRESET' }
+ ⨯ uncaughtException:  [Error: aborted] { code: 'ECONNRESET' }
+ GET /calculators/dilution-boiloff 200 in 408ms
+ GET /manifest.webmanifest 200 in 139ms
+ POST /calculators/dilution-boiloff 200 in 443ms
+ GET /beer/pilsner-urquell 200 in 1256ms
+ GET /beer/bell-s-two-hearted-ale 200 in 1322ms
+ POST /calculators/dilution-boiloff 200 in 174ms
+ GET /beer/pilsner-urquell 200 in 967ms
+ GET /beer/bell-s-two-hearted-ale 200 in 748ms
+ GET /beer/bell-s-two-hearted-ale 200 in 755ms
+ GET /manifest.webmanifest 200 in 715ms
+ GET /recipes/pilsner-urquell 200 in 1604ms
+ GET /beer/sample-american-stout 200 in 1037ms
+ GET /beer/bell-s-two-hearted-ale 200 in 1045ms
+ GET /calculators/unit-converter 200 in 426ms
+ GET /manifest.webmanifest 200 in 113ms
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /calculators/unit-converter 200 in 1020ms
+ GET /bjcp 200 in 3123ms
+ GET /bjcp 200 in 3058ms
+ GET /manifest.webmanifest 200 in 74ms
+ POST /calculators/unit-converter 200 in 322ms
+ POST /calculators/unit-converter 200 in 123ms
+ GET /admin/recipes 200 in 821ms
+ GET /manifest.webmanifest 200 in 110ms
+ GET /bjcp 200 in 924ms
+ GET /bjcp 200 in 911ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 752ms
+ GET /manifest.webmanifest 200 in 89ms
+ GET /api/recipes/water-profiles 200 in 174ms
+ GET /labels 200 in 689ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 406ms
+ GET /bjcp 200 in 1815ms
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 132ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 459ms
+ GET /api/devices 200 in 191ms
+ GET /api/devices 200 in 232ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 154ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 577ms
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /calculators/abv-attenuation 200 in 736ms
+ GET /calculators/dilution-boiloff 200 in 1055ms
+ GET /admin/recipes 200 in 778ms
+ GET /manifest.webmanifest 200 in 87ms
+ POST /calculators/abv-attenuation 200 in 231ms
+ POST /calculators/abv-attenuation 200 in 202ms
+ POST /calculators/dilution-boiloff 200 in 163ms
+ POST /calculators/dilution-boiloff 200 in 112ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 913ms
+ GET /calculators/dilution-boiloff 200 in 579ms
+ GET /beer/pilsner-urquell 200 in 463ms
+ GET /manifest.webmanifest 200 in 97ms
+ GET /api/recipes/water-profiles 200 in 129ms
+ POST /calculators/dilution-boiloff 200 in 241ms
+ POST /calculators/dilution-boiloff 200 in 95ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 438ms
+ GET /recipes/pilsner-urquell 200 in 920ms
+ GET /beer/sample-american-stout 200 in 453ms
+ GET /calculators/unit-converter 200 in 816ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 584ms
+ GET /api/devices 200 in 181ms
+ GET /api/devices 200 in 181ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 75ms
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /manifest.webmanifest 200 in 80ms
+ POST /calculators/unit-converter 200 in 365ms
+ GET /beer/sample-american-stout 200 in 969ms
+ GET /beer/sample-american-stout 200 in 715ms
+ GET /calculators/unit-converter 200 in 500ms
+ GET /manifest.webmanifest 200 in 93ms
+ POST /calculators/unit-converter 200 in 300ms
+ POST /calculators/unit-converter 200 in 115ms
+ GET /beer/sample-american-stout 200 in 1404ms
+ GET /beer/pilsner-urquell 200 in 1407ms
+ GET /admin/recipes 200 in 819ms
+ GET /manifest.webmanifest 200 in 94ms
+ GET /beer/pilsner-urquell 200 in 668ms
+ GET /beer/pilsner-urquell 200 in 487ms
+ GET /beer/pilsner-urquell 200 in 622ms
+ GET /beer/bell-s-two-hearted-ale 200 in 625ms
+ GET /beer/bell-s-two-hearted-ale 200 in 1346ms
+ GET /beer/bell-s-two-hearted-ale 200 in 1303ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 827ms
+ GET /manifest.webmanifest 200 in 88ms
+ GET /api/recipes/water-profiles 200 in 88ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 556ms
+ GET /beer/bell-s-two-hearted-ale 200 in 1197ms
+ GET /beer/sample-american-stout 200 in 1179ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 1741ms
+ GET /api/devices 200 in 226ms
+ GET /api/devices 200 in 288ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 468ms
+ GET /bjcp 200 in 3679ms
+ GET /bjcp 200 in 3627ms
+ GET /calculators/dilution-boiloff 200 in 485ms
+ GET /manifest.webmanifest 200 in 151ms
+ POST /calculators/dilution-boiloff 200 in 372ms
+ POST /calculators/dilution-boiloff 200 in 191ms
+ GET /beer/pilsner-urquell 200 in 1375ms
+ GET /manifest.webmanifest 200 in 121ms
+ GET /bjcp 200 in 2996ms
+ GET /bjcp 200 in 1416ms
+ GET /recipes/pilsner-urquell 200 in 854ms
+ GET /labels 200 in 753ms
+ GET /bjcp 200 in 1353ms
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 127ms
+ GET /calculators/abv-attenuation 200 in 392ms
+ GET /admin/recipes 200 in 646ms
+ POST /calculators/abv-attenuation 200 in 192ms
+ POST /calculators/abv-attenuation 200 in 70ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 923ms
+ GET /calculators/dilution-boiloff 200 in 552ms
+ POST /calculators/dilution-boiloff 200 in 218ms
+ GET /api/recipes/water-profiles 200 in 145ms
+ POST /calculators/dilution-boiloff 200 in 130ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 238ms
+ GET /beer/sample-american-stout 200 in 460ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 398ms
+ GET /api/devices 200 in 160ms
+ GET /api/devices 200 in 184ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 95ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 99ms
+ GET /beer/sample-american-stout 200 in 590ms
+ GET /beer/sample-american-stout 200 in 327ms
+ GET /beer/sample-american-stout 200 in 695ms
+ GET /beer/pilsner-urquell 200 in 366ms
+ GET /beer/pilsner-urquell 200 in 692ms
+ GET /beer/pilsner-urquell 200 in 496ms
+ GET /beer/bell-s-two-hearted-ale 200 in 520ms
+ GET /beer/pilsner-urquell 200 in 716ms
+ GET /beer/bell-s-two-hearted-ale 200 in 677ms
+ GET /beer/bell-s-two-hearted-ale 200 in 384ms
+ GET / 307 in 586ms
+ GET /beer/bell-s-two-hearted-ale 200 in 1070ms
+ GET /beer/sample-american-stout 200 in 1091ms
+ GET /app 200 in 643ms
+ GET / 307 in 203ms
+ GET /app 200 in 301ms
+ GET /admin/recipes 200 in 1347ms
+ GET /manifest.webmanifest 200 in 589ms
+ GET /bjcp 200 in 2160ms
+ GET /bjcp 200 in 2133ms
+ GET /admin/recipes 200 in 1213ms
+ GET /manifest.webmanifest 200 in 89ms
+ GET /bjcp 200 in 2655ms
+ GET /bjcp 200 in 1598ms
+ GET /labels 200 in 471ms
+ GET /admin/recipes 200 in 803ms
+ GET /bjcp 200 in 1896ms
+ GET /manifest.webmanifest 200 in 91ms
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 142ms
+ GET /admin/recipes 200 in 1024ms
+ GET /calculators/abv-attenuation 200 in 1277ms
+ GET /admin/recipes 200 in 887ms
+ GET /manifest.webmanifest 200 in 127ms
+ POST /calculators/abv-attenuation 200 in 287ms
+ POST /calculators/abv-attenuation 200 in 125ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 1079ms
+ GET /calculators/dilution-boiloff 200 in 1417ms
+ GET /admin/recipes 200 in 750ms
+ GET /manifest.webmanifest 200 in 102ms
+ POST /calculators/dilution-boiloff 200 in 345ms
+ GET /api/recipes/water-profiles 200 in 114ms
+ POST /calculators/dilution-boiloff 200 in 94ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 290ms
+ GET /admin/recipes 200 in 711ms
+ GET /manifest.webmanifest 200 in 300ms
+ GET /beer/sample-american-stout 200 in 1002ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 441ms
+ GET /api/devices 200 in 207ms
+ GET /api/devices 200 in 194ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 99ms
+ GET /beer/sample-american-stout 200 in 976ms
+ GET /beer/sample-american-stout 200 in 501ms
+ GET /admin/recipes 200 in 1225ms
+ GET /beer/sample-american-stout 200 in 1117ms
+ GET /beer/pilsner-urquell 200 in 1044ms
+ GET /manifest.webmanifest 200 in 95ms
+ GET /beer/pilsner-urquell 200 in 676ms
+ GET /beer/pilsner-urquell 200 in 471ms
+ GET /beer/pilsner-urquell 200 in 709ms
+ GET /beer/bell-s-two-hearted-ale 200 in 513ms
+ GET /beer/bell-s-two-hearted-ale 200 in 699ms
+ GET /beer/bell-s-two-hearted-ale 200 in 660ms
+ GET /beer/bell-s-two-hearted-ale 200 in 696ms
+ GET /beer/sample-american-stout 200 in 507ms
+ GET /bjcp 200 in 1402ms
+ GET /bjcp 200 in 1405ms
+ GET / 307 in 217ms
+ GET /app 200 in 386ms
+ GET / 307 in 296ms
+ GET /app 200 in 353ms
+ GET /bjcp 200 in 2164ms
+ GET /manifest.webmanifest 200 in 103ms
+ GET /bjcp 200 in 1776ms
+ GET /bjcp 200 in 1164ms
+ GET /labels 200 in 1692ms
+ GET /manifest.webmanifest 200 in 100ms
+ GET /bjcp 200 in 2672ms
+ GET /bjcp 200 in 2484ms
+ GET /api/labels/custom?template=typographic&preset=M&dpi=203&gravityUnit=plato&title=%D0%9C%D0%BE%D1%91+%D0%BF%D0%B8%D0%B2%D0%BE&style=&abv=&ibu=&ebc=&og=&fg=&malts=&hops=&yeast=&description=&author=&brand=BEWED+WITH+NB&volume=&batch=&bottlingDate=2026-10-22&qr=0&format=png&preview=1 200 in 140ms
+ GET /calculators/abv-attenuation 200 in 458ms
+ GET /admin/recipes 200 in 661ms
+ GET /bjcp 200 in 821ms
+ POST /calculators/abv-attenuation 200 in 316ms
+ POST /calculators/abv-attenuation 200 in 273ms
+ GET /manifest.webmanifest 200 in 133ms
+ GET /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 1645ms
+ GET /calculators/dilution-boiloff 200 in 1369ms
+ GET /api/recipes/water-profiles 200 in 498ms
+ POST /calculators/dilution-boiloff 200 in 953ms
+ POST /calculators/dilution-boiloff 200 in 321ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 404ms
+ GET /bjcp 200 in 1921ms
+ GET /manifest.webmanifest 200 in 140ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 497ms
+ GET /api/devices 200 in 183ms
+ GET /api/devices 200 in 215ms
+ POST /app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit 200 in 118ms
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /bjcp 200 in 1519ms
+ GET /manifest.webmanifest 200 in 73ms
+ GET /bjcp 200 in 623ms
+ GET /manifest.webmanifest 200 in 73ms
+ GET /bjcp 200 in 795ms
+ GET /manifest.webmanifest 200 in 91ms
+ GET /bjcp 200 in 942ms
+ GET /manifest.webmanifest 200 in 419ms
+ GET /bjcp 200 in 661ms
+ GET /manifest.webmanifest 200 in 86ms
+ GET /bjcp 200 in 656ms
+ GET /manifest.webmanifest 200 in 73ms
+ GET /bjcp 200 in 589ms
+ GET /manifest.webmanifest 200 in 73ms
+ GET /bjcp 200 in 605ms
+ GET /manifest.webmanifest 200 in 73ms
+[?25h

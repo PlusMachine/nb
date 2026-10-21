@@ -80,13 +80,13 @@ const fermentationStepSchema = z.object({
   id: z.string().trim().min(1).max(64),
   name: z.string().trim().min(1).max(80),
   temperatureC: numberField().min(-10, "Температура брожения не может быть ниже -10 °C.").max(50, "Температура брожения не может быть выше 50 °C.").optional().nullable(),
-  durationDays: numberField().int("Длительность брожения должна быть целым числом.").min(1, "Длительность брожения должна быть не меньше 1 дня.").max(365, "Длительность брожения не может быть больше 365 дней.").optional().nullable()
+  durationDays: numberField().positive("Длительность брожения должна быть больше 0 дней.").max(365, "Длительность брожения не может быть больше 365 дней.").optional().nullable()
 });
 
 const optionalTemperatureStepSchema = z.object({
   enabled: z.coerce.boolean().default(false),
   temperatureC: numberField().min(-10, "Температура брожения не может быть ниже -10 °C.").max(50, "Температура брожения не может быть выше 50 °C.").optional().nullable(),
-  durationDays: numberField().int("Длительность брожения должна быть целым числом.").min(1, "Длительность брожения должна быть не меньше 1 дня.").max(365, "Длительность брожения не может быть больше 365 дней.").optional().nullable()
+  durationDays: numberField().positive("Длительность брожения должна быть больше 0 дней.").max(365, "Длительность брожения не может быть больше 365 дней.").optional().nullable()
 });
 
 export const defaultRecipeProcessMeta = {
@@ -126,7 +126,7 @@ export const recipeProcessMetaSchema = z.object({
   }).default(defaultRecipeProcessMeta.mashProfile),
   fermentationProfile: z.object({
     primaryTemperatureC: numberField().min(-10, "Температура брожения не может быть ниже -10 °C.").max(50, "Температура брожения не может быть выше 50 °C.").optional().nullable().default(defaultRecipeProcessMeta.fermentationProfile.primaryTemperatureC),
-    primaryDurationDays: numberField().int("Длительность брожения должна быть целым числом.").min(1, "Длительность брожения должна быть не меньше 1 дня.").max(365, "Длительность брожения не может быть больше 365 дней.").optional().nullable().default(defaultRecipeProcessMeta.fermentationProfile.primaryDurationDays),
+    primaryDurationDays: numberField().positive("Длительность брожения должна быть больше 0 дней.").max(365, "Длительность брожения не может быть больше 365 дней.").optional().nullable().default(defaultRecipeProcessMeta.fermentationProfile.primaryDurationDays),
     extraSteps: z.array(fermentationStepSchema).max(10).default([]),
     coldCrash: optionalTemperatureStepSchema.default(defaultRecipeProcessMeta.fermentationProfile.coldCrash),
     conditioning: optionalTemperatureStepSchema.default(defaultRecipeProcessMeta.fermentationProfile.conditioning)
@@ -172,7 +172,7 @@ export const recipeCalculationMetaSchema = z.object({
   bitternessFormula: z.enum(recipeBitternessFormulas).default("tinseth_whirlpool_v2"),
   bitternessSettings: z.object({
     includeBoilCarryoverIntoWhirlpool: z.coerce.boolean().default(true),
-    whirlpoolUtilizationFactor: numberField().positive("Коэффициент whirlpool должен быть больше нуля.").max(3, "Коэффициент whirlpool не может быть больше 3.").default(1),
+    whirlpoolUtilizationFactor: numberField().positive("Коэффициент вирпула должен быть больше нуля.").max(3, "Коэффициент вирпула не может быть больше 3.").default(1),
     hopFormUtilizationFactor: numberField().positive("Коэффициент хмеля должен быть больше нуля.").max(3, "Коэффициент хмеля не может быть больше 3.").default(1),
     firstWortHopMode: z.enum(["bonus_10pct", "treat_as_20min", "treat_as_boil_start"]).default("bonus_10pct")
   }).partial().default({}),
@@ -237,6 +237,7 @@ export const recipeWaterPlanMetaSchema = z.object({
     target: z.enum(recipeWaterManualSaltAdditionTargets).optional()
   })).optional().default([]),
   targetMashPh: numberField().min(4, "Целевой pH затора не может быть ниже 4.").max(7, "Целевой pH затора не может быть выше 7.").optional().nullable().default(null),
+  mashAcidificationEnabled: z.boolean().optional(),
   spargeAcidificationEnabled: z.coerce.boolean().default(false),
   spargeSourcePh: numberField().min(0, "pH промывочной воды не может быть ниже 0.").max(14, "pH промывочной воды не может быть выше 14.").optional().nullable(),
   targetSpargePh: numberField().min(4, "Целевой pH промывочной воды не может быть ниже 4.").max(7, "Целевой pH промывочной воды не может быть выше 7.").optional().nullable(),
@@ -651,10 +652,10 @@ export const WATER_PROFILES_SAVE_RATE_WINDOW_SECONDS = 60 * 10;
 
 /**
  * Потолок размера входа импорта (BeerXML/Brewfather) ДО парсинга — чтобы никто не
- * заставлял сервер разбирать мегабайтные строки. 256 КБ с запасом покрывают
- * реальные экспорты (обычно единицы–десятки КБ).
+ * заставлял сервер разбирать неограниченные строки. 8 МБ покрывают библиотеки рецептов.
  */
-export const RECIPE_IMPORT_MAX_INPUT_BYTES = 256 * 1024;
+export const RECIPE_IMPORT_MAX_INPUT_BYTES = 8 * 1024 * 1024;
+export const RECIPE_IMPORT_MAX_RECIPES = 100;
 
 /** Сколько опубликованных рецептов реально оценено / сохранено (для гейтинга сортов). */
 export type PublicRecipeSortAvailability = {
@@ -862,6 +863,15 @@ export type RecipeDetailDto = RecipeListItemDto & {
   cloneCount?: number;
 };
 
+/** Публичное чтение сохраняет форму для общих расчётов, но не данные редактора. */
+export type PublicRecipeDetailDto = RecipeDetailDto & {
+  authorNotes: null;
+  draftState: null;
+  equipmentProfileId: null;
+  brewPlanMeta: null;
+  versions: [];
+};
+
 /**
  * Тонкая проекция рецепта для OG-карточки (превью ссылки). Карточке нужны только
  * скаляры строки + рейтинг + число варок + styleId + heroImageId (Ф5: фото-врезка) —
@@ -948,6 +958,8 @@ export type RecipeMatchLineDto = {
   // Ф23: бренд строки (если известен) — показывается подписью «категория · бренд»
   // под именем в строках нехватки панели матча.
   brand: string | null;
+  // Код страны каталожной позиции — флаг рядом с брендом в панели матча.
+  countryCode: string | null;
   status: RecipeMatchLineStatus;
   coveragePercent: number;
   requiredQuantityNormalized: number;
@@ -971,8 +983,11 @@ export type RecipeMatchDto = {
   recipeId: string;
   matchPercent: number;
   label: RecipeMatchLabel;
+  /** Уникальные ингредиенты рецепта (кипячение+вирпул одного хмеля = 1). */
   totalLines: number;
+  /** Из них полностью покрыты складом (covered/substitute по всем добавкам). */
   coveredLines: number;
+  /** Уникальные ингредиенты со статусом missing (тип отсутствует на складе). */
   missingCount: number;
   lines: RecipeMatchLineDto[];
   targetBatchVolumeL: number;

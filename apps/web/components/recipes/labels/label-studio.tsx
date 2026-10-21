@@ -104,7 +104,7 @@ const describeDescriptionFixes = (fixes: string[]): string => {
 
 // text-base на мобиле — иначе iOS зумит страницу при фокусе на поле с кеглем < 16px.
 const inputClass =
-  "h-9 w-full rounded-md border border-border bg-background px-2 text-base sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "h-9 w-full rounded-md border border-border bg-background px-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 const chipClass = (active: boolean): string =>
   `rounded-md border px-3 py-1.5 text-sm transition-colors ${
@@ -748,7 +748,7 @@ export function LabelStudio(props: LabelStudioProps) {
           ) : null}
         </div>
 
-        <section className="space-y-3 sticky top-[var(--chrome-top,0px)] z-10 lg:col-start-2 lg:row-span-2 lg:top-4 lg:self-start">
+        <section className="space-y-3 lg:sticky lg:col-start-2 lg:row-span-2 lg:top-[calc(var(--chrome-top,0px)+1rem)] lg:z-10 lg:self-start">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-medium text-muted-foreground">Превью</h2>
             <button
@@ -885,7 +885,7 @@ export function LabelStudio(props: LabelStudioProps) {
         >
           <div className="space-y-2 p-5 text-sm">
             <p>В полях уже есть данные — что с ними сделать?</p>
-            <p className="text-muted-foreground">Из рецепта приедут: {RECIPE_FIELDS_SUMMARY}.</p>
+            <p className="text-muted-foreground">Из рецепта будут заполнены: {RECIPE_FIELDS_SUMMARY}.</p>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setFillOffer(null)}>
@@ -991,7 +991,7 @@ export function LabelStudio(props: LabelStudioProps) {
                   onChange={(event) => setField("description")(event.target.value)}
                   onBlur={flushSync}
                   placeholder="Пара предложений о пиве"
-                  className="w-full resize-y rounded-md border border-border bg-background px-2 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="w-full resize-y rounded-md border border-border bg-background px-2 py-1.5 text-base sm:text-sm [@media(pointer:coarse)]:text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
                 {/* Описание младше всех блоков и урезается по остатку высоты: молча
                     исчезнувший текст читался бы как поломка. Что именно спасёт
@@ -1068,7 +1068,7 @@ export function LabelStudio(props: LabelStudioProps) {
               // Молча задизейбленный чекбокс не объясняет, что QR вообще бывает и
               // что для него нужно: цель выше, а гостю — ещё и аккаунт.
               <p className="text-xs text-muted-foreground">
-                QR появится, когда выше указан рецепт.
+                Выберите рецепт выше, чтобы добавить QR-код.
                 {props.loginHref ? (
                   <>
                     {" "}

@@ -1,0 +1,17 @@
+
+ RUN  v4.0.18 /home/dopefish/projects/nb/apps/web
+
+ ✓ tests/bjcp-style-page-placeholder-image.test.ts (1 test) 1494ms
+     ✓ serves the generated OG card when heroImageUrl is only the shared BJCP placeholder  1492ms
+ ✓ tests/bjcp-style-page-seo.test.ts (9 tests) 690ms
+     ✓ redirects generateMetadata for a legacy alias slug to the canonical /bjcp/<slug>  431ms
+ ✓ tests/bjcp-hub-page-seo.test.ts (4 tests) 629ms
+     ✓ has a canonical /bjcp and an openGraph block  422ms
+ ✓ tests/recipe-editor-components.test.ts (44 tests) 351ms
+ ✓ tests/bjcp-card-stats.test.ts (9 tests) 100ms
+
+ Test Files  5 passed (5)
+      Tests  67 passed (67)
+   Start at  23:52:12
+   Duration  8.01s (transform 2.35s, setup 139ms, import 3.28s, tests 3.26s, environment 1ms)
+

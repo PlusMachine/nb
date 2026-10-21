@@ -1,0 +1,44 @@
+
+ RUN  v4.0.18 /home/dopefish/projects/nb/apps/web
+
+ ❯ integration/recovery-browser.integration.test.ts (6 tests | 1 failed) 39733ms
+     × equipment loading failure blocks start, retry restores required choice 15756ms
+     ✓ a late failure from a closed brew dialog does not corrupt the reopened dialog  5771ms
+     ✓ preparation calculation can fail and recover without changing chosen volume  3938ms
+     ✓ consumption preview recovers after network failure and consumes both exact lots  8327ms
+     ✓ an in-flight consumption cannot be dismissed or submitted twice  2649ms
+     ✓ guest browsing cannot read a private batch  3119ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  integration/recovery-browser.integration.test.ts > live Chromium: recovery and consistency > equipment loading failure blocks start, retry restores required choice
+Error: expect(locator).toBeVisible() failed
+
+Locator: getByRole('dialog').getByText(/Не удалось загрузить объём и оборудование/)
+Expected: visible
+Timeout: 5000ms
+Error: element(s) not found
+
+Call log:
+  - Expect "to.be.visible" with timeout 5000ms
+  - waiting for getByRole('dialog').getByText(/Не удалось загрузить объём и оборудование/)
+
+ ❯ captureRawStack ../../node_modules/playwright-core/lib/coreBundle.js:3172:17
+ ❯ callMatcherAsStep ../../node_modules/playwright/lib/matchers/expect.js:12877:57
+ ❯ Object.toBeVisible ../../node_modules/playwright/lib/matchers/expect.js:12867:23
+ ❯ integration/recovery-browser.integration.test.ts:62:99
+     60|     await page.route("**/app/recipes/**", abortVolume);
+     61|     await page.getByRole("button", { name: "Сварить", exact: true }).c…
+     62|     await expect(page.getByRole("dialog").getByText(/Не удалось загруз…
+       |                                                                                                   ^
+     63|     await expect(page.getByRole("button", { name: "Начать варку", exac…
+     64|     await page.unroute("**/app/recipes/**", abortVolume);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  22:48:10
+   Duration  42.50s (transform 1.27s, setup 77ms, import 2.28s, tests 39.73s, environment 0ms)
+

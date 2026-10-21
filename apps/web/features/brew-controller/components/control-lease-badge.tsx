@@ -4,7 +4,7 @@
 //  ControlLeaseBadge — статус single-writer аренды устройства + перехват.
 //  Состояния (см. docs §control-lease):
 //   - держу я            → «Вы управляете» (+ уведомление, если кто-то просит);
-//   - держит другой      → «Управляет другой сеанс» + [Запросить перехват];
+//   - держит другой      → «Управляет другой сеанс» + [Запросить управление];
 //   - свободно/подключаюсь → нейтральная подсказка.
 // =============================================================================
 import { Radio, ShieldCheck, ShieldQuestion } from "lucide-react";
@@ -34,7 +34,7 @@ export function ControlLeaseBadge({ lease, hasDevice, onRequestTakeover, onRelea
         </span>
         {lease.takeoverRequested ? (
           <span className="inline-flex items-center gap-2 rounded-full bg-warning-subtle px-3 py-1 text-xs font-medium text-warning-subtle-foreground">
-            Другой сеанс просит управление
+            Запрошена передача управления
             <button
               type="button"
               onClick={onRelease}
@@ -57,7 +57,7 @@ export function ControlLeaseBadge({ lease, hasDevice, onRequestTakeover, onRelea
         Управляет другой сеанс
         {lease.takeoverByMe ? (
           <span className="rounded-md bg-warning-subtle px-2 py-0.5 text-[11px] font-semibold text-warning-subtle-foreground">
-            Перехват запрошен…
+            Управление запрошено…
           </span>
         ) : (
           <button
@@ -66,7 +66,7 @@ export function ControlLeaseBadge({ lease, hasDevice, onRequestTakeover, onRelea
             disabled={pending}
             className="rounded-md bg-warning px-2 py-0.5 text-[11px] font-semibold text-warning-foreground hover:bg-warning/90 disabled:opacity-50"
           >
-            Запросить перехват
+            Запросить управление
           </button>
         )}
       </span>

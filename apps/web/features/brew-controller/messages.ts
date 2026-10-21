@@ -18,13 +18,13 @@ export function describeStartBrewError(error: unknown): string {
     case "NOT_FOUND":
       return "Рецепт не найден или недоступен для варки.";
     case "BREW_BATCH_NOT_FOUND":
-      return "Партия варки не найдена.";
+      return "Партия не найдена.";
     case "DEVICE_NOT_FOUND":
       return "Устройство не найдено или не привязано к вам.";
     case "DEVICE_NOT_CAPABLE":
       return "Это устройство только передаёт показания и не поддерживает запуск варки. Выберите пивоварню BrewForge.";
     case "DEVICE_NO_LOCAL_URL":
-      return "У устройства не задан локальный адрес (localUrl). Допривяжите устройство по адресу в сети.";
+      return "У устройства не задан локальный адрес. Укажите его адрес в домашней сети в настройках подключения.";
     case "PROVIDER_UNAVAILABLE":
       return "Контроллер недоступен. Повторите попытку позже.";
     default:
@@ -38,13 +38,13 @@ export function describeStartBrewError(error: unknown): string {
 export function describeStartBrewNack(reason: AckReason | null): string {
   switch (reason) {
     case "REJECTED_INTERLOCK":
-      return "Устройство отклонило запуск: активен интерлок безопасности (датчик/перегрев/поплавок/E-stop). Устраните причину и повторите.";
+      return "Запуск заблокирован защитой устройства: проверьте датчики, температуру, уровень жидкости и аварийный выключатель. Устраните причину и повторите запуск.";
     case "RATE_LIMITED":
       return "Слишком частые команды устройству. Повторите чуть позже.";
     case "QUEUE_FULL":
       return "Очередь команд устройства переполнена. Повторите позже.";
     case "VALIDATION":
-      return "Устройство отклонило рецепт/команду (валидация). Проверьте рецепт и повторите.";
+      return "Устройство отклонило рецепт или команду из-за некорректных параметров. Проверьте рецепт и повторите запуск.";
     default:
       return "Устройство не запустило варку. Проверьте состояние контроллера.";
   }

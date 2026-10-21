@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "at": "2026-10-20T20:20:54.307Z",
+  "browser": "149.0.7827.55",
+  "batch": "http://127.0.0.1:3000/app/brew-batches/a42dbf9d-a841-4bba-b2a8-2f32a7e8481c",
+  "checks": [
+    "final editor at 360 and 834 px without document overflow",
+    "completed party reload at 360 px",
+    "bookmark add reload remove reload",
+    "no new page errors, HTTP 500 or console errors during final pass"
+  ],
+  "errors": [],
+  "consoleErrors": []
+}

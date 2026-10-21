@@ -43,7 +43,7 @@ export function DeviceLogSyncCard({ deviceId }: { deviceId: string }) {
       } else {
         show({
           title: "Журнал синхронизирован",
-          description: `Догружено файлов: ${summary.filesImported}, точек: ${importedSamples}.`,
+          description: `Загружено файлов: ${summary.filesImported}, точек: ${importedSamples}.`,
           tone: "success"
         });
       }
@@ -61,7 +61,7 @@ export function DeviceLogSyncCard({ deviceId }: { deviceId: string }) {
         <div>
           <p className="text-sm font-semibold text-foreground">Офлайн-журнал варки</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Устройство ведёт полный журнал варки локально (SPIFFS), даже без сети. Синхронизируйте
+            Устройство сохраняет журнал варки даже без сети. Синхронизируйте
             его сюда, чтобы офлайн-варки тоже появились в истории.
           </p>
         </div>
@@ -72,7 +72,7 @@ export function DeviceLogSyncCard({ deviceId }: { deviceId: string }) {
 
       {lastSummary ? (
         <p className="mt-3 text-xs text-muted-foreground">
-          На устройстве: {lastSummary.filesOnDevice} · Догружено: {lastSummary.filesImported} · Уже
+          На устройстве: {lastSummary.filesOnDevice} · Загружено: {lastSummary.filesImported} · Уже
           было: {lastSummary.filesSkipped}
           {lastSummary.filesFailed > 0 ? ` · Ошибок: ${lastSummary.filesFailed}` : ""}
         </p>

@@ -136,7 +136,7 @@ export function FeedbackWidget({ open, onOpenChange, prefill, isAuthenticated }:
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="you@example.com"
-              className="w-full rounded-md border border-input bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              className="w-full rounded-md border border-input bg-card px-3 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
         ) : null}

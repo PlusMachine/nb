@@ -1,0 +1,257 @@
+--- a/apps/web/features/ingredients/catalog-service.ts
++++ b/apps/web/features/ingredients/catalog-service.ts
+@@ -1811,6 +1811,53 @@
+   };
+ };
+ 
++type CatalogListRankResult = {
++  items: UserCatalogIngredientDto[];
++  rescue: "layout" | "fuzzy" | "scatter" | null;
++};
++
++const createCatalogListRanker = (query: string | undefined, sort: IngredientCatalogSortOption) => {
++  const q = query?.trim();
++  const searches = new WeakMap<UserCatalogIngredientDto[], {
++    brandMarketCounts: Map<string, number>;
++    passes: Map<boolean, RankedCatalogItem[]>;
++  }>();
++
++  return (
++    items: UserCatalogIngredientDto[],
++    inScope: (item: UserCatalogIngredientDto) => boolean = () => true
++  ): CatalogListRankResult => {
++    const scopedItems = items.filter(inScope);
++    if (!q || scopedItems.length === 0) {
++      return { items: sortCatalogItems(scopedItems, sort), rescue: null };
++    }
++    let search = searches.get(items);
++    if (!search) {
++      search = { brandMarketCounts: buildBrandMarketCountMap(items), passes: new Map() };
++      searches.set(items, search);
++    }
++    const prepared = search;
++    const { results, usedLayoutFallback } = rankQueryTwoPass(q, (includeLayoutVariants) => {
++      let ranked = prepared.passes.get(includeLayoutVariants);
++      if (!ranked) {
++        const rankCandidate = createIngredientRanker(q, { includeLayoutVariants });
++        ranked = items
++          .map((item) => buildRankedItem(item, rankCandidate, prepared.brandMarketCounts))
++          .filter((item): item is RankedCatalogItem => item !== null)
++          .sort(sortRankedCatalogItems);
++        prepared.passes.set(includeLayoutVariants, ranked);
++      }
++      // Score a candidate once per pass, but decide whether to retain weak
++      // matches within the destination category/subtype, not another category.
++      return filterRankedFamilyFallback(filterRankedCatalogNoise(ranked.filter(({ item }) => inScope(item))));
++    });
++    return {
++      items: results.map(({ item }) => item),
++      rescue: usedLayoutFallback ? "layout" : resolveCatalogRescueKind(results[0]?.tier)
++    };
++  };
++};
++
+ export const listUserCatalogIngredients = async (
+   userId: string | null,
+   params: CatalogListParams = {}
+@@ -1822,52 +1869,23 @@
+     : "name";
+   const sort = resolveCatalogSortOptionForCategory(requestedSort, params.category);
+   const view = params.view === "mine" ? "mine" : "all";
+-  const { catalogItems, customItems, allItems } = await loadUnifiedCatalogItems(userId);
+-
+-  // Rescue-выдача (С4): rankItems возвращает вместе со списком признак того, что
+-  // вся выдача — рескью (раскладка ИЛИ лучший (первый после фильтров tier→score)
+-  // результат — token-scatter/fuzzy). Без q рескью невозможен (нет ранжирования).
+-  const rankItems = (
+-    items: UserCatalogIngredientDto[]
+-  ): { items: UserCatalogIngredientDto[]; rescue: "layout" | "fuzzy" | "scatter" | null } => {
+-    const q = params.q?.trim();
+-    if (!q) {
+-      return { items: sortCatalogItems(items, sort), rescue: null };
+-    }
+-
+-    const brandMarketCounts = buildBrandMarketCountMap(items);
+-
+-    const { results, usedLayoutFallback } = rankQueryTwoPass(q, (includeLayoutVariants) => {
+-      const rankCandidate = createIngredientRanker(q, { includeLayoutVariants });
+-      return filterRankedFamilyFallback(filterRankedCatalogNoise(items
+-        .map((item) => buildRankedItem(item, rankCandidate, brandMarketCounts))
+-        .filter((item): item is RankedCatalogItem => item !== null)
+-        .sort(sortRankedCatalogItems)));
+-    });
+-
+-    return {
+-      items: results.map(({ item }) => item),
+-      rescue: usedLayoutFallback ? "layout" : resolveCatalogRescueKind(results[0]?.tier)
+-    };
+-  };
++  const { customItems, allItems } = await loadUnifiedCatalogItems(userId);
++
++  const rankItems = createCatalogListRanker(params.q, sort);
+ 
+   const rankedAll = rankItems(allItems);
+-  const rankedCustom = rankItems(customItems);
+   const rankedAllItems = rankedAll.items;
+-  const rankedCustomItems = rankedCustom.items;
+-  const baseItems = view === "mine" ? rankedCustomItems : rankedAllItems;
+-  const searchRescue = view === "mine" ? rankedCustom.rescue : rankedAll.rescue;
+-  const filteredByCategory = params.category
+-    ? baseItems.filter((item) => item.category === params.category)
+-    : baseItems;
+-  const filteredBySubtype = params.subtype
+-    ? filteredByCategory.filter((item) => item.category === "fermentable" && item.subtype === params.subtype)
+-    : filteredByCategory;
+-  const filtered = params.consumableGroup
+-    ? filteredBySubtype.filter((item) => (
++  const sourceItems = view === "mine" ? customItems : allItems;
++  const selected = rankItems(sourceItems, (item) => (
++    (!params.category || item.category === params.category)
++    && (!params.subtype || (item.category === "fermentable" && item.subtype === params.subtype))
++    && (!params.consumableGroup || (
+       item.category === "consumable" && resolveConsumableInventoryBroadGroup(item) === params.consumableGroup
+     ))
+-    : filteredBySubtype;
++  ));
++  const filtered = selected.items;
++  const searchRescue = selected.rescue;
++  const countScope = (inScope: (item: UserCatalogIngredientDto) => boolean) => rankItems(sourceItems, inScope).items.length;
+ 
+   const countByCategory = (items: UserCatalogIngredientDto[]) => ({
+     fermentable: items.filter((item) => item.category === "fermentable").length,
+@@ -1876,10 +1894,6 @@
+     consumable: items.filter((item) => item.category === "consumable").length,
+     water_treatment: items.filter((item) => item.category === "water_treatment").length
+   });
+-  const countFermentableSubtypes = (items: UserCatalogIngredientDto[]) => ({
+-    malt: items.filter((item) => item.category === "fermentable" && item.subtype === "malt").length,
+-    fermentable: items.filter((item) => item.category === "fermentable" && item.subtype === "fermentable").length
+-  });
+ 
+   const total = filtered.length;
+   const totalPages = Math.max(1, Math.ceil(total / pageSize));
+@@ -1893,10 +1907,23 @@
+     total,
+     totalPages,
+     facets: {
+-      byCategory: countByCategory(baseItems),
++      // Counts describe the results after following each category link.
++      byCategory: {
++        fermentable: countScope((item) => item.category === "fermentable"),
++        hop: countScope((item) => item.category === "hop"),
++        yeast: countScope((item) => item.category === "yeast"),
++        consumable: countScope((item) => item.category === "consumable"),
++        water_treatment: countScope((item) => item.category === "water_treatment")
++      },
+       filteredByCategory: countByCategory(filtered),
+-      byFermentableSubtype: countFermentableSubtypes(baseItems),
+-      byConsumableGroup: countConsumableGroups(baseItems),
++      byFermentableSubtype: {
++        malt: countScope((item) => item.category === "fermentable" && item.subtype === "malt"),
++        fermentable: countScope((item) => item.category === "fermentable" && item.subtype === "fermentable")
++      },
++      byConsumableGroup: {
++        additives: countScope((item) => item.category === "consumable" && resolveConsumableInventoryBroadGroup(item) === "inventory_additives"),
++        supplies: countScope((item) => item.category === "consumable" && resolveConsumableInventoryBroadGroup(item) === "inventory_supplies")
++      },
+       customCount: rankedAllItems.filter((item) => item.source === "custom").length,
+       catalogCount: rankedAllItems.filter((item) => item.source === "catalog").length
+     },
+@@ -1910,10 +1937,9 @@
+ export const CATALOG_HUB_PREVIEW_LIMIT = 6;
+ export const CATALOG_HUB_SEARCH_GROUP_LIMIT = 10;
+ 
+-// Дублирует rankItems из listUserCatalogIngredients намеренно: ту функцию
+-// трогать нельзя (контракт listUserCatalogIngredients зафиксирован), а сортов
+-// у хаба нет — только "name" без q. См. notes/catalog-hub-redesign.md, S1.
+-// Возвращает вместе со списком признак rescue-выдачи (С4) — см. rankItems выше.
++// Глобальный хаб сохраняет общую обрезку шума перед группировкой секций.
++// У категорийных лендингов обрезка теперь выполняется внутри выбранного
++// контекста (createCatalogListRanker); публичная форма DTO остаётся общей.
+ const rankHubItems = (
+   items: UserCatalogIngredientDto[],
+   q: string | undefined
+--- a/apps/web/tests/catalog-search-noise-and-sort.test.ts
++++ b/apps/web/tests/catalog-search-noise-and-sort.test.ts
+@@ -651,3 +651,81 @@
+     expect(attenuationResult.items.map((item) => item.id)).toEqual(["a-item", "b-item"]);
+   });
+ });
++
++
++describe("catalog category search applies rescue within the selected scope", () => {
++  beforeEach(() => {
++    mockState.catalogItems = [];
++    mockState.customItems = [];
++    mockState.favoriteKeys = new Set();
++  });
++
++  const scopedFixture = () => [
++    buildCatalogItem({ id: "hop-citra", type: "hop", category: "hop", subtype: null,
++      primaryLabelRu: "Citra", secondaryLabelRu: null, displayName: "Citra", displayNameRu: "Citra", displayNameEn: "Citra", nameRu: "Citra", nameEn: "Citra" }),
++    buildCatalogItem({ id: "malt-citro", primaryLabelRu: "Citro", secondaryLabelRu: null,
++      displayName: "Citro", displayNameRu: "Citro", displayNameEn: "Citro", nameRu: "Citro", nameEn: "Citro" })
++  ];
++
++  it("keeps a fuzzy hop hit despite a strong hit in another category", async () => {
++    mockState.catalogItems = scopedFixture();
++    const result = await listUserCatalogIngredients(null, { q: "citro", category: "hop" });
++    expect(result.items.map((item) => item.id)).toEqual(["hop-citra"]);
++    expect(result.searchRescue).toBe("fuzzy");
++    expect(result.total).toBe(1);
++    expect(result.facets.byCategory.hop).toBe(1);
++    expect(result.facets.byCategory.fermentable).toBe(1);
++  });
++
++  it("keeps the global strong-match policy while category counters describe their destinations", async () => {
++    mockState.catalogItems = scopedFixture();
++    const result = await listUserCatalogIngredients(null, { q: "citro" });
++    expect(result.items.map((item) => item.id)).toEqual(["malt-citro"]);
++    expect(result.searchRescue).toBeNull();
++    expect(result.facets.byCategory.hop).toBe(1);
++    const hop = await listUserCatalogIngredients(null, { q: "citro", category: "hop" });
++    expect(hop.total).toBe(result.facets.byCategory.hop);
++  });
++
++  it("keeps exact matches stronger than fuzzy hits inside the same category", async () => {
++    const [hop, other] = scopedFixture();
++    mockState.catalogItems = [hop, { ...other, id: "hop-citro", type: "hop", category: "hop", subtype: null }];
++    const result = await listUserCatalogIngredients(null, { q: "citro", category: "hop" });
++    expect(result.items.map((item) => item.id)).toEqual(["hop-citro"]);
++    expect(result.searchRescue).toBeNull();
++  });
++
++  it("computes subtype counts using the same rescue policy as subtype pages", async () => {
++    const [hop, malt] = scopedFixture();
++    mockState.catalogItems = [{ ...hop, id: "fermentable-citra", type: "fermentable", category: "fermentable", subtype: "fermentable" }, malt];
++    const result = await listUserCatalogIngredients(null, { q: "citro", category: "fermentable", subtype: "fermentable" });
++    expect(result.items.map((item) => item.id)).toEqual(["fermentable-citra"]);
++    expect(result.facets.byFermentableSubtype.fermentable).toBe(1);
++    expect(result.facets.byFermentableSubtype.malt).toBe(1);
++  });
++
++  it("runs layout fallback inside the category even when another category has a literal match", async () => {
++    const [hop, malt] = scopedFixture();
++    mockState.catalogItems = [
++      { ...hop, primaryLabelRu: "Мозаик", displayName: "Мозаик", nameRu: "Мозаик", nameEn: "Mosaic", displayNameRu: "Мозаик", displayNameEn: "Mosaic" },
++      { ...malt, primaryLabelRu: "vjpfbr", displayName: "vjpfbr", nameRu: "vjpfbr", nameEn: "vjpfbr", displayNameRu: "vjpfbr", displayNameEn: "vjpfbr" }
++    ];
++    const result = await listUserCatalogIngredients(null, { q: "vjpfbr", category: "hop" });
++    expect(result.items.map((item) => item.id)).toEqual(["hop-citra"]);
++    expect(result.searchRescue).toBe("layout");
++    expect(result.facets.byCategory.hop).toBe(1);
++    const global = await listUserCatalogIngredients(null, { q: "vjpfbr" });
++    expect(global.items.map((item) => item.id)).toEqual(["malt-citro"]);
++    expect(global.searchRescue).toBeNull();
++  });
++
++  it("never uses catalog matches as a rescue for an empty custom-only view", async () => {
++    mockState.catalogItems = scopedFixture();
++    const result = await listUserCatalogIngredients("user-1", { q: "citro", category: "hop", view: "mine" });
++    expect(result.items).toEqual([]);
++    expect(result.total).toBe(0);
++    expect(result.facets.byCategory.hop).toBe(0);
++    expect(result.searchRescue).toBeNull();
++  });
++
++});

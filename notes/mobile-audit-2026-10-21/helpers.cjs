@@ -1,0 +1,11 @@
+global.metrics = async function(p=page) {return p.evaluate(()=>{
+ const w=document.documentElement.clientWidth;
+ const visible=e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0&&getComputedStyle(e).visibility!=='hidden'};
+ const outside=[...document.querySelectorAll('main *,[role=dialog] *,[role=listbox] *,[role=menu] *')].filter(visible).filter(e=>{let r=e.getBoundingClientRect();return r.right>w+2||r.left< -2}).map(e=>({tag:e.tagName,text:e.textContent?.trim().slice(0,90),cls:typeof e.className==='string'?e.className:'svg',rect:JSON.stringify(e.getBoundingClientRect())}));
+ const small=[...document.querySelectorAll('input,select,textarea')].filter(visible).filter(e=>parseFloat(getComputedStyle(e).fontSize)<16).map(e=>({placeholder:e.getAttribute('placeholder'),font:getComputedStyle(e).fontSize}));
+ return {width:innerWidth,height:innerHeight,client:w,scroll:document.documentElement.scrollWidth,outside:outside.slice(0,30),smallInputs:small};
+});};
+global.shot=async function(name,p=page){await p.screenshot({path:out+'/screens/'+name+'.png',scale:'css'});};
+global.snap=async function(){console.log((await page.locator('body').innerText()).slice(0,13000));console.log(await page.locator('button,input,select,[role=combobox]').evaluateAll(es=>es.map(e=>({tag:e.tagName,role:e.getAttribute('role'),text:e.textContent?.trim().slice(0,100),label:e.getAttribute('aria-label'),placeholder:e.getAttribute('placeholder')}))));};
+global.results=[];
+global.scan=async function(routes,widths,p=page){for(const route of routes){try{let response=await p.goto(base+route,{waitUntil:'domcontentloaded',timeout:60000});await p.waitForTimeout(800);let title=await p.title();for(const [width,height]of widths){await p.setViewportSize({width,height});await p.waitForTimeout(150);let m=await metrics(p);let key=route.replace(/[^a-z0-9]+/gi,'_')+'-'+width;await shot(key,p);let r={route,url:p.url(),status:response.status(),title,...m,screenshot:key+'.png'};results.push(r);console.log(JSON.stringify({route,width,status:r.status,scroll:m.scroll,client:m.client,outside:m.outside.length}));}await fs.writeFile(out+'/scan.json',JSON.stringify(results,null,2));}catch(e){console.log('SCAN ERROR',route,e.message);results.push({route,error:e.message});}}};

@@ -106,7 +106,7 @@ describe("startBrewOnDeviceFromRecipeAction", () => {
     expect(result.heatingStarted).toBe(false);
     expect(result.brewBatchId).toBe("batch-3");
     expect(result.reason).toBe("REJECTED_INTERLOCK");
-    expect(result.message).toContain("интерлок");
+    expect(result.message).toContain("защитой устройства");
   });
 
   it("рецепт недоступен: партия не создаётся, устройство не трогаем, id партии — null", async () => {

@@ -6,7 +6,9 @@ vi.mock("server-only", () => ({}));
 // Реальный импорт @nb/db в тест-окружении безопасен (соединение ленивое), как и в
 // tests/recipes-read-components.test.ts, который тоже тянет service.ts транзитивно.
 
-import { defaultRecipeProcessMeta, type RecipeDetailDto } from "../features/recipes/contracts";
+import { defaultRecipeProcessMeta, recipeWaterPlanMetaSchema, type RecipeDetailDto } from "../features/recipes/contracts";
+import { toPublicRecipeDetail } from "../features/recipes/public-detail";
+import { starterEquipmentProfileDefaults } from "../features/equipment-profiles/contracts";
 import {
   assertRecipeCloneAllowed,
   buildCloneTitle,
@@ -141,6 +143,7 @@ describe("buildRecipeClonePayload", () => {
   it("creates a private draft and carries over the recipe-level fields", () => {
     const payload = buildRecipeClonePayload(sourceRecipe, { title: "West Coast IPA", remapPrivateCustomToImported: false });
 
+    expect(payload.authorNotes).toBe("Dry hop day 5");
     expect(payload.title).toBe("West Coast IPA");
     expect(payload.publicationState).toBe("private");
     expect(payload.styleId).toBe("american-ipa");
@@ -159,6 +162,8 @@ describe("buildRecipeClonePayload", () => {
 
   it("remaps a private custom ingredient to an imported snapshot for cross-user clones", () => {
     const payload = buildRecipeClonePayload(sourceRecipe, { title: "West Coast IPA", remapPrivateCustomToImported: true });
+
+    expect(payload.authorNotes).toBeNull();
 
     // каталожный (глобальный) ингредиент переносится как есть
     const catalog = payload.ingredients[0] as Record<string, unknown>;
@@ -237,5 +242,50 @@ describe("buildCloneTitle", () => {
 
     expect(title.length).toBeLessThanOrEqual(180);
     expect(title.endsWith("(копия)")).toBe(true);
+  });
+});
+
+describe("public recipe projection", () => {
+  it("removes private profiles and unknown fields without losing brewing values or custom ingredient snapshots", () => {
+    const recipe = {
+      ...sourceRecipe,
+      futurePrivateField: "SECRET_FUTURE",
+      equipmentProfileSnapshot: {
+        ...starterEquipmentProfileDefaults,
+        id: "00000000-0000-4000-8000-000000000001",
+        snapshotAt: "2026-10-07T00:00:00.000Z",
+        name: "SECRET_EQUIPMENT_NAME",
+        notes: "SECRET_EQUIPMENT_NOTES"
+      },
+      waterPlanMeta: recipeWaterPlanMetaSchema.parse({
+        sourceProfileMode: "saved",
+        sourceProfileSavedId: "SECRET_WATER_ID",
+        sourceProfileName: "SECRET_WATER_NAME",
+        targetProfileMode: "saved",
+        targetProfileSavedId: "SECRET_TARGET_ID",
+        targetProfileName: "SECRET_TARGET_NAME",
+        sourceProfile: { ca: 50 },
+        targetProfile: { so4: 100 }
+      }),
+      ingredients: sourceRecipe.ingredients.map((line) => ({
+        ...line,
+        futurePrivateField: "SECRET_FUTURE_LINE",
+        stepMeta: { timeMinutes: 10, privateNote: "SECRET_LINE_NOTE" },
+        externalImportMeta: { raw: "SECRET_RAW_IMPORT" }
+      }))
+    };
+    const projected = toPublicRecipeDetail(recipe);
+    expect(JSON.stringify(projected)).not.toContain("SECRET_");
+    expect(projected.equipmentProfileSnapshot?.evaporationRateLPerHr).toBe(3);
+    expect(projected.waterPlanMeta?.sourceProfile?.ca).toBe(50);
+    expect(projected.waterPlanMeta?.targetProfile?.so4).toBe(100);
+    expect(projected.ingredients[1].userCustomIngredientId).toBeNull();
+    expect(projected.ingredients[1].inventoryIntentMode).toBe("imported");
+    const clone = buildRecipeClonePayload(projected, { title: "copy", remapPrivateCustomToImported: true });
+    expect(clone.ingredients[1].externalImportMeta).toMatchObject({
+      importedIngredient: { name: "House Yeast", defaultDisplayUnit: "g", type: "yeast" }
+    });
+    expect(clone.authorNotes).toBeNull();
+    expect(recipe.equipmentProfileSnapshot.notes).toBe("SECRET_EQUIPMENT_NOTES");
   });
 });

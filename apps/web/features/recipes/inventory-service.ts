@@ -40,7 +40,9 @@ import {
   type InventoryPackEquivalent
 } from "../inventory/pack";
 import { parseInventoryUnit, type InventoryUnit } from "../inventory/units";
+import { planInventoryLotUse } from "../inventory/lot-plan";
 import type { InventoryListItemDto } from "../inventory/contracts";
+import { snapshotInventoryLines, type BrewInventorySnapshot } from "../brew-batches/inventory-snapshot";
 
 type RecipeLineRow = typeof recipeIngredients.$inferSelect;
 type InventoryItemRow = typeof userIngredients.$inferSelect;
@@ -67,6 +69,8 @@ const runInTransaction = async <T>(
 ): Promise<T> => client.transaction(async (tx) => body(tx));
 
 type ScopedOptions = {
+  /** Снимок из уже проверенной по владельцу партии; не принимать из пользовательского ввода. */
+  batchSnapshot?: BrewInventorySnapshot;
   /** Партия-владелец аллокаций. NULL — «вне партии» (дев-скрипты, легаси). */
   brewBatchId?: string | null;
   /**
@@ -245,6 +249,36 @@ const buildLineScaleResolver = async (
     dojim
   );
 };
+
+const loadInventorySource = async (
+  userId: string,
+  recipeId: string,
+  options: ScopedOptions,
+  client: InventoryDbClient
+) => {
+  if (options.batchSnapshot) {
+    if (!options.brewBatchId || options.batchSnapshot.recipeId !== recipeId) {
+      throw new Error("INVALID_BATCH_INVENTORY_SNAPSHOT");
+    }
+    return {
+      lines: snapshotInventoryLines(options.batchSnapshot),
+      scaleLine: () => 1,
+      isOwnRecipe: false
+    };
+  }
+  const recipe = await ensureBrewableRecipe(userId, recipeId, client);
+  const lines = await client.query.recipeIngredients.findMany({ where: eq(recipeIngredients.recipeId, recipeId) });
+  return {
+    lines,
+    scaleLine: await buildLineScaleResolver(lines, resolveRecipeScaleFactor(recipe, options.targetBatchVolumeL), options.efficiencyFactor, client),
+    isOwnRecipe: recipe.authorId === userId
+  };
+};
+
+// У снимка нет зависимости от живого FK. Область партии уже ограничена userId + brewBatchId.
+const allocationRecipeScope = (recipeId: string, options: ScopedOptions) => (
+  options.batchSnapshot ? undefined : eq(recipeInventoryAllocations.recipeId, recipeId)
+);
 
 const ensureOwnedInventoryItem = async (
   userId: string,
@@ -465,7 +499,7 @@ const resolveRecipeLineAllocationQuantity = async (
  * показывало бы «хватает» по большому лоту, а списание упиралось бы в закреплённый
  * маленький).
  */
-export const findOwnedInventoryItemByRecipeLineSource = async (
+const findOwnedInventoryItemsByRecipeLineSource = async (
   userId: string,
   line: RecipeLineRow,
   factor: number,
@@ -478,7 +512,7 @@ export const findOwnedInventoryItemByRecipeLineSource = async (
       : null;
 
   if (!sourceFilter) {
-    return null;
+    return [];
   }
 
   const candidates = await client.query.userIngredients.findMany({
@@ -503,8 +537,13 @@ export const findOwnedInventoryItemByRecipeLineSource = async (
     .sort((left, right) => (
       right.normalizedQuantity - left.normalizedQuantity
       || right.updatedAt.getTime() - left.updatedAt.getTime()
-    ))[0] ?? null;
+      || left.id.localeCompare(right.id)
+    ));
 };
+
+export const findOwnedInventoryItemByRecipeLineSource = async (userId: string, line: RecipeLineRow, factor: number, client: InventoryDbClient) => (
+  (await findOwnedInventoryItemsByRecipeLineSource(userId, line, factor, client))[0] ?? null
+);
 
 /**
  * Сквозной подбор позиции склада под строку рецепта: СНАЧАЛА уважает лот,
@@ -516,7 +555,7 @@ export const findOwnedInventoryItemByRecipeLineSource = async (
  * через эту функцию — иначе превью обещало бы один лот, а списание уходило в
  * другой (закреплённый).
  */
-export const resolveOwnedInventoryItemForRecipeLine = async (
+const resolveOwnedInventoryItemsForRecipeLine = async (
   userId: string,
   line: RecipeLineRow,
   inventoryItemId: string | null,
@@ -529,12 +568,16 @@ export const resolveOwnedInventoryItemForRecipeLine = async (
     });
 
     if (selected && !selected.archivedAt && await inventoryItemCanCoverRecipeLine(line, selected, factor, client)) {
-      return selected;
+      return [selected];
     }
   }
 
-  return findOwnedInventoryItemByRecipeLineSource(userId, line, factor, client);
+  return findOwnedInventoryItemsByRecipeLineSource(userId, line, factor, client);
 };
+
+export const resolveOwnedInventoryItemForRecipeLine = async (userId: string, line: RecipeLineRow, inventoryItemId: string | null, factor: number, client: InventoryDbClient) => (
+  (await resolveOwnedInventoryItemsForRecipeLine(userId, line, inventoryItemId, factor, client))[0] ?? null
+);
 
 const updateRecipeLineInventorySelectionMeta = async (
   line: typeof recipeIngredients.$inferSelect,
@@ -602,25 +645,18 @@ export const listRecipeStockCoverage = async (
   options: ScopedOptions = {}
 ): Promise<RecipeStockCoverageDto> => {
   const client = options.client ?? db;
-  // Покрытие читают и на варке ЧУЖОГО published-рецепта (варка без клона), поэтому
-  // гейт — «можно ли из него варить», а не «мой ли он»: иначе списание падало бы с
-  // NOT_FOUND уже ПОСЛЕ создания аллокаций. Аллокации всё равно фильтруются по userId.
-  const recipe = await ensureBrewableRecipe(userId, recipeId, client);
-  const volumeFactor = resolveRecipeScaleFactor(recipe, options.targetBatchVolumeL);
+  // Партия использует проверенный снимок; для операций вне партии проверяем
+  // доступ к живому рецепту. Аллокации всегда ограничены пользователем и областью.
+  const { lines, scaleLine } = await loadInventorySource(userId, recipeId, options, client);
   const brewBatchId = options.brewBatchId ?? null;
-  const [lines, allocations] = await Promise.all([
-    client.query.recipeIngredients.findMany({
-      where: eq(recipeIngredients.recipeId, recipeId)
-    }),
-    client.query.recipeInventoryAllocations.findMany({
-      where: and(
-        eq(recipeInventoryAllocations.userId, userId),
-        eq(recipeInventoryAllocations.recipeId, recipeId),
-        allocationBatchScope(brewBatchId),
-        inArray(recipeInventoryAllocations.status, [...visibleAllocationStatuses])
-      )
-    })
-  ]);
+  const allocations = await client.query.recipeInventoryAllocations.findMany({
+    where: and(
+      eq(recipeInventoryAllocations.userId, userId),
+      allocationRecipeScope(recipeId, options),
+      allocationBatchScope(brewBatchId),
+      inArray(recipeInventoryAllocations.status, [...visibleAllocationStatuses])
+    )
+  });
   const inventoryIds = [...new Set(allocations.map((allocation) => allocation.inventoryItemId))];
   const inventoryRows = inventoryIds.length
     ? await client.query.userIngredients.findMany({
@@ -631,24 +667,23 @@ export const listRecipeStockCoverage = async (
     })
     : [];
   const inventoryById = new Map(inventoryRows.map((item) => [item.id, item]));
-  const scaleLine = await buildLineScaleResolver(lines, volumeFactor, options.efficiencyFactor, client);
-  const allocationsByLineId = new Map<string, typeof allocations[number]>();
+  const allocationsByPersistentKey = new Map<string, typeof allocations[number]>();
 
   for (const allocation of allocations) {
-    const current = allocationsByLineId.get(allocation.recipeIngredientId);
+    const current = allocationsByPersistentKey.get(allocation.recipeIngredientPersistentKey);
     if (
       !current
       || allocationStatusRank(allocation.status) > allocationStatusRank(current.status)
       || allocation.updatedAt.getTime() > current.updatedAt.getTime()
     ) {
-      allocationsByLineId.set(allocation.recipeIngredientId, allocation);
+      allocationsByPersistentKey.set(allocation.recipeIngredientPersistentKey, allocation);
     }
   }
 
   const coverageLines = [...lines]
     .sort((left, right) => (left.displayOrder ?? 0) - (right.displayOrder ?? 0))
     .map((line): RecipeStockCoverageLineDto => {
-      const allocation = allocationsByLineId.get(line.id) ?? null;
+      const allocation = allocationsByPersistentKey.get(line.persistentKey) ?? null;
       const inventoryItem = allocation ? inventoryById.get(allocation.inventoryItemId) ?? null : null;
       const lineUnit = parseUnitOrThrow(line.amountNormalizedUnit);
       const allocatedQuantityNormalized = allocation?.allocatedQuantityNormalized ?? 0;
@@ -709,8 +744,10 @@ const allocateRecipeLineFromInventoryItem = async (input: {
   client: InventoryDbClient;
   /** true — позиция утверждена как ЗАМЕНА (Ф2), а не точный exactKey строки. */
   substitution?: boolean;
+  fromSnapshot?: boolean;
+  split?: { groupId: string; quantity: number; append: boolean };
 }) => {
-  const requiredQuantity = await resolveRecipeLineAllocationQuantity(
+  const requiredQuantity = input.split?.quantity ?? await resolveRecipeLineAllocationQuantity(
     input.line,
     input.inventoryItem,
     input.factor,
@@ -728,22 +765,22 @@ const allocateRecipeLineFromInventoryItem = async (input: {
 
     // Освобождаем прежнюю активную аллокацию ТОЛЬКО в своей области: активная
     // аллокация другой партии — её резерв на её же варку, трогать нельзя.
-    await tx.update(recipeInventoryAllocations).set({
+    if (!input.split?.append) await tx.update(recipeInventoryAllocations).set({
       status: "released",
       releasedAt: now,
       updatedAt: now
     }).where(and(
       eq(recipeInventoryAllocations.userId, input.userId),
-      eq(recipeInventoryAllocations.recipeId, input.recipeId),
-      eq(recipeInventoryAllocations.recipeIngredientId, input.line.id),
+      input.fromSnapshot ? undefined : eq(recipeInventoryAllocations.recipeId, input.recipeId),
+      eq(recipeInventoryAllocations.recipeIngredientPersistentKey, input.line.persistentKey),
       allocationBatchScope(input.brewBatchId),
       inArray(recipeInventoryAllocations.status, [...activeAllocationStatuses])
     ));
 
     await tx.insert(recipeInventoryAllocations).values({
       userId: input.userId,
-      recipeId: input.recipeId,
-      recipeIngredientId: input.line.id,
+      recipeId: input.fromSnapshot ? null : input.recipeId,
+      recipeIngredientId: input.fromSnapshot ? null : input.line.id,
       recipeIngredientPersistentKey: input.line.persistentKey,
       inventoryItemId: input.inventoryItem.id,
       brewBatchId: input.brewBatchId,
@@ -751,6 +788,8 @@ const allocateRecipeLineFromInventoryItem = async (input: {
       allocatedQuantityNormalized: requiredQuantity,
       allocatedNormalizedUnit: input.inventoryItem.normalizedUnit,
       allocationMeta: {
+        ...(input.split ? { splitGroupId: input.split.groupId } : {}),
+        ...(input.fromSnapshot ? { sourceRecipeId: input.recipeId, sourceRecipeIngredientId: input.line.id, snapshotVersion: 1 } : {}),
         source: input.substitution ? "recipe_substitution" : "recipe_selection",
         ingredientDisplayName: input.line.ingredientDisplayNameSnapshot ?? null,
         // След конверсии «пачка рецепта → граммы склада» — для аудита расхождений.
@@ -780,24 +819,15 @@ export const allocateRecipeIngredientFromInventory = async (input: {
   inventoryItemId: string;
 } & ScopedOptions) => {
   const client = input.client ?? db;
-  const recipe = await ensureBrewableRecipe(input.userId, input.recipeId, client);
-  const volumeFactor = resolveRecipeScaleFactor(recipe, input.targetBatchVolumeL);
+  const { lines, scaleLine } = await loadInventorySource(input.userId, input.recipeId, input, client);
   const brewBatchId = input.brewBatchId ?? null;
-  const [line, inventoryItem] = await Promise.all([
-    client.query.recipeIngredients.findFirst({
-      where: and(
-        eq(recipeIngredients.recipeId, input.recipeId),
-        eq(recipeIngredients.persistentKey, input.recipeIngredientPersistentKey)
-      )
-    }),
-    ensureOwnedInventoryItem(input.userId, input.inventoryItemId, client)
-  ]);
+  const line = lines.find((entry) => entry.persistentKey === input.recipeIngredientPersistentKey);
+  const inventoryItem = await ensureOwnedInventoryItem(input.userId, input.inventoryItemId, client);
 
   if (!line) {
     throw new Error("NOT_FOUND");
   }
 
-  const scaleLine = await buildLineScaleResolver([line], volumeFactor, input.efficiencyFactor, client);
   await allocateRecipeLineFromInventoryItem({
     userId: input.userId,
     recipeId: input.recipeId,
@@ -805,6 +835,7 @@ export const allocateRecipeIngredientFromInventory = async (input: {
     inventoryItem,
     brewBatchId,
     factor: scaleLine(line),
+    fromSnapshot: Boolean(input.batchSnapshot),
     client
   });
 };
@@ -829,28 +860,21 @@ export const autoAllocateRecipeInventoryFromStock = async (
   options: ScopedOptions = {}
 ): Promise<RecipeStockCoverageDto> => {
   const client = options.client ?? db;
-  const recipe = await ensureBrewableRecipe(userId, recipeId, client);
-  const volumeFactor = resolveRecipeScaleFactor(recipe, options.targetBatchVolumeL);
-  const isOwnRecipe = recipe.authorId === userId;
+  const { lines, scaleLine, isOwnRecipe } = await loadInventorySource(userId, recipeId, options, client);
   const brewBatchId = options.brewBatchId ?? null;
-  const [lines, ownAllocations] = await Promise.all([
-    client.query.recipeIngredients.findMany({
-      where: eq(recipeIngredients.recipeId, recipeId)
-    }),
-    client.query.recipeInventoryAllocations.findMany({
-      where: and(
-        eq(recipeInventoryAllocations.userId, userId),
-        eq(recipeInventoryAllocations.recipeId, recipeId),
-        allocationBatchScope(brewBatchId),
-        inArray(recipeInventoryAllocations.status, ["allocated", "reserved", "consumed"])
-      )
-    })
-  ]);
-  const allocatedLineIds = new Set(ownAllocations.map((allocation) => allocation.recipeIngredientId));
-  const scaleLine = await buildLineScaleResolver(lines, volumeFactor, options.efficiencyFactor, client);
+  const ownAllocations = await client.query.recipeInventoryAllocations.findMany({
+    where: and(
+      eq(recipeInventoryAllocations.userId, userId),
+      allocationRecipeScope(recipeId, options),
+      allocationBatchScope(brewBatchId),
+      inArray(recipeInventoryAllocations.status, ["allocated", "reserved", "consumed"])
+    )
+  });
+  const allocatedLineIds = new Set(ownAllocations.map((allocation) => allocation.recipeIngredientPersistentKey));
 
-  for (const line of lines) {
-    if (allocatedLineIds.has(line.id)) {
+  const remaining = new Map<string, number>();
+  for (const line of [...lines].sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))) {
+    if (allocatedLineIds.has(line.persistentKey)) {
       continue;
     }
 
@@ -871,21 +895,39 @@ export const autoAllocateRecipeInventoryFromStock = async (
         brewBatchId,
         factor: scaleLine(line),
         client,
-        substitution: true
+        substitution: true,
+        fromSnapshot: Boolean(options.batchSnapshot)
       });
+      const requested = await resolveRecipeLineAllocationQuantity(line, substituteItem, scaleLine(line), client, true);
+      planInventoryLotUse(requested, [{ inventoryItemId: substituteItem.id, availableQuantity: substituteItem.normalizedQuantity }], remaining);
       continue;
     }
 
     // Уважаем лот, выбранный автором в пикере (inventorySelectionMeta): без этого
     // варка брала лот с наибольшим остатком, игнорируя явный выбор.
-    const inventoryItem = await resolveOwnedInventoryItemForRecipeLine(
+    const exactItems = await resolveOwnedInventoryItemsForRecipeLine(
       userId,
       line,
       readInventoryItemIdFromMeta(line.inventorySelectionMeta),
       scaleLine(line),
       client
     );
+    const inventoryItem = exactItems[0] ?? null;
     if (!inventoryItem) {
+      continue;
+    }
+    const pool = exactItems.filter(item => item.normalizedUnit === line.amountNormalizedUnit && item.normalizedQuantity > 0);
+    if (options.batchSnapshot && pool.length > 1) {
+      const required = roundTo(line.amountNormalizedQuantity * scaleLine(line), 3);
+      const { takes, shortfall } = planInventoryLotUse(required, pool.map(item => ({ inventoryItemId: item.id, availableQuantity: item.normalizedQuantity })), remaining);
+      if (!takes.length) takes.push({ inventoryItemId: pool[0]!.id, quantity: 0 });
+      takes[takes.length - 1]!.quantity = roundTo(takes[takes.length - 1]!.quantity + shortfall, 3);
+      const groupId = `${line.persistentKey}:${Date.now()}`;
+      for (const [index, take] of takes.entries()) await allocateRecipeLineFromInventoryItem({
+        userId, recipeId, line, inventoryItem: pool.find(item => item.id === take.inventoryItemId)!,
+        brewBatchId, factor: scaleLine(line), client, fromSnapshot: true,
+        split: { groupId, quantity: take.quantity, append: index > 0 }
+      });
       continue;
     }
     // Selection-meta — UX-подсказка редактора «какая позиция склада закрывает
@@ -901,8 +943,11 @@ export const autoAllocateRecipeInventoryFromStock = async (
       inventoryItem,
       brewBatchId,
       factor: scaleLine(line),
-      client
+      client,
+      fromSnapshot: Boolean(options.batchSnapshot)
     });
+    const requested = await resolveRecipeLineAllocationQuantity(line, inventoryItem, scaleLine(line), client, false);
+    planInventoryLotUse(requested, [{ inventoryItemId: inventoryItem.id, availableQuantity: inventoryItem.normalizedQuantity }], remaining);
   }
 
   return listRecipeStockCoverage(userId, recipeId, options);
@@ -914,7 +959,7 @@ export const reserveRecipeInventoryAllocations = async (
   options: ScopedOptions = {}
 ): Promise<RecipeStockCoverageDto> => {
   const client = options.client ?? db;
-  await ensureBrewableRecipe(userId, recipeId, client);
+  await loadInventorySource(userId, recipeId, options, client);
   const brewBatchId = options.brewBatchId ?? null;
   const now = new Date();
   await client.update(recipeInventoryAllocations).set({
@@ -923,7 +968,7 @@ export const reserveRecipeInventoryAllocations = async (
     updatedAt: now
   }).where(and(
     eq(recipeInventoryAllocations.userId, userId),
-    eq(recipeInventoryAllocations.recipeId, recipeId),
+    allocationRecipeScope(recipeId, options),
     allocationBatchScope(brewBatchId),
     eq(recipeInventoryAllocations.status, "allocated")
   ));
@@ -937,7 +982,7 @@ export const releaseRecipeInventoryAllocations = async (
   options: ScopedOptions = {}
 ): Promise<RecipeStockCoverageDto> => {
   const client = options.client ?? db;
-  await ensureBrewableRecipe(userId, recipeId, client);
+  await loadInventorySource(userId, recipeId, options, client);
   const brewBatchId = options.brewBatchId ?? null;
   const now = new Date();
   await client.update(recipeInventoryAllocations).set({
@@ -946,7 +991,7 @@ export const releaseRecipeInventoryAllocations = async (
     updatedAt: now
   }).where(and(
     eq(recipeInventoryAllocations.userId, userId),
-    eq(recipeInventoryAllocations.recipeId, recipeId),
+    allocationRecipeScope(recipeId, options),
     allocationBatchScope(brewBatchId),
     inArray(recipeInventoryAllocations.status, [...activeAllocationStatuses])
   ));
@@ -1002,15 +1047,14 @@ export const consumeRecipeInventoryAllocations = async (
   options: ScopedOptions = {}
 ): Promise<RecipeStockCoverageDto> => {
   const client = options.client ?? db;
-  await ensureBrewableRecipe(userId, recipeId, client);
+  const { lines } = await loadInventorySource(userId, recipeId, options, client);
   const brewBatchId = options.brewBatchId ?? null;
 
   await runInTransaction(client, async (tx) => {
-    const [allocations, lines] = await Promise.all([
-      tx.query.recipeInventoryAllocations.findMany({
+    const allocations = await tx.query.recipeInventoryAllocations.findMany({
         where: and(
           eq(recipeInventoryAllocations.userId, userId),
-          eq(recipeInventoryAllocations.recipeId, recipeId),
+          allocationRecipeScope(recipeId, options),
           allocationBatchScope(brewBatchId),
           inArray(recipeInventoryAllocations.status, [...activeAllocationStatuses])
         ),
@@ -1019,25 +1063,32 @@ export const consumeRecipeInventoryAllocations = async (
         // списания — даже разных партий, поделивших один пакет солода, — берут
         // строки в одном и том же порядке и не встают во встречные блокировки.
         orderBy: (table, { asc }) => [asc(table.inventoryItemId), asc(table.id)]
-      }),
-      tx.query.recipeIngredients.findMany({
-        where: eq(recipeIngredients.recipeId, recipeId)
-      })
-    ]);
-    const lineById = new Map(lines.map((line) => [line.id, line]));
+      });
+    const lineByPersistentKey = new Map(lines.map((line) => [line.persistentKey, line]));
     const now = new Date();
 
     // Одна строка рецепта = одно требование. Две активные аллокации на одну строку
     // в одной области — след гонки подбора (уникального индекса на
-    // (brew_batch_id, recipe_ingredient_id) в схеме нет); списывать по обеим значило
+    // (brew_batch_id, recipe_ingredient_persistent_key) в схеме нет); списывать по обеим значило
     // бы взять со склада вдвое. Первую (по id) проводим, дубли гасим в released.
     const byLine = new Map<string, typeof allocations>();
     for (const allocation of allocations) {
-      const bucket = byLine.get(allocation.recipeIngredientId) ?? [];
+      const bucket = byLine.get(allocation.recipeIngredientPersistentKey) ?? [];
       bucket.push(allocation);
-      byLine.set(allocation.recipeIngredientId, bucket);
+      byLine.set(allocation.recipeIngredientPersistentKey, bucket);
     }
-    const duplicateIds = [...byLine.values()].flatMap((bucket) => bucket.slice(1).map((allocation) => allocation.id));
+    const accepted = [...byLine.values()].flatMap((bucket) => {
+      const groupId = asAllocationMeta(bucket[0]!.allocationMeta).splitGroupId;
+      if (typeof groupId !== "string") return [bucket[0]!];
+      const items = new Set<string>();
+      return bucket.filter((allocation) => {
+        if (asAllocationMeta(allocation.allocationMeta).splitGroupId !== groupId || items.has(allocation.inventoryItemId)) return false;
+        items.add(allocation.inventoryItemId);
+        return true;
+      });
+    });
+    const acceptedIds = new Set(accepted.map(allocation => allocation.id));
+    const duplicateIds = allocations.filter(allocation => !acceptedIds.has(allocation.id)).map(allocation => allocation.id);
     if (duplicateIds.length > 0) {
       console.error("[recipes] consume: duplicate active allocations for one recipe line, releasing extras", {
         recipeId,
@@ -1055,7 +1106,11 @@ export const consumeRecipeInventoryAllocations = async (
       ));
     }
 
-    for (const allocation of [...byLine.values()].map((bucket) => bucket[0]!)) {
+    const orderedAllocations = accepted.sort((left, right) => (
+      left.inventoryItemId.localeCompare(right.inventoryItemId)
+      || (lineByPersistentKey.get(left.recipeIngredientPersistentKey)?.displayOrder ?? 0) - (lineByPersistentKey.get(right.recipeIngredientPersistentKey)?.displayOrder ?? 0)
+    ));
+    for (const allocation of orderedAllocations) {
       // Остаток — ПОД блокировкой строки: до коммита конкурента мы сюда не пройдём,
       // а пройдя — прочитаем уже его результат (как в features/inventory/service.ts).
       const [locked] = await tx
@@ -1074,7 +1129,11 @@ export const consumeRecipeInventoryAllocations = async (
           eq(userIngredients.id, allocation.inventoryItemId),
           eq(userIngredients.userId, userId)
         ))
-        .for("update");
+        // INSERT аллокации уже держит KEY SHARE по FK на склад. FOR UPDATE
+        // заставлял два списания ждать апгрейда блокировки друг друга.
+        // Ключ позиции не меняем: NO KEY UPDATE защищает количество и совместим
+        // с FK соседней транзакции, сохраняя последовательное списание остатка.
+        .for("no key update");
 
       if (!locked) {
         throw new Error("NOT_FOUND");
@@ -1089,7 +1148,7 @@ export const consumeRecipeInventoryAllocations = async (
       const requestedQuantity = allocation.allocatedQuantityNormalized;
       const availableQuantity = Math.max(0, locked.normalizedQuantity);
       const isShort = availableQuantity + CONSUME_EPSILON < requestedQuantity;
-      const line = lineById.get(allocation.recipeIngredientId) ?? null;
+      const line = lineByPersistentKey.get(allocation.recipeIngredientPersistentKey) ?? null;
 
       // Нехватка дрожжей не роняет варку (матч у них по наличию штамма) — списываем
       // остаток и метим аллокацию clamped безусловно. Для остальных категорий это же
@@ -1162,7 +1221,7 @@ export const consumeRecipeInventoryAllocations = async (
       await tx.insert(inventoryTransactions).values({
         userId,
         inventoryItemId: locked.id,
-        recipeId,
+        recipeId: options.batchSnapshot ? null : recipeId,
         recipeIngredientId: allocation.recipeIngredientId,
         brewBatchId,
         type: "consume",
@@ -1207,6 +1266,8 @@ export type BrewBatchConsumeLinePlanEntry = {
   requiredQuantityNormalized: number;
   /** Точная позиция склада (тот же exactKey) — null, если владелец ничего такого не держит. */
   exactItem: InventoryItemRow | null;
+  /** Несколько лотов того же продукта; закреплённый автором лот остаётся единственным. */
+  exactItems?: InventoryItemRow[];
   /** Требование строки в единице exactItem (для сравнения "хватает ли") — null, если exactItem нет. */
   exactRequiredInItemUnit: number | null;
   /** Кандидаты на замену (family_compatible, другой exactKey, остаток > 0) — у дрожжей всегда []. */
@@ -1224,17 +1285,12 @@ export const buildBrewBatchConsumeLinePlanEntries = async (
   inventoryItemsById: Map<string, InventoryListItemDto>;
 }> => {
   const client = options.client ?? db;
-  const recipe = await ensureBrewableRecipe(userId, recipeId, client);
-  const volumeFactor = resolveRecipeScaleFactor(recipe, options.targetBatchVolumeL);
-  const lines = await client.query.recipeIngredients.findMany({
-    where: eq(recipeIngredients.recipeId, recipeId)
-  });
-  const scaleLine = await buildLineScaleResolver(lines, volumeFactor, options.efficiencyFactor, client);
+  const { lines, scaleLine } = await loadInventorySource(userId, recipeId, options, client);
 
   const catalogIds = [...new Set(
     lines.map((line) => line.ingredientCatalogItemId).filter((id): id is string => Boolean(id))
   )];
-  const catalogRows = catalogIds.length
+  const catalogRows = !options.batchSnapshot && catalogIds.length
     ? await client.query.ingredients.findMany({ where: inArray(ingredients.id, catalogIds) })
     : [];
   const catalogById = new Map(catalogRows.map((row) => [row.id, row]));
@@ -1262,6 +1318,11 @@ export const buildBrewBatchConsumeLinePlanEntries = async (
   for (const line of lines) {
     const factor = scaleLine(line);
     const lineProfile = profileFromRecipeIngredientRow(line, catalogById.get(line.ingredientCatalogItemId ?? ""));
+    if (options.batchSnapshot) {
+      const frozenLine = options.batchSnapshot.lines.find((entry) => entry.persistentKey === line.persistentKey);
+      lineProfile.technicalData = frozenLine?.technicalData ?? null;
+      lineProfile.nameEn = frozenLine?.ingredientDisplayNameEnSnapshot ?? null;
+    }
     const lineUnit = parseInventoryUnit(line.amountNormalizedUnit);
     const requiredQuantityNormalized = roundTo(line.amountNormalizedQuantity * factor, 3);
 
@@ -1271,13 +1332,14 @@ export const buildBrewBatchConsumeLinePlanEntries = async (
     // берёт лучший лот по exactKey. Звать здесь findOwnedInventoryItemByRecipeLineSource
     // напрямую — баг: превью показало бы «хватает» по большому лоту, пока
     // списание упирается в закреплённый маленький.
-    const exactItem = await resolveOwnedInventoryItemForRecipeLine(
+    const exactItems = await resolveOwnedInventoryItemsForRecipeLine(
       userId,
       line,
       readInventoryItemIdFromMeta(line.inventorySelectionMeta),
       factor,
       client
     );
+    const exactItem = exactItems[0] ?? null;
     const exactRequiredInItemUnit = exactItem
       ? await resolveRequiredQuantityInInventoryItemUnit(line, exactItem, factor, client)
       : null;
@@ -1291,6 +1353,7 @@ export const buildBrewBatchConsumeLinePlanEntries = async (
       factor,
       requiredQuantityNormalized,
       exactItem,
+      exactItems,
       exactRequiredInItemUnit,
       substitutes,
       lineComparisonValue

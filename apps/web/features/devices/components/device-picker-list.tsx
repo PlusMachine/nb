@@ -168,7 +168,7 @@ export function DevicePickerList({
             </p>
           ) : (
             <p className="mt-1 text-xs leading-5 text-success-subtle-foreground">
-              Сохраните токен и пропишите его в устройстве — он показывается один раз и нигде не хранится в открытом виде.
+              Сохраните токен и укажите его в настройках устройства. Он показывается один раз.
             </p>
           )}
           <code className="mt-2 block break-all rounded-md border border-success/30 bg-card px-2 py-1.5 font-mono text-xs text-success-subtle-foreground">
@@ -239,7 +239,7 @@ export function DevicePickerList({
           ) : null}
           <div>
             <label htmlFor="brew-pair-code" className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-              Claim-код
+              Код привязки
             </label>
             <input
               id="brew-pair-code"
@@ -250,12 +250,12 @@ export function DevicePickerList({
               className="w-full rounded-lg border border-border bg-card px-3 py-2 font-mono text-sm uppercase text-foreground"
             />
             <p className="mt-1 text-xs leading-5 text-muted-foreground">
-              Код показывает дисплей устройства или его точка доступа при первом включении.
+              Код можно найти на дисплее устройства или на странице настройки, подключившись к его точке доступа Wi-Fi при первом включении.
             </p>
           </div>
           <div>
             <label htmlFor="brew-pair-url" className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-              Локальный адрес <span className="font-normal lowercase text-muted-foreground">(опционально)</span>
+              Локальный адрес <span className="font-normal lowercase text-muted-foreground">(необязательно)</span>
             </label>
             <input
               id="brew-pair-url"
@@ -268,7 +268,7 @@ export function DevicePickerList({
           </div>
           <div>
             <label htmlFor="brew-pair-name" className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-              Название <span className="font-normal lowercase text-muted-foreground">(опционально)</span>
+              Название <span className="font-normal lowercase text-muted-foreground">(необязательно)</span>
             </label>
             <input
               id="brew-pair-name"

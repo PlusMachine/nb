@@ -51,6 +51,9 @@ import {
 } from "./catalog-ranking";
 import { readCustomIngredientMetadata } from "./custom-metadata";
 import { resolveCanonicalFamilyBucket, resolveIngredientMatchKey } from "./match-group";
+import {
+  readDerivedFromHopAlphaAcidPct
+} from "./derived-ingredient-presentation";
 import { normalizeSearchText } from "./normalization";
 import {
   canonicalizeWaterTreatmentQuickStartGroup,
@@ -100,7 +103,7 @@ import {
   resolveIngredientSubtype,
   type IngredientSubtype
 } from "./taxonomy";
-import { matchesIngredientFamilyScope, rankIngredientCandidate, rankQueryTwoPass } from "./ranking";
+import { createIngredientFamilyMatcher, createIngredientRanker, prepareIngredientCandidate, rankQueryTwoPass, type PreparedIngredientCandidate, type RankedCandidate } from "./ranking";
 import {
   applyFavoriteStateToCatalogItems,
   listIngredientPurchaseLinksByReference
@@ -165,18 +168,27 @@ const buildCustomAliasDto = (aliases: ReturnType<typeof readCustomIngredientMeta
   }))
 );
 
-const mapSystemIngredient = (item: Awaited<ReturnType<typeof loadIngredients>>[number]): UserCatalogIngredientDto => ({
-  ...item,
-  source: "catalog",
-  notes: null,
-  properties: null,
-  derivedFromIngredientId: null,
-  derivedFromDisplayName: null,
-  inventoryUsageCount: 0,
-  recipeUsageCount: 0,
-  inventoryInUse: false,
-  recipeInUse: false
-});
+// The underlying DTO is an immutable snapshot from loadIngredients. Weak keys
+// release prepared data once TTL/invalidation replaces that snapshot.
+const mappedSystemIngredients = new WeakMap<Awaited<ReturnType<typeof loadIngredients>>[number], UserCatalogIngredientDto>();
+const mapSystemIngredient = (item: Awaited<ReturnType<typeof loadIngredients>>[number]): UserCatalogIngredientDto => {
+  const cached = mappedSystemIngredients.get(item);
+  if (cached) return cached;
+  const mapped: UserCatalogIngredientDto = {
+    ...item,
+    source: "catalog",
+    notes: null,
+    properties: null,
+    derivedFromIngredientId: null,
+    derivedFromDisplayName: null,
+    inventoryUsageCount: 0,
+    recipeUsageCount: 0,
+    inventoryInUse: false,
+    recipeInUse: false
+  };
+  mappedSystemIngredients.set(item, mapped);
+  return mapped;
+};
 
 const mapCustomIngredient = (
   item: typeof userCustomIngredients.$inferSelect
@@ -226,6 +238,14 @@ const mapCustomIngredient = (
     ?? readTrimmedString(properties.brand)
     ?? null;
   const country = item.country ?? readTrimmedString(properties.country);
+  const countryCode = (() => {
+    const raw = readTrimmedString(properties.countryCode);
+    if (!raw) {
+      return null;
+    }
+    const normalized = raw.toUpperCase();
+    return /^[A-Z]{2}$/.test(normalized) ? normalized : null;
+  })();
   const groupName = readTrimmedString(properties.groupName)
     ?? readTrimmedString(properties.group)
     ?? null;
@@ -260,7 +280,7 @@ const mapCustomIngredient = (
     brandName: brand,
     manufacturer: brand,
     country,
-    countryCode: null,
+    countryCode,
     countryName: country,
     productCode: metadata.productCode,
     groupName,
@@ -284,6 +304,7 @@ const mapCustomIngredient = (
     unitPreferred,
     derivedFromIngredientId: metadata.derivedFromIngredientId,
     derivedFromDisplayName: metadata.derivedFromDisplayName,
+    derivedFromHopAlphaAcidPct: readDerivedFromHopAlphaAcidPct(properties),
     inventoryUsageCount: 0,
     recipeUsageCount: 0,
     inventoryInUse: false,
@@ -308,7 +329,9 @@ const loadCustomIngredients = async (userId: string): Promise<UserCatalogIngredi
 };
 
 const buildSearchText = (item: UserCatalogIngredientDto) => {
-  const aliases = item.aliases.map((alias) => alias.aliasNormalized);
+  const aliases = item.aliases
+    .filter((alias) => alias.isEnabled !== false)
+    .map((alias) => alias.aliasNormalized);
   const variantNames = item.packageVariants.flatMap((variant) => buildConsumablePackageSearchLabels(variant));
   const consumable = resolveConsumableTechnicalData(item.technicalData);
 
@@ -392,6 +415,8 @@ export const toIngredientSuggestionItem = (
   matchRescue,
   derivedFromIngredientId: item.derivedFromIngredientId,
   derivedFromDisplayName: item.derivedFromDisplayName,
+  derivedFromHopAlphaAcidPct: item.derivedFromHopAlphaAcidPct,
+  hopAlphaAcidPct: item.hopAlphaAcidPct,
   isFavorite: item.isFavorite ?? false,
   source: item.source
 });
@@ -721,14 +746,25 @@ const buildBrandMarketCountMap = (items: UserCatalogIngredientDto[]) => {
   return counts;
 };
 
-const buildRankedItem = (
-  item: UserCatalogIngredientDto,
-  query: string,
-  brandMarketCounts?: Map<string, number>,
-  options?: { includeLayoutVariants?: boolean }
-): RankedCatalogItem | null => {
-  const normalizedBrand = normalizeSearchText(resolveManufacturerLabel(item) ?? "");
-  const rank = rankIngredientCandidate(query, {
+type CatalogSearchDocument = {
+  candidate: RankedCandidate;
+  prepared: PreparedIngredientCandidate;
+  normalizedBrand: string;
+};
+const catalogSearchDocuments = new WeakMap<UserCatalogIngredientDto, CatalogSearchDocument>();
+const catalogSearchOrigins = new WeakMap<UserCatalogIngredientDto, UserCatalogIngredientDto>();
+
+const getCatalogSearchDocument = (item: UserCatalogIngredientDto): CatalogSearchDocument => {
+  const origin = catalogSearchOrigins.get(item) ?? item;
+  const cached = catalogSearchDocuments.get(origin);
+  if (cached) return cached;
+  const document = buildCatalogSearchDocument(origin);
+  catalogSearchDocuments.set(origin, document);
+  return document;
+};
+
+const buildCatalogSearchDocument = (item: UserCatalogIngredientDto): CatalogSearchDocument => {
+  const candidate: RankedCandidate = {
     displayName: item.displayName,
     displayNameRu: item.nameRu ?? item.displayNameRu,
     displayNameEn: item.nameEn ?? item.displayNameEn,
@@ -746,11 +782,7 @@ const buildRankedItem = (
     brandName: item.brand ?? item.brandName,
     manufacturer: item.producer ?? item.manufacturer,
     productCode: item.productCode,
-    isFavorite: item.isFavorite,
     source: item.source,
-    inventoryUsageCount: item.inventoryUsageCount,
-    recipeUsageCount: item.recipeUsageCount,
-    brandMarketCount: normalizedBrand ? brandMarketCounts?.get(normalizedBrand) ?? 0 : 0,
     sourcesCount: item.sources.length,
     packageVariantsCount: item.packageVariants.length,
     packageVariants: item.packageVariants.map((variant) => ({
@@ -763,18 +795,33 @@ const buildRankedItem = (
       stockContentAmount: variant.stockContentAmount,
       stockContentUnit: variant.stockContentUnit
     }))
-  }, { includeLayoutVariants: options?.includeLayoutVariants ?? false });
-
-  if (!rank || rank.score <= 0) {
-    return null;
-  }
-
-  return {
-    item,
-    tier: rank.tier,
-    score: rank.score,
-    familyFallback: rank.familyFallback
   };
+  return {
+    candidate,
+    prepared: prepareIngredientCandidate(candidate),
+    normalizedBrand: normalizeSearchText(resolveManufacturerLabel(item) ?? "")
+  };
+};
+
+// Personal and scope-dependent boosts are always read from the current request.
+const buildCatalogRankContext = (item: UserCatalogIngredientDto, document: CatalogSearchDocument, brandMarketCount = 0): RankedCandidate => ({
+  ...document.candidate,
+  isFavorite: item.isFavorite,
+  inventoryUsageCount: item.inventoryUsageCount,
+  recipeUsageCount: item.recipeUsageCount,
+  brandMarketCount
+});
+
+const buildRankedItem = (
+  item: UserCatalogIngredientDto,
+  rankCandidate: ReturnType<typeof createIngredientRanker>,
+  brandMarketCounts?: Map<string, number>
+): RankedCatalogItem | null => {
+  const document = getCatalogSearchDocument(item);
+  const brandMarketCount = document.normalizedBrand ? brandMarketCounts?.get(document.normalizedBrand) ?? 0 : 0;
+  const rank = rankCandidate(buildCatalogRankContext(item, document, brandMarketCount), document.prepared);
+  if (!rank || rank.score <= 0) return null;
+  return { item, tier: rank.tier, score: rank.score, familyFallback: rank.familyFallback };
 };
 
 const applyUsageCounts = async (
@@ -957,6 +1004,48 @@ const sortCatalogItems = (
   return left.primaryLabelRu.localeCompare(right.primaryLabelRu, "ru");
 });
 
+const enrichCustomItemsFromDerivedCatalog = (
+  customItems: UserCatalogIngredientDto[],
+  catalogItems: UserCatalogIngredientDto[]
+): UserCatalogIngredientDto[] => {
+  const catalogById = new Map(catalogItems.map((item) => [item.id, item] as const));
+
+  return customItems.map((item) => {
+    if (!item.derivedFromIngredientId) {
+      return item;
+    }
+
+    const base = catalogById.get(item.derivedFromIngredientId);
+    if (!base) {
+      return item;
+    }
+
+    let next = item;
+
+    if (item.category === "hop") {
+      const storedCatalogAlpha = item.derivedFromHopAlphaAcidPct ?? null;
+      const catalogAlpha = storedCatalogAlpha ?? base.hopAlphaAcidPct ?? null;
+      if (catalogAlpha != null && storedCatalogAlpha == null) {
+        next = {
+          ...next,
+          derivedFromHopAlphaAcidPct: catalogAlpha
+        };
+      }
+    }
+
+    if (!next.countryCode && base.countryCode) {
+      next = {
+        ...next,
+        countryCode: base.countryCode,
+        countryName: next.countryName ?? base.countryName ?? null,
+        country: next.country ?? base.countryName ?? base.country ?? null
+      };
+    }
+
+    return next;
+  });
+};
+
 const loadUnifiedCatalogItems = async (
   userId: string | null,
   params?: { type?: string }
@@ -972,14 +1061,21 @@ const loadUnifiedCatalogItems = async (
   const filteredCustomItems = customItems.filter((item) => (
     !params?.type || item.type === params.type
   ));
+  const enrichedCustomItems = enrichCustomItemsFromDerivedCatalog(filteredCustomItems, mappedCatalogItems);
 
   const combinedItems = [
-    ...filteredCustomItems,
+    ...enrichedCustomItems,
     ...mappedCatalogItems
   ];
   const allItems = userId
     ? await applyFavoriteStateToCatalogItems(userId, combinedItems)
     : combinedItems;
+
+  const originsByReference = new Map(combinedItems.map((item) => [`${item.source}:${item.id}`, item]));
+  allItems.forEach((item) => {
+    const origin = originsByReference.get(`${item.source}:${item.id}`);
+    if (origin && item !== origin) catalogSearchOrigins.set(item, origin);
+  });
 
   return {
     catalogItems: allItems.filter((item) => item.source === "catalog"),
@@ -1102,42 +1198,11 @@ const filterItemsByQuickStartFamily = (
     return items;
   }
 
-  return items.filter((item) => matchesIngredientFamilyScope(family.presetQuery, {
-    displayName: item.displayName,
-    displayNameRu: item.nameRu ?? item.displayNameRu,
-    displayNameEn: item.nameEn ?? item.displayNameEn,
-    nameRu: item.nameRu,
-    nameEn: item.nameEn,
-    category: item.category,
-    sourceCategory: item.sourceCategory,
-    aliases: item.aliases.map((alias) => ({
-      alias: alias.alias,
-      aliasNormalized: alias.aliasNormalized,
-      source: alias.source,
-      isEnabled: alias.isEnabled
-    })),
-    searchTextNorm: buildSearchText(item),
-    brandName: item.brand ?? item.brandName,
-    manufacturer: item.producer ?? item.manufacturer,
-    productCode: item.productCode,
-    isFavorite: item.isFavorite,
-    source: item.source,
-    inventoryUsageCount: item.inventoryUsageCount,
-    recipeUsageCount: item.recipeUsageCount,
-    brandMarketCount: 0,
-    sourcesCount: item.sources.length,
-    packageVariantsCount: item.packageVariants.length,
-    packageVariants: item.packageVariants.map((variant) => ({
-      id: variant.id,
-      brand: variant.brand,
-      productNameEn: variant.productNameEn,
-      productNameRu: variant.productNameRu,
-      packageAmount: variant.packageAmount,
-      packageUnit: variant.packageUnit,
-      stockContentAmount: variant.stockContentAmount,
-      stockContentUnit: variant.stockContentUnit
-    }))
-  }));
+  const matchesFamily = createIngredientFamilyMatcher(family.presetQuery);
+  return items.filter((item) => {
+    const document = getCatalogSearchDocument(item);
+    return matchesFamily(buildCatalogRankContext(item, document), document.prepared);
+  });
 };
 
 const sortQuickStartItems = (items: UserCatalogIngredientDto[]) => items.slice().sort((left, right) => (
@@ -1647,10 +1712,13 @@ export const searchUserCatalogIngredients = async (
   const { rankedItems, usedLayoutFallback } = rankingQuery
     ? (() => {
       const brandMarketCounts = buildBrandMarketCountMap(favoriteScopedItems);
-      const { results, usedLayoutFallback: layoutFallback } = rankQueryTwoPass(rankingQuery, (includeLayoutVariants) => favoriteScopedItems
-        .map((item) => buildRankedItem(item, rankingQuery, brandMarketCounts, { includeLayoutVariants }))
-        .filter((item): item is RankedCatalogItem => item !== null)
-        .sort(sortRankedCatalogItems));
+      const { results, usedLayoutFallback: layoutFallback } = rankQueryTwoPass(rankingQuery, (includeLayoutVariants) => {
+        const rankCandidate = createIngredientRanker(rankingQuery, { includeLayoutVariants });
+        return favoriteScopedItems
+          .map((item) => buildRankedItem(item, rankCandidate, brandMarketCounts))
+          .filter((item): item is RankedCatalogItem => item !== null)
+          .sort(sortRankedCatalogItems);
+      });
 
       return { rankedItems: results, usedLayoutFallback: layoutFallback };
     })()
@@ -1749,6 +1817,53 @@ const countConsumableGroups = (items: UserCatalogIngredientDto[]) => {
   };
 };
 
+type CatalogListRankResult = {
+  items: UserCatalogIngredientDto[];
+  rescue: "layout" | "fuzzy" | "scatter" | null;
+};
+
+const createCatalogListRanker = (query: string | undefined, sort: IngredientCatalogSortOption) => {
+  const q = query?.trim();
+  const searches = new WeakMap<UserCatalogIngredientDto[], {
+    brandMarketCounts: Map<string, number>;
+    passes: Map<boolean, RankedCatalogItem[]>;
+  }>();
+
+  return (
+    items: UserCatalogIngredientDto[],
+    inScope: (item: UserCatalogIngredientDto) => boolean = () => true
+  ): CatalogListRankResult => {
+    const scopedItems = items.filter(inScope);
+    if (!q || scopedItems.length === 0) {
+      return { items: sortCatalogItems(scopedItems, sort), rescue: null };
+    }
+    let search = searches.get(items);
+    if (!search) {
+      search = { brandMarketCounts: buildBrandMarketCountMap(items), passes: new Map() };
+      searches.set(items, search);
+    }
+    const prepared = search;
+    const { results, usedLayoutFallback } = rankQueryTwoPass(q, (includeLayoutVariants) => {
+      let ranked = prepared.passes.get(includeLayoutVariants);
+      if (!ranked) {
+        const rankCandidate = createIngredientRanker(q, { includeLayoutVariants });
+        ranked = items
+          .map((item) => buildRankedItem(item, rankCandidate, prepared.brandMarketCounts))
+          .filter((item): item is RankedCatalogItem => item !== null)
+          .sort(sortRankedCatalogItems);
+        prepared.passes.set(includeLayoutVariants, ranked);
+      }
+      // Score a candidate once per pass, but decide whether to retain weak
+      // matches within the destination category/subtype, not another category.
+      return filterRankedFamilyFallback(filterRankedCatalogNoise(ranked.filter(({ item }) => inScope(item))));
+    });
+    return {
+      items: results.map(({ item }) => item),
+      rescue: usedLayoutFallback ? "layout" : resolveCatalogRescueKind(results[0]?.tier)
+    };
+  };
+};
+
 export const listUserCatalogIngredients = async (
   userId: string | null,
   params: CatalogListParams = {}
@@ -1760,49 +1875,23 @@ export const listUserCatalogIngredients = async (
     : "name";
   const sort = resolveCatalogSortOptionForCategory(requestedSort, params.category);
   const view = params.view === "mine" ? "mine" : "all";
-  const { catalogItems, customItems, allItems } = await loadUnifiedCatalogItems(userId);
+  const { customItems, allItems } = await loadUnifiedCatalogItems(userId);
 
-  // Rescue-выдача (С4): rankItems возвращает вместе со списком признак того, что
-  // вся выдача — рескью (раскладка ИЛИ лучший (первый после фильтров tier→score)
-  // результат — token-scatter/fuzzy). Без q рескью невозможен (нет ранжирования).
-  const rankItems = (
-    items: UserCatalogIngredientDto[]
-  ): { items: UserCatalogIngredientDto[]; rescue: "layout" | "fuzzy" | "scatter" | null } => {
-    const q = params.q?.trim();
-    if (!q) {
-      return { items: sortCatalogItems(items, sort), rescue: null };
-    }
-
-    const brandMarketCounts = buildBrandMarketCountMap(items);
-
-    const { results, usedLayoutFallback } = rankQueryTwoPass(q, (includeLayoutVariants) => filterRankedFamilyFallback(filterRankedCatalogNoise(items
-      .map((item) => buildRankedItem(item, q, brandMarketCounts, { includeLayoutVariants }))
-      .filter((item): item is RankedCatalogItem => item !== null)
-      .sort(sortRankedCatalogItems))));
-
-    return {
-      items: results.map(({ item }) => item),
-      rescue: usedLayoutFallback ? "layout" : resolveCatalogRescueKind(results[0]?.tier)
-    };
-  };
+  const rankItems = createCatalogListRanker(params.q, sort);
 
   const rankedAll = rankItems(allItems);
-  const rankedCustom = rankItems(customItems);
   const rankedAllItems = rankedAll.items;
-  const rankedCustomItems = rankedCustom.items;
-  const baseItems = view === "mine" ? rankedCustomItems : rankedAllItems;
-  const searchRescue = view === "mine" ? rankedCustom.rescue : rankedAll.rescue;
-  const filteredByCategory = params.category
-    ? baseItems.filter((item) => item.category === params.category)
-    : baseItems;
-  const filteredBySubtype = params.subtype
-    ? filteredByCategory.filter((item) => item.category === "fermentable" && item.subtype === params.subtype)
-    : filteredByCategory;
-  const filtered = params.consumableGroup
-    ? filteredBySubtype.filter((item) => (
+  const sourceItems = view === "mine" ? customItems : allItems;
+  const selected = rankItems(sourceItems, (item) => (
+    (!params.category || item.category === params.category)
+    && (!params.subtype || (item.category === "fermentable" && item.subtype === params.subtype))
+    && (!params.consumableGroup || (
       item.category === "consumable" && resolveConsumableInventoryBroadGroup(item) === params.consumableGroup
     ))
-    : filteredBySubtype;
+  ));
+  const filtered = selected.items;
+  const searchRescue = selected.rescue;
+  const countScope = (inScope: (item: UserCatalogIngredientDto) => boolean) => rankItems(sourceItems, inScope).items.length;
 
   const countByCategory = (items: UserCatalogIngredientDto[]) => ({
     fermentable: items.filter((item) => item.category === "fermentable").length,
@@ -1810,10 +1899,6 @@ export const listUserCatalogIngredients = async (
     yeast: items.filter((item) => item.category === "yeast").length,
     consumable: items.filter((item) => item.category === "consumable").length,
     water_treatment: items.filter((item) => item.category === "water_treatment").length
-  });
-  const countFermentableSubtypes = (items: UserCatalogIngredientDto[]) => ({
-    malt: items.filter((item) => item.category === "fermentable" && item.subtype === "malt").length,
-    fermentable: items.filter((item) => item.category === "fermentable" && item.subtype === "fermentable").length
   });
 
   const total = filtered.length;
@@ -1828,10 +1913,23 @@ export const listUserCatalogIngredients = async (
     total,
     totalPages,
     facets: {
-      byCategory: countByCategory(baseItems),
+      // Counts describe the results after following each category link.
+      byCategory: {
+        fermentable: countScope((item) => item.category === "fermentable"),
+        hop: countScope((item) => item.category === "hop"),
+        yeast: countScope((item) => item.category === "yeast"),
+        consumable: countScope((item) => item.category === "consumable"),
+        water_treatment: countScope((item) => item.category === "water_treatment")
+      },
       filteredByCategory: countByCategory(filtered),
-      byFermentableSubtype: countFermentableSubtypes(baseItems),
-      byConsumableGroup: countConsumableGroups(baseItems),
+      byFermentableSubtype: {
+        malt: countScope((item) => item.category === "fermentable" && item.subtype === "malt"),
+        fermentable: countScope((item) => item.category === "fermentable" && item.subtype === "fermentable")
+      },
+      byConsumableGroup: {
+        additives: countScope((item) => item.category === "consumable" && resolveConsumableInventoryBroadGroup(item) === "inventory_additives"),
+        supplies: countScope((item) => item.category === "consumable" && resolveConsumableInventoryBroadGroup(item) === "inventory_supplies")
+      },
       customCount: rankedAllItems.filter((item) => item.source === "custom").length,
       catalogCount: rankedAllItems.filter((item) => item.source === "catalog").length
     },
@@ -1845,10 +1943,9 @@ export const listUserCatalogIngredients = async (
 export const CATALOG_HUB_PREVIEW_LIMIT = 6;
 export const CATALOG_HUB_SEARCH_GROUP_LIMIT = 10;
 
-// Дублирует rankItems из listUserCatalogIngredients намеренно: ту функцию
-// трогать нельзя (контракт listUserCatalogIngredients зафиксирован), а сортов
-// у хаба нет — только "name" без q. См. notes/catalog-hub-redesign.md, S1.
-// Возвращает вместе со списком признак rescue-выдачи (С4) — см. rankItems выше.
+// Глобальный хаб сохраняет общую обрезку шума перед группировкой секций.
+// У категорийных лендингов обрезка теперь выполняется внутри выбранного
+// контекста (createCatalogListRanker); публичная форма DTO остаётся общей.
 const rankHubItems = (
   items: UserCatalogIngredientDto[],
   q: string | undefined
@@ -1860,10 +1957,13 @@ const rankHubItems = (
 
   const brandMarketCounts = buildBrandMarketCountMap(items);
 
-  const { results, usedLayoutFallback } = rankQueryTwoPass(trimmedQuery, (includeLayoutVariants) => filterRankedFamilyFallback(filterRankedCatalogNoise(items
-    .map((item) => buildRankedItem(item, trimmedQuery, brandMarketCounts, { includeLayoutVariants }))
-    .filter((item): item is RankedCatalogItem => item !== null)
-    .sort(sortRankedCatalogItems))));
+  const { results, usedLayoutFallback } = rankQueryTwoPass(trimmedQuery, (includeLayoutVariants) => {
+    const rankCandidate = createIngredientRanker(trimmedQuery, { includeLayoutVariants });
+    return filterRankedFamilyFallback(filterRankedCatalogNoise(items
+      .map((item) => buildRankedItem(item, rankCandidate, brandMarketCounts))
+      .filter((item): item is RankedCatalogItem => item !== null)
+      .sort(sortRankedCatalogItems)));
+  });
 
   return {
     items: results.map(({ item }) => item),
@@ -2038,13 +2138,22 @@ export const getUserCatalogIngredientByRef = async (
 
   let result = favorited;
 
-  if (result.source === "custom" && result.derivedFromIngredientId && !result.derivedFromDisplayName) {
-    const baseItem = await getIngredientById(result.derivedFromIngredientId);
-    if (baseItem) {
-      result = {
-        ...result,
-        derivedFromDisplayName: baseItem.primaryLabelRu
-      };
+  if (result.source === "custom" && result.derivedFromIngredientId) {
+    const needsBaseDisplayName = !result.derivedFromDisplayName;
+    const needsCatalogHopAlpha = result.category === "hop" && result.derivedFromHopAlphaAcidPct == null;
+    const needsCountryCode = !result.countryCode;
+    if (needsBaseDisplayName || needsCatalogHopAlpha || needsCountryCode) {
+      const baseItem = await getIngredientById(result.derivedFromIngredientId);
+      if (baseItem) {
+        result = {
+          ...result,
+          derivedFromDisplayName: needsBaseDisplayName ? baseItem.primaryLabelRu : result.derivedFromDisplayName,
+          derivedFromHopAlphaAcidPct: needsCatalogHopAlpha ? baseItem.hopAlphaAcidPct ?? null : result.derivedFromHopAlphaAcidPct,
+          countryCode: needsCountryCode ? baseItem.countryCode ?? null : result.countryCode,
+          countryName: result.countryName ?? baseItem.countryName ?? null,
+          country: result.country ?? baseItem.countryName ?? baseItem.country ?? null
+        };
+      }
     }
   }
 

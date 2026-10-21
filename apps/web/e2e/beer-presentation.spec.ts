@@ -18,7 +18,7 @@ const BASE_URL = process.env.E2E_BASE_URL ?? "http://localhost:3000";
 // геометрии. Гость, уже сделавший выбор, его не видит — воспроизводим это.
 const acceptCookies = async (page: Page) => {
   await page.context().addCookies([
-    { name: "nb_cookie_consent", value: "1:all", url: BASE_URL },
+    { name: "nb_cookie_consent", value: encodeURIComponent("1:necessary"), url: BASE_URL },
     { name: "nb_age_ok", value: "1", url: BASE_URL }
   ]);
 };

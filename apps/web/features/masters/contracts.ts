@@ -140,7 +140,7 @@ export const masterProfileInputSchema = z
       .string()
       .trim()
       .min(1, "Коротко опишите, чем занимаетесь.")
-      .max(200, "Summary — максимум 200 символов."),
+      .max(200, "Короткое описание — максимум 200 символов."),
     about: z
       .string()
       .trim()

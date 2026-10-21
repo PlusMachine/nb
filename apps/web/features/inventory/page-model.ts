@@ -35,7 +35,7 @@ export const inventoryCategoryLabels: Record<IngredientCategory, string> = {
 
 export const inventoryFermentableSubtypeLabels: Record<Extract<IngredientSubtype, "malt" | "fermentable">, string> = {
   malt: "Солод",
-  fermentable: "Сбраживаемое сырье"
+  fermentable: "Сбраживаемое сырьё"
 };
 
 export const inventoryPrimaryGroupOrder: InventoryPrimaryGroupKey[] = [...inventoryPrimaryGroupKeys];

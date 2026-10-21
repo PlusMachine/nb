@@ -80,6 +80,7 @@ const missingLine = (overrides: Partial<RecipeMatchLineDto> = {}): RecipeMatchLi
   ingredientDisplayName: "Citra",
   category: "hop",
   brand: null,
+  countryCode: null,
   status: "missing",
   coveragePercent: 0,
   requiredQuantityNormalized: 50,

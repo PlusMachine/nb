@@ -1,0 +1,1686 @@
+{
+  "config": {
+    "argv": [
+      "/usr/bin/node",
+      "/home/dopefish/projects/nb/node_modules/.bin/playwright",
+      "test",
+      "e2e/safari-interactions.spec.ts",
+      "--config=e2e/safari-audit.config.ts",
+      "--workers=1",
+      "--output=../../notes/mobile-audit-2026-10-21/safari/interactions-final-playwright"
+    ],
+    "configFile": "/home/dopefish/projects/nb/apps/web/e2e/safari-audit.config.ts",
+    "rootDir": "/home/dopefish/projects/nb/apps/web/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/interactions-final-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "iphone-se",
+        "name": "iphone-se",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/interactions-final-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "iphone-13",
+        "name": "iphone-13",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/interactions-final-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "iphone-landscape",
+        "name": "iphone-landscape",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/interactions-final-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "ipad-mini",
+        "name": "ipad-mini",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/interactions-final-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "ipad-mini-landscape",
+        "name": "ipad-mini-landscape",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/interactions-final-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "ipad-pro",
+        "name": "ipad-pro",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/interactions-final-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "ipad-pro-landscape",
+        "name": "ipad-pro-landscape",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "../../../notes/mobile-audit-2026-10-21/safari/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.1",
+    "workers": 1,
+    "webServer": {
+      "command": "pnpm run dev",
+      "url": "http://127.0.0.1:3100",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "safari-interactions.spec.ts",
+      "file": "safari-interactions.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "QR description remains readable and collapses back to the short viewport",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-se",
+              "projectName": "iphone-se",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 19660,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:14:58.545Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-f1833f6b6afb621d0d66",
+          "file": "safari-interactions.spec.ts",
+          "line": 25,
+          "column": 1
+        },
+        {
+          "title": "QR feedback leaves recipe actions uncovered and can be opened twice",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-se",
+              "projectName": "iphone-se",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7336,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:15:18.341Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-f78549ddaa38bc0df10e",
+          "file": "safari-interactions.spec.ts",
+          "line": 55,
+          "column": 1
+        },
+        {
+          "title": "label date and description remain editable with readable touch fields",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-se",
+              "projectName": "iphone-se",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4820,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:15:25.711Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-826ae3dccb197c3c3e49",
+          "file": "safari-interactions.spec.ts",
+          "line": 84,
+          "column": 1
+        },
+        {
+          "title": "BJCP waits for its handlers before accepting the first query",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-se",
+              "projectName": "iphone-se",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4947,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:15:30.555Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-57b43ef406d6491751f8",
+          "file": "safari-interactions.spec.ts",
+          "line": 106,
+          "column": 1
+        },
+        {
+          "title": "BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-se",
+              "projectName": "iphone-se",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6413,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:15:35.525Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-7f9e8f886601724f3178",
+          "file": "safari-interactions.spec.ts",
+          "line": 129,
+          "column": 1
+        },
+        {
+          "title": "cookie choice closes the banner and survives a reload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-se",
+              "projectName": "iphone-se",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5714,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:15:41.956Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-dade5a50c586c4354e16",
+          "file": "safari-interactions.spec.ts",
+          "line": 160,
+          "column": 1
+        },
+        {
+          "title": "QR description remains readable and collapses back to the short viewport",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-13",
+              "projectName": "iphone-13",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4455,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:15:48.955Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-f12453323b6395651b24",
+          "file": "safari-interactions.spec.ts",
+          "line": 25,
+          "column": 1
+        },
+        {
+          "title": "QR feedback leaves recipe actions uncovered and can be opened twice",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-13",
+              "projectName": "iphone-13",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4983,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:15:53.520Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-3769b155d30d1a38b9be",
+          "file": "safari-interactions.spec.ts",
+          "line": 55,
+          "column": 1
+        },
+        {
+          "title": "label date and description remain editable with readable touch fields",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-13",
+              "projectName": "iphone-13",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6215,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:15:58.519Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-ae64e78b5b6aa3f06005",
+          "file": "safari-interactions.spec.ts",
+          "line": 84,
+          "column": 1
+        },
+        {
+          "title": "BJCP waits for its handlers before accepting the first query",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-13",
+              "projectName": "iphone-13",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4444,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:16:04.760Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-21716037eaa8e4250dc7",
+          "file": "safari-interactions.spec.ts",
+          "line": 106,
+          "column": 1
+        },
+        {
+          "title": "BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-13",
+              "projectName": "iphone-13",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 10158,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:16:09.230Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-7598221b3ac1c127a0b3",
+          "file": "safari-interactions.spec.ts",
+          "line": 129,
+          "column": 1
+        },
+        {
+          "title": "cookie choice closes the banner and survives a reload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-13",
+              "projectName": "iphone-13",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 10716,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:16:19.400Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-ac9bfaa0602b7b5dc3f2",
+          "file": "safari-interactions.spec.ts",
+          "line": 160,
+          "column": 1
+        },
+        {
+          "title": "QR description remains readable and collapses back to the short viewport",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-landscape",
+              "projectName": "iphone-landscape",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4451,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:16:31.587Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-a989b5837be91a95b715",
+          "file": "safari-interactions.spec.ts",
+          "line": 25,
+          "column": 1
+        },
+        {
+          "title": "QR feedback leaves recipe actions uncovered and can be opened twice",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-landscape",
+              "projectName": "iphone-landscape",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5945,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:16:36.166Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-abc889eaeb09e928045d",
+          "file": "safari-interactions.spec.ts",
+          "line": 55,
+          "column": 1
+        },
+        {
+          "title": "label date and description remain editable with readable touch fields",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-landscape",
+              "projectName": "iphone-landscape",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5381,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:16:42.132Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-a12bbca426e37456ae64",
+          "file": "safari-interactions.spec.ts",
+          "line": 84,
+          "column": 1
+        },
+        {
+          "title": "BJCP waits for its handlers before accepting the first query",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-landscape",
+              "projectName": "iphone-landscape",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5831,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:16:47.527Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-cc7eab0f6d866a4b79f3",
+          "file": "safari-interactions.spec.ts",
+          "line": 106,
+          "column": 1
+        },
+        {
+          "title": "BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-landscape",
+              "projectName": "iphone-landscape",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 10869,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:16:53.380Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-274258116df43d6bfc0f",
+          "file": "safari-interactions.spec.ts",
+          "line": 129,
+          "column": 1
+        },
+        {
+          "title": "cookie choice closes the banner and survives a reload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-landscape",
+              "projectName": "iphone-landscape",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 17947,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:17:04.271Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-ce9db75bcaa70ba72aac",
+          "file": "safari-interactions.spec.ts",
+          "line": 160,
+          "column": 1
+        },
+        {
+          "title": "QR description remains readable and collapses back to the short viewport",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini",
+              "projectName": "ipad-mini",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5014,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:17:23.747Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-6704c6ea4bc697eed026",
+          "file": "safari-interactions.spec.ts",
+          "line": 25,
+          "column": 1
+        },
+        {
+          "title": "QR feedback leaves recipe actions uncovered and can be opened twice",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini",
+              "projectName": "ipad-mini",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6138,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:17:28.890Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-6761b0755f173325f6c4",
+          "file": "safari-interactions.spec.ts",
+          "line": 55,
+          "column": 1
+        },
+        {
+          "title": "label date and description remain editable with readable touch fields",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini",
+              "projectName": "ipad-mini",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3726,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:17:35.047Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-3e61bbeea74aa666de41",
+          "file": "safari-interactions.spec.ts",
+          "line": 84,
+          "column": 1
+        },
+        {
+          "title": "BJCP waits for its handlers before accepting the first query",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini",
+              "projectName": "ipad-mini",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6540,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:17:38.794Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-af81be4a6f06d4d95f08",
+          "file": "safari-interactions.spec.ts",
+          "line": 106,
+          "column": 1
+        },
+        {
+          "title": "BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini",
+              "projectName": "ipad-mini",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7945,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:17:45.345Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-5422e43344794c8c6ab5",
+          "file": "safari-interactions.spec.ts",
+          "line": 129,
+          "column": 1
+        },
+        {
+          "title": "cookie choice closes the banner and survives a reload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini",
+              "projectName": "ipad-mini",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 10541,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:17:53.315Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-debd13ba5bfd35c8cc3f",
+          "file": "safari-interactions.spec.ts",
+          "line": 160,
+          "column": 1
+        },
+        {
+          "title": "QR description remains readable and collapses back to the short viewport",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini-landscape",
+              "projectName": "ipad-mini-landscape",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4582,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:18:05.044Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-08251a3970e1d733725b",
+          "file": "safari-interactions.spec.ts",
+          "line": 25,
+          "column": 1
+        },
+        {
+          "title": "QR feedback leaves recipe actions uncovered and can be opened twice",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini-landscape",
+              "projectName": "ipad-mini-landscape",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 16158,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:18:09.749Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-745d99d4cbc739b529c1",
+          "file": "safari-interactions.spec.ts",
+          "line": 55,
+          "column": 1
+        },
+        {
+          "title": "label date and description remain editable with readable touch fields",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini-landscape",
+              "projectName": "ipad-mini-landscape",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5947,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:18:25.921Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-72688403b91c48d44117",
+          "file": "safari-interactions.spec.ts",
+          "line": 84,
+          "column": 1
+        },
+        {
+          "title": "BJCP waits for its handlers before accepting the first query",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini-landscape",
+              "projectName": "ipad-mini-landscape",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6712,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:18:31.888Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-26e55f8a8ea25ee1b646",
+          "file": "safari-interactions.spec.ts",
+          "line": 106,
+          "column": 1
+        },
+        {
+          "title": "BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini-landscape",
+              "projectName": "ipad-mini-landscape",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7465,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:18:38.629Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-0ce995ad59ba768ec689",
+          "file": "safari-interactions.spec.ts",
+          "line": 129,
+          "column": 1
+        },
+        {
+          "title": "cookie choice closes the banner and survives a reload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-mini-landscape",
+              "projectName": "ipad-mini-landscape",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 33471,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:18:46.101Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-4dc424160b94701fc3d6",
+          "file": "safari-interactions.spec.ts",
+          "line": 160,
+          "column": 1
+        },
+        {
+          "title": "QR description remains readable and collapses back to the short viewport",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro",
+              "projectName": "ipad-pro",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 22157,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/\\/recipes\\/pilsner-urquell$/\u001b[39m\nReceived string:  \u001b[31m\"http://127.0.0.1:3100/beer/pilsner-urquell\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"http://127.0.0.1:3100/beer/pilsner-urquell\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/\\/recipes\\/pilsner-urquell$/\u001b[39m\nReceived string:  \u001b[31m\"http://127.0.0.1:3100/beer/pilsner-urquell\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"http://127.0.0.1:3100/beer/pilsner-urquell\"\u001b[22m\n\n    at /home/dopefish/projects/nb/apps/web/e2e/safari-interactions.spec.ts:52:22",
+                    "location": {
+                      "file": "/home/dopefish/projects/nb/apps/web/e2e/safari-interactions.spec.ts",
+                      "column": 22,
+                      "line": 52
+                    },
+                    "snippet": "  50 |   await expect(page.getByRole(\"link\", { name: \"Рецепт этого пива\", exact: true })).toBeInViewport();\n  51 |   await page.getByRole(\"link\", { name: \"Рецепт этого пива\", exact: true }).tap();\n> 52 |   await expect(page).toHaveURL(/\\/recipes\\/pilsner-urquell$/);\n     |                      ^\n  53 | });\n  54 |\n  55 | test(\"QR feedback leaves recipe actions uncovered and can be opened twice\", async ({ page }) => {"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/dopefish/projects/nb/apps/web/e2e/safari-interactions.spec.ts",
+                        "column": 22,
+                        "line": 52
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/\\/recipes\\/pilsner-urquell$/\u001b[39m\nReceived string:  \u001b[31m\"http://127.0.0.1:3100/beer/pilsner-urquell\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"http://127.0.0.1:3100/beer/pilsner-urquell\"\u001b[22m\n\n\n  50 |   await expect(page.getByRole(\"link\", { name: \"Рецепт этого пива\", exact: true })).toBeInViewport();\n  51 |   await page.getByRole(\"link\", { name: \"Рецепт этого пива\", exact: true }).tap();\n> 52 |   await expect(page).toHaveURL(/\\/recipes\\/pilsner-urquell$/);\n     |                      ^\n  53 | });\n  54 |\n  55 | test(\"QR feedback leaves recipe actions uncovered and can be opened twice\", async ({ page }) => {\n    at /home/dopefish/projects/nb/apps/web/e2e/safari-interactions.spec.ts:52:22"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:19:20.854Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/interactions-final-playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-ipad-pro/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/interactions-final-playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-ipad-pro/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/interactions-final-playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-ipad-pro/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/dopefish/projects/nb/apps/web/e2e/safari-interactions.spec.ts",
+                    "column": 22,
+                    "line": 52
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-8d2b5674515e1a71aeda",
+          "file": "safari-interactions.spec.ts",
+          "line": 25,
+          "column": 1
+        },
+        {
+          "title": "QR feedback leaves recipe actions uncovered and can be opened twice",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro",
+              "projectName": "ipad-pro",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 22049,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:19:44.243Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-4920aa773fe106922874",
+          "file": "safari-interactions.spec.ts",
+          "line": 55,
+          "column": 1
+        },
+        {
+          "title": "label date and description remain editable with readable touch fields",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro",
+              "projectName": "ipad-pro",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8505,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:20:06.399Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-dc044c274f189355c2a9",
+          "file": "safari-interactions.spec.ts",
+          "line": 84,
+          "column": 1
+        },
+        {
+          "title": "BJCP waits for its handlers before accepting the first query",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro",
+              "projectName": "ipad-pro",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6865,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:20:14.925Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-37ce6beea116f25861e3",
+          "file": "safari-interactions.spec.ts",
+          "line": 106,
+          "column": 1
+        },
+        {
+          "title": "BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro",
+              "projectName": "ipad-pro",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 9502,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:20:21.815Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-d1758b233cad77382564",
+          "file": "safari-interactions.spec.ts",
+          "line": 129,
+          "column": 1
+        },
+        {
+          "title": "cookie choice closes the banner and survives a reload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro",
+              "projectName": "ipad-pro",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 9213,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:20:31.340Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-6972a7e92cfcd9e6008c",
+          "file": "safari-interactions.spec.ts",
+          "line": 160,
+          "column": 1
+        },
+        {
+          "title": "QR description remains readable and collapses back to the short viewport",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro-landscape",
+              "projectName": "ipad-pro-landscape",
+              "results": [
+                {
+                  "workerIndex": 7,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4236,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:20:41.924Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-99c0c9788a999a3dc7cb",
+          "file": "safari-interactions.spec.ts",
+          "line": 25,
+          "column": 1
+        },
+        {
+          "title": "QR feedback leaves recipe actions uncovered and can be opened twice",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro-landscape",
+              "projectName": "ipad-pro-landscape",
+              "results": [
+                {
+                  "workerIndex": 7,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5813,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:20:46.323Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-2d46ffbf83d4adfba77b",
+          "file": "safari-interactions.spec.ts",
+          "line": 55,
+          "column": 1
+        },
+        {
+          "title": "label date and description remain editable with readable touch fields",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro-landscape",
+              "projectName": "ipad-pro-landscape",
+              "results": [
+                {
+                  "workerIndex": 7,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3624,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:20:52.153Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-4dfa39280b98e4b8df84",
+          "file": "safari-interactions.spec.ts",
+          "line": 84,
+          "column": 1
+        },
+        {
+          "title": "BJCP waits for its handlers before accepting the first query",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro-landscape",
+              "projectName": "ipad-pro-landscape",
+              "results": [
+                {
+                  "workerIndex": 7,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5365,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:20:55.795Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-1cac021ee7e4e5fbeb8e",
+          "file": "safari-interactions.spec.ts",
+          "line": 106,
+          "column": 1
+        },
+        {
+          "title": "BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro-landscape",
+              "projectName": "ipad-pro-landscape",
+              "results": [
+                {
+                  "workerIndex": 7,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8566,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:21:01.182Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-886437a8d3fd0d2dba78",
+          "file": "safari-interactions.spec.ts",
+          "line": 129,
+          "column": 1
+        },
+        {
+          "title": "cookie choice closes the banner and survives a reload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "ipad-pro-landscape",
+              "projectName": "ipad-pro-landscape",
+              "results": [
+                {
+                  "workerIndex": 7,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 9992,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:21:09.769Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-d6fbe25d63be7403cc3b",
+          "file": "safari-interactions.spec.ts",
+          "line": 160,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-21T21:14:30.061Z",
+    "duration": 410054.682,
+    "expected": 41,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

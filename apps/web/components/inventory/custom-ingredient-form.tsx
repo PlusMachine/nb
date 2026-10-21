@@ -26,6 +26,7 @@ import {
   type CustomHopForm,
   type CustomYeastForm
 } from "@/features/inventory/custom-ingredient";
+import { buildHopHarvestYearOptions } from "@/features/inventory/hop-harvest-year";
 import type { InventoryPriceInputMode } from "@/features/inventory/purchase-cost";
 import {
   inventoryUnitLabels,
@@ -433,12 +434,6 @@ export function CustomIngredientForm({
         min: 0,
         max: 100
       });
-      errors.harvestYear = validateNumericInput(harvestYear, {
-        label: "Урожай",
-        min: 1900,
-        max: 2100,
-        integer: true
-      });
     }
 
     if (category === "yeast") {
@@ -715,7 +710,7 @@ export function CustomIngredientForm({
                 <NumericInput
                   min={0.0001}
                   step="0.1"
-                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
+                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
                   value={fermentableColorEbc}
                   onChange={(e) => {
                     setFermentableColorEbc(e.target.value);
@@ -730,7 +725,7 @@ export function CustomIngredientForm({
                   min={0}
                   max={100}
                   step="0.1"
-                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
+                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
                   value={fermentableExtractYieldPct}
                   onChange={(e) => {
                     setFermentableExtractYieldPct(e.target.value);
@@ -742,7 +737,7 @@ export function CustomIngredientForm({
               </label>
               <label className="text-sm">Страна
                 <select
-                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
+                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
                   value={country}
                   onChange={(e) => setCountry(e.target.value)}
                 >
@@ -760,7 +755,7 @@ export function CustomIngredientForm({
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <label className="text-sm">Тип хмеля
                 <select
-                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
+                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
                   value={hopForm}
                   onChange={(e) => setHopForm(e.target.value as CustomHopForm)}
                 >
@@ -775,7 +770,7 @@ export function CustomIngredientForm({
                   min={0}
                   max={100}
                   step="0.1"
-                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
+                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
                   value={hopAlphaAcidPct}
                   onChange={(e) => {
                     setHopAlphaAcidPct(e.target.value);
@@ -786,19 +781,19 @@ export function CustomIngredientForm({
                 {(localFieldErrors.hopAlphaAcidPct || fieldErrors?.hopAlphaAcidPct) && <span className="text-xs text-destructive">{localFieldErrors.hopAlphaAcidPct ?? fieldErrors?.hopAlphaAcidPct}</span>}
               </label>
               <label className="text-sm">Урожай
-                <NumericInput
-                  integer
-                  min={1900}
-                  max={2100}
-                  step="1"
-                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
+                <select
+                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
                   value={harvestYear}
                   onChange={(e) => {
                     setHarvestYear(e.target.value);
                     setLocalFieldErrors((current) => ({ ...current, harvestYear: null }));
                   }}
-                  placeholder="Необязательно"
-                />
+                >
+                  <option value="">Не указан</option>
+                  {buildHopHarvestYearOptions(harvestYear).map((year) => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
                 {(localFieldErrors.harvestYear || fieldErrors?.harvestYear) && <span className="text-xs text-destructive">{localFieldErrors.harvestYear ?? fieldErrors?.harvestYear}</span>}
               </label>
             </div>
@@ -807,7 +802,7 @@ export function CustomIngredientForm({
           {category === "yeast" ? (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <label className="text-sm">Тип дрожжей
-                <select className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm" value={yeastForm} onChange={(e) => setYeastForm(e.target.value as CustomYeastForm)}>
+                <select className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base" value={yeastForm} onChange={(e) => setYeastForm(e.target.value as CustomYeastForm)}>
                   {customYeastForms.map((option) => (
                     <option key={option} value={option}>{customYeastFormLabels[option]}</option>
                   ))}
@@ -819,7 +814,7 @@ export function CustomIngredientForm({
                   min={0}
                   max={100}
                   step="0.1"
-                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
+                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
                   value={yeastAttenuationPct}
                   onChange={(e) => {
                     setYeastAttenuationPct(e.target.value);
@@ -839,7 +834,7 @@ export function CustomIngredientForm({
                   min={1}
                   max={100}
                   step="0.1"
-                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
+                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
                   value={waterTreatmentConcentrationPct}
                   onChange={(e) => {
                     setWaterTreatmentConcentrationPct(e.target.value);
@@ -869,7 +864,7 @@ export function CustomIngredientForm({
                 </span>
                 <NumericInput
                   min={0}
-                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
+                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
                   value={enteredQuantity}
                   onChange={(e) => {
                     setEnteredQuantity(e.target.value);
@@ -881,7 +876,7 @@ export function CustomIngredientForm({
               </label>
 
               <label className="text-sm">Ед. изм.
-                <select className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm" value={enteredUnit} onChange={(e) => setEnteredUnit(e.target.value as InventoryUnit)}>
+                <select className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base" value={enteredUnit} onChange={(e) => setEnteredUnit(e.target.value as InventoryUnit)}>
                   {unitProfile.allowedUnits.map((unit) => <option key={unit} value={unit}>{inventoryUnitLabels[unit]}</option>)}
                 </select>
                 {fieldErrors?.enteredUnit && <span className="text-xs text-destructive">{fieldErrors.enteredUnit}</span>}
@@ -902,7 +897,7 @@ export function CustomIngredientForm({
                     <div className="mt-1 flex items-center gap-2">
                       <input
                         type="date"
-                        className="w-full rounded-md border px-2 py-2 text-base sm:text-sm"
+                        className="w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
                         value={purchasedAt}
                         onChange={(e) => setPurchasedAt(e.target.value)}
                       />
@@ -918,7 +913,7 @@ export function CustomIngredientForm({
                   </label>
 
                   <label className="text-sm">Годен до
-                    <input type="date" className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm" value={freshnessDate} onChange={(e) => setFreshnessDate(e.target.value)} />
+                    <input type="date" className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base" value={freshnessDate} onChange={(e) => setFreshnessDate(e.target.value)} />
                   </label>
                 </div>
 
@@ -952,7 +947,7 @@ export function CustomIngredientForm({
                 />
 
                 <label className="block text-sm">Заметки
-                  <textarea className="mt-1 h-20 w-full rounded-md border px-2 py-2 text-base sm:text-sm" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Например: куплен под конкретную варку" />
+                  <textarea className="mt-1 h-20 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Например: куплен под конкретную варку" />
                 </label>
               </div>
           </InventoryOptionalDisclosure>

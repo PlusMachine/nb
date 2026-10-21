@@ -31,7 +31,7 @@ const STAGE_SHORT_LABEL: Record<number, string> = {
   [STAGE_NUM.MASH_STEP]: "Затор",
   [STAGE_NUM.MASH_OUT]: "Мэшаут",
   [STAGE_NUM.PROMPT_IODINE]: "Йодная проба",
-  [STAGE_NUM.PROMPT_REMOVE_MALT]: "Убрать солод",
+  [STAGE_NUM.PROMPT_REMOVE_MALT]: "Извлечь дробину",
   [STAGE_NUM.BOIL_RAMP]: "Разогрев",
   [STAGE_NUM.BOILING]: "Кипение",
   [STAGE_NUM.HOP_STAND]: "Вирпул",

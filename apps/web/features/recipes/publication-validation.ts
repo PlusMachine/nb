@@ -20,9 +20,9 @@ type RecipePublicationValidationInput = {
 export const publicationRequirementLabels: Record<RecipePublicationRequirementKey, string> = {
   title: "Название рецепта",
   description: "Описание рецепта",
-  "ingredients.fermentable": "Хотя бы одно сбраживаемое",
-  "ingredients.hop": "Хотя бы один хмель",
-  "ingredients.yeast": "Хотя бы одни дрожжи",
+  "ingredients.fermentable": "Хотя бы один сбраживаемый ингредиент",
+  "ingredients.hop": "Хотя бы одно внесение хмеля",
+  "ingredients.yeast": "Дрожжи",
   boilTimeMinutes: "Время кипячения"
 };
 
@@ -81,11 +81,11 @@ export const getRecipePublicationFieldErrors = (
   }
 
   if (!hasFermentable) {
-    fieldErrors["ingredients.fermentable"] = "Добавьте хотя бы одно сбраживаемое.";
+    fieldErrors["ingredients.fermentable"] = "Добавьте хотя бы один сбраживаемый ингредиент.";
   }
 
   if (!hasHop) {
-    fieldErrors["ingredients.hop"] = "Добавьте хотя бы один хмель.";
+    fieldErrors["ingredients.hop"] = "Добавьте хотя бы одно внесение хмеля.";
   }
 
   if (!hasYeast) {

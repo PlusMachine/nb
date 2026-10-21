@@ -306,7 +306,7 @@ const putServerSavedWaterProfiles = async (
 
 export const getNextSavedSourceWaterProfileName = (
   profiles: SavedSourceWaterProfile[],
-) => `Сохраненный профиль ${profiles.length + 1}`;
+) => `Сохранённый профиль ${profiles.length + 1}`;
 
 export const getNextSavedTargetWaterProfileName = (
   profiles: SavedTargetWaterProfile[],
@@ -345,7 +345,7 @@ const waterWarningLabels: Record<string, string> = {
   target_profile_missing_or_zero: "Выберите целевой профиль воды.",
   grain_bill_missing_for_mash_ph: "Для расчёта pH нужна засыпь.",
   target_not_reached_within_max_acid:
-    "Целевой pH не достигнут в лимите кислоты.",
+    "Для достижения целевого pH нужна доза кислоты выше заданного ограничения.",
   calcium_above_practical_range: "Ca выше практического диапазона.",
   magnesium_above_practical_range: "Mg выше практического диапазона.",
   sodium_above_practical_range: "Na выше практического диапазона.",
@@ -354,9 +354,9 @@ const waterWarningLabels: Record<string, string> = {
   bicarbonate_above_practical_range: "HCO3 выше практического диапазона.",
   lactic_acid_taste_threshold:
     "Молочной кислоты столько, что лактат будет заметен во вкусе (порог ~400 ppm). Используйте фосфорную кислоту или разбавьте воду осмосом.",
-  sparge_acid_capped_at_max_ml: "Доза кислоты в промывку упёрлась в лимит.",
+  sparge_acid_capped_at_max_ml: "Для подкисления промывочной воды нужна доза кислоты выше заданного ограничения.",
   salt_addition_capped:
-    "Подбор солей упёрся в лимит на одну соль — профиль достигнут не полностью.",
+    "Достигнуто ограничение по дозировке одной из солей — целевой профиль удалось получить лишь частично.",
 };
 
 const formatKg = (value: number) => `${value.toFixed(1).replace(".", ",")} кг`;
@@ -378,7 +378,7 @@ const buildEquipmentWarningLabel = (
   switch (warning) {
     case "grain_bill_limit_exceeded":
       return limits.maxGrainKg != null
-        ? `Засыпь ${formatKg(limits.grainKg)} — больше лимита профиля (${formatKg(limits.maxGrainKg)}). Поднимите лимит в профиле оборудования, если у вас влезает больше.`
+        ? `Засыпь ${formatKg(limits.grainKg)} — больше лимита профиля (${formatKg(limits.maxGrainKg)}). Увеличьте допустимую засыпь в профиле оборудования, если ваша пивоварня вмещает больше.`
         : null;
     case "mash_volume_limit_exceeded":
       return limits.maxMashVolumeL != null
@@ -409,7 +409,7 @@ const buildWaterPlanResultWarningLabel = (
   switch (warning) {
     case "dilution_suggested_target":
       return waterPlanResult.dilutionSuggestedPct != null
-        ? `Цель по HCO3 недостижима солями — разбавьте воду осмосом примерно на ${waterPlanResult.dilutionSuggestedPct}%.`
+        ? `Целевую концентрацию HCO3 нельзя получить добавлением солей — разбавьте воду осмосом примерно на ${waterPlanResult.dilutionSuggestedPct}%.`
         : null;
     case "dilution_suggested_acid":
       return waterPlanResult.dilutionSuggestedPct != null
@@ -1215,7 +1215,7 @@ function SourceSavedWaterProfileOption({
   selectedId,
   selected,
   showProfileSummary = true,
-  savedLabel = "Сохраненный",
+  savedLabel = "Сохранённый",
   onSelect,
   onDelete,
 }: {
@@ -1338,7 +1338,7 @@ function SourceSavedWaterProfileOption({
       >
         <span className="flex min-w-0 flex-1 items-center gap-2">
           <span className="block min-w-0 flex-1 truncate">
-            {selectedProfile?.name ?? "Сохраненный профиль"}
+            {selectedProfile?.name ?? "Сохранённый профиль"}
           </span>
           {showProfileSummary ? (
             <span className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${selected ? "bg-background/10 text-background/70" : "bg-muted text-muted-foreground"}`}>
@@ -1759,7 +1759,7 @@ export function WaterSetupWizard({
   const spargeAcidificationEnabled =
     Boolean(effectiveWaterPlanMeta.spargeAcidificationEnabled) &&
     waterPlanResult.waterVolumes.spargeWaterL > 0;
-  const acidCalculationEnabled = mashPhEnabled || spargeAcidificationEnabled;
+  const acidCalculationEnabled = (mashPhEnabled && effectiveWaterPlanMeta.mashAcidificationEnabled !== false) || spargeAcidificationEnabled;
   const saltCalculationMode =
     effectiveWaterPlanMeta.engine === "advanced_manual" ? "manual" : "auto";
   const hasAdvancedSettings =
@@ -1890,7 +1890,7 @@ export function WaterSetupWizard({
       : effectiveWaterPlanMeta.sourceProfileMode === "saved"
         ? effectiveWaterPlanMeta.sourceProfileName ??
           selectedSavedSourceProfile?.name ??
-          "Сохраненный профиль"
+          "Сохранённый профиль"
       : getSelectedPresetName(
           effectiveWaterPlanMeta.sourceProfilePresetId,
           builtInSourceWaterProfiles,
@@ -1904,7 +1904,7 @@ export function WaterSetupWizard({
       : effectiveWaterPlanMeta.targetProfileMode === "saved"
         ? effectiveWaterPlanMeta.targetProfileName ??
           selectedSavedTargetProfile?.name ??
-          "Сохраненный профиль"
+          "Сохранённый профиль"
         : effectiveWaterPlanMeta.targetProfileName ??
           selectedCatalogTarget?.displayName ??
           (effectiveWaterPlanMeta.targetProfile ? "Профиль из рецепта" : null) ??
@@ -2095,7 +2095,7 @@ export function WaterSetupWizard({
     updateSavedSourceProfiles(nextProfiles);
     setManualProfileNameTouched(false);
     setManualProfileSaveOpen(false);
-    setSourceProfileSaveMessage(`${name} сохранен`);
+    setSourceProfileSaveMessage(`${name} сохранён`);
     onChange(
       applyRecipeWaterSavedSourceProfile(effectiveWaterPlanMeta, savedProfile),
     );
@@ -2132,7 +2132,7 @@ export function WaterSetupWizard({
     updateSavedTargetProfiles(nextProfiles);
     setTargetProfileNameTouched(false);
     setTargetProfileSaveOpen(false);
-    setTargetProfileSaveMessage(`${name} сохранен`);
+    setTargetProfileSaveMessage(`${name} сохранён`);
     onChange(
       applyRecipeWaterSavedTargetProfile(effectiveWaterPlanMeta, savedProfile),
     );
@@ -2279,7 +2279,7 @@ export function WaterSetupWizard({
               }}
               onDelete={handleDeleteSavedSourceProfile}
               showProfileSummary
-              savedLabel="Сохраненный"
+              savedLabel="Сохранённый"
             />
             {selectableSourceWaterProfiles.map((preset) => (
               <SourceWaterProfileOption
@@ -2431,7 +2431,7 @@ export function WaterSetupWizard({
                 selectedId={effectiveWaterPlanMeta.targetProfileSavedId}
                 selected={targetModeSelection.saved}
                 showProfileSummary
-                savedLabel="Сохраненный"
+                savedLabel="Сохранённый"
                 onSelect={(profile) => {
                   setTargetProfileSaveMessage(null);
                   setTargetCatalogPickerOpen(false);
@@ -2815,6 +2815,10 @@ export function WaterSetupWizard({
               <h3 className="text-sm font-semibold text-foreground">
                 4. pH и подкисление
               </h3>
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={waterPlanMeta.mashAcidificationEnabled !== false} onChange={(event) => onChange({ ...waterPlanMeta, mashAcidificationEnabled: event.target.checked })} />
+                Автоматически рассчитывать дозу кислоты для затора
+              </label>
               <div className="grid gap-3 lg:grid-cols-2">
                 <MashPhCorrectionCard
                   value={mashPhEnabled ? waterPlanMeta.targetMashPh : null}
@@ -2973,7 +2977,7 @@ export function WaterSetupWizard({
                       }
                       className="h-4 w-4 rounded border-border"
                     />
-                    Считать пищевую соду (NaHCO3) в авторасчёте
+                    Учитывать пищевую соду (NaHCO3) в авторасчёте
                   </label>
                 ) : null}
                 {mashPhEnabled ? (

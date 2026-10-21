@@ -33,6 +33,10 @@ import {
   ingredientPickerFermentableQuickStartGroupOrder,
   resolveFermentableQuickStartGroupLabel
 } from "@/features/ingredients/picker-quick-start";
+import {
+  catalogComparableNumbersEqual,
+  formatHopAlphaAcidAaValue
+} from "@/features/ingredients/derived-ingredient-presentation";
 import { resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
 import {
   resolveIngredientTechnicalDataColorRangeEbc,
@@ -41,6 +45,7 @@ import {
 import { isWaterTreatmentAcidLike, readWaterTreatmentConcentrationPct } from "@/features/ingredients/water-treatment";
 import { inventoryFermentableSubtypeLabels } from "@/features/inventory/page-model";
 import type { InventoryPriceInputMode } from "@/features/inventory/purchase-cost";
+import { buildHopHarvestYearOptions } from "@/features/inventory/hop-harvest-year";
 import {
   inventoryUnitLabels,
   resolveHumanFacingInventoryUnitProfile,
@@ -59,6 +64,7 @@ export type CatalogBatchOverrideFields = {
   fermentableColorEbc: string;
   fermentableExtractYieldPct: string;
   hopAlphaAcidPct: string;
+  harvestYear: string;
   waterTreatmentConcentrationPct: string;
 };
 
@@ -80,6 +86,7 @@ export type CatalogIngredientSubmitPayload = {
   fermentableColorEbc?: string;
   fermentableExtractYieldPct?: string;
   hopAlphaAcidPct?: string;
+  harvestYear?: string;
   waterTreatmentConcentrationPct?: string;
   purchaseLinks?: string[];
   purchaseLinksTouched?: boolean;
@@ -209,6 +216,7 @@ export const createInitialCatalogBatchOverrideFields = (): CatalogBatchOverrideF
   fermentableColorEbc: "",
   fermentableExtractYieldPct: "",
   hopAlphaAcidPct: "",
+  harvestYear: "",
   waterTreatmentConcentrationPct: ""
 });
 
@@ -478,7 +486,10 @@ export const hasCatalogIngredientTechnicalOverrides = ({
   }
 
   if (defaults.kind === "hop") {
-    return !numbersEqual(parseInputNumber(overrides.hopAlphaAcidPct), defaults.alphaAcidPct);
+    return (
+      !numbersEqual(parseInputNumber(overrides.hopAlphaAcidPct), defaults.alphaAcidPct)
+      || Boolean(overrides.harvestYear.trim())
+    );
   }
 
   return !numbersEqual(parseInputNumber(overrides.waterTreatmentConcentrationPct), defaults.concentrationPct);
@@ -524,27 +535,43 @@ export const resolveCatalogBatchOverrideSummaryState = ({
           { label: "Экстрактивность", value: catalogExtract }
         ]
         : null,
-      statusBadgeLabel: hasTechnicalOverrides ? "ИЗМЕНЕННЫЙ" : null
+      statusBadgeLabel: hasTechnicalOverrides ? "ИЗМЕНЁННЫЙ" : null
     };
   }
 
   if (defaults.kind === "hop") {
+    const hopAlphaOverride = !catalogComparableNumbersEqual(
+      parseInputNumber(overrides.hopAlphaAcidPct),
+      defaults.alphaAcidPct
+    );
     const currentAlpha = formatCatalogBatchNumber(
       hasTechnicalOverrides ? overrides.hopAlphaAcidPct : defaults.hopAlphaAcidPct,
       "% AA"
-    ) ?? "Альфа-кислота не указана";
+    );
+    const currentAlphaValue = currentAlpha
+      ? hopAlphaOverride && parseInputNumber(overrides.hopAlphaAcidPct) != null
+        ? formatHopAlphaAcidAaValue(parseInputNumber(overrides.hopAlphaAcidPct)!, { userOverride: true })
+        : currentAlpha
+      : "Альфа-кислота не указана";
     const catalogAlpha = formatCatalogBatchNumber(defaults.hopAlphaAcidPct, "% AA") ?? "Альфа-кислота не указана";
+    const currentHarvestYear = formatCatalogBatchNumber(
+      hasTechnicalOverrides ? overrides.harvestYear : "",
+    );
+    const currentEntries: CatalogBatchSummaryEntry[] = [
+      { label: "Альфа-кислота", value: currentAlphaValue }
+    ];
+    if (currentHarvestYear) {
+      currentEntries.push({ label: "Урожай", value: currentHarvestYear });
+    }
 
     return {
-      currentEntries: [
-        { label: "Альфа-кислота", value: currentAlpha }
-      ],
+      currentEntries,
       catalogEntries: hasTechnicalOverrides
         ? [
           { label: "Альфа-кислота", value: catalogAlpha }
         ]
         : null,
-      statusBadgeLabel: hasTechnicalOverrides ? "ИЗМЕНЕННЫЙ" : null
+      statusBadgeLabel: null
     };
   }
 
@@ -588,7 +615,7 @@ export const resolveCatalogDerivedVariantPresentation = ({
   return {
     isDerivedVariantFlow,
     submitLabel: isDerivedVariantFlow ? "Добавить как свой вариант" : "Добавить в запасы",
-    noticeText: isDerivedVariantFlow ? "Сохранится как ваш измененный вариант ингредиента." : null,
+    noticeText: isDerivedVariantFlow ? "Сохранится как ваш изменённый вариант ингредиента." : null,
     inlineHelper: isDerivedVariantFlow ? "Каталог не изменится." : null
   };
 };
@@ -606,6 +633,7 @@ const buildInitialBatchOverridesFromSelection = (
       fermentableColorEbc: defaults.fermentableColorEbc,
       fermentableExtractYieldPct: defaults.fermentableExtractYieldPct,
       hopAlphaAcidPct: "",
+      harvestYear: "",
       waterTreatmentConcentrationPct: ""
     };
   }
@@ -615,6 +643,7 @@ const buildInitialBatchOverridesFromSelection = (
       fermentableColorEbc: "",
       fermentableExtractYieldPct: "",
       hopAlphaAcidPct: defaults.hopAlphaAcidPct,
+      harvestYear: "",
       waterTreatmentConcentrationPct: ""
     };
   }
@@ -623,6 +652,7 @@ const buildInitialBatchOverridesFromSelection = (
     fermentableColorEbc: "",
     fermentableExtractYieldPct: "",
     hopAlphaAcidPct: "",
+    harvestYear: "",
     waterTreatmentConcentrationPct: defaults.waterTreatmentConcentrationPct
   };
 };
@@ -735,6 +765,9 @@ export const buildCatalogIngredientPayload = (
   }
   if (batchOverrides?.hopAlphaAcidPct?.trim()) {
     payload.hopAlphaAcidPct = batchOverrides.hopAlphaAcidPct;
+  }
+  if (batchOverrides?.harvestYear?.trim()) {
+    payload.harvestYear = batchOverrides.harvestYear;
   }
   if (batchOverrides?.waterTreatmentConcentrationPct?.trim()) {
     payload.waterTreatmentConcentrationPct = batchOverrides.waterTreatmentConcentrationPct;
@@ -1012,6 +1045,7 @@ export function CatalogIngredientForm({
       fieldErrors?.fermentableColorEbc
       || fieldErrors?.fermentableExtractYieldPct
       || fieldErrors?.hopAlphaAcidPct
+      || fieldErrors?.harvestYear
       || fieldErrors?.waterTreatmentConcentrationPct
     );
 
@@ -1276,7 +1310,7 @@ export function CatalogIngredientForm({
                         <NumericInput
                           min={0}
                           step="0.1"
-                          className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
+                          className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
                           value={batchOverrides.fermentableColorEbc}
                           onChange={(event) => {
                             setBatchOverrides((current) => ({
@@ -1294,7 +1328,7 @@ export function CatalogIngredientForm({
                           min={0}
                           max={100}
                           step="0.1"
-                          className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
+                          className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
                           value={batchOverrides.fermentableExtractYieldPct}
                           onChange={(event) => {
                             setBatchOverrides((current) => ({
@@ -1310,13 +1344,13 @@ export function CatalogIngredientForm({
                   ) : null}
 
                   {batchOverrideMode === "customize" && batchOverrideDefaults.kind === "hop" ? (
-                    <div className="grid grid-cols-1 gap-3 sm:max-w-xs">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:max-w-md">
                       <label className="text-sm">Альфа-кислота, %
                         <NumericInput
                           min={0}
                           max={100}
                           step="0.1"
-                          className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
+                          className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
                           value={batchOverrides.hopAlphaAcidPct}
                           onChange={(event) => {
                             setBatchOverrides((current) => ({
@@ -1328,6 +1362,25 @@ export function CatalogIngredientForm({
                         />
                         {(localFieldErrors.hopAlphaAcidPct || fieldErrors?.hopAlphaAcidPct) && <span className="text-xs text-destructive">{localFieldErrors.hopAlphaAcidPct ?? fieldErrors?.hopAlphaAcidPct}</span>}
                       </label>
+                      <label className="text-sm">Урожай
+                        <select
+                          className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
+                          value={batchOverrides.harvestYear}
+                          onChange={(event) => {
+                            setBatchOverrides((current) => ({
+                              ...current,
+                              harvestYear: event.target.value
+                            }));
+                            setLocalFieldErrors((current) => ({ ...current, harvestYear: null }));
+                          }}
+                        >
+                          <option value="">Не указан</option>
+                          {buildHopHarvestYearOptions(batchOverrides.harvestYear).map((year) => (
+                            <option key={year} value={year}>{year}</option>
+                          ))}
+                        </select>
+                        {(localFieldErrors.harvestYear || fieldErrors?.harvestYear) && <span className="text-xs text-destructive">{localFieldErrors.harvestYear ?? fieldErrors?.harvestYear}</span>}
+                      </label>
                     </div>
                   ) : null}
 
@@ -1338,7 +1391,7 @@ export function CatalogIngredientForm({
                           min={1}
                           max={100}
                           step="0.1"
-                          className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
+                          className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
                           value={batchOverrides.waterTreatmentConcentrationPct}
                           onChange={(event) => {
                             setBatchOverrides((current) => ({
@@ -1361,7 +1414,7 @@ export function CatalogIngredientForm({
             />
             {selectedPackEquivalent ? (
               <p className="text-xs text-muted-foreground">
-                1 pack = {selectedPackEquivalent.normalizedQuantity} {selectedPackEquivalent.normalizedUnit}
+                1 уп. = {selectedPackEquivalent.normalizedQuantity} {selectedPackEquivalent.normalizedUnit}
               </p>
             ) : null}
             {derivedVariantPresentation.noticeText ? (
@@ -1382,7 +1435,7 @@ export function CatalogIngredientForm({
             <label className="text-sm">Количество *
               <NumericInput
                 min={0.0001}
-                className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
+                className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
                 value={fields.enteredQuantity}
                 onChange={(e) => {
                   setFields((s) => ({ ...s, enteredQuantity: e.target.value }));
@@ -1394,7 +1447,7 @@ export function CatalogIngredientForm({
 
             <label className="text-sm">Ед. изм. *
               <select
-                className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
+                className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
                 value={fields.enteredUnit}
                 onChange={(e) => setFields((s) => ({ ...s, enteredUnit: e.target.value as InventoryUnit }))}
               >
@@ -1423,7 +1476,7 @@ export function CatalogIngredientForm({
                   <div className="mt-1 flex items-center gap-2">
                     <input
                       type="date"
-                      className="w-full rounded-md border px-2 py-2 text-base sm:text-sm"
+                      className="w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
                       value={fields.purchasedAt}
                       onChange={(e) => setFields((s) => ({ ...s, purchasedAt: e.target.value }))}
                     />
@@ -1441,7 +1494,7 @@ export function CatalogIngredientForm({
                 <label className="text-sm">Годен до
                   <input
                     type="date"
-                    className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
+                    className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
                     value={fields.freshnessDate}
                     onChange={(e) => setFields((s) => ({ ...s, freshnessDate: e.target.value }))}
                   />
@@ -1478,7 +1531,7 @@ export function CatalogIngredientForm({
 
               <label className="block text-sm">Заметки
                 <textarea
-                  className="mt-1 h-20 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
+                  className="mt-1 h-20 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
                   value={fields.notes}
                   onChange={(e) => setFields((s) => ({ ...s, notes: e.target.value }))}
                 />

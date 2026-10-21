@@ -15,7 +15,7 @@ export function RecipeStatsPreview({
 }) {
   return (
     <section className="space-y-2 rounded-2xl border border-border bg-card p-5 shadow-sm" data-testid="recipe-stats-preview">
-      <h2 className="text-base font-semibold text-foreground">Предпросмотр статистики</h2>
+      <h2 className="text-base font-semibold text-foreground">Расчётные показатели</h2>
       <p className="text-sm text-muted-foreground">Объём партии: {recipe ? `${recipe.batchSizeEnteredQuantity} ${inventoryUnitLabels[recipe.batchSizeEnteredUnit] ?? recipe.batchSizeEnteredUnit}` : "—"}</p>
       <RecipeStatsSummary
         recipe={recipe ?? {

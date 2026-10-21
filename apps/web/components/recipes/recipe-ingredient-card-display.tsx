@@ -246,12 +246,16 @@ export function RecipeIngredientTitleBlock({
   );
   const showFermentableKindOnBrandLine = Boolean(fermentableKindLabel && isGenericFermentable && !showInlineBrand);
   const showFermentableKindInlineWithTitle = Boolean(fermentableKindLabel && !showFermentableKindOnBrandLine);
-  const showCountryInlineWithTitle = country
-    && source.category !== "hop"
-    && !(source.category === "fermentable" && source.subtype === "fermentable");
-  const showCountryOnBrandLine = country
-    && (source.category === "hop" || (source.category === "fermentable" && source.subtype === "fermentable"))
-    && !showInlineBrand;
+  // Хмель: страна происхождения — атрибут сорта, рядом с именем (не с фасовщиком
+  // Beervingem/YCH на второй строке). Generic fermentable без inline-бренда —
+  // по-прежнему на brand-line рядом с типом.
+  const showCountryOnBrandLine = Boolean(
+    country
+    && source.category === "fermentable"
+    && source.subtype === "fermentable"
+    && !showInlineBrand
+  );
+  const showCountryInlineWithTitle = Boolean(country) && !showCountryOnBrandLine;
 
   return (
     <div className="min-w-0">
@@ -278,7 +282,7 @@ export function RecipeIngredientTitleBlock({
             <span className="truncate">{brandLabel}</span>
           </span>
         ) : null}
-        {showCountryInlineWithTitle ? (
+        {showCountryInlineWithTitle && country ? (
           <CountryFlag
             countryCode={country.code}
             className="h-3.5 w-[1.15rem]"
@@ -289,7 +293,7 @@ export function RecipeIngredientTitleBlock({
       {!showInlineBrand && brandLabel ? (
         <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-muted-foreground">
           <span className="font-medium text-foreground">{brandLabel}</span>
-          {showCountryOnBrandLine ? (
+          {showCountryOnBrandLine && country ? (
             <CountryFlag
               countryCode={country.code}
               className="h-3.5 w-[1.15rem]"

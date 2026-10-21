@@ -232,7 +232,7 @@ export function BrewDayBoard({
   const transitionConfirm = !cursor.actComplete && undone > 0
     ? {
         title: "Поставить на брожение?",
-        description: `Ещё ${undone} ${undone === 1 ? "шаг" : undone < 5 ? "шага" : "шагов"} варочного дня не отмечено. Всё равно перейти к брожению?`
+        description: `Невыполненных шагов варочного дня: ${undone}. Всё равно перейти к брожению?`
       }
     : null;
 

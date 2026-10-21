@@ -1,0 +1,189 @@
+{
+  "qaUserId": "71baa508-c350-4e1f-b321-67652c686eea",
+  "batches": [
+    {
+      "id": "460350e8-9f85-4a48-ba03-afcf6b6185cf",
+      "status": "completed",
+      "brewNumber": 1,
+      "recipeId": "06bfcf45-a9a8-4e6b-9e52-53d99658260a",
+      "recipe": {
+        "id": "06bfcf45-a9a8-4e6b-9e52-53d99658260a",
+        "title": "Каскад цветочно-ванильный (Граф_Пивоварoff, бир.рф) (копия)",
+        "batchSizeL": 10,
+        "efficiencyPct": 65,
+        "versionNumber": 1,
+        "recipeEfficiencyPct": 65
+      },
+      "grainBillKg": 2.66,
+      "equipment": null,
+      "water": {
+        "mash": null,
+        "sparge": null
+      },
+      "hopIdentity": {
+        "catalogId": "us-cascade-beervingem-standard",
+        "snapshotName": "Каскад",
+        "nameEn": null
+      }
+    },
+    {
+      "id": "dbcf67a9-4f3c-4fa1-acbb-f4b60a4bdd27",
+      "status": "planned",
+      "brewNumber": 1,
+      "recipeId": "cf4aa96c-01d7-4538-985f-a2a006634563",
+      "recipe": {
+        "id": "cf4aa96c-01d7-4538-985f-a2a006634563",
+        "title": "Каскад цветочно-ванильный (Граф_Пивоварoff, бир.рф)",
+        "batchSizeL": 12.5,
+        "efficiencyPct": 65,
+        "versionNumber": 1,
+        "recipeEfficiencyPct": 72
+      },
+      "grainBillKg": 3.32,
+      "equipment": {
+        "id": "44b8c5ac-eb6c-4da1-b8a6-da3ca3a0ed78",
+        "name": "QA Кухня 10 л",
+        "maxGrainKg": null,
+        "maxMashVolumeL": null
+      },
+      "water": null,
+      "hopIdentity": {
+        "catalogId": "us-cascade-beervingem-standard",
+        "snapshotName": "Каскад",
+        "nameEn": null
+      }
+    },
+    {
+      "id": "0380744c-b813-4c59-8d5f-7e5982796810",
+      "status": "planned",
+      "brewNumber": 2,
+      "recipeId": "cf4aa96c-01d7-4538-985f-a2a006634563",
+      "recipe": {
+        "id": "cf4aa96c-01d7-4538-985f-a2a006634563",
+        "title": "Каскад цветочно-ванильный (Граф_Пивоварoff, бир.рф)",
+        "batchSizeL": 10,
+        "efficiencyPct": 65,
+        "versionNumber": 1,
+        "recipeEfficiencyPct": 72
+      },
+      "grainBillKg": 2.66,
+      "equipment": {
+        "id": "44b8c5ac-eb6c-4da1-b8a6-da3ca3a0ed78",
+        "name": "QA Кухня 10 л",
+        "maxGrainKg": null,
+        "maxMashVolumeL": null
+      },
+      "water": null,
+      "hopIdentity": {
+        "catalogId": "us-cascade-beervingem-standard",
+        "snapshotName": "Каскад",
+        "nameEn": null
+      }
+    },
+    {
+      "id": "940315bc-3a9a-41d3-bbc9-d596d9849b6f",
+      "status": "cancelled",
+      "brewNumber": 3,
+      "recipeId": "cf4aa96c-01d7-4538-985f-a2a006634563",
+      "recipe": {
+        "id": "cf4aa96c-01d7-4538-985f-a2a006634563",
+        "title": "Каскад цветочно-ванильный (Граф_Пивоварoff, бир.рф)",
+        "batchSizeL": 60,
+        "efficiencyPct": 70,
+        "versionNumber": 1,
+        "recipeEfficiencyPct": 72
+      },
+      "grainBillKg": 14.81,
+      "equipment": {
+        "id": "db6c9696-471b-4a50-971a-495082c52868",
+        "name": "QA Пресет Braumeister",
+        "maxGrainKg": 2.5,
+        "maxMashVolumeL": 12
+      },
+      "water": null,
+      "hopIdentity": {
+        "catalogId": "us-cascade-beervingem-standard",
+        "snapshotName": "Каскад",
+        "nameEn": null
+      }
+    },
+    {
+      "id": "525c3c10-6dbf-41ee-b3ca-d3a973f0a2aa",
+      "status": "cancelled",
+      "brewNumber": 2,
+      "recipeId": "06bfcf45-a9a8-4e6b-9e52-53d99658260a",
+      "recipe": {
+        "id": "06bfcf45-a9a8-4e6b-9e52-53d99658260a",
+        "title": "Каскад цветочно-ванильный (Граф_Пивоварoff, бир.рф) (копия)",
+        "batchSizeL": 10,
+        "efficiencyPct": 65,
+        "versionNumber": 1,
+        "recipeEfficiencyPct": 65
+      },
+      "grainBillKg": 2.66,
+      "equipment": {
+        "id": "44b8c5ac-eb6c-4da1-b8a6-da3ca3a0ed78",
+        "name": "QA Кухня 10 л",
+        "maxGrainKg": null,
+        "maxMashVolumeL": null
+      },
+      "water": {
+        "mash": 8,
+        "sparge": 10.1
+      },
+      "hopIdentity": {
+        "catalogId": "us-cascade-beervingem-standard",
+        "snapshotName": "Каскад",
+        "nameEn": null
+      }
+    }
+  ],
+  "inventory": [
+    {
+      "ingredient_catalog_item_id": "weyermann--pale-ale-malt",
+      "entered_quantity": 2.177,
+      "entered_unit": "kg",
+      "normalized_quantity": 2176.923,
+      "normalized_unit": "g"
+    },
+    {
+      "ingredient_catalog_item_id": "xx-cascade-standard",
+      "entered_quantity": 200,
+      "entered_unit": "g",
+      "normalized_quantity": 200,
+      "normalized_unit": "g"
+    },
+    {
+      "ingredient_catalog_item_id": "fermentis-us-05",
+      "entered_quantity": 1.583,
+      "entered_unit": "pack",
+      "normalized_quantity": 17.417,
+      "normalized_unit": "g"
+    },
+    {
+      "ingredient_catalog_item_id": null,
+      "entered_quantity": 50,
+      "entered_unit": "g",
+      "normalized_quantity": 50,
+      "normalized_unit": "g"
+    },
+    {
+      "ingredient_catalog_item_id": "us-cascade-beervingem-standard",
+      "entered_quantity": 7.5,
+      "entered_unit": "g",
+      "normalized_quantity": 7.5,
+      "normalized_unit": "g"
+    }
+  ],
+  "recipe": [
+    {
+      "id": "06bfcf45-a9a8-4e6b-9e52-53d99658260a",
+      "batch_size_entered_quantity": 10,
+      "batch_size_entered_unit": "l",
+      "efficiency": 65,
+      "equipment_profile_id": "44b8c5ac-eb6c-4da1-b8a6-da3ca3a0ed78",
+      "og": 1.053,
+      "abv": 5.64
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 // =============================================================================
 //  apps/bridge — ws.ts
 //  WebSocket-сервер для браузера/портала. Это realtime-канал «портал ↔ мост»:
-//  фан-аут телеметрии устройства его владельцу + приём команд от владельца.
+//  фан-аут телеметрии устройства его владельцу. Команды идут через HTTP API.
 //
 //  Модель аутентификации/владения:
 //   - Клиент передаёт raw nb_session НЕ в URL, а в заголовке Sec-WebSocket-Protocol
@@ -11,30 +11,24 @@
 //     эхо-ответу ТОЛЬКО "nb-bridge-v1" (никогда токен), хэширует токен sha256
 //     (схема @nb/auth.hashToken) и ищет в sessions→users живую сессию → userId.
 //     Нет/просрочена → 4401 close. Токен нигде не логируется.
-//   - Подписка/команда на устройство РАЗРЕШЕНА, только если brew_devices.userId
-//     == userId сессии (ownership-check на каждое действие). Чужую телеметрию
-//     клиент не получает в принципе.
-//   - Команды публикуются в brewforge/<id>/cmd (QoS1, делает mqtt.ts) И пишут
-//     строку аудита device_commands. На клиента — пер-клиентный rate-limit.
+//   - Подписка на устройство РАЗРЕШЕНА, только если brew_devices.userId
+//     == userId сессии (ownership-check при подписке).
+//   - WS не принимает команды: проверки lease и свежести телеметрии выполняет HTTP API.
 //   - Аутентификация УСТРОЙСТВ — на брокере; мост доверяет топикам брокера.
 //
 //  Протокол сообщений (JSON):
 //   client→bridge: { type:"subscribe",   deviceId }
 //                  { type:"unsubscribe", deviceId }
-//                  { type:"command",     deviceId, command:<Command> }
 //   bridge→client: { type:"telemetry",   deviceId, data:<Telemetry> }
 //                  { type:"ack",         deviceId, data:<Ack> }
 //                  { type:"subscribed"|"unsubscribed", deviceId }
-//                  { type:"command-accepted", deviceId, commandId }
 //                  { type:"error",       error }
 // =============================================================================
 import crypto from "node:crypto";
 import type { IncomingMessage } from "node:http";
 import { WebSocketServer, type WebSocket } from "ws";
 import {
-  CommandSchema,
   type Ack,
-  type Command,
   type Telemetry,
 } from "@nb/brewforge-protocol";
 
@@ -42,10 +36,8 @@ import {
   and,
   brewDevices,
   db,
-  deviceCommands,
   eq,
   gt,
-  resolveActiveBatchId,
   sessions,
   users,
 } from "./db.js";
@@ -57,10 +49,6 @@ const DEFAULT_WS_PORT = 8090;
 // эхоится обратно, чтобы не утёк в заголовки/логи ответа.
 const WS_SUBPROTOCOL = "nb-bridge-v1";
 
-// Rate-limit команд: не более N за окно на клиента (sliding window).
-const CMD_RATE_LIMIT = 10;
-const CMD_RATE_WINDOW_MS = 10_000;
-
 // sha256-хэш токена (совпадает с @nb/auth.hashToken — sha256 hex).
 const hashToken = (value: string): string =>
   crypto.createHash("sha256").update(value).digest("hex");
@@ -70,18 +58,13 @@ interface ClientCtx {
   userId: string;
   // hardwareId устройств, на которые клиент подписан (после ownership-check).
   subscriptions: Set<string>;
-  cmdTimes: number[]; // метки последних команд для rate-limit
 }
-
-export type CommandPublisher = (hardwareId: string, command: Command) => Promise<void>;
 
 export interface WsHub {
   /** Раздать телеметрию устройства его подписчикам-владельцам. */
   broadcastTelemetry: (hardwareId: string, telemetry: Telemetry) => void;
   /** Раздать ack команды подписчикам устройства. */
   broadcastAck: (hardwareId: string, ack: Ack) => void;
-  /** Привязать издателя команд (из mqtt.ts) после старта. */
-  setCommandPublisher: (publisher: CommandPublisher) => void;
   clientCount: () => number;
   close: () => Promise<void>;
 }
@@ -142,7 +125,6 @@ export function startWsServer(opts: { port?: number }): WsHub {
   const port = opts.port ?? DEFAULT_WS_PORT;
   const wss = new WebSocketServer({ port, handleProtocols: selectSubprotocol });
   const clients = new Set<ClientCtx>();
-  let publisher: CommandPublisher | null = null;
 
   wss.on("listening", () => console.log(`[ws] слушает порт ${port}`));
   wss.on("error", (err) => console.error("[ws] ошибка сервера:", err.message));
@@ -168,13 +150,12 @@ export function startWsServer(opts: { port?: number }): WsHub {
           ws,
           userId,
           subscriptions: new Set(),
-          cmdTimes: [],
         };
         clients.add(ctx);
         send(ws, { type: "ready" });
 
         ws.on("message", (buf: Buffer) => {
-          handleClientMessage(ctx, buf, publisher).catch((err: unknown) => {
+          handleClientMessage(ctx, buf).catch((err: unknown) => {
             const msg = err instanceof Error ? err.message : String(err);
             console.error("[ws] сбой обработки сообщения:", msg);
             send(ws, { type: "error", error: "internal error" });
@@ -217,9 +198,6 @@ export function startWsServer(opts: { port?: number }): WsHub {
   return {
     broadcastTelemetry,
     broadcastAck,
-    setCommandPublisher: (p) => {
-      publisher = p;
-    },
     clientCount: () => clients.size,
     close,
   };
@@ -228,7 +206,6 @@ export function startWsServer(opts: { port?: number }): WsHub {
 async function handleClientMessage(
   ctx: ClientCtx,
   buf: Buffer,
-  publisher: CommandPublisher | null,
 ): Promise<void> {
   let msg: unknown;
   try {
@@ -260,57 +237,10 @@ async function handleClientMessage(
       return;
     }
     case "command": {
-      await handleCommand(ctx, deviceId, obj.command, publisher);
+      send(ctx.ws, { type: "error", error: "commands require HTTP API" });
       return;
     }
     default:
       send(ctx.ws, { type: "error", error: "unknown message type" });
   }
-}
-
-async function handleCommand(
-  ctx: ClientCtx,
-  deviceId: string,
-  commandJson: unknown,
-  publisher: CommandPublisher | null,
-): Promise<void> {
-  if (!deviceId) return void send(ctx.ws, { type: "error", error: "missing deviceId" });
-
-  // Rate-limit (sliding window) на клиента.
-  const now = Date.now();
-  ctx.cmdTimes = ctx.cmdTimes.filter((t) => now - t < CMD_RATE_WINDOW_MS);
-  if (ctx.cmdTimes.length >= CMD_RATE_LIMIT) {
-    return void send(ctx.ws, { type: "error", error: "rate limited" });
-  }
-
-  // Ownership-check (на каждую команду, не доверяем подписке).
-  const owned = await resolveOwnedDevice(deviceId, ctx.userId);
-  if (!owned) return void send(ctx.ws, { type: "error", error: "forbidden" });
-
-  const parsed = CommandSchema.safeParse(commandJson);
-  if (!parsed.success) {
-    return void send(ctx.ws, { type: "error", error: "invalid command" });
-  }
-  const command = parsed.data;
-
-  if (!publisher) {
-    return void send(ctx.ws, { type: "error", error: "bridge not ready" });
-  }
-
-  ctx.cmdTimes.push(now);
-
-  // Аудит-строка ДО публикации (status=sent); ack из брокера переведёт в acked/failed.
-  const brewBatchId = await resolveActiveBatchId(owned.id);
-  await db.insert(deviceCommands).values({
-    id: command.id,
-    deviceId: owned.id,
-    brewBatchId: brewBatchId ?? null,
-    userId: ctx.userId,
-    type: command.type,
-    arg: (command.arg ?? null) as Record<string, unknown> | null,
-    status: "sent",
-  });
-
-  await publisher(deviceId, command);
-  send(ctx.ws, { type: "command-accepted", deviceId, commandId: command.id });
 }

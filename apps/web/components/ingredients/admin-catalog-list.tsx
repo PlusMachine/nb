@@ -290,8 +290,7 @@ export function AdminCatalogList({ items, basePath, q, category, status, sort, p
           return (
             <div className="space-y-1">
               <p className="text-foreground">{ingredientCategoryLabels[item.category]}</p>
-              <p className="text-xs text-muted-foreground">{item.type}</p>
-              {familyName ? <p className="text-xs text-muted-foreground">{familyName}</p> : null}
+              {familyName && familyName !== primaryName ? <p className="text-xs text-muted-foreground">{familyName}</p> : null}
             </div>
           );
         }

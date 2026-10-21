@@ -14,6 +14,7 @@ const gapLine = (overrides: Partial<RecipeMatchLineDto> = {}): RecipeMatchLineDt
   ingredientDisplayName: "Хмель",
   category: "hop",
   brand: null,
+  countryCode: null,
   status: "missing",
   coveragePercent: 0,
   requiredQuantityNormalized: 10,
@@ -35,7 +36,10 @@ const baseMatch = (overrides: Partial<RecipeMatchDto> = {}): RecipeMatchDto => (
   totalLines: 5,
   coveredLines: 3,
   missingCount: 2,
-  lines: [gapLine({ recipeIngredientId: "gap-1" }), gapLine({ recipeIngredientId: "gap-2" })],
+  lines: [
+    gapLine({ recipeIngredientId: "gap-1", ingredientDisplayName: "Citra", ingredientCatalogItemId: "cat-citra" }),
+    gapLine({ recipeIngredientId: "gap-2", ingredientDisplayName: "Cascade", ingredientCatalogItemId: "cat-cascade" })
+  ],
   targetBatchVolumeL: 20,
   recipeBatchVolumeL: 20,
   scaledToInventory: false,

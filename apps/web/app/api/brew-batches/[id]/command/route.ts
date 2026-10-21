@@ -23,7 +23,7 @@ function describeCommandError(message: string): string {
     case "CLOUD_UNSUPPORTED":
       return "Эта операция по облаку пока недоступна — выполните её, находясь в одной сети с устройством.";
     case "DEVICE_NO_LOCAL_URL":
-      return "У устройства не задан локальный адрес и облако недоступно. Допривяжите устройство или включите облачный путь.";
+      return "У устройства не задан локальный адрес, а связь через облако недоступна. Укажите адрес устройства в настройках или настройте облачное подключение.";
     case "DEVICE_NOT_FOUND":
       return "Устройство не найдено или не привязано к вам.";
     case "PROVIDER_UNAVAILABLE":
@@ -69,7 +69,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         return NextResponse.json(
           {
             error:
-              "Управление устройством занято другим сеансом. Запросите перехват, чтобы взять контроль.",
+              "Устройством управляют из другого сеанса. Запросите передачу управления.",
             code: "NO_CONTROL_LEASE",
           },
           { status: 409 },
@@ -85,7 +85,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         return NextResponse.json(
           {
             error:
-              "Нет свежей телеметрии устройства — эта команда заблокирована до восстановления связи.",
+              "Нет свежих показаний устройства — команда недоступна до восстановления связи.",
             code: "DEVICE_STALE",
           },
           { status: 409 },

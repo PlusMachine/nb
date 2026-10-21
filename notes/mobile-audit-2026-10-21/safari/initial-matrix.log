@@ -1,0 +1,340 @@
+
+Running 231 tests using 1 worker
+
+  ✓    1 [iphone-se] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (1.9s)
+  ✓    2 [iphone-se] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла (2.0s)
+  ✘    3 [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет (2.4s)
+  ✘    4 [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (7.0s)
+  ✓    5 [iphone-se] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (2.2s)
+  ✓    6 [iphone-se] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла (1.9s)
+  ✘    7 [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет (1.9s)
+  ✘    8 [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (7.0s)
+  ✓    9 [iphone-se] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (1.7s)
+  ✓   10 [iphone-se] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла (1.8s)
+  ✘   11 [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет (2.0s)
+  ✘   12 [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (7.0s)
+  ✓   13 [iphone-se] › e2e/beer-presentation.spec.ts:92:3 › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек (1.7s)
+  ✓   14 [iphone-se] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (12.7s)
+  ✘   15 [iphone-se] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query (1.0m)
+  ✓   16 [iphone-se] › e2e/bjcp-search.spec.ts:46:1 › local search and view filters preserve browser history without RSC navigation (8.4s)
+  ✓   17 [iphone-se] › e2e/bjcp-search.spec.ts:72:1 › choosing a family suggestion cancels pending text and keeps the chosen scope (6.7s)
+  ✓   18 [iphone-se] › e2e/bjcp-search.spec.ts:86:1 › back cancels an uncommitted query instead of rewriting the restored history (4.2s)
+  ✓   19 [iphone-se] › e2e/calculators-unit-converter.spec.ts:12:3 › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow) (8.2s)
+  ✓   20 [iphone-se] › e2e/calculators-unit-converter.spec.ts:21:3 › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей (3.0s)
+  ✓   21 [iphone-se] › e2e/calculators-unit-converter.spec.ts:34:3 › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением (2.0s)
+  -   22 [iphone-se] › e2e/calculators-unit-converter.spec.ts:45:3 › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину
+  ✓   23 [iphone-se] › e2e/calculators-unit-converter.spec.ts:61:3 › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой (1.7s)
+  ✓   24 [iphone-se] › e2e/calculators-unit-converter.spec.ts:74:3 › Конвертер единиц пивовара › у каждой вкладки группы есть иконка (1.6s)
+  ✓   25 [iphone-se] › e2e/calculators-unit-converter.spec.ts:86:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (1.8s)
+  ✓   26 [iphone-se] › e2e/calculators-unit-converter.spec.ts:98:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (1.8s)
+  ✓   27 [iphone-se] › e2e/calculators-unit-converter.spec.ts:111:3 › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки (1.8s)
+  ✓   28 [iphone-se] › e2e/calculators-unit-converter.spec.ts:118:3 › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex) (2.0s)
+  ✓   29 [iphone-se] › e2e/mobile-audit.spec.ts:34:1 › M01: label preview leaves data fields clickable in every format (4.7s)
+  ✓   30 [iphone-se] › e2e/mobile-audit.spec.ts:53:1 › M02: public navigation and sign-in fit, including tablet breakpoint (4.0s)
+  ✓   31 [iphone-se] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (17.3s)
+  ✓   32 [iphone-se] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions (23.4s)
+  ✓   33 [iphone-se] › e2e/mobile-audit.spec.ts:124:1 › M05: every dilution operation fits on the narrow screen (8.5s)
+  ✓   34 [iphone-13] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (2.3s)
+  ✓   35 [iphone-13] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла (2.2s)
+  ✓   36 [iphone-13] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет (2.1s)
+  ✓   37 [iphone-13] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.3s)
+  ✓   38 [iphone-13] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (2.1s)
+  ✓   39 [iphone-13] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла (3.0s)
+  ✓   40 [iphone-13] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет (2.3s)
+  ✓   41 [iphone-13] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.3s)
+  ✓   42 [iphone-13] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (2.2s)
+  ✓   43 [iphone-13] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла (2.1s)
+  ✓   44 [iphone-13] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет (2.0s)
+  ✓   45 [iphone-13] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.2s)
+  ✓   46 [iphone-13] › e2e/beer-presentation.spec.ts:92:3 › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек (2.5s)
+  ✘   47 [iphone-13] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (2.6s)
+
+
+  1) [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет 
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 570
+    Received:    725
+
+      75 |         }));
+      76 |         // Допуск на субпиксель/скроллбар — но не на «ещё чуть-чуть контента внизу».
+    > 77 |         expect(scrollHeight).toBeLessThanOrEqual(innerHeight + 2);
+         |                              ^
+      78 |       });
+      79 |
+      80 |       test("главное видно без прокрутки: имя, паспорт, ссылка на рецепт", async ({ page }) => {
+        at /home/dopefish/projects/nb/apps/web/e2e/beer-presentation.spec.ts:77:30
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-6455f-—-вертикального-скролла-нет-iphone-se/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-6455f-—-вертикального-скролла-нет-iphone-se/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-6455f-—-вертикального-скролла-нет-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-6455f-—-вертикального-скролла-нет-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт 
+
+    Error: expect(locator).toBeInViewport() failed
+
+    Locator:  getByRole('link', { name: 'Рецепт этого пива' })
+    Expected: in viewport
+    Received: viewport ratio 0
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeInViewport" with timeout 5000ms
+      - waiting for getByRole('link', { name: 'Рецепт этого пива' })
+        13 × locator resolved to <a href="/recipes/sample-american-stout" class="rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur transition-colors hover:bg-white/20">Рецепт этого пива</a>
+           - unexpected value "viewport ratio 0"
+
+
+      85 |           await expect(page.locator("dt", { hasText: new RegExp(`^${label}$`) })).toBeInViewport();
+      86 |         }
+    > 87 |         await expect(page.getByRole("link", { name: "Рецепт этого пива" })).toBeInViewport();
+         |                                                                             ^
+      88 |       });
+      89 |     });
+      90 |   }
+        at /home/dopefish/projects/nb/apps/web/e2e/beer-presentation.spec.ts:87:77
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-30be0-мя-паспорт-ссылка-на-рецепт-iphone-se/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-30be0-мя-паспорт-ссылка-на-рецепт-iphone-se/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-30be0-мя-паспорт-ссылка-на-рецепт-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-30be0-мя-паспорт-ссылка-на-рецепт-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет 
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 570
+    Received:    741
+
+      75 |         }));
+      76 |         // Допуск на субпиксель/скроллбар — но не на «ещё чуть-чуть контента внизу».
+    > 77 |         expect(scrollHeight).toBeLessThanOrEqual(innerHeight + 2);
+         |                              ^
+      78 |       });
+      79 |
+      80 |       test("главное видно без прокрутки: имя, паспорт, ссылка на рецепт", async ({ page }) => {
+        at /home/dopefish/projects/nb/apps/web/e2e/beer-presentation.spec.ts:77:30
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-262cb-—-вертикального-скролла-нет-iphone-se/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-262cb-—-вертикального-скролла-нет-iphone-se/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-262cb-—-вертикального-скролла-нет-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-262cb-—-вертикального-скролла-нет-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт 
+
+    Error: expect(locator).toBeInViewport() failed
+
+    Locator:  getByRole('link', { name: 'Рецепт этого пива' })
+    Expected: in viewport
+    Received: viewport ratio 0
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeInViewport" with timeout 5000ms
+      - waiting for getByRole('link', { name: 'Рецепт этого пива' })
+        13 × locator resolved to <a href="/recipes/pilsner-urquell" class="rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur transition-colors hover:bg-white/20">Рецепт этого пива</a>
+           - unexpected value "viewport ratio 0"
+
+
+      85 |           await expect(page.locator("dt", { hasText: new RegExp(`^${label}$`) })).toBeInViewport();
+      86 |         }
+    > 87 |         await expect(page.getByRole("link", { name: "Рецепт этого пива" })).toBeInViewport();
+         |                                                                             ^
+      88 |       });
+      89 |     });
+      90 |   }
+        at /home/dopefish/projects/nb/apps/web/e2e/beer-presentation.spec.ts:87:77
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-23d36-мя-паспорт-ссылка-на-рецепт-iphone-se/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-23d36-мя-паспорт-ссылка-на-рецепт-iphone-se/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-23d36-мя-паспорт-ссылка-на-рецепт-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-23d36-мя-паспорт-ссылка-на-рецепт-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет 
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 570
+    Received:    713
+
+      75 |         }));
+      76 |         // Допуск на субпиксель/скроллбар — но не на «ещё чуть-чуть контента внизу».
+    > 77 |         expect(scrollHeight).toBeLessThanOrEqual(innerHeight + 2);
+         |                              ^
+      78 |       });
+      79 |
+      80 |       test("главное видно без прокрутки: имя, паспорт, ссылка на рецепт", async ({ page }) => {
+        at /home/dopefish/projects/nb/apps/web/e2e/beer-presentation.spec.ts:77:30
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-78552-—-вертикального-скролла-нет-iphone-se/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-78552-—-вертикального-скролла-нет-iphone-se/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-78552-—-вертикального-скролла-нет-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-78552-—-вертикального-скролла-нет-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт 
+
+    Error: expect(locator).toBeInViewport() failed
+
+    Locator:  getByRole('link', { name: 'Рецепт этого пива' })
+    Expected: in viewport
+    Received: viewport ratio 0
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeInViewport" with timeout 5000ms
+      - waiting for getByRole('link', { name: 'Рецепт этого пива' })
+        13 × locator resolved to <a href="/recipes/bell-s-two-hearted-ale" class="rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur transition-colors hover:bg-white/20">Рецепт этого пива</a>
+           - unexpected value "viewport ratio 0"
+
+
+      85 |           await expect(page.locator("dt", { hasText: new RegExp(`^${label}$`) })).toBeInViewport();
+      86 |         }
+    > 87 |         await expect(page.getByRole("link", { name: "Рецепт этого пива" })).toBeInViewport();
+         |                                                                             ^
+      88 |       });
+      89 |     });
+      90 |   }
+        at /home/dopefish/projects/nb/apps/web/e2e/beer-presentation.spec.ts:87:77
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-9455e-мя-паспорт-ссылка-на-рецепт-iphone-se/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-9455e-мя-паспорт-ссылка-на-рецепт-iphone-se/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-9455e-мя-паспорт-ссылка-на-рецепт-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-9455e-мя-паспорт-ссылка-на-рецепт-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [iphone-se] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: locator.click: Test timeout of 60000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Очистить поиск', exact: true })
+
+
+      30 |   const search = page.getByRole("combobox", { name: "Поиск стилей BJCP" });
+      31 |   await search.fill("IPA");
+    > 32 |   await page.getByRole("button", { name: "Очистить поиск", exact: true }).click();
+         |                                                                           ^
+      33 |   await search.fill("pilsner");
+      34 |   await search.press("Escape");
+      35 |   await expect.poll(() => new URL(page.url()).searchParams.get("q")).toBe("pilsner");
+        at /home/dopefish/projects/nb/apps/web/e2e/bjcp-search.spec.ts:32:75
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-clearing-befor-f7b23-annot-restore-a-stale-query-iphone-se/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-clearing-befor-f7b23-annot-restore-a-stale-query-iphone-se/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-clearing-befor-f7b23-annot-restore-a-stale-query-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-clearing-befor-f7b23-annot-restore-a-stale-query-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [iphone-13] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it 
+
+    Test was interrupted.
+
+    Error: locator.fill: Test ended.
+    Call log:
+      - waiting for getByRole('combobox', { name: 'Поиск стилей BJCP' })
+        - locator resolved to <input value="IPA" role="combobox" id="bjcp-search" autocomplete="off" aria-expanded="false" aria-autocomplete="list" placeholder="Код BJCP, русское или английское название, синоним" class="h-[3.25rem] w-full rounded-[1.4rem] border border-border bg-card px-12 pr-12 text-base text-foreground outline-none transition focus:border-ring focus:ring-4 focus:ring-ring/70"/>
+        - fill("несуществующийстильxyz")
+      - attempting fill action
+        - waiting for element to be visible, enabled and editable
+
+
+      11 |   await expect(page).toHaveURL(/[?&]q=IPA(?:&|$)/);
+      12 |   const query = "несуществующийстильxyz";
+    > 13 |   await search.fill(query);
+         |                ^
+      14 |   await search.press("Escape");
+      15 |
+      16 |   await expect(search).toHaveValue(query);
+        at /home/dopefish/projects/nb/apps/web/e2e/bjcp-search.spec.ts:13:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-closing-BJCP-s-5c709-arch-and-allows-clearing-it-iphone-13/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-closing-BJCP-s-5c709-arch-and-allows-clearing-it-iphone-13/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-closing-BJCP-s-5c709-arch-and-allows-clearing-it-iphone-13/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-closing-BJCP-s-5c709-arch-and-allows-clearing-it-iphone-13/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7 failed
+    [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет 
+    [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт 
+    [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет 
+    [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт 
+    [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет 
+    [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт 
+    [iphone-se] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query 
+  1 interrupted
+    [iphone-13] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it 
+  1 skipped
+  184 did not run
+  38 passed (4.4m)

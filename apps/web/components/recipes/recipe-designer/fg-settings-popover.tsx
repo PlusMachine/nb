@@ -136,7 +136,7 @@ export function FgSettingsPopover({
 
           <div className="mt-2.5 space-y-2.5">
             <label className="space-y-1 text-[11px] font-medium text-muted-foreground">
-              Ожидаемая attenuation, %
+              Ожидаемая аттенюация, %
               <NumericInput
                 min={60}
                 max={90}
@@ -201,7 +201,7 @@ export function FgSettingsPopover({
                         event.currentTarget.blur();
                       }
                     }}
-                    className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-base tabular-nums text-foreground shadow-sm sm:text-sm"
+                    className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-base tabular-nums text-foreground shadow-sm sm:text-sm [@media(pointer:coarse)]:text-base"
                     placeholder={(sgToManualFgInput(preview?.fg ?? 1.012) ?? 0).toFixed(manualFgPrecision)}
                   />
                   {manualFgSecondaryText ? (
@@ -219,7 +219,7 @@ export function FgSettingsPopover({
                 </div>
                 {preview.fgEstimateDetails.mainMashTempC != null && preview.fgEstimateDetails.mashAdjPctPoints !== 0 ? (
                   <div className="flex items-center justify-between gap-2">
-                    <span>Поправка по затору ({preview.fgEstimateDetails.mainMashTempC}°C)</span>
+                    <span>Поправка на температуру затирания ({preview.fgEstimateDetails.mainMashTempC}°C)</span>
                     <span className="font-medium tabular-nums text-foreground">{formatSignedPctPoints(preview.fgEstimateDetails.mashAdjPctPoints)}</span>
                   </div>
                 ) : null}
@@ -242,7 +242,7 @@ export function FgSettingsPopover({
                   </div>
                 ) : null}
                 <div className="flex items-center justify-between gap-2 border-t border-border pt-1 font-medium text-foreground">
-                  <span>Итоговая attenuation</span>
+                  <span>Итоговая аттенюация</span>
                   <span className="tabular-nums">{preview.fgEstimateDetails.effectiveAttenuationPct.toFixed(1)}%</span>
                 </div>
                 {(() => {

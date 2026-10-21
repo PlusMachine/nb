@@ -1,6 +1,6 @@
 // =============================================================================
 //  features/brew-batches/components/fermenter-panel.tsx
-//  Блок «Бродит в приборе» на акте «Брожение» (§8.4 docs/brewforge-web-hmi.md) —
+//  Блок «Устройство для брожения» на акте «Брожение» (§8.4 docs/brewforge-web-hmi.md) —
 //  соединяет партию с прибором-ферментером: имя + last-known температура/уставка,
 //  ссылка «Пульт», привязка/отвязка. Серверный (не "use client"): готовое состояние
 //  приходит пропом (resolveFermenterBindingStatus считает page.tsx), интерактив
@@ -45,7 +45,7 @@ export function FermenterPanel({ brewBatchId, status, deviceName, candidates, fr
         <div className="flex items-center gap-2">
           <Radio className="h-4 w-4 text-muted-foreground" aria-hidden />
           <h2 className="text-base font-semibold text-foreground">
-            Бродит в приборе{deviceName ? ` · ${deviceName}` : ""}
+            Устройство для брожения{deviceName ? ` · ${deviceName}` : ""}
           </h2>
         </div>
         <div className="flex items-center gap-2">
@@ -62,7 +62,7 @@ export function FermenterPanel({ brewBatchId, status, deviceName, candidates, fr
       {status.kind === "mode-mismatch" ? (
         <p className="flex items-center gap-2 rounded-lg bg-warning-subtle px-3 py-2 text-sm font-medium text-warning-subtle-foreground">
           <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden />
-          Прибор не в режиме ферментации
+          Прибор не в режиме брожения
         </p>
       ) : null}
 

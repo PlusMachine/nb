@@ -1,0 +1,86 @@
+
+Running 42 tests using 1 worker
+
+  ✓   1 [iphone-se] › e2e/safari-interactions.spec.ts:25:1 › QR description remains readable and collapses back to the short viewport (19.7s)
+  ✓   2 [iphone-se] › e2e/safari-interactions.spec.ts:55:1 › QR feedback leaves recipe actions uncovered and can be opened twice (7.3s)
+  ✓   3 [iphone-se] › e2e/safari-interactions.spec.ts:84:1 › label date and description remain editable with readable touch fields (4.8s)
+  ✓   4 [iphone-se] › e2e/safari-interactions.spec.ts:106:1 › BJCP waits for its handlers before accepting the first query (4.9s)
+  ✓   5 [iphone-se] › e2e/safari-interactions.spec.ts:129:1 › BJCP suggestions fit the viewport and keyboard selection scrolls inside (6.4s)
+  ✓   6 [iphone-se] › e2e/safari-interactions.spec.ts:160:1 › cookie choice closes the banner and survives a reload (5.7s)
+  ✓   7 [iphone-13] › e2e/safari-interactions.spec.ts:25:1 › QR description remains readable and collapses back to the short viewport (4.5s)
+  ✓   8 [iphone-13] › e2e/safari-interactions.spec.ts:55:1 › QR feedback leaves recipe actions uncovered and can be opened twice (5.0s)
+  ✓   9 [iphone-13] › e2e/safari-interactions.spec.ts:84:1 › label date and description remain editable with readable touch fields (6.2s)
+  ✓  10 [iphone-13] › e2e/safari-interactions.spec.ts:106:1 › BJCP waits for its handlers before accepting the first query (4.4s)
+  ✓  11 [iphone-13] › e2e/safari-interactions.spec.ts:129:1 › BJCP suggestions fit the viewport and keyboard selection scrolls inside (10.2s)
+  ✓  12 [iphone-13] › e2e/safari-interactions.spec.ts:160:1 › cookie choice closes the banner and survives a reload (10.7s)
+  ✓  13 [iphone-landscape] › e2e/safari-interactions.spec.ts:25:1 › QR description remains readable and collapses back to the short viewport (4.5s)
+  ✓  14 [iphone-landscape] › e2e/safari-interactions.spec.ts:55:1 › QR feedback leaves recipe actions uncovered and can be opened twice (5.9s)
+  ✓  15 [iphone-landscape] › e2e/safari-interactions.spec.ts:84:1 › label date and description remain editable with readable touch fields (5.4s)
+  ✓  16 [iphone-landscape] › e2e/safari-interactions.spec.ts:106:1 › BJCP waits for its handlers before accepting the first query (5.8s)
+  ✓  17 [iphone-landscape] › e2e/safari-interactions.spec.ts:129:1 › BJCP suggestions fit the viewport and keyboard selection scrolls inside (10.9s)
+  ✓  18 [iphone-landscape] › e2e/safari-interactions.spec.ts:160:1 › cookie choice closes the banner and survives a reload (17.9s)
+  ✓  19 [ipad-mini] › e2e/safari-interactions.spec.ts:25:1 › QR description remains readable and collapses back to the short viewport (5.0s)
+  ✓  20 [ipad-mini] › e2e/safari-interactions.spec.ts:55:1 › QR feedback leaves recipe actions uncovered and can be opened twice (6.1s)
+  ✓  21 [ipad-mini] › e2e/safari-interactions.spec.ts:84:1 › label date and description remain editable with readable touch fields (3.7s)
+  ✓  22 [ipad-mini] › e2e/safari-interactions.spec.ts:106:1 › BJCP waits for its handlers before accepting the first query (6.5s)
+  ✓  23 [ipad-mini] › e2e/safari-interactions.spec.ts:129:1 › BJCP suggestions fit the viewport and keyboard selection scrolls inside (7.9s)
+  ✓  24 [ipad-mini] › e2e/safari-interactions.spec.ts:160:1 › cookie choice closes the banner and survives a reload (10.5s)
+  ✓  25 [ipad-mini-landscape] › e2e/safari-interactions.spec.ts:25:1 › QR description remains readable and collapses back to the short viewport (4.6s)
+  ✓  26 [ipad-mini-landscape] › e2e/safari-interactions.spec.ts:55:1 › QR feedback leaves recipe actions uncovered and can be opened twice (16.2s)
+  ✓  27 [ipad-mini-landscape] › e2e/safari-interactions.spec.ts:84:1 › label date and description remain editable with readable touch fields (5.9s)
+  ✓  28 [ipad-mini-landscape] › e2e/safari-interactions.spec.ts:106:1 › BJCP waits for its handlers before accepting the first query (6.7s)
+  ✓  29 [ipad-mini-landscape] › e2e/safari-interactions.spec.ts:129:1 › BJCP suggestions fit the viewport and keyboard selection scrolls inside (7.5s)
+  ✓  30 [ipad-mini-landscape] › e2e/safari-interactions.spec.ts:160:1 › cookie choice closes the banner and survives a reload (33.5s)
+  ✘  31 [ipad-pro] › e2e/safari-interactions.spec.ts:25:1 › QR description remains readable and collapses back to the short viewport (22.2s)
+  ✓  32 [ipad-pro] › e2e/safari-interactions.spec.ts:55:1 › QR feedback leaves recipe actions uncovered and can be opened twice (22.0s)
+  ✓  33 [ipad-pro] › e2e/safari-interactions.spec.ts:84:1 › label date and description remain editable with readable touch fields (8.5s)
+  ✓  34 [ipad-pro] › e2e/safari-interactions.spec.ts:106:1 › BJCP waits for its handlers before accepting the first query (6.9s)
+  ✓  35 [ipad-pro] › e2e/safari-interactions.spec.ts:129:1 › BJCP suggestions fit the viewport and keyboard selection scrolls inside (9.5s)
+  ✓  36 [ipad-pro] › e2e/safari-interactions.spec.ts:160:1 › cookie choice closes the banner and survives a reload (9.2s)
+  ✓  37 [ipad-pro-landscape] › e2e/safari-interactions.spec.ts:25:1 › QR description remains readable and collapses back to the short viewport (4.2s)
+  ✓  38 [ipad-pro-landscape] › e2e/safari-interactions.spec.ts:55:1 › QR feedback leaves recipe actions uncovered and can be opened twice (5.8s)
+  ✓  39 [ipad-pro-landscape] › e2e/safari-interactions.spec.ts:84:1 › label date and description remain editable with readable touch fields (3.6s)
+  ✓  40 [ipad-pro-landscape] › e2e/safari-interactions.spec.ts:106:1 › BJCP waits for its handlers before accepting the first query (5.4s)
+  ✓  41 [ipad-pro-landscape] › e2e/safari-interactions.spec.ts:129:1 › BJCP suggestions fit the viewport and keyboard selection scrolls inside (8.6s)
+  ✓  42 [ipad-pro-landscape] › e2e/safari-interactions.spec.ts:160:1 › cookie choice closes the banner and survives a reload (10.0s)
+
+
+  1) [ipad-pro] › e2e/safari-interactions.spec.ts:25:1 › QR description remains readable and collapses back to the short viewport 
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected pattern: /\/recipes\/pilsner-urquell$/
+    Received string:  "http://127.0.0.1:3100/beer/pilsner-urquell"
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 5000ms
+        14 × unexpected value "http://127.0.0.1:3100/beer/pilsner-urquell"
+
+
+      50 |   await expect(page.getByRole("link", { name: "Рецепт этого пива", exact: true })).toBeInViewport();
+      51 |   await page.getByRole("link", { name: "Рецепт этого пива", exact: true }).tap();
+    > 52 |   await expect(page).toHaveURL(/\/recipes\/pilsner-urquell$/);
+         |                      ^
+      53 | });
+      54 |
+      55 | test("QR feedback leaves recipe actions uncovered and can be opened twice", async ({ page }) => {
+        at /home/dopefish/projects/nb/apps/web/e2e/safari-interactions.spec.ts:52:22
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/interactions-final-playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-ipad-pro/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/interactions-final-playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-ipad-pro/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/interactions-final-playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-ipad-pro/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/interactions-final-playwright/safari-interactions-QR-des-df082--back-to-the-short-viewport-ipad-pro/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [ipad-pro] › e2e/safari-interactions.spec.ts:25:1 › QR description remains readable and collapses back to the short viewport 
+  41 passed (6.8m)

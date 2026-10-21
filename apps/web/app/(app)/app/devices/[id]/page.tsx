@@ -13,6 +13,7 @@ import { findBatchForFermenter } from "@/features/devices/fermenter-binding";
 import { listPushableRecipes } from "@/features/devices/onboard-recipes";
 import { DeviceConsole, type DeviceConsoleView } from "@/features/devices/components/device-console";
 import { isStreamLikeProviderId } from "@/features/device-streams/contracts";
+import { isDemoStreamDevice } from "@/features/device-streams/demo";
 import { StreamDeviceView } from "@/features/device-streams/components/stream-device-view";
 import type { FermenterBatchLink } from "@/features/brew-controller/components/ferment-dashboard-view";
 
@@ -55,6 +56,7 @@ export default async function DeviceConsolePage({ params }: { params: Promise<{ 
         device={{ id: device.id, name: device.name, hardwareKind: device.hardwareKind }}
         preferredGravityUnit={user.preferredGravityUnit}
         isRaptDevice={device.providerId === RAPT_PROVIDER_ID}
+        isDemo={isDemoStreamDevice(device)}
       />
     );
   }

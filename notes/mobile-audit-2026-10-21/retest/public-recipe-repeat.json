@@ -1,0 +1,35 @@
+[
+  {
+    "width": 360,
+    "status": 200,
+    "title": "Pilsner Urquell",
+    "errors": [],
+    "height": 800,
+    "client": 360,
+    "scroll": 360,
+    "outside": [],
+    "smallInputs": []
+  },
+  {
+    "width": 834,
+    "status": 200,
+    "title": "Pilsner Urquell",
+    "errors": [],
+    "height": 1112,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": []
+  },
+  {
+    "width": 1024,
+    "status": 200,
+    "title": "Pilsner Urquell",
+    "errors": [],
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": []
+  }
+]

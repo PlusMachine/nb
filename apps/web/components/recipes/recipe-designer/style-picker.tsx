@@ -185,7 +185,7 @@ export function StylePicker({
                   onClick={selectNoStyle}
                   className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm hover:bg-accent ${activeIndex === 0 ? "bg-accent" : !selectedStyle ? "bg-muted text-foreground" : "text-foreground"}`}
                 >
-                  <span>Пиво вне BJCP стиля</span>
+                  <span>Без стиля BJCP</span>
                   {!selectedStyle ? <span className="text-[11px] text-muted-foreground">активно</span> : null}
                 </button>
 

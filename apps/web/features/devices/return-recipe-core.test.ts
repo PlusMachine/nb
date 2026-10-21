@@ -35,7 +35,7 @@ const buildTile = (overrides: Partial<DeviceTile> = {}): DeviceTile => ({
   status: "online",
   fw: null,
   isDemo: false,
-  lastSeenAt: null,
+  lastSeenAt: new Date().toISOString(),
   createdAt: "2026-07-15T10:00:00.000Z",
   kind: "brewforge",
   snapshot: null,
@@ -55,6 +55,12 @@ describe("hasBrewCapableOnlineTile", () => {
 
   it("offline BrewForge — false", () => {
     expect(hasBrewCapableOnlineTile([buildTile({ status: "offline" })])).toBe(false);
+  });
+
+  it("не предлагает продолжить варку по устаревшему online-статусу", () => {
+    const now = Date.parse("2026-10-20T10:00:00Z");
+    expect(hasBrewCapableOnlineTile([buildTile({ lastSeenAt: "2026-07-15T10:00:00Z" })], now)).toBe(false);
+    expect(hasBrewCapableOnlineTile([buildTile({ lastSeenAt: null })], now)).toBe(false);
   });
 
   it("online стрим-устройство (ареометр) не считается — не может варить", () => {

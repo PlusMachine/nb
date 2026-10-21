@@ -67,7 +67,7 @@ const OVERLAY_BANNER: Record<
     Icon: Hand,
   },
   fault: {
-    label: { brew: "Авария — варка остановлена интерлоком", distill: "Авария — перегон остановлен интерлоком" },
+    label: { brew: "Авария — варка остановлена защитой", distill: "Авария — перегон остановлен защитой" },
     cls: "bg-destructive-subtle text-destructive-subtle-foreground",
     Icon: OctagonX,
   },

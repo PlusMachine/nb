@@ -1,0 +1,9 @@
+
+Running 4 tests using 1 worker
+
+  ✓  1 [iphone-landscape] › e2e/bjcp-search.spec.ts:10:1 › closing BJCP suggestions preserves a pending search and allows clearing it (4.2s)
+  ✓  2 [iphone-landscape] › e2e/mobile-audit.spec.ts:124:1 › M05: every dilution operation fits on the narrow screen (5.4s)
+  ✓  3 [iphone-landscape] › e2e/safari-interactions.spec.ts:119:1 › BJCP suggestions fit the viewport and keyboard selection scrolls inside (5.0s)
+  ✓  4 [iphone-landscape] › e2e/safari-interactions.spec.ts:147:1 › cookie choice closes the banner and survives a reload (5.1s)
+
+  4 passed (42.0s)

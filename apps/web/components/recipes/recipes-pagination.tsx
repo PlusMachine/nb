@@ -48,7 +48,7 @@ export function RecipesPagination({ current, totalPages }: { current: number; to
   const mutedClass = `${baseClass} border-border text-muted-foreground`;
 
   return (
-    <nav className="flex flex-wrap items-center justify-center gap-2" aria-label="Пагинация">
+    <nav className="flex flex-wrap items-center justify-center gap-2" aria-label="Навигация по страницам">
       {current > 1 ? (
         <Link href={hrefFor(current - 1)} rel="prev" scroll={false} onClick={scrollToResultsTop} className={idleClass}>
           Назад

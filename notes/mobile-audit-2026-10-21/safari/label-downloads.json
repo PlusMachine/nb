@@ -1,0 +1,74 @@
+[
+  {
+    "profile": "iPhone 13",
+    "format": "PNG",
+    "file": "recipe-label-iPhone-13.png",
+    "bytes": 5931,
+    "valid": true,
+    "clicked": true,
+    "http": 200,
+    "attachment": "attachment; filename=\"qa-mobile-audit-21-10-l-203dpi.png\"",
+    "browserSaveVerified": false,
+    "limitation": "WPE standalone download probe does not emit download even with valid attachment or download attribute"
+  },
+  {
+    "profile": "iPhone 13",
+    "format": "PDF",
+    "file": "recipe-label-iPhone-13.pdf",
+    "bytes": 22532,
+    "valid": true,
+    "clicked": true,
+    "http": 200,
+    "attachment": "attachment; filename=\"qa-mobile-audit-21-10-l-203dpi.pdf\"",
+    "browserSaveVerified": false,
+    "limitation": "WPE standalone download probe does not emit download even with valid attachment or download attribute"
+  },
+  {
+    "profile": "iPad Pro 11",
+    "format": "PNG",
+    "file": "recipe-label-iPad-Pro-11.png",
+    "bytes": 5931,
+    "valid": true,
+    "clicked": true,
+    "http": 200,
+    "attachment": "attachment; filename=\"qa-mobile-audit-21-10-l-203dpi.png\"",
+    "browserSaveVerified": false,
+    "limitation": "WPE standalone download probe does not emit download even with valid attachment or download attribute"
+  },
+  {
+    "profile": "iPad Pro 11",
+    "format": "PDF",
+    "file": "recipe-label-iPad-Pro-11.pdf",
+    "bytes": 22532,
+    "valid": true,
+    "clicked": true,
+    "http": 200,
+    "attachment": "attachment; filename=\"qa-mobile-audit-21-10-l-203dpi.pdf\"",
+    "browserSaveVerified": false,
+    "limitation": "WPE standalone download probe does not emit download even with valid attachment or download attribute"
+  },
+  {
+    "profile": "iPad Mini landscape",
+    "format": "PNG",
+    "file": "recipe-label-iPad-Mini-landscape.png",
+    "bytes": 5931,
+    "valid": true,
+    "clicked": true,
+    "http": 200,
+    "attachment": "attachment; filename=\"qa-mobile-audit-21-10-l-203dpi.png\"",
+    "browserSaveVerified": false,
+    "limitation": "WPE standalone download probe does not emit download even with valid attachment or download attribute"
+  },
+  {
+    "profile": "iPad Mini landscape",
+    "format": "PDF",
+    "file": "recipe-label-iPad-Mini-landscape.pdf",
+    "bytes": 22532,
+    "valid": true,
+    "clicked": true,
+    "http": 200,
+    "attachment": "attachment; filename=\"qa-mobile-audit-21-10-l-203dpi.pdf\"",
+    "browserSaveVerified": false,
+    "limitation": "WPE standalone download probe does not emit download even with valid attachment or download attribute"
+  }
+]

@@ -1,0 +1,412 @@
+
+Running 231 tests using 1 worker
+
+  ✘    1 [iphone-se] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (5ms)
+  ✘    2 [iphone-se] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла (5ms)
+  ✘    3 [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет (4ms)
+  ✘    4 [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (4ms)
+  ✘    5 [iphone-se] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (4ms)
+  ✘    6 [iphone-se] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла (4ms)
+  ✘    7 [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет (4ms)
+  ✘    8 [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (4ms)
+  ✘    9 [iphone-se] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (4ms)
+  ✘   10 [iphone-se] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла (5ms)
+  ✘   11 [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет (4ms)
+  ✘   12 [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (4ms)
+  ✘   13 [iphone-se] › e2e/beer-presentation.spec.ts:92:3 › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек (5ms)
+  ✘   14 [iphone-se] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (4ms)
+  ✘   15 [iphone-se] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query (3ms)
+
+
+  1) [iphone-se] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) 
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Please install them with the following command:      ║
+    ║                                                      ║
+    ║     sudo npx playwright install-deps                 ║
+    ║                                                      ║
+    ║ Alternatively, use apt:                              ║
+    ║     sudo apt-get install gstreamer1.0-libav          ║
+    ║                                                      ║
+    ║ <3 Playwright Team                                   ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-84236-алы-длинные-названия-цвета--iphone-se/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-84236-алы-длинные-названия-цвета--iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-84236-алы-длинные-названия-цвета--iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [iphone-se] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла 
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Please install them with the following command:      ║
+    ║                                                      ║
+    ║     sudo npx playwright install-deps                 ║
+    ║                                                      ║
+    ║ Alternatively, use apt:                              ║
+    ║     sudo apt-get install gstreamer1.0-libav          ║
+    ║                                                      ║
+    ║ <3 Playwright Team                                   ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-6e5e4-нет-горизонтального-скролла-iphone-se/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-6e5e4-нет-горизонтального-скролла-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-6e5e4-нет-горизонтального-скролла-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет 
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Please install them with the following command:      ║
+    ║                                                      ║
+    ║     sudo npx playwright install-deps                 ║
+    ║                                                      ║
+    ║ Alternatively, use apt:                              ║
+    ║     sudo apt-get install gstreamer1.0-libav          ║
+    ║                                                      ║
+    ║ <3 Playwright Team                                   ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-6455f-—-вертикального-скролла-нет-iphone-se/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-6455f-—-вертикального-скролла-нет-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-6455f-—-вертикального-скролла-нет-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт 
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Please install them with the following command:      ║
+    ║                                                      ║
+    ║     sudo npx playwright install-deps                 ║
+    ║                                                      ║
+    ║ Alternatively, use apt:                              ║
+    ║     sudo apt-get install gstreamer1.0-libav          ║
+    ║                                                      ║
+    ║ <3 Playwright Team                                   ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-30be0-мя-паспорт-ссылка-на-рецепт-iphone-se/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-30be0-мя-паспорт-ссылка-на-рецепт-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-30be0-мя-паспорт-ссылка-на-рецепт-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [iphone-se] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) 
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Please install them with the following command:      ║
+    ║                                                      ║
+    ║     sudo npx playwright install-deps                 ║
+    ║                                                      ║
+    ║ Alternatively, use apt:                              ║
+    ║     sudo apt-get install gstreamer1.0-libav          ║
+    ║                                                      ║
+    ║ <3 Playwright Team                                   ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-ddd46-алы-длинные-названия-цвета--iphone-se/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-ddd46-алы-длинные-названия-цвета--iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-ddd46-алы-длинные-названия-цвета--iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [iphone-se] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла 
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Please install them with the following command:      ║
+    ║                                                      ║
+    ║     sudo npx playwright install-deps                 ║
+    ║                                                      ║
+    ║ Alternatively, use apt:                              ║
+    ║     sudo apt-get install gstreamer1.0-libav          ║
+    ║                                                      ║
+    ║ <3 Playwright Team                                   ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-c3b02-нет-горизонтального-скролла-iphone-se/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-c3b02-нет-горизонтального-скролла-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-c3b02-нет-горизонтального-скролла-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет 
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Please install them with the following command:      ║
+    ║                                                      ║
+    ║     sudo npx playwright install-deps                 ║
+    ║                                                      ║
+    ║ Alternatively, use apt:                              ║
+    ║     sudo apt-get install gstreamer1.0-libav          ║
+    ║                                                      ║
+    ║ <3 Playwright Team                                   ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-262cb-—-вертикального-скролла-нет-iphone-se/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-262cb-—-вертикального-скролла-нет-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-262cb-—-вертикального-скролла-нет-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт 
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Please install them with the following command:      ║
+    ║                                                      ║
+    ║     sudo npx playwright install-deps                 ║
+    ║                                                      ║
+    ║ Alternatively, use apt:                              ║
+    ║     sudo apt-get install gstreamer1.0-libav          ║
+    ║                                                      ║
+    ║ <3 Playwright Team                                   ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-23d36-мя-паспорт-ссылка-на-рецепт-iphone-se/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-23d36-мя-паспорт-ссылка-на-рецепт-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-23d36-мя-паспорт-ссылка-на-рецепт-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) [iphone-se] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) 
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Please install them with the following command:      ║
+    ║                                                      ║
+    ║     sudo npx playwright install-deps                 ║
+    ║                                                      ║
+    ║ Alternatively, use apt:                              ║
+    ║     sudo apt-get install gstreamer1.0-libav          ║
+    ║                                                      ║
+    ║ <3 Playwright Team                                   ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-a2bdc-алы-длинные-названия-цвета--iphone-se/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-a2bdc-алы-длинные-названия-цвета--iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-a2bdc-алы-длинные-названия-цвета--iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10) [iphone-se] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла 
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Please install them with the following command:      ║
+    ║                                                      ║
+    ║     sudo npx playwright install-deps                 ║
+    ║                                                      ║
+    ║ Alternatively, use apt:                              ║
+    ║     sudo apt-get install gstreamer1.0-libav          ║
+    ║                                                      ║
+    ║ <3 Playwright Team                                   ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-93262-нет-горизонтального-скролла-iphone-se/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-93262-нет-горизонтального-скролла-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-93262-нет-горизонтального-скролла-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11) [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет 
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Please install them with the following command:      ║
+    ║                                                      ║
+    ║     sudo npx playwright install-deps                 ║
+    ║                                                      ║
+    ║ Alternatively, use apt:                              ║
+    ║     sudo apt-get install gstreamer1.0-libav          ║
+    ║                                                      ║
+    ║ <3 Playwright Team                                   ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-78552-—-вертикального-скролла-нет-iphone-se/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-78552-—-вертикального-скролла-нет-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-78552-—-вертикального-скролла-нет-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  12) [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт 
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Please install them with the following command:      ║
+    ║                                                      ║
+    ║     sudo npx playwright install-deps                 ║
+    ║                                                      ║
+    ║ Alternatively, use apt:                              ║
+    ║     sudo apt-get install gstreamer1.0-libav          ║
+    ║                                                      ║
+    ║ <3 Playwright Team                                   ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-9455e-мя-паспорт-ссылка-на-рецепт-iphone-se/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-9455e-мя-паспорт-ссылка-на-рецепт-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-9455e-мя-паспорт-ссылка-на-рецепт-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  13) [iphone-se] › e2e/beer-presentation.spec.ts:92:3 › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек 
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Please install them with the following command:      ║
+    ║                                                      ║
+    ║     sudo npx playwright install-deps                 ║
+    ║                                                      ║
+    ║ Alternatively, use apt:                              ║
+    ║     sudo apt-get install gstreamer1.0-libav          ║
+    ║                                                      ║
+    ║ <3 Playwright Team                                   ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-6b580-ого-пива-не-выходит-за-трек-iphone-se/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-6b580-ого-пива-не-выходит-за-трек-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/beer-presentation-Страница-6b580-ого-пива-не-выходит-за-трек-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  14) [iphone-se] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it 
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Please install them with the following command:      ║
+    ║                                                      ║
+    ║     sudo npx playwright install-deps                 ║
+    ║                                                      ║
+    ║ Alternatively, use apt:                              ║
+    ║     sudo apt-get install gstreamer1.0-libav          ║
+    ║                                                      ║
+    ║ <3 Playwright Team                                   ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-closing-BJCP-s-5c709-arch-and-allows-clearing-it-iphone-se/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-closing-BJCP-s-5c709-arch-and-allows-clearing-it-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-closing-BJCP-s-5c709-arch-and-allows-clearing-it-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  15) [iphone-se] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query 
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Please install them with the following command:      ║
+    ║                                                      ║
+    ║     sudo npx playwright install-deps                 ║
+    ║                                                      ║
+    ║ Alternatively, use apt:                              ║
+    ║     sudo apt-get install gstreamer1.0-libav          ║
+    ║                                                      ║
+    ║ <3 Playwright Team                                   ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-clearing-befor-f7b23-annot-restore-a-stale-query-iphone-se/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-clearing-befor-f7b23-annot-restore-a-stale-query-iphone-se/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/safari/playwright/bjcp-search-clearing-befor-f7b23-annot-restore-a-stale-query-iphone-se/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  15 failed
+    [iphone-se] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) 
+    [iphone-se] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла 
+    [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет 
+    [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт 
+    [iphone-se] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) 
+    [iphone-se] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла 
+    [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет 
+    [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт 
+    [iphone-se] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) 
+    [iphone-se] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла 
+    [iphone-se] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет 
+    [iphone-se] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт 
+    [iphone-se] › e2e/beer-presentation.spec.ts:92:3 › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек 
+    [iphone-se] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it 
+    [iphone-se] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query 
+  216 did not run

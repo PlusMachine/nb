@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
+import { canAccessCalculator } from "@/features/calculators/access";
 import { calculatorHasStickyResultBar, calculatorQueryHasKnownFields, getCalculatorDefinition, initialCalculatorStateFromQuery, parseCalculatorQuery } from "@/features/calculators/definitions";
 import { buildCalculatorMetadata, buildCalculatorShareMetadata } from "@/features/calculators/seo";
+import { getVisibleCalculatorSlugs, isCalculatorPublic } from "@/features/calculators/visibility";
 
 import { CalculatorPageView } from "../calculator-page-view";
 
@@ -21,7 +23,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   const [{ slug }, rawQuery] = await Promise.all([params, searchParams]);
   const definition = getCalculatorDefinition(slug);
 
-  if (!definition) {
+  if (!definition || !(await canAccessCalculator(slug))) {
     notFound();
   }
 
@@ -54,7 +56,7 @@ export default async function CalculatorSharePage({ params, searchParams }: Prop
   const [{ slug }, rawQuery] = await Promise.all([params, searchParams]);
   const definition = getCalculatorDefinition(slug);
 
-  if (!definition) {
+  if (!definition || !(await canAccessCalculator(slug))) {
     notFound();
   }
 
@@ -72,5 +74,8 @@ export default async function CalculatorSharePage({ params, searchParams }: Prop
     redirect(`/calculators/${slug}${queryString ? `?${queryString}` : ""}`);
   }
 
-  return <CalculatorPageView definition={definition} />;
+  return <CalculatorPageView
+    definition={definition}
+    visibleCalculatorSlugs={getVisibleCalculatorSlugs(isCalculatorPublic(definition.catalog.slug) ? undefined : "admin")}
+  />;
 }

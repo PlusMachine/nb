@@ -1,6 +1,7 @@
 import { and, db, desc, eq, favoriteCalculators, inArray } from "@nb/db";
 
 import { calculatorBySlug, getCalculatorBySlug, type CalculatorCatalogItem, type CalculatorSlug } from "./catalog";
+import { canViewCalculator } from "./visibility";
 
 // Сервис избранных калькуляторов. По образцу «сохранённых рецептов»
 // (features/recipes/service.ts): идемпотентный toggle, батч-проверка состояния и
@@ -64,7 +65,7 @@ export const getFavoriteCalculatorSlugs = async (userId: string, slugs: string[]
  * для секции на дашборде. Записи с неизвестным slug (например удалённый из
  * каталога калькулятор) отбрасываем.
  */
-export const listFavoriteCalculators = async (userId: string): Promise<CalculatorCatalogItem[]> => {
+export const listFavoriteCalculators = async (userId: string, role?: string): Promise<CalculatorCatalogItem[]> => {
   const rows = await db
     .select({ slug: favoriteCalculators.calculatorSlug })
     .from(favoriteCalculators)
@@ -73,5 +74,5 @@ export const listFavoriteCalculators = async (userId: string): Promise<Calculato
 
   return rows
     .map((row) => (isKnownSlug(row.slug) ? calculatorBySlug[row.slug] : null))
-    .filter((item): item is CalculatorCatalogItem => item !== null);
+    .filter((item): item is CalculatorCatalogItem => item !== null && canViewCalculator(item.slug, role));
 };

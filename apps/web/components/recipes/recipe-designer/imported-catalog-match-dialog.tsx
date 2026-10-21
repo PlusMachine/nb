@@ -123,9 +123,9 @@ export function ImportedCatalogMatchDialog({
             <PackageSearch className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="text-base font-semibold text-foreground">Сопоставить импортированное с каталогом</h3>
+            <h3 className="text-base font-semibold text-foreground">Сопоставить ингредиенты с каталогом</h3>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              Проверьте подобранные аналоги. Не то — выберите другой вариант или найдите вручную в каталоге.
+              Проверьте подобранные аналоги. Если они не подходят, выберите другой вариант или найдите ингредиент в каталоге.
             </p>
           </div>
         </div>
@@ -160,7 +160,7 @@ export function ImportedCatalogMatchDialog({
                   pending ? (
                     <p className="text-xs text-muted-foreground">Подбираем аналоги из каталога…</p>
                   ) : (
-                    <p className="text-xs text-muted-foreground">В каталоге ничего не нашлось — позиция останется импортированной или найдите вручную.</p>
+                    <p className="text-xs text-muted-foreground">Совпадений в каталоге нет. Можно оставить ингредиент как есть или найти его вручную.</p>
                   )
                 ) : (
                   options.map((candidate) => {
@@ -196,7 +196,7 @@ export function ImportedCatalogMatchDialog({
                     checked={selected === null}
                     onChange={() => setSelection((prev) => ({ ...prev, [line.localId]: null }))}
                   />
-                  <span className="text-muted-foreground">Оставить как импортированное</span>
+                  <span className="text-muted-foreground">Оставить без привязки к каталогу</span>
                 </label>
               </div>
 
@@ -231,7 +231,7 @@ export function ImportedCatalogMatchDialog({
       </div>
 
       <div className="flex items-center justify-between gap-3 border-t border-border p-4">
-        <span className="text-xs text-muted-foreground">Привяжется {matchedCount} из {lines.length}</span>
+        <span className="text-xs text-muted-foreground">Будет сопоставлено: {matchedCount} из {lines.length}</span>
         <div className="flex gap-2">
           <Button type="button" variant="outline" size="sm" disabled={pending} onClick={onClose}>Отмена</Button>
           <Button type="button" size="sm" disabled={pending || matchedCount === 0} onClick={handleApply}>

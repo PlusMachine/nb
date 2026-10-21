@@ -105,7 +105,7 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
     router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
   }, [pathname, router, searchParams]);
   const visibleReturnRecipe = returnRecipeDismissed ? null : returnRecipe;
-  const canContinueBrew = hasBrewCapableOnlineTile(tiles);
+  const canContinueBrew = hasBrewCapableOnlineTile(tiles, nowMs);
   const [claimCode, setClaimCode] = useState("");
   const [name, setName] = useState("");
   const [localUrl, setLocalUrl] = useState("");
@@ -120,6 +120,7 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
   // Отзыв.
   const [revokeTarget, setRevokeTarget] = useState<DeviceTileData | null>(null);
   const [revoking, setRevoking] = useState(false);
+  const [revokeError, setRevokeError] = useState<string | null>(null);
 
   // RAPT Cloud подключение (§5 F1-RAPT/F8, M4-B): read-only фетч на маунте — не
   // создаёт подключение (getRaptIntegrationAction, в отличие от «getOrCreate» в
@@ -213,14 +214,17 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
     if (!revokeTarget) return;
     const target = revokeTarget;
     setRevoking(true);
+    setRevokeError(null);
     try {
       const res = await fetch(`/api/devices/${target.id}`, { method: "DELETE" });
       if (res.ok) {
         setRevokeTarget(null);
         await refresh();
+      } else {
+        setRevokeError("Не удалось отозвать доступ. Попробуйте ещё раз.");
       }
     } catch {
-      // оставляем диалог открытым при сетевой ошибке
+      setRevokeError("Нет связи с сервером. Проверьте подключение и повторите попытку.");
     } finally {
       setRevoking(false);
     }
@@ -419,8 +423,8 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
         <Card className="p-5">
           <h2 className="text-sm font-semibold text-foreground">Привязать устройство</h2>
           <p className="mt-1 text-xs text-muted-foreground">
-            Введите одноразовый код привязки, показанный на экране контроллера. Опционально — имя и
-            локальный адрес (для прямой LAN-связи).
+            Введите одноразовый код с экрана контроллера.
+            Локальный адрес позволяет подключаться к устройству в домашней сети.
           </p>
           <form onSubmit={submitPair} className="mt-4 grid gap-3 sm:grid-cols-3">
             <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
@@ -433,7 +437,7 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
               />
             </label>
             <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
-              Имя (опц.)
+              Название (необязательно)
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -441,7 +445,7 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
               />
             </label>
             <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
-              Локальный адрес (опц.)
+              Локальный адрес (необязательно)
               <Input
                 value={localUrl}
                 onChange={(e) => setLocalUrl(e.target.value)}
@@ -467,8 +471,8 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
                 </p>
               ) : (
                 <p className="mt-1 text-xs text-success-subtle-foreground">
-                  Скопируйте этот токен и пропишите его на устройстве. Он показывается{" "}
-                  <strong>один раз</strong> и не хранится на сервере.
+                  Скопируйте токен и укажите его в настройках устройства. Он показывается{" "}
+                  <strong>один раз</strong>.
                 </p>
               )}
               <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -519,7 +523,10 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
               key={tile.id}
               tile={tile}
               nowMs={nowMs}
-              onRevoke={() => setRevokeTarget(tile)}
+              onRevoke={() => {
+                setRevokeError(null);
+                setRevokeTarget(tile);
+              }}
               preferredGravityUnit={preferredGravityUnit}
             />
           ))}
@@ -537,6 +544,7 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
         confirmLabel="Отозвать"
         tone="danger"
         pending={revoking}
+        error={revokeError}
         onConfirm={() => void runRevoke()}
         onClose={() => setRevokeTarget(null)}
       />

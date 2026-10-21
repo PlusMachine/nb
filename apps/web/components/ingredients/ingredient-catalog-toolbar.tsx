@@ -347,7 +347,7 @@ export function IngredientCatalogToolbar({
     },
     {
       key: "fermentable",
-      label: "Сбраживаемое сырье",
+      label: "Сбраживаемое сырьё",
       category: "fermentable",
       count: counts.byFermentableSubtype.fermentable,
       active: category === "fermentable" && subtype === "fermentable",
@@ -434,7 +434,7 @@ export function IngredientCatalogToolbar({
             onChange={(event) => setSearchValue(event.target.value)}
             onFocus={handleSearchFocus}
             onBlur={handleSearchBlur}
-            className="h-11 w-full rounded-xl border border-border bg-muted px-4 pr-10 text-base sm:text-sm"
+            className="h-11 w-full rounded-xl border border-border bg-muted px-4 pr-10 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
             placeholder="Поиск по каталогу"
             aria-label="Поиск по каталогу"
           />

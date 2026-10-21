@@ -44,6 +44,8 @@ import { Button, Dialog, DialogCloseButton, DialogFooter, DialogHeader } from "@
 
 import {
   getBrewVolumeOptionsAction,
+  getBrewPreparationPreviewAction,
+  type BrewPreparationPreview,
   startBrewFromRecipeAction,
   type BrewVolumeOptions
 } from "@/app/(public)/recipes/[slug]/brew-actions";
@@ -62,6 +64,8 @@ import {
   type PickerDevice
 } from "@/features/devices/components/device-picker-list";
 import { newIdempotencyKey } from "@/lib/idempotency-key";
+
+import { BrewPreparationSummary } from "./brew-preparation-summary";
 
 type Screen = "gate" | "login" | "mode" | "virtual" | "device-pick" | "device-confirm";
 // Состояние футера виртуальной и device-веток (общее): "start" — по
@@ -109,8 +113,13 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
   // обязателен, только если они разошлись (см. brew-volume-choice.tsx).
   const [volumeOptions, setVolumeOptions] = useState<BrewVolumeOptions | null>(null);
   const [volumeOptionsLoading, setVolumeOptionsLoading] = useState(true);
+  const [volumeOptionsError, setVolumeOptionsError] = useState<string | null>(null);
   const [volumeChoice, setVolumeChoice] = useState<BrewVolumeChoiceKind | null>(null);
   const [customVolume, setCustomVolume] = useState("");
+  const [preparation, setPreparation] = useState<BrewPreparationPreview | null>(null);
+  const [preparationLoading, setPreparationLoading] = useState(false);
+  const [limitsAccepted, setLimitsAccepted] = useState(false);
+  const [previewRetry, setPreviewRetry] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [remoteDisabled, setRemoteDisabled] = useState<{ message: string; brewBatchId: string } | null>(null);
@@ -119,15 +128,18 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
   // inFlight режет повторный сабмит в том же тике до того, как отрисуется disabled.
   const idempotencyKeyRef = useRef<string | null>(null);
   const inFlightRef = useRef(false);
+  const requestEpochRef = useRef(0);
   const ensureIdempotencyKey = () =>
     (idempotencyKeyRef.current ??= newIdempotencyKey());
 
   const loadDevices = useCallback(async () => {
+    const epoch = requestEpochRef.current;
     setDevicesLoading(true);
     setDevicesError(null);
     setAuthRequired(false);
     try {
       const res = await fetch("/api/devices", { cache: "no-store" });
+      if (epoch !== requestEpochRef.current) return;
       // Аноним: роут отвечает 401 (getSessionUser, без redirect). Ловим и
       // редирект на /login на всякий случай — на случай регресса в роуте.
       const redirectedToLogin = res.redirected && new URL(res.url).pathname.startsWith("/login");
@@ -137,6 +149,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
       }
       if (!res.ok) throw new Error("LIST_FAILED");
       const data = (await res.json()) as { devices?: PickerDevice[]; devicesEnabled?: boolean };
+      if (epoch !== requestEpochRef.current) return;
       const list = data.devices ?? [];
       setDevicesEnabled(data.devicesEnabled !== false);
       setDevices(list);
@@ -145,24 +158,28 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
       const brewable = list.filter(isBrewCapableDevice);
       setSelectedDeviceId((prev) => prev ?? brewable.find((device) => device.status === "online")?.id ?? null);
     } catch {
-      setDevicesError("Не удалось загрузить список устройств.");
+      if (epoch === requestEpochRef.current) setDevicesError("Не удалось загрузить список устройств.");
     } finally {
-      setDevicesLoading(false);
+      if (epoch === requestEpochRef.current) setDevicesLoading(false);
     }
   }, []);
 
   // Объёмы рецепта и оборудования — вместе с устройствами, при открытии. Аноним
   // получает null (экшен молчит) и уходит на экран логина — там объём не нужен.
   const loadVolumeOptions = useCallback(async () => {
+    const epoch = requestEpochRef.current;
     setVolumeOptionsLoading(true);
+    setVolumeOptionsError(null);
+    setVolumeOptions(null);
     try {
-      setVolumeOptions(await getBrewVolumeOptionsAction(recipeId));
+      const options = await getBrewVolumeOptionsAction(recipeId);
+      if (epoch !== requestEpochRef.current) return;
+      if (!options) throw new Error("VOLUME_OPTIONS_UNAVAILABLE");
+      setVolumeOptions(options);
     } catch {
-      // Объём не подтянулся — не блокируем варку: без выбора партия создаётся в
-      // объёме рецепта, как и раньше.
-      setVolumeOptions(null);
+      if (epoch === requestEpochRef.current) setVolumeOptionsError("Не удалось загрузить параметры объёма и оборудования. Повторите загрузку перед варкой.");
     } finally {
-      setVolumeOptionsLoading(false);
+      if (epoch === requestEpochRef.current) setVolumeOptionsLoading(false);
     }
   }, [recipeId]);
 
@@ -171,6 +188,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
   // (осознанная повторная варка того же рецепта создаёт отдельную партию).
   useEffect(() => {
     if (!open) return;
+    requestEpochRef.current += 1;
     setScreen("gate");
     setDevices([]);
     setSelectedDeviceId(null);
@@ -178,6 +196,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
     setPlannedDate("");
     setVolumeOptions(null);
     setVolumeOptionsLoading(true);
+    setVolumeOptionsError(null);
     setVolumeChoice(null);
     setCustomVolume("");
     setError(null);
@@ -187,6 +206,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
     inFlightRef.current = false;
     void loadDevices();
     void loadVolumeOptions();
+    return () => { requestEpochRef.current += 1; };
   }, [open, loadDevices, loadVolumeOptions]);
 
   // Экран выбора режима имеет смысл, только если реально есть из чего выбирать:
@@ -223,35 +243,66 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
   const recipeBatchVolumeL = volumeOptions?.recipeBatchVolumeL ?? null;
   const volumeProfile = volumeOptions?.defaultProfile ?? null;
   const volumeChoiceRequired = hasBrewVolumeMismatch(recipeBatchVolumeL, volumeProfile);
-  const volumeReady = isBrewVolumeSelectionReady({
+  const volumeReady = Boolean(volumeOptions) && !volumeOptionsLoading && !volumeOptionsError && isBrewVolumeSelectionReady({
     required: volumeChoiceRequired,
     choice: volumeChoice,
     customValue: customVolume
   });
   const volumeSelection = resolveBrewVolumeSelection({
-    choice: volumeChoice,
+    choice: volumeChoice ?? (!volumeChoiceRequired && volumeProfile ? "profile" : null),
     profile: volumeProfile,
     customValue: customVolume
   });
 
-  const volumeChoiceBlock = volumeChoiceRequired && recipeBatchVolumeL != null && volumeProfile ? (
+  const volumeChoiceBlock = volumeOptionsError ? (
+    <div className="space-y-2">
+      <p role="alert" className="text-sm text-destructive">{volumeOptionsError}</p>
+      <Button type="button" variant="outline" size="sm" onClick={() => void loadVolumeOptions()}>Повторить загрузку</Button>
+    </div>
+  ) : recipeBatchVolumeL != null && volumeProfile ? (
     <BrewVolumeChoice
       recipeBatchVolumeL={recipeBatchVolumeL}
       recipeEfficiencyPct={volumeOptions?.recipeEfficiencyPct ?? null}
       profile={volumeProfile}
-      choice={volumeChoice}
+      choice={volumeChoice ?? (!volumeChoiceRequired ? "profile" : null)}
       onChoiceChange={setVolumeChoice}
       customValue={customVolume}
       onCustomValueChange={setCustomVolume}
       disabled={submitting}
     />
+  ) : recipeBatchVolumeL != null ? <p className="text-sm text-muted-foreground">Объём по рецепту: {recipeBatchVolumeL} л. Профиль оборудования не выбран.</p> : null;
+
+  useEffect(() => {
+    if (!open || volumeOptionsLoading || !volumeReady) { setPreparation(null); return; }
+    let cancelled = false;
+    setPreparation(null);
+    setPreparationLoading(true);
+    setLimitsAccepted(false);
+    const timer = setTimeout(() => {
+      void getBrewPreparationPreviewAction({ recipeId, ...volumeSelection })
+        .then((result) => { if (!cancelled) setPreparation(result); })
+        .catch(() => { if (!cancelled) setPreparation(null); })
+        .finally(() => { if (!cancelled) setPreparationLoading(false); });
+    }, 200);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [open, volumeOptionsLoading, volumeReady, recipeId, volumeSelection.targetBatchVolumeL, volumeSelection.equipmentProfileId, previewRetry]);
+  const preparationReady = Boolean(preparation) && !preparationLoading && (!preparation?.warnings.length || limitsAccepted);
+  const preparationBlock = volumeReady && !volumeOptionsLoading ? (
+    <div className="space-y-2">
+      {preparationLoading ? <p className="text-xs text-muted-foreground">Проверяем объёмы и оборудование…</p> : preparation ? (
+        <>
+          <BrewPreparationSummary preview={preparation} />
+          {preparation.warnings.length ? <label className="flex items-start gap-2 text-sm"><input type="checkbox" checked={limitsAccepted} onChange={(event) => setLimitsAccepted(event.target.checked)} className="mt-1" />Продолжить с превышением ограничений оборудования</label> : null}
+        </>
+      ) : <p role="alert" className="text-xs text-destructive">Не удалось рассчитать параметры варки. <button type="button" className="underline" onClick={() => setPreviewRetry((value) => value + 1)}>Повторить расчёт</button></p>}
+    </div>
   ) : null;
 
   // plannedForDate — явный параметр, а не чтение общего стейта: «Начать сейчас»/
   // «Начать варку» вызывают без аргумента (дата игнорируется, даже если поле уже
   // было раскрыто), «Запланировать» передаёт выбранную дату явно.
   const handleConfirmVirtual = async (plannedForDate?: string) => {
-    if (inFlightRef.current) return;
+    if (inFlightRef.current || !volumeReady || !preparationReady) return;
     inFlightRef.current = true;
     setError(null);
     setSubmitting(true);
@@ -283,7 +334,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
   };
 
   const handleConfirmDevice = async () => {
-    if (!selectedDeviceId || inFlightRef.current) return;
+    if (!selectedDeviceId || inFlightRef.current || !volumeReady || !preparationReady) return;
     inFlightRef.current = true;
     setError(null);
     setSubmitting(true);
@@ -344,7 +395,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
               {screen === "gate" ? "Проверяем ваши устройства…" : null}
               {screen === "login" ? "Войдите, чтобы начать варку." : null}
               {screen === "mode" ? "Выберите, как варить." : null}
-              {screen === "virtual" ? "Партия появится в подготовке — старт варочного дня там." : null}
+              {screen === "virtual" ? "Перед варкой вы сможете проверить ингредиенты и план." : null}
               {screen === "device-pick" ? "Выберите устройство BrewForge." : null}
               {screen === "device-confirm"
                 ? startStep === "schedule"
@@ -361,15 +412,6 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
         <div className="flex items-center gap-2 p-5 py-10 text-sm text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" />
           Загрузка…
-        </div>
-      ) : null}
-
-      {screen === "login" ? (
-        <div className="p-5">
-          <p className="text-sm leading-6 text-muted-foreground">
-            Варка сохранится в вашей мастерской: шаги, таймеры и замеры в одном месте. Аккаунт создаётся
-            автоматически при первом входе.
-          </p>
         </div>
       ) : null}
 
@@ -392,7 +434,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
             <span>
               <span className="block text-sm font-semibold text-foreground">Вручную</span>
               <span className="mt-0.5 block text-xs leading-5 text-muted-foreground">
-                Гид варочного дня на экране: паузы, таймеры, шаги.
+                Пошаговый план варки на экране: паузы, таймеры и внесение ингредиентов.
               </span>
             </span>
           </button>
@@ -407,7 +449,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
             <span>
               <span className="block text-sm font-semibold text-foreground">На BrewForge</span>
               <span className="mt-0.5 block text-xs leading-5 text-muted-foreground">
-                Рецепт уйдёт на контроллер BrewForge, который запустит нагрев.
+                      Рецепт будет отправлен на контроллер BrewForge, который запустит нагрев.
               </span>
             </span>
           </button>
@@ -417,6 +459,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
       {screen === "virtual" ? (
         <div className="space-y-3 p-5">
           {volumeChoiceBlock}
+          {preparationBlock}
           {startStep === "schedule" ? (
             <label className="flex flex-col gap-1">
               <span className="text-xs text-muted-foreground">Дата варки</span>
@@ -455,6 +498,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
       {screen === "device-pick" ? (
         <div className="space-y-3 p-5">
           {volumeChoiceBlock}
+          {preparationBlock}
           <DevicePickerList
             devices={devices}
             loading={devicesLoading}
@@ -544,14 +588,14 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
               <Button
                 variant="outline"
                 onClick={() => void handleConfirmVirtual()}
-                disabled={submitting || !volumeReady}
+                disabled={submitting || !volumeReady || !preparationReady}
               >
                 {submitting ? "Начинаем…" : "Начать сейчас"}
               </Button>
               <Button
                 variant="primary"
                 onClick={() => void handleConfirmVirtual(plannedDate)}
-                disabled={submitting || !volumeReady || !plannedDate}
+                disabled={submitting || !volumeReady || !preparationReady || !plannedDate}
               >
                 {submitting ? "Планируем…" : "Запланировать"}
               </Button>
@@ -564,7 +608,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
               <Button
                 variant="primary"
                 onClick={() => void handleConfirmVirtual()}
-                disabled={submitting || !volumeReady}
+                disabled={submitting || !volumeReady || !preparationReady}
               >
                 {submitting ? "Начинаем…" : "Начать варку"}
               </Button>
@@ -586,7 +630,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
               setPlannedDate("");
               setScreen("device-confirm");
             }}
-            disabled={submitting || !selectedDeviceId || !volumeReady}
+            disabled={submitting || !selectedDeviceId || !volumeReady || !preparationReady}
           >
             Далее
           </Button>

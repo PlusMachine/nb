@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import type { CalculatorCatalogItem } from "./catalog";
 import type { CalculatorResult } from "./definitions";
+import { isCalculatorPublic } from "./visibility";
 
 // SEO-фундамент калькуляторов (/calculators/<slug>): metadata и BreadcrumbList.
 // Билдеры по образцу features/content-articles/seo.ts / features/ingredients/seo.ts;
@@ -18,6 +19,7 @@ export const buildCalculatorMetadata = (item: CalculatorCatalogItem): Metadata =
   return {
     title: item.seoTitle,
     description,
+    ...(!isCalculatorPublic(item.slug) ? { robots: { index: false, follow: false } } : {}),
     alternates: {
       canonical: canonicalPath
     },

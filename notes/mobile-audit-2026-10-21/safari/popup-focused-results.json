@@ -1,0 +1,371 @@
+{
+  "config": {
+    "argv": [
+      "/usr/bin/node",
+      "/home/dopefish/projects/nb/node_modules/.bin/playwright",
+      "test",
+      "--config=e2e/safari-audit.config.ts",
+      "--workers=1",
+      "--project=iphone-landscape",
+      "--grep=suggestions fit|cookie choice|M05|closing BJCP",
+      "--output=../../notes/mobile-audit-2026-10-21/safari/popup-focused-playwright"
+    ],
+    "configFile": "/home/dopefish/projects/nb/apps/web/e2e/safari-audit.config.ts",
+    "rootDir": "/home/dopefish/projects/nb/apps/web/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/popup-focused-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "iphone-se",
+        "name": "iphone-se",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/popup-focused-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "iphone-13",
+        "name": "iphone-13",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/popup-focused-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "iphone-landscape",
+        "name": "iphone-landscape",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/popup-focused-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "ipad-mini",
+        "name": "ipad-mini",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/popup-focused-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "ipad-mini-landscape",
+        "name": "ipad-mini-landscape",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/popup-focused-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "ipad-pro",
+        "name": "ipad-pro",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/mobile-audit-2026-10-21/safari/popup-focused-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "ipad-pro-landscape",
+        "name": "ipad-pro-landscape",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "bjcp-search.spec.ts",
+          "calculators-unit-converter.spec.ts",
+          "beer-presentation.spec.ts",
+          "safari-interactions.spec.ts"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "../../../notes/mobile-audit-2026-10-21/safari/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.1",
+    "workers": 1,
+    "webServer": {
+      "command": "pnpm run dev",
+      "url": "http://127.0.0.1:3100",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "bjcp-search.spec.ts",
+      "file": "bjcp-search.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "closing BJCP suggestions preserves a pending search and allows clearing it",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-landscape",
+              "projectName": "iphone-landscape",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4160,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T20:59:54.036Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "55c347c33e937786a50b-94da777fcc37aa3780cc",
+          "file": "bjcp-search.spec.ts",
+          "line": 10,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "mobile-audit.spec.ts",
+      "file": "mobile-audit.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "M05: every dilution operation fits on the narrow screen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-landscape",
+              "projectName": "iphone-landscape",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5391,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T20:59:58.313Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-d112c1c0ca6c8e8c0e84",
+          "file": "mobile-audit.spec.ts",
+          "line": 124,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "safari-interactions.spec.ts",
+      "file": "safari-interactions.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-landscape",
+              "projectName": "iphone-landscape",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4984,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:00:03.737Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-274258116df43d6bfc0f",
+          "file": "safari-interactions.spec.ts",
+          "line": 119,
+          "column": 1
+        },
+        {
+          "title": "cookie choice closes the banner and survives a reload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "iphone-landscape",
+              "projectName": "iphone-landscape",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5116,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:00:08.735Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0def5a99993eff87b618-ce9db75bcaa70ba72aac",
+          "file": "safari-interactions.spec.ts",
+          "line": 147,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-21T20:59:32.278Z",
+    "duration": 42029.034,
+    "expected": 4,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

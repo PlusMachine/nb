@@ -21,9 +21,10 @@
     "**/*.ts",
     "**/*.tsx",
     ".next-2/types/**/*.ts",
+    ".next-admin-check/types/**/*.ts",
+    ".next-loadtest/types/**/*.ts",
     ".next-qa/types/**/*.ts",
-    ".next/types/**/*.ts",
-    ".next-admin-check/types/**/*.ts"
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

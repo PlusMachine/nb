@@ -61,7 +61,7 @@ export function PublicRecipePage({
   return (
     <RecipeMatchProvider recipeId={recipe.id}>
       <main className="relative space-y-6 pt-6">
-        <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
+        <nav aria-label="Навигационная цепочка" className="text-sm text-muted-foreground">
           <ol className="flex flex-wrap items-center gap-2">
             <li><Link href="/" className="transition hover:text-foreground">Главная</Link></li>
             <li aria-hidden="true">/</li>
@@ -85,9 +85,15 @@ export function PublicRecipePage({
             <RecipeMatchMobileBadge />
             {recipe.heroImageId ? <RecipePhotoHero imageId={recipe.heroImageId} title={recipe.title} /> : null}
             <RecipeMetaSection recipe={recipe} showPrivateNotes={false} />
-            <RecipeIngredientsSection ingredients={recipe.ingredients} />
+            <RecipeIngredientsSection
+              ingredients={recipe.ingredients}
+              batchSizeEnteredQuantity={recipe.batchSizeEnteredQuantity}
+              batchSizeEnteredUnit={recipe.batchSizeEnteredUnit}
+              efficiency={recipe.efficiency}
+              batchAction={<RecipeScalePanel recipe={recipe} variant="inline" />}
+            />
             <PublicRecipeWaterSection recipe={recipe} />
-            <PublicRecipeMashSection processMeta={recipe.processMeta} />
+            <PublicRecipeMashSection processMeta={recipe.processMeta} boilTimeMinutes={recipe.boilTimeMinutes} />
             <PublicRecipeBoilSection boilTimeMinutes={recipe.boilTimeMinutes} ingredients={recipe.ingredients} />
             <PublicRecipeFermentationSection processMeta={recipe.processMeta} ingredients={recipe.ingredients} />
           </div>
@@ -99,8 +105,6 @@ export function PublicRecipePage({
             <RecipeFeatureToggle recipeId={recipe.id} slug={recipe.slug} />
             {/* Персональный матчинг со складом тянется клиентом после гидрации → документ кэшируем. */}
             <RecipeMatchPanel />
-            {/* Эфемерный пересчёт под объём — модалка, чистый клиент, без записи в БД. */}
-            <RecipeScalePanel recipe={recipe} />
             <RecipeCloneAttribution clonedFrom={recipe.clonedFrom} ownerAuthorId={recipe.authorId} />
             <RecipeSourceAttribution importMeta={recipe.importMeta} />
           </aside>

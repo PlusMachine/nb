@@ -452,6 +452,13 @@
       "when": 1791000000034,
       "tag": "0068_old_roulette",
       "breakpoints": true
+    },
+    {
+      "idx": 69,
+      "version": "7",
+      "when": 1791395926034,
+      "tag": "0069_batch_inventory_snapshot",
+      "breakpoints": true
     }
   ]
 }

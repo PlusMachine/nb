@@ -1,3 +1,5 @@
+import { getVisibleCalculatorSlugs, isVisibleCalculatorLink } from "@/features/calculators/visibility";
+
 export type RelatedLink = { href: string; label: string };
 
 // Куратируемая вручную карта slug статьи → ссылки «Дальше». Контент-модель
@@ -29,5 +31,6 @@ const defaultRelatedLinks: RelatedLink[] = [
 ];
 
 export const getRelatedLinksForArticle = (slug: string): RelatedLink[] => (
-  relatedLinksBySlug[slug] ?? defaultRelatedLinks
+  (relatedLinksBySlug[slug] ?? defaultRelatedLinks)
+    .filter((link) => isVisibleCalculatorLink(link.href, getVisibleCalculatorSlugs()))
 );

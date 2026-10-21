@@ -37,11 +37,8 @@ export default async function ArticlesPage() {
 
   return (
     <div className="mx-auto w-full max-w-5xl space-y-8 px-4 py-10">
-      <header className="space-y-2">
+      <header>
         <h1 className="text-3xl font-semibold text-foreground">Статьи и обзоры</h1>
-        <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
-          Практические материалы по домашнему пивоварению: пошаговые статьи, разборы процессов и обзоры оборудования.
-        </p>
       </header>
 
       {articles.length === 0 ? (

@@ -1,0 +1,92 @@
+[
+  {
+    "package": "@nb/auth",
+    "directory": "packages/auth",
+    "command": "vitest run --passWithNoTests --maxWorkers=1",
+    "exitCode": 0,
+    "seconds": 0.8,
+    "log": "prepush-auth-tests.log",
+    "passedTests": 9
+  },
+  {
+    "package": "@nb/brewforge-protocol",
+    "directory": "packages/brewforge-protocol",
+    "command": "vitest run --passWithNoTests --maxWorkers=1",
+    "exitCode": 0,
+    "seconds": 2.42,
+    "log": "prepush-brewforge-protocol-tests.log",
+    "passedTests": 116
+  },
+  {
+    "package": "@nb/brewforge-sim",
+    "directory": "packages/brewforge-sim",
+    "command": "vitest run --passWithNoTests --maxWorkers=1",
+    "exitCode": 0,
+    "seconds": 1.37,
+    "log": "prepush-brewforge-sim-tests.log",
+    "passedTests": 13
+  },
+  {
+    "package": "@nb/brewing-core",
+    "directory": "packages/brewing-core",
+    "command": "vitest run --passWithNoTests --maxWorkers=1",
+    "exitCode": 0,
+    "seconds": 4.14,
+    "log": "prepush-brewing-core-tests.log",
+    "passedTests": 151
+  },
+  {
+    "package": "@nb/content",
+    "directory": "packages/content",
+    "command": "vitest run --passWithNoTests --maxWorkers=1",
+    "exitCode": 0,
+    "seconds": 3.2,
+    "log": "prepush-content-tests.log",
+    "passedTests": 14
+  },
+  {
+    "package": "@nb/db",
+    "directory": "packages/db",
+    "command": "vitest run --passWithNoTests --maxWorkers=1",
+    "exitCode": 0,
+    "seconds": 1.3,
+    "log": "prepush-db-tests.log",
+    "passedTests": 11
+  },
+  {
+    "package": "@nb/push",
+    "directory": "packages/push",
+    "command": "vitest run --passWithNoTests --maxWorkers=1",
+    "exitCode": 0,
+    "seconds": 0.36,
+    "log": "prepush-push-tests.log",
+    "passedTests": 0
+  },
+  {
+    "package": "@nb/search",
+    "directory": "packages/search",
+    "command": "vitest run --passWithNoTests --maxWorkers=1",
+    "exitCode": 0,
+    "seconds": 0.7,
+    "log": "prepush-search-tests.log",
+    "passedTests": 22
+  },
+  {
+    "package": "@nb/shared",
+    "directory": "packages/shared",
+    "command": "vitest run --passWithNoTests --maxWorkers=1",
+    "exitCode": 0,
+    "seconds": 0.37,
+    "log": "prepush-shared-tests.log",
+    "passedTests": 0
+  },
+  {
+    "package": "@nb/ui",
+    "directory": "packages/ui",
+    "command": "vitest run --passWithNoTests --maxWorkers=1",
+    "exitCode": 0,
+    "seconds": 0.36,
+    "log": "prepush-ui-tests.log",
+    "passedTests": 0
+  }
+]

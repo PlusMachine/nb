@@ -369,20 +369,12 @@ body {
   to { opacity: 1; }
 }
 
-@keyframes home-live-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-
 @media (prefers-reduced-motion: no-preference) {
   .home-glass-fill stop {
     transition: stop-color 0.5s var(--ease-out-expo);
   }
   .home-vital-fade {
     animation: home-vital-in 0.25s var(--ease-out-quart) both;
-  }
-  .home-live-dot {
-    animation: home-live-pulse 1.6s ease-in-out infinite;
   }
 }
 

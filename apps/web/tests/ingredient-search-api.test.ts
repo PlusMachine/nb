@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+vi.mock("@nb/auth", () => ({ assertRateLimit: vi.fn(async () => {}) }));
+
 vi.mock("../lib/auth", () => ({ getSessionUser: vi.fn(async () => ({ id: "u1" })) }));
 import { getSessionUser } from "../lib/auth";
 vi.mock("../features/ingredients/catalog-service", () => ({

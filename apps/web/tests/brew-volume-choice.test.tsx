@@ -124,7 +124,7 @@ describe("BrewVolumeChoice — рендер", () => {
     );
 
     expect(html).toContain('aria-pressed="true"');
-    expect(html).toContain("Количества ингредиентов пересчитаны на 20 л");
+    expect(html).toContain("Количество ингредиентов пересчитано на 20 л");
   });
 
   it("эффективность разошлась → предупреждает про дожим засыпи (солода спишется больше)", () => {
@@ -158,7 +158,7 @@ describe("BrewVolumeChoice — рендер", () => {
       />
     );
 
-    expect(html).toContain("Количества ингредиентов пересчитаны на 20 л");
+    expect(html).toContain("Количество ингредиентов пересчитано на 20 л");
     expect(html).not.toContain("Засыпь");
   });
 });

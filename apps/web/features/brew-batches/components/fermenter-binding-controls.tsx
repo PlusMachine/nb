@@ -14,7 +14,7 @@ import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 import { bindBatchFermenterAction } from "@/app/(app)/app/brew-batches/[id]/actions";
 import type { FermenterCandidate } from "@/features/devices/contracts";
 
-/** Пикер «Бродит в приборе…» — выбор из приборов, чей last-known режим сейчас ферментация. */
+/** Пикер «Устройство для брожения…» — выбор из приборов, чей last-known режим сейчас ферментация. */
 export function FermenterPicker({
   brewBatchId,
   candidates
@@ -46,7 +46,7 @@ export function FermenterPicker({
   return (
     <div className="space-y-2">
       <label className="block text-xs font-medium text-muted-foreground">
-        Бродит в приборе…
+        Устройство для брожения…
         <select
           value={deviceId}
           onChange={(e) => setDeviceId(e.target.value)}

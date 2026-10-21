@@ -589,11 +589,28 @@ describe("App dashboard", () => {
     expect(stockIndex).toBeGreaterThan(-1);
     expect(stockIndex).toBeLessThan(recipeIndex);
     expect(recipeIndex).toBeLessThan(brewIndex);
+    // stock CTA goes to inventory add — not the public catalog hub
+    expect(html).toContain("Добавить на склад");
+    expect(html).toContain('href="/app/ingredients"');
+    expect(html).not.toContain("Выбрать из каталога");
+    expect(html).not.toContain("Добавить вручную");
     // empty resource widgets are not rendered on day one
     expect(html).not.toContain("Чего не хватает");
     // knowledge surfaces stay reachable
     expect(html).toContain('href="/articles"');
     expect(html).toContain('href="/bjcp"');
     expect(html).toContain('href="/calculators"');
+  });
+
+  it("sends an empty inventory widget straight to stock add, not the catalog hub", async () => {
+    mocks.getInventorySummaries.mockResolvedValue(emptyInventory);
+
+    const html = renderToStaticMarkup(await AppZonePage());
+
+    expect(html).toContain("Добавьте ингредиенты — рецепты покажут, чего хватает для варки.");
+    expect(html).toContain("Добавить на склад");
+    expect(html).toContain('href="/app/ingredients"');
+    // empty stock must not fork into public catalog browse
+    expect(html).not.toMatch(/>Каталог</);
   });
 });

@@ -47,7 +47,7 @@ const mocks = vi.hoisted(() => ({
   getDeviceById: vi.fn(async (): Promise<unknown> => null),
   listFermenterCandidates: vi.fn(async (): Promise<unknown[]> => []),
   getRecipeById: vi.fn(async (): Promise<unknown> => { throw new Error("NOT_FOUND"); }),
-  computeRecipeMatch: vi.fn(async (): Promise<unknown> => ({ lines: [] })),
+  previewBrewBatchConsumption: vi.fn(async (): Promise<unknown> => ({ lines: [] })),
   // Пропсы дочерних досок ловим шпионами: подтверждение завершения живёт в
   // закрытом Dialog, а подсказка журнала — во внутреннем состоянии; в статичной
   // разметке их не видно, а проверять надо именно проводку страницы.
@@ -62,12 +62,12 @@ vi.mock("../features/brew-batches/service", () => ({
   getDeviceTelemetryHistory: mocks.getDeviceTelemetryHistory
 }));
 vi.mock("../features/brew-batches/inventory", () => ({
-  getBrewBatchInventoryView: mocks.getBrewBatchInventoryView
+  getBrewBatchInventoryView: mocks.getBrewBatchInventoryView,
+  previewBrewBatchConsumption: mocks.previewBrewBatchConsumption
 }));
 vi.mock("../features/devices/service", () => ({ getDeviceById: mocks.getDeviceById }));
 vi.mock("../features/devices/fermenter-binding", () => ({ listFermenterCandidates: mocks.listFermenterCandidates }));
 vi.mock("../features/recipes/service", () => ({ getRecipeById: mocks.getRecipeById }));
-vi.mock("../features/recipes/match-service", () => ({ computeRecipeMatch: mocks.computeRecipeMatch }));
 vi.mock("../features/shopping/service", () => ({
   isShoppingGapLine: (line: { status?: string }) => line.status === "missing" || line.status === "partial"
 }));
@@ -81,6 +81,7 @@ vi.mock("../app/(app)/app/brew-batches/[id]/actions", () => ({
   setBrewBatchPlannedForAction: vi.fn(),
   setBrewDayStepStateAction: vi.fn(),
   setBrewBatchStatusAction: vi.fn(),
+  deleteBrewBatchAction: vi.fn(),
   consumeBrewBatchInventoryAction: vi.fn(),
   restoreBrewBatchInventoryAction: vi.fn(),
   bindBatchFermenterAction: vi.fn()
@@ -127,7 +128,7 @@ beforeEach(() => {
   mocks.getBrewBatchInventoryView.mockResolvedValue(null);
   mocks.getDeviceById.mockResolvedValue(null);
   mocks.listFermenterCandidates.mockResolvedValue([]);
-  mocks.computeRecipeMatch.mockResolvedValue({ lines: [] });
+  mocks.previewBrewBatchConsumption.mockResolvedValue({ lines: [] });
 });
 
 describe("Brew batches page", () => {
@@ -265,7 +266,7 @@ describe("Страница партии — акт «Итог» (A4)", () => {
     expect(html).toContain("Итог партии");
     expect(html).toContain("Склад");
     expect(html).toContain("Пильзнер");
-    expect(html).toContain("История движений");
+    expect(html).toContain("История запасов");
     expect(html).toContain("партия №1");
   });
 
@@ -296,7 +297,7 @@ describe("Страница партии — акт «Итог» (A4)", () => {
     expect(html).toContain("Заметки о варке");
     expect(html).not.toContain('id="tasting-notes"');
     // Склад остаётся доступным и в архиве — что списано и что вернулось.
-    expect(html).toContain("История движений");
+    expect(html).toContain("История запасов");
   });
 });
 
@@ -350,13 +351,14 @@ describe("Страница партии — акт «Брожение» (B3)", (
 });
 
 describe("Страница партии — акт «Подготовка» (A2)", () => {
-  it("считает покрытие склада (Ф5) с учётом уже списанного на ЭТУ партию", async () => {
+  it("считает покрытие склада по составу ЭТОЙ партии", async () => {
     mocks.getBrewBatchDetail.mockResolvedValue(detail({}, { status: "planned", startedAt: null, completedAt: null }));
     // Коверидж считается, только когда есть свой инвентарный вид партии и она
     // ещё не списала себя — пустой (не списанный) вид, как у свежей партии.
     mocks.getBrewBatchInventoryView.mockResolvedValue({
       brewBatchId: BATCH_ID,
       recipeId: RECIPE_ID,
+      hasInventorySnapshot: true,
       hasConsumed: false,
       canRestore: false,
       batchAlreadyConsumed: false,
@@ -366,11 +368,7 @@ describe("Страница партии — акт «Подготовка» (A2)
 
     await renderDetail();
 
-    expect(mocks.computeRecipeMatch).toHaveBeenCalledWith({
-      userId: "u-1",
-      recipeId: RECIPE_ID,
-      brewBatchId: BATCH_ID
-    });
+    expect(mocks.previewBrewBatchConsumption).toHaveBeenCalledWith("u-1", BATCH_ID);
   });
 
   it("не считает покрытие, когда партия уже списала себя (batchAlreadyConsumed)", async () => {
@@ -378,6 +376,7 @@ describe("Страница партии — акт «Подготовка» (A2)
     mocks.getBrewBatchInventoryView.mockResolvedValue({
       brewBatchId: BATCH_ID,
       recipeId: RECIPE_ID,
+      hasInventorySnapshot: true,
       hasConsumed: true,
       canRestore: true,
       batchAlreadyConsumed: true,
@@ -387,7 +386,7 @@ describe("Страница партии — акт «Подготовка» (A2)
 
     await renderDetail();
 
-    expect(mocks.computeRecipeMatch).not.toHaveBeenCalled();
+    expect(mocks.previewBrewBatchConsumption).not.toHaveBeenCalled();
   });
 
   it("не считает покрытие без своего инвентарного вида партии (getBrewBatchInventoryView → null)", async () => {
@@ -396,7 +395,7 @@ describe("Страница партии — акт «Подготовка» (A2)
 
     await renderDetail();
 
-    expect(mocks.computeRecipeMatch).not.toHaveBeenCalled();
+    expect(mocks.previewBrewBatchConsumption).not.toHaveBeenCalled();
   });
 });
 
@@ -407,6 +406,7 @@ describe("Страница партии — покрытие склада вне
   const liveInventoryView = {
     brewBatchId: BATCH_ID,
     recipeId: RECIPE_ID,
+    hasInventorySnapshot: true,
     hasConsumed: false,
     canRestore: false,
     batchAlreadyConsumed: false,
@@ -423,11 +423,7 @@ describe("Страница партии — покрытие склада вне
 
     await renderDetail();
 
-    expect(mocks.computeRecipeMatch).toHaveBeenCalledWith({
-      userId: "u-1",
-      recipeId: RECIPE_ID,
-      brewBatchId: BATCH_ID
-    });
+    expect(mocks.previewBrewBatchConsumption).toHaveBeenCalledWith("u-1", BATCH_ID);
   });
 
   it("считает покрытие в акте «Брожение» (status fermenting)", async () => {
@@ -435,10 +431,15 @@ describe("Страница партии — покрытие склада вне
 
     await renderDetail();
 
-    expect(mocks.computeRecipeMatch).toHaveBeenCalledWith({
-      userId: "u-1",
-      recipeId: RECIPE_ID,
-      brewBatchId: BATCH_ID
-    });
+    expect(mocks.previewBrewBatchConsumption).toHaveBeenCalledWith("u-1", BATCH_ID);
   });
+});
+
+
+it("a deleted recipe does not hide snapshot-based stock coverage", async () => {
+  mocks.getBrewBatchDetail.mockResolvedValue(detail({}, { recipeId: null, status: "planned", startedAt: null, completedAt: null }));
+  mocks.getBrewBatchInventoryView.mockResolvedValue({ brewBatchId: BATCH_ID, recipeId: null, hasInventorySnapshot: true, hasConsumed: false, canRestore: false, batchAlreadyConsumed: false, consumed: [], log: [] });
+  const html = await renderDetail();
+  expect(mocks.previewBrewBatchConsumption).toHaveBeenCalledWith("u-1", BATCH_ID);
+  expect(html).toContain("Списать со склада");
 });

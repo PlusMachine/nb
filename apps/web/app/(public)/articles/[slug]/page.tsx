@@ -61,7 +61,7 @@ export default async function ArticleDetailPage({ params }: { params: Promise<{ 
 
   return (
     <main className="mx-auto w-full max-w-3xl space-y-8 px-4 py-10">
-      <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
+      <nav aria-label="Навигационная цепочка" className="text-sm text-muted-foreground">
         <ol className="flex flex-wrap items-center gap-2">
           <li><Link href="/" className="transition hover:text-foreground">Главная</Link></li>
           <li aria-hidden="true">/</li>

@@ -1,0 +1,31 @@
+{
+  "matrix_total": 198,
+  "matrix_passed": 192,
+  "matrix_skipped": 6,
+  "matrix_unresolved_failures": 0,
+  "unit_files": 295,
+  "unit_tests_passed": 4065,
+  "typescript": "passed",
+  "evidence": [
+    "e2e-final.log",
+    "e2e-repeat.log",
+    "final-matrix-status.json",
+    "unit-final2.log",
+    "typecheck-final.log",
+    "bjcp-stress.log",
+    "broad-scan.json",
+    "broad-errors.json",
+    "public-recipe-repeat.json",
+    "calculator-smoke.json",
+    "label-downloads.json",
+    "label-pdf-check.json"
+  ],
+  "bjcp_stress_passed": 12,
+  "route_count": 65,
+  "layout_captures": 229,
+  "document_horizontal_overflows": 0,
+  "calculator_interaction_checks_passed": 34,
+  "label_downloads_valid": 4,
+  "public_recipe_rechecks_without_errors": 3,
+  "broad_scan_transient_errors": 1
+}

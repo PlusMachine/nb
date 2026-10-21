@@ -9,7 +9,7 @@ import { DemoDashboardSection } from "@/components/demo/demo-dashboard";
 import { DemoFermentationSection } from "@/components/demo/demo-fermentation";
 import { DemoInventorySection } from "@/components/demo/demo-inventory";
 import { DemoRecipesSection } from "@/components/demo/demo-recipes";
-import { calculators } from "@/features/calculators/catalog";
+import { getVisibleCalculatorSlugs } from "@/features/calculators/visibility";
 import { getSectionOgImage } from "@/features/og/section";
 import { getServerEnv } from "@/lib/env";
 
@@ -68,7 +68,7 @@ const ANCHORS = [
   { href: "#inventory", n: 2, label: "Склад" },
   { href: "#brew-day", n: 3, label: "Варочный день" },
   { href: "#fermentation", n: 4, label: "Брожение" },
-  { href: "#dashboard", n: 5, label: "Дашборд" }
+  { href: "#dashboard", n: 5, label: "Обзор" }
 ];
 
 // Заголовок сюжетной секции с видимым порядковым номером (сюжет = порядок,
@@ -109,7 +109,7 @@ export default async function DemoPage() {
   const data = makeDemoData(now);
   const bjcpCatalog = await getBjcpCatalogData();
   const bjcpStyleCount = bjcpCatalog.styles.length;
-  const calculatorCount = calculators.length;
+  const calculatorCount = getVisibleCalculatorSlugs().length;
 
   return (
     <main className="space-y-16 pb-24 pt-8">
@@ -172,7 +172,7 @@ export default async function DemoPage() {
             <DemoPult initialHistory={buildMashHistory(now)} />
           </div>
           <p className="mt-5 text-sm text-muted-foreground">
-            Это настоящий пульт NB, подключённый к симулятору контроллера — время ускорено. С железом всё выглядит так же.
+            Здесь можно попробовать управление на симуляторе. Время ускорено, настоящее оборудование не подключено.
           </p>
         </div>
       </section>
@@ -189,7 +189,7 @@ export default async function DemoPage() {
       </section>
 
       <section id="dashboard" className="scroll-mt-24 space-y-5">
-        <SectionHeading n={5} title="Дашборд" />
+        <SectionHeading n={5} title="Обзор" />
         <DemoDashboardSection
           brews={data.dashboard.brews}
           inventorySummary={data.dashboard.inventorySummary}
@@ -219,7 +219,6 @@ export default async function DemoPage() {
           <span className="text-xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
             Завести свою мастерскую
           </span>
-          <span className="text-sm text-muted-foreground">Вход по номеру телефона — аккаунт создаётся при первом входе</span>
         </Link>
       </section>
     </main>

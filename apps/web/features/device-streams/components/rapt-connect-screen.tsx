@@ -3,7 +3,7 @@
 // =============================================================================
 //  features/device-streams/components/rapt-connect-screen.tsx
 //  F1-RAPT «RAPT Cloud» — шаг 2 визарда подключения (docs/specs/third-party-
-//  fermentation-devices.md §5): URL вебхука + шаблон payload для копирования на
+//  fermentation-devices.md §5): URL вебхука + шаблон данных для копирования на
 //  RAPT-портал (Integrations → Web Hooks → New, POST), сворачиваемая инструкция,
 //  живая зона «Ждём первый пакет…». В отличие от generic-флоу (connect-stream-
 //  device-form.tsx) здесь нет формы «имя+вид» — устройства обнаруживаются САМИ
@@ -208,7 +208,7 @@ export function RaptConnectScreen({ preferredGravityUnit, onBack, onDone, onInte
           )}
 
           <div className="space-y-1.5">
-            <p className="text-xs font-medium text-muted-foreground">Шаблон payload</p>
+            <p className="text-xs font-medium text-muted-foreground">Шаблон данных</p>
             <div className="flex flex-wrap items-start gap-2">
               <pre className="max-w-full overflow-x-auto whitespace-pre rounded-md bg-muted px-3 py-2 font-mono text-xs leading-5 text-foreground">
                 {integration.payloadTemplate}
@@ -232,7 +232,7 @@ export function RaptConnectScreen({ preferredGravityUnit, onBack, onDone, onInte
                 <li>На RAPT-портале откройте Integrations → Web Hooks → New.</li>
                 <li>Метод запроса — POST.</li>
                 <li>Вставьте URL вебхука (выше) в адрес.</li>
-                <li>Вставьте шаблон payload (выше) в тело запроса.</li>
+                <li>Вставьте шаблон данных (выше) в тело запроса.</li>
                 <li>Сохраните — RAPT Pill, камера ферментации или BrewZilla появятся здесь автоматически при первом пакете.</li>
               </ol>
             ) : null}

@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Select } from "@nb/ui";
+import { pluralize } from "@/lib/pluralize";
 
 type AdminPaginationProps = {
   page: number;
@@ -83,7 +84,7 @@ export function AdminPagination({
   return (
     <div className={`flex flex-wrap items-center justify-between gap-3 ${className}`}>
       <div className="flex items-center gap-3 text-sm text-muted-foreground">
-        {typeof total === "number" ? <span>{total} записей</span> : null}
+        {typeof total === "number" ? <span>{total} {pluralize(total, ["запись", "записи", "записей"])}</span> : null}
         {pageSize !== undefined ? (
           <Select
             aria-label="Записей на странице"

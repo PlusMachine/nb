@@ -5,6 +5,8 @@ import { Suspense } from "react";
 import { CalculatorPageClient } from "@/components/calculators/calculator-page-client";
 import { CalculatorHeading, CommonMistakesDetails, FormulaDetails } from "@/components/calculators/calculator-static-sections";
 import { calculatorHasStickyResultBar, type CalculatorDefinition } from "@/features/calculators/definitions";
+import type { CalculatorSlug } from "@/features/calculators/catalog";
+import { getVisibleCalculatorSlugs } from "@/features/calculators/visibility";
 import { buildCalculatorBreadcrumbJsonLd, buildCalculatorWebAppJsonLd } from "@/features/calculators/seo";
 import { jsonLdScriptProps } from "@/features/ingredients/seo";
 import { getServerEnv } from "@/lib/env";
@@ -13,7 +15,13 @@ import { getServerEnv } from "@/lib/env";
 // page.tsx (Ф4, docs/specs/og-images.md §5.2): переиспользуется и основной
 // статической страницей /calculators/[slug], и динамическим саброутом
 // /calculators/[slug]/share — без дублирования разметки между ними.
-export function CalculatorPageView({ definition }: { definition: CalculatorDefinition }) {
+export function CalculatorPageView({
+  definition,
+  visibleCalculatorSlugs = getVisibleCalculatorSlugs()
+}: {
+  definition: CalculatorDefinition;
+  visibleCalculatorSlugs?: CalculatorSlug[];
+}) {
   const baseUrl = getServerEnv().APP_URL;
   const breadcrumbJsonLd = buildCalculatorBreadcrumbJsonLd(definition.catalog, { baseUrl });
   const webAppJsonLd = buildCalculatorWebAppJsonLd(definition.catalog, { baseUrl });
@@ -26,7 +34,7 @@ export function CalculatorPageView({ definition }: { definition: CalculatorDefin
 
   return (
     <>
-      <nav aria-label="Breadcrumb" className="pt-6 text-sm text-muted-foreground">
+      <nav aria-label="Навигационная цепочка" className="pt-6 text-sm text-muted-foreground">
         <ol className="flex flex-wrap items-center gap-2">
           <li><Link href="/" className="transition hover:text-foreground">Главная</Link></li>
           <li aria-hidden="true">/</li>
@@ -45,7 +53,7 @@ export function CalculatorPageView({ definition }: { definition: CalculatorDefin
         <CalculatorHeading item={definition.catalog} />
 
         <Suspense fallback={null}>
-          <CalculatorPageClient slug={definition.catalog.slug} />
+          <CalculatorPageClient slug={definition.catalog.slug} visibleCalculatorSlugs={visibleCalculatorSlugs} />
         </Suspense>
 
         <FormulaDetails

@@ -18,7 +18,7 @@ export function RecipesEmptyState({
       <section className="rounded-2xl border border-dashed border-border bg-muted p-10 text-center">
         <h2 className="text-lg font-semibold text-foreground">Ничего не найдено</h2>
         <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-          По выбранным фильтрам нет рецептов. Попробуйте смягчить условия или сбросить фильтры.
+          Измените запрос или снимите часть фильтров.
         </p>
         <Link
           href="/recipes"
@@ -33,12 +33,9 @@ export function RecipesEmptyState({
   return (
     <section className="rounded-2xl border border-dashed border-border bg-muted p-10 text-center">
       <h2 className="text-lg font-semibold text-foreground">Публичных рецептов пока нет</h2>
-      <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-        Как только авторы опубликуют рецепты, они появятся здесь. Создайте свой — он может стать первым.
-      </p>
       <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
         <Link
-          href="/app/recipes"
+          href="/app/recipes/new"
           className="inline-flex items-center rounded-xl bg-foreground px-4 py-2.5 text-sm font-medium text-background transition hover:bg-foreground/90"
         >
           Создать рецепт

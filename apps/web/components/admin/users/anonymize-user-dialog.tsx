@@ -63,7 +63,7 @@ export function AnonymizeUserDialog({ open, confirmationValue, pending, error, o
           </div>
         ) : (
           <p className="rounded-lg bg-warning-subtle px-3 py-2 text-sm text-warning-subtle-foreground">
-            У аккаунта нет ни e-mail, ни телефона — подтверждать нечего, обезличивать нечего.
+            У аккаунта нет e-mail или телефона для подтверждения удаления.
           </p>
         )}
 

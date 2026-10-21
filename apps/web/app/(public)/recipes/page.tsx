@@ -53,12 +53,7 @@ export default async function PublicRecipesPage({ searchParams }: { searchParams
       {viewer ? <RecipeTabs /> : null}
 
       <section className="rounded-2xl border border-border bg-card p-6">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-semibold text-foreground sm:text-3xl">Рецепты сообщества</h1>
-          <p className="text-sm text-muted-foreground">
-            Готовые рецепты от других пивоваров — выберите идею под свой стиль и оборудование.
-          </p>
-        </div>
+        <h1 className="text-2xl font-semibold text-foreground sm:text-3xl">Рецепты сообщества</h1>
       </section>
 
       {/* Сайдбар фильтров включаем только с `xl`, а не с `lg`: у залогиненного к

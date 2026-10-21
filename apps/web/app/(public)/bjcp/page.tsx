@@ -8,7 +8,7 @@ import { getSectionOgImage } from "@/features/og/section";
 import { getServerEnv } from "@/lib/env";
 
 const title = "Стили пива — справочник BJCP 2021";
-const description = "Поиск по стилям BJCP, режим семейной навигации для обычного пользователя и строгий просмотр по официальным категориям BJCP 2021.";
+const description = "Справочник стилей пива BJCP 2021: поиск по названию и коду, просмотр по семействам пива и официальным категориям.";
 
 export const metadata: Metadata = {
   title,

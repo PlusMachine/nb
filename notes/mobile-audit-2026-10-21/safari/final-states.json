@@ -1,0 +1,32 @@
+[
+  {
+    "profile": "iPhone SE",
+    "path": "/admin/recipes",
+    "status": "passed"
+  },
+  {
+    "profile": "iPhone 13 landscape",
+    "path": "/calculators/abv-attenuation",
+    "status": "passed"
+  },
+  {
+    "profile": "iPhone 13 landscape",
+    "path": "/calculators/dilution-boiloff",
+    "state": {
+      "mode": "extra_boil_time",
+      "gravityUnit": "Plato",
+      "currentVolumeL": 20,
+      "currentGravity": 14.7,
+      "targetGravity": 12.4,
+      "targetVolumeL": 24,
+      "boilOffRateLPerHour": 4,
+      "additionType": "dme",
+      "currentVolumeMeasuredHot": "0"
+    }
+  },
+  {
+    "profile": "iPhone 13 landscape",
+    "path": "/calculators/dilution-boiloff",
+    "status": "passed"
+  }
+]

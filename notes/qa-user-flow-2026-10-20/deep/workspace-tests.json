@@ -1,0 +1,79 @@
+[
+  {
+    "workspace": "auth",
+    "status": "passed",
+    "tests": 9,
+    "files": 1,
+    "log": "test-auth.log"
+  },
+  {
+    "workspace": "brewforge-protocol",
+    "status": "passed",
+    "tests": 116,
+    "files": 8,
+    "log": "test-brewforge-protocol.log"
+  },
+  {
+    "workspace": "brewforge-sim",
+    "status": "passed",
+    "tests": 13,
+    "files": 3,
+    "log": "test-brewforge-sim.log"
+  },
+  {
+    "workspace": "brewing-core",
+    "status": "passed",
+    "tests": 151,
+    "files": 12,
+    "log": "test-brewing-core.log"
+  },
+  {
+    "workspace": "content",
+    "status": "passed",
+    "tests": 14,
+    "files": 2,
+    "log": "test-content.log"
+  },
+  {
+    "workspace": "db",
+    "status": "passed",
+    "tests": 11,
+    "files": 1,
+    "log": "test-db.log"
+  },
+  {
+    "workspace": "push",
+    "status": "no_tests",
+    "tests": 0,
+    "files": 0,
+    "log": "test-push.log"
+  },
+  {
+    "workspace": "search",
+    "status": "passed",
+    "tests": 22,
+    "files": 1,
+    "log": "test-search.log"
+  },
+  {
+    "workspace": "shared",
+    "status": "no_tests",
+    "tests": 0,
+    "files": 0,
+    "log": "test-shared.log"
+  },
+  {
+    "workspace": "ui",
+    "status": "no_tests",
+    "tests": 0,
+    "files": 0,
+    "log": "test-ui.log"
+  },
+  {
+    "workspace": "web",
+    "status": "passed",
+    "tests": 4065,
+    "files": 295,
+    "log": "test-web.log"
+  }
+]

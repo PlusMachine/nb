@@ -29,6 +29,12 @@ import {
   rewriteIngredientQueryForManufacturer
 } from "@/features/ingredients/normalization";
 import {
+  formatHopAlphaAcidStatLabel,
+  isHopWithUserAlphaOverride,
+  resolveCustomIngredientOwnershipBadgeLabel,
+  type DerivedIngredientOwnershipSource
+} from "@/features/ingredients/derived-ingredient-presentation";
+import {
   ingredientCategoryLabels,
   buildIngredientTypedSummary,
   type ResolvedIngredientCountry,
@@ -870,7 +876,12 @@ export const buildIngredientPickerTechnicalBadges = (item: IngredientSuggestionI
     const alphaAcidPct = resolveIngredientTechnicalDataHopAlphaAcidPct(hop);
     const hopFormLabel = formatHopFormLabel(hop.hopForm);
 
-    pushBadge(alphaAcidPct != null ? `Альфа ${formatBadgeValue(alphaAcidPct)}%` : null);
+    const userAlphaOverride = isHopWithUserAlphaOverride(item);
+    pushBadge(
+      alphaAcidPct != null
+        ? formatHopAlphaAcidStatLabel(alphaAcidPct, { userOverride: userAlphaOverride })
+        : null
+    );
     pushBadge(hopFormLabel);
     pushBadge(item.harvestYear != null ? `Урожай ${item.harvestYear}` : null);
   } else if (technicalData.type === "malt" || technicalData.type === "fermentable") {
@@ -949,7 +960,7 @@ export const buildIngredientPickerInventoryMetaItems = (item: IngredientSuggesti
     const expired = freshnessDate.date.getTime() < Date.now();
     items.push(`${expired ? "Просрочен" : "Годен до"} ${freshnessDate.label}`);
   } else if (updatedAt) {
-    items.push(`Обновлен ${updatedAt.label}`);
+    items.push(`Обновлён ${updatedAt.label}`);
   }
 
   if (item.inventoryPurchaseLinksCount && item.inventoryPurchaseLinksCount > 0) {
@@ -1088,13 +1099,9 @@ const IngredientPickerMetaLine = ({
   );
 };
 
-const resolveIngredientOwnershipBadgeLabel = (item: Pick<IngredientSuggestionItem, "source" | "derivedFromIngredientId">) => {
-  if (item.source !== "custom") {
-    return null;
-  }
-
-  return item.derivedFromIngredientId ? "ИЗМЕНЕННЫЙ" : "СВОЙ";
-};
+const resolveIngredientOwnershipBadgeLabel = (item: DerivedIngredientOwnershipSource) => (
+  resolveCustomIngredientOwnershipBadgeLabel(item)
+);
 
 const resolveMatchedConsumablePackageVariant = (item: IngredientSuggestionItem) => {
   if (!item.packageVariants?.length) {
@@ -1971,7 +1978,37 @@ const emptyIngredientSearchResult: IngredientSearchResult = {
   appliedCustomOnly: false
 };
 
-const defaultSearchIngredients = async ({
+export class IngredientSearchRequestError extends Error {
+  constructor(readonly status: number) {
+    super(`INGREDIENT_SEARCH_HTTP_${status}`);
+    this.name = "IngredientSearchRequestError";
+  }
+}
+
+export const resolveIngredientPickerSearchError = (error: unknown) => (
+  error instanceof IngredientSearchRequestError && error.status === 429
+    ? "Слишком много запросов. Подождите немного и повторите поиск."
+    : "Не удалось загрузить ингредиенты. Повторите поиск."
+);
+
+export const IngredientPickerSearchErrorState = ({ message, onRetry }: {
+  message: string;
+  onRetry: () => void;
+}) => (
+  <div role="alert" className="rounded-md border border-border bg-background px-3 py-3 text-sm shadow-sm">
+    <p>{message}</p>
+    <button
+      type="button"
+      onPointerDown={(event) => event.preventDefault()}
+      onClick={onRetry}
+      className="mt-2 font-medium underline underline-offset-2"
+    >
+      Повторить поиск
+    </button>
+  </div>
+);
+
+export const defaultSearchIngredients = async ({
   q,
   type,
   category,
@@ -2001,28 +2038,7 @@ const defaultSearchIngredients = async ({
   const params = buildIngredientSearchParams({ q, type, category, subtype, family, group, manufacturer, favoritesOnly, customOnly, includeCustom, limit });
   const response = await fetch(`/api/ingredients/search?${params.toString()}`, { signal });
   if (!response.ok) {
-    return {
-      ...emptyIngredientSearchResult,
-      appliedManufacturer: manufacturer ? {
-        type: "manufacturer" as const,
-        label: manufacturer,
-        normalizedLabel: normalizeSearchText(manufacturer),
-        value: manufacturer,
-        count: 0,
-        score: 0
-      } : null,
-      appliedGroup: group ? {
-        type: "consumable_group" as const,
-        label: group,
-        normalizedLabel: normalizeSearchText(group),
-        value: group,
-        count: 0,
-        score: 0
-      } : null,
-      appliedFamily: resolveIngredientPickerQuickStartFamilyScope(family ?? null),
-      appliedFavoritesOnly: favoritesOnly ?? false,
-      appliedCustomOnly: customOnly ?? false
-    };
+    throw new IngredientSearchRequestError(response.status);
   }
   return await response.json() as IngredientSearchResult;
 };
@@ -2277,6 +2293,8 @@ export const IngredientPicker = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [searchRetryCount, setSearchRetryCount] = useState(0);
   const [hasResolvedQuery, setHasResolvedQuery] = useState(false);
   const [emptyStateMessage, setEmptyStateMessage] = useState<string | null>(null);
   const cacheRef = useRef(createIngredientPickerSearchCache());
@@ -2486,6 +2504,7 @@ export const IngredientPicker = ({
       setActiveIndex(0);
       setIsLoading(false);
       setHasResolvedQuery(false);
+      setSearchError(null);
       return;
     }
 
@@ -2509,6 +2528,7 @@ export const IngredientPicker = ({
     });
     const cached = cacheRef.current.get(searchIngredients, cacheKey);
     if (cached) {
+      setSearchError(null);
       setSearchResult(cached);
       setActiveIndex(0);
       setIsLoading(false);
@@ -2520,6 +2540,7 @@ export const IngredientPicker = ({
     const run = async () => {
       try {
         setIsLoading(true);
+        setSearchError(null);
         setHasResolvedQuery(false);
         const response = await searchIngredients({
           q: effectiveSearchQuery,
@@ -2556,7 +2577,11 @@ export const IngredientPicker = ({
         if (isAbortError(error) || controller.signal.aborted) {
           return;
         }
-        throw error;
+        setSearchError(resolveIngredientPickerSearchError(error));
+        setSearchResult(emptyIngredientSearchResult);
+        setActiveIndex(0);
+        setIsLoading(false);
+        setHasResolvedQuery(true);
       }
     };
 
@@ -2568,7 +2593,7 @@ export const IngredientPicker = ({
       clearTimeout(timer);
       controller.abort();
     };
-  }, [activeCustomOnly, activeFavoritesOnly, activeGroup, activeGroupKey, activeGroupValue, activeManufacturer, activeManufacturerKey, activeManufacturerLabel, activeQuickStartFamily, appliedGroup, appliedQuickStartFamily?.key, category, effectiveSearchQuery, hasSearchScope, includeCustom, isExpanded, isOpen, limit, query, searchIngredients, searchOnEmptyQuery, subtype, type]);
+  }, [activeCustomOnly, activeFavoritesOnly, activeGroup, activeGroupKey, activeGroupValue, activeManufacturer, activeManufacturerKey, activeManufacturerLabel, activeQuickStartFamily, appliedGroup, appliedQuickStartFamily?.key, category, effectiveSearchQuery, hasSearchScope, includeCustom, isExpanded, isOpen, limit, query, searchIngredients, searchOnEmptyQuery, searchRetryCount, subtype, type]);
 
   useEffect(() => {
     if (!showQuickStart || !category) {
@@ -2961,12 +2986,12 @@ export const IngredientPicker = ({
     });
   };
 
-  const showSuggestions = shouldShowIngredientSuggestions({
+  const showSuggestions = !searchError && shouldShowIngredientSuggestions({
     isOpen,
     itemsCount: visibleItems.length,
     refinementsCount: refinementMode ? searchResult.refinements.length : 0
   });
-  const isLoadingVisible = shouldShowIngredientLoadingState({
+  const isLoadingVisible = !searchError && shouldShowIngredientLoadingState({
     hasResolvedQuery,
     isOpen,
     query: effectiveSearchQuery,
@@ -2978,7 +3003,7 @@ export const IngredientPicker = ({
     hasSearchScope,
     searchOnEmptyQuery
   });
-  const showEmptyState = shouldShowIngredientEmptyState({
+  const showEmptyState = !searchError && shouldShowIngredientEmptyState({
     hasResolvedQuery,
     isLoading,
     isOpen,
@@ -3410,7 +3435,7 @@ export const IngredientPicker = ({
               }, 0);
             }}
             placeholder={inputPlaceholder}
-            className={`h-10 w-full rounded-md border border-border px-3 text-base sm:text-sm ${isLoadingVisible ? "pr-10" : ""}`}
+            className={`h-10 w-full rounded-md border border-border px-3 text-base sm:text-sm [@media(pointer:coarse)]:text-base ${isLoadingVisible ? "pr-10" : ""}`}
             role="combobox"
             aria-expanded={isOpen}
             aria-busy={isLoadingVisible}
@@ -3498,6 +3523,17 @@ export const IngredientPicker = ({
         </div>
         {quickStartPanel}
         {loadingPanel}
+        {isOpen && searchError ? (
+          <IngredientPickerSearchErrorState
+            message={searchError}
+            onRetry={() => {
+              setSearchError(null);
+              setHasResolvedQuery(false);
+              setSearchRetryCount((count) => count + 1);
+              inputRef.current?.focus();
+            }}
+          />
+        ) : null}
         {showSuggestions ? suggestionsPanel : null}
         {showEmptyState ? emptyStatePanel : null}
       </div>

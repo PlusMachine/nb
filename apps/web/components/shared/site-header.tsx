@@ -22,6 +22,15 @@ export function SiteHeader() {
     setMobileOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    const desktopQuery = window.matchMedia("(min-width: 1280px)");
+    const closeOnDesktop = (event: MediaQueryListEvent) => {
+      if (event.matches) setMobileOpen(false);
+    };
+    desktopQuery.addEventListener("change", closeOnDesktop);
+    return () => desktopQuery.removeEventListener("change", closeOnDesktop);
+  }, []);
+
   // Закрытие по клику вне хедера и по Escape.
   useEffect(() => {
     if (!mobileOpen) {
@@ -46,7 +55,7 @@ export function SiteHeader() {
   }, [mobileOpen]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur">
       <div
         ref={containerRef}
         className="relative mx-auto flex h-14 max-w-7xl items-center justify-between gap-x-6 px-6"
@@ -59,7 +68,7 @@ export function SiteHeader() {
           >
             NB
           </Link>
-          <nav className="hidden items-center gap-1 text-sm lg:flex" aria-label="Разделы сайта">
+          <nav className="hidden items-center gap-1 text-sm xl:flex" aria-label="Разделы сайта">
             {publicLinks.map((link) => {
               const active = isActivePath(pathname, link.href);
               return (
@@ -93,14 +102,14 @@ export function SiteHeader() {
             onClick={() => setMobileOpen((value) => !value)}
             aria-label={mobileOpen ? "Закрыть меню" : "Открыть меню"}
             aria-expanded={mobileOpen}
-            className="grid min-h-11 min-w-11 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground lg:hidden"
+            className="grid min-h-11 min-w-11 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground xl:hidden"
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
 
         {mobileOpen ? (
-          <div className="absolute inset-x-0 top-full z-50 border-b border-border bg-popover px-6 py-3 shadow-lg lg:hidden">
+          <div className="absolute inset-x-0 top-full z-50 max-h-[calc(100dvh-3.5rem)] overflow-y-auto border-b border-border bg-popover px-6 py-3 shadow-lg xl:hidden">
             <nav className="flex flex-col gap-1 text-sm" aria-label="Разделы сайта">
               {publicLinks.map((link) => {
                 const active = isActivePath(pathname, link.href);

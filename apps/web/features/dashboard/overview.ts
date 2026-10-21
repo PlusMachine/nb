@@ -112,12 +112,11 @@ export const buildDashboardOnboarding = ({
     {
       key: "stock",
       title: "Пополните склад",
-      hint: "Рецепты сверяются со складом и показывают, чего не хватает под варку.",
+      hint: "Занесите остатки — рецепты покажут, чего хватает для варки.",
       done: inventoryTotalItems > 0,
-      links: [
-        { href: "/catalog", label: "Выбрать из каталога" },
-        { href: "/app/ingredients", label: "Добавить вручную" }
-      ]
+      // Склад наполняется через модалку на /app/ingredients (поиск + свой),
+      // а не через публичный хаб /catalog — тот для browse, не для учёта остатков.
+      links: [{ href: "/app/ingredients", label: "Добавить на склад" }]
     },
     {
       key: "recipe",

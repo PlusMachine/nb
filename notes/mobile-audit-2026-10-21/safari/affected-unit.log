@@ -1,0 +1,42 @@
+
+ RUN  v4.0.18 /home/dopefish/projects/nb/apps/web
+
+ ✓ tests/bjcp-style-page-placeholder-image.test.ts (1 test) 1374ms
+     ✓ serves the generated OG card when heroImageUrl is only the shared BJCP placeholder  1372ms
+ ✓ tests/calculators-pages.test.ts (12 tests) 1274ms
+     ✓ /calculators renders all calculators grouped into section headings  418ms
+     ✓ calculator routes render through the dynamic route with seoTitle metadata, canonical and visible/JSON-LD breadcrumbs  637ms
+ ✓ tests/bjcp-style-page-seo.test.ts (9 tests) 642ms
+     ✓ redirects generateMetadata for a legacy alias slug to the canonical /bjcp/<slug>  402ms
+ ✓ tests/bjcp-hub-page-seo.test.ts (4 tests) 574ms
+     ✓ has a canonical /bjcp and an openGraph block  383ms
+ ✓ tests/bjcp-card-stats.test.ts (9 tests) 92ms
+ ✓ tests/calculators-access.test.tsx (9 tests) 90ms
+ ✓ tests/calculators-mash-infusion-view.test.ts (22 tests) 14ms
+ ✓ tests/calculators-visibility.test.tsx (13 tests) 13ms
+ ✓ tests/calculators-serialize-query.test.ts (15 tests) 13ms
+ ✓ tests/calculators-gravity-unit-migration.test.ts (28 tests) 11ms
+ ✓ tests/calculators-gravity-fallback-fields.test.ts (5 tests) 10ms
+ ✓ tests/calculators-brewing-water-method-preset.test.ts (17 tests) 10ms
+ ✓ tests/feedback-admin-actions.test.ts (3 tests) 10ms
+ ✓ tests/calculators-ingredient-picker-rows.test.ts (8 tests) 9ms
+ ✓ tests/calculators-yeast-pitch-preset.test.ts (12 tests) 8ms
+ ✓ tests/calculators-silent-zero-warnings.test.ts (4 tests) 8ms
+ ✓ tests/calculators-ibu-solubility-ceiling.test.ts (2 tests) 7ms
+ ✓ tests/calculators-bottling-mixed-sizes.test.ts (5 tests) 8ms
+ ✓ tests/calculators-hydrometer-view.test.ts (11 tests) 7ms
+ ✓ tests/calculators-refractometer-view.test.ts (11 tests) 7ms
+ ✓ tests/calculators-ibu-whirlpool-time-fallback.test.ts (4 tests) 7ms
+ ✓ tests/calculators-yeast-starter-stats.test.ts (4 tests) 7ms
+ ✓ tests/calculators-beer-color-scale.test.ts (8 tests) 6ms
+ ✓ tests/calculators-priming-co2-preset.test.ts (3 tests) 4ms
+ ✓ tests/calculators-abv-view.test.ts (6 tests) 6ms
+ ✓ tests/calculators-search.test.ts (4 tests) 6ms
+ ✓ tests/calculators-water-ph-preset-query.test.ts (6 tests) 6ms
+ ✓ tests/calculators-favorites-visibility.test.ts (3 tests) 5ms
+
+ Test Files  28 passed (28)
+      Tests  238 passed (238)
+   Start at  00:01:41
+   Duration  14.61s (transform 2.27s, setup 577ms, import 4.26s, tests 4.23s, environment 5ms)
+

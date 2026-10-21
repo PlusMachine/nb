@@ -45,12 +45,14 @@ import {
   isWaterTreatmentAcidLike,
   readWaterTreatmentConcentrationPct,
 } from "@/features/ingredients/water-treatment";
+import { resolveIngredientTechnicalDataHopAlphaAcidPct } from "@/features/ingredients/technical-fields";
 import { resolveIngredientCategory, resolveLegacyIngredientType } from "@/features/ingredients/taxonomy";
 import type { InventoryListItemDto } from "@/features/inventory/contracts";
 import {
   formatInventoryQuantityInputValue,
   resolveInventoryMeasurementForDisplay
 } from "@/features/inventory/display";
+import { buildHopHarvestYearOptions } from "@/features/inventory/hop-harvest-year";
 import { resolveInventoryPackEquivalent } from "@/features/inventory/pack";
 import { inventoryFermentableSubtypeLabels } from "@/features/inventory/page-model";
 import type { InventoryPriceInputMode } from "@/features/inventory/purchase-cost";
@@ -70,6 +72,8 @@ type Props = {
   currencyRates: SystemCurrencyRateMap;
   initialQuickStartDataByContext?: IngredientPickerQuickStartResultByContext | null;
   renderTrigger?: (onClick: () => void) => React.ReactNode;
+  /** Allows list badges (alpha / harvest year) to open the same editor dialog. */
+  openRequestRef?: React.MutableRefObject<(() => void) | null>;
   initiallyOpen?: boolean;
 };
 
@@ -84,6 +88,8 @@ type FormState = {
   ingredientCatalogItemId: string | null;
   userCustomIngredientId: string | null;
   waterTreatmentConcentrationPct: string;
+  hopAlphaAcidPct: string;
+  harvestYear: string;
   enteredQuantity: string;
   enteredUnit: InventoryUnit;
   priceInputMode: InventoryPriceInputMode;
@@ -111,6 +117,28 @@ const formatConcentrationInputValue = (value: number | null | undefined) => {
 
   return Number.isInteger(value) ? String(value) : String(Number(value.toFixed(2)));
 };
+
+const formatHopAlphaInputValue = (value: number | null | undefined) => {
+  if (value == null || !Number.isFinite(value)) {
+    return "";
+  }
+
+  return String(Number(value.toFixed(2)));
+};
+
+const formatHarvestYearInputValue = (value: number | null | undefined) => {
+  if (value == null || !Number.isFinite(value)) {
+    return "";
+  }
+
+  return String(Math.trunc(value));
+};
+
+export const isHopInventoryEditorSelection = (
+  selected: IngredientSuggestionItem | null
+): selected is IngredientSuggestionItem => (
+  Boolean(selected && (selected.category === "hop" || selected.type === "hop"))
+);
 
 export const resolveInventoryEditorUnitProfile = (
   form: Pick<FormState, "type" | "category" | "subtype" | "enteredUnit">,
@@ -159,6 +187,7 @@ export const resolveInventoryEditorInitialSelection = (
   derivedFromDisplayName: source.derivedFromDisplayName ?? null,
   groupName: source.groupName ?? null,
   itemKind: source.itemKind ?? null,
+  harvestYear: source.harvestYear ?? null,
   source: source.sourceKind === "catalog" ? "catalog" : "custom"
 });
 
@@ -232,6 +261,8 @@ export const createFormState = (
     ingredientCatalogItemId: item.source.sourceKind === "catalog" ? item.source.sourceId : null,
     userCustomIngredientId: item.source.sourceKind === "custom" ? item.source.sourceId : null,
     waterTreatmentConcentrationPct: formatConcentrationInputValue(readWaterTreatmentConcentrationPct(item.source.technicalData)),
+    hopAlphaAcidPct: formatHopAlphaInputValue(resolveIngredientTechnicalDataHopAlphaAcidPct(item.source.technicalData)),
+    harvestYear: formatHarvestYearInputValue(item.source.harvestYear),
     enteredQuantity: formatInventoryQuantityInputValue(displayMeasurement.quantity, displayMeasurement.unit),
     enteredUnit: displayMeasurement.unit,
     priceInputMode: item.priceInputMode ?? (displayPriceMinor != null ? "total" : "total"),
@@ -253,10 +284,12 @@ const canSubmitInventoryForm = (form: FormState) => {
 
 const validateInventoryEditorNumbers = ({
   form,
-  showWaterTreatmentConcentrationField
+  showWaterTreatmentConcentrationField,
+  showHopBatchFields
 }: {
   form: FormState;
   showWaterTreatmentConcentrationField: boolean;
+  showHopBatchFields: boolean;
 }) => {
   const errors: Record<string, string | null> = {
     enteredQuantity: validateNumericInput(form.enteredQuantity, {
@@ -278,6 +311,14 @@ const validateInventoryEditorNumbers = ({
       min: 0,
       max: 100,
       exclusiveMin: true
+    });
+  }
+
+  if (showHopBatchFields) {
+    errors.hopAlphaAcidPct = validateNumericInput(form.hopAlphaAcidPct, {
+      label: "Альфа-кислота",
+      min: 0,
+      max: 100
     });
   }
 
@@ -370,6 +411,7 @@ export function InventoryItemDetailsEditor({
   currencyRates,
   initialQuickStartDataByContext = null,
   renderTrigger,
+  openRequestRef,
   initiallyOpen = false
 }: Props) {
   const [editing, setEditing] = useState(initiallyOpen);
@@ -416,6 +458,12 @@ export function InventoryItemDetailsEditor({
     })
     : null;
   const showWaterTreatmentConcentrationField = isWaterTreatmentAcidSuggestion(selectedSuggestion);
+  const showHopBatchFields = isHopInventoryEditorSelection(selectedSuggestion);
+  const currentNumberErrors = validateInventoryEditorNumbers({
+    form,
+    showWaterTreatmentConcentrationField,
+    showHopBatchFields
+  });
   const selectionCategoryValue = resolveInventoryIngredientCategoryValue({
     category: form.category,
     subtype: form.subtype,
@@ -443,10 +491,6 @@ export function InventoryItemDetailsEditor({
     category: form.category,
     subtype: form.subtype,
     initialQuickStartDataByContext
-  });
-  const currentNumberErrors = validateInventoryEditorNumbers({
-    form,
-    showWaterTreatmentConcentrationField
   });
   const hasCurrentNumberErrors = hasValidationErrors(currentNumberErrors);
 
@@ -500,6 +544,8 @@ export function InventoryItemDetailsEditor({
       waterTreatmentConcentrationPct: showWaterTreatmentConcentrationField
         ? form.waterTreatmentConcentrationPct
         : null,
+      hopAlphaAcidPct: showHopBatchFields ? form.hopAlphaAcidPct : null,
+      harvestYear: showHopBatchFields ? form.harvestYear : null
     };
   };
 
@@ -514,6 +560,17 @@ export function InventoryItemDetailsEditor({
     setResult(null);
     setEditing(true);
   };
+
+  useEffect(() => {
+    if (!openRequestRef) {
+      return;
+    }
+
+    openRequestRef.current = openEditor;
+    return () => {
+      openRequestRef.current = null;
+    };
+  });
 
   const clearSelectedIngredient = () => {
     const resetState = resolveInventoryEditorSelectionResetState();
@@ -540,6 +597,8 @@ export function InventoryItemDetailsEditor({
       ingredientCatalogItemId: null,
       userCustomIngredientId: null,
       waterTreatmentConcentrationPct: "",
+      hopAlphaAcidPct: "",
+      harvestYear: "",
       enteredUnit: resetUnitProfile.defaultUnit
     }));
     setResult(null);
@@ -588,7 +647,8 @@ export function InventoryItemDetailsEditor({
                     const sourcePayload = buildSubmitSourcePayload();
                     const nextFieldErrors = validateInventoryEditorNumbers({
                       form,
-                      showWaterTreatmentConcentrationField
+                      showWaterTreatmentConcentrationField,
+                      showHopBatchFields
                     });
                     setLocalFieldErrors(nextFieldErrors);
                     if (hasValidationErrors(nextFieldErrors)) {
@@ -599,6 +659,8 @@ export function InventoryItemDetailsEditor({
                       ingredientCatalogItemId: sourcePayload.ingredientCatalogItemId,
                       userCustomIngredientId: sourcePayload.userCustomIngredientId,
                       waterTreatmentConcentrationPct: sourcePayload.waterTreatmentConcentrationPct,
+                      hopAlphaAcidPct: sourcePayload.hopAlphaAcidPct,
+                      harvestYear: sourcePayload.harvestYear,
                       enteredQuantity: form.enteredQuantity,
                       enteredUnit: form.enteredUnit,
                       priceInputMode: form.priceInputMode,
@@ -645,6 +707,8 @@ export function InventoryItemDetailsEditor({
                           ingredientCatalogItemId: null,
                           userCustomIngredientId: null,
                           waterTreatmentConcentrationPct: "",
+                          hopAlphaAcidPct: "",
+                          harvestYear: "",
                           enteredUnit: nextUnitProfile.defaultUnit
                         }));
                         setResult(null);
@@ -765,6 +829,10 @@ export function InventoryItemDetailsEditor({
                           waterTreatmentConcentrationPct: formatConcentrationInputValue(
                             readWaterTreatmentConcentrationPct(selected.technicalData)
                           ),
+                          hopAlphaAcidPct: formatHopAlphaInputValue(
+                            resolveIngredientTechnicalDataHopAlphaAcidPct(selected.technicalData)
+                          ),
+                          harvestYear: formatHarvestYearInputValue(selected.harvestYear),
                           enteredUnit: nextUnitProfile.defaultUnit
                         }));
                         setResult(null);
@@ -799,7 +867,7 @@ export function InventoryItemDetailsEditor({
                       />
                         {selectedPackEquivalent ? (
                           <p className="text-xs text-muted-foreground">
-                            1 pack = {selectedPackEquivalent.normalizedQuantity} {selectedPackEquivalent.normalizedUnit}
+                            1 уп. = {selectedPackEquivalent.normalizedQuantity} {selectedPackEquivalent.normalizedUnit}
                           </p>
                         ) : null}
                     </div>
@@ -825,6 +893,42 @@ export function InventoryItemDetailsEditor({
                         />
                         {(localFieldErrors.waterTreatmentConcentrationPct || currentNumberErrors.waterTreatmentConcentrationPct || result?.fieldErrors?.waterTreatmentConcentrationPct) ? <span className="mt-1 block text-xs text-destructive">{localFieldErrors.waterTreatmentConcentrationPct ?? currentNumberErrors.waterTreatmentConcentrationPct ?? result?.fieldErrors?.waterTreatmentConcentrationPct}</span> : null}
                       </label>
+                    ) : null}
+                    {showHopBatchFields ? (
+                      <div className="grid gap-3 sm:grid-cols-2 sm:max-w-md">
+                        <label className="block text-sm font-medium text-foreground">Альфа-кислота, %
+                          <NumericInput
+                            min={0}
+                            max={100}
+                            step="0.1"
+                            value={form.hopAlphaAcidPct}
+                            onChange={(event) => {
+                              setForm((current) => ({ ...current, hopAlphaAcidPct: event.target.value }));
+                              setLocalFieldErrors((current) => ({ ...current, hopAlphaAcidPct: null }));
+                              setResult(null);
+                            }}
+                            className="mt-1.5 w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-base transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
+                          />
+                          {(localFieldErrors.hopAlphaAcidPct || currentNumberErrors.hopAlphaAcidPct || result?.fieldErrors?.hopAlphaAcidPct) ? <span className="mt-1 block text-xs text-destructive">{localFieldErrors.hopAlphaAcidPct ?? currentNumberErrors.hopAlphaAcidPct ?? result?.fieldErrors?.hopAlphaAcidPct}</span> : null}
+                        </label>
+                        <label className="block text-sm font-medium text-foreground">Урожай
+                          <select
+                            className="mt-1.5 w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-base transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
+                            value={form.harvestYear}
+                            onChange={(event) => {
+                              setForm((current) => ({ ...current, harvestYear: event.target.value }));
+                              setLocalFieldErrors((current) => ({ ...current, harvestYear: null }));
+                              setResult(null);
+                            }}
+                          >
+                            <option value="">Не указан</option>
+                            {buildHopHarvestYearOptions(form.harvestYear).map((year) => (
+                              <option key={year} value={year}>{year}</option>
+                            ))}
+                          </select>
+                          {(localFieldErrors.harvestYear || result?.fieldErrors?.harvestYear) ? <span className="mt-1 block text-xs text-destructive">{localFieldErrors.harvestYear ?? result?.fieldErrors?.harvestYear}</span> : null}
+                        </label>
+                      </div>
                     ) : null}
                     <div className="grid gap-3 sm:grid-cols-2">
                       <label className="block text-sm font-medium text-foreground">Количество *

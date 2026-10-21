@@ -39,6 +39,7 @@ export const brewPlanSnapshotSchema = z.object({
     recipeEfficiencyPct: z.number().nullable().optional()
   }),
   equipmentProfileSnapshot: z.record(z.string(), z.unknown()).nullable(),
+  equipmentWarnings: z.array(z.string()).optional(),
   waterPlanMeta: z.record(z.string(), z.unknown()).nullable(),
   mashSteps: z.array(z.record(z.string(), z.unknown())),
   boilPlan: z.object({
@@ -373,7 +374,7 @@ export const brewDayStepStatePatchSchema = z.object({
   done: z.boolean().optional(),
   timerStartedAt: z.string().datetime({ offset: true }).nullable().optional()
 }).refine((value) => value.done !== undefined || value.timerStartedAt !== undefined, {
-  message: "Пустой патч шага."
+  message: "Нет изменений для сохранения."
 });
 export type BrewDayStepStatePatch = z.infer<typeof brewDayStepStatePatchSchema>;
 
@@ -416,6 +417,8 @@ export type BrewBatchInventoryLogEntry = {
 export type BrewBatchInventoryView = {
   brewBatchId: string;
   recipeId: string | null;
+  /** Полный состав партии сохранён; источник рецепта для списания не нужен. */
+  hasInventorySnapshot: boolean;
   /** Есть незавершённое (не возвращённое) списание этой партии. */
   hasConsumed: boolean;
   /** Можно вернуть списанное на склад (есть нетто-списание). */
@@ -479,6 +482,7 @@ export type BrewBatchConsumePlanLine = {
    *  (той же, что и у exact/substitutes.availableQuantity) — для клиентского гарда
    *  двойного бронирования одной позиции склада (Ф2, П3). */
   requiredQuantityNormalized: number;
+  normalizedUnit?: import("../inventory/units").InventoryUnit;
   kind: "exact" | "exact_short" | "substitute_available" | "missing";
   /**
    * Короткий exact КЛАМПАЕТСЯ (спишется остаток, не роняя транзакцию) или БЛОКИРУЕТ
@@ -491,6 +495,8 @@ export type BrewBatchConsumePlanLine = {
   exactClamps: boolean;
   /** Точная позиция склада (тот же продукт). comparison здесь всегда null. */
   exact: BrewBatchConsumePlanCandidate | null;
+  /** Лоты одного точного продукта в общей нормализованной единице строки. */
+  exactLots?: Array<{ inventoryItemId: string; availableQuantity: number }>;
   /** Кандидаты на замену — ближе по характеристике выше, затем больший остаток. */
   substitutes: BrewBatchConsumePlanCandidate[];
   /** Для kind="missing": деталка каталога при наличии привязки, иначе поиск по имени. */

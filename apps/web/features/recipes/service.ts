@@ -38,6 +38,7 @@ import {
 import { assertRateLimit } from "@nb/auth";
 import { getBjcpStyleHeroImageByBjcpId } from "@nb/content";
 import { normalizeSearchText, swapKeyboardLayout } from "@nb/search";
+import { normalizedSearchMatch } from "@/lib/search-sql";
 import {
   createRecipePayloadSchema,
   defaultRecipeProcessMeta,
@@ -55,6 +56,7 @@ import {
   type RecipeCalculationMeta,
   type RecipeCloneSourceDto,
   type RecipeDetailDto,
+  type PublicRecipeDetailDto,
   type RecipeDraftPreviewDto,
   type RecipeIngredientDto,
   type RecipeListItemDto,
@@ -98,8 +100,10 @@ import {
   type EquipmentProfileSnapshot
 } from "../equipment-profiles/contracts";
 import { getRecipePublicationFieldErrors } from "./publication-validation";
+import { getEquipmentProfile } from "../equipment-profiles/service";
+import { buildEquipmentProfileSnapshotFromDto } from "../equipment-profiles/snapshot";
 import { calculateRecipeFgEstimate } from "./fg-estimate";
-import { scaleRecipeToVolume } from "./scale";
+import { scaleRecipeDetailForBrew } from "./scale";
 import {
   normalizeRecipeBatchSize,
   normalizeRecipeIngredientAmountWithSource,
@@ -127,6 +131,7 @@ import {
   type IngredientSourceLinkage
 } from "../ingredients/source-linkage";
 import { resolveInventoryUnitProfile } from "../inventory/units";
+import { toPublicRecipeDetail } from "./public-detail";
 
 const DEFAULT_EFFICIENCY = DEFAULT_BREWHOUSE_EFFICIENCY_PCT;
 const DEFAULT_BATCH_SIZE_ENTERED_QUANTITY = 20;
@@ -144,8 +149,11 @@ class RecipeValidationError extends Error {
   }
 }
 
-const ensureOwnedRecipe = async (authorId: string, recipeId: string) => {
-  const recipe = await db.query.recipes.findFirst({
+type RecipeTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
+type RecipeDbClient = typeof db | RecipeTransaction;
+
+const ensureOwnedRecipe = async (authorId: string, recipeId: string, client: RecipeDbClient = db) => {
+  const recipe = await client.query.recipes.findFirst({
     where: and(eq(recipes.id, recipeId), eq(recipes.authorId, authorId))
   });
 
@@ -227,13 +235,13 @@ const ensurePublicRecipeBySlug = async (slug: string) => {
   return recipe;
 };
 
-const resolveUniqueRecipeSlug = async (title: string, recipeId?: string) => {
+const resolveUniqueRecipeSlug = async (title: string, recipeId?: string, client: RecipeDbClient = db) => {
   const base = toRecipeSlugBase(title);
   let index = 1;
 
   while (index <= 1000) {
     const candidate = appendSlugSuffix(base, index);
-    const existing = await db.query.recipes.findFirst({
+    const existing = await client.query.recipes.findFirst({
       where: eq(recipes.slug, candidate)
     });
 
@@ -247,11 +255,28 @@ const resolveUniqueRecipeSlug = async (title: string, recipeId?: string) => {
   throw new Error("SLUG_COLLISION");
 };
 
-const isSlugUniqueConstraintError = (error: unknown) => error instanceof Error
-  && (error.message.includes("recipes_slug_uidx") || (error as { code?: string }).code === "23505");
+const isSlugUniqueConstraintError = (error: unknown): boolean => {
+  if (!(error instanceof Error)) return false;
+  const pgError = error as Error & { code?: string; constraint?: string; cause?: unknown };
+  return (pgError.code === "23505" && pgError.constraint === "recipes_slug_uidx")
+    || error.message.includes("recipes_slug_uidx")
+    || (pgError.cause != null && isSlugUniqueConstraintError(pgError.cause));
+};
 
-const ensureCatalogIngredientExists = async (ingredientCatalogItemId: string) => {
-  const catalogItem = await db.query.ingredients.findFirst({
+// После unique violation PostgreSQL отклоняет запросы в этой транзакции.
+// Повторяем всю операцию в новой транзакции, а не отдельную запись slug.
+const withRecipeWriteTransaction = async <T>(write: (tx: RecipeTransaction) => Promise<T>): Promise<T> => {
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      return await db.transaction(write);
+    } catch (error) {
+      if (!isSlugUniqueConstraintError(error) || attempt >= 4) throw error;
+    }
+  }
+};
+
+const ensureCatalogIngredientExists = async (ingredientCatalogItemId: string, client: RecipeDbClient = db) => {
+  const catalogItem = await client.query.ingredients.findFirst({
     where: and(
       eq(ingredients.id, ingredientCatalogItemId),
       eq(ingredients.isActive, true)
@@ -265,8 +290,8 @@ const ensureCatalogIngredientExists = async (ingredientCatalogItemId: string) =>
   return catalogItem;
 };
 
-const ensureOwnedCustomIngredient = async (authorId: string, userCustomIngredientId: string) => {
-  const customIngredient = await db.query.userCustomIngredients.findFirst({
+const ensureOwnedCustomIngredient = async (authorId: string, userCustomIngredientId: string, client: RecipeDbClient = db) => {
+  const customIngredient = await client.query.userCustomIngredients.findFirst({
     where: and(
       eq(userCustomIngredients.id, userCustomIngredientId),
       eq(userCustomIngredients.userId, authorId)
@@ -280,9 +305,9 @@ const ensureOwnedCustomIngredient = async (authorId: string, userCustomIngredien
   return customIngredient;
 };
 
-const findCatalogIngredientIfAvailable = async (ingredientCatalogItemId: string) => {
+const findCatalogIngredientIfAvailable = async (ingredientCatalogItemId: string, client: RecipeDbClient = db) => {
   try {
-    return await ensureCatalogIngredientExists(ingredientCatalogItemId);
+    return await ensureCatalogIngredientExists(ingredientCatalogItemId, client);
   } catch (error) {
     if (error instanceof Error && error.message === "CATALOG_INGREDIENT_NOT_FOUND") {
       return null;
@@ -292,9 +317,9 @@ const findCatalogIngredientIfAvailable = async (ingredientCatalogItemId: string)
   }
 };
 
-const findOwnedCustomIngredientIfAvailable = async (authorId: string, userCustomIngredientId: string) => {
+const findOwnedCustomIngredientIfAvailable = async (authorId: string, userCustomIngredientId: string, client: RecipeDbClient = db) => {
   try {
-    return await ensureOwnedCustomIngredient(authorId, userCustomIngredientId);
+    return await ensureOwnedCustomIngredient(authorId, userCustomIngredientId, client);
   } catch (error) {
     if (error instanceof Error && error.message === "CUSTOM_INGREDIENT_NOT_FOUND") {
       return null;
@@ -441,7 +466,7 @@ const readImportedIngredientLinkage = (
   };
 };
 
-const buildRecipeStatsSourceRaw = (source: IngredientSourceLinkage): RecipeStatsSourceRaw => ({
+const buildRecipeStatsSourceRaw = (source: IngredientSourceLinkage | Pick<IngredientSourceLinkage, "type" | "technicalData">): RecipeStatsSourceRaw => ({
   type: source.type,
   technicalData: source.technicalData ?? undefined,
   properties: source.technicalData ? { technicalData: source.technicalData } : {}
@@ -492,8 +517,8 @@ const isRecipeBitternessFormula = (value: string): value is RecipeCalculationMet
   (recipeBitternessFormulas as readonly string[]).includes(value)
 );
 
-const getUserRecipeCalculationMeta = async (authorId: string): Promise<RecipeCalculationMeta> => {
-  const settings = await db.query.userBrewingSettings.findFirst({
+const getUserRecipeCalculationMeta = async (authorId: string, client: RecipeDbClient = db): Promise<RecipeCalculationMeta> => {
+  const settings = await client.query.userBrewingSettings.findFirst({
     where: eq(userBrewingSettings.userId, authorId)
   });
 
@@ -737,7 +762,8 @@ const prepareRecipeIngredientEntries = async (
     inventorySelectionMeta?: RecipeInventorySelectionMeta | null;
     externalImportMeta?: Record<string, unknown> | null;
   }>,
-  boilTimeMinutes: number
+  boilTimeMinutes: number,
+  client: RecipeDbClient = db
 ) => {
   const preparedValues: PreparedRecipeIngredientEntry[] = [];
 
@@ -746,14 +772,14 @@ const prepareRecipeIngredientEntries = async (
     let rawSource: RecipeStatsSourceRaw;
 
     if (ingredient.ingredientCatalogItemId) {
-      const catalog = await ensureCatalogIngredientExists(ingredient.ingredientCatalogItemId);
+      const catalog = await ensureCatalogIngredientExists(ingredient.ingredientCatalogItemId, client);
       resolvedSource = buildCatalogIngredientLinkage(catalog);
       rawSource = catalog;
       if (ingredient.familyId != null && ingredient.familyId !== resolvedSource.familyId) {
         throw new Error("INGREDIENT_LINKAGE_MISMATCH");
       }
     } else if (ingredient.userCustomIngredientId) {
-      const custom = await ensureOwnedCustomIngredient(authorId, ingredient.userCustomIngredientId);
+      const custom = await ensureOwnedCustomIngredient(authorId, ingredient.userCustomIngredientId, client);
       resolvedSource = buildCustomIngredientLinkage(custom);
       rawSource = custom;
       if (ingredient.familyId != null) {
@@ -1034,17 +1060,18 @@ const mapRecipeIngredientBase = (ingredient: typeof recipeIngredients.$inferSele
 const hydrateRecipeIngredientDto = async (
   authorId: string,
   ingredient: typeof recipeIngredients.$inferSelect,
-  boilTimeMinutes: number
+  boilTimeMinutes: number,
+  client: RecipeDbClient = db
 ): Promise<RecipeIngredientDto> => {
   const stepMeta = ingredient.stepMeta as Record<string, unknown> | null;
   const stepMetaLinkage = readRecipeIngredientLinkageMeta(stepMeta);
   let liveLinkage: IngredientSourceLinkage | null = null;
 
   if (ingredient.ingredientCatalogItemId) {
-    const catalog = await findCatalogIngredientIfAvailable(ingredient.ingredientCatalogItemId);
+    const catalog = await findCatalogIngredientIfAvailable(ingredient.ingredientCatalogItemId, client);
     liveLinkage = catalog ? buildCatalogIngredientLinkage(catalog) : null;
   } else if (ingredient.userCustomIngredientId) {
-    const custom = await findOwnedCustomIngredientIfAvailable(authorId, ingredient.userCustomIngredientId);
+    const custom = await findOwnedCustomIngredientIfAvailable(authorId, ingredient.userCustomIngredientId, client);
     liveLinkage = custom ? buildCustomIngredientLinkage(custom) : null;
   }
 
@@ -1323,31 +1350,13 @@ const toRecipeIngredientInsert = (
 });
 
 const syncRecipeIngredients = async (
-  authorId: string,
+  client: RecipeDbClient,
   recipeId: string,
-  payloadIngredients: Array<{
-    persistentKey?: string | null;
-    ingredientCatalogItemId?: string | null;
-    userCustomIngredientId?: string | null;
-    type?: typeof recipeIngredients.$inferInsert.type;
-    category?: RecipeIngredientDto["ingredientCategory"];
-    subtype?: string | null;
-    familyId?: string | null;
-    amountEnteredQuantity: number;
-    amountEnteredUnit: string;
-    stage: typeof recipeIngredients.$inferInsert.stage;
-    timeOffset?: number | null;
-    stepMeta?: Record<string, unknown> | null;
-    inventoryIntentMode?: RecipeInventoryIntentMode | null;
-    inventorySelectionMeta?: RecipeInventorySelectionMeta | null;
-    externalImportMeta?: Record<string, unknown> | null;
-  }>,
-  boilTimeMinutes: number
+  preparedIngredients: PreparedRecipeIngredientEntry[]
 ) => {
-  const existingIngredients = await db.query.recipeIngredients.findMany({
+  const existingIngredients = await client.query.recipeIngredients.findMany({
     where: eq(recipeIngredients.recipeId, recipeId)
   });
-  const preparedIngredients = await prepareRecipeIngredientEntries(authorId, payloadIngredients, boilTimeMinutes);
   const existingByPersistentKey = new Map(existingIngredients.map((ingredient) => [ingredient.persistentKey, ingredient]));
   const retainedIds = new Set<string>();
 
@@ -1358,7 +1367,7 @@ const syncRecipeIngredients = async (
 
     if (existing) {
       retainedIds.add(existing.id);
-      await db.update(recipeIngredients).set({
+      await client.update(recipeIngredients).set({
         ...nextValue,
         updatedAt: new Date()
       }).where(and(
@@ -1366,13 +1375,13 @@ const syncRecipeIngredients = async (
         eq(recipeIngredients.id, existing.id)
       )).returning();
     } else {
-      await db.insert(recipeIngredients).values(nextValue);
+      await client.insert(recipeIngredients).values(nextValue);
     }
   }
 
   for (const existing of existingIngredients) {
     if (!retainedIds.has(existing.id)) {
-      await db.delete(recipeIngredients).where(and(
+      await client.delete(recipeIngredients).where(and(
         eq(recipeIngredients.recipeId, recipeId),
         eq(recipeIngredients.id, existing.id)
       ));
@@ -1516,14 +1525,14 @@ const computeRecipeStatsSnapshot = (input: {
       preBoilVolumeL,
       postBoilVolumeL,
       fermentableGravityPoints,
-      hopUtilizationFactor: 1,
+      hopUtilizationFactor: input.equipmentProfileSnapshot?.hopUtilizationFactor ?? 1,
       hopFormUtilizationFactor: bitternessSettings.hopFormUtilizationFactor ?? 1,
       whirlpoolUtilizationFactor: bitternessSettings.whirlpoolUtilizationFactor ?? 1,
       includeBoilCarryoverIntoWhirlpool: bitternessSettings.includeBoilCarryoverIntoWhirlpool ?? true,
       whirlpoolTimeMinutes,
       whirlpoolTemperatureC,
       firstWortHopMode: bitternessSettings.firstWortHopMode ?? "bonus_10pct",
-      altitudeM: 0
+      altitudeM: input.equipmentProfileSnapshot?.altitudeM ?? 0
     }).ibu
     : null;
   const color = fermentables.length ? calculateColor(fermentables, batchVolumeL).srm : null;
@@ -1541,9 +1550,24 @@ const computeRecipeStatsSnapshot = (input: {
   };
 };
 
-export const recomputeRecipeStats = async (authorId: string, recipeId: string) => {
-  const recipe = await ensureOwnedRecipe(authorId, recipeId);
-  const ingredients = await db.query.recipeIngredients.findMany({
+/** Тот же расчёт, что у сохранения копии, для пересчитанной партии и её превью. */
+export const calculateRecipeDetailStats = (recipe: RecipeDetailDto) => computeRecipeStatsSnapshot({
+  ...recipe,
+  calculationMeta: parseRecipeCalculationMeta(recipe.calculationMeta),
+  ingredients: recipe.ingredients.map((line) => ({
+    ...line,
+    source: {
+      displayName: line.ingredientDisplayName ?? line.ingredientDisplayNameSnapshot ?? line.type,
+      category: line.ingredientCategory,
+      technicalData: line.ingredientTechnicalData ?? null,
+      raw: buildRecipeStatsSourceRaw({ type: line.type, technicalData: line.ingredientTechnicalData ?? null })
+    }
+  }))
+});
+
+export const recomputeRecipeStats = async (authorId: string, recipeId: string, client: RecipeDbClient = db) => {
+  const recipe = await ensureOwnedRecipe(authorId, recipeId, client);
+  const ingredients = await client.query.recipeIngredients.findMany({
     where: eq(recipeIngredients.recipeId, recipeId)
   });
   const hydratedIngredients = await Promise.all(ingredients.map(async (ingredient) => {
@@ -1551,11 +1575,11 @@ export const recomputeRecipeStats = async (authorId: string, recipeId: string) =
     let rawSource: RecipeStatsSourceRaw | null = null;
 
     if (ingredient.ingredientCatalogItemId) {
-      const catalog = await ensureCatalogIngredientExists(ingredient.ingredientCatalogItemId);
+      const catalog = await ensureCatalogIngredientExists(ingredient.ingredientCatalogItemId, client);
       liveLinkage = buildCatalogIngredientLinkage(catalog);
       rawSource = catalog;
     } else if (ingredient.userCustomIngredientId) {
-      const custom = await ensureOwnedCustomIngredient(authorId, ingredient.userCustomIngredientId);
+      const custom = await ensureOwnedCustomIngredient(authorId, ingredient.userCustomIngredientId, client);
       liveLinkage = buildCustomIngredientLinkage(custom);
       rawSource = custom;
     }
@@ -1610,7 +1634,7 @@ export const recomputeRecipeStats = async (authorId: string, recipeId: string) =
 
   const calculationMeta = parseRecipeCalculationMeta(
     recipe.calculationMeta as Record<string, unknown> | null | undefined,
-    await getUserRecipeCalculationMeta(authorId)
+    await getUserRecipeCalculationMeta(authorId, client)
   );
   const stats = computeRecipeStatsSnapshot({
     batchSizeNormalizedQuantity: recipe.batchSizeNormalizedQuantity,
@@ -1628,7 +1652,7 @@ export const recomputeRecipeStats = async (authorId: string, recipeId: string) =
     fgEstimateDetails: stats.fgEstimateDetails
   });
 
-  const [updated] = await db.update(recipes).set({
+  const [updated] = await client.update(recipes).set({
     efficiency: stats.efficiency,
     og: stats.og,
     fg: stats.fg,
@@ -1652,46 +1676,58 @@ export const recomputeRecipeStats = async (authorId: string, recipeId: string) =
  * скрипт-флуд, квота — медленное засорение базы. Бросает RATE_LIMITED /
  * RECIPE_QUOTA_REACHED; экшены маппят их в понятные сообщения.
  */
-const assertRecipeCreationAllowed = async (authorId: string): Promise<void> => {
+const assertRecipeCreationAllowed = async (authorId: string, requestedCount = 1): Promise<void> => {
   await assertRateLimit(authorId, "recipe_create", RECIPE_CREATE_RATE_LIMIT, RECIPE_CREATE_RATE_WINDOW_SECONDS);
   const [row] = await db.select({ value: count() }).from(recipes).where(eq(recipes.authorId, authorId));
-  if ((row?.value ?? 0) >= RECIPE_MAX_COUNT_PER_USER) {
+  if ((row?.value ?? 0) + requestedCount > RECIPE_MAX_COUNT_PER_USER) {
     throw new Error("RECIPE_QUOTA_REACHED");
   }
 };
 
-export const createRecipe = async (
+export const createRecipes = async (
   authorId: string,
-  payload: unknown,
+  payloads: unknown[],
   options?: { recipeFamilyId?: string; versionNumber?: number; clonedFromRecipeId?: string | null }
 ) => {
-  await assertRecipeCreationAllowed(authorId);
-  const parsed = createRecipePayloadSchema.parse(normalizeCreateRecipePayloadDefaults(payload));
-  const preparedIngredients = await prepareRecipeIngredientEntries(authorId, parsed.ingredients, parsed.boilTimeMinutes);
-  const nextProcessMeta = parseRecipeProcessMeta(parsed.processMeta ?? null);
-  const nextCalculationMeta = parsed.calculationMeta != null
-    ? parseRecipeCalculationMeta(parsed.calculationMeta)
-    : null;
-  const nextWaterPlanMeta = parsed.waterPlanMeta != null
-    ? sanitizeRecipeWaterPlanMeta(parsed.waterPlanMeta as Record<string, unknown>)
-    : null;
-  validateRecipeForPublicationState({
-    publicationState: parsed.publicationState,
-    title: parsed.title,
-    styleId: parsed.styleId ?? null,
-    description: parsed.description ?? null,
-    boilTimeMinutes: parsed.boilTimeMinutes,
-    processMeta: nextProcessMeta as Record<string, unknown>,
-    ingredients: preparedIngredients
-  });
-  const batchSize = normalizeRecipeBatchSize(parsed.batchSizeEnteredQuantity, parsed.batchSizeEnteredUnit);
-  let [created] = [] as Array<typeof recipes.$inferSelect>;
-
-  for (let attempt = 0; attempt < 5; attempt += 1) {
-    const slug = await resolveUniqueRecipeSlug(parsed.title);
-
-    try {
-      [created] = await db.insert(recipes).values({
+  if (!payloads.length || payloads.length > 100) throw new Error("IMPORT_TOO_MANY_RECIPES");
+  await assertRecipeCreationAllowed(authorId, payloads.length);
+  // Prepare the entire collection before the first write; the transaction rolls
+  // back every recipe if any insert, ingredient or calculation fails.
+  const prepared: Array<{
+    parsed: ReturnType<typeof createRecipePayloadSchema.parse>;
+    preparedIngredients: Awaited<ReturnType<typeof prepareRecipeIngredientEntries>>;
+    nextProcessMeta: ReturnType<typeof parseRecipeProcessMeta>;
+    nextCalculationMeta: RecipeCalculationMeta | null;
+    nextWaterPlanMeta: ReturnType<typeof sanitizeRecipeWaterPlanMeta> | null;
+    batchSize: ReturnType<typeof normalizeRecipeBatchSize>;
+  }> = [];
+  for (const payload of payloads) {
+    const parsed = createRecipePayloadSchema.parse(normalizeCreateRecipePayloadDefaults(payload));
+    const preparedIngredients = await prepareRecipeIngredientEntries(authorId, parsed.ingredients, parsed.boilTimeMinutes);
+    const nextProcessMeta = parseRecipeProcessMeta(parsed.processMeta ?? null);
+    const nextCalculationMeta = parsed.calculationMeta != null
+      ? parseRecipeCalculationMeta(parsed.calculationMeta)
+      : null;
+    const nextWaterPlanMeta = parsed.waterPlanMeta != null
+      ? sanitizeRecipeWaterPlanMeta(parsed.waterPlanMeta as Record<string, unknown>)
+      : null;
+    validateRecipeForPublicationState({
+      publicationState: parsed.publicationState,
+      title: parsed.title,
+      styleId: parsed.styleId ?? null,
+      description: parsed.description ?? null,
+      boilTimeMinutes: parsed.boilTimeMinutes,
+      processMeta: nextProcessMeta as Record<string, unknown>,
+      ingredients: preparedIngredients
+    });
+    const batchSize = normalizeRecipeBatchSize(parsed.batchSizeEnteredQuantity, parsed.batchSizeEnteredUnit);
+    prepared.push({ parsed, preparedIngredients, nextProcessMeta, nextCalculationMeta, nextWaterPlanMeta, batchSize });
+  }
+  const created = await withRecipeWriteTransaction(async (tx) => {
+    const createdRecipes = [];
+    for (const { parsed, preparedIngredients, nextProcessMeta, nextCalculationMeta, nextWaterPlanMeta, batchSize } of prepared) {
+      const slug = await resolveUniqueRecipeSlug(parsed.title, undefined, tx);
+      const [created] = await tx.insert(recipes).values({
         authorId,
         recipeFamilyId: options?.recipeFamilyId ?? crypto.randomUUID(),
         versionNumber: options?.versionNumber ?? 1,
@@ -1718,133 +1754,125 @@ export const createRecipe = async (
         heroImageId: parsed.heroImageId ?? null,
         clonedFromRecipeId: options?.clonedFromRecipeId ?? null
       }).returning();
-      break;
-    } catch (error) {
-      if (!isSlugUniqueConstraintError(error) || attempt === 4) {
-        throw error;
-      }
+      if (!created) throw new Error("CREATE_FAILED");
+      await syncRecipeIngredients(tx, created.id, preparedIngredients);
+      await recomputeRecipeStats(authorId, created.id, tx);
+      createdRecipes.push(created);
     }
-  }
-
-  if (!created) {
-    throw new Error("CREATE_FAILED");
-  }
-
-  await syncRecipeIngredients(authorId, created.id, parsed.ingredients, parsed.boilTimeMinutes);
-  await recomputeRecipeStats(authorId, created.id);
-
-  return getRecipeById(authorId, created.id);
+    return createdRecipes;
+  });
+  return Promise.all(created.map((recipe) => getRecipeById(authorId, recipe.id)));
 };
+
+export const createRecipe = async (
+  authorId: string,
+  payload: unknown,
+  options?: { recipeFamilyId?: string; versionNumber?: number; clonedFromRecipeId?: string | null }
+) => (await createRecipes(authorId, [payload], options))[0]!;
 
 export const updateRecipe = async (authorId: string, recipeId: string, payload: unknown) => {
   const parsed = updateRecipePayloadSchema.parse(normalizeUpdateRecipePayloadDefaults(payload));
-  const current = await ensureOwnedRecipe(authorId, recipeId);
-  const nextBoilTimeMinutes = parsed.boilTimeMinutes ?? current.boilTimeMinutes ?? DEFAULT_BOIL_TIME_MINUTES;
-  const nextIngredientsPayload = parsed.ingredients ?? (await getOwnedRecipeById(authorId, recipeId)).ingredients.map((ingredient) => ({
-    persistentKey: ingredient.persistentKey,
-    ingredientCatalogItemId: ingredient.ingredientCatalogItemId,
-    userCustomIngredientId: ingredient.userCustomIngredientId,
-    type: ingredient.type,
-    category: ingredient.ingredientCategory ?? undefined,
-    subtype: ingredient.ingredientSubtype ?? null,
-    familyId: ingredient.ingredientFamilyId ?? null,
-    amountEnteredQuantity: ingredient.amountEnteredQuantity,
-    amountEnteredUnit: ingredient.amountEnteredUnit,
-    stage: ingredient.stage,
-    timeOffset: ingredient.timeOffset,
-    stepMeta: ingredient.stepMeta,
-    inventoryIntentMode: ingredient.inventoryIntentMode ?? null,
-    inventorySelectionMeta: ingredient.inventorySelectionMeta ?? null,
-    externalImportMeta: ingredient.externalImportMeta ?? null
-  }));
-  const preparedIngredients = await prepareRecipeIngredientEntries(authorId, nextIngredientsPayload, nextBoilTimeMinutes);
+  await withRecipeWriteTransaction(async (tx) => {
+    await tx.select({ id: recipes.id }).from(recipes)
+      .where(and(eq(recipes.id, recipeId), eq(recipes.authorId, authorId))).for("update");
+    const current = await ensureOwnedRecipe(authorId, recipeId, tx);
+    const nextBoilTimeMinutes = parsed.boilTimeMinutes ?? current.boilTimeMinutes ?? DEFAULT_BOIL_TIME_MINUTES;
+    const nextIngredientsPayload = parsed.ingredients ?? (await Promise.all((await tx.query.recipeIngredients.findMany({
+      where: eq(recipeIngredients.recipeId, recipeId)
+    })).map((ingredient) => hydrateRecipeIngredientDto(authorId, ingredient, nextBoilTimeMinutes, tx)))).map((ingredient) => ({
+      persistentKey: ingredient.persistentKey,
+      ingredientCatalogItemId: ingredient.ingredientCatalogItemId,
+      userCustomIngredientId: ingredient.userCustomIngredientId,
+      type: ingredient.type,
+      category: ingredient.ingredientCategory ?? undefined,
+      subtype: ingredient.ingredientSubtype ?? null,
+      familyId: ingredient.ingredientFamilyId ?? null,
+      amountEnteredQuantity: ingredient.amountEnteredQuantity,
+      amountEnteredUnit: ingredient.amountEnteredUnit,
+      stage: ingredient.stage,
+      timeOffset: ingredient.timeOffset,
+      stepMeta: ingredient.stepMeta,
+      inventoryIntentMode: ingredient.inventoryIntentMode ?? null,
+      inventorySelectionMeta: ingredient.inventorySelectionMeta ?? null,
+      externalImportMeta: ingredient.externalImportMeta ?? null
+    }));
+    const preparedIngredients = await prepareRecipeIngredientEntries(authorId, nextIngredientsPayload, nextBoilTimeMinutes, tx);
 
-  const batchSize = parsed.batchSizeEnteredQuantity !== undefined || parsed.batchSizeEnteredUnit !== undefined
-    ? normalizeRecipeBatchSize(
-      parsed.batchSizeEnteredQuantity ?? current.batchSizeEnteredQuantity,
-      parsed.batchSizeEnteredUnit ?? current.batchSizeEnteredUnit
-    )
-    : null;
+    const batchSize = parsed.batchSizeEnteredQuantity !== undefined || parsed.batchSizeEnteredUnit !== undefined
+      ? normalizeRecipeBatchSize(
+        parsed.batchSizeEnteredQuantity ?? current.batchSizeEnteredQuantity,
+        parsed.batchSizeEnteredUnit ?? current.batchSizeEnteredUnit
+      )
+      : null;
 
-  const nextTitle = parsed.title ?? current.title;
-  const nextProcessMeta = parsed.processMeta !== undefined
-    ? parseRecipeProcessMeta(parsed.processMeta ?? null)
-    : parseRecipeProcessMeta(current.processMeta as Record<string, unknown> | null | undefined);
-  const nextCalculationMeta = parsed.calculationMeta !== undefined
-    ? parsed.calculationMeta == null ? null : parseRecipeCalculationMeta(parsed.calculationMeta)
-    : parseRecipeCalculationMeta(current.calculationMeta as Record<string, unknown> | null | undefined, await getUserRecipeCalculationMeta(authorId));
-  validateRecipeForPublicationState({
-    publicationState: parsed.publicationState ?? current.publicationState,
-    title: nextTitle,
-    styleId: parsed.styleId !== undefined ? parsed.styleId : current.styleId,
-    description: parsed.description !== undefined ? parsed.description : current.description,
-    boilTimeMinutes: parsed.boilTimeMinutes ?? current.boilTimeMinutes,
-    processMeta: nextProcessMeta as Record<string, unknown>,
-    ingredients: preparedIngredients
-  });
-  // URL опубликованного рецепта канонический — смена названия не меняет slug
-  // (история слагов/redirect на переименование — отдельная задача). Для
-  // draft/private рецепт ещё не проиндексирован, слаг подстраивается под
-  // название, как раньше.
-  const shouldRecomputeSlug = parsed.title !== undefined && current.publicationState !== "published";
+    const nextTitle = parsed.title ?? current.title;
+    const nextProcessMeta = parsed.processMeta !== undefined
+      ? parseRecipeProcessMeta(parsed.processMeta ?? null)
+      : parseRecipeProcessMeta(current.processMeta as Record<string, unknown> | null | undefined);
+    const nextCalculationMeta = parsed.calculationMeta !== undefined
+      ? parsed.calculationMeta == null ? null : parseRecipeCalculationMeta(parsed.calculationMeta)
+      : parseRecipeCalculationMeta(current.calculationMeta as Record<string, unknown> | null | undefined, await getUserRecipeCalculationMeta(authorId, tx));
+    validateRecipeForPublicationState({
+      publicationState: parsed.publicationState ?? current.publicationState,
+      title: nextTitle,
+      styleId: parsed.styleId !== undefined ? parsed.styleId : current.styleId,
+      description: parsed.description !== undefined ? parsed.description : current.description,
+      boilTimeMinutes: parsed.boilTimeMinutes ?? current.boilTimeMinutes,
+      processMeta: nextProcessMeta as Record<string, unknown>,
+      ingredients: preparedIngredients
+    });
+    // URL опубликованного рецепта канонический — смена названия не меняет slug
+    // (история слагов/redirect на переименование — отдельная задача). Для
+    // draft/private рецепт ещё не проиндексирован, слаг подстраивается под
+    // название, как раньше.
+    const shouldRecomputeSlug = parsed.title !== undefined && current.publicationState !== "published";
 
-  let [updated] = [] as Array<typeof recipes.$inferSelect>;
+    const slug = shouldRecomputeSlug ? await resolveUniqueRecipeSlug(nextTitle, recipeId, tx) : current.slug;
+    const [updated] = await tx.update(recipes).set({
+      publicationState: parsed.publicationState ?? current.publicationState,
+      title: nextTitle,
+      slug,
+      styleId: parsed.styleId !== undefined ? parsed.styleId : current.styleId,
+      batchSizeEnteredQuantity: batchSize?.enteredQuantity ?? current.batchSizeEnteredQuantity,
+      batchSizeEnteredUnit: batchSize?.enteredUnit ?? current.batchSizeEnteredUnit,
+      batchSizeNormalizedQuantity: batchSize?.normalizedQuantity ?? current.batchSizeNormalizedQuantity,
+      batchSizeNormalizedUnit: batchSize?.normalizedUnit ?? current.batchSizeNormalizedUnit,
+      efficiency: parsed.efficiency !== undefined ? parsed.efficiency : current.efficiency,
+      boilTimeMinutes: parsed.boilTimeMinutes ?? current.boilTimeMinutes,
+      description: parsed.description !== undefined ? parsed.description : current.description,
+      authorNotes: parsed.authorNotes !== undefined ? parsed.authorNotes : current.authorNotes,
+      processMeta: parsed.processMeta !== undefined
+        ? sanitizeRecipeProcessMeta(nextProcessMeta as Record<string, unknown>)
+        : current.processMeta,
+      calculationMeta: parsed.calculationMeta !== undefined
+        ? nextCalculationMeta == null ? null : sanitizeRecipeCalculationMeta(nextCalculationMeta as Record<string, unknown>)
+        : current.calculationMeta,
+      draftState: parsed.draftState !== undefined ? parsed.draftState : current.draftState,
+      importMeta: parsed.importMeta !== undefined ? parsed.importMeta : current.importMeta,
+      equipmentProfileId: parsed.equipmentProfileId !== undefined ? parsed.equipmentProfileId : current.equipmentProfileId,
+      equipmentProfileSnapshot: parsed.equipmentProfileSnapshot !== undefined
+        ? parsed.equipmentProfileSnapshot as Record<string, unknown> | null
+        : current.equipmentProfileSnapshot,
+      waterPlanMeta: parsed.waterPlanMeta !== undefined
+        ? parsed.waterPlanMeta == null ? null : sanitizeRecipeWaterPlanMeta(parsed.waterPlanMeta as Record<string, unknown>)
+        : current.waterPlanMeta,
+      brewPlanMeta: parsed.brewPlanMeta !== undefined ? parsed.brewPlanMeta : current.brewPlanMeta,
+      heroImageId: parsed.heroImageId !== undefined ? parsed.heroImageId : current.heroImageId,
+      updatedAt: new Date()
+    }).where(eq(recipes.id, recipeId)).returning();
 
-  for (let attempt = 0; attempt < 5; attempt += 1) {
-    const slug = shouldRecomputeSlug ? await resolveUniqueRecipeSlug(nextTitle, recipeId) : current.slug;
-
-    try {
-      [updated] = await db.update(recipes).set({
-        publicationState: parsed.publicationState ?? current.publicationState,
-        title: nextTitle,
-        slug,
-        styleId: parsed.styleId !== undefined ? parsed.styleId : current.styleId,
-        batchSizeEnteredQuantity: batchSize?.enteredQuantity ?? current.batchSizeEnteredQuantity,
-        batchSizeEnteredUnit: batchSize?.enteredUnit ?? current.batchSizeEnteredUnit,
-        batchSizeNormalizedQuantity: batchSize?.normalizedQuantity ?? current.batchSizeNormalizedQuantity,
-        batchSizeNormalizedUnit: batchSize?.normalizedUnit ?? current.batchSizeNormalizedUnit,
-        efficiency: parsed.efficiency !== undefined ? parsed.efficiency : current.efficiency,
-        boilTimeMinutes: parsed.boilTimeMinutes ?? current.boilTimeMinutes,
-        description: parsed.description !== undefined ? parsed.description : current.description,
-        authorNotes: parsed.authorNotes !== undefined ? parsed.authorNotes : current.authorNotes,
-        processMeta: parsed.processMeta !== undefined
-          ? sanitizeRecipeProcessMeta(nextProcessMeta as Record<string, unknown>)
-          : current.processMeta,
-        calculationMeta: parsed.calculationMeta !== undefined
-          ? nextCalculationMeta == null ? null : sanitizeRecipeCalculationMeta(nextCalculationMeta as Record<string, unknown>)
-          : current.calculationMeta,
-        draftState: parsed.draftState !== undefined ? parsed.draftState : current.draftState,
-        importMeta: parsed.importMeta !== undefined ? parsed.importMeta : current.importMeta,
-        equipmentProfileId: parsed.equipmentProfileId !== undefined ? parsed.equipmentProfileId : current.equipmentProfileId,
-        equipmentProfileSnapshot: parsed.equipmentProfileSnapshot !== undefined
-          ? parsed.equipmentProfileSnapshot as Record<string, unknown> | null
-          : current.equipmentProfileSnapshot,
-        waterPlanMeta: parsed.waterPlanMeta !== undefined
-          ? parsed.waterPlanMeta == null ? null : sanitizeRecipeWaterPlanMeta(parsed.waterPlanMeta as Record<string, unknown>)
-          : current.waterPlanMeta,
-        brewPlanMeta: parsed.brewPlanMeta !== undefined ? parsed.brewPlanMeta : current.brewPlanMeta,
-        heroImageId: parsed.heroImageId !== undefined ? parsed.heroImageId : current.heroImageId,
-        updatedAt: new Date()
-      }).where(eq(recipes.id, recipeId)).returning();
-      break;
-    } catch (error) {
-      if (!isSlugUniqueConstraintError(error) || attempt === 4) {
-        throw error;
-      }
+    if (!updated) {
+      throw new Error("NOT_FOUND");
     }
-  }
 
-  if (!updated) {
-    throw new Error("NOT_FOUND");
-  }
+    if (parsed.ingredients) {
+      await syncRecipeIngredients(tx, recipeId, preparedIngredients);
+    }
 
-  if (parsed.ingredients) {
-    await syncRecipeIngredients(authorId, recipeId, parsed.ingredients, nextBoilTimeMinutes);
-  }
-
-  if (parsed.recomputeStats) {
-    await recomputeRecipeStats(authorId, recipeId);
-  }
+    if (parsed.recomputeStats) {
+      await recomputeRecipeStats(authorId, recipeId, tx);
+    }
+  });
 
   return getRecipeById(authorId, recipeId);
 };
@@ -1996,7 +2024,7 @@ export const buildRecipeClonePayload = (
   efficiency: recipe.efficiency,
   boilTimeMinutes: recipe.boilTimeMinutes,
   description: recipe.description,
-  authorNotes: recipe.authorNotes,
+  authorNotes: options.remapPrivateCustomToImported ? null : recipe.authorNotes,
   processMeta: recipe.processMeta,
   calculationMeta: recipe.calculationMeta ?? null,
   equipmentProfileId: options.resetEquipmentProfileId ? null : recipe.equipmentProfileId ?? null,
@@ -2075,65 +2103,44 @@ export const cloneRecipe = async (authorId: string, recipeId: string) => {
 };
 
 /**
- * Точечная поддержка «клонировать в другом объёме» (этап 6b, #6). Если передан
- * валидный targetBatchVolumeLitres — отдаёт эфемерно пересчитанную (scaleRecipeToVolume,
- * чистая функция) копию рецепта: батч и количества ингредиентов, сопоставленные по
- * persistentKey. Ничего не пишет в БД сама — только готовит вход для buildRecipeClonePayload.
- * Без параметра или при factor=1 — рецепт без изменений (клон в исходном объёме).
+ * Точечная поддержка «клонировать под свои параметры» (объём и/или efficiency).
+ * Тот же движок, что у старта варки (`scaleRecipeDetailForBrew`): дожим засыпи
+ * под целевую efficiency + масштаб объёма. Без параметров / без изменений —
+ * рецепт как есть (клон в исходных цифрах).
  */
-const applyCloneTargetVolume = (
+const applyCloneTargetParams = (
   recipe: RecipeDetailDto,
-  targetBatchVolumeLitres: number | null | undefined
-): RecipeDetailDto => {
-  if (targetBatchVolumeLitres == null || !Number.isFinite(targetBatchVolumeLitres) || targetBatchVolumeLitres <= 0) {
-    return recipe;
+  options: {
+    targetBatchVolumeLitres?: number | null;
+    targetEfficiencyPct?: number | null;
   }
-
-  const scaled = scaleRecipeToVolume(recipe, targetBatchVolumeLitres);
-  if (!scaled.scaled) {
-    return recipe;
-  }
-
-  const scaledByKey = new Map(scaled.ingredients.map((item) => [item.persistentKey, item]));
-  return {
-    ...recipe,
-    batchSizeEnteredQuantity: scaled.batchSizeEnteredQuantity,
-    ingredients: recipe.ingredients.map((ingredient) => {
-      const scaledIngredient = scaledByKey.get(ingredient.persistentKey);
-      // Мёржим количество ВМЕСТЕ с единицами: с Ф9 масштабирование может сменить
-      // единицу строки (пачка с известной граммовкой → граммы) — брать одно
-      // amountEnteredQuantity значило бы сохранить «8.1 pack» вместо «8.1 г».
-      return scaledIngredient
-        ? {
-            ...ingredient,
-            amountEnteredQuantity: scaledIngredient.amountEnteredQuantity,
-            amountEnteredUnit: scaledIngredient.amountEnteredUnit,
-            amountNormalizedQuantity: scaledIngredient.amountNormalizedQuantity,
-            amountNormalizedUnit: scaledIngredient.amountNormalizedUnit
-          }
-        : ingredient;
-    })
-  };
-};
+): RecipeDetailDto => scaleRecipeDetailForBrew(recipe, {
+  targetLitres: options.targetBatchVolumeLitres,
+  targetEfficiencyPct: options.targetEfficiencyPct
+});
 
 /**
  * Мост «сохранённое/публичное → мои рецепты»: копирует ЧУЖОЙ published-рецепт
  * (или свой в любом статусе) в новый ЧЕРНОВИК (private) во владении пользователя.
  * Проставляет clonedFromRecipeId для атрибуции. Гард: чужой можно копировать
  * только если он published. userId приходит из серверной сессии — не из клиента.
- * targetBatchVolumeLitres — опциональный целевой объём (см. applyCloneTargetVolume):
- * мост с эфемерным пересчётом на публичной странице (`RecipeScalePanel`) — копия
- * сразу заводится в объёме, который пользователь выбрал для предпросмотра. Показатели
- * источника наследуются копией (см. {@link applyInheritedRecipeStats}), КРОМЕ случая
- * реального пересчёта под другой объём — тогда пользователь явно попросил другой
- * объём, и правильный результат — свежий расчёт движка, а не цифры источника.
- * Копирование ЧУЖОГО рецепта инкрементит cloneCount источника («Скопировали N раз»);
- * копия своего же рецепта счётчик не трогает.
+ * targetBatchVolumeLitres / targetEfficiencyPct — опциональный пересчёт
+ * (см. applyCloneTargetParams): мост с эфемерным предпросмотром на публичной
+ * странице (`RecipeScalePanel`) — копия сразу заводится в параметрах, которые
+ * пользователь выбрал для предпросмотра. Показатели источника наследуются
+ * копией (см. {@link applyInheritedRecipeStats}), КРОМЕ случая реального
+ * пересчёта — тогда правильный результат — свежий расчёт движка, а не цифры
+ * источника. Копирование ЧУЖОГО рецепта инкрементит cloneCount источника
+ * («Скопировали N раз»); копия своего же рецепта счётчик не трогает.
  */
 export const cloneRecipeFromPublic = async (
   userId: string,
   sourceRecipeId: string,
-  options?: { targetBatchVolumeLitres?: number | null }
+  options?: {
+    targetBatchVolumeLitres?: number | null;
+    targetEfficiencyPct?: number | null;
+    equipmentProfileId?: string | null;
+  }
 ): Promise<RecipeDetailDto> => {
   const guard = await db.query.recipes.findFirst({
     where: eq(recipes.id, sourceRecipeId),
@@ -2154,16 +2161,21 @@ export const cloneRecipeFromPublic = async (
   const source = isOwn
     ? await getOwnedRecipeById(userId, sourceRecipeId)
     : await getPublicRecipeById(sourceRecipeId);
-  const scaledSource = applyCloneTargetVolume(source, options?.targetBatchVolumeLitres);
-  const wasRescaled = scaledSource !== source;
+  const selectedProfile = options?.equipmentProfileId ? await getEquipmentProfile(userId, options.equipmentProfileId) : null;
+  const scaledSource = applyCloneTargetParams(source, {
+    targetBatchVolumeLitres: options?.targetBatchVolumeLitres,
+    targetEfficiencyPct: options?.targetEfficiencyPct
+  });
+  const wasRescaled = scaledSource !== source || selectedProfile != null
+    || options?.targetBatchVolumeLitres != null || options?.targetEfficiencyPct != null;
 
   let clone = await createRecipe(
     userId,
-    buildRecipeClonePayload(scaledSource, {
+    { ...buildRecipeClonePayload(scaledSource, {
       title: buildCloneTitle(source.title),
       remapPrivateCustomToImported: !isOwn,
       resetEquipmentProfileId: !isOwn
-    }),
+    }), ...(selectedProfile ? { equipmentProfileId: selectedProfile.id, equipmentProfileSnapshot: buildEquipmentProfileSnapshotFromDto(selectedProfile) } : {}) },
     { clonedFromRecipeId: sourceRecipeId }
   );
 
@@ -2232,12 +2244,8 @@ export const createRecipeVersion = async (authorId: string, recipeId: string) =>
 };
 
 export const setRecipeIngredients = async (authorId: string, recipeId: string, ingredientsPayload: unknown) => {
-  const parsed = createRecipePayloadSchema.shape.ingredients.parse(ingredientsPayload);
-  const recipe = await ensureOwnedRecipe(authorId, recipeId);
-  await syncRecipeIngredients(authorId, recipeId, parsed, recipe.boilTimeMinutes ?? DEFAULT_BOIL_TIME_MINUTES);
-  await recomputeRecipeStats(authorId, recipeId);
-
-  return getRecipeById(authorId, recipeId);
+  const ingredients = createRecipePayloadSchema.shape.ingredients.parse(ingredientsPayload);
+  return updateRecipe(authorId, recipeId, { ingredients });
 };
 
 /** Число рецептов автора (все версии) одним индексным count — для статистики
@@ -2407,7 +2415,8 @@ export const getNextDefaultRecipeTitle = async (authorId: string) => {
 
 export const getRecipeById = async (viewerId: string | null, recipeId: string): Promise<RecipeDetailDto> => {
   const recipe = await ensureAccessibleRecipe(viewerId, recipeId);
-  return await mapRecipeDetailDto(recipe, recipe.ingredients);
+  const detail = await mapRecipeDetailDto(recipe, recipe.ingredients);
+  return viewerId === recipe.authorId ? detail : toPublicRecipeDetail(detail);
 };
 
 export const getOwnedRecipeById = async (authorId: string, recipeId: string): Promise<RecipeDetailDto> => {
@@ -2425,14 +2434,14 @@ export const getOwnedRecipeById = async (authorId: string, recipeId: string): Pr
   return await mapRecipeDetailDto(recipe, recipe.ingredients);
 };
 
-export const getPublicRecipeById = async (recipeId: string): Promise<RecipeDetailDto> => {
+export const getPublicRecipeById = async (recipeId: string): Promise<PublicRecipeDetailDto> => {
   const recipe = await ensurePublicRecipe(recipeId);
-  return await mapRecipeDetailDto(recipe, recipe.ingredients);
+  return toPublicRecipeDetail(await mapRecipeDetailDto(recipe, recipe.ingredients));
 };
 
-export const getPublicRecipeBySlug = async (slug: string): Promise<RecipeDetailDto> => {
+export const getPublicRecipeBySlug = async (slug: string): Promise<PublicRecipeDetailDto> => {
   const recipe = await ensurePublicRecipeBySlug(slug);
-  return await mapRecipeDetailDto(recipe, recipe.ingredients);
+  return toPublicRecipeDetail(await mapRecipeDetailDto(recipe, recipe.ingredients));
 };
 
 /**
@@ -2718,7 +2727,11 @@ const buildTextSearchCondition = (scope: TextSearchScope) => {
 
   const clauses = [
     ...scope.titleVariants.map((variant) => ilike(recipes.title, `%${escapeLikePattern(variant)}%`)),
-    ...scope.titleVariants.map((variant) => ilike(users.displayName, `%${escapeLikePattern(variant)}%`))
+    ...scope.titleVariants.map((variant) => ilike(users.displayName, `%${escapeLikePattern(variant)}%`)),
+    ...(scope.titleVariants.length ? [
+      normalizedSearchMatch(recipes.title, scope.titleVariants.map((variant) => `%${escapeLikePattern(variant)}%`)),
+      normalizedSearchMatch(users.displayName, scope.titleVariants.map((variant) => `%${escapeLikePattern(variant)}%`))
+    ] : [])
   ];
   if (scope.styleIds.length) {
     clauses.push(inArray(recipes.styleId, scope.styleIds));

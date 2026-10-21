@@ -1,0 +1,35 @@
+{
+  "node": "v24.13.1",
+  "candidates": 1229,
+  "parityQueries": 12,
+  "parity": "exact",
+  "iterations": 7,
+  "preparationMs": 24.3,
+  "preparedJsonBytes": 827421,
+  "results": [
+    {
+      "query": "citra",
+      "beforeP50Ms": 37.72,
+      "afterP50Ms": 8.89,
+      "speedup": 4.24
+    },
+    {
+      "query": "pilsner",
+      "beforeP50Ms": 250.5,
+      "afterP50Ms": 81.88,
+      "speedup": 3.06
+    },
+    {
+      "query": "vjpfbr",
+      "beforeP50Ms": 187.75,
+      "afterP50Ms": 38.05,
+      "speedup": 4.93
+    },
+    {
+      "query": "qqqzzz",
+      "beforeP50Ms": 145.07,
+      "afterP50Ms": 27.45,
+      "speedup": 5.28
+    }
+  ]
+}

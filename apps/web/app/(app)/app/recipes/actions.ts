@@ -18,8 +18,9 @@ import {
   reorderRecipeImages,
   setRecipeCoverImage
 } from "@/features/recipe-images/service";
-import { exportRecipeToBeerXml, importBeerXmlToCanonicalRecipe } from "@/features/recipes/interop/beerxml";
-import { importBrewfatherJsonToCanonicalRecipe } from "@/features/recipes/interop/brewfather-json";
+import { exportRecipeToBeerXml, importBeerXmlToCanonicalRecipes } from "@/features/recipes/interop/beerxml";
+import { importBrewfatherJsonToCanonicalRecipes } from "@/features/recipes/interop/brewfather-json";
+import { recipeImportErrorMessage } from "@/features/recipes/interop/errors";
 import {
   listRecipeWaterAdditivesStockStatus,
   type RecipeWaterAdditiveStockRequirement,
@@ -68,6 +69,7 @@ export type RecipeEditorResult = {
   ok: boolean;
   message: string;
   recipe?: RecipeDetailDto;
+  importedCount?: number;
   fieldErrors?: Record<string, string>;
 };
 
@@ -142,7 +144,7 @@ const mapRecipeEditorError = (error: unknown): RecipeEditorResult => {
       return { ok: false, message: "Тип ингредиента не совпадает с выбранным источником." };
     }
     if (error.message === "INGREDIENT_LINKAGE_MISMATCH") {
-      return { ok: false, message: "Выбранный ингредиент больше не совпадает с текущей taxonomy-связкой." };
+      return { ok: false, message: "Категория или подтип ингредиента изменились. Выберите ингредиент заново." };
     }
 
     if (error.message === "RATE_LIMITED") {
@@ -169,17 +171,21 @@ const assertImportInputWithinLimit = (input: unknown): void => {
 };
 
 const mapRecipeImportError = (error: unknown, formatLabel: string): RecipeEditorResult => {
+  const specificMessage = recipeImportErrorMessage(error);
+  if (specificMessage) return { ok: false, message: specificMessage };
   if (error instanceof Error && error.message === "IMPORT_INPUT_TOO_LARGE") {
     return { ok: false, message: `${formatLabel}: файл слишком большой для импорта.` };
   }
 
   if (error instanceof Error) {
+    if (error.message === "IMPORT_TOO_MANY_RECIPES") return { ok: false, message: "За один раз можно импортировать не больше 100 рецептов." };
+    if (error.message.startsWith("UNSUPPORTED_IMPORT_UNIT:") || error.message.startsWith("IMPORT_RECIPE_ERROR:")) return { ok: false, message: `Импорт отменён, рецепты не сохранены. ${error.message}` };
     if (error.message === "EMPTY_BEERXML") {
       return { ok: false, message: "BeerXML пустой. Загрузите файл или вставьте XML перед импортом." };
     }
 
     if (error.message === "INVALID_BEERXML") {
-      return { ok: false, message: "BeerXML не распознан: в файле не найден блок RECIPE." };
+      return { ok: false, message: "BeerXML повреждён или не содержит корректных блоков RECIPE." };
     }
 
     if (error.message === "INVALID_BREWFATHER_JSON") {
@@ -255,7 +261,7 @@ export const createRecipeAction = async (payload: RecipeEditorPayload): Promise<
 
     return {
       ok: true,
-      message: "Рецепт создан и статистика пересчитана.",
+      message: "Рецепт создан, показатели рассчитаны.",
       recipe
     };
   } catch (error) {
@@ -277,7 +283,7 @@ export const updateRecipeAction = async (recipeId: string, payload: RecipeEditor
 
     return {
       ok: true,
-      message: "Рецепт обновлен.",
+      message: "Рецепт обновлён.",
       recipe
     };
   } catch (error) {
@@ -298,7 +304,7 @@ export const deleteRecipeAction = async (recipeId: string): Promise<{ ok: boolea
       revalidatePath(`/recipes/${recipe.slug}`);
     }
 
-    return { ok: true, message: "Рецепт удален." };
+    return { ok: true, message: "Рецепт удалён." };
   } catch (error) {
     if (error instanceof Error && error.message === "NOT_FOUND") {
       return { ok: false, message: "Рецепт не найден или уже недоступен." };
@@ -539,7 +545,7 @@ export const proposeRecipeIngredientAction = async (payload: {
 // серверный путь — consumeBrewBatchInventory/restoreBrewBatchInventory
 // (features/brew-batches/inventory.ts), точки входа — чекбокс в диалоге «Сварить»
 // и блок «Склад» на странице партии. Редакторские экшены (sync/reserve/consume/
-// release/getStockCoverage) удалены: они списывали с brewBatchId=NULL и навсегда
+// release/getStockCoverage) удалёны: они списывали с brewBatchId=NULL и навсегда
 // запирали рецепт от списания на любую будущую варку.
 
 export type RecipeWaterAdditivesStockResult =
@@ -554,7 +560,7 @@ export const getRecipeWaterAdditivesStockAction = async (
     const status = await listRecipeWaterAdditivesStockStatus(user.id, requirements);
     return { ok: true, status };
   } catch {
-    return { ok: false, message: "Не удалось проверить наличие водных добавок на складе." };
+    return { ok: false, message: "Не удалось проверить наличие добавок для воды на складе." };
   }
 };
 
@@ -574,7 +580,7 @@ export const createBrewBatchFromRecipeAction = async (
 
     return {
       ok: true,
-      message: "Партия варки создана.",
+      message: "Партия создана.",
       brewBatchId: batch.id
     };
   } catch (error) {
@@ -588,7 +594,7 @@ export const createBrewBatchFromRecipeAction = async (
       return { ok: false, message: "Достигнут предел числа партий (500). Удалите ненужные, чтобы создавать новые." };
     }
 
-    return { ok: false, message: "Не удалось создать партию варки." };
+    return { ok: false, message: "Не удалось создать партию." };
   }
 };
 
@@ -600,11 +606,11 @@ export const exportRecipeBeerXmlAction = async (
     const recipe = await getOwnedRecipeById(user.id, recipeId);
     return {
       ok: true,
-      message: "BeerXML экспорт подготовлен.",
+      message: "Файл BeerXML подготовлен.",
       beerXml: exportRecipeToBeerXml(recipe)
     };
   } catch {
-    return { ok: false, message: "Не удалось подготовить BeerXML экспорт." };
+    return { ok: false, message: "Не удалось подготовить экспорт в BeerXML." };
   }
 };
 
@@ -614,11 +620,14 @@ export const importBeerXmlRecipeAction = async (
   try {
     const user = await requireUser();
     assertImportInputWithinLimit(beerXml);
-    const { createRecipeFromCanonicalImport } = await import("@/features/recipes/interop/import-service");
+    const { createRecipeFromCanonicalImport, createRecipesFromCanonicalImport } = await import("@/features/recipes/interop/import-service");
     const { resolveImportedStyleId, readImportedStyleHint } = await import("@/features/recipes/interop/resolve-imported-style");
-    const canonical = importBeerXmlToCanonicalRecipe(beerXml);
-    canonical.styleId = await resolveImportedStyleId(readImportedStyleHint(canonical.importMeta));
-    const recipe = await createRecipeFromCanonicalImport(user.id, canonical);
+    const canonical = importBeerXmlToCanonicalRecipes(beerXml);
+    for (const item of canonical) item.styleId ??= await resolveImportedStyleId(readImportedStyleHint(item.importMeta));
+    const imported = canonical.length === 1
+      ? [await createRecipeFromCanonicalImport(user.id, canonical[0]!) ]
+      : await createRecipesFromCanonicalImport(user.id, canonical);
+    const recipe = imported[0]!;
 
     revalidatePath("/app/recipes");
     revalidatePath(`/app/recipes/${recipe.id}`);
@@ -626,8 +635,9 @@ export const importBeerXmlRecipeAction = async (
 
     return {
       ok: true,
-      message: "BeerXML рецепт импортирован.",
-      recipe
+      message: canonical.length > 1 ? `Импортировано рецептов: ${canonical.length}. Все доступны в разделе «Рецепты».` : "Рецепт из BeerXML импортирован.",
+      recipe,
+      importedCount: imported.length
     };
   } catch (error) {
     return mapRecipeImportError(error, "BeerXML");
@@ -640,11 +650,14 @@ export const importBrewfatherJsonRecipeAction = async (
   try {
     const user = await requireUser();
     assertImportInputWithinLimit(payload);
-    const { createRecipeFromCanonicalImport } = await import("@/features/recipes/interop/import-service");
+    const { createRecipeFromCanonicalImport, createRecipesFromCanonicalImport } = await import("@/features/recipes/interop/import-service");
     const { resolveImportedStyleId, readImportedStyleHint } = await import("@/features/recipes/interop/resolve-imported-style");
-    const canonical = importBrewfatherJsonToCanonicalRecipe(payload);
-    canonical.styleId = await resolveImportedStyleId(readImportedStyleHint(canonical.importMeta));
-    const recipe = await createRecipeFromCanonicalImport(user.id, canonical);
+    const canonical = importBrewfatherJsonToCanonicalRecipes(payload);
+    for (const item of canonical) item.styleId ??= await resolveImportedStyleId(readImportedStyleHint(item.importMeta));
+    const imported = canonical.length === 1
+      ? [await createRecipeFromCanonicalImport(user.id, canonical[0]!) ]
+      : await createRecipesFromCanonicalImport(user.id, canonical);
+    const recipe = imported[0]!;
 
     revalidatePath("/app/recipes");
     revalidatePath(`/app/recipes/${recipe.id}`);
@@ -652,8 +665,9 @@ export const importBrewfatherJsonRecipeAction = async (
 
     return {
       ok: true,
-      message: "Brewfather JSON импортирован.",
-      recipe
+      message: canonical.length > 1 ? `Импортировано рецептов: ${canonical.length}. Все доступны в разделе «Рецепты».` : "Brewfather JSON импортирован.",
+      recipe,
+      importedCount: imported.length
     };
   } catch (error) {
     return mapRecipeImportError(error, "Brewfather JSON");
@@ -771,7 +785,7 @@ export const deleteRecipeImageAction = async (
 
     return {
       ok: true,
-      message: "Фото удалено."
+      message: "Фото удалёно."
     };
   } catch (error) {
     if (isRecipeImagesSchemaMissing(error)) {
@@ -800,7 +814,7 @@ export const setRecipeCoverImageAction = async (
 
     return {
       ok: true,
-      message: "Обложка обновлена.",
+      message: "Обложка обновлёна.",
       image
     };
   } catch (error) {
@@ -836,7 +850,7 @@ export const reorderRecipeImagesAction = async (
 
     return {
       ok: true,
-      message: "Порядок фотографий обновлен.",
+      message: "Порядок фотографий обновлён.",
       images
     };
   } catch (error) {

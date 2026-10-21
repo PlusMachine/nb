@@ -25,6 +25,11 @@ import {
   resolveYeastFormLabelRu
 } from "@/features/ingredients/presentation";
 import {
+  formatHopAlphaAcidStatLabel,
+  isHopWithUserAlphaOverride,
+  resolveCustomIngredientOwnershipBadgeLabel
+} from "@/features/ingredients/derived-ingredient-presentation";
+import {
   resolveIngredientTechnicalDataColorRangeEbc,
   sanitizeIngredientColorValue
 } from "@/features/ingredients/technical-fields";
@@ -83,8 +88,14 @@ const buildKeyStats = (item: UserCatalogIngredientDto): KeyStatBadge[] => {
 
   if (item.category === "hop") {
     const hopFormLabel = formatHopFormLabel(item.hopForm);
+    const userAlphaOverride = isHopWithUserAlphaOverride(item);
     return [
-      item.hopAlphaAcidPct != null ? { key: "alpha", label: `Альфа ${formatValue(item.hopAlphaAcidPct)}%` } : null,
+      item.hopAlphaAcidPct != null
+        ? {
+          key: "alpha",
+          label: formatHopAlphaAcidStatLabel(item.hopAlphaAcidPct, { userOverride: userAlphaOverride })
+        }
+        : null,
       item.hopBetaAcidPct != null ? { key: "beta", label: `Бета ${formatValue(item.hopBetaAcidPct)}%` } : null,
       hopFormLabel ? { key: "form", label: hopFormLabel } : null,
       item.properties && typeof item.properties.harvestYear === "number" ? { key: "harvest", label: `Урожай ${item.properties.harvestYear}` } : null
@@ -227,12 +238,13 @@ const IngredientNameBadges = ({ item, canManage, hideSubtypeBadge = false }: { i
   // строке — шум; в смешанных видах он информативен.
   const subtypeBadgeLabel = hideSubtypeBadge ? null : resolveSubtypeBadgeLabel(item);
   const usageBadges = canManage ? buildUsageBadges(item) : [];
+  const ownershipBadgeLabel = resolveCustomIngredientOwnershipBadgeLabel(item);
 
   return (
     <>
-      {item.source === "custom" ? (
+      {ownershipBadgeLabel ? (
         <span className="rounded-full bg-warning-subtle px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-warning-subtle-foreground ring-1 ring-warning/30">
-          {item.derivedFromIngredientId ? "ИЗМЕНЕННЫЙ" : "СВОЙ"}
+          {ownershipBadgeLabel}
         </span>
       ) : null}
       {subtypeBadgeLabel ? (

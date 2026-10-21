@@ -350,7 +350,7 @@ describe("recipe interop and brew plan foundation", () => {
     expect(hop?.hopForm).toBe("pellet");
     expect(processMeta?.mashProfile?.steps?.length).toBeGreaterThan(0);
     const yeast = canonical.ingredients.find((ingredient) => ingredient.category === "yeast");
-    expect(yeast?.unit === "g" || yeast?.unit === "pack").toBe(true);
+    expect(yeast?.unit === "g" || yeast?.unit === "l" || yeast?.unit === "pack").toBe(true);
     if (yeast?.unit === "pack") {
       expect(yeast.amount).toBeGreaterThanOrEqual(1);
     }

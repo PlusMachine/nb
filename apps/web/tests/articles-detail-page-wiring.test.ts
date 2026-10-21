@@ -125,7 +125,7 @@ describe("article detail page — render", () => {
 
     expect(html).toContain("Как сварить первое пиво");
     expect(html).toContain("санитайзинг оборудования");
-    expect(html).toContain('aria-label="Breadcrumb"');
+    expect(html).toContain('aria-label="Навигационная цепочка"');
     expect(html).toContain("application/ld+json");
     expect(html).toContain("BlogPosting");
     expect(html).toContain("BreadcrumbList");

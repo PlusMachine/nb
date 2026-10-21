@@ -1,0 +1,175 @@
+{
+  "base_head": "80fd137c90a563a0ed564d176e72b2caefb3d465",
+  "stages": {
+    "01": {
+      "patch": "notes/search-improvements-2026-10-16/patches/01.patch",
+      "files": [
+        {
+          "path": "apps/web/features/ingredients/ranking.ts",
+          "before_sha256": "94c1dc3f60814dac66c62bed739ccba5418077ae6492604c890f958ecede8a9d",
+          "after_sha256": "aae412a8fe8b13e7cafb4f98ae0706a5461f91505d6058b9931c7e850f09588e"
+        },
+        {
+          "path": "apps/web/features/ingredients/service.ts",
+          "before_sha256": "da445dd037131c845f36fed8c63c3e40a53a296ea473c63e1df1e1ac6a4d5d08",
+          "after_sha256": "fa99c329c1d50cd078a8c0704bb1c3b5afe0be39921f11097d5e8e8aeaab2ab5"
+        },
+        {
+          "path": "apps/web/features/ingredients/catalog-service.ts",
+          "before_sha256": "26d50f62d5fadfbba82a761c469a50d8abb60936ce96993e3fa97dd399d096b6",
+          "after_sha256": "7f7ac1b88c8301fb83d079275af057467317a3b0a5281f457dbe3c6b5b60aa9d"
+        },
+        {
+          "path": "apps/web/features/inventory/service.ts",
+          "before_sha256": "bb2ad3accecb0e52d09873a259c350bad968ac93d17519c6b022245bbbfa9d2d",
+          "after_sha256": "c5280b35822a0964fc7f6aa310e3af1314ea6801fbb3fa365cc62efcf5136b9e"
+        },
+        {
+          "path": "apps/web/tests/ingredient-ranking-prepared.test.ts",
+          "before_sha256": null,
+          "after_sha256": "003fc8f88f84c4910a4c20986b59925f453c443e129f66b517baaf7006252274"
+        },
+        {
+          "path": "apps/web/tests/fixtures/ingredient-ranking-baseline.json",
+          "before_sha256": null,
+          "after_sha256": "c1fb9c4458a8c50d5ce91aecc8408753f05bc4b1959deb3c0d67f162536698ff"
+        },
+        {
+          "path": "apps/web/tests/fixtures/ingredient-ranking-corpus.ts",
+          "before_sha256": null,
+          "after_sha256": "1c75de29f8a70196e97912332b06b60e70f684b0e26a0f284d07d81808965052"
+        }
+      ]
+    },
+    "02": {
+      "patch": "notes/search-improvements-2026-10-16/patches/02.patch",
+      "files": [
+        {
+          "path": "apps/web/features/ingredients/catalog-service.ts",
+          "before_sha256": "7f7ac1b88c8301fb83d079275af057467317a3b0a5281f457dbe3c6b5b60aa9d",
+          "after_sha256": "6f19c5cf6e93fec2ade43fc2d836b8f0d714d4107e982eaf9beb55af8a2c34ea"
+        },
+        {
+          "path": "apps/web/tests/user-catalog-ingredient-search.test.ts",
+          "before_sha256": "6ef4ad586c0cd9811abdd746ba1847081c00e01478d960891f691e3f9c0139f7",
+          "after_sha256": "41364fc3e4f96551f5faa838dcbe783400bb6add8ff872870588f6351d338f98"
+        }
+      ]
+    },
+    "03": {
+      "patch": "notes/search-improvements-2026-10-16/patches/03.patch",
+      "files": [
+        {
+          "path": "apps/web/components/ingredients/ingredient-picker.tsx",
+          "before_sha256": "a2a40e99875cf4d1bd70284c545657a95266bf81d98cffc9947c5ca60bde92e0",
+          "after_sha256": "40eb2a0e8dc3ed27f579311090d9cd577205438d5a33dceda792e1a5efc59d93"
+        },
+        {
+          "path": "apps/web/tests/ingredient-picker-search-errors.test.tsx",
+          "before_sha256": null,
+          "after_sha256": "ffe8b865c7416660089ec2169af49ff62b85e46eee02aa81b5d00aff9ef798db"
+        },
+        {
+          "path": "apps/web/tests/ingredient-search-api.test.ts",
+          "before_sha256": "f9f6f032da4d2efba655c11b7dffa2921611f91346a95ecd2fe6c44e5b0fbeab",
+          "after_sha256": "33466a3df0972c2c61e20da13d0a09d6b52412fc02b5495f388e35f7f6c7632b"
+        }
+      ]
+    },
+    "04": {
+      "patch": "notes/search-improvements-2026-10-16/patches/04.patch",
+      "files": [
+        {
+          "path": "apps/web/features/ingredients/service.ts",
+          "before_sha256": "fa99c329c1d50cd078a8c0704bb1c3b5afe0be39921f11097d5e8e8aeaab2ab5",
+          "after_sha256": "6e8cad928180dfe3e2b2333de61dea4f196fafd77cdfdc77332610302f371ef8"
+        },
+        {
+          "path": "apps/web/features/ingredients/catalog-cache.ts",
+          "before_sha256": null,
+          "after_sha256": "d4587ecbbc50001fed06a54387f591ecd8f6285251c30e4bbfec960a80a0bd5e"
+        },
+        {
+          "path": "apps/web/tests/ingredient-catalog-cache.test.ts",
+          "before_sha256": null,
+          "after_sha256": "17addc17ebacbf0afe6b1cf1c92ee30cdb2c5310e43e17aa7666c1fe10317b4b"
+        }
+      ]
+    },
+    "05": {
+      "patch": "notes/search-improvements-2026-10-16/patches/05.patch",
+      "files": [
+        {
+          "path": "packages/db/src/index.ts",
+          "before_sha256": "4de3fe72f4bfb6b217f704a7f1eb6e7ee740830e379f4dc9f1a6a9b68df8df99",
+          "after_sha256": "9f9ab9aec6c498bdeb10a3ea11c33524732812216674cbfdf092f284f0257a79"
+        },
+        {
+          "path": "apps/web/lib/search-sql.ts",
+          "before_sha256": null,
+          "after_sha256": "640e5cbcd49c152e29f98442dc3a12ae2f9c56a078d9d678b232f01a54fb2514"
+        },
+        {
+          "path": "apps/web/features/inventory/service.ts",
+          "before_sha256": "c5280b35822a0964fc7f6aa310e3af1314ea6801fbb3fa365cc62efcf5136b9e",
+          "after_sha256": "71fca1fa650fc774f33a7f126a224101485918e855d9f2288162048c5310fd63"
+        },
+        {
+          "path": "apps/web/features/recipes/service.ts",
+          "before_sha256": "ef3617892bd0a47702a29d35a10be0655efb8a81afb0a848fd4346e2d48e9c3b",
+          "after_sha256": "b549c045eaec2000c7966cfd4f7b82cf7a1a4ac0a7d14ec714698a5dfa2a9a5b"
+        },
+        {
+          "path": "apps/web/tests/search-sql-normalization.test.ts",
+          "before_sha256": null,
+          "after_sha256": "fe89c8bd0dd399d6937804ba6ba9db4d96172ebb13448d9f9fc393d5e49e70ea"
+        },
+        {
+          "path": "apps/web/tests/public-recipes-service.test.ts",
+          "before_sha256": "7df6e5e9e6b622e49a489f243bd7999a04c8f661dc41e27fdb938595085016a7",
+          "after_sha256": "2daee13a210aa185bffd5e0bea9f996c653857de263cecc4dee4c880a749105c"
+        }
+      ]
+    },
+    "06": {
+      "patch": "notes/search-improvements-2026-10-16/patches/06.patch",
+      "files": [
+        {
+          "path": "apps/web/features/ingredients/catalog-service.ts",
+          "before_sha256": "6f19c5cf6e93fec2ade43fc2d836b8f0d714d4107e982eaf9beb55af8a2c34ea",
+          "after_sha256": "5536e85b65ca1c9e0c12e4a64a69e5be83848f652cc40a8ba6b740736264efb8"
+        },
+        {
+          "path": "apps/web/tests/catalog-search-noise-and-sort.test.ts",
+          "before_sha256": "207ff1d797e2d05c77894276dc1e72ba2b4ddb47bccc25d2e056d1fc5849d61f",
+          "after_sha256": "a5ef2a69562fd8e57228585b90d5d7ee92817cd746fd14f2f3807ab681daa49a"
+        }
+      ]
+    },
+    "07": {
+      "patch": "notes/search-improvements-2026-10-16/patches/07.patch",
+      "files": [
+        {
+          "path": "apps/web/features/ingredients/ranking.ts",
+          "before_sha256": "aae412a8fe8b13e7cafb4f98ae0706a5461f91505d6058b9931c7e850f09588e",
+          "after_sha256": "fde66f58cbd42f90f855a4f2b035ff174c393f900d05d4362bac670dd3c4a3d5"
+        },
+        {
+          "path": "apps/web/features/ingredients/catalog-service.ts",
+          "before_sha256": "5536e85b65ca1c9e0c12e4a64a69e5be83848f652cc40a8ba6b740736264efb8",
+          "after_sha256": "3e2ceab6c487e11595c72be9d52fb92d2bb5c12251157bbdfc37d60a2dd09dcb"
+        },
+        {
+          "path": "apps/web/tests/ingredient-ranking-prepared.test.ts",
+          "before_sha256": "003fc8f88f84c4910a4c20986b59925f453c443e129f66b517baaf7006252274",
+          "after_sha256": "de05d4325f60f2d0a29f9642f6fee834d5ee01717bda9f213958c86c29f1a310"
+        },
+        {
+          "path": "apps/web/tests/user-catalog-ingredient-search.test.ts",
+          "before_sha256": "41364fc3e4f96551f5faa838dcbe783400bb6add8ff872870588f6351d338f98",
+          "after_sha256": "7429966fa74dd3938e345b450d26f45e29681b42fd2adc90eba0061b12ea163c"
+        }
+      ]
+    }
+  }
+}

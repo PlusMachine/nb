@@ -1,0 +1,358 @@
+{
+  "userId": "5bae007b-598c-469a-91b1-083548a9c905",
+  "assertions": [
+    "3 parties after double click; 1 recipe copy",
+    "two completed 10 L parties, identical OG 1.053 and ABV 5.6 targets",
+    "own equipment retained",
+    "bilingual hop snapshot",
+    "two measurements each",
+    "capacity warnings saved",
+    "all stock nonnegative"
+  ],
+  "recipes": [
+    {
+      "id": "7f567f53-5dab-4537-b1f0-848e189a3550",
+      "equipmentProfileId": "c53c8039-aee8-4ef1-857b-0c2c19934a81",
+      "efficiency": 65,
+      "batchMl": 10000,
+      "og": 1.053,
+      "abv": 5.64
+    }
+  ],
+  "batches": [
+    {
+      "id": "e017409d-7acf-439e-ab93-0e0292b5c1b0",
+      "recipeId": "cf4aa96c-01d7-4538-985f-a2a006634563",
+      "status": "completed",
+      "recipe": {
+        "id": "cf4aa96c-01d7-4538-985f-a2a006634563",
+        "title": "Каскад цветочно-ванильный (Граф_Пивоварoff, бир.рф)",
+        "batchSizeL": 10,
+        "efficiencyPct": 65,
+        "versionNumber": 1,
+        "recipeEfficiencyPct": 72
+      },
+      "targets": {
+        "og": 1.053,
+        "fg": 1.01,
+        "abv": 5.64
+      },
+      "water": {
+        "mashWaterVolumeL": 7.974,
+        "spargeWaterVolumeL": 10.110733333333332
+      },
+      "warnings": [],
+      "equipment": {
+        "id": "c53c8039-aee8-4ef1-857b-0c2c19934a81",
+        "name": "QA FIX Кухня 10 л"
+      },
+      "consumed": [
+        {
+          "lineKey": "5ae960f3-7a4f-4b80-8c62-40eb535bd483",
+          "itemId": "5154be49-91c0-44bc-96ab-a59eca6bf79b",
+          "quantity": 2,
+          "unit": "g",
+          "meta": {
+            "source": "recipe_selection",
+            "sourceRecipeId": "cf4aa96c-01d7-4538-985f-a2a006634563",
+            "snapshotVersion": 1,
+            "ingredientDisplayName": "Каскад",
+            "sourceRecipeIngredientId": "54c3ffdf-9c64-45bd-9912-4b16d6332668"
+          }
+        },
+        {
+          "lineKey": "9f0501fa-e57c-4bc3-98ff-afdd2ccc431e",
+          "itemId": "5154be49-91c0-44bc-96ab-a59eca6bf79b",
+          "quantity": 4,
+          "unit": "g",
+          "meta": {
+            "source": "recipe_selection",
+            "sourceRecipeId": "cf4aa96c-01d7-4538-985f-a2a006634563",
+            "snapshotVersion": 1,
+            "ingredientDisplayName": "Каскад",
+            "sourceRecipeIngredientId": "cc7388aa-b6dc-4abe-9069-649afec65a95"
+          }
+        },
+        {
+          "lineKey": "9d3c10f6-217d-4808-a132-2c07ac8d419b",
+          "itemId": "5154be49-91c0-44bc-96ab-a59eca6bf79b",
+          "quantity": 1.5,
+          "unit": "g",
+          "meta": {
+            "source": "recipe_selection",
+            "clamped": true,
+            "sourceRecipeId": "cf4aa96c-01d7-4538-985f-a2a006634563",
+            "snapshotVersion": 1,
+            "ingredientDisplayName": "Каскад",
+            "sourceRecipeIngredientId": "fe408b89-ea1e-4151-8b0a-acdd1a93456f",
+            "requestedQuantityNormalized": 6
+          }
+        },
+        {
+          "lineKey": "66b97c03-9de6-443c-9797-f34288289426",
+          "itemId": "a7ee5c5a-6cfa-49cf-af0d-81dc6157e593",
+          "quantity": 3.667,
+          "unit": "g",
+          "meta": {
+            "source": "recipe_selection",
+            "sourceRecipeId": "cf4aa96c-01d7-4538-985f-a2a006634563",
+            "snapshotVersion": 1,
+            "ingredientDisplayName": "US-05",
+            "sourceRecipeIngredientId": "95eb2be5-e6dc-4475-af62-cbadf18b5492"
+          }
+        },
+        {
+          "lineKey": "45e00bd0-8c3f-4079-9c2d-a389976c3d2b",
+          "itemId": "adfb1d76-cccc-4d0b-b88b-31db13a16506",
+          "quantity": 2658.462,
+          "unit": "g",
+          "meta": {
+            "source": "recipe_substitution",
+            "substitution": true,
+            "sourceRecipeId": "cf4aa96c-01d7-4538-985f-a2a006634563",
+            "snapshotVersion": 1,
+            "ingredientDisplayName": "Пэйл Эль",
+            "sourceRecipeIngredientId": "86f171a0-fd1f-479b-8347-3556a55fbec9",
+            "substitutedForDisplayName": "Пэйл Эль"
+          }
+        }
+      ]
+    },
+    {
+      "id": "76278ed5-6507-42a1-9ab4-5d606c9f06ee",
+      "recipeId": "cf4aa96c-01d7-4538-985f-a2a006634563",
+      "status": "cancelled",
+      "recipe": {
+        "id": "cf4aa96c-01d7-4538-985f-a2a006634563",
+        "title": "Каскад цветочно-ванильный (Граф_Пивоварoff, бир.рф)",
+        "batchSizeL": 60,
+        "efficiencyPct": 70,
+        "versionNumber": 1,
+        "recipeEfficiencyPct": 72
+      },
+      "targets": {
+        "og": 1.053,
+        "fg": 1.01,
+        "abv": 5.64
+      },
+      "water": {
+        "mashWaterVolumeL": 12,
+        "spargeWaterVolumeL": 67.43213333333334
+      },
+      "warnings": [
+        "Затор требует больше воды, чем вмещает заторник (12 л). Уменьшите объём партии или измените оборудование.",
+        "Засыпь 14.81 кг превышает максимум оборудования 2.5 кг."
+      ],
+      "equipment": {
+        "id": "fc5835aa-d633-4a4d-a8eb-2c31a85701bc",
+        "name": "QA FIX Braumeister 10"
+      },
+      "consumed": []
+    },
+    {
+      "id": "e7f3f119-6fc4-437c-8e54-d7b5297a2832",
+      "recipeId": "7f567f53-5dab-4537-b1f0-848e189a3550",
+      "status": "completed",
+      "recipe": {
+        "id": "7f567f53-5dab-4537-b1f0-848e189a3550",
+        "title": "Каскад цветочно-ванильный (Граф_Пивоварoff, бир.рф) (копия)",
+        "batchSizeL": 10,
+        "efficiencyPct": 65,
+        "versionNumber": 1,
+        "recipeEfficiencyPct": 65
+      },
+      "targets": {
+        "og": 1.053,
+        "fg": 1.01,
+        "abv": 5.64
+      },
+      "water": {
+        "engine": "balanced_default",
+        "phModel": "hybrid_mash_ph_v1",
+        "blendRatio": null,
+        "allowedAcids": [],
+        "allowedSalts": [],
+        "selectedAcid": "lactic_acid",
+        "setupEnabled": false,
+        "targetMashPh": null,
+        "sourceProfile": null,
+        "targetProfile": null,
+        "spargeSourcePh": null,
+        "targetSpargePh": null,
+        "mashWaterVolumeL": 7.98,
+        "calibrationOffset": null,
+        "sourceProfileMode": "preset",
+        "sourceProfileName": null,
+        "targetProfileMode": "catalog",
+        "targetProfileName": null,
+        "targetProfileSlug": null,
+        "totalWaterVolumeL": null,
+        "spargeWaterVolumeL": 10.106333333333335,
+        "manualSaltAdditions": [],
+        "targetProfileSource": null,
+        "acidConcentrationPct": null,
+        "sourceProfileSavedId": null,
+        "targetProfileSavedId": null,
+        "grainAbsorptionLPerKg": null,
+        "sourceProfilePresetId": "ro_distilled",
+        "targetProfilePresetId": null,
+        "targetProfileIsOverridden": false,
+        "spargeAcidificationEnabled": false,
+        "showWaterAdditivesInIngredients": false,
+        "targetProfileResolvedFromBjcpStyleKey": null
+      },
+      "warnings": [],
+      "equipment": {
+        "id": "c53c8039-aee8-4ef1-857b-0c2c19934a81",
+        "name": "QA FIX Кухня 10 л"
+      },
+      "consumed": [
+        {
+          "lineKey": "49d1457a-7196-4e8c-a5c4-5d2ecdbe1483",
+          "itemId": "1596eb2a-03a8-4ca6-ad51-633632471dda",
+          "quantity": 2,
+          "unit": "g",
+          "meta": {
+            "source": "recipe_substitution",
+            "substitution": true,
+            "sourceRecipeId": "7f567f53-5dab-4537-b1f0-848e189a3550",
+            "snapshotVersion": 1,
+            "ingredientDisplayName": "Каскад",
+            "sourceRecipeIngredientId": "f52b0541-f30e-4e95-9a52-7cf328ca4c6c",
+            "substitutedForDisplayName": "Каскад"
+          }
+        },
+        {
+          "lineKey": "91698fbd-5d8e-4948-9a53-4ac51c6aeaf1",
+          "itemId": "1596eb2a-03a8-4ca6-ad51-633632471dda",
+          "quantity": 4,
+          "unit": "g",
+          "meta": {
+            "source": "recipe_substitution",
+            "substitution": true,
+            "sourceRecipeId": "7f567f53-5dab-4537-b1f0-848e189a3550",
+            "snapshotVersion": 1,
+            "ingredientDisplayName": "Каскад",
+            "sourceRecipeIngredientId": "ca7509b8-99f8-423c-bf2b-4406bc9a12ac",
+            "substitutedForDisplayName": "Каскад"
+          }
+        },
+        {
+          "lineKey": "3cac029d-24e8-4ab7-b6f7-b248d58890cb",
+          "itemId": "1596eb2a-03a8-4ca6-ad51-633632471dda",
+          "quantity": 6,
+          "unit": "g",
+          "meta": {
+            "source": "recipe_substitution",
+            "substitution": true,
+            "sourceRecipeId": "7f567f53-5dab-4537-b1f0-848e189a3550",
+            "snapshotVersion": 1,
+            "ingredientDisplayName": "Каскад",
+            "sourceRecipeIngredientId": "610cfe17-f7a9-4e32-a6ca-7c3939b06469",
+            "substitutedForDisplayName": "Каскад"
+          }
+        },
+        {
+          "lineKey": "7d28fa2d-14a8-428a-9f81-713af8a0d450",
+          "itemId": "1596eb2a-03a8-4ca6-ad51-633632471dda",
+          "quantity": 6,
+          "unit": "g",
+          "meta": {
+            "source": "recipe_substitution",
+            "substitution": true,
+            "sourceRecipeId": "7f567f53-5dab-4537-b1f0-848e189a3550",
+            "snapshotVersion": 1,
+            "ingredientDisplayName": "Каскад",
+            "sourceRecipeIngredientId": "5b2e94bc-f39c-48d5-a03a-af7a69cf7aea",
+            "substitutedForDisplayName": "Каскад"
+          }
+        },
+        {
+          "lineKey": "dfcf34dd-7c8f-47b4-9542-dbf47a0a6eea",
+          "itemId": "1596eb2a-03a8-4ca6-ad51-633632471dda",
+          "quantity": 8,
+          "unit": "g",
+          "meta": {
+            "source": "recipe_substitution",
+            "substitution": true,
+            "sourceRecipeId": "7f567f53-5dab-4537-b1f0-848e189a3550",
+            "snapshotVersion": 1,
+            "ingredientDisplayName": "Каскад",
+            "sourceRecipeIngredientId": "4e995278-fed4-4968-9cdc-ee1c4aae9610",
+            "substitutedForDisplayName": "Каскад"
+          }
+        },
+        {
+          "lineKey": "a55b85a7-ecbc-4924-9835-a9f6f03b28ed",
+          "itemId": "a7ee5c5a-6cfa-49cf-af0d-81dc6157e593",
+          "quantity": 3.7,
+          "unit": "g",
+          "meta": {
+            "source": "recipe_selection",
+            "sourceRecipeId": "7f567f53-5dab-4537-b1f0-848e189a3550",
+            "snapshotVersion": 1,
+            "ingredientDisplayName": "US-05",
+            "sourceRecipeIngredientId": "48a4d50e-d974-4ae6-9311-36aa0ef01d29"
+          }
+        },
+        {
+          "lineKey": "8003ab77-bc54-4310-b962-dde864c5c3e6",
+          "itemId": "adfb1d76-cccc-4d0b-b88b-31db13a16506",
+          "quantity": 2660,
+          "unit": "g",
+          "meta": {
+            "source": "recipe_substitution",
+            "substitution": true,
+            "sourceRecipeId": "7f567f53-5dab-4537-b1f0-848e189a3550",
+            "snapshotVersion": 1,
+            "ingredientDisplayName": "Пэйл Эль",
+            "sourceRecipeIngredientId": "3f819025-8793-4da2-86eb-4ead395e18ce",
+            "substitutedForDisplayName": "Пэйл Эль"
+          }
+        }
+      ]
+    }
+  ],
+  "inventory": [
+    {
+      "id": "adfb1d76-cccc-4d0b-b88b-31db13a16506",
+      "name": "Пэйл Эль",
+      "quantity": 181.538,
+      "unit": "g",
+      "enteredQuantity": 0.182,
+      "enteredUnit": "kg"
+    },
+    {
+      "id": "1596eb2a-03a8-4ca6-ad51-633632471dda",
+      "name": "Каскад",
+      "quantity": 174,
+      "unit": "g",
+      "enteredQuantity": 174,
+      "enteredUnit": "g"
+    },
+    {
+      "id": "a7ee5c5a-6cfa-49cf-af0d-81dc6157e593",
+      "name": "US-05",
+      "quantity": 14.633,
+      "unit": "g",
+      "enteredQuantity": 1.33,
+      "enteredUnit": "pack"
+    },
+    {
+      "id": "944da904-9c2c-42de-bf2b-255321c4ab82",
+      "name": "QA Цедра FIX",
+      "quantity": 50,
+      "unit": "g",
+      "enteredQuantity": 50,
+      "enteredUnit": "g"
+    },
+    {
+      "id": "5154be49-91c0-44bc-96ab-a59eca6bf79b",
+      "name": "Каскад",
+      "quantity": 0,
+      "unit": "g",
+      "enteredQuantity": 0,
+      "enteredUnit": "g"
+    }
+  ]
+}

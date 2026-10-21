@@ -382,6 +382,104 @@ describe("inventory service", () => {
     });
   });
 
+  it("creates a derived hop custom ingredient when harvest year is set even if alpha matches", async () => {
+    mockState.catalogFindFirst.mockResolvedValueOnce({
+      id: "cat-hop-1",
+      isActive: true,
+      type: "hop",
+      itemKind: "hop",
+      nameRu: "Цитра",
+      nameEn: "Citra",
+      displayModeRu: "localized_first",
+      displayNameOverrideRu: null,
+      secondaryNameOverrideRu: null,
+      hideSecondaryNameRu: false,
+      countryCode: "US",
+      countryName: "США",
+      brand: "Yakima Chief",
+      producer: "Yakima Chief",
+      productCode: null,
+      groupName: null,
+      category: null,
+      subcategory: null,
+      presentOnBirrf: true,
+      inventoryEnabled: true,
+      attributes: {
+        alpha_acid_pct_typical: 12,
+        beta_acid_pct_typical: 3.8,
+        hop_form: "pellet"
+      },
+      quantityDefaults: null
+    });
+    mockState.customFindFirst.mockResolvedValueOnce(null);
+
+    const resolved = await resolveCatalogInventoryAdditionSource("u1", {
+      ingredientCatalogItemId: "cat-hop-1",
+      hopAlphaAcidPct: 12,
+      harvestYear: 2025
+    });
+
+    expect(resolved).toMatchObject({
+      sourceKind: "custom"
+    });
+    expect(mockState.inserted[0]?.values).toMatchObject({
+      type: "hop",
+      displayName: "Цитра",
+      hopAlphaAcidPct: 12,
+      hopSeason: "2025",
+      hopForm: "pellet"
+    });
+    expect(mockState.inserted[0]?.values.properties).toMatchObject({
+      derivedFromIngredientId: "cat-hop-1",
+      harvestYear: 2025
+    });
+  });
+
+  it("keeps harvest year empty when catalog hop alpha is overridden without a year", async () => {
+    mockState.catalogFindFirst.mockResolvedValueOnce({
+      id: "cat-hop-1",
+      isActive: true,
+      type: "hop",
+      itemKind: "hop",
+      nameRu: "Цитра",
+      nameEn: "Citra",
+      displayModeRu: "localized_first",
+      displayNameOverrideRu: null,
+      secondaryNameOverrideRu: null,
+      hideSecondaryNameRu: false,
+      countryCode: "US",
+      countryName: "США",
+      brand: "Yakima Chief",
+      producer: "Yakima Chief",
+      productCode: null,
+      groupName: null,
+      category: null,
+      subcategory: null,
+      presentOnBirrf: true,
+      inventoryEnabled: true,
+      attributes: {
+        alpha_acid_pct_typical: 12,
+        beta_acid_pct_typical: 3.8,
+        hop_form: "pellet"
+      },
+      quantityDefaults: null
+    });
+    mockState.customFindFirst.mockResolvedValueOnce(null);
+
+    await resolveCatalogInventoryAdditionSource("u1", {
+      ingredientCatalogItemId: "cat-hop-1",
+      hopAlphaAcidPct: 13.2
+    });
+
+    expect(mockState.inserted[0]?.values).toMatchObject({
+      hopAlphaAcidPct: 13.2,
+      hopSeason: null
+    });
+    expect(mockState.inserted[0]?.values.properties).toMatchObject({
+      harvestYear: null
+    });
+  });
+
   it("keeps catalog water acid source when concentration differs", async () => {
     mockState.catalogFindFirst.mockResolvedValueOnce({
       id: "lactic-acid",
@@ -916,7 +1014,7 @@ describe("inventory service", () => {
       ingredientDefaultDisplayUnitSnapshot: "kg",
       ingredientMeasurementDimension: "weight"
     });
-    mockState.catalogFindFirst.mockResolvedValueOnce({
+    const maltCatalog = {
       id: "cat-2",
       isActive: true,
       type: "malt",
@@ -939,7 +1037,10 @@ describe("inventory service", () => {
       inventoryEnabled: true,
       attributes: {},
       quantityDefaults: null
-    });
+    };
+    mockState.catalogFindFirst
+      .mockResolvedValueOnce(maltCatalog)
+      .mockResolvedValueOnce(maltCatalog);
 
     await updateInventoryItem("u1", "inv-1", {
       ingredientCatalogItemId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0",
@@ -965,6 +1066,104 @@ describe("inventory service", () => {
       normalizedUnit: "g",
       unitDimension: "weight",
       notes: "Обновили источник"
+    });
+  });
+
+  it("rebinds a catalog hop to a derived custom source when harvest year is set on edit", async () => {
+    const hopCatalog = {
+      id: "cat-hop-1",
+      isActive: true,
+      type: "hop",
+      itemKind: "hop",
+      nameRu: "Цитра",
+      nameEn: "Citra",
+      displayModeRu: "localized_first",
+      displayNameOverrideRu: null,
+      secondaryNameOverrideRu: null,
+      hideSecondaryNameRu: false,
+      countryCode: "US",
+      countryName: "США",
+      brand: "Yakima Chief",
+      producer: "Yakima Chief",
+      productCode: null,
+      groupName: null,
+      category: null,
+      subcategory: null,
+      presentOnBirrf: true,
+      inventoryEnabled: true,
+      attributes: {
+        alpha_acid_pct_typical: 12,
+        beta_acid_pct_typical: 3.8,
+        hop_form: "pellet"
+      },
+      quantityDefaults: null
+    };
+
+    mockState.inventoryFindFirst.mockResolvedValueOnce({
+      id: "inv-hop-1",
+      userId: "u1",
+      ingredientCatalogItemId: "cat-hop-1",
+      userCustomIngredientId: null,
+      ingredientCategory: "hop",
+      ingredientSubtype: "hop",
+      ingredientDefaultDisplayUnitSnapshot: "g",
+      ingredientMeasurementDimension: "weight",
+      properties: {}
+    });
+    mockState.catalogFindFirst
+      .mockResolvedValueOnce(hopCatalog)
+      .mockResolvedValueOnce(hopCatalog);
+    mockState.customFindFirst
+      .mockResolvedValueOnce(null)
+      .mockImplementationOnce(async () => ({
+        id: "new-1",
+        userId: "u1",
+        type: "hop",
+        displayName: "Цитра",
+        normalizedName: "цитра",
+        manufacturer: "Yakima Chief",
+        country: "США",
+        hopAlphaAcidPct: 12,
+        hopForm: "pellet",
+        hopSeason: "2025",
+        properties: {
+          category: "hop",
+          subtype: "hop",
+          harvestYear: 2025,
+          derivedFromIngredientId: "cat-hop-1",
+          technicalData: {
+            type: "hop",
+            alphaAcidPctTypical: 12,
+            betaAcidPctTypical: 3.8,
+            hopForm: "pellet"
+          },
+          defaultDisplayUnit: "g",
+          allowedUnits: ["g", "oz"],
+          measurementDimension: "weight"
+        },
+        visibility: "private"
+      }));
+
+    await updateInventoryItem("u1", "inv-hop-1", {
+      ingredientCatalogItemId: "cat-hop-1",
+      userCustomIngredientId: null,
+      hopAlphaAcidPct: 12,
+      harvestYear: 2025,
+      enteredQuantity: 100,
+      enteredUnit: "g"
+    });
+
+    expect(mockState.inserted[0]?.values).toMatchObject({
+      type: "hop",
+      hopAlphaAcidPct: 12,
+      hopSeason: "2025"
+    });
+    expect(mockState.updates.at(-1)?.set).toMatchObject({
+      ingredientCatalogItemId: null,
+      userCustomIngredientId: "new-1",
+      ingredientCategory: "hop",
+      enteredQuantity: 100,
+      enteredUnit: "g"
     });
   });
 

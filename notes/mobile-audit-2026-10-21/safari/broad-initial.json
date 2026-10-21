@@ -1,0 +1,2056 @@
+[
+  {
+    "route": "/app",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app-iPhone-13.png"
+  },
+  {
+    "route": "/app",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/app",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/app",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/app",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app-iPad-Pro-11.png"
+  },
+  {
+    "route": "/app",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/app",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/app/ingredients",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/ingredients",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [
+      {
+        "tag": "SPAN",
+        "text": "",
+        "cls": "absolute inset-y-0 left-[40%] w-full",
+        "rect": "{\"x\":159.390625,\"y\":734.5,\"width\":356,\"height\":89.25,\"top\":734.5,\"right\":515.390625,\"bottom\":823.75,\"left\":159.390625}"
+      },
+      {
+        "tag": "DIV",
+        "text": "",
+        "cls": "relative overflow-hidden h-full w-full",
+        "rect": "{\"x\":159.390625,\"y\":734.5,\"width\":356,\"height\":89.25,\"top\":734.5,\"right\":515.390625,\"bottom\":823.75,\"left\":159.390625}"
+      },
+      {
+        "tag": "IMG",
+        "text": "",
+        "cls": "scale-105 object-cover blur-[2px] transition duration-300 [@media(hover:hover)]:group-hover:scale-100 [@media(hover:hover)]:group-hover:blur-0",
+        "rect": "{\"x\":150.49063110351562,\"y\":732.2666625976562,\"width\":373.8000183105469,\"height\":93.7125244140625,\"top\":732.2666625976562,\"right\":524.2906494140625,\"bottom\":825.9791870117188,\"left\":150.49063110351562}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "",
+        "cls": "absolute inset-y-0 left-[40%] w-full",
+        "rect": "{\"x\":159.390625,\"y\":837.75,\"width\":356,\"height\":89.25,\"top\":837.75,\"right\":515.390625,\"bottom\":927,\"left\":159.390625}"
+      },
+      {
+        "tag": "DIV",
+        "text": "",
+        "cls": "relative overflow-hidden h-full w-full",
+        "rect": "{\"x\":159.390625,\"y\":837.75,\"width\":356,\"height\":89.25,\"top\":837.75,\"right\":515.390625,\"bottom\":927,\"left\":159.390625}"
+      },
+      {
+        "tag": "IMG",
+        "text": "",
+        "cls": "scale-105 object-cover blur-[2px] transition duration-500 [@media(hover:hover)]:group-hover:scale-100 [@media(hover:hover)]:group-hover:blur-0",
+        "rect": "{\"x\":150.49063110351562,\"y\":835.5166625976562,\"width\":373.8000183105469,\"height\":93.7125244140625,\"top\":835.5166625976562,\"right\":524.2906494140625,\"bottom\":929.2291870117188,\"left\":150.49063110351562}"
+      }
+    ],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_ingredients-iPhone-13.png"
+  },
+  {
+    "route": "/app/ingredients",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/app/ingredients",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [
+      {
+        "tag": "SPAN",
+        "text": "",
+        "cls": "absolute inset-y-0 left-[40%] w-full",
+        "rect": "{\"x\":519.1875,\"y\":588.75,\"width\":343,\"height\":89.25,\"top\":588.75,\"right\":862.1875,\"bottom\":678,\"left\":519.1875}"
+      },
+      {
+        "tag": "DIV",
+        "text": "",
+        "cls": "relative overflow-hidden h-full w-full",
+        "rect": "{\"x\":519.1875,\"y\":588.75,\"width\":343,\"height\":89.25,\"top\":588.75,\"right\":862.1875,\"bottom\":678,\"left\":519.1875}"
+      },
+      {
+        "tag": "IMG",
+        "text": "",
+        "cls": "scale-105 object-cover blur-[2px] transition duration-500 [@media(hover:hover)]:group-hover:scale-100 [@media(hover:hover)]:group-hover:blur-0",
+        "rect": "{\"x\":510.61248779296875,\"y\":586.5166625976562,\"width\":360.1500244140625,\"height\":93.7125244140625,\"top\":586.5166625976562,\"right\":870.7625122070312,\"bottom\":680.2291870117188,\"left\":510.61248779296875}"
+      }
+    ],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_ingredients-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/app/ingredients",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/app/ingredients",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [
+      {
+        "tag": "SPAN",
+        "text": "",
+        "cls": "absolute inset-y-0 left-[40%] w-full",
+        "rect": "{\"x\":578,\"y\":588.75,\"width\":385,\"height\":89.25,\"top\":588.75,\"right\":963,\"bottom\":678,\"left\":578}"
+      },
+      {
+        "tag": "DIV",
+        "text": "",
+        "cls": "relative overflow-hidden h-full w-full",
+        "rect": "{\"x\":578,\"y\":588.75,\"width\":385,\"height\":89.25,\"top\":588.75,\"right\":963,\"bottom\":678,\"left\":578}"
+      },
+      {
+        "tag": "IMG",
+        "text": "",
+        "cls": "scale-105 object-cover blur-[2px] transition duration-500 [@media(hover:hover)]:group-hover:scale-100 [@media(hover:hover)]:group-hover:blur-0",
+        "rect": "{\"x\":568.375,\"y\":586.5125122070312,\"width\":404.25,\"height\":93.71246337890625,\"top\":586.5125122070312,\"right\":972.625,\"bottom\":680.2249755859375,\"left\":568.375}"
+      }
+    ],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_ingredients-iPad-Pro-11.png"
+  },
+  {
+    "route": "/app/ingredients",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/app/ingredients",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [
+      {
+        "tag": "SPAN",
+        "text": "",
+        "cls": "absolute inset-y-0 left-[40%] w-full",
+        "rect": "{\"x\":808.1875,\"y\":348.75,\"width\":318,\"height\":89.25,\"top\":348.75,\"right\":1126.1875,\"bottom\":438,\"left\":808.1875}"
+      },
+      {
+        "tag": "DIV",
+        "text": "",
+        "cls": "relative overflow-hidden h-full w-full",
+        "rect": "{\"x\":808.1875,\"y\":348.75,\"width\":318,\"height\":89.25,\"top\":348.75,\"right\":1126.1875,\"bottom\":438,\"left\":808.1875}"
+      },
+      {
+        "tag": "IMG",
+        "text": "",
+        "cls": "scale-105 object-cover blur-[2px] transition duration-300 [@media(hover:hover)]:group-hover:scale-100 [@media(hover:hover)]:group-hover:blur-0",
+        "rect": "{\"x\":800.2374877929688,\"y\":346.51251220703125,\"width\":333.89996337890625,\"height\":93.71249389648438,\"top\":346.51251220703125,\"right\":1134.137451171875,\"bottom\":440.2250061035156,\"left\":800.2374877929688}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "",
+        "cls": "absolute inset-y-0 left-[40%] w-full",
+        "rect": "{\"x\":808.1875,\"y\":452,\"width\":318,\"height\":89.25,\"top\":452,\"right\":1126.1875,\"bottom\":541.25,\"left\":808.1875}"
+      },
+      {
+        "tag": "DIV",
+        "text": "",
+        "cls": "relative overflow-hidden h-full w-full",
+        "rect": "{\"x\":808.1875,\"y\":452,\"width\":318,\"height\":89.25,\"top\":452,\"right\":1126.1875,\"bottom\":541.25,\"left\":808.1875}"
+      },
+      {
+        "tag": "IMG",
+        "text": "",
+        "cls": "scale-105 object-cover blur-[2px] transition duration-500 [@media(hover:hover)]:group-hover:scale-100 [@media(hover:hover)]:group-hover:blur-0",
+        "rect": "{\"x\":800.2374877929688,\"y\":449.76251220703125,\"width\":333.89996337890625,\"height\":93.71246337890625,\"top\":449.76251220703125,\"right\":1134.137451171875,\"bottom\":543.4749755859375,\"left\":800.2374877929688}"
+      }
+    ],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_ingredients-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/app/shopping",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/shopping",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_shopping-iPhone-13.png"
+  },
+  {
+    "route": "/app/shopping",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/app/shopping",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_shopping-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/app/shopping",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/app/shopping",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_shopping-iPad-Pro-11.png"
+  },
+  {
+    "route": "/app/shopping",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/app/shopping",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_shopping-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/app/equipment",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/equipment",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_equipment-iPhone-13.png"
+  },
+  {
+    "route": "/app/equipment",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/app/equipment",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_equipment-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/app/equipment",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/app/equipment",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_equipment-iPad-Pro-11.png"
+  },
+  {
+    "route": "/app/equipment",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/app/equipment",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_equipment-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/app/devices",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/devices",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_devices-iPhone-13.png"
+  },
+  {
+    "route": "/app/devices",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/app/devices",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_devices-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/app/devices",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/app/devices",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_devices-iPad-Pro-11.png"
+  },
+  {
+    "route": "/app/devices",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/app/devices",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_devices-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/app/saved",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/saved",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_saved-iPhone-13.png"
+  },
+  {
+    "route": "/app/saved",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/app/saved",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_saved-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/app/saved",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/app/saved",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_saved-iPad-Pro-11.png"
+  },
+  {
+    "route": "/app/saved",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/app/saved",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_app_saved-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/app/master",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/master",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": "Иван Кузнецов",
+        "font": "14px"
+      },
+      {
+        "placeholder": "Новосибирск",
+        "font": "14px"
+      },
+      {
+        "placeholder": "Делаю ЦКТ и щиты автоматики из нержавейки.",
+        "font": "14px"
+      },
+      {
+        "placeholder": "Что делаете, из чего, сроки изготовления, география доставки…",
+        "font": "14px"
+      },
+      {
+        "placeholder": "@ivan_brew",
+        "font": "14px"
+      },
+      {
+        "placeholder": "+7 900 000-00-00",
+        "font": "14px"
+      },
+      {
+        "placeholder": "master@example.com",
+        "font": "14px"
+      },
+      {
+        "placeholder": "https://example.com",
+        "font": "14px"
+      },
+      {
+        "placeholder": "2019",
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "TEXTAREA",
+        "type": "textarea",
+        "class": "min-h-[8rem] rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      }
+    ],
+    "screenshot": "screens/scan_app_master-iPhone-13.png"
+  },
+  {
+    "route": "/app/master",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/app/master",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": "Иван Кузнецов",
+        "font": "14px"
+      },
+      {
+        "placeholder": "Новосибирск",
+        "font": "14px"
+      },
+      {
+        "placeholder": "Делаю ЦКТ и щиты автоматики из нержавейки.",
+        "font": "14px"
+      },
+      {
+        "placeholder": "Что делаете, из чего, сроки изготовления, география доставки…",
+        "font": "14px"
+      },
+      {
+        "placeholder": "@ivan_brew",
+        "font": "14px"
+      },
+      {
+        "placeholder": "+7 900 000-00-00",
+        "font": "14px"
+      },
+      {
+        "placeholder": "master@example.com",
+        "font": "14px"
+      },
+      {
+        "placeholder": "https://example.com",
+        "font": "14px"
+      },
+      {
+        "placeholder": "2019",
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "TEXTAREA",
+        "type": "textarea",
+        "class": "min-h-[8rem] rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      }
+    ],
+    "screenshot": "screens/scan_app_master-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/app/master",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/app/master",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": "Иван Кузнецов",
+        "font": "14px"
+      },
+      {
+        "placeholder": "Новосибирск",
+        "font": "14px"
+      },
+      {
+        "placeholder": "Делаю ЦКТ и щиты автоматики из нержавейки.",
+        "font": "14px"
+      },
+      {
+        "placeholder": "Что делаете, из чего, сроки изготовления, география доставки…",
+        "font": "14px"
+      },
+      {
+        "placeholder": "@ivan_brew",
+        "font": "14px"
+      },
+      {
+        "placeholder": "+7 900 000-00-00",
+        "font": "14px"
+      },
+      {
+        "placeholder": "master@example.com",
+        "font": "14px"
+      },
+      {
+        "placeholder": "https://example.com",
+        "font": "14px"
+      },
+      {
+        "placeholder": "2019",
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "TEXTAREA",
+        "type": "textarea",
+        "class": "min-h-[8rem] rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      }
+    ],
+    "screenshot": "screens/scan_app_master-iPad-Pro-11.png"
+  },
+  {
+    "route": "/app/master",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/app/master",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": "Иван Кузнецов",
+        "font": "14px"
+      },
+      {
+        "placeholder": "Новосибирск",
+        "font": "14px"
+      },
+      {
+        "placeholder": "Делаю ЦКТ и щиты автоматики из нержавейки.",
+        "font": "14px"
+      },
+      {
+        "placeholder": "Что делаете, из чего, сроки изготовления, география доставки…",
+        "font": "14px"
+      },
+      {
+        "placeholder": "@ivan_brew",
+        "font": "14px"
+      },
+      {
+        "placeholder": "+7 900 000-00-00",
+        "font": "14px"
+      },
+      {
+        "placeholder": "master@example.com",
+        "font": "14px"
+      },
+      {
+        "placeholder": "https://example.com",
+        "font": "14px"
+      },
+      {
+        "placeholder": "2019",
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "TEXTAREA",
+        "type": "textarea",
+        "class": "min-h-[8rem] rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      },
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+        "font": "14px"
+      }
+    ],
+    "screenshot": "screens/scan_app_master-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/profile",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/profile",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      },
+      {
+        "tag": "SELECT",
+        "type": "select-one",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      },
+      {
+        "tag": "SELECT",
+        "type": "select-one",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      }
+    ],
+    "screenshot": "screens/scan_profile-iPhone-13.png"
+  },
+  {
+    "route": "/profile",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/profile",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      },
+      {
+        "tag": "SELECT",
+        "type": "select-one",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      },
+      {
+        "tag": "SELECT",
+        "type": "select-one",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      }
+    ],
+    "screenshot": "screens/scan_profile-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/profile",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/profile",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      },
+      {
+        "tag": "SELECT",
+        "type": "select-one",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      },
+      {
+        "tag": "SELECT",
+        "type": "select-one",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      }
+    ],
+    "screenshot": "screens/scan_profile-iPad-Pro-11.png"
+  },
+  {
+    "route": "/profile",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/profile",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      },
+      {
+        "tag": "SELECT",
+        "type": "select-one",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      },
+      {
+        "tag": "SELECT",
+        "type": "select-one",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      }
+    ],
+    "screenshot": "screens/scan_profile-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/settings",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/profile",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      },
+      {
+        "tag": "SELECT",
+        "type": "select-one",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      },
+      {
+        "tag": "SELECT",
+        "type": "select-one",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      }
+    ],
+    "screenshot": "screens/scan_settings-iPhone-13.png"
+  },
+  {
+    "route": "/settings",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/profile",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      },
+      {
+        "tag": "SELECT",
+        "type": "select-one",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      },
+      {
+        "tag": "SELECT",
+        "type": "select-one",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      }
+    ],
+    "screenshot": "screens/scan_settings-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/settings",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/profile",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      },
+      {
+        "tag": "SELECT",
+        "type": "select-one",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      },
+      {
+        "tag": "SELECT",
+        "type": "select-one",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      }
+    ],
+    "screenshot": "screens/scan_settings-iPad-Pro-11.png"
+  },
+  {
+    "route": "/settings",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/profile",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      },
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [
+      {
+        "tag": "INPUT",
+        "type": "text",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      },
+      {
+        "tag": "SELECT",
+        "type": "select-one",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      },
+      {
+        "tag": "SELECT",
+        "type": "select-one",
+        "class": "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm",
+        "font": "14px"
+      }
+    ],
+    "screenshot": "screens/scan_settings-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [
+      {
+        "tag": "DIV",
+        "text": "2РецептOG15 °PIBU · Цвет55 · 16 EBCСтиль 21AAmerican IPA",
+        "cls": "flex w-[78%] shrink-0 snap-start flex-col gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm sm:w-auto sm:shrink",
+        "rect": "{\"x\":307.234375,\"y\":3934.5625,\"width\":279.234375,\"height\":184.5,\"top\":3934.5625,\"right\":586.46875,\"bottom\":4119.0625,\"left\":307.234375}"
+      },
+      {
+        "tag": "DIV",
+        "text": "2Рецепт",
+        "cls": "flex items-center gap-2.5",
+        "rect": "{\"x\":324.234375,\"y\":3951.5625,\"width\":245.234375,\"height\":32,\"top\":3951.5625,\"right\":569.46875,\"bottom\":3983.5625,\"left\":324.234375}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "Рецепт",
+        "cls": "text-[17px] font-semibold text-foreground",
+        "rect": "{\"x\":384.046875,\"y\":3954.8125,\"width\":65.859375,\"height\":25.5,\"top\":3954.8125,\"right\":449.90625,\"bottom\":3980.3125,\"left\":384.046875}"
+      },
+      {
+        "tag": "DIV",
+        "text": "OG15 °PIBU · Цвет55 · 16 EBCСтиль 21AAmerican IPA",
+        "cls": "flex flex-col gap-2 rounded-xl border border-border bg-muted p-3 text-[13px]",
+        "rect": "{\"x\":324.234375,\"y\":3995.5625,\"width\":245.234375,\"height\":100.5,\"top\":3995.5625,\"right\":569.46875,\"bottom\":4096.0625,\"left\":324.234375}"
+      },
+      {
+        "tag": "DIV",
+        "text": "OG15 °P",
+        "cls": "flex items-baseline justify-between gap-3",
+        "rect": "{\"x\":337.234375,\"y\":4008.5625,\"width\":219.234375,\"height\":19.5,\"top\":4008.5625,\"right\":556.46875,\"bottom\":4028.0625,\"left\":337.234375}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "15 °P",
+        "cls": "shrink-0 font-semibold tabular-nums text-foreground",
+        "rect": "{\"x\":522.71875,\"y\":4008.5625,\"width\":33.75,\"height\":19.5,\"top\":4008.5625,\"right\":556.46875,\"bottom\":4028.0625,\"left\":522.71875}"
+      },
+      {
+        "tag": "DIV",
+        "text": "IBU · Цвет55 · 16 EBC",
+        "cls": "flex items-baseline justify-between gap-3",
+        "rect": "{\"x\":337.234375,\"y\":4036.0625,\"width\":219.234375,\"height\":19.5,\"top\":4036.0625,\"right\":556.46875,\"bottom\":4055.5625,\"left\":337.234375}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "IBU · Цвет",
+        "cls": "min-w-0 truncate text-muted-foreground",
+        "rect": "{\"x\":337.234375,\"y\":4036.0625,\"width\":62.78125,\"height\":19.5,\"top\":4036.0625,\"right\":400.015625,\"bottom\":4055.5625,\"left\":337.234375}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "55 · 16 EBC",
+        "cls": "shrink-0 font-semibold tabular-nums text-foreground",
+        "rect": "{\"x\":483.46875,\"y\":4036.0625,\"width\":73,\"height\":19.5,\"top\":4036.0625,\"right\":556.46875,\"bottom\":4055.5625,\"left\":483.46875}"
+      },
+      {
+        "tag": "DIV",
+        "text": "Стиль 21AAmerican IPA",
+        "cls": "flex items-baseline justify-between gap-3",
+        "rect": "{\"x\":337.234375,\"y\":4063.5625,\"width\":219.234375,\"height\":19.5,\"top\":4063.5625,\"right\":556.46875,\"bottom\":4083.0625,\"left\":337.234375}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "Стиль 21A",
+        "cls": "min-w-0 truncate text-muted-foreground",
+        "rect": "{\"x\":337.234375,\"y\":4063.5625,\"width\":62.375,\"height\":19.5,\"top\":4063.5625,\"right\":399.609375,\"bottom\":4083.0625,\"left\":337.234375}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "American IPA",
+        "cls": "shrink-0 font-semibold tabular-nums text-foreground",
+        "rect": "{\"x\":471.21875,\"y\":4063.5625,\"width\":85.25,\"height\":19.5,\"top\":4063.5625,\"right\":556.46875,\"bottom\":4083.0625,\"left\":471.21875}"
+      },
+      {
+        "tag": "DIV",
+        "text": "3ВаркаКипячение45 из 60 минЧерез 12:30 — внести Citra, 30 г",
+        "cls": "flex w-[78%] shrink-0 snap-start flex-col gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm sm:w-auto sm:shrink",
+        "rect": "{\"x\":598.46875,\"y\":3934.5625,\"width\":279.234375,\"height\":184.5,\"top\":3934.5625,\"right\":877.703125,\"bottom\":4119.0625,\"left\":598.46875}"
+      },
+      {
+        "tag": "DIV",
+        "text": "3Варка",
+        "cls": "flex items-center gap-2.5",
+        "rect": "{\"x\":615.46875,\"y\":3951.5625,\"width\":245.234375,\"height\":32,\"top\":3951.5625,\"right\":860.703125,\"bottom\":3983.5625,\"left\":615.46875}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "",
+        "cls": "grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-foreground text-background",
+        "rect": "{\"x\":615.46875,\"y\":3951.5625,\"width\":32,\"height\":32,\"top\":3951.5625,\"right\":647.46875,\"bottom\":3983.5625,\"left\":615.46875}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":623.46875,\"y\":3959.5625,\"width\":16,\"height\":16,\"top\":3959.5625,\"right\":639.46875,\"bottom\":3975.5625,\"left\":623.46875}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":634.8020629882812,\"y\":3966.895751953125,\"width\":2.66668701171875,\"height\":4,\"top\":3966.895751953125,\"right\":637.46875,\"bottom\":3970.895751953125,\"left\":634.8020629882812}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":625.46875,\"y\":3960.895751953125,\"width\":10.66668701171875,\"height\":4,\"top\":3960.895751953125,\"right\":636.1354370117188,\"bottom\":3964.895751953125,\"left\":625.46875}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":626.8020629882812,\"y\":3964.895751953125,\"width\":8,\"height\":9.33349609375,\"top\":3964.895751953125,\"right\":634.8020629882812,\"bottom\":3974.229248046875,\"left\":626.8020629882812}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "3",
+        "cls": "text-xs font-semibold tabular-nums text-muted-foreground",
+        "rect": "{\"x\":657.46875,\"y\":3959.5625,\"width\":7.8125,\"height\":16,\"top\":3959.5625,\"right\":665.28125,\"bottom\":3975.5625,\"left\":657.46875}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "Варка",
+        "cls": "text-[17px] font-semibold text-foreground",
+        "rect": "{\"x\":675.28125,\"y\":3954.8125,\"width\":55.078125,\"height\":25.5,\"top\":3954.8125,\"right\":730.359375,\"bottom\":3980.3125,\"left\":675.28125}"
+      },
+      {
+        "tag": "DIV",
+        "text": "Кипячение45 из 60 минЧерез 12:30 — внести Citra, 30 г",
+        "cls": "flex flex-col gap-2 rounded-xl border border-border bg-muted p-3 text-[13px]",
+        "rect": "{\"x\":615.46875,\"y\":3995.5625,\"width\":245.234375,\"height\":106.5,\"top\":3995.5625,\"right\":860.703125,\"bottom\":4102.0625,\"left\":615.46875}"
+      },
+      {
+        "tag": "DIV",
+        "text": "Кипячение45 из 60 мин",
+        "cls": "flex items-baseline justify-between gap-3",
+        "rect": "{\"x\":628.46875,\"y\":4008.5625,\"width\":219.234375,\"height\":19.5,\"top\":4008.5625,\"right\":847.703125,\"bottom\":4028.0625,\"left\":628.46875}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "Кипячение",
+        "cls": "min-w-0 truncate text-muted-foreground",
+        "rect": "{\"x\":628.46875,\"y\":4008.5625,\"width\":68.5625,\"height\":19.5,\"top\":4008.5625,\"right\":697.03125,\"bottom\":4028.0625,\"left\":628.46875}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "45 из 60 мин",
+        "cls": "shrink-0 font-semibold tabular-nums text-foreground",
+        "rect": "{\"x\":764.28125,\"y\":4008.5625,\"width\":83.421875,\"height\":19.5,\"top\":4008.5625,\"right\":847.703125,\"bottom\":4028.0625,\"left\":764.28125}"
+      },
+      {
+        "tag": "DIV",
+        "text": "",
+        "cls": "h-1 overflow-hidden rounded-full bg-muted",
+        "rect": "{\"x\":628.46875,\"y\":4036.0625,\"width\":219.234375,\"height\":4,\"top\":4036.0625,\"right\":847.703125,\"bottom\":4040.0625,\"left\":628.46875}"
+      },
+      {
+        "tag": "DIV",
+        "text": "",
+        "cls": "h-full rounded-full bg-warning",
+        "rect": "{\"x\":628.46875,\"y\":4036.0625,\"width\":164.421875,\"height\":4,\"top\":4036.0625,\"right\":792.890625,\"bottom\":4040.0625,\"left\":628.46875}"
+      },
+      {
+        "tag": "DIV",
+        "text": "Через 12:30 — внести Citra, 30 г",
+        "cls": "flex items-center gap-2 pt-0.5 font-semibold text-foreground",
+        "rect": "{\"x\":628.46875,\"y\":4048.0625,\"width\":219.234375,\"height\":41,\"top\":4048.0625,\"right\":847.703125,\"bottom\":4089.0625,\"left\":628.46875}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "",
+        "cls": "h-2 w-2 shrink-0 rounded-full bg-warning",
+        "rect": "{\"x\":628.46875,\"y\":4065.5625,\"width\":8,\"height\":8,\"top\":4065.5625,\"right\":636.46875,\"bottom\":4073.5625,\"left\":628.46875}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "Через 12:30 — внести Citra, 30 г",
+        "cls": "tabular-nums",
+        "rect": "{\"x\":644.46875,\"y\":4050.0625,\"width\":203.234375,\"height\":39,\"top\":4050.0625,\"right\":847.703125,\"bottom\":4089.0625,\"left\":644.46875}"
+      }
+    ],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_-iPhone-13.png"
+  },
+  {
+    "route": "/",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_-iPad-Pro-11.png"
+  },
+  {
+    "route": "/",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/recipes",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/recipes",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_recipes-iPhone-13.png"
+  },
+  {
+    "route": "/recipes",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/recipes",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [
+      {
+        "tag": "SELECT",
+        "type": "select-one",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm",
+        "font": "14px"
+      }
+    ],
+    "screenshot": "screens/scan_recipes-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/recipes",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/recipes",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [
+      {
+        "tag": "SELECT",
+        "type": "select-one",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm",
+        "font": "14px"
+      }
+    ],
+    "screenshot": "screens/scan_recipes-iPad-Pro-11.png"
+  },
+  {
+    "route": "/recipes",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/recipes",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [
+      {
+        "placeholder": null,
+        "font": "14px"
+      }
+    ],
+    "smallTextFields": [
+      {
+        "tag": "SELECT",
+        "type": "select-one",
+        "class": "h-10 rounded-lg border border-border bg-card px-3 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm",
+        "font": "14px"
+      }
+    ],
+    "screenshot": "screens/scan_recipes-iPad-Mini-landscape.png"
+  },
+  {
+    "route": "/catalog",
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/catalog",
+    "status": 200,
+    "errors": [],
+    "width": 390,
+    "height": 664,
+    "client": 390,
+    "scroll": 390,
+    "outside": [
+      {
+        "tag": "A",
+        "text": "Сбраживаемое сырьё174",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":270.796875,\"y\":246,\"width\":232.625,\"height\":38,\"top\":246,\"right\":503.421875,\"bottom\":284,\"left\":270.796875}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "174",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":463.484375,\"y\":255,\"width\":26.9375,\"height\":20,\"top\":255,\"right\":490.421875,\"bottom\":275,\"left\":463.484375}"
+      },
+      {
+        "tag": "A",
+        "text": "Хмель248",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":511.421875,\"y\":246,\"width\":123.921875,\"height\":38,\"top\":246,\"right\":635.34375,\"bottom\":284,\"left\":511.421875}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":524.421875,\"y\":257,\"width\":16,\"height\":16,\"top\":257,\"right\":540.421875,\"bottom\":273,\"left\":524.421875}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":531.6351928710938,\"y\":264.2133483886719,\"width\":4.1009521484375,\"height\":4.100921630859375,\"top\":264.2133483886719,\"right\":535.7361450195312,\"bottom\":268.31427001953125,\"left\":531.6351928710938}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":525.7606811523438,\"y\":258.33880615234375,\"width\":11.080078125,\"height\":11.08013916015625,\"top\":258.33880615234375,\"right\":536.8407592773438,\"bottom\":269.4189453125,\"left\":525.7606811523438}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":531.8485717773438,\"y\":268.29998779296875,\"width\":3.3341064453125,\"height\":3.327117919921875,\"top\":268.29998779296875,\"right\":535.1826782226562,\"bottom\":271.6271057128906,\"left\":531.8485717773438}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":535.1752319335938,\"y\":267.7533264160156,\"width\":3.88665771484375,\"height\":3.888092041015625,\"top\":267.7533264160156,\"right\":539.0618896484375,\"bottom\":271.64141845703125,\"left\":535.1752319335938}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":535.7152099609375,\"y\":264.4266662597656,\"width\":3.333740234375,\"height\":3.334136962890625,\"top\":264.4266662597656,\"right\":539.0489501953125,\"bottom\":267.76080322265625,\"left\":535.7152099609375}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":532.5485229492188,\"y\":260.67999267578125,\"width\":6.01458740234375,\"height\":3.781097412109375,\"top\":260.67999267578125,\"right\":538.5631103515625,\"bottom\":264.4610900878906,\"left\":532.5485229492188}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":526.2817993164062,\"y\":258.3333435058594,\"width\":1.4267578125,\"height\":1.953338623046875,\"top\":258.3333435058594,\"right\":527.7085571289062,\"bottom\":260.28668212890625,\"left\":526.2817993164062}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":528.1018676757812,\"y\":265.1199951171875,\"width\":3.7806396484375,\"height\":6.021240234375,\"top\":265.1199951171875,\"right\":531.8825073242188,\"bottom\":271.1412353515625,\"left\":528.1018676757812}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "248",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":595.40625,\"y\":255,\"width\":26.9375,\"height\":20,\"top\":255,\"right\":622.34375,\"bottom\":275,\"left\":595.40625}"
+      },
+      {
+        "tag": "A",
+        "text": "Дрожжи349",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":643.34375,\"y\":246,\"width\":140.953125,\"height\":38,\"top\":246,\"right\":784.296875,\"bottom\":284,\"left\":643.34375}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":656.34375,\"y\":257,\"width\":16,\"height\":16,\"top\":257,\"right\":672.34375,\"bottom\":273,\"left\":656.34375}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":659.0101318359375,\"y\":258.3333435058594,\"width\":10.667236328125,\"height\":13.33331298828125,\"top\":258.3333435058594,\"right\":669.6773681640625,\"bottom\":271.6666564941406,\"left\":659.0101318359375}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "349",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":744.359375,\"y\":255,\"width\":26.9375,\"height\":20,\"top\":255,\"right\":771.296875,\"bottom\":275,\"left\":744.359375}"
+      },
+      {
+        "tag": "A",
+        "text": "Водоподготовка28",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":792.296875,\"y\":246,\"width\":186.8125,\"height\":38,\"top\":246,\"right\":979.109375,\"bottom\":284,\"left\":792.296875}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":805.296875,\"y\":257,\"width\":16,\"height\":16,\"top\":257,\"right\":821.296875,\"bottom\":273,\"left\":805.296875}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":807.296875,\"y\":260.5333251953125,\"width\":5.33331298828125,\"height\":7.333343505859375,\"top\":260.5333251953125,\"right\":812.6301879882812,\"bottom\":267.8666687011719,\"left\":807.296875}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":811.3568725585938,\"y\":259.0133361816406,\"width\":7.9400634765625,\"height\":12.672698974609375,\"top\":259.0133361816406,\"right\":819.2969360351562,\"bottom\":271.68603515625,\"left\":811.3568725585938}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "28",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":948.15625,\"y\":255,\"width\":17.953125,\"height\":20,\"top\":255,\"right\":966.109375,\"bottom\":275,\"left\":948.15625}"
+      },
+      {
+        "tag": "A",
+        "text": "Специи и добавки118",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":987.109375,\"y\":246,\"width\":206.953125,\"height\":38,\"top\":246,\"right\":1194.0625,\"bottom\":284,\"left\":987.109375}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1000.109375,\"y\":257,\"width\":16,\"height\":16,\"top\":257,\"right\":1016.109375,\"bottom\":273,\"left\":1000.109375}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1002.109375,\"y\":258.3346862792969,\"width\":12,\"height\":13.330596923828125,\"top\":258.3346862792969,\"right\":1014.109375,\"bottom\":271.665283203125,\"left\":1002.109375}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1002.3093872070312,\"y\":261.6666564941406,\"width\":11.5999755859375,\"height\":3.33349609375,\"top\":261.6666564941406,\"right\":1013.9093627929688,\"bottom\":265.0001525878906,\"left\":1002.3093872070312}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1005.109375,\"y\":259.8466796875,\"width\":6,\"height\":3.433319091796875,\"top\":259.8466796875,\"right\":1011.109375,\"bottom\":263.2799987792969,\"left\":1005.109375}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "118",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":1154.125,\"y\":255,\"width\":26.9375,\"height\":20,\"top\":255,\"right\":1181.0625,\"bottom\":275,\"left\":1154.125}"
+      },
+      {
+        "tag": "A",
+        "text": "Расходники28",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":1202.0625,\"y\":246,\"width\":156.3125,\"height\":38,\"top\":246,\"right\":1358.375,\"bottom\":284,\"left\":1202.0625}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1215.0625,\"y\":257,\"width\":16,\"height\":16,\"top\":257,\"right\":1231.0625,\"bottom\":273,\"left\":1215.0625}"
+      }
+    ],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_catalog-iPhone-13.png"
+  },
+  {
+    "route": "/catalog",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/catalog",
+    "status": 200,
+    "errors": [],
+    "width": 750,
+    "height": 342,
+    "client": 750,
+    "scroll": 750,
+    "outside": [
+      {
+        "tag": "A",
+        "text": "Дрожжи349",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":651.34375,\"y\":222,\"width\":140.953125,\"height\":38,\"top\":222,\"right\":792.296875,\"bottom\":260,\"left\":651.34375}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "349",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":752.359375,\"y\":231,\"width\":26.9375,\"height\":20,\"top\":231,\"right\":779.296875,\"bottom\":251,\"left\":752.359375}"
+      },
+      {
+        "tag": "A",
+        "text": "Водоподготовка28",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":800.296875,\"y\":222,\"width\":186.8125,\"height\":38,\"top\":222,\"right\":987.109375,\"bottom\":260,\"left\":800.296875}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":813.296875,\"y\":233,\"width\":16,\"height\":16,\"top\":233,\"right\":829.296875,\"bottom\":249,\"left\":813.296875}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":815.296875,\"y\":236.53334045410156,\"width\":5.33331298828125,\"height\":7.3333282470703125,\"top\":236.53334045410156,\"right\":820.6301879882812,\"bottom\":243.86666870117188,\"left\":815.296875}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":819.3568725585938,\"y\":235.01333618164062,\"width\":7.9400634765625,\"height\":12.672698974609375,\"top\":235.01333618164062,\"right\":827.2969360351562,\"bottom\":247.68603515625,\"left\":819.3568725585938}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "28",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":956.15625,\"y\":231,\"width\":17.953125,\"height\":20,\"top\":231,\"right\":974.109375,\"bottom\":251,\"left\":956.15625}"
+      },
+      {
+        "tag": "A",
+        "text": "Специи и добавки118",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":995.109375,\"y\":222,\"width\":206.953125,\"height\":38,\"top\":222,\"right\":1202.0625,\"bottom\":260,\"left\":995.109375}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1008.109375,\"y\":233,\"width\":16,\"height\":16,\"top\":233,\"right\":1024.109375,\"bottom\":249,\"left\":1008.109375}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1010.109375,\"y\":234.33470153808594,\"width\":12,\"height\":13.330596923828125,\"top\":234.33470153808594,\"right\":1022.109375,\"bottom\":247.66529846191406,\"left\":1010.109375}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1010.3093872070312,\"y\":237.6666717529297,\"width\":11.5999755859375,\"height\":3.3334808349609375,\"top\":237.6666717529297,\"right\":1021.9093627929688,\"bottom\":241.00015258789062,\"left\":1010.3093872070312}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1013.109375,\"y\":235.84666442871094,\"width\":6,\"height\":3.4333343505859375,\"top\":235.84666442871094,\"right\":1019.109375,\"bottom\":239.27999877929688,\"left\":1013.109375}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "118",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":1162.125,\"y\":231,\"width\":26.9375,\"height\":20,\"top\":231,\"right\":1189.0625,\"bottom\":251,\"left\":1162.125}"
+      },
+      {
+        "tag": "A",
+        "text": "Расходники28",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":1210.0625,\"y\":222,\"width\":156.3125,\"height\":38,\"top\":222,\"right\":1366.375,\"bottom\":260,\"left\":1210.0625}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1223.0625,\"y\":233,\"width\":16,\"height\":16,\"top\":233,\"right\":1239.0625,\"bottom\":249,\"left\":1223.0625}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1225.0625,\"y\":234.33470153808594,\"width\":12,\"height\":13.330596923828125,\"top\":234.33470153808594,\"right\":1237.0625,\"bottom\":247.66529846191406,\"left\":1225.0625}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1225.262451171875,\"y\":237.6666717529297,\"width\":11.60009765625,\"height\":3.3334808349609375,\"top\":237.6666717529297,\"right\":1236.862548828125,\"bottom\":241.00015258789062,\"left\":1225.262451171875}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1228.0625,\"y\":235.84666442871094,\"width\":6,\"height\":3.4333343505859375,\"top\":235.84666442871094,\"right\":1234.0625,\"bottom\":239.27999877929688,\"left\":1228.0625}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "28",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":1335.421875,\"y\":231,\"width\":17.953125,\"height\":20,\"top\":231,\"right\":1353.375,\"bottom\":251,\"left\":1335.421875}"
+      }
+    ],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_catalog-iPhone-13-landscape.png"
+  },
+  {
+    "route": "/catalog",
+    "profile": "iPad Pro 11",
+    "url": "http://127.0.0.1:3100/catalog",
+    "status": 200,
+    "errors": [],
+    "width": 834,
+    "height": 1194,
+    "client": 834,
+    "scroll": 834,
+    "outside": [
+      {
+        "tag": "A",
+        "text": "Водоподготовка28",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":800.296875,\"y\":222,\"width\":186.8125,\"height\":38,\"top\":222,\"right\":987.109375,\"bottom\":260,\"left\":800.296875}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "28",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":956.15625,\"y\":231,\"width\":17.953125,\"height\":20,\"top\":231,\"right\":974.109375,\"bottom\":251,\"left\":956.15625}"
+      },
+      {
+        "tag": "A",
+        "text": "Специи и добавки118",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":995.109375,\"y\":222,\"width\":206.953125,\"height\":38,\"top\":222,\"right\":1202.0625,\"bottom\":260,\"left\":995.109375}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1008.109375,\"y\":233,\"width\":16,\"height\":16,\"top\":233,\"right\":1024.109375,\"bottom\":249,\"left\":1008.109375}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1010.109375,\"y\":234.33470153808594,\"width\":12,\"height\":13.330596923828125,\"top\":234.33470153808594,\"right\":1022.109375,\"bottom\":247.66529846191406,\"left\":1010.109375}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1010.3093872070312,\"y\":237.6666717529297,\"width\":11.5999755859375,\"height\":3.3334808349609375,\"top\":237.6666717529297,\"right\":1021.9093627929688,\"bottom\":241.00015258789062,\"left\":1010.3093872070312}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1013.109375,\"y\":235.84666442871094,\"width\":6,\"height\":3.4333343505859375,\"top\":235.84666442871094,\"right\":1019.109375,\"bottom\":239.27999877929688,\"left\":1013.109375}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "118",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":1162.125,\"y\":231,\"width\":26.9375,\"height\":20,\"top\":231,\"right\":1189.0625,\"bottom\":251,\"left\":1162.125}"
+      },
+      {
+        "tag": "A",
+        "text": "Расходники28",
+        "cls": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foreground hover:border-border hover:bg-muted",
+        "rect": "{\"x\":1210.0625,\"y\":222,\"width\":156.3125,\"height\":38,\"top\":222,\"right\":1366.375,\"bottom\":260,\"left\":1210.0625}"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1223.0625,\"y\":233,\"width\":16,\"height\":16,\"top\":233,\"right\":1239.0625,\"bottom\":249,\"left\":1223.0625}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1225.0625,\"y\":234.33470153808594,\"width\":12,\"height\":13.330596923828125,\"top\":234.33470153808594,\"right\":1237.0625,\"bottom\":247.66529846191406,\"left\":1225.0625}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1225.262451171875,\"y\":237.6666717529297,\"width\":11.60009765625,\"height\":3.3334808349609375,\"top\":237.6666717529297,\"right\":1236.862548828125,\"bottom\":241.00015258789062,\"left\":1225.262451171875}"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "cls": "svg",
+        "rect": "{\"x\":1228.0625,\"y\":235.84666442871094,\"width\":6,\"height\":3.4333343505859375,\"top\":235.84666442871094,\"right\":1234.0625,\"bottom\":239.27999877929688,\"left\":1228.0625}"
+      },
+      {
+        "tag": "SPAN",
+        "text": "28",
+        "cls": "tabular-nums text-muted-foreground",
+        "rect": "{\"x\":1335.421875,\"y\":231,\"width\":17.953125,\"height\":20,\"top\":231,\"right\":1353.375,\"bottom\":251,\"left\":1335.421875}"
+      }
+    ],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_catalog-iPad-Pro-11.png"
+  },
+  {
+    "route": "/catalog",
+    "profile": "iPad Mini landscape",
+    "url": "http://127.0.0.1:3100/catalog",
+    "status": 200,
+    "errors": [],
+    "width": 1024,
+    "height": 768,
+    "client": 1024,
+    "scroll": 1024,
+    "outside": [],
+    "smallInputs": [],
+    "smallTextFields": [],
+    "screenshot": "screens/scan_catalog-iPad-Mini-landscape.png"
+  }
+]

@@ -1,0 +1,80 @@
+[
+  {
+    "route": "/app/ingredients",
+    "profile": "iPhone 13",
+    "attempt": 1,
+    "error": "page.goto: Navigation to \"http://127.0.0.1:3100/app/ingredients\" is interrupted by another navigation to \"http://127.0.0.1:3100/app\"\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3100/app/ingredients\", waiting until \"domcontentloaded\"\u001b[22m\n"
+  },
+  {
+    "route": "/app/ingredients",
+    "profile": "iPhone 13 landscape",
+    "attempt": 1,
+    "error": "page.goto: Navigation to \"http://127.0.0.1:3100/app/ingredients\" is interrupted by another navigation to \"http://127.0.0.1:3100/app\"\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3100/app/ingredients\", waiting until \"domcontentloaded\"\u001b[22m\n"
+  },
+  {
+    "route": "/app/shopping",
+    "profile": "iPhone 13",
+    "attempt": 1,
+    "error": "page.goto: Navigation to \"http://127.0.0.1:3100/app/shopping\" is interrupted by another navigation to \"http://127.0.0.1:3100/app/ingredients\"\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3100/app/shopping\", waiting until \"domcontentloaded\"\u001b[22m\n"
+  },
+  {
+    "route": "/app/equipment",
+    "profile": "iPhone 13",
+    "attempt": 1,
+    "error": "page.goto: Navigation to \"http://127.0.0.1:3100/app/equipment\" is interrupted by another navigation to \"http://127.0.0.1:3100/app/shopping\"\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3100/app/equipment\", waiting until \"domcontentloaded\"\u001b[22m\n"
+  },
+  {
+    "route": "/app/devices",
+    "profile": "iPhone 13",
+    "attempt": 1,
+    "error": "page.goto: Navigation to \"http://127.0.0.1:3100/app/devices\" is interrupted by another navigation to \"http://127.0.0.1:3100/app/equipment\"\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3100/app/devices\", waiting until \"domcontentloaded\"\u001b[22m\n"
+  },
+  {
+    "route": "/app/saved",
+    "profile": "iPhone 13",
+    "attempt": 1,
+    "error": "page.goto: Navigation to \"http://127.0.0.1:3100/app/saved\" is interrupted by another navigation to \"http://127.0.0.1:3100/app/devices\"\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3100/app/saved\", waiting until \"domcontentloaded\"\u001b[22m\n"
+  },
+  {
+    "route": "/app/saved",
+    "profile": "iPhone 13",
+    "attempt": 2,
+    "error": "page.goto: Navigation to \"http://127.0.0.1:3100/app/saved\" is interrupted by another navigation to \"http://127.0.0.1:3100/app/devices\"\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3100/app/saved\", waiting until \"domcontentloaded\"\u001b[22m\n"
+  },
+  {
+    "route": "/app/master",
+    "profile": "iPhone 13",
+    "attempt": 1,
+    "error": "page.goto: Navigation to \"http://127.0.0.1:3100/app/master\" is interrupted by another navigation to \"http://127.0.0.1:3100/app/saved\"\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3100/app/master\", waiting until \"domcontentloaded\"\u001b[22m\n"
+  },
+  {
+    "route": "/profile",
+    "profile": "iPhone 13",
+    "attempt": 1,
+    "error": "page.goto: Navigation to \"http://127.0.0.1:3100/profile\" is interrupted by another navigation to \"http://127.0.0.1:3100/app/master\"\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3100/profile\", waiting until \"domcontentloaded\"\u001b[22m\n"
+  },
+  {
+    "route": "/settings",
+    "profile": "iPhone 13",
+    "attempt": 1,
+    "error": "page.goto: Navigation to \"http://127.0.0.1:3100/settings\" is interrupted by another navigation to \"http://127.0.0.1:3100/profile\"\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3100/settings\", waiting until \"domcontentloaded\"\u001b[22m\n"
+  },
+  {
+    "route": "/recipes",
+    "profile": "iPhone 13",
+    "attempt": 1,
+    "error": "page.goto: Navigation to \"http://127.0.0.1:3100/recipes\" is interrupted by another navigation to \"http://127.0.0.1:3100/\"\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3100/recipes\", waiting until \"domcontentloaded\"\u001b[22m\n"
+  },
+  {
+    "route": "/recipes",
+    "profile": "iPhone 13",
+    "attempt": 2,
+    "error": "HTTP 500"
+  },
+  {
+    "route": "/catalog",
+    "profile": "iPhone 13",
+    "attempt": 1,
+    "error": "page.goto: Navigation to \"http://127.0.0.1:3100/catalog\" is interrupted by another navigation to \"http://127.0.0.1:3100/recipes\"\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3100/catalog\", waiting until \"domcontentloaded\"\u001b[22m\n"
+  }
+]

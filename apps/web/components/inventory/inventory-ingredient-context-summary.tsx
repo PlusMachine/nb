@@ -12,7 +12,7 @@ import { resolveConsumableInventoryBroadGroup } from "@/features/ingredients/con
 import type { InventorySourceDto } from "@/features/inventory/contracts";
 
 const inventoryIngredientContextCategoryLabels: Record<IngredientCategory, string> = {
-  fermentable: "Ферментируемые",
+  fermentable: "Сбраживаемые",
   hop: "Хмель",
   yeast: "Дрожжи",
   water_treatment: "Водоподготовка",
@@ -45,7 +45,7 @@ export const resolveInventoryIngredientContextCategoryLabel = ({
     }
 
     if (subtype === "fermentable") {
-      return "Сбраживаемое сырье";
+      return "Сбраживаемое сырьё";
     }
   }
 

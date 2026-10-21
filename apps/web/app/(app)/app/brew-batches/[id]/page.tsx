@@ -6,7 +6,7 @@ import { ChevronLeft } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { pluralize } from "@/lib/pluralize";
 import { getBrewBatchDetail, getDeviceTelemetryHistory } from "@/features/brew-batches/service";
-import { getBrewBatchInventoryView } from "@/features/brew-batches/inventory";
+import { getBrewBatchInventoryView, previewBrewBatchConsumption } from "@/features/brew-batches/inventory";
 import {
   brewDayActForStatus,
   brewMeasurementKindForAct,
@@ -29,7 +29,6 @@ import { listFermenterCandidates } from "@/features/devices/fermenter-binding";
 import { deviceChannel } from "@/features/brew-controller";
 import { mapFermentationPlanToDeviceSteps } from "@/features/brew-controller/ferment-profile";
 import { getRecipeById } from "@/features/recipes/service";
-import { computeRecipeMatch } from "@/features/recipes/match-service";
 import { formatGravity, formatGravityNumber, resolvePreferredGravityUnit } from "@/features/system/gravity-units";
 import { formatRelativeTimestamp } from "@/features/recipes/format";
 import { resolveFermenterBindingStatus } from "@/features/brew-batches/fermenter-status";
@@ -111,23 +110,22 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
   // списала себя (batchAlreadyConsumed — панель показывает архивную картину, а не
   // призыв списать). Вход в список покупок (бывший S3/D13) остаётся — теперь он
   // строкой в самой панели «Склад», а не отдельным числом на странице.
-  // brewBatchId — чтобы уже списанное НА ЭТУ партию считалось покрытием (иначе
-  // после списания склад партии показывал нехватку теми же позициями, что сам же
-  // и списал). Кредит виден только в контексте партии, глобальный матч его не знает.
+  // Индикатор и диалог используют один план из зафиксированного состава партии.
+  // Изменение рецепта-источника не должно менять обещание о расходе или наличии.
   let stockCoverage: { totalLines: number; presentCount: number; coveredCount: number; fullyCovered: boolean } | null = null;
   const isTerminalAct = batch.status === "cancelled" || batch.status === "completed";
-  if (batch.recipeId && !isTerminalAct && inventoryView && !inventoryView.batchAlreadyConsumed) {
+  if (!isTerminalAct && inventoryView?.hasInventorySnapshot && !inventoryView.batchAlreadyConsumed) {
     try {
-      const match = await computeRecipeMatch({ userId: user.id, recipeId: batch.recipeId, brewBatchId: batch.id });
-      stockCoverage = {
-        totalLines: match.totalLines,
+      const plan = await previewBrewBatchConsumption(user.id, batch.id);
+      stockCoverage = plan ? {
+        totalLines: plan.lines.length,
         // Гейт кнопки: хоть что-то есть (partial тоже считается — списывать можно).
-        presentCount: match.lines.filter((line) => line.status !== "missing").length,
+        presentCount: plan.lines.filter((line) => line.kind !== "missing").length,
         // Честный счёт ЗАКРЫТЫХ позиций для подписи — partial сюда не входит
         // (товар есть, но меньше нужного, строка всё ещё «не хватает»).
-        coveredCount: match.coveredLines,
-        fullyCovered: match.totalLines > 0 && match.lines.every((line) => line.status === "covered")
-      };
+        coveredCount: plan.lines.filter((line) => line.kind === "exact").length,
+        fullyCovered: plan.lines.length > 0 && plan.lines.every((line) => line.kind === "exact")
+      } : null;
     } catch {
       stockCoverage = null;
     }
@@ -378,6 +376,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
             brewBatchId={batch.id}
             planSummary={planSummary}
             ogTargetLabel={ogTargetLabel}
+            equipmentWarnings={batch.brewPlanSnapshot.equipmentWarnings}
             plannedForIso={batch.plannedFor ? batch.plannedFor.toISOString() : null}
           />
           {inventoryView ? (
@@ -446,7 +445,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
             summary={summary}
             preferredGravityUnit={user.preferredGravityUnit}
             measurementKind={measurementKind}
-            title="Плотность брожения (FG)"
+            title="Конечная плотность (FG)"
           />
           {inventoryView ? <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} stockCoverage={stockCoverage} /> : null}
           <BrewNotes brewBatchId={batch.id} kind="brew" notes={batch.notes} />

@@ -1,0 +1,44 @@
+[
+  {
+    "route": "/market",
+    "profile": "iPhone 13 landscape",
+    "attempt": 1,
+    "error": "Unexpected EOF"
+  },
+  {
+    "route": "/app/recipes/new",
+    "profile": "iPhone 13",
+    "attempt": 1,
+    "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3100/app/recipes/new\", waiting until \"domcontentloaded\"\u001b[22m\n"
+  },
+  {
+    "route": "/app/recipes/new",
+    "profile": "iPhone 13",
+    "attempt": 2,
+    "error": "locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('h1').first() to be visible\u001b[22m\n"
+  },
+  {
+    "route": "/app/recipes/new",
+    "profile": "iPhone 13",
+    "attempt": 3,
+    "error": "locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('h1').first() to be visible\u001b[22m\n"
+  },
+  {
+    "route": "/app/recipes/new",
+    "profile": "iPad Pro 11",
+    "attempt": 1,
+    "error": "locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('h1').first() to be visible\u001b[22m\n"
+  },
+  {
+    "route": "/app/recipes/new",
+    "profile": "iPad Pro 11",
+    "attempt": 2,
+    "error": "locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('h1').first() to be visible\u001b[22m\n"
+  },
+  {
+    "route": "/app/recipes/new",
+    "profile": "iPad Pro 11",
+    "attempt": 3,
+    "error": "locator.waitFor: Target page, context or browser has been closed\nCall log:\n\u001b[2m  - waiting for locator('h1').first() to be visible\u001b[22m\n"
+  }
+]

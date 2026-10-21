@@ -4,10 +4,10 @@ import type { EquipmentProfilePayload } from "@/features/equipment-profiles/cont
 import { buildEquipmentProfileVolumeSummary } from "@/features/equipment/summary";
 
 const warningLabels: Record<string, string> = {
-  mash_volume_limit_exceeded: "Лимит затора",
-  kettle_volume_limit_exceeded: "Лимит котла",
+  mash_volume_limit_exceeded: "Объём заторника превышен",
+  kettle_volume_limit_exceeded: "Объём котла превышен",
   mash_below_min_volume: "Мало воды в заторнике",
-  grain_bill_limit_exceeded: "Засыпь не влезет"
+  grain_bill_limit_exceeded: "Слишком большая засыпь"
 };
 
 const formatLiters = (value: number) => Number.isFinite(value) ? `${value.toFixed(1)} л` : "—";
@@ -33,11 +33,11 @@ export function EquipmentProfileSummary({
       <h3 className="text-sm font-semibold text-foreground">Что будет рассчитано</h3>
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
         <div>
-          <span className="block text-[11px] uppercase text-muted-foreground">Pre-boil</span>
+          <span className="block text-[11px] uppercase text-muted-foreground">До кипячения</span>
           <span className="font-medium text-foreground">{formatLiters(summary.preBoilHotL)}</span>
         </div>
         <div>
-          <span className="block text-[11px] uppercase text-muted-foreground">Post-boil</span>
+          <span className="block text-[11px] uppercase text-muted-foreground">После кипячения</span>
           <span className="font-medium text-foreground">{formatLiters(summary.postBoilHotL)}</span>
         </div>
         <div>
@@ -45,11 +45,11 @@ export function EquipmentProfileSummary({
           <span className="font-medium text-foreground">{formatLiters(summary.totalWaterL)}</span>
         </div>
         <div>
-          <span className="block text-[11px] uppercase text-muted-foreground">Mash / sparge</span>
+          <span className="block text-[11px] uppercase text-muted-foreground">Затор / промывка</span>
           <span className="font-medium text-foreground">{formatLiters(summary.mashWaterL)} / {formatLiters(summary.spargeWaterL)}</span>
         </div>
         <div>
-          <span className="block text-[11px] uppercase text-muted-foreground">Max mash</span>
+          <span className="block text-[11px] uppercase text-muted-foreground">Макс. объём затора</span>
           <span className="font-medium text-foreground">{formatOptionalLiters(maxMashVolumeL)}</span>
         </div>
       </div>

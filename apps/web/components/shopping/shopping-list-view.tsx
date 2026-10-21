@@ -303,10 +303,9 @@ function EmptyState() {
         <PackageSearch className="h-8 w-8 text-muted-foreground" />
       </div>
       <div className="space-y-2">
-        <h2 className="text-lg font-semibold text-foreground">Нехваток пока нет</h2>
+        <h2 className="text-lg font-semibold text-foreground">Список покупок пока пуст</h2>
         <p className="mx-auto max-w-sm text-sm leading-relaxed text-muted-foreground">
-          Они считаются по запланированным партиям: выберите рецепт и запланируйте варку — здесь появится, чего не
-          хватает на складе.
+          Выберите рецепт и запланируйте варку — здесь появится список ингредиентов, которых не хватает на складе.
         </p>
       </div>
       <div className="flex flex-wrap items-center justify-center gap-2">

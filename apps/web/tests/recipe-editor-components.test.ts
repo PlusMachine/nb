@@ -629,7 +629,7 @@ describe("recipe editor components", () => {
       })
     );
 
-    expect(html).toContain("Предпросмотр статистики");
+    expect(html).toContain("Расчётные показатели");
     expect(html).toContain("НП");
     expect(html).toContain("20 л");
   });
@@ -710,10 +710,9 @@ describe("recipe editor components", () => {
     expect(html).toContain("Со склада");
   });
 
-  // B2: удалить рецепт можно прямо из редактора (kebab → «Удалить рецепт» с подтверждением).
-  // Содержимое DropdownMenu живёт в Radix-портале и в статическую разметку не попадает —
-  // проверяем сам триггер: он появляется, только когда рецепт уже есть в БД.
-  it("kebab «Действия с рецептом» есть у сохранённого рецепта и отсутствует у несохранённого", () => {
+  // На телефоне импорт/экспорт находится в меню даже у нового рецепта.
+  // Открытие пунктов и переход menu → dialog проверяет mobile-audit.spec.ts.
+  it("меню действий доступно у сохранённого и нового рецепта", () => {
     const editHtml = renderDesignerMarkup({
       mode: "edit",
       initialRecipe: buildRecipeDetail(),
@@ -722,7 +721,7 @@ describe("recipe editor components", () => {
     const createHtml = renderDesignerMarkup({ mode: "create", preferredGravityUnit: "plato" });
 
     expect(editHtml).toContain("Действия с рецептом");
-    expect(createHtml).not.toContain("Действия с рецептом");
+    expect(createHtml).toContain("Действия с рецептом");
   });
 
   // B2 (после ревью Н4): порог создания записи в БД — содержание ИЛИ личность.

@@ -877,7 +877,7 @@ export const buildFinishBrewConfirm = ({
   const parts: string[] = [];
 
   if (isOver) {
-    parts.push(`Брожение идёт день ${fermentDayN} — дольше плана (${plannedDays} ${pluralize(plannedDays as number, ["день", "дня", "дней"])}).`);
+    parts.push(`Идёт ${fermentDayN}-й день брожения — дольше плана (${plannedDays} ${pluralize(plannedDays as number, ["день", "дня", "дней"])}).`);
   } else if (fermentDayN != null) {
     const day = plannedDays != null ? `день ${fermentDayN} из ${plannedDays}` : `день ${fermentDayN}`;
     parts.push(daysLeft != null
@@ -887,7 +887,7 @@ export const buildFinishBrewConfirm = ({
 
   if (undoneSteps > 0) {
     parts.push(
-      `Не отмечено ${undoneSteps} ${pluralize(undoneSteps, ["шаг", "шага", "шагов"])} брожения и розлива.`
+      `Осталось выполнить ${undoneSteps} ${pluralize(undoneSteps, ["шаг", "шага", "шагов"])} брожения и розлива.`
     );
   }
 

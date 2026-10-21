@@ -18,7 +18,7 @@
 //  (skippedLineCount/skippedLineNames) — сообщение после списания честно
 //  называет и клампнутые, и пропущенные строки.
 // =============================================================================
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeftRight, Check, Loader2, X } from "lucide-react";
 
@@ -33,17 +33,38 @@ import type {
   BrewBatchConsumeSubstitution
 } from "@/features/brew-batches/contracts";
 import { pluralize } from "@/lib/pluralize";
+import { formatInventoryQuantityInputValue } from "@/features/inventory/display";
+import { formatInventoryUnitLabel } from "@/features/inventory/units";
+import { planInventoryLotUse } from "@/features/inventory/lot-plan";
 
 export type ConsumeDialogResult = { ok: boolean; message: string };
 
 export type SubstitutionSelection = { checked: boolean; inventoryItemId: string };
 export type SubstitutionSelections = Record<string, SubstitutionSelection>;
 
+/** Распределяем один остаток между внесениями, не обещая его каждой строке заново. */
+export const estimateConsumption = (lines: BrewBatchConsumePlanLine[], selections: SubstitutionSelections) => {
+  const remaining = new Map<string, number>();
+  const quantities = new Map<string, number>();
+  for (const line of lines) {
+    const selection = selections[line.recipeIngredientId];
+    const candidate = selection?.checked
+      ? line.substitutes.find((item) => item.inventoryItemId === selection.inventoryItemId)
+      : line.exact;
+    if (!candidate) continue;
+    const lots = !selection?.checked && line.exactLots?.length ? line.exactLots : [candidate];
+    const { takes } = planInventoryLotUse(line.requiredQuantityNormalized, lots, remaining);
+    const quantity = takes.reduce((sum, take) => sum + take.quantity, 0);
+    quantities.set(line.recipeIngredientId, quantity);
+  }
+  return quantities;
+};
+
 // Строка предлагает замену (чекбокс + опционально select), когда она либо
 // substitute_available (нет точного совпадения вовсе), либо exact_short с
 // exactClamps=false (короткий exact, который сервер иначе уронит целиком).
 const lineOffersSubstitution = (line: BrewBatchConsumePlanLine): boolean => (
-  line.kind === "substitute_available" || (line.kind === "exact_short" && !line.exactClamps)
+  line.kind === "substitute_available" || ((line.kind === "exact_short" || line.kind === "exact") && !line.exactClamps)
 );
 
 // Небольшой эпсилон на округления количеств (то же значение, что и на сервере,
@@ -58,20 +79,17 @@ export type OverbookedInventoryItem = {
 };
 
 /**
- * Ф3: гард двойного бронирования одной позиции склада — ловит ТОЛЬКО когда
+ * Диагностика общего дефицита одной позиции склада — ловит, когда
  * НЕСКОЛЬКО строк рецепта ссылаются на одну и ту же складскую позицию, и сумма
  * их клампованных потребностей превышает остаток этой позиции. Спрос каждой
  * строки берётся клампованным остатком ЭТОЙ ЖЕ позиции (Math.min(required,
  * available)), а не полной потребностью рецепта — списание всегда частичное
  * (Ф4), сервер сам ужимает короткую строку до остатка. Если бы гард считал
  * спрос полным, одиночная короткая строка без замены (на складе меньше нужного)
- * сама себя объявляла бы overbooked и намертво блокировала подтверждение —
- * П0-регрессия: до Ф4 такой кейс перехватывал отдельный getBlockingShortLines,
- * снесённый вместе с блокирующим списанием. Presence-based строки
+ * сама себя объявляла бы конфликтом нескольких внесений. Presence-based строки
  * (exactClamps=true, дрожжи) в гард не входят — у них кламп легален и единицы
- * могут не совпадать с граммами. Чистая функция — тестируется без DOM, сервер
- * остаётся атомарным бэкстопом (изменений на сервере под этот гард не
- * требуется).
+ * могут не совпадать с граммами. Предупреждение не блокирует частичное списание;
+ * сервер атомарно распределяет остаток в порядке внесений.
  */
 export const computeOverbookedInventoryItems = (
   lines: BrewBatchConsumePlanLine[],
@@ -151,6 +169,8 @@ export function ConsumeInventoryDialog({
   const [selections, setSelections] = useState<SubstitutionSelections>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [loadRetry, setLoadRetry] = useState(0);
+  const inFlight = useRef(false);
 
   useEffect(() => {
     if (!open) {
@@ -166,7 +186,7 @@ export function ConsumeInventoryDialog({
     void previewBrewBatchInventoryAction(brewBatchId).then(async (result) => {
       if (cancelled) return;
       if (!result.ok || !result.plan) {
-        setLoadError(result.message || "Не удалось построить предпросмотр списания.");
+        setLoadError(result.message || "Не удалось подготовить список ингредиентов для списания.");
         setLoading(false);
         return;
       }
@@ -191,13 +211,17 @@ export function ConsumeInventoryDialog({
       setSelections(initial);
       setPlan(result.plan);
       setLoading(false);
+    }).catch(() => {
+      if (cancelled) return;
+      setLoadError("Не удалось загрузить остатки. Проверьте соединение и повторите загрузку.");
+      setLoading(false);
     });
 
     return () => {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, brewBatchId]);
+  }, [open, brewBatchId, loadRetry]);
 
   const toggleSubstitution = (recipeIngredientId: string) => {
     setSelections((prev) => ({
@@ -213,22 +237,16 @@ export function ConsumeInventoryDialog({
     }));
   };
 
-  // exact/exact_short — каждая такая строка спишется ровно один раз (сама собой
-  // или через отмеченную замену), считаем их через exactCount и НЕ прибавляем
-  // повторно за чекбокс. substitute_available без exact-подбора в exactCount не
-  // входит вовсе — считаем только отмеченные.
-  const checkedSubstituteOnlyCount = plan
-    ? plan.lines.filter((line) => line.kind === "substitute_available" && selections[line.recipeIngredientId]?.checked).length
-    : 0;
-  const selectedCount = (plan?.exactCount ?? 0) + checkedSubstituteOnlyCount;
+  const consumption = plan ? estimateConsumption(plan.lines, selections) : new Map<string, number>();
+  const selectedCount = [...consumption.values()].filter((quantity) => quantity > 0).length;
 
   const overbookedItems = plan ? computeOverbookedInventoryItems(plan.lines, selections) : [];
   const confirmDisabled = submitting
-    || selectedCount === 0
-    || overbookedItems.length > 0;
+    || selectedCount === 0;
 
   const confirm = async () => {
-    if (!plan || submitting || confirmDisabled) return;
+    if (!plan || inFlight.current || submitting || confirmDisabled) return;
+    inFlight.current = true;
     setSubmitting(true);
     setSubmitError(null);
     try {
@@ -247,6 +265,7 @@ export function ConsumeInventoryDialog({
     } catch {
       setSubmitError("Не удалось выполнить операцию.");
     } finally {
+      inFlight.current = false;
       setSubmitting(false);
     }
   };
@@ -262,10 +281,11 @@ export function ConsumeInventoryDialog({
       title="Списать со склада"
       hideTitle
       size="lg"
+      guard={{ isDirty: () => submitting, onGuardedClose: () => {} }}
     >
       <DialogHeader>
         <h3 className="text-base font-semibold text-foreground">Списать со склада</h3>
-        <DialogCloseButton />
+        <DialogCloseButton disabled={submitting} />
       </DialogHeader>
 
       <div className="space-y-3 p-5">
@@ -275,9 +295,10 @@ export function ConsumeInventoryDialog({
             Считаем…
           </div>
         ) : loadError ? (
-          <p role="alert" className="text-sm text-destructive">
-            {loadError}
-          </p>
+          <div className="space-y-3">
+            <p role="alert" className="text-sm text-destructive">{loadError}</p>
+            <Button type="button" variant="outline" size="sm" onClick={() => setLoadRetry((value) => value + 1)}>Повторить загрузку</Button>
+          </div>
         ) : plan?.alreadyConsumed ? (
           <p className="text-sm text-muted-foreground">По этой партии уже списано.</p>
         ) : plan ? (
@@ -286,6 +307,7 @@ export function ConsumeInventoryDialog({
               <ConsumeLineRow
                 key={line.recipeIngredientId}
                 line={line}
+                actualQuantity={consumption.get(line.recipeIngredientId)}
                 selection={selections[line.recipeIngredientId]}
                 onToggle={() => toggleSubstitution(line.recipeIngredientId)}
                 onChooseCandidate={(inventoryItemId) => chooseCandidate(line.recipeIngredientId, inventoryItemId)}
@@ -295,8 +317,8 @@ export function ConsumeInventoryDialog({
         ) : null}
 
         {plan && !plan.alreadyConsumed && overbookedItems.length > 0 ? (
-          <p role="alert" className="text-sm text-destructive">
-            На {overbookedItems.map((item) => `«${item.name}»`).join(", ")} не хватит на все выбранные строки.
+          <p role="status" className="rounded-lg bg-warning-subtle p-3 text-sm text-warning-subtle-foreground">
+            На {overbookedItems.map((item) => `«${item.name}»`).join(", ")} не хватит на все внесения. Спишем только имеющийся остаток по порядку внесений; недостающую часть пропустим. Остальные ингредиенты спишутся как обычно.
           </p>
         ) : null}
 
@@ -314,7 +336,7 @@ export function ConsumeInventoryDialog({
         {plan && !plan.alreadyConsumed ? (
           <Button type="button" onClick={() => void confirm()} disabled={confirmDisabled}>
             {submitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
-            Списать {selectedCount} {pluralize(selectedCount, ["позиция", "позиции", "позиций"])}
+            Списать {selectedCount} {pluralize(selectedCount, ["позицию", "позиции", "позиций"])}
           </Button>
         ) : null}
       </DialogFooter>
@@ -331,21 +353,34 @@ export function ConsumeLineRow({
   line,
   selection,
   onToggle,
-  onChooseCandidate
+  onChooseCandidate,
+  actualQuantity
 }: {
   line: BrewBatchConsumePlanLine;
+  actualQuantity?: number;
   selection: SubstitutionSelection | undefined;
   onToggle: () => void;
   onChooseCandidate: (inventoryItemId: string) => void;
 }) {
+  const partial = actualQuantity != null && actualQuantity + 0.000001 < line.requiredQuantityNormalized;
+  const amountLabel = partial ? `${formatInventoryQuantityInputValue(actualQuantity!, line.normalizedUnit)} ${formatInventoryUnitLabel(line.normalizedUnit ?? "g", actualQuantity!)}` : line.requiredLabel;
+  const deductionLabel = actualQuantity === 0 ? "Пропустим" : `−${amountLabel}`;
+  const partialHint = partial ? <p className="w-full text-xs text-warning-subtle-foreground">Нужно {line.requiredLabel}; спишем {amountLabel}. Недостающую часть пропустим.</p> : null;
   if (line.kind === "exact") {
     return (
-      <li className="flex items-center justify-between gap-3 py-2.5">
+      <li className="flex flex-wrap items-center justify-between gap-3 py-2.5">
         <span className="flex min-w-0 items-center gap-2 text-sm text-foreground">
-          <Check className="h-4 w-4 shrink-0 text-success" aria-hidden />
+          <Check className={`h-4 w-4 shrink-0 ${partial ? "text-warning" : "text-success"}`} aria-hidden />
           <span className="truncate">{line.displayName}</span>
         </span>
-        <span className="shrink-0 text-sm font-medium tabular-nums text-foreground">−{line.requiredLabel}</span>
+        <span className="shrink-0 text-sm font-medium tabular-nums text-foreground">{deductionLabel}</span>
+        {line.exactLots && line.exactLots.length > 1 ? <p className="w-full pl-6 text-xs text-muted-foreground">Запас в {line.exactLots.length} партиях закупки.</p> : null}
+        {partialHint}
+        {(partial || selection?.checked) && !line.exactClamps && line.substitutes.length > 0 ? (
+          <div className="w-full space-y-2">
+            <SubstitutionFields line={line} selection={selection} onToggle={onToggle} onChooseCandidate={onChooseCandidate} showCandidateName />
+          </div>
+        ) : null}
       </li>
     );
   }
@@ -363,10 +398,10 @@ export function ConsumeLineRow({
             <Check className="h-4 w-4 shrink-0 text-warning" aria-hidden />
             <span className="truncate">{line.displayName}</span>
           </span>
-          <span className="shrink-0 text-sm font-medium tabular-nums text-warning">−{line.requiredLabel}</span>
-          {line.exact ? (
+          <span className="shrink-0 text-sm font-medium tabular-nums text-warning">{deductionLabel}</span>
+          {line.exact && !selection?.checked ? (
             <p className="w-full pl-6 text-xs text-muted-foreground">
-              На складе {line.exact.availableLabel} — спишем остаток.
+              В партии закупки {line.exact.availableLabel}; остаток распределяется между внесениями.
             </p>
           ) : null}
         </div>
@@ -379,6 +414,7 @@ export function ConsumeLineRow({
             showCandidateName
           />
         ) : null}
+        {partialHint}
       </li>
     );
   }
@@ -386,8 +422,9 @@ export function ConsumeLineRow({
   if (line.kind === "substitute_available") {
     return (
       <li className="space-y-2 py-2.5">
-        <SubstitutionHeader line={line} selection={selection} />
+        <SubstitutionHeader line={line} selection={selection} deductionLabel={deductionLabel} />
         <SubstitutionFields line={line} selection={selection} onToggle={onToggle} onChooseCandidate={onChooseCandidate} />
+        {partialHint}
       </li>
     );
   }
@@ -423,10 +460,12 @@ export function ConsumeLineRow({
 // заменяет собственная шапка с исходным именем строки и требуемым количеством).
 function SubstitutionHeader({
   line,
-  selection
+  selection,
+  deductionLabel
 }: {
   line: BrewBatchConsumePlanLine;
   selection: SubstitutionSelection | undefined;
+  deductionLabel: string;
 }) {
   const candidateId = selection?.inventoryItemId ?? line.substitutes[0]?.inventoryItemId;
   const candidate = line.substitutes.find((item) => item.inventoryItemId === candidateId) ?? line.substitutes[0];
@@ -436,7 +475,7 @@ function SubstitutionHeader({
         <ArrowLeftRight className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
         <span className="truncate">{candidate?.name}</span>
       </span>
-      <span className="shrink-0 text-sm font-medium tabular-nums text-foreground">−{line.requiredLabel}</span>
+      <span className="shrink-0 text-sm font-medium tabular-nums text-foreground">{selection?.checked ? deductionLabel : `Нужно ${line.requiredLabel}`}</span>
     </div>
   );
 }

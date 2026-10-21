@@ -133,7 +133,7 @@ const matchWordForms: [string, string, string] = ["совпадение", "со�
 // Заголовки секций хаба = лейблы пилюль тулбара (ingredient-catalog-toolbar.tsx).
 const catalogHubSectionLabels: Record<CatalogLandingSlug, string> = {
   malts: "Солод",
-  fermentables: "Сбраживаемое сырье",
+  fermentables: "Сбраживаемое сырьё",
   hops: ingredientCategoryLabels.hop,
   yeast: ingredientCategoryLabels.yeast,
   water: ingredientCategoryLabels.water_treatment,
@@ -179,7 +179,7 @@ const renderCatalogHub = async ({
           <h1 className="text-3xl font-semibold tracking-tight text-foreground">Каталог ингредиентов</h1>
           <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
             {canManage
-              ? "Системный каталог и ваши пользовательские ингредиенты доступны в одном разделе."
+              ? "Общий каталог и ваши ингредиенты — в одном разделе."
               : "Открытый справочник ингредиентов для домашних пивоваров: солод, хмель, дрожжи и не только."}
           </p>
         </div>
@@ -211,7 +211,7 @@ const renderCatalogHub = async ({
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
             {view === "mine"
-              ? "Создайте свой ингредиент с нуля или сделайте свой вариант на основе системного."
+              ? "Создайте свой ингредиент с нуля или сделайте свой вариант на основе ингредиента из общего каталога."
               : "Попробуйте изменить запрос, фильтр категории или сортировку."}
           </p>
           {q || canManage ? (
@@ -446,7 +446,7 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
             {view === "mine"
-              ? "Создайте свой ингредиент с нуля или сделайте свой вариант на основе системного."
+              ? "Создайте свой ингредиент с нуля или сделайте свой вариант на основе ингредиента из общего каталога."
               : "Попробуйте изменить запрос, фильтр категории или сортировку."}
           </p>
           {showOtherCategoriesButton || q || canManage ? (

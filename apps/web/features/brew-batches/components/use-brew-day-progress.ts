@@ -29,6 +29,30 @@ export function useBrewDayProgress(
   const [pending, setPending] = useState<Record<string, boolean>>({});
   const [error, setError] = useState<string | null>(null);
   const inFlight = useRef<Set<string>>(new Set());
+  const confirmed = useRef<BrewDayProgress>(initialProgress ?? emptyBrewDayProgress);
+  const patches = useRef(new Map<string, BrewDayStepPatch>());
+  const generation = useRef(0);
+
+  useEffect(() => {
+    generation.current += 1;
+    confirmed.current = initialProgress ?? emptyBrewDayProgress;
+    patches.current.clear();
+    inFlight.current.clear();
+    setProgress(confirmed.current);
+    setPending({});
+    setError(null);
+    // При смене партии её локальные правки не переносятся на соседнюю.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [brewBatchId]);
+
+  const reconcile = () => {
+    const steps = { ...confirmed.current.steps };
+    for (const [id, patch] of patches.current) {
+      const current = steps[id] ?? { done: false, timerStartedAt: null };
+      steps[id] = { done: patch.done ?? current.done, timerStartedAt: patch.timerStartedAt !== undefined ? patch.timerStartedAt : current.timerStartedAt };
+    }
+    return { ...confirmed.current, steps };
+  };
 
   const [now, setNow] = useState<number | null>(null);
   useEffect(() => {
@@ -42,40 +66,39 @@ export function useBrewDayProgress(
       return;
     }
     inFlight.current.add(stepId);
+    const epoch = generation.current;
+    patches.current.set(stepId, patch);
     setPending((prev) => ({ ...prev, [stepId]: true }));
     setError(null);
-    const previous = progress;
-    setProgress((prev) => {
-      const current = prev.steps[stepId] ?? { done: false, timerStartedAt: null };
-      return {
-        steps: {
-          ...prev.steps,
-          [stepId]: {
-            done: patch.done ?? current.done,
-            timerStartedAt: patch.timerStartedAt !== undefined ? patch.timerStartedAt : current.timerStartedAt
-          }
-        },
-        updatedAt: prev.updatedAt
-      };
-    });
+    setProgress(reconcile());
     try {
       const result = await setBrewDayStepStateAction(brewBatchId, stepId, patch);
+      if (epoch !== generation.current) return;
       if (!result.ok || !result.progress) {
-        setProgress(previous);
         setError(result.message);
         return;
       }
-      setProgress(result.progress);
+      const timestamp = (value: string | null) => value ? Date.parse(value) || 0 : 0;
+      if (timestamp(result.progress.updatedAt) > timestamp(confirmed.current.updatedAt)) {
+        confirmed.current = result.progress;
+      } else {
+        // Ответы могут прийти не по порядку или иметь одинаковую миллисекунду.
+        // Подтверждаем свой шаг, не затирая более свежие соседние шаги.
+        confirmed.current = { ...confirmed.current, steps: { ...confirmed.current.steps, [stepId]: result.progress.steps[stepId] } };
+      }
     } catch {
-      setProgress(previous);
-      setError("Не удалось сохранить шаг. Попробуйте ещё раз.");
+      if (epoch === generation.current) setError("Не удалось сохранить шаг. Попробуйте ещё раз.");
     } finally {
-      inFlight.current.delete(stepId);
-      setPending((prev) => {
-        const next = { ...prev };
-        delete next[stepId];
-        return next;
-      });
+      if (epoch === generation.current) {
+        patches.current.delete(stepId);
+        inFlight.current.delete(stepId);
+        setProgress(reconcile());
+        setPending((prev) => {
+          const next = { ...prev };
+          delete next[stepId];
+          return next;
+        });
+      }
     }
   };
 

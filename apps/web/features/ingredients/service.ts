@@ -35,12 +35,13 @@ import {
   type IngredientType
 } from "./contracts";
 import { normalizeSearchText } from "./normalization";
+import { createCatalogSnapshotCache } from "./catalog-cache";
 import {
   buildIngredientTypedSummary,
   resolveIngredientDisplayNames,
   resolveIngredientPrimaryDisplayName
 } from "./presentation";
-import { rankIngredientCandidate, rankQueryTwoPass } from "./ranking";
+import { createIngredientRanker, rankQueryTwoPass } from "./ranking";
 import { extractIngredientTechnicalData, extractIngredientTechnicalFields } from "./technical-fields";
 import {
   resolveIngredientCategory,
@@ -342,11 +343,6 @@ const loadIngredientsUncached = async (
     .filter((row) => params?.category ? row.category === params.category : true);
 };
 
-type CachedCatalogEntry = {
-  items: IngredientCatalogItemDto[];
-  loadedAt: number;
-};
-
 // Процессный in-memory TTL-кэш анонимной части каталога (без includeInactive —
 // тот путь админский, listCatalogIngredients, всегда идёт напрямую в БД).
 // Раньше здесь был unstable_cache, но полный каталог сериализуется в ~3.78MB,
@@ -366,7 +362,7 @@ type CachedCatalogEntry = {
 // listSameBrandCatalogIngredients) и поиск (searchCatalogItems /
 // searchIngredientSuggestions).
 const CATALOG_CACHE_TTL_MS = 5 * 60 * 1000;
-const catalogCache = new Map<string, CachedCatalogEntry>();
+const catalogCache = createCatalogSnapshotCache<IngredientCatalogItemDto[]>({ ttlMs: CATALOG_CACHE_TTL_MS });
 
 const buildCatalogCacheKey = (params: { type?: string; category?: string }) => (
   JSON.stringify({ type: params.type ?? null, category: params.category ?? null })
@@ -392,13 +388,7 @@ export const loadIngredients = async (
   }
 
   const cacheKey = buildCatalogCacheKey(cacheParams);
-  const cached = catalogCache.get(cacheKey);
-  if (cached && Date.now() - cached.loadedAt < CATALOG_CACHE_TTL_MS) {
-    return cached.items.slice();
-  }
-
-  const items = await loadIngredientsUncached(cacheParams);
-  catalogCache.set(cacheKey, { items, loadedAt: Date.now() });
+  const items = await catalogCache.get(cacheKey, () => loadIngredientsUncached(cacheParams));
   return items.slice();
 };
 
@@ -440,26 +430,28 @@ const rankCatalogItems = (
 ): IngredientSuggestionItem[] => {
   // Раскладка — фолбэк: второй проход только при нуле результатов первого
   // (тот же двухпроходный паттерн, что в catalog-service.ts).
-  const { results: ranked } = rankQueryTwoPass(query, (includeLayoutVariants) => items
-    .map((item) => {
-      const match = scoreCandidate(item, query, { includeLayoutVariants });
-      return match ? toSuggestionItem(item, match) : null;
-    })
-    .filter((item): item is IngredientSuggestionItem => item !== null)
-    .sort((left, right) => (
-      (right.score ?? 0) - (left.score ?? 0)
-      || (left.primaryLabelRu ?? left.displayName).localeCompare(right.primaryLabelRu ?? right.displayName, "ru")
-    )));
+  const { results: ranked } = rankQueryTwoPass(query, (includeLayoutVariants) => {
+    const rankCandidate = createIngredientRanker(query, { includeLayoutVariants });
+    return items
+      .map((item) => {
+        const match = scoreCandidate(item, rankCandidate);
+        return match ? toSuggestionItem(item, match) : null;
+      })
+      .filter((item): item is IngredientSuggestionItem => item !== null)
+      .sort((left, right) => (
+        (right.score ?? 0) - (left.score ?? 0)
+        || (left.primaryLabelRu ?? left.displayName).localeCompare(right.primaryLabelRu ?? right.displayName, "ru")
+      ));
+  });
 
   return typeof limit === "number" ? ranked.slice(0, limit) : ranked;
 };
 
 const scoreCandidate = (
   item: IngredientCatalogItemDto,
-  query: string,
-  options: { includeLayoutVariants?: boolean } = {}
+  rankCandidate: ReturnType<typeof createIngredientRanker>
 ): MatchResult | null => {
-  const rank = rankIngredientCandidate(query, {
+  const rank = rankCandidate({
     displayName: item.primaryLabelRu,
     displayNameRu: item.nameRu,
     displayNameEn: item.nameEn,
@@ -491,7 +483,7 @@ const scoreCandidate = (
       stockContentAmount: variant.stockContentAmount,
       stockContentUnit: variant.stockContentUnit
     }))
-  }, { includeLayoutVariants: options.includeLayoutVariants ?? false });
+  });
 
   if (!rank) {
     return null;

@@ -1,13 +1,10 @@
 import Link from "next/link";
 import React, { type CSSProperties } from "react";
 
-import {
-  isCalculatorVerified,
-  type CalculatorCardItem,
-  type CalculatorSlug
-} from "@/features/calculators/catalog";
+import type { CalculatorCardItem, CalculatorSlug } from "@/features/calculators/catalog";
 
 import { CalculatorFavoriteToggle } from "./calculator-favorite-toggle";
+import { CalculatorVerificationBadge } from "./calculator-verification-badge";
 
 const calculatorCardBackgrounds: Partial<Record<CalculatorSlug, string>> = {
   "abv-attenuation": "/images/calculators/2-Photoroom.png",
@@ -51,6 +48,7 @@ export function CalculatorCard({ calculator }: { calculator: CalculatorCardItem 
         className="absolute right-2 top-2 z-10"
       />
       <article className="pointer-events-none relative z-[1] flex h-full flex-col justify-between p-3.5 sm:p-4">
+        <CalculatorVerificationBadge slug={calculator.slug} />
         <div className="max-w-[65%] space-y-0.5">
           <h3 className="text-[14px] font-semibold leading-snug text-foreground sm:text-[15px]">
             {calculator.shortTitle}
@@ -59,11 +57,6 @@ export function CalculatorCard({ calculator }: { calculator: CalculatorCardItem 
             {calculator.description}
           </p>
         </div>
-        {isCalculatorVerified(calculator.slug) ? (
-          <span className="inline-flex w-fit items-center gap-1 rounded-full bg-success-subtle px-2 py-0.5 text-[10px] font-semibold text-success-subtle-foreground">
-            ✓ проверен
-          </span>
-        ) : null}
       </article>
     </div>
   );

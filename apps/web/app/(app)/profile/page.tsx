@@ -8,7 +8,7 @@ import { gravityUnitLabels, preferredGravityUnits } from "@/features/system/grav
 
 import { updateSettingsAction } from "../settings/actions";
 
-const inputClassName = "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm";
+const inputClassName = "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base";
 
 export default async function ProfilePage() {
   const user = await requireUser();

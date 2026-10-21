@@ -15,9 +15,7 @@ import {
   buildPackageVariantPayload,
   createAdminAliasRow,
   createAdminPackageVariantRow,
-  formatEnumLabel,
   formatJsonText,
-  getAdminIngredientFieldVisibility,
   getAdminIngredientSubtypeOptions,
   getNextAdminIngredientTaxonomyState,
   ingredientAliasLocaleLabels,
@@ -32,6 +30,8 @@ import {
 } from "@/features/ingredients/admin-form-model";
 import {
   buildIngredientTypedSummary,
+  formatIngredientSubtypeLabel,
+  ingredientCategoryLabels,
   resolveIngredientDisplayNames
 } from "@/features/ingredients/presentation";
 import {
@@ -259,15 +259,15 @@ const PackageVariantEditor = ({
                 />
                 <NumericInput
                   value={row.stockContentAmountText}
-                  aria-label={`Содержимое на складе варианта ${index + 1}`}
+                  aria-label={`Количество для учёта на складе ${index + 1}`}
                   placeholder="На складе"
                   className={numericInputClassName}
                   onChange={(event) => patch(index, { stockContentAmountText: event.target.value })}
                 />
                 <Input
                   value={row.stockContentUnit ?? ""}
-                  aria-label={`Единица склада варианта ${index + 1}`}
-                  placeholder="Единица склада"
+                  aria-label={`Единица учёта на складе ${index + 1}`}
+                  placeholder="Единица учёта на складе"
                   onChange={(event) => patch(index, { stockContentUnit: event.target.value || null })}
                 />
               </div>
@@ -336,7 +336,6 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const subtypeOptions = getAdminIngredientSubtypeOptions(selectedCategory);
-  const fieldVisibility = getAdminIngredientFieldVisibility(selectedCategory, selectedSubtype);
   const resolvedType = resolveLegacyIngredientType({
     category: selectedCategory,
     subtype: selectedSubtype
@@ -405,7 +404,7 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
         setError(null);
 
         if (jsonError) {
-          setError("Проверьте JSON-поля: есть незакрытые ошибки.");
+          setError("Проверьте JSON-поля: в них есть ошибки.");
           return;
         }
 
@@ -501,8 +500,8 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
       ) : null}
 
       <section className={sectionClassName}>
-        <h2 className={sectionTitleClassName}>Таксономия</h2>
-        <div className="grid gap-3 md:grid-cols-3">
+        <h2 className={sectionTitleClassName}>Классификация</h2>
+        <div className="grid gap-3 md:grid-cols-2">
           <Select
             label="Категория"
             value={selectedCategory}
@@ -518,7 +517,7 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
             }}
           >
             {ingredientCategories.map((category) => (
-              <option key={category} value={category}>{formatEnumLabel(category)}</option>
+              <option key={category} value={category}>{ingredientCategoryLabels[category]}</option>
             ))}
           </Select>
           <Select
@@ -530,13 +529,9 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
             }))}
           >
             {subtypeOptions.map((subtype) => (
-              <option key={subtype} value={subtype}>{formatEnumLabel(subtype)}</option>
+              <option key={subtype} value={subtype}>{formatIngredientSubtypeLabel(selectedCategory, subtype)}</option>
             ))}
           </Select>
-          <div className="grid gap-1.5">
-            <label htmlFor="field-type" className={fieldLabelClassName}>Тип</label>
-            <Input id="field-type" value={resolvedType} readOnly className="bg-muted" />
-          </div>
         </div>
       </section>
 
@@ -551,7 +546,9 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
             defaultValue={initial?.displayModeRu ?? "auto"}
           >
             {ingredientDisplayModes.map((mode) => (
-              <option key={mode} value={mode}>{mode}</option>
+              <option key={mode} value={mode}>
+                {{ auto: "Автоматически", localized_first: "Сначала русское название", source_first: "Сначала исходное название" }[mode]}
+              </option>
             ))}
           </Select>
           <TextField
@@ -624,7 +621,6 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
       ) : null}
 
       <section className={sectionClassName}>
-        <h2 className={sectionTitleClassName}>Атрибуты</h2>
         <JsonField
           id="json-attributes"
           label="Атрибуты"
@@ -652,24 +648,11 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
 
       <section className={sectionClassName}>
         <h2 className={sectionTitleClassName}>Предпросмотр</h2>
-        <div className="grid gap-3 md:grid-cols-2">
-          <div className="rounded-md border border-border bg-muted p-3">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Каталог / Поиск</p>
-            <p className="mt-2 font-medium text-foreground">{preview.primaryName || "Без основного названия"}</p>
-            {preview.secondaryName ? <p className="text-sm text-muted-foreground">{preview.secondaryName}</p> : null}
-            {preview.summary ? <p className="mt-2 text-sm text-muted-foreground">{preview.summary}</p> : null}
-          </div>
-          <div className="rounded-md border border-border bg-muted p-3">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Рецепт / Склад</p>
-            <p className="mt-2 font-medium text-foreground">{preview.primaryName || "Без основного названия"}</p>
-            <p className="text-sm text-muted-foreground">{resolvedType} / {selectedCategory} / {selectedSubtype ?? "none"}</p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Основные поля: {fieldVisibility.primary.join(", ")}
-            </p>
-            {fieldVisibility.advanced.length ? (
-              <p className="text-sm text-muted-foreground">Дополнительные поля: {fieldVisibility.advanced.join(", ")}</p>
-            ) : null}
-          </div>
+        <div className="rounded-md border border-border bg-muted p-3">
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">Каталог / Поиск</p>
+          <p className="mt-2 font-medium text-foreground">{preview.primaryName || "Без основного названия"}</p>
+          {preview.secondaryName ? <p className="text-sm text-muted-foreground">{preview.secondaryName}</p> : null}
+          {preview.summary ? <p className="mt-2 text-sm text-muted-foreground">{preview.summary}</p> : null}
         </div>
       </section>
 

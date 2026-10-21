@@ -22,7 +22,7 @@ export function InventorySummary({ summary }: Props) {
           <p className="text-2xl font-semibold">{summary.inStockItems}</p>
         </article>
         <article className="rounded-md border p-3">
-          <p className="text-xs text-muted-foreground">Пустые</p>
+          <p className="text-xs text-muted-foreground">Закончились</p>
           <p className="text-2xl font-semibold">{summary.emptyItems}</p>
         </article>
       </div>

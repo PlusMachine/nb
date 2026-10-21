@@ -1,0 +1,82 @@
+[
+  {
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app",
+    "message": "/127.0.0.1:3100/_next/static/webpack/e0b0f044aae3554c.webpack.hot-update.json due to access control checks."
+  },
+  {
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/app",
+    "message": "/127.0.0.1:3100/_next/static/webpack/243c5fdded672cd9.webpack.hot-update.json due to access control checks."
+  },
+  {
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/ingredients",
+    "message": "/127.0.0.1:3100/_next/static/webpack/2a2802e5c4be91c4.webpack.hot-update.json due to access control checks."
+  },
+  {
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/shopping",
+    "message": "/127.0.0.1:3100/_next/static/webpack/694a9de153462c92.webpack.hot-update.json due to access control checks."
+  },
+  {
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/equipment",
+    "message": "/127.0.0.1:3100/_next/static/webpack/a3f61654c005d3bb.webpack.hot-update.json due to access control checks."
+  },
+  {
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/devices",
+    "message": "/127.0.0.1:3100/_next/static/webpack/f6551fe8852916ed.webpack.hot-update.json due to access control checks."
+  },
+  {
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/devices",
+    "message": "/127.0.0.1:3100/api/devices/tiles due to access control checks."
+  },
+  {
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/devices",
+    "message": "/127.0.0.1:3100/_next/static/webpack/c8d14b5c998445ef.webpack.hot-update.json due to access control checks."
+  },
+  {
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/saved",
+    "message": "/127.0.0.1:3100/_next/static/webpack/2081dcc79f777c09.webpack.hot-update.json due to access control checks."
+  },
+  {
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/master",
+    "message": "/127.0.0.1:3100/_next/static/webpack/63834786da25c876.webpack.hot-update.json due to access control checks."
+  },
+  {
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/master",
+    "message": "/127.0.0.1:3100/app/master?_rsc=wwetc due to access control checks."
+  },
+  {
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/app/master",
+    "message": "/127.0.0.1:3100/__nextjs_original-stack-frames due to access control checks."
+  },
+  {
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/profile",
+    "message": "/127.0.0.1:3100/_next/static/webpack/10a539d3169d9892.webpack.hot-update.json due to access control checks."
+  },
+  {
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/",
+    "message": "/127.0.0.1:3100/_next/static/webpack/8ba6ef42c1d5b3ae.webpack.hot-update.json due to access control checks."
+  },
+  {
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/recipes",
+    "message": "Unexpected end of JSON input"
+  },
+  {
+    "profile": "iPhone 13",
+    "url": "http://127.0.0.1:3100/recipes",
+    "message": "/127.0.0.1:3100/_next/static/webpack/d42f375654c73fc8.webpack.hot-update.json due to access control checks."
+  }
+]

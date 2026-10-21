@@ -16,9 +16,9 @@ const INSTRUCTIONS: Record<StreamHardwareKind, string> = {
     "В приложении Tilt (или TiltPi/TiltBridge) откройте Настройки → Use Custom Cloud URL и вставьте ссылку выше. Телефон с приложением Tilt должен быть рядом с ферментером (связь по Bluetooth) — для надёжности лучше использовать TiltPi или TiltBridge.",
   floaty: "В приложении Floaty включите отправку на пользовательский сервер и вставьте ссылку выше как адрес назначения.",
   brewpiless: "В настройках BrewPiLess откройте раздел Remote logging и вставьте ссылку выше.",
-  "rapt-pill": "RAPT Pill подключается отдельным флоу (RAPT Cloud) — здесь эта инструкция не используется.",
-  "rapt-chamber": "RAPT-камера подключается отдельным флоу (RAPT Cloud) — здесь эта инструкция не используется.",
-  "rapt-brewzilla": "BrewZilla подключается отдельным флоу (RAPT Cloud) — здесь эта инструкция не используется.",
+  "rapt-pill": "RAPT Pill подключается через RAPT Cloud. Вернитесь к выбору типа подключения и выберите RAPT Cloud.",
+  "rapt-chamber": "RAPT-камера подключается через RAPT Cloud. Вернитесь к выбору типа подключения и выберите RAPT Cloud.",
+  "rapt-brewzilla": "BrewZilla подключается через RAPT Cloud. Вернитесь к выбору типа подключения и выберите RAPT Cloud.",
   other: "Устройство должно уметь отправлять HTTP push в формате iSpindel или Brewfather — впишите ссылку выше как адрес назначения (обычно поле Server/URL)."
 };
 

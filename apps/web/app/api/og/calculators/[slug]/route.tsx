@@ -1,4 +1,6 @@
+import { canAccessCalculator } from "@/features/calculators/access";
 import { calculatorHasStickyResultBar, calculatorQueryHasKnownFields, getCalculatorDefinition, initialCalculatorStateFromQuery, parseCalculatorQuery } from "@/features/calculators/definitions";
+import { isCalculatorPublic } from "@/features/calculators/visibility";
 import { buildCalculatorOgView, buildCalculatorResultOgView } from "@/features/og/calculator";
 import { assertOgRateLimit, ogStaticFallback, renderOgCardResponse, renderOgFallbackResponse } from "@/features/og/render";
 import { getServerEnv } from "@/lib/env";
@@ -14,6 +16,10 @@ export const runtime = "nodejs";
 
 export async function GET(request: Request, context: { params: Promise<{ slug: string }> }) {
   const { slug } = await context.params;
+  const definition = getCalculatorDefinition(slug);
+  if (definition && !(await canAccessCalculator(slug))) {
+    return new Response(null, { status: 404, headers: { "Cache-Control": "private, no-store" } });
+  }
   const { APP_URL, SITE_NAME } = getServerEnv();
 
   try {
@@ -25,13 +31,13 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
   const domain = new URL(APP_URL).host;
 
   try {
-    const definition = getCalculatorDefinition(slug);
     if (!definition) {
       // Неизвестный слаг — дешёвый 302 без Satori-рендера (§7a, анти-DoS).
       return ogStaticFallback();
     }
 
     const query = parseCalculatorQuery(Object.fromEntries(new URL(request.url).searchParams));
+    const isPublic = isCalculatorPublic(definition.catalog.slug);
 
     if (
       Object.keys(query).length === 0 ||
@@ -44,7 +50,7 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
       // остаются на карточке v1. Контент меняется только с деплоем — кэшируем надолго на CDN.
       return await renderOgCardResponse(
         buildCalculatorOgView(definition.catalog, { domain, wordmark: SITE_NAME }),
-        "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800"
+        isPublic ? "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800" : "private, no-store"
       );
     }
 
@@ -53,7 +59,7 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
     // URL query-зависимый (свой результат на каждую комбинацию входов) — короче TTL.
     return await renderOgCardResponse(
       buildCalculatorResultOgView(definition.catalog, result, { domain, wordmark: SITE_NAME }),
-      "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400"
+      isPublic ? "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400" : "private, no-store"
     );
   } catch (error) {
     console.error("og calculator card render failed", { slug, error });

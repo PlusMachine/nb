@@ -97,8 +97,8 @@ export const publicLinks: { href: string; label: string }[] = [
 // рабочей зоны, чтобы состав и порядок ссылок не расходились между зонами.
 export const legalLinks: { href: string; label: string }[] = [
   { href: "/legal/terms", label: "Пользовательское соглашение" },
-  { href: "/legal/privacy", label: "Политика обработки ПДн" },
-  { href: "/legal/consent", label: "Согласие на обработку ПДн" },
+  { href: "/legal/privacy", label: "Политика конфиденциальности" },
+  { href: "/legal/consent", label: "Согласие на обработку данных" },
   { href: "/legal/cookies", label: "Использование cookie" }
 ];
 

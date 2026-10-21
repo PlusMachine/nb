@@ -88,7 +88,7 @@ export function RecipeStyleStatsBlock({
       status: getRangeStatus(preview?.ibu ?? null, selectedStyle?.ibu ?? null)
     },
     {
-      label: "Color",
+      label: "Цвет",
       valueLabel: preview?.color != null ? formatColorWithEbc(preview.color) : "—",
       actualValue: preview?.color ?? null,
       globalRange: globalBrewingRanges.colorSrm,
@@ -136,7 +136,7 @@ export function RecipeStyleStatsBlock({
                 href={selectedStyleArticleHref}
                 target="_blank"
                 rel="noreferrer"
-                aria-label={`Открыть описание BJCP стиля ${selectedStyle?.name ?? styleName}`}
+                aria-label={`Открыть описание стиля BJCP ${selectedStyle?.name ?? styleName}`}
                 className="inline-flex min-w-0 items-center gap-1.5 rounded-md text-xs text-muted-foreground underline-offset-2 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <span className="truncate">{`BJCP ${styleName}`}</span>

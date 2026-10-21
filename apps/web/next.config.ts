@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../..");
 
 const nextConfig: NextConfig = {
+  experimental: { serverActions: { bodySizeLimit: "10mb" } },
   // Несколько dev-серверов на одном чекауте (параллельные сессии) пишут в один
   // `.next` и затирают друг другу манифесты — роут «исчезает» с 404 на ровном
   // месте. Второму и последующим серверам дают свой каталог: NEXT_DIST_DIR=.next-2.

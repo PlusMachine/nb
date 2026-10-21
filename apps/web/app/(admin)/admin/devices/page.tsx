@@ -8,6 +8,8 @@ import { AdminPagination } from "@/components/admin/admin-pagination";
 import { DevicesFilters } from "@/components/admin/devices/devices-filters";
 import { listAdminDevices, type AdminDeviceListItem } from "@/features/devices/admin";
 import { devicePresenceLabels, type DevicePresence } from "@/features/devices/contracts";
+import { isDemoDevice } from "@/features/devices/service";
+import { isDemoStreamDevice } from "@/features/device-streams/demo";
 import { requireRole } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
@@ -71,9 +73,12 @@ export default async function AdminDevicesPage({
       header: "Устройство",
       cell: (device) => (
         <div className="space-y-0.5">
-          <Link href={`/admin/devices/${device.id}`} className="font-medium text-foreground hover:underline">
-            {device.name}
-          </Link>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link href={`/admin/devices/${device.id}`} className="font-medium text-foreground hover:underline">
+              {device.name}
+            </Link>
+            {isDemoDevice(device) || isDemoStreamDevice(device) ? <Badge size="sm" tone="neutral">Демо</Badge> : null}
+          </div>
           <div className="font-mono text-xs text-muted-foreground">{device.hardwareId}</div>
         </div>
       )

@@ -93,7 +93,8 @@ function NumberField({
   onChange,
   step = 0.1,
   min = 0,
-  max
+  max,
+  error
 }: {
   name: NumberFieldName;
   label: string;
@@ -102,12 +103,14 @@ function NumberField({
   step?: number;
   min?: number;
   max?: number;
+  error?: string;
 }) {
   return (
     <label className="text-xs font-medium text-muted-foreground">
       <span>{label}</span>
       <input
         name={name}
+        aria-invalid={Boolean(error)}
         type="number"
         min={min}
         max={max}
@@ -116,6 +119,7 @@ function NumberField({
         onChange={(event) => onChange(name, event.target.value)}
         className={equipmentFormInputClassName}
       />
+      {error ? <span role="alert" className="mt-1 block text-destructive">{error}</span> : null}
     </label>
   );
 }
@@ -158,11 +162,13 @@ const buildUnusedName = (name: string, takenNames: string[]) => {
 export function EquipmentProfileFormFields({
   profile,
   showPresets = false,
-  existingNames = []
+  existingNames = [],
+  fieldErrors = {}
 }: {
   profile: EquipmentProfilePayload;
   showPresets?: boolean;
   existingNames?: string[];
+  fieldErrors?: Record<string, string>;
 }) {
   const [values, setValues] = useState(() => profileToFormValues(profile));
   const [presetId, setPresetId] = useState("");
@@ -208,32 +214,34 @@ export function EquipmentProfileFormFields({
             Название
             <input
               name="name"
+              required
+              maxLength={180}
               value={values.name}
               onChange={(event) => setValues((current) => ({ ...current, name: event.target.value }))}
               className={equipmentFormInputClassName}
             />
           </label>
-          <NumberField name="targetBatchVolumeL" label="Типичный объём партии, л" value={values.targetBatchVolumeL} onChange={setNumberField} />
-          <NumberField name="brewhouseEfficiencyPct" label="Эффективность, %" value={values.brewhouseEfficiencyPct} onChange={setNumberField} step={0.1} min={1} max={100} />
-          <NumberField name="evaporationRateLPerHr" label="Испарение, л/ч" value={values.evaporationRateLPerHr} onChange={setNumberField} />
-          <NumberField name="trubChillerLossL" label="Потери в котле / на чиллере, л" value={values.trubChillerLossL} onChange={setNumberField} />
-          <NumberField name="mashThicknessLPerKg" label="Гидромодуль, л/кг" value={values.mashThicknessLPerKg} onChange={setNumberField} step={0.1} min={0.1} />
-          <NumberField name="grainAbsorptionLPerKg" label="Поглощение воды зерном, л/кг" value={values.grainAbsorptionLPerKg} onChange={setNumberField} step={0.01} />
+          <NumberField name="targetBatchVolumeL" label="Типичный объём партии, л" min={0.1} value={values.targetBatchVolumeL} onChange={setNumberField} error={fieldErrors.targetBatchVolumeL} />
+          <NumberField name="brewhouseEfficiencyPct" label="Эффективность, %" value={values.brewhouseEfficiencyPct} onChange={setNumberField} step={0.1} min={1} max={100} error={fieldErrors.brewhouseEfficiencyPct} />
+          <NumberField name="evaporationRateLPerHr" label="Испарение, л/ч" value={values.evaporationRateLPerHr} onChange={setNumberField} error={fieldErrors.evaporationRateLPerHr} />
+          <NumberField name="trubChillerLossL" label="Потери в котле / на чиллере, л" value={values.trubChillerLossL} onChange={setNumberField} error={fieldErrors.trubChillerLossL} />
+          <NumberField name="mashThicknessLPerKg" label="Гидромодуль, л/кг" value={values.mashThicknessLPerKg} onChange={setNumberField} step={0.1} min={0.1} error={fieldErrors.mashThicknessLPerKg} />
+          <NumberField name="grainAbsorptionLPerKg" label="Поглощение воды зерном, л/кг" value={values.grainAbsorptionLPerKg} onChange={setNumberField} step={0.01} error={fieldErrors.grainAbsorptionLPerKg} />
         </div>
       </section>
 
       <details className="border-t border-border pt-4">
-        <summary className="cursor-pointer text-sm font-semibold text-foreground">Ещё параметры (опционально)</summary>
+        <summary className="cursor-pointer text-sm font-semibold text-foreground">Дополнительные параметры (необязательно)</summary>
         <div className="mt-3 grid gap-3 md:grid-cols-3">
-          <NumberField name="fermenterLossL" label="Потери в ферментере, л" value={values.fermenterLossL} onChange={setNumberField} />
-          <NumberField name="coolingShrinkagePct" label="Усадка при охлаждении, %" value={values.coolingShrinkagePct} onChange={setNumberField} step={0.1} max={20} />
-          <NumberField name="mashTunDeadspaceL" label="Мёртвый объём заторника, л" value={values.mashTunDeadspaceL} onChange={setNumberField} />
-          <NumberField name="minMashVolumeL" label="Мин. объём заторника, л (опц.)" value={values.minMashVolumeL} onChange={setNumberField} />
-          <NumberField name="maxGrainKg" label="Макс. засыпь, кг (опц.)" value={values.maxGrainKg} onChange={setNumberField} />
-          <NumberField name="maxMashVolumeL" label="Макс. объём заторника, л (опц.)" value={values.maxMashVolumeL} onChange={setNumberField} />
-          <NumberField name="maxKettleVolumeL" label="Макс. объём котла, л (опц)" value={values.maxKettleVolumeL} onChange={setNumberField} />
-          <NumberField name="hopUtilizationFactor" label="Калибровка утилизации хмеля" value={values.hopUtilizationFactor} onChange={setNumberField} step={0.01} min={0.01} />
-          <NumberField name="altitudeM" label="Высота над уровнем моря, м" value={values.altitudeM} onChange={setNumberField} step={1} min={-500} max={9000} />
+          <NumberField name="fermenterLossL" label="Потери в ферментере, л" value={values.fermenterLossL} onChange={setNumberField} error={fieldErrors.fermenterLossL} />
+          <NumberField name="coolingShrinkagePct" label="Уменьшение объёма при охлаждении, %" value={values.coolingShrinkagePct} onChange={setNumberField} step={0.1} max={20} error={fieldErrors.coolingShrinkagePct} />
+          <NumberField name="mashTunDeadspaceL" label="Мёртвый объём заторника, л" value={values.mashTunDeadspaceL} onChange={setNumberField} error={fieldErrors.mashTunDeadspaceL} />
+          <NumberField name="minMashVolumeL" label="Мин. объём заторника, л (необязательно)" value={values.minMashVolumeL} onChange={setNumberField} error={fieldErrors.minMashVolumeL} />
+          <NumberField name="maxGrainKg" label="Макс. засыпь, кг (необязательно)" value={values.maxGrainKg} onChange={setNumberField} error={fieldErrors.maxGrainKg} />
+          <NumberField name="maxMashVolumeL" label="Макс. объём заторника, л (необязательно)" value={values.maxMashVolumeL} onChange={setNumberField} error={fieldErrors.maxMashVolumeL} />
+          <NumberField name="maxKettleVolumeL" label="Макс. объём котла, л (необязательно)" value={values.maxKettleVolumeL} onChange={setNumberField} error={fieldErrors.maxKettleVolumeL} />
+          <NumberField name="hopUtilizationFactor" label="Коэффициент использования хмеля" value={values.hopUtilizationFactor} onChange={setNumberField} step={0.01} min={0.01} error={fieldErrors.hopUtilizationFactor} />
+          <NumberField name="altitudeM" label="Высота над уровнем моря, м" value={values.altitudeM} onChange={setNumberField} step={1} min={-500} max={9000} error={fieldErrors.altitudeM} />
           <label className="text-xs font-medium text-muted-foreground md:col-span-3">
             Заметки
             <textarea

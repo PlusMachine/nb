@@ -100,10 +100,10 @@ export default async function HomePage() {
           <div className="space-y-6">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Домашнее пивоварение</p>
             <h1 className="max-w-2xl text-balance text-4xl font-semibold leading-[0.98] text-foreground sm:text-5xl lg:text-6xl" style={{ fontFamily: "var(--font-display)" }}>
-              Свари своё пиво — от рецепта до розлива
+              Сварите своё пиво — от рецепта до розлива
             </h1>
             <p className="max-w-xl text-pretty text-lg leading-8 text-muted-foreground">
-              Соберите рецепт — редактор посчитает плотность, горечь и цвет на лету. Сверьте со складом, сварите по шагам и следите за брожением.
+              Рассчитайте рецепт, проверьте запасы и ведите варку по шагам.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link href="/login?next=/app/recipes/new" className="inline-flex items-center rounded-full bg-foreground px-5 py-3 text-sm font-semibold text-background transition-colors hover:bg-foreground/90 skin-hop:bg-primary skin-hop:text-primary-foreground skin-hop:hover:bg-primary/90">
@@ -219,9 +219,8 @@ export default async function HomePage() {
       <section className="space-y-5">
         <div className="flex items-end justify-between gap-4">
           <h2 className="text-3xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
-            Как работает мастерская
+            В мастерской
           </h2>
-          <Link href="/login?next=/app/recipes/new" className="text-sm font-semibold text-foreground">Начать</Link>
         </div>
         <HomeLoop />
       </section>
@@ -235,26 +234,20 @@ export default async function HomePage() {
       <section className="grid gap-4 sm:grid-cols-2">
         <Link
           href="/login?next=/app/recipes/new"
-          className="group flex flex-col gap-2 rounded-[1.25rem] border border-border bg-card p-6 transition hover:-translate-y-0.5 hover:border-border hover:shadow-md"
+          className="group rounded-[1.25rem] border border-border bg-card p-6 transition hover:-translate-y-0.5 hover:border-border hover:shadow-md"
         >
           <span className="flex items-center gap-2 text-xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
             Начать с рецепта
             <ArrowRight className="ml-auto h-5 w-5 text-muted-foreground transition group-hover:translate-x-1 group-hover:text-muted-foreground" aria-hidden />
           </span>
-          <span className="max-w-[44ch] text-sm text-muted-foreground">
-            Соберите засыпь и охмеление — редактор посчитает OG, IBU и цвет на лету
-          </span>
         </Link>
         <Link
           href="/login?next=/app/ingredients"
-          className="group flex flex-col gap-2 rounded-[1.25rem] border border-border bg-card p-6 transition hover:-translate-y-0.5 hover:border-border hover:shadow-md"
+          className="group rounded-[1.25rem] border border-border bg-card p-6 transition hover:-translate-y-0.5 hover:border-border hover:shadow-md"
         >
           <span className="flex items-center gap-2 text-xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
             Начать со склада
             <ArrowRight className="ml-auto h-5 w-5 text-muted-foreground transition group-hover:translate-x-1 group-hover:text-muted-foreground" aria-hidden />
-          </span>
-          <span className="max-w-[44ch] text-sm text-muted-foreground">
-            Занесите запасы — сайт покажет, какие рецепты можно сварить уже сегодня
           </span>
         </Link>
       </section>

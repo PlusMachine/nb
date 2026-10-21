@@ -156,6 +156,7 @@ import {
   findBrewableRecipesForUser,
   indexInventoryEntries,
   matchLineAgainstInventory,
+  matchRecipeLinesAgainstInventory,
   summarizeMatch,
   type InventoryMatchEntry,
   type MatchLineInput
@@ -366,27 +367,36 @@ describe("matchLineAgainstInventory — подсказка «добавить н
 });
 
 describe("summarizeMatch — пороги label и подсчёт строк", () => {
-  // Минимальный DTO строки: summarizeMatch читает только category, coveragePercent,
-  // status и displayOrder.
-  const lineDto = (over: Partial<RecipeMatchLineDto>): RecipeMatchLineDto => ({
-    recipeIngredientId: "ri",
-    persistentKey: "ri-pk",
-    displayOrder: 0,
-    ingredientDisplayName: null,
-    category: "fermentable",
-    brand: null,
-    status: "covered",
-    coveragePercent: 100,
-    requiredQuantityNormalized: 0,
-    availableQuantityNormalized: 0,
-    shortfallNormalized: 0,
-    normalizedUnit: "g",
-    viaSubstitute: false,
-    ingredientCatalogItemId: null,
-    userCustomIngredientId: null,
-    suggestedAddQuantity: null,
-    suggestedAddUnit: null,
-    ...over
+  // Минимальный DTO строки: summarizeMatch читает category, coveragePercent,
+  // status, displayOrder и identity (catalog/custom/name/line id).
+  let lineSeq = 0;
+  const lineDto = (over: Partial<RecipeMatchLineDto>): RecipeMatchLineDto => {
+    const seq = lineSeq++;
+    return {
+      recipeIngredientId: `ri-${seq}`,
+      persistentKey: `ri-${seq}-pk`,
+      displayOrder: 0,
+      ingredientDisplayName: null,
+      category: "fermentable",
+      brand: null,
+      countryCode: null,
+      status: "covered",
+      coveragePercent: 100,
+      requiredQuantityNormalized: 0,
+      availableQuantityNormalized: 0,
+      shortfallNormalized: 0,
+      normalizedUnit: "g",
+      viaSubstitute: false,
+      ingredientCatalogItemId: `cat-${seq}`,
+      userCustomIngredientId: null,
+      suggestedAddQuantity: null,
+      suggestedAddUnit: null,
+      ...over
+    };
+  };
+
+  beforeEach(() => {
+    lineSeq = 0;
   });
 
   const ctx = { targetBatchVolumeL: 20, recipeBatchVolumeL: 20 };
@@ -423,13 +433,45 @@ describe("summarizeMatch — пороги label и подсчёт строк", (
   it("substitute учитывается как покрытая строка, missing — как отсутствующая", () => {
     const summary = summarizeMatch("r", [
       lineDto({ status: "covered", coveragePercent: 100 }),
-      lineDto({ status: "substitute", coveragePercent: 100, displayOrder: 1 }),
-      lineDto({ status: "partial", coveragePercent: 50, displayOrder: 2 }),
-      lineDto({ status: "missing", coveragePercent: 0, displayOrder: 3 })
+      lineDto({ status: "substitute", coveragePercent: 100, displayOrder: 1, recipeIngredientId: "ri-2", ingredientCatalogItemId: "cat-2" }),
+      lineDto({ status: "partial", coveragePercent: 50, displayOrder: 2, recipeIngredientId: "ri-3", ingredientCatalogItemId: "cat-3" }),
+      lineDto({ status: "missing", coveragePercent: 0, displayOrder: 3, recipeIngredientId: "ri-4", ingredientCatalogItemId: "cat-4" })
     ], ctx);
 
     expect(summary.totalLines).toBe(4);
     expect(summary.coveredLines).toBe(2); // covered + substitute
+    expect(summary.missingCount).toBe(1);
+  });
+
+  it("повторные добавки одного каталожного id схлопываются в один ингредиент", () => {
+    const summary = summarizeMatch("r", [
+      lineDto({
+        status: "covered",
+        coveragePercent: 100,
+        category: "hop",
+        ingredientCatalogItemId: "cat-citra",
+        recipeIngredientId: "boil"
+      }),
+      lineDto({
+        status: "covered",
+        coveragePercent: 100,
+        category: "hop",
+        ingredientCatalogItemId: "cat-citra",
+        recipeIngredientId: "whirlpool",
+        displayOrder: 1
+      }),
+      lineDto({
+        status: "missing",
+        coveragePercent: 0,
+        displayOrder: 2,
+        recipeIngredientId: "yeast",
+        ingredientCatalogItemId: "cat-yeast",
+        category: "yeast"
+      })
+    ], ctx);
+
+    expect(summary.totalLines).toBe(2);
+    expect(summary.coveredLines).toBe(1);
     expect(summary.missingCount).toBe(1);
   });
 
@@ -759,24 +801,75 @@ describe("findBrewableOwnRecipesForUser — свои рецепты «можно
   });
 });
 
-describe("matchLineAgainstInventory — дубликаты строк рецепта", () => {
-  it("две одинаковые строки независимо «видят» один и тот же запас (см. отчёт)", () => {
-    // ВНИМАНИЕ: матч идёт построчно, склад между строками не вычитается. Две
-    // строки одного хмеля по 50 г при наличии 50 г обе помечаются covered, хотя
-    // суммарно требуется 100 г. Для discovery-матча (по наличию) это by-design,
-    // но как количественная гарантия «хватит на всю варку» — завышение. Тест
-    // фиксирует фактическое поведение, не утверждая его корректность.
+describe("matchRecipeLinesAgainstInventory — дубликаты строк рецепта", () => {
+  it("две добавки одного хмеля делят общий остаток (кипячение + вирпул)", () => {
+    // Раньше каждая строка видела полный запас → обе covered при 50 г на 50+50.
+    // Теперь бюджет общий: первая забирает 50 г, вторая становится missing/partial.
     const cascade: IngredientMatchProfile = {
       category: "hop", type: "hop", name: "Cascade", nameEn: "Cascade",
       catalogItemId: "cat--cascade", dimension: "weight"
     };
     const index = indexInventoryEntries([entry("hop-1", cascade, 50, "g")]);
 
-    const first = matchLineAgainstInventory(line(cascade, 50, "g", "hop-line-1"), index, 1);
-    const second = matchLineAgainstInventory(line(cascade, 50, "g", "hop-line-2"), index, 1);
+    const [first, second] = matchRecipeLinesAgainstInventory(
+      [
+        line(cascade, 50, "g", "hop-line-1"),
+        { ...line(cascade, 50, "g", "hop-line-2"), displayOrder: 1 }
+      ],
+      index,
+      () => 1
+    );
 
     expect(first.status).toBe("covered");
-    expect(second.status).toBe("covered");
+    expect(second.status).toBe("partial");
+    expect(second.shortfallNormalized).toBe(50);
+    expect(second.coveragePercent).toBe(0);
+  });
+
+  it("summarizeMatch схлопывает повторные добавки в один ингредиент для «Есть N из M»", () => {
+    const citraLine = (id: string, order: number, status: RecipeMatchLineDto["status"]): RecipeMatchLineDto => ({
+      recipeIngredientId: id,
+      persistentKey: `${id}-pk`,
+      displayOrder: order,
+      ingredientDisplayName: "Citra",
+      category: "hop",
+      brand: null,
+      countryCode: null,
+      status,
+      coveragePercent: status === "covered" ? 100 : 0,
+      requiredQuantityNormalized: 30,
+      availableQuantityNormalized: status === "covered" ? 30 : 0,
+      shortfallNormalized: status === "covered" ? 0 : 30,
+      normalizedUnit: "g",
+      viaSubstitute: false,
+      ingredientCatalogItemId: "cat--citra",
+      userCustomIngredientId: null,
+      suggestedAddQuantity: status === "covered" ? null : 30,
+      suggestedAddUnit: status === "covered" ? null : "g"
+    });
+
+    // 1× Citra (две строки) + 6 отсутствующих солодов/дрожжей → «Есть 1 из 7», не «2 из 8»
+    const otherMissing = (id: string, order: number): RecipeMatchLineDto => ({
+      ...citraLine(id, order, "missing"),
+      ingredientDisplayName: `Other ${id}`,
+      category: "fermentable",
+      ingredientCatalogItemId: `cat--${id}`
+    });
+
+    const summary = summarizeMatch("r", [
+      citraLine("hop-1", 0, "covered"),
+      citraLine("hop-2", 1, "covered"),
+      otherMissing("m1", 2),
+      otherMissing("m2", 3),
+      otherMissing("m3", 4),
+      otherMissing("m4", 5),
+      otherMissing("m5", 6),
+      otherMissing("m6", 7)
+    ], { targetBatchVolumeL: 20, recipeBatchVolumeL: 20 });
+
+    expect(summary.totalLines).toBe(7);
+    expect(summary.coveredLines).toBe(1);
+    expect(summary.missingCount).toBe(6);
   });
 });
 

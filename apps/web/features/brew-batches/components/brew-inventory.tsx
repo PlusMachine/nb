@@ -6,6 +6,7 @@ import { ChevronRight, Loader2, PackageMinus, Undo2 } from "lucide-react";
 
 import { Button } from "@nb/ui";
 import { restoreBrewBatchInventoryAction } from "@/app/(app)/app/brew-batches/[id]/actions";
+import { BATCH_INVENTORY_SNAPSHOT_MESSAGE } from "../inventory-snapshot";
 import {
   type BrewBatchInventoryLogEntry,
   type BrewBatchInventoryView,
@@ -35,7 +36,7 @@ const logTypeLabels: Record<BrewBatchInventoryLogEntry["type"], string> = {
   consume: "списание",
   reserve: "резерв",
   release: "возврат",
-  adjustment: "поправка"
+  adjustment: "корректировка"
 };
 
 const logDateFmt = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
@@ -67,8 +68,8 @@ export function BrewInventory({
 
   // Списание — свойство ЭТОЙ партии: варка того же рецепта во второй раз (пока
   // первая ещё бродит) списывает свой склад заново. Гасим кнопку, только если эта
-  // партия уже списала (и не вернула), варка закрыта или рецепта-источника больше нет.
-  const recipeAvailable = Boolean(view.recipeId);
+  // партия уже списала (и не вернула), варка закрыта или нет полного состава партии.
+  const recipeAvailable = view.hasInventorySnapshot;
   const isTerminal = status === "cancelled" || status === "completed";
   const canConsume = !view.batchAlreadyConsumed && recipeAvailable && !isTerminal;
 
@@ -154,7 +155,7 @@ export function BrewInventory({
           ) : canConsume
             ? "Спишем со склада ингредиенты рецепта — в объёме этой варки."
             : !recipeAvailable
-              ? "Рецепт этой варки удалён — списывать нечего."
+              ? <>{BATCH_INVENTORY_SNAPSHOT_MESSAGE}{" "}<Link href="/app/inventory" className="text-primary underline">Открыть склад</Link></>
               : "По этой варке ингредиенты со склада не списывались."}
         </p>
       )}
@@ -227,7 +228,7 @@ export function BrewInventory({
         <details className="group rounded-xl border border-border bg-muted/40">
           <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-sm text-muted-foreground [&::-webkit-details-marker]:hidden">
             <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition group-open:rotate-90" aria-hidden />
-            <span className="font-medium">История движений</span>
+            <span className="font-medium">История запасов</span>
             <span className="text-xs text-muted-foreground tabular-nums">{view.log.length}</span>
           </summary>
           <ul className="divide-y divide-border px-3 pb-3">

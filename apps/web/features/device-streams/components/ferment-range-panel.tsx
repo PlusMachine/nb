@@ -219,7 +219,7 @@ export function FermentRangePanel({ sessions, manualMeasurements, gravityUnit, d
       <ConfirmActionDialog
         open={deleteOpen}
         title={`Удалить ${stats?.total ?? 0} ${pointsWord(stats?.total ?? 0)}?`}
-        description="Точки будут удалены безвозвратно. Кривая и вердикт брожения пересчитаются без них."
+        description="Точки будут удалены безвозвратно. График и оценка состояния брожения будут пересчитаны без них."
         confirmLabel="Удалить"
         pendingLabel="Удаляем…"
         pending={pending}

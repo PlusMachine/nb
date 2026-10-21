@@ -25,7 +25,7 @@ export function InventoryTypeFilter({ value, onChange }: Props) {
         id="inventory-type-filter"
         name="type"
         {...controlProps}
-        className="mt-1 min-w-40 rounded-md border px-3 py-2 text-base sm:text-sm"
+        className="mt-1 min-w-40 rounded-md border px-3 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
       >
         <option value="all">Все типы</option>
         {inventoryTypeOrder.map((type) => (

@@ -242,7 +242,7 @@ describe("buildFermentProgress", () => {
 
   it("hours=0 (держать вручную) → dayLabel без счётчика дней", () => {
     const progress = buildFermentProgress({ steps, currentIndex: 2, elapsedSec: 5 * 86_400 });
-    expect(progress.dayLabel).toBe("держится вручную");
+    expect(progress.dayLabel).toBe("до ручного перехода");
   });
 
   it("подписи ступеней берутся из плана, когда он опознан", () => {

@@ -1,0 +1,173 @@
+{
+  "results": [
+    {
+      "name": "A01 Empty warehouse and no equipment",
+      "status": "passed"
+    },
+    {
+      "name": "A02 Brewing without profile preserves recipe goals",
+      "status": "passed"
+    },
+    {
+      "name": "A03 Fill warehouse and create profile",
+      "status": "passed"
+    },
+    {
+      "name": "A04 Failed equipment load blocks silent fallback and retry restores choice",
+      "status": "passed"
+    },
+    {
+      "name": "A05 Consumption request failure is recoverable",
+      "status": "passed"
+    },
+    {
+      "name": "A06 Scale profile load failure blocks clone and recovers",
+      "status": "passed"
+    },
+    {
+      "name": "A07 Calculation failure blocks start and retry succeeds",
+      "status": "passed"
+    },
+    {
+      "name": "A08 Keyboard close and reopen resets brew choices",
+      "status": "failed",
+      "error": "locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('dialog').getByText(/Количества ингредиентов пересчитаны на 12,5 л/) to be visible\u001b[22m\n"
+    },
+    {
+      "name": "A08b Keyboard close and reopen resets brew choices",
+      "status": "passed"
+    },
+    {
+      "name": "A09 Multiple lots and optional fallback after shared depletion",
+      "status": "passed"
+    },
+    {
+      "name": "A10 Full consumption with pooled exact lots and explicit analogue",
+      "status": "passed"
+    },
+    {
+      "name": "A11 Export BeerXML with process and scaled ingredients",
+      "status": "failed",
+      "error": "false == true"
+    },
+    {
+      "name": "A11b BeerXML export data and import empty/invalid validation",
+      "status": "passed"
+    },
+    {
+      "name": "A12 Import rejects empty and malformed input without losing text",
+      "status": "failed",
+      "error": "locator.click: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('dialog').getByRole('button', { name: 'Импортировать', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <button disabled type=\"button\" class=\"inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 bg-foreground text-background hover:bg-foreground/90 min-h-[36px] px-3 py-1.5 text-xs\">Импортировать</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    38 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not enabled\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n"
+    },
+    {
+      "name": "A12b Import validation and round trip",
+      "status": "failed",
+      "error": "page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================"
+    },
+    {
+      "name": "A13 Imported recipe retains volume ingredients and process",
+      "status": "failed",
+      "error": "locator.click: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Сопоставить с каталогом', exact: true })\u001b[22m\n"
+    },
+    {
+      "name": "A14 Map imported ingredients back to catalog and persist",
+      "status": "passed"
+    },
+    {
+      "name": "A15 Warehouse viewport and category fit",
+      "status": "passed"
+    },
+    {
+      "name": "A15b Final warehouse visual fit at four widths",
+      "status": "failed",
+      "error": "[{\"text\":\"Сбраживаемые\",\"overflow\":false},{\"text\":\"Хмель\",\"overflow\":false},{\"text\":\"Дрожжи\",\"overflow\":false},{\"text\":\"Водоподготовка\",\"overflow\":true},{\"text\":\"Расходники\",\"overflow\":false},{\"text\":\"Специи и добавки\",\"overflow\":true}]"
+    },
+    {
+      "name": "A15c Category labels fit after responsive layout change",
+      "status": "passed"
+    },
+    {
+      "name": "A16 Custom ingredient zero validation preserves input and saves valid amount",
+      "status": "passed"
+    },
+    {
+      "name": "A17 Manual quantity failure keeps page and can be retried",
+      "status": "passed"
+    },
+    {
+      "name": "A18 Finished stock and fractional restock cycle",
+      "status": "failed",
+      "error": "locator.click: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '1 закончились', exact: true })\u001b[22m\n"
+    },
+    {
+      "name": "A18b Finished stock and fractional restock cycle",
+      "status": "passed"
+    },
+    {
+      "name": "A19 Equipment duplicate default cancel and deletion",
+      "status": "passed"
+    },
+    {
+      "name": "A20 Final warehouse consumption after returns and profile changes",
+      "status": "passed"
+    },
+    {
+      "name": "A21 Rapid step completion and timer persist through reload",
+      "status": "passed"
+    },
+    {
+      "name": "A22 OG notes and complete brewing stages",
+      "status": "passed"
+    },
+    {
+      "name": "A23 FG dry hop early finish cancellation and final result",
+      "status": "passed"
+    },
+    {
+      "name": "A24 favorite toggle and reload",
+      "status": "passed"
+    },
+    {
+      "name": "A25 bookmark survives reload and can be removed",
+      "status": "failed",
+      "error": "\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: 'В закладки', exact: true })\nExpected: visible\nTimeout: 20000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"to.be.visible\" with timeout 20000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'В закладки', exact: true })\u001b[22m\n"
+    },
+    {
+      "name": "A26 bookmark complete roundtrip after hydration",
+      "status": "passed"
+    },
+    {
+      "name": "A27 final editor responsive persistence",
+      "status": "passed"
+    },
+    {
+      "name": "A28 final completed party reload without application errors",
+      "status": "passed"
+    }
+  ],
+  "errors": [
+    {
+      "page": "http://127.0.0.1:3000/app/brew-batches/1fd87c9a-abbd-4839-a70b-cc02e85eed88",
+      "error": "Failed to fetch"
+    }
+  ],
+  "expectedFailures": [
+    "Intentional volume options network failure",
+    "Intentional volume options network failure",
+    "Intentional volume options network failure",
+    "Intentional volume options network failure",
+    "Intentional consume preview network failure",
+    "Intentional volume options network failure",
+    "Intentional volume options network failure",
+    "Intentional volume options network failure",
+    "Intentional volume options network failure",
+    "Intentional consume preview network failure",
+    "Intentional volume options network failure",
+    "Intentional volume options network failure",
+    "Intentional volume options network failure",
+    "Intentional volume options network failure",
+    "Intentional preparation calculation failure",
+    "Intentional stock adjustment failure",
+    "Intentional stock adjustment failure"
+  ]
+}

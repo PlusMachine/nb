@@ -238,8 +238,10 @@ export const buildIngredientAliasesPreview = (
     return null;
   }
 
-  const preview = aliases.slice(0, limit).map((alias) => alias.alias).join(", ");
-  const rest = aliases.length - limit;
+  const labels = [...new Set(aliases.map((alias) => alias.alias.trim()).filter(Boolean))];
+  if (labels.length === 0) return null;
+  const preview = labels.slice(0, limit).join(", ");
+  const rest = labels.length - limit;
   return rest > 0 ? `${preview} +${rest}` : preview;
 };
 

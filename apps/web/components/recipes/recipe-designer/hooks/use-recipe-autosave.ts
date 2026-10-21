@@ -56,10 +56,15 @@ export function useRecipeAutosave({
   const [activeVersionNumber, setActiveVersionNumber] = useState(initialRecipe?.versionNumber ?? 1);
   const [recipeVersions, setRecipeVersions] = useState(initialRecipe?.versions ?? []);
   const [saveResult, setSaveResult] = useState<RecipeEditorResult | null>(null);
-  const [pendingSave, setPendingSave] = useState(false);
+  const [pendingSave, setPendingSaveState] = useState(false);
   const [blockedSignature, setBlockedSignature] = useState<string | null>(null);
   const [saveResultSignature, setSaveResultSignature] = useState<string | null>(null);
   const pendingSaveRef = useRef(false);
+  const setPendingSave = React.useCallback((pending: boolean) => {
+    // Блокируем второй запрос сразу, в том числе до следующего React-render.
+    pendingSaveRef.current = pending;
+    setPendingSaveState(pending);
+  }, []);
   // Рецепт удалён из редактора: гасит автосейв намертво. Без этого уже взведённый
   // 1.5-секундный таймер после удаления сделал бы update по мёртвому id — или,
   // хуже, create и воскресил бы рецепт новой записью.
@@ -94,10 +99,6 @@ export function useRecipeAutosave({
   useEffect(() => {
     onSaveStatusChange?.(saveStatus);
   }, [onSaveStatusChange, saveStatus]);
-
-  useEffect(() => {
-    pendingSaveRef.current = pendingSave;
-  }, [pendingSave]);
 
   useEffect(() => {
     if (typeof window === "undefined" || (!isDirty && !pendingSave)) {
@@ -224,10 +225,12 @@ export function useRecipeAutosave({
     setSaveResult(result);
     setSaveResultSignature(surfaceInlineResult ? nextSignature : null);
     return result;
-  }, [activeRecipeId, draftBaseline, initialRecipe, initialTitle, onRecipeCreated, payload, persistMode, publicationState, setPublicationState, setSavedPublicationState]);
+  }, [activeRecipeId, draftBaseline, initialRecipe, initialTitle, onRecipeCreated, payload, persistMode, publicationState, setPendingSave, setPublicationState, setSavedPublicationState]);
 
   useEffect(() => {
-    if (!isDirty || deletedRef.current) return;
+    // Завершение запроса снова запускает debounce для последнего состояния.
+    // Ошибку текущего состояния повторяем только явно, без бесконечных ретраев.
+    if (!isDirty || pendingSave || hasCurrentSaveError || deletedRef.current) return;
     if (blockedSignature === currentSignature) return;
     let cancelled = false;
     const autoSaveTimer = window.setTimeout(async () => {
@@ -235,7 +238,7 @@ export function useRecipeAutosave({
       await persistRecipe();
     }, 1500);
     return () => { cancelled = true; window.clearTimeout(autoSaveTimer); };
-  }, [blockedSignature, currentSignature, isDirty, persistRecipe]);
+  }, [blockedSignature, currentSignature, hasCurrentSaveError, isDirty, pendingSave, persistRecipe]);
 
   // Рецепт удаляется: гасим автосейв ДО запроса (пока идёт delete, взведённый
   // таймер не должен успеть сохранить рецепт обратно).

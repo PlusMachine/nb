@@ -1,0 +1,80 @@
+
+Running 18 tests using 1 worker
+
+  ✓   1 [phone-320] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (17.3s)
+  ✘   2 [phone-320] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query (1.0m)
+  ✘   3 [phone-320] › e2e/bjcp-search.spec.ts:46:1 › local search and view filters preserve browser history without RSC navigation (18.4s)
+
+
+  1) [phone-320] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: locator.fill: Test timeout of 60000ms exceeded.
+    Call log:
+      - waiting for getByRole('combobox', { name: 'Поиск стилей BJCP' })
+        - waiting for" http://127.0.0.1:3100/bjcp" navigation to finish...
+        - navigated to "http://127.0.0.1:3100/bjcp"
+
+
+      29 |   if (await cookieButton.isVisible()) await cookieButton.click();
+      30 |   const search = page.getByRole("combobox", { name: "Поиск стилей BJCP" });
+    > 31 |   await search.fill("IPA");
+         |                ^
+      32 |   await page.getByRole("button", { name: "Очистить поиск", exact: true }).click();
+      33 |   await search.fill("pilsner");
+      34 |   await search.press("Escape");
+        at /home/dopefish/projects/nb/apps/web/e2e/bjcp-search.spec.ts:31:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-clearing-befor-f7b23-annot-restore-a-stale-query-phone-320/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-clearing-befor-f7b23-annot-restore-a-stale-query-phone-320/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-clearing-befor-f7b23-annot-restore-a-stale-query-phone-320/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-clearing-befor-f7b23-annot-restore-a-stale-query-phone-320/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [phone-320] › e2e/bjcp-search.spec.ts:46:1 › local search and view filters preserve browser history without RSC navigation 
+
+    Test was interrupted.
+
+    Error: locator.fill: Test ended.
+    Call log:
+      - waiting for getByRole('combobox', { name: 'Поиск стилей BJCP' })
+
+
+      54 |   });
+      55 |   const search = page.getByRole("combobox", { name: "Поиск стилей BJCP" });
+    > 56 |   await search.fill("IPA");
+         |                ^
+      57 |   await expect.poll(() => new URL(page.url()).searchParams.get("q")).toBe("IPA");
+      58 |   await search.press("Escape");
+      59 |   const beforeView = page.url();
+        at /home/dopefish/projects/nb/apps/web/e2e/bjcp-search.spec.ts:56:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-local-search-a-db301-tory-without-RSC-navigation-phone-320/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-local-search-a-db301-tory-without-RSC-navigation-phone-320/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-local-search-a-db301-tory-without-RSC-navigation-phone-320/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-local-search-a-db301-tory-without-RSC-navigation-phone-320/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [phone-320] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query 
+  1 interrupted
+    [phone-320] › e2e/bjcp-search.spec.ts:46:1 › local search and view filters preserve browser history without RSC navigation 
+  15 did not run
+  1 passed (1.8m)

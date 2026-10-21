@@ -16,11 +16,11 @@ function Meter({ value }: { value: number }) {
   );
 }
 
-function FragRow({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+function FragRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-baseline justify-between gap-3">
       <span className="min-w-0 truncate text-muted-foreground">{label}</span>
-      <span className={`shrink-0 font-semibold tabular-nums ${accent ? "text-success" : "text-foreground"}`}>{value}</span>
+      <span className="shrink-0 font-semibold tabular-nums text-foreground">{value}</span>
     </div>
   );
 }
@@ -29,43 +29,38 @@ type LoopFrame = {
   icon: LucideIcon;
   title: string;
   body: React.ReactNode;
-  note: string;
 };
 
 const frames: LoopFrame[] = [
   {
     icon: Boxes,
     title: "Склад",
-    note: "Остатки, свежесть и цены — по каждой позиции",
     body: (
       <>
-        <FragRow label="Солод пилснер · Weyermann" value="4.2 кг" />
-        <Meter value={62} />
-        <FragRow label="Хмель Saaz · 3.4% АК" value="180 г" />
-        <Meter value={34} />
+        <FragRow label="Солод Pale Ale" value="5,5 кг" />
+        <FragRow label="Хмель Citra" value="180 г" />
+        <FragRow label="Дрожжи US-05" value="2 уп." />
       </>
     )
   },
   {
     icon: FlaskConical,
     title: "Рецепт",
-    note: "Статистика пересчитывается при каждой правке засыпи",
     body: (
       <>
-        <FragRow label="OG" value="12.5 °P" />
-        <FragRow label="IBU · Цвет" value="38 · 12 EBC" />
-        <FragRow label="Стиль 21A" value="попадание ✓" accent />
+        <FragRow label="OG" value="15 °P" />
+        <FragRow label="IBU · Цвет" value="55 · 16 EBC" />
+        <FragRow label="Стиль 21A" value="American IPA" />
       </>
     )
   },
   {
     icon: Beer,
     title: "Варка",
-    note: "План дня собирается из рецепта автоматически",
     body: (
       <>
-        <FragRow label="Кипячение" value="60 мин" />
-        <Meter value={78} />
+        <FragRow label="Кипячение" value="45 из 60 мин" />
+        <Meter value={75} />
         <div className="flex items-center gap-2 pt-0.5 font-semibold text-foreground">
           <span className="h-2 w-2 shrink-0 rounded-full bg-warning" aria-hidden />
           <span className="tabular-nums">Через 12:30 — внести Citra, 30 г</span>
@@ -76,12 +71,11 @@ const frames: LoopFrame[] = [
   {
     icon: Droplets,
     title: "Брожение",
-    note: "Снапшот рецепта хранится вместе с партией",
     body: (
       <>
         <FragRow label="Партия №14" value="день 5" />
-        <FragRow label="Замер плотности" value="6.2 °P" />
-        <FragRow label="Списание склада" value="выполнено" accent />
+        <FragRow label="Замер плотности" value="6,2 °P" />
+        <FragRow label="Температура" value="19 °C" />
       </>
     )
   }
@@ -109,7 +103,6 @@ export function HomeLoop() {
             <div className="flex flex-col gap-2 rounded-xl border border-border bg-muted p-3 text-[13px]">
               {frame.body}
             </div>
-            <p className="text-xs text-muted-foreground">{frame.note}</p>
           </div>
         );
       })}

@@ -161,7 +161,7 @@ export function DistillDashboardView({
   const stop = useCallback(() => {
     requestConfirm({
       title: "Остановить перегон?",
-      description: "Устройство выключит нагрев. Текущий срез фракций потребуется начать заново.",
+      description: "Устройство выключит нагрев. Отбор текущей фракции потребуется начать заново.",
       confirmLabel: "Остановить",
       tone: "danger",
       run: async () => {
@@ -198,7 +198,7 @@ export function DistillDashboardView({
         </Button>
         <HoldToConfirmButton
           label="Аварийный останов"
-          holdingLabel="Держите для E-STOP…"
+          holdingLabel="Удерживайте для аварийной остановки…"
           disabled={pending || !hasDevice}
           onConfirm={() => void run(cmdEstop())}
           icon={<OctagonX className="h-4 w-4" aria-hidden />}

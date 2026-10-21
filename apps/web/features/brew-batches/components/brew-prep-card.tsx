@@ -28,12 +28,14 @@ export function BrewPrepCard({
   brewBatchId,
   planSummary,
   ogTargetLabel,
-  plannedForIso
+  plannedForIso,
+  equipmentWarnings = []
 }: {
   brewBatchId: string;
   planSummary: BrewDayPlanSummary;
   ogTargetLabel: string | null;
   plannedForIso: string | null;
+  equipmentWarnings?: string[];
 }) {
   const timerTotal = fmtTimerTotal(planSummary.totalTimerSeconds);
   const hasPlan = planSummary.stages.length > 0;
@@ -41,6 +43,8 @@ export function BrewPrepCard({
   return (
     <section className="space-y-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
       <h2 className="text-base font-semibold text-foreground">План варочного дня</h2>
+
+      {equipmentWarnings.length ? <div role="alert" className="space-y-1 rounded-lg bg-warning-subtle p-3 text-sm text-warning-subtle-foreground">{equipmentWarnings.map((warning) => <p key={warning}>{warning}</p>)}</div> : null}
 
       {hasPlan ? (
         <>
@@ -58,14 +62,14 @@ export function BrewPrepCard({
             ))}
           </ol>
           <p className="text-xs text-muted-foreground">
-            {planSummary.totalSteps} шагов
+            Шагов: {planSummary.totalSteps}
             {timerTotal ? ` · ${timerTotal} активного времени` : ""}
             {ogTargetLabel ? ` · цель OG ${ogTargetLabel}` : ""}
           </p>
         </>
       ) : (
         <p className="text-sm text-muted-foreground">
-          В рецепте нет шагов затора/кипячения — гид варочного дня будет пустым. Замеры и заметки доступны после старта.
+          В рецепте не указаны этапы затирания и кипячения, поэтому пошаговый план варки пуст. После начала варки можно будет записывать замеры и заметки.
         </p>
       )}
 

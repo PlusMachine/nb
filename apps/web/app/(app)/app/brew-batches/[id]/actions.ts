@@ -7,6 +7,7 @@ import { requireUser } from "@/lib/auth";
 import { pluralize } from "@/lib/pluralize";
 import {
   addBrewMeasurement,
+  deleteBrewBatch,
   deleteBrewMeasurement,
   setBrewDayStepState,
   setBrewMeasurementFinal,
@@ -32,6 +33,7 @@ import {
 } from "@/features/brew-batches/contracts";
 import { bindBatchFermenter } from "@/features/devices/fermenter-binding";
 import { bindBatchFermenterSchema } from "@/features/devices/contracts";
+import { BATCH_INVENTORY_SNAPSHOT_MESSAGE } from "@/features/brew-batches/inventory-snapshot";
 
 export type BrewActionResult = { ok: boolean; message: string };
 export type BrewDayProgressResult = BrewActionResult & { progress?: BrewDayProgress };
@@ -60,26 +62,36 @@ export const setBrewBatchStatusAction = async (
       return { ok: false, message: "Неизвестный статус." };
     }
     await updateBrewBatchStatus(user.id, brewBatchId, status);
-    // Отмена варки возвращает списанные на неё ингредиенты на склад (идемпотентно;
-    // no-op, если ничего не списывалось). Откат — внутри транзакции restore.
-    let restoredNote = "";
-    if (status === "cancelled") {
-      try {
-        const { restoredItemCount } = await restoreBrewBatchInventory(user.id, brewBatchId);
-        if (restoredItemCount > 0) {
-          restoredNote = " Списанные ингредиенты возвращены на склад.";
-        }
-      } catch {
-        // Возврат — best-effort; смену статуса не откатываем.
-      }
-    }
+    // Статус не говорит, было ли сырьё физически использовано. Возврат — отдельное действие.
     revalidateBatch(brewBatchId);
-    return { ok: true, message: `Статус обновлён.${restoredNote}` };
+    return { ok: true, message: "Статус обновлён." };
   } catch (error) {
     if (error instanceof Error && error.message === "NOT_FOUND") {
       return { ok: false, message: "Варка не найдена." };
     }
     return { ok: false, message: "Не удалось обновить статус." };
+  }
+};
+
+/**
+ * Удаляет партию навсегда, сохраняя фактический остаток и историю списаний.
+ * Неиспользованное сырьё можно явно вернуть до удаления партии.
+ */
+export const deleteBrewBatchAction = async (
+  brewBatchId: string
+): Promise<BrewActionResult> => {
+  try {
+    const user = await requireUser();
+    await deleteBrewBatch(user.id, brewBatchId);
+    revalidatePath("/app/brew-batches");
+    revalidatePath(`/app/brew-batches/${brewBatchId}`);
+    revalidatePath("/app/inventory");
+    return { ok: true, message: "Партия удалена." };
+  } catch (error) {
+    if (error instanceof Error && error.message === "NOT_FOUND") {
+      return { ok: false, message: "Варка не найдена или уже удалена." };
+    }
+    return { ok: false, message: "Не удалось удалить партию." };
   }
 };
 
@@ -255,8 +267,11 @@ export const previewBrewBatchInventoryAction = async (
       return { ok: false, message: "Варка не найдена." };
     }
     return { ok: true, message: "", plan };
-  } catch {
-    return { ok: false, message: "Не удалось построить предпросмотр списания." };
+  } catch (error) {
+    if (error instanceof Error && error.message === "BATCH_INVENTORY_SNAPSHOT_REQUIRED") {
+      return { ok: false, message: BATCH_INVENTORY_SNAPSHOT_MESSAGE };
+    }
+    return { ok: false, message: "Не удалось подготовить список ингредиентов для списания." };
   }
 };
 
@@ -276,8 +291,8 @@ export const consumeBrewBatchInventoryAction = async (
       return {
         ok: false,
         message: result.substituteAvailableCount > 0
-          ? "Точных совпадений на складе нет, но есть замены — подтвердите списание в предпросмотре."
-          : "На складе нет сопоставленных позиций для списания.",
+          ? "Точных совпадений на складе нет, но есть замены — проверьте их и подтвердите списание."
+          : "На складе нет подходящих ингредиентов для списания.",
         view: result,
         substituteAvailableCount: result.substituteAvailableCount
       };
@@ -298,7 +313,7 @@ export const consumeBrewBatchInventoryAction = async (
       return {
         ok: true,
         message: `Ингредиенты списаны частично. На складе не хватило: ${shortNames} — списали остаток. `
-          + `Ещё ${skippedCount} ${skippedWord} не было на складе: ${skippedNames}.`,
+          + `Для ${skippedCount} ${skippedWord} остатка не хватило: ${skippedNames}.`,
         view: result,
         substituteAvailableCount: result.substituteAvailableCount
       };
@@ -332,8 +347,8 @@ export const consumeBrewBatchInventoryAction = async (
     if (error instanceof Error && error.message === "INVALID_STATUS") {
       return { ok: false, message: "Списание доступно только для активной варки." };
     }
-    if (error instanceof Error && error.message === "RECIPE_UNAVAILABLE") {
-      return { ok: false, message: "Рецепт-источник больше недоступен — авто-списание невозможно." };
+    if (error instanceof Error && error.message === "BATCH_INVENTORY_SNAPSHOT_REQUIRED") {
+      return { ok: false, message: BATCH_INVENTORY_SNAPSHOT_MESSAGE };
     }
     if (error instanceof Error && error.message === "INSUFFICIENT_STOCK") {
       return { ok: false, message: "Недостаточно остатков на складе для списания." };

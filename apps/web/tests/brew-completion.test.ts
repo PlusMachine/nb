@@ -87,7 +87,7 @@ describe("buildFinishBrewConfirm", () => {
   it("брожение дольше плана — спокойный тон, формулировка «дольше плана»", () => {
     const confirm = buildFinishBrewConfirm({ fermentDayN: 12, plannedDays: 10, undoneSteps: 0 });
 
-    expect(confirm.description).toContain("день 12 — дольше плана (10 дней)");
+    expect(confirm.description).toContain("12-й день брожения — дольше плана (10 дней)");
     expect(confirm.description).not.toContain("по плану ещё");
     expect(confirm.description).not.toContain("из 10");
     expect(confirm.tone).toBe("primary");
@@ -105,7 +105,7 @@ describe("buildFinishBrewConfirm", () => {
   it("упоминает неотмеченные шаги, когда они есть", () => {
     const confirm = buildFinishBrewConfirm({ fermentDayN: 14, plannedDays: 14, undoneSteps: 2 });
 
-    expect(confirm.description).toContain("Не отмечено 2 шага");
+    expect(confirm.description).toContain("Осталось выполнить 2 шага");
   });
 
   it("всегда напоминает, что этап обратим", () => {

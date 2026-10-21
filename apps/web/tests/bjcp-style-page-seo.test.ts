@@ -148,7 +148,7 @@ describe("bjcp style page — render", () => {
     expect(html).not.toContain("?view=bjcp");
     expect(html).not.toContain("category=");
     expect(html).toContain('href="/bjcp"');
-    expect(html).toContain('aria-label="Breadcrumb"');
+    expect(html).toContain('aria-label="Навигационная цепочка"');
 
     expect(html).toContain("application/ld+json");
     expect(html).toContain("BreadcrumbList");
@@ -189,7 +189,7 @@ describe("bjcp style page — render", () => {
 
   // Перелинковка стиль → калькуляторы (M8, P2 аудита): статичный набор ссылок
   // рядом с переходом по соседним стилям.
-  it("renders links to relevant calculators next to the sibling-styles navigation", async () => {
+  it("renders available calculator links and hides unpublished tools next to the sibling-styles navigation", async () => {
     mocks.listPublicRecipesForStyle.mockResolvedValue({ items: [], total: 0 });
     const { default: BjcpStylePage } = await import("../app/(public)/bjcp/[slug]/page");
 
@@ -197,9 +197,9 @@ describe("bjcp style page — render", () => {
     const html = renderToStaticMarkup(React.createElement(ToastProvider, null, view));
 
     expect(html).toContain("Калькуляторы");
-    expect(html).toContain('href="/calculators/ibu"');
+    expect(html).not.toContain('href="/calculators/ibu"');
     expect(html).toContain('href="/calculators/abv-attenuation"');
-    expect(html).toContain('href="/calculators/beer-color"');
-    expect(html).toContain('href="/calculators/priming-sugar"');
+    expect(html).not.toContain('href="/calculators/beer-color"');
+    expect(html).not.toContain('href="/calculators/priming-sugar"');
   });
 });

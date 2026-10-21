@@ -370,7 +370,8 @@ vi.mock("@nb/auth", async (importOriginal) => ({
 }));
 
 // Граница «рецепты»: возвращаем заранее собранный RecipeDetailDto с гейтом владельца.
-vi.mock("@/features/recipes/service", () => ({
+vi.mock("@/features/recipes/service", async (importOriginal) => ({
+  ...await importOriginal<typeof import("../features/recipes/service")>(),
   getOwnedRecipeById: async (authorId: string, recipeId: string) => {
     const found = fixtures.recipeDetails.find((r: any) => r.id === recipeId && r.__authorId === authorId);
     if (!found) {
@@ -526,6 +527,9 @@ import {
   type BrewBatchStatus
 } from "@/features/brew-batches/contracts";
 
+import { buildBrewInventorySnapshot } from "../features/brew-batches/inventory-snapshot";
+import type { RecipeDetailDto } from "../features/recipes/contracts";
+
 // --- Фикстуры ----------------------------------------------------------------
 
 const makeRecipeDetail = (id: string, authorId: string, publicationState = "private") => ({
@@ -550,7 +554,12 @@ const makeRecipeDetail = (id: string, authorId: string, publicationState = "priv
   },
   ingredients: [
     {
-      persistentKey: "h1",
+      id: uuid(203),
+      displayOrder: 0,
+      type: "hop",
+      amountNormalizedQuantity: 20,
+      amountNormalizedUnit: "g",
+      persistentKey: uuid(103),
       ingredientDisplayName: "Magnum",
       ingredientDisplayNameSnapshot: "Magnum",
       ingredientCategory: "hop",
@@ -594,7 +603,7 @@ const seedBatch = (overrides: Partial<Record<string, any>> = {}) => {
     deviceId: null,
     brewPlanSnapshot: validSnapshot(overrides.recipeId ?? RECIPE_ID),
     brewDayProgress: null,
-    recipeSnapshot: { title: "Тестовый IPA" },
+    recipeSnapshot: { title: "Тестовый IPA", inventory: buildBrewInventorySnapshot(makeRecipeDetail(RECIPE_ID, USER_ID) as unknown as RecipeDetailDto, USER_ID) },
     equipmentProfileSnapshot: null,
     waterPlanSnapshot: null,
     deviceHints: [],
@@ -656,7 +665,7 @@ describe("createBrewBatchFromRecipe", () => {
     expect(batch.brewPlanSnapshot.boilPlan.boilTimeMinutes).toBe(60);
     // recipeSnapshot перенёс строки рецепта (для аудита состава на момент старта).
     expect((batch.recipeSnapshot as any)?.ingredients?.[0]).toMatchObject({
-      persistentKey: "h1",
+      persistentKey: uuid(103),
       displayName: "Magnum",
       unit: "g"
     });
@@ -772,7 +781,9 @@ const makeRecipe30L = (id: string, authorId: string) => ({
   batchSizeNormalizedUnit: "ml",
   ingredients: [
     {
-      persistentKey: "m1",
+      id: uuid(201),
+      displayOrder: 0,
+      persistentKey: uuid(101),
       ingredientDisplayName: "Пильзнер",
       ingredientDisplayNameSnapshot: "Пильзнер",
       ingredientCategory: "fermentable",
@@ -788,7 +799,9 @@ const makeRecipe30L = (id: string, authorId: string) => ({
     {
       // Сахар: эффективность затирания на него не действует (100% выход) → дожим
       // его НЕ касается, только объём.
-      persistentKey: "s1",
+      id: uuid(202),
+      displayOrder: 1,
+      persistentKey: uuid(102),
       ingredientDisplayName: "Декстроза",
       ingredientDisplayNameSnapshot: "Декстроза",
       ingredientCategory: "fermentable",
@@ -802,7 +815,9 @@ const makeRecipe30L = (id: string, authorId: string) => ({
       stepMeta: null
     },
     {
-      persistentKey: "h1",
+      id: uuid(203),
+      displayOrder: 2,
+      persistentKey: uuid(103),
       ingredientDisplayName: "Magnum",
       ingredientDisplayNameSnapshot: "Magnum",
       ingredientCategory: "hop",
@@ -854,7 +869,7 @@ describe("createBrewBatchFromRecipe — объём варки и оборудо�
     expect(batch.brewPlanSnapshot.recipe.batchSizeL).toBe(30);
     // Засыпь — только затирочный солод (6 кг); кипятильная декстроза в заторник не идёт (Ф10).
     expect(batch.brewPlanSnapshot.grainBillTotalKg).toBe(6);
-    expect(snapshotAmount(batch, "m1")).toBe(6);
+    expect(snapshotAmount(batch, uuid(101))).toBe(6);
   });
 
   it("объём партии 20 л без смены оборудования: всё пересчитано ×2/3, эффективность авторская", async () => {
@@ -867,8 +882,8 @@ describe("createBrewBatchFromRecipe — объём варки и оборудо�
     const hopAddition = batch.brewPlanSnapshot.boilPlan.timedAdditions.find((a: any) => a.name === "Magnum");
     expect(hopAddition?.amount).toMatchObject({ quantity: 20, unit: "g" });
     // Слепок состава — то же самое, иначе «состав партии» разошёлся бы с гидом.
-    expect(snapshotAmount(batch, "m1")).toBe(4);
-    expect(snapshotAmount(batch, "h1")).toBe(20);
+    expect(snapshotAmount(batch, uuid(101))).toBe(4);
+    expect(snapshotAmount(batch, uuid(103))).toBe(20);
     // Оборудование не меняли → дожима засыпи нет.
     expect(batch.brewPlanSnapshot.recipe.efficiencyPct).toBe(75);
     expect(batch.brewPlanSnapshot.recipe.recipeEfficiencyPct).toBe(75);
@@ -881,12 +896,12 @@ describe("createBrewBatchFromRecipe — объём варки и оборудо�
     });
 
     // Солод: 6 кг × 2/3 × (75/65) = 4.615 кг — иначе на 65%-оборудовании недобрали бы OG.
-    expect(snapshotAmount(batch, "m1")).toBeCloseTo(4.615, 2);
+    expect(snapshotAmount(batch, uuid(101))).toBeCloseTo(4.615, 2);
     // Сахар усваивается полностью, эффективность затирания на него не действует:
     // 1 кг × 2/3 = 0.667 кг, без дожима.
-    expect(snapshotAmount(batch, "s1")).toBeCloseTo(0.667, 2);
+    expect(snapshotAmount(batch, uuid(102))).toBeCloseTo(0.667, 2);
     // Хмель — только по объёму: 30 г → 20 г.
-    expect(snapshotAmount(batch, "h1")).toBe(20);
+    expect(snapshotAmount(batch, uuid(103))).toBe(20);
     // План помнит обе эффективности — по ним списание и матч повторят тот же дожим.
     expect(batch.brewPlanSnapshot.recipe.efficiencyPct).toBe(65);
     expect(batch.brewPlanSnapshot.recipe.recipeEfficiencyPct).toBe(75);
@@ -924,15 +939,17 @@ describe("createBrewBatchFromRecipe — объём варки и оборудо�
     const batch = await createBrewBatchFromRecipe(USER_ID, RECIPE_30L, { targetBatchVolumeL: 20 });
     await consumeBrewBatchInventory(USER_ID, batch.id);
 
-    // Движок аллокаций масштабирует строки рецепта под targetBatchVolumeL (см.
-    // features/recipes/batch-scale.ts) — партия обязана передать ему СВОЙ объём.
+    // Движок получает уже пересчитанный состав партии без повторного множителя.
     expect(fixtures.consumeCalls.length).toBeGreaterThan(0);
     for (const call of fixtures.consumeCalls) {
-      expect(call).toMatchObject({ brewBatchId: batch.id, targetBatchVolumeL: 20, efficiencyFactor: 1 });
+      expect(call).toMatchObject({ brewBatchId: batch.id, batchSnapshot: { version: 1, recipeId: RECIPE_30L } });
+      expect(call.targetBatchVolumeL).toBeUndefined();
+      expect(call.efficiencyFactor).toBeUndefined();
+      expect(call.batchSnapshot.lines.find((line: any) => line.persistentKey === uuid(101)).amountEnteredQuantity).toBe(4);
     }
   });
 
-  it("списание получает ТОТ ЖЕ дожим засыпи, что зашит в план (иначе гид и склад разойдутся)", async () => {
+  it("списание получает зафиксированную засыпь с дожимом без повторного пересчёта", async () => {
     const batch = await createBrewBatchFromRecipe(USER_ID, RECIPE_30L, {
       targetBatchVolumeL: 20,
       equipmentProfileId: PROFILE_ID
@@ -941,8 +958,9 @@ describe("createBrewBatchFromRecipe — объём варки и оборудо�
 
     expect(fixtures.consumeCalls.length).toBeGreaterThan(0);
     for (const call of fixtures.consumeCalls) {
-      expect(call.targetBatchVolumeL).toBe(20);
-      expect(call.efficiencyFactor).toBeCloseTo(75 / 65, 4);
+      expect(call.targetBatchVolumeL).toBeUndefined();
+      expect(call.efficiencyFactor).toBeUndefined();
+      expect(call.batchSnapshot.lines.find((line: any) => line.persistentKey === uuid(101)).amountEnteredQuantity).toBeCloseTo(4.615, 2);
     }
   });
 });
@@ -1109,6 +1127,15 @@ describe("журнал замеров", () => {
   it("getBrewBatchDetail возвращает null для чужой партии", async () => {
     const seeded = seedBatch();
     expect(await getBrewBatchDetail(OTHER_USER, seeded.id)).toBeNull();
+  });
+
+  it("keeps the batch's scaled targets when the source recipe has different live targets", async () => {
+    const batch = await createBrewBatchFromRecipe(USER_ID, RECIPE_ID);
+    const stored = store.brewBatches.find((item) => item.id === batch.id)!;
+    stored.recipeSnapshot = { ...stored.recipeSnapshot, og: 1.053, fg: 1.010, abv: 5.6 };
+
+    const detail = await getBrewBatchDetail(USER_ID, batch.id);
+    expect(detail!.summary.target).toEqual({ og: 1.053, fg: 1.010, abv: 5.6 });
   });
 });
 

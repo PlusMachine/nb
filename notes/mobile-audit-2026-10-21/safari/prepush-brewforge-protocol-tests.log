@@ -1,0 +1,17 @@
+
+ RUN  v4.0.18 /home/dopefish/projects/nb/packages/brewforge-protocol
+
+ ✓ src/command.test.ts (13 tests) 15ms
+ ✓ src/config.test.ts (13 tests) 20ms
+ ✓ src/log.test.ts (11 tests) 14ms
+ ✓ src/update.test.ts (27 tests) 13ms
+ ✓ src/telemetry.test.ts (15 tests) 12ms
+ ✓ src/enums.test.ts (12 tests) 8ms
+ ✓ src/persist-gate.test.ts (13 tests) 7ms
+ ✓ src/watchdog.test.ts (12 tests) 7ms
+
+ Test Files  8 passed (8)
+      Tests  116 passed (116)
+   Start at  00:36:51
+   Duration  2.01s (transform 193ms, setup 0ms, import 387ms, tests 97ms, environment 2ms)
+

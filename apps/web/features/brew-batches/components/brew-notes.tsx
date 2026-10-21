@@ -87,7 +87,7 @@ export function BrewNotes({
         disabled={busy}
         rows={4}
         placeholder={section.placeholder}
-        className="w-full resize-y rounded-lg border border-border p-2.5 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
+        className="w-full resize-y rounded-lg border border-border p-2.5 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm [@media(pointer:coarse)]:text-base"
       />
       <div className="flex items-center gap-3">
         <Button type="button" size="sm" onClick={save} disabled={busy || !dirty}>

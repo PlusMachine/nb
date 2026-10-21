@@ -1,7 +1,8 @@
 import { ChevronRight } from "lucide-react";
 
 import { CalculatorFavoriteToggle } from "@/components/calculators/calculator-favorite-toggle";
-import { isCalculatorVerified, type CalculatorCatalogItem } from "@/features/calculators/catalog";
+import type { CalculatorCatalogItem } from "@/features/calculators/catalog";
+import { CalculatorVerificationBadge } from "./calculator-verification-badge";
 
 // Серверные (не "use client") статичные секции калькулятора — шапка (h1+intro),
 // формула/допущения и частые ошибки. Вынесены из calculator-page-client.tsx, чтобы
@@ -17,11 +18,7 @@ export function CalculatorHeading({ item }: { item: CalculatorCatalogItem }) {
         className="absolute right-4 top-4"
       />
       <div className="max-w-3xl space-y-2 pr-10">
-        {isCalculatorVerified(item.slug) ? (
-          <span className="inline-flex w-fit items-center gap-1 rounded-full bg-success-subtle px-2 py-0.5 text-[10px] font-semibold text-success-subtle-foreground">
-            ✓ проверен
-          </span>
-        ) : null}
+        <CalculatorVerificationBadge slug={item.slug} />
         <h1 className="text-2xl font-semibold leading-tight text-foreground sm:text-3xl">{item.title}</h1>
         <p className="text-sm leading-6 text-muted-foreground">{item.intro}</p>
       </div>

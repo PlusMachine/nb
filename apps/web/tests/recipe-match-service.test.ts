@@ -501,6 +501,39 @@ describe("computeRecipeMatch — Ф23: бренд строки в DTO", () => {
 
     expect(result.lines[0].brand).toBeNull();
   });
+
+  it("протягивает ingredientCountryCode в countryCode строки", async () => {
+    (getRecipeById as Mock).mockResolvedValue(recipeWithBrand({
+      ingredientBrand: "Weyermann",
+      ingredientCountryCode: "DE"
+    }));
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1" });
+
+    expect(result.lines[0].countryCode).toBe("DE");
+  });
+
+  it("countryCode = null, если код страны не задан", async () => {
+    (getRecipeById as Mock).mockResolvedValue(recipeWithBrand({ ingredientBrand: "Weyermann" }));
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1" });
+
+    expect(result.lines[0].countryCode).toBeNull();
+  });
+
+  it("падает на ingredientProducer, если brand/brandName пусты (хмель)", async () => {
+    (getRecipeById as Mock).mockResolvedValue(recipeWithBrand({
+      ingredientBrand: null,
+      ingredientBrandName: null,
+      ingredientProducer: "Beervingem",
+      ingredientCountryCode: "US"
+    }));
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1" });
+
+    expect(result.lines[0].brand).toBe("Beervingem");
+    expect(result.lines[0].countryCode).toBe("US");
+  });
 });
 
 // Ф28: hasEquipmentProfile — только на витринном пути БЕЗ явного объёма/партии

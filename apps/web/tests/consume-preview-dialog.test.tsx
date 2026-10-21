@@ -11,6 +11,7 @@ vi.mock("@/app/(app)/app/brew-batches/[id]/actions", () => ({
 
 import {
   computeOverbookedInventoryItems,
+  estimateConsumption,
   ConsumeInventoryDialog,
   ConsumeLineRow,
   type SubstitutionSelections
@@ -43,7 +44,7 @@ describe("ConsumeLineRow — рендер по видам строки пред�
   const renderRow = (line: BrewBatchConsumePlanLine, selection?: { checked: boolean; inventoryItemId: string }) =>
     renderToStaticMarkup(
       <ul>
-        <ConsumeLineRow line={line} selection={selection} onToggle={() => {}} onChooseCandidate={() => {}} />
+        <ConsumeLineRow line={line} actualQuantity={estimateConsumption([line], selection ? { [line.recipeIngredientId]: selection } : {}).get(line.recipeIngredientId)} selection={selection} onToggle={() => {}} onChooseCandidate={() => {}} />
       </ul>
     );
 
@@ -67,7 +68,7 @@ describe("ConsumeLineRow — рендер по видам строки пред�
     expect(html).not.toContain("остаток");
   });
 
-  it("exact_short + exactClamps=true (дрожжи): тёплый (warning) стиль, «спишем остаток», без замены, не блокирует", () => {
+  it("exact_short + exactClamps=true (дрожжи): показывает фактический остаток и потребность без замены", () => {
     const html = renderRow({
       recipeIngredientId: "ri-2",
       displayName: "US-05",
@@ -82,15 +83,15 @@ describe("ConsumeLineRow — рендер по видам строки пред�
     });
 
     expect(html).toContain("US-05");
-    expect(html).toContain("−22 г");
-    expect(html).toContain("На складе 11 г");
-    expect(html).toContain("спишем остаток");
+    expect(html).toContain("−11 г");
+    expect(html).toContain("В партии закупки 11 г");
+    expect(html).toContain("Нужно 22 г; спишем 11 г");
     expect(html).toContain("text-warning");
     expect(html).not.toContain("checkbox");
     expect(html).not.toContain("вместо «");
   });
 
-  it("exact_short + exactClamps=false (солод): та же формулировка «спишем остаток» + доступна замена, не блокирует", () => {
+  it("exact_short + exactClamps=false (солод): показывает фактический остаток и предлагает замену", () => {
     const line: BrewBatchConsumePlanLine = {
       recipeIngredientId: "ri-2b",
       displayName: "Munich BrandA",
@@ -107,10 +108,10 @@ describe("ConsumeLineRow — рендер по видам строки пред�
     };
 
     const uncheckedHtml = renderRow(line, { checked: false, inventoryItemId: "ii-sub" });
-    expect(uncheckedHtml).toContain("На складе 500 г");
+    expect(uncheckedHtml).toContain("В партии закупки 500 г");
     // Формулировка одна на оба значения exactClamps — сервер клампит короткую
     // строку в любом случае (Ф4, partial-режим), замена лишь предпочтительнее.
-    expect(uncheckedHtml).toContain("спишем остаток");
+    expect(uncheckedHtml).toContain("Нужно 2 кг; спишем 500 г");
     expect(uncheckedHtml).not.toContain("не хватит");
     expect(uncheckedHtml).toContain("вместо «Munich BrandA»");
     expect(uncheckedHtml).toContain("Munich BrandB");
@@ -145,7 +146,7 @@ describe("ConsumeLineRow — рендер по видам строки пред�
 
     const uncheckedHtml = renderRow(line, { checked: false, inventoryItemId: "ii-3" });
     expect(uncheckedHtml).toContain("Курский пилс");
-    expect(uncheckedHtml).toContain("−5 кг");
+    expect(uncheckedHtml).toContain("Нужно 5 кг");
     expect(uncheckedHtml).toContain("вместо «Beerex пилснер»");
     expect(uncheckedHtml).toContain("EBC 4.1 ↔ 5.3");
     // Единственный кандидат — выбора (select) можно не показывать.
@@ -153,6 +154,7 @@ describe("ConsumeLineRow — рендер по видам строки пред�
 
     const checkedHtml = renderRow(line, { checked: true, inventoryItemId: "ii-3" });
     expect(checkedHtml).toContain("checked=\"\"");
+    expect(checkedHtml).toContain("−5 кг");
   });
 
   it("substitute_available: несколько кандидатов — есть выбор, дефолт первый из отсортированных сервером", () => {

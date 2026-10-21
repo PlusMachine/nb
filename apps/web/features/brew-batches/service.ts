@@ -4,6 +4,7 @@ import { assertRateLimit } from "@nb/auth";
 import { getRecipeById } from "../recipes/service";
 import { resolveBrewBatchRecipe } from "./brew-setup";
 import { buildBrewPlanSnapshot } from "./brew-plan";
+import { buildBrewInventorySnapshot } from "./inventory-snapshot";
 import { applyBrewDayStepPatch, buildBrewDaySteps, normalizeBrewDayProgress } from "./brew-day";
 import { summarizeBrewMeasurements } from "./measurements";
 import {
@@ -156,6 +157,7 @@ export const createBrewBatchFromRecipe = async (
     // Самодостаточный слепок: таргеты og/fg/abv (сравнение план↔факт без живого
     // рецепта) + атрибуция автора («по рецепту X от Y», в т.ч. для чужого).
     recipeSnapshot: {
+      inventory: buildBrewInventorySnapshot(recipe, userId),
       id: recipe.id,
       title: recipe.title,
       versionNumber: recipe.versionNumber,
@@ -416,6 +418,27 @@ export const updateBrewBatchStatus = async (
   return mapBrewBatchDto(updated);
 };
 
+/**
+ * Жёсткое удаление партии владельцем. Замеры и ferment_sessions уходят каскадом;
+ * телеметрия/команды/транзакции склада теряют brew_batch_id (SET NULL).
+ * Аллокации партии удаляются каскадом, освобождая незавершённые резервы.
+ * Списания сохраняются: удаление записи не возвращает физически использованное
+ * сырьё. Явный возврат неиспользованного сырья возможен до удаления партии.
+ */
+export const deleteBrewBatch = async (
+  userId: string,
+  brewBatchId: string
+): Promise<BrewBatchDto> => {
+  const batch = await getBrewBatchById(userId, brewBatchId);
+  if (!batch) {
+    throw new Error("NOT_FOUND");
+  }
+  await db
+    .delete(brewBatches)
+    .where(and(eq(brewBatches.id, brewBatchId), eq(brewBatches.userId, userId)));
+  return batch;
+};
+
 // --- Журнал замеров + заметки + цели ----------------------------------------
 
 /** Замеры партии (ownership-checked), oldest→newest. Пусто, если партии нет/чужая. */
@@ -658,12 +681,16 @@ export const updateBrewBatchPlannedFor = async (
   return mapBrewBatchDto(updated);
 };
 
-// Цели рецепта (расчётные og/fg/abv) для сравнения с фактом. Берём из ЖИВОГО
-// рецепта, а если его уже нет (recipeId=NULL после удаления/анпаблиша источника
-// при варке без клона) — из снапшота партии: он самодостаточен.
+// Цели именно этой партии уже пересчитаны при создании. Живой рецепт нужен
+// только старым партиям без сохранённых целей: его объём и будущие правки
+// не должны менять сравнение плана с фактом начатой варки.
 const getRecipeBrewTargets = async (
   batch: Pick<BrewBatchDto, "recipeId" | "recipeSnapshot">
 ): Promise<{ og: number | null; fg: number | null; abv: number | null } | null> => {
+  const snapshot = batch.recipeSnapshot as { og?: number | null; fg?: number | null; abv?: number | null } | null;
+  if (snapshot && ["og", "fg", "abv"].some((key) => Object.prototype.hasOwnProperty.call(snapshot, key))) {
+    return { og: snapshot.og ?? null, fg: snapshot.fg ?? null, abv: snapshot.abv ?? null };
+  }
   if (batch.recipeId) {
     const row = await db.query.recipes.findFirst({
       where: eq(recipes.id, batch.recipeId),
@@ -672,10 +699,6 @@ const getRecipeBrewTargets = async (
     if (row) {
       return { og: row.og, fg: row.fg, abv: row.abv };
     }
-  }
-  const snapshot = batch.recipeSnapshot as { og?: number | null; fg?: number | null; abv?: number | null } | null;
-  if (snapshot && (snapshot.og != null || snapshot.fg != null || snapshot.abv != null)) {
-    return { og: snapshot.og ?? null, fg: snapshot.fg ?? null, abv: snapshot.abv ?? null };
   }
   return null;
 };

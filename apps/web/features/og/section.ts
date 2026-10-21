@@ -30,7 +30,7 @@ export type SectionOgEntry = { eyebrow?: string; title: string };
 // ловится tsc, а не падает молча в проде на резолве раздела.
 const SECTION_HUBS = {
   // app/(public)/page.tsx — hero главной.
-  home: { eyebrow: "Домашнее пивоварение", title: "Свари своё пиво — от рецепта до розлива" },
+  home: { eyebrow: "Домашнее пивоварение", title: "Сварите своё пиво — от рецепта до розлива" },
   // RECIPES_LIST_TITLE, features/recipes/seo.ts.
   recipes: { title: "Рецепты сообщества" },
   // CATALOG_BASE_TITLE, features/ingredients/seo.ts.

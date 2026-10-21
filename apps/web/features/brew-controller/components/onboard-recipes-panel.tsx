@@ -38,7 +38,7 @@ const ERROR_TEXT: Record<string, string> = {
   NOT_FOUND: "Устройство или рецепт не найдены",
   PROVIDER_UNAVAILABLE: "Операции с рецептами недоступны для этого устройства",
   INVALID_REQUEST: "Проверьте выбранный рецепт",
-  INVALID_SLOT: "Некорректное место на пивоварне",
+  INVALID_SLOT: "Выбрана недопустимая ячейка памяти контроллера",
   INTERNAL_ERROR: "Внутренняя ошибка. Попробуйте позже"
 };
 
@@ -207,8 +207,7 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
       <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
         <h3 className="text-sm font-semibold text-foreground">Загрузить рецепт</h3>
         <p className="mt-1 text-xs text-muted-foreground">
-          Рецепт ляжет на пивоварню — нагрев это не запускает. Сварить можно из мастера рецептов
-          или на устройстве.
+          Рецепт сохранится на контроллере. Нагрев включится только после запуска варки — со страницы рецепта или на самом устройстве.
         </p>
 
         {pushableRecipes.length === 0 ? (
@@ -344,7 +343,7 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
 
 function SnapshotView({ state }: { state: SnapshotState }) {
   if (state === "loading" || state === undefined) {
-    return <p className="text-xs text-muted-foreground">Чтение рецепта с платы…</p>;
+    return <p className="text-xs text-muted-foreground">Чтение рецепта с контроллера…</p>;
   }
   if (state === "error") {
     return <p role="alert" className="text-xs text-destructive">Не удалось прочитать рецепт.</p>;

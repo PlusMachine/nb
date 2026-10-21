@@ -1,0 +1,507 @@
+
+ RUN  v4.0.18 /home/dopefish/projects/nb/apps/web
+
+ ✓ tests/admin-users-auth-gates.test.ts (13 tests) 956ms
+ ✓ tests/equipment-profiles-page.test.ts (10 tests) 1520ms
+     ✓ renders summary-first profile cards without open edit forms by default  1414ms
+ ✓ tests/masters-public-notfound.test.ts (7 tests) 2055ms
+     ✓ рендерит страницу мастера, когда getPublishedMasterBySlug находит слаг  1700ms
+ ✓ tests/bjcp-hub-page-seo.test.ts (4 tests) 2084ms
+     ✓ has a canonical /bjcp and an openGraph block  1646ms
+ ✓ tests/recipe-editor-actions.test.ts (4 tests) 3176ms
+     ✓ create action uses service layer and returns stats payload  3168ms
+ ✓ tests/articles-detail-page-wiring.test.ts (5 tests) 1233ms
+     ✓ builds metadata from the CMS article: seoTitle, canonical, OG article  1198ms
+ ✓ tests/bjcp-style-page-placeholder-image.test.ts (1 test) 3719ms
+     ✓ serves the generated OG card when heroImageUrl is only the shared BJCP placeholder  3708ms
+ ✓ tests/labels-render-smoke.test.ts (10 tests) 2056ms
+     ✓ craft L @300dpi: точный размер и 1-бит  389ms
+     ✓ typographic LW @300dpi: точный размер и 1-бит  391ms
+ ✓ tests/recipe-service.test.ts (45 tests) 1561ms
+     ✓ автоимя из сервиса распознаётся редактором как автоматическое  1213ms
+ ✓ tests/og-photo.test.ts (7 tests) 984ms
+     ✓ отдаёт JPEG data URI ровно OG_PHOTO_WIDTH×630, вес врезки < 150 КБ  408ms
+     ✓ вход webp тоже перекодируется в JPEG (Satori не ест webp)  505ms
+ ✓ tests/public-recipe-query.test.ts (29 tests) 734ms
+ ✓ tests/bjcp-style-page-seo.test.ts (9 tests) 3254ms
+     ✓ redirects generateMetadata for a legacy alias slug to the canonical /bjcp/<slug>  2747ms
+ ✓ tests/calculators-pages.test.ts (12 tests) 4210ms
+     ✓ /calculators renders all calculators grouped into section headings  1519ms
+     ✓ calculator routes render through the dynamic route with seoTitle metadata, canonical and visible/JSON-LD breadcrumbs  2172ms
+ ✓ tests/password-signup.test.ts (5 tests) 456ms
+ ✓ tests/recipes-pages-wiring.test.ts (5 tests) 4714ms
+     ✓ list page uses listAuthorRecipeCards  4637ms
+ ✓ tests/brew-batch-consume-substitution.test.ts (21 tests) 617ms
+     ✓ exact / exact_short / substitute_available / missing — по одному примеру каждого  517ms
+ ✓ tests/home-data-cache.test.ts (3 tests) 636ms
+     ✓ лента и счётчики берутся из слота, пока он свеж  500ms
+ ✓ tests/og-render-smoke.test.ts (4 tests) 2342ms
+     ✓ текстовая карточка: PNG-сигнатура, 1200×630, ≤ 300 КБ  658ms
+     ✓ карточка с фото-врезкой: 1200×630, ≤ 300 КБ, PNG или JPEG (смотря сработал ли весовой гейт)  1130ms
+     ✓ весовой гейт: PNG > 300 КБ дожимается в JPEG меньшего размера  507ms
+ ✓ tests/ingredient-ranking-prepared.test.ts (70 tests) 361ms
+ ✓ tests/labels-layout.test.ts (37 tests) 3811ms
+     ✓ стилевые тайглайны печатаются на большой наклейке (не выбрасываются)  3269ms
+ ✓ tests/public-recipes-service.test.ts (14 tests) 298ms
+ ✓ tests/coverage-recipes-lifecycle.test.ts (29 tests) 442ms
+ ✓ tests/coverage-search.test.ts (37 tests) 481ms
+ ✓ tests/bridge-ws-command-gate.test.ts (4 tests) 272ms
+ ✓ tests/public-recipes-pages-wiring.test.ts (10 tests) 4743ms
+     ✓ uses getPublicRecipeBySlug and renders read-only recipe  4723ms
+ ✓ tests/recipe-interop.test.ts (17 tests) 346ms
+ ✓ tests/coverage-brew-batches-lifecycle.test.ts (68 tests) 203ms
+ ✓ tests/coverage-recipe-match-journeys.test.ts (44 tests) 184ms
+ ✓ tests/inventory-add-flow.test.ts (74 tests) 258ms
+ ✓ tests/recipe-editor-pages-wiring.test.ts (5 tests) 5928ms
+     ✓ edit form renders from owner-safe service  5733ms
+ ✓ tests/recipe-water-plan.test.ts (45 tests) 156ms
+ ✓ tests/recipe-water-flow-ui.test.ts (36 tests) 350ms
+ ✓ tests/calculators-access.test.tsx (9 tests) 179ms
+ ✓ tests/user-catalog-ingredient-search.test.ts (44 tests) 174ms
+ ✓ tests/labels-fonts.test.ts (1 test) 153ms
+ ✓ tests/recipe-editor-components.test.ts (44 tests) 685ms
+ ✓ tests/shopping-page-view.test.ts (31 tests) 192ms
+ ✓ tests/masters-upload-route.test.ts (18 tests) 220ms
+ ✓ tests/my-recipes-gallery.test.tsx (21 tests) 261ms
+ ✓ tests/app-dashboard-wiring.test.ts (28 tests) 306ms
+ ✓ tests/bjcp-card-stats.test.ts (9 tests) 155ms
+stderr | tests/recipe-match-service.test.ts > computeRecipeMatchesForUser — batch > FIX-3: isolates a per-recipe match failure instead of failing the whole batch
+[recipes] computeRecipeMatchesForUser: skipping recipe after match error {
+  recipeId: 'r-broken',
+  error: Error: [test] simulated corrupt recipe line
+      at roundTo (/home/dopefish/projects/nb/apps/web/tests/recipe-match-service.test.ts:48:15)
+      at matchLineAgainstInventory (/home/dopefish/projects/nb/apps/web/features/recipes/match-service.ts:424:20)
+      at /home/dopefish/projects/nb/apps/web/features/recipes/match-service.ts:584:20
+      at Array.map (<anonymous>)
+      at matchRecipeLinesAgainstInventory (/home/dopefish/projects/nb/apps/web/features/recipes/match-service.ts:584:6)
+      at computeMatchForRecipeRow (/home/dopefish/projects/nb/apps/web/features/recipes/match-service.ts:959:17)
+      at Module.computeRecipeMatchesForUser (/home/dopefish/projects/nb/apps/web/features/recipes/match-service.ts:1223:27)
+      at processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at /home/dopefish/projects/nb/apps/web/tests/recipe-match-service.test.ts:862:20
+      at file:///home/dopefish/projects/nb/node_modules/@vitest/runner/dist/index.js:915:20
+}
+
+ ✓ tests/recipe-match-service.test.ts (62 tests) 129ms
+ ✓ tests/recipe-migration.test.ts (39 tests) 129ms
+ ✓ tests/ingredient-catalog-metadata-ui.test.ts (26 tests) 133ms
+ ✓ tests/ingredient-picker.test.ts (78 tests) 168ms
+ ✓ tests/labels-overrides.test.ts (18 tests) 216ms
+ ✓ tests/labels-slots.test.ts (31 tests) 109ms
+ ✓ tests/recipe-ingredient-links.test.ts (5 tests) 179ms
+ ✓ tests/keg-carbonation-table.test.tsx (5 tests) 196ms
+ ✓ tests/coverage-masters-lifecycle.test.ts (45 tests) 136ms
+ ✓ tests/inventory-service.test.ts (33 tests) 141ms
+ ✓ features/brew-controller/transport.test.ts (23 tests) 112ms
+ ✓ tests/recipes-read-components.test.ts (22 tests) 169ms
+ ✓ tests/equipment-presets.test.ts (165 tests) 124ms
+ ✓ tests/recipe-fg-estimate.test.ts (37 tests) 92ms
+ ✓ tests/inventory-usability-components.test.ts (25 tests) 253ms
+ ✓ tests/recipe-water-ingredients.test.ts (11 tests) 209ms
+ ✓ tests/labels-input-limits.test.ts (14 tests) 155ms
+ ✓ tests/inventory-page-foundation.test.ts (6 tests) 208ms
+stderr | tests/recipe-inventory-service.test.ts > recipe inventory allocation service > гонка списания > дубли аллокаций на одну строку (след гонки подбора) не списывают склад дважды
+[recipes] consume: duplicate active allocations for one recipe line, releasing extras {
+  recipeId: '00000000-0000-4000-8000-000000000001',
+  brewBatchId: '00000000-0000-4000-8000-000000000402',
+  duplicateIds: [ '00000000-0000-4000-8000-000000000999' ]
+}
+
+ ✓ tests/recipe-inventory-service.test.ts (39 tests) 96ms
+ ✓ tests/brew-batches-page-wiring.test.ts (17 tests) 247ms
+ ✓ tests/admin-ingredient-form.test.tsx (7 tests) 130ms
+ ✓ tests/consume-preview-dialog.test.tsx (15 tests) 109ms
+ ✓ tests/inventory-page-filters.test.ts (5 tests) 197ms
+ ✓ tests/catalog-search-noise-and-sort.test.ts (26 tests) 67ms
+ ✓ tests/recipe-designer-equipment-snapshot.test.ts (21 tests) 159ms
+ ✓ tests/coverage-custom-ingredients.test.ts (28 tests) 87ms
+ ✓ tests/owner-recipe-card.test.tsx (13 tests) 96ms
+ ✓ tests/coverage-inventory-crud.test.ts (18 tests) 101ms
+ ✓ tests/brew-inventory-prep.test.tsx (18 tests) 107ms
+ ✓ tests/master-page-view.test.ts (12 tests) 64ms
+ ✓ features/device-streams/sessions.test.ts (32 tests) 76ms
+ ✓ tests/recipes-filter-sheet.test.ts (3 tests) 70ms
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — автообнаружение устройства и маппинг hardware_kind > новое устройство создаётся: providerId=rapt-cloud, hardwareId=rapt-<device_id>, name из device_name
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — автообнаружение устройства и маппинг hardware_kind > без device_name имя — 'RAPT ' + device_type
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — автообнаружение устройства и маппинг hardware_kind > device_type=RAPT Pill → hardware_kind=rapt-pill
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — автообнаружение устройства и маппинг hardware_kind > device_type=Fermentation Chamber → hardware_kind=rapt-chamber
+[device-streams:analytics] device_connected { kind: 'rapt-chamber', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — автообнаружение устройства и маппинг hardware_kind > device_type=Temperature Controller → hardware_kind=rapt-chamber
+[device-streams:analytics] device_connected { kind: 'rapt-chamber', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — автообнаружение устройства и маппинг hardware_kind > device_type=Mini Fridge → hardware_kind=rapt-chamber
+[device-streams:analytics] device_connected { kind: 'rapt-chamber', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — автообнаружение устройства и маппинг hardware_kind > device_type=BrewZilla Gen 4 → hardware_kind=rapt-brewzilla
+[device-streams:analytics] device_connected { kind: 'rapt-brewzilla', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — автообнаружение устройства и маппинг hardware_kind > device_type=Неизвестный тип → hardware_kind=other
+[device-streams:analytics] device_connected { kind: 'other', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — автообнаружение устройства и маппинг hardware_kind > device_type=null → hardware_kind=other
+[device-streams:analytics] device_connected { kind: 'other', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — автообнаружение устройства и маппинг hardware_kind > повторный пакет того же device_id НЕ создаёт дубль устройства
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — квота (стрим+RAPT ≤ 10) > устройство, уже существующее ДО достижения квоты, продолжает принимать данные
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+ ✓ tests/recipe-clone-bridge.test.ts (10 tests) 127ms
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — строковые числа и нормализация > значения-строки (@-подстановки RAPT) парсятся в числа и нормализуются
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — строковые числа и нормализация > плаузибилити-клампы: мусорные значения → NULL, но точка пишется с сырым payload
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — время точки (ts) > ts вне окна ±48ч → используем receivedAt
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — время точки (ts) > ts в разумном окне → используем sourceTs, а не receivedAt
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — время точки (ts) > невалидная строка ts → используем receivedAt (не бросает)
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — персист-гейт (§8.5) > первая точка пишется; вторая через минуту — гейтится
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — персист-гейт (§8.5) > точка через 5+ минут проходит гейт
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — денормализация сеанса > активный сеанс устройства денормализуется в sessionId показания
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — вызов processIngestAlerts (F6/M5-A) > вызывается ПОСЛЕ успешной записи, с sessionId активного сеанса
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+stdout | features/device-streams/ingest-rapt.test.ts > ingestRaptWebhook — вызов processIngestAlerts (F6/M5-A) > вызывается с sessionId=null, когда активного сеанса нет
+[device-streams:analytics] device_connected { kind: 'rapt-pill', provider: 'rapt-cloud' }
+[device-streams:analytics] first_packet { provider: 'rapt-cloud' }
+
+ ✓ features/device-streams/ingest-rapt.test.ts (27 tests) 99ms
+ ✓ tests/brew-day.test.ts (58 tests) 67ms
+ ✓ tests/catalog-hub-sections.test.ts (11 tests) 85ms
+ ✓ tests/coverage-catalog-browse.test.ts (21 tests) 82ms
+ ✓ tests/inventory-lot-plan.test.ts (2 tests) 118ms
+ ✓ tests/ingredient-catalog-cross-links.test.ts (13 tests) 107ms
+ ✓ tests/admin-users-last-admin.test.ts (14 tests) 84ms
+ ✓ tests/shopping-list-service.test.ts (47 tests) 94ms
+ ✓ tests/content-articles.test.ts (13 tests) 83ms
+ ✓ tests/coverage-masters-images.test.ts (28 tests) 49ms
+ ✓ tests/recipe-card.test.ts (12 tests) 91ms
+ ✓ tests/coverage-content-articles-crud.test.ts (24 tests) 66ms
+ ✓ tests/recipe-match-panel.test.ts (9 tests) 107ms
+ ✓ tests/recipe-image-upload-route.test.ts (2 tests) 80ms
+ ✓ tests/recipes-page.test.ts (6 tests) 68ms
+ ✓ tests/shopping-contracts.test.ts (14 tests) 46ms
+ ✓ tests/ingredient-service-foundation.test.ts (10 tests) 63ms
+stdout | features/device-streams/alerts.test.ts > processIngestAlerts — батарея > вольты < 3.4 В → battery_low, впервые за сеанс (alert_state пуст)
+[device-streams:analytics] alert_sent { type: 'battery_low' }
+
+stdout | features/device-streams/alerts.test.ts > processIngestAlerts — батарея > проценты < 20% → battery_low
+[device-streams:analytics] alert_sent { type: 'battery_low' }
+
+stdout | features/device-streams/alerts.test.ts > processIngestAlerts — дедуп 12ч > не шлёт повторно раньше 12ч, шлёт снова после
+[device-streams:analytics] alert_sent { type: 'battery_low' }
+
+stdout | features/device-streams/alerts.test.ts > processIngestAlerts — дедуп 12ч > не шлёт повторно раньше 12ч, шлёт снова после
+[device-streams:analytics] alert_sent { type: 'battery_low' }
+
+stdout | features/device-streams/alerts.test.ts > processIngestAlerts — вердикт брожения (§5 F5, через сглаживание) > not_started: текст с советом проверить дрожжи
+[device-streams:analytics] alert_sent { type: 'not_started' }
+
+stdout | features/device-streams/alerts.test.ts > processIngestAlerts — вердикт брожения (§5 F5, через сглаживание) > likely_done: заголовок «Похоже, добродило: …» + фраза П5 в теле
+[device-streams:analytics] verdict_likely_done { sessionId: 'session-1' }
+[device-streams:analytics] alert_sent { type: 'likely_done' }
+
+stdout | features/device-streams/alerts.test.ts > processIngestAlerts — температурный коридор (§5 F6) > первая точка «вне» 31 минуту назад → temp_out
+[device-streams:analytics] alert_sent { type: 'temp_out' }
+
+stdout | features/device-streams/alerts.test.ts > processIngestAlerts — устойчивость к сбоям и запись alert_state > падение sendPushToUser не валит процесс (best-effort)
+[device-streams:analytics] alert_sent { type: 'battery_low' }
+
+stderr | features/device-streams/alerts.test.ts > processIngestAlerts — устойчивость к сбоям и запись alert_state > падение sendPushToUser не валит процесс (best-effort)
+[device-streams] processIngestAlerts: sendPushToUser упал: Error: push failed
+    at /home/dopefish/projects/nb/apps/web/features/device-streams/alerts.test.ts:381:48
+    at file:///home/dopefish/projects/nb/node_modules/@vitest/runner/dist/index.js:145:11
+    at file:///home/dopefish/projects/nb/node_modules/@vitest/runner/dist/index.js:915:26
+    at file:///home/dopefish/projects/nb/node_modules/@vitest/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///home/dopefish/projects/nb/node_modules/@vitest/runner/dist/index.js:1209:10)
+    at file:///home/dopefish/projects/nb/node_modules/@vitest/runner/dist/index.js:1653:37
+    at Traces.$ (file:///home/dopefish/projects/nb/node_modules/vitest/dist/chunks/traces.CCmnQaNT.js:142:27)
+    at trace (file:///home/dopefish/projects/nb/node_modules/vitest/dist/chunks/test.B8ej_ZHS.js:239:21)
+    at runTest (file:///home/dopefish/projects/nb/node_modules/@vitest/runner/dist/index.js:1653:12)
+
+stdout | features/device-streams/alerts.test.ts > processIngestAlerts — устойчивость к сбоям и запись alert_state > несколько кандидатов разом (батарея+температура) → один UPDATE alert_state на оба типа
+[device-streams:analytics] alert_sent { type: 'temp_out' }
+[device-streams:analytics] alert_sent { type: 'battery_low' }
+
+ ✓ tests/ingredient-search-service.test.ts (5 tests) 51ms
+ ✓ features/device-streams/alerts.test.ts (13 tests) 57ms
+ ✓ tests/site-shell.test.ts (5 tests) 56ms
+ ✓ tests/custom-catalog-ingredient-form.test.ts (2 tests) 52ms
+ ✓ tests/login-form.test.tsx (13 tests) 87ms
+stdout | features/device-streams/ingest.test.ts > ingestStreamPacket — персист-гейт (§8.5) > первая точка пишется; вторая через минуту — гейтится, но lastSeenAt обновляется
+[device-streams:analytics] first_packet { provider: 'stream' }
+
+stdout | features/device-streams/ingest.test.ts > ingestStreamPacket — персист-гейт (§8.5) > точка через 5+ минут проходит гейт и пишется
+[device-streams:analytics] first_packet { provider: 'stream' }
+
+stdout | features/device-streams/ingest.test.ts > ingestStreamPacket — дедуп (deviceId, ts) > два пакета с одинаковым вычисленным ts никогда не дают двух строк
+[device-streams:analytics] first_packet { provider: 'stream' }
+[device-streams:analytics] first_packet { provider: 'stream' }
+
+stdout | features/device-streams/ingest.test.ts > ingestStreamPacket — плаузибилити-клампы > мусорные значения клампуются в NULL, но точка пишется вместе с сырым payload
+[device-streams:analytics] first_packet { provider: 'stream' }
+
+stdout | features/device-streams/ingest.test.ts > ingestStreamPacket — время точки (ts) > Tilt Timepoint вне окна ±48ч (битые часы) → используем receivedAt
+[device-streams:analytics] first_packet { provider: 'stream' }
+
+stdout | features/device-streams/ingest.test.ts > ingestStreamPacket — время точки (ts) > Tilt Timepoint в разумном окне → используем sourceTs, а не receivedAt
+[device-streams:analytics] first_packet { provider: 'stream' }
+
+stdout | features/device-streams/ingest.test.ts > ingestStreamPacket — денормализация сеанса > активный сеанс устройства денормализуется в sessionId показания
+[device-streams:analytics] first_packet { provider: 'stream' }
+
+stdout | features/device-streams/ingest.test.ts > ingestStreamPacket — денормализация сеанса > завершённый сеанс не подхватывается — sessionId остаётся null
+[device-streams:analytics] first_packet { provider: 'stream' }
+
+stdout | features/device-streams/ingest.test.ts > ingestStreamPacket — вызов processIngestAlerts (F6/M5-A) > вызывается ПОСЛЕ успешной записи, с sessionId активного сеанса
+[device-streams:analytics] first_packet { provider: 'stream' }
+
+stdout | features/device-streams/ingest.test.ts > ingestStreamPacket — вызов processIngestAlerts (F6/M5-A) > вызывается с sessionId=null, когда активного сеанса нет
+[device-streams:analytics] first_packet { provider: 'stream' }
+
+ ✓ tests/public-recipe-process-section.test.ts (12 tests) 49ms
+ ✓ features/device-streams/ingest.test.ts (16 tests) 74ms
+ ✓ tests/ingredient-ranking.test.ts (11 tests) 53ms
+ ✓ tests/recipe-seo.test.ts (33 tests) 33ms
+ ✓ tests/ingredient-purchase-links.test.ts (7 tests) 60ms
+ ✓ tests/admin-firmware.test.ts (16 tests) 89ms
+ ✓ tests/brewable-recipe-card.test.tsx (9 tests) 83ms
+ ✓ features/brew-controller/translator.test.ts (11 tests) 68ms
+ ✓ tests/recipe-ratings-service.test.ts (17 tests) 83ms
+ ✓ tests/inventory-search-scope.test.ts (12 tests) 55ms
+ ✓ tests/ingredient-seo.test.ts (36 tests) 58ms
+ ✓ tests/inventory-units.test.ts (15 tests) 51ms
+ ✓ tests/brew-measurements.test.ts (15 tests) 46ms
+ ✓ tests/recipe-style-picker.test.ts (6 tests) 43ms
+ ✓ tests/masters-contracts.test.ts (47 tests) 65ms
+ ✓ tests/masters-image-route.test.ts (7 tests) 71ms
+ ✓ tests/labels-density.test.ts (6 tests) 59ms
+ ✓ tests/audit-service.test.ts (19 tests) 39ms
+ ✓ tests/admin-recipes-actions.test.ts (10 tests) 48ms
+ ✓ tests/recipe-tabs.test.tsx (5 tests) 47ms
+ ✓ tests/admin-devices.test.ts (16 tests) 32ms
+ ✓ tests/ingredient-normalization.test.ts (7 tests) 65ms
+ ✓ tests/brew-volume-choice.test.tsx (17 tests) 63ms
+ ✓ features/brew-controller/cloud-transport.test.ts (9 tests) 32ms
+ ✓ tests/ingredient-search-api.test.ts (2 tests) 39ms
+ ✓ tests/admin-recipes-service.test.ts (15 tests) 52ms
+ ✓ tests/ingredient-picker-search-errors.test.tsx (7 tests) 45ms
+ ✓ tests/market-item-card.test.ts (6 tests) 45ms
+ ✓ tests/push-subscription-state-api.test.ts (4 tests) 29ms
+ ✓ tests/calculators-visibility.test.tsx (13 tests) 44ms
+ ✓ tests/masters-admin-actions.test.ts (11 tests) 49ms
+ ✓ tests/push-subscription-toggle.test.ts (10 tests) 36ms
+ ✓ tests/shopping-transfer-service.test.ts (10 tests) 49ms
+ ✓ tests/money-display.test.ts (3 tests) 28ms
+ ✓ tests/ingredient-proposal-moderation-actions.test.ts (9 tests) 25ms
+ ✓ tests/ingredients-search-api.test.ts (4 tests) 38ms
+ ✓ features/device-streams/integrations.test.ts (12 tests) 24ms
+ ✓ tests/brew-completion.test.ts (14 tests) 32ms
+ ✓ tests/brew-notes.test.tsx (4 tests) 34ms
+ ✓ tests/recipe-clone-service.test.ts (17 tests) 42ms
+ ✓ features/device-streams/verdict-core.test.ts (27 tests) 32ms
+ ✓ features/notifications/push-events.test.ts (46 tests) 34ms
+ ✓ tests/og-entity-views.test.ts (19 tests) 50ms
+ ✓ tests/masters-cabinet-actions.test.ts (14 tests) 44ms
+ ✓ features/brew-controller/sim-transport.test.ts (8 tests) 37ms
+ ✓ tests/admin-recipes-hidden-access.test.ts (11 tests) 29ms
+ ✓ tests/middleware.test.ts (2 tests) 18ms
+ ✓ tests/recipe-clone-action.test.ts (10 tests) 24ms
+ ✓ tests/ingredient-presentation.test.ts (17 tests) 28ms
+ ✓ tests/recipe-rating-form.test.ts (5 tests) 40ms
+ ✓ tests/catalog-legacy-redirects.test.ts (8 tests) 26ms
+ ✓ tests/og-section-views.test.ts (11 tests) 39ms
+ ✓ tests/brew-inventory-snapshot.test.ts (5 tests) 26ms
+ ✓ tests/recipe-scale-volume.test.ts (22 tests) 25ms
+ ✓ tests/pwa-manifest.test.ts (5 tests) 62ms
+ ✓ tests/admin-users-actions.test.ts (14 tests) 27ms
+ ✓ tests/calculators-serialize-query.test.ts (15 tests) 23ms
+ ✓ features/brew-controller/ferment-profile.test.ts (33 tests) 26ms
+ ✓ tests/content-editor-schema.test.ts (8 tests) 30ms
+ ✓ tests/ingredient-contracts.test.ts (5 tests) 20ms
+ ✓ tests/push-subscriptions-admin.test.ts (9 tests) 26ms
+ ✓ features/brew-controller/distill-console.test.ts (31 tests) 26ms
+ ✓ tests/ingredient-technical-fields.test.ts (20 tests) 15ms
+ ✓ tests/brew-nudge.test.ts (20 tests) 15ms
+ ✓ tests/recipes-color-scale.test.ts (3 tests) 48ms
+ ✓ tests/recipe-water-profiles.test.ts (7 tests) 24ms
+ ✓ tests/og-calculator-share.test.ts (14 tests) 39ms
+ ✓ tests/devices-route.test.ts (2 tests) 29ms
+ ✓ features/device-streams/series-core.test.ts (16 tests) 20ms
+ ✓ tests/recipe-match-mobile-badge.test.ts (5 tests) 23ms
+ ✓ features/brew-controller/stage-timeline.test.ts (18 tests) 20ms
+ ✓ features/devices/log-sync-core.test.ts (9 tests) 25ms
+ ✓ tests/calculators-gravity-unit-migration.test.ts (28 tests) 23ms
+ ✓ tests/cookie-consent-kiosk.test.ts (13 tests) 16ms
+ ✓ tests/recipe-rating-action.test.ts (9 tests) 22ms
+ ✓ tests/pack-rounding.test.ts (22 tests) 21ms
+ ✓ tests/inventory-suggestions-api.test.ts (1 test) 18ms
+ ✓ tests/admin-catalog-bulk-actions.test.ts (8 tests) 23ms
+ ✓ tests/calculators-brewing-water-method-preset.test.ts (17 tests) 24ms
+ ✓ tests/calculators-gravity-fallback-fields.test.ts (5 tests) 20ms
+ ✓ features/brew-controller/device-mode.test.ts (26 tests) 28ms
+ ✓ tests/calculators-mash-infusion-view.test.ts (22 tests) 28ms
+ ✓ tests/recipe-designer-alpha-override.test.ts (10 tests) 22ms
+ ✓ tests/inventory-price-input.test.tsx (2 tests) 35ms
+ ✓ tests/navigation.test.ts (33 tests) 19ms
+ ✓ tests/recipes-url.test.ts (12 tests) 29ms
+ ✓ features/device-streams/normalize-core.test.ts (30 tests) 20ms
+ ✓ tests/admin-catalog-bulk.test.ts (7 tests) 28ms
+ ✓ tests/recipe-style-search.test.ts (11 tests) 30ms
+ ✓ tests/admin-currency-settings-actions.test.ts (3 tests) 21ms
+ ✓ tests/og-recipe-view.test.ts (17 tests) 23ms
+ ✓ tests/brew-batch-lifecycle-actions.test.ts (6 tests) 19ms
+ ✓ tests/server-env-app-url-guard.test.ts (6 tests) 14ms
+ ✓ tests/feedback-admin-actions.test.ts (3 tests) 27ms
+ ✓ tests/beer-bottle-params.test.ts (17 tests) 19ms
+ ✓ tests/inventory-pack.test.ts (20 tests) 15ms
+ ✓ tests/ingredient-match-group.test.ts (10 tests) 16ms
+ ✓ features/device-streams/parse-core.test.ts (18 tests) 20ms
+ ✓ tests/admin-page-models.test.ts (9 tests) 33ms
+ ✓ tests/ingredient-catalog-cache.test.ts (5 tests) 19ms
+ ✓ tests/recipe-saves-service.test.ts (9 tests) 28ms
+ ✓ tests/masters-seo.test.ts (8 tests) 16ms
+ ✓ tests/country-flag.test.ts (1 test) 25ms
+ ✓ features/brew-controller/telemetry-annotations.test.ts (4 tests) 16ms
+ ✓ tests/admin-recipes-visibility.test.ts (11 tests) 24ms
+ ✓ features/brew-controller/brew-recipe-flow.test.ts (5 tests) 18ms
+ ✓ tests/inventory-inline-actions.test.ts (8 tests) 36ms
+ ✓ tests/my-recipes-url.test.ts (14 tests) 19ms
+ ✓ tests/ingredient-moderation-api.test.ts (1 test) 35ms
+ ✓ tests/calculators-ingredient-picker-rows.test.ts (8 tests) 24ms
+ ✓ features/brew-controller/stage-labels.test.ts (5 tests) 14ms
+ ✓ tests/calculators-silent-zero-warnings.test.ts (4 tests) 13ms
+ ✓ tests/dashboard-overview.test.ts (9 tests) 29ms
+ ✓ tests/home-style-vitals.test.ts (8 tests) 29ms
+ ✓ tests/inventory-consume.test.ts (12 tests) 17ms
+ ✓ tests/robots.test.ts (4 tests) 14ms
+ ✓ tests/labels-url.test.ts (10 tests) 16ms
+ ✓ features/devices/onboard-recipes-merge.test.ts (5 tests) 13ms
+ ✓ tests/calculators-yeast-pitch-preset.test.ts (12 tests) 16ms
+ ✓ tests/recipes-range-slider.test.ts (11 tests) 13ms
+ ✓ tests/admin-users-permissions.test.ts (18 tests) 15ms
+ ✓ tests/inventory-pack-count-hint.test.ts (11 tests) 10ms
+ ✓ tests/admin-users-device-token.test.ts (4 tests) 15ms
+ ✓ tests/shopping-transfer-dialog-derive.test.ts (8 tests) 11ms
+ ✓ tests/calculators-bottling-mixed-sizes.test.ts (5 tests) 12ms
+ ✓ tests/ingredient-metadata-actions.test.ts (2 tests) 28ms
+ ✓ features/firmware/versions.test.ts (15 tests) 25ms
+ ✓ tests/calculators-refractometer-view.test.ts (11 tests) 14ms
+ ✓ tests/brewability-badge.test.ts (13 tests) 9ms
+ ✓ features/device-streams/stream-device-core.test.ts (10 tests) 10ms
+ ✓ tests/calculators-yeast-starter-stats.test.ts (4 tests) 11ms
+ ✓ tests/recipe-sitemap-service.test.ts (9 tests) 12ms
+ ✓ tests/derived-ingredient-presentation.test.ts (3 tests) 5ms
+ ✓ features/devices/tiles.test.ts (9 tests) 11ms
+ ✓ tests/sitemap.test.ts (1 test) 13ms
+ ✓ features/device-streams/series.test.ts (4 tests) 13ms
+ ✓ tests/calculators-beer-color-scale.test.ts (8 tests) 11ms
+ ✓ tests/ingredient-taxonomy.test.ts (3 tests) 6ms
+ ✓ tests/master-cabinet-client-logic.test.ts (7 tests) 13ms
+ ✓ tests/admin-recipes-sitemap.test.ts (2 tests) 9ms
+ ✓ tests/inventory-purchase-cost.test.ts (5 tests) 20ms
+ ✓ features/devices/connection.test.ts (5 tests) 29ms
+ ✓ features/brew-controller/kiosk-status.test.ts (9 tests) 21ms
+ ✓ tests/ingredient-family-backfill.test.ts (2 tests) 14ms
+ ✓ tests/shopping-copy-text.test.ts (8 tests) 14ms
+ ✓ tests/calculators-hydrometer-view.test.ts (11 tests) 18ms
+ ✓ features/brew-controller/command-gate.test.ts (6 tests) 9ms
+ ✓ tests/labels-recipe-fields.test.ts (7 tests) 23ms
+ ✓ tests/error-handling.test.ts (5 tests) 15ms
+ ✓ tests/calculators-ibu-whirlpool-time-fallback.test.ts (4 tests) 13ms
+ ✓ tests/recipe-designer-yeast-default-quantity.test.ts (3 tests) 10ms
+ ✓ tests/gravity-units.test.ts (13 tests) 21ms
+ ✓ tests/calculators-search.test.ts (4 tests) 34ms
+ ✓ tests/recipe-publication-validation.test.ts (5 tests) 20ms
+ ✓ tests/calculators-abv-view.test.ts (6 tests) 10ms
+ ✓ tests/auth-phone.test.ts (3 tests) 11ms
+ ✓ features/brew-controller/faults.test.ts (5 tests) 11ms
+ ✓ features/brew-batches/fermenter-status.test.ts (8 tests) 13ms
+ ✓ features/device-streams/connect-instructions.test.ts (4 tests) 13ms
+ ✓ tests/article-cover.test.ts (5 tests) 10ms
+ ✓ tests/hop-harvest-year.test.ts (2 tests) 9ms
+ ✓ features/device-streams/chart-scale.test.ts (7 tests) 10ms
+ ✓ tests/imported-catalog-match.test.ts (5 tests) 11ms
+ ✓ features/brew-controller/stream-provider.test.ts (5 tests) 10ms
+ ✓ tests/rating-score.test.ts (5 tests) 6ms
+ ✓ tests/calculators-water-ph-preset-query.test.ts (6 tests) 9ms
+ ✓ features/devices/return-recipe-core.test.ts (8 tests) 15ms
+ ✓ tests/beer-share-key.test.ts (3 tests) 12ms
+ ✓ tests/calculators-favorites-visibility.test.ts (3 tests) 9ms
+ ✓ tests/equipment-profile-volume-plan.test.ts (3 tests) 10ms
+ ✓ tests/ingredient-catalog-toolbar-href.test.ts (8 tests) 10ms
+ ✓ tests/calculators-ibu-solubility-ceiling.test.ts (2 tests) 11ms
+ ✓ tests/beer-color.test.ts (4 tests) 7ms
+ ✓ tests/catalog-links.test.ts (8 tests) 11ms
+ ✓ tests/ingredient-workflows.test.ts (3 tests) 16ms
+ ✓ tests/consumable-picker-group.test.ts (3 tests) 11ms
+ ✓ tests/user-flow-regressions.test.ts (5 tests) 22ms
+ ✓ features/device-streams/reading-summary.test.ts (5 tests) 8ms
+ ✓ tests/email-policy.test.ts (3 tests) 11ms
+ ✓ features/devices/stream-tile.test.ts (5 tests) 7ms
+ ✓ tests/audit-page-model.test.ts (3 tests) 7ms
+ ✓ features/devices/fermenter-binding-core.test.ts (6 tests) 7ms
+ ✓ tests/currency-rates.test.ts (3 tests) 9ms
+ ✓ tests/numeric-input.test.ts (15 tests) 21ms
+ ✓ tests/ios-install-hint.test.ts (7 tests) 8ms
+ ✓ features/device-streams/session-format.test.ts (4 tests) 6ms
+ ✓ features/device-streams/demo.test.ts (1 test) 4ms
+ ✓ tests/recipe-master-docs.test.ts (1 test) 6ms
+ ✓ tests/pairing-error-text.test.ts (3 tests) 7ms
+ ✓ features/brew-controller/telemetry-source.test.ts (3 tests) 5ms
+ ✓ tests/dashboard-onboarding.test.ts (2 tests) 5ms
+ ✓ tests/smoke.test.ts (1 test) 5ms
+ ✓ tests/search-sql-normalization.test.ts (1 test) 7ms
+ ✓ tests/recipe-format.test.ts (3 tests) 6ms
+ ✓ features/brew-controller/mqtt-client.test.ts (2 tests) 5ms
+ ✓ tests/calculators-priming-co2-preset.test.ts (3 tests) 5ms
+ ✓ tests/style-picker.test.ts (9 tests) 8ms
+ ✓ features/device-streams/corrections.test.ts (30 tests) -7415155ms
+ ✓ tests/recipe-save-button.test.ts (5 tests) 7ms
+
+ Test Files  295 passed (295)
+      Tests  4065 passed (4065)
+   Start at  23:09:45
+   Duration  26.21s (transform 53.78s, setup 16.40s, import 170.33s, tests 67.65s, environment 112ms)
+

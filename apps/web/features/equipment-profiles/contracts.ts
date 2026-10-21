@@ -23,8 +23,8 @@ export const EQUIPMENT_PROFILE_CREATE_RATE_LIMIT = 20;
 export const EQUIPMENT_PROFILE_CREATE_RATE_WINDOW_SECONDS = 60 * 60;
 
 export const equipmentProfilePayloadSchema = z.object({
-  name: z.string().trim().min(1).max(180),
-  targetBatchVolumeL: z.coerce.number().positive(),
+  name: z.string().trim().min(1, "Введите название профиля.").max(180),
+  targetBatchVolumeL: z.coerce.number().positive("Объём партии должен быть больше 0 л."),
   brewhouseEfficiencyPct: z.coerce.number().positive().max(100).default(DEFAULT_BREWHOUSE_EFFICIENCY_PCT),
   evaporationRateLPerHr: z.coerce.number().min(0).default(DEFAULT_EVAPORATION_RATE_L_PER_HR),
   trubChillerLossL: z.coerce.number().min(0).default(0),

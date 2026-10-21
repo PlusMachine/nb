@@ -64,7 +64,7 @@ export default function BrewforgePage() {
         </h1>
         <p className="mt-5 max-w-2xl text-pretty text-lg leading-8 text-zinc-400">
           Контроллер, который ведёт варку по рецепту с сайта: держит паузы затирания,
-          управляет нагревом и отсчитывает внесения хмеля.
+          управляет нагревом и отсчитывает время до внесения хмеля.
         </p>
       </section>
 

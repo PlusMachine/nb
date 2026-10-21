@@ -116,11 +116,6 @@ export function DemoFermentationSection({
           })}
         </ul>
       </section>
-
-      <p className="text-sm text-muted-foreground">
-        Прошивка держит температурный профиль сама; замеры и заметки остаются в журнале партии вместе со снапшотом
-        рецепта.
-      </p>
     </div>
   );
 }

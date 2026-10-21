@@ -30,6 +30,7 @@ import { IngredientPicker } from "@/components/ingredients/ingredient-picker";
 import { KegCarbonationBlock } from "@/components/calculators/keg-carbonation-block";
 import type { IngredientSuggestionItem } from "@/features/ingredients/contracts";
 import { calculatorBySlug, type CalculatorSlug } from "@/features/calculators/catalog";
+import { getVisibleCalculatorSlugs, isVisibleCalculatorLink } from "@/features/calculators/visibility";
 import {
   calculatorStorageKey,
   calculatorDefinitionBySlug,
@@ -181,7 +182,7 @@ function CalculatorInput({
   size?: "sm" | "md";
   onChange: (value: string) => void;
 }) {
-  const commonClassName = "mt-1 h-10 w-full rounded-lg border border-border bg-card px-3 text-base text-foreground shadow-sm focus:border-border focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm";
+  const commonClassName = "mt-1 h-10 w-full rounded-lg border border-border bg-card px-3 text-base text-foreground shadow-sm focus:border-border focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm [@media(pointer:coarse)]:text-base";
   const options: CalculatorFieldOption[] = field.dynamicOptions ? field.dynamicOptions(state, row) : (field.options ?? []);
   const unitLabel = field.dynamicUnit ? field.dynamicUnit(state, row) : field.unit;
   const step = field.dynamicStep ? field.dynamicStep(state, row) : field.step;
@@ -549,7 +550,7 @@ function ConverterGroupCard({
                   onChange(`${group.id}From`, unit);
                   onChange(`${group.id}Value`, event.target.value);
                 }}
-                className="mt-1 h-9 w-full rounded-lg border border-border bg-card px-2.5 text-base tabular-nums text-foreground shadow-sm focus:border-border focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
+                className="mt-1 h-9 w-full rounded-lg border border-border bg-card px-2.5 text-base tabular-nums text-foreground shadow-sm focus:border-border focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm [@media(pointer:coarse)]:text-base"
               />
             </label>
           );
@@ -747,6 +748,8 @@ const STICKY_BAR_BOTTOM_PADDING_CLASSNAME = "pb-[calc(0.75rem_+_env(safe-area-in
 // Мобильный липкий бар результата (<lg): пока форма ниже поля результата, число всё равно
 // на виду. Питается тем же result.primary, что и большая панель справа (см. вызов ниже) —
 // без повторного вызова definition.calculate(). Тап — плавный скролл к полной панели.
+// На коротком экране оставляем полную панель в документе: fixed-дубль вместе
+// с нижней навигацией занимал почти половину высоты и перекрывал форму.
 function StickyResultBar({ primary }: { primary: CalculatorResultStat }) {
   const toneAccentClassName = toneClassName(primary.tone, "hero");
   const barRef = useRef<HTMLButtonElement>(null);
@@ -760,11 +763,11 @@ function StickyResultBar({ primary }: { primary: CalculatorResultStat }) {
     // Другие fixed-элементы (кнопка «Обратная связь», тосты) должны знать высоту этого
     // бара, чтобы не лечь поверх него. ResizeObserver, а не разовый замер: высота зависит
     // от контента (helper-строка) и safe-area, которые меняются после монтирования.
-    const observer = new ResizeObserver((entries) => {
-      const height = entries[0]?.contentRect.height ?? 0;
+    const observer = new ResizeObserver(() => {
+      const height = node.getBoundingClientRect().height;
       document.documentElement.style.setProperty("--nb-sticky-bar-h", `${height}px`);
     });
-    observer.observe(node);
+    observer.observe(node, { box: "border-box" });
 
     return () => {
       observer.disconnect();
@@ -779,7 +782,7 @@ function StickyResultBar({ primary }: { primary: CalculatorResultStat }) {
       onClick={() => {
         document.getElementById("calculator-result")?.scrollIntoView({ behavior: "smooth", block: "start" });
       }}
-      className={`fixed inset-x-0 bottom-[var(--chrome-bottom,0px)] z-40 flex w-full items-center gap-3 border-t border-border bg-card px-4 pt-2.5 text-left shadow-[0_-6px_16px_rgba(0,0,0,0.08)] lg:hidden ${STICKY_BAR_BOTTOM_PADDING_CLASSNAME}`}
+      className={`fixed inset-x-0 bottom-[var(--chrome-bottom,0px)] z-40 flex w-full items-center gap-3 border-t border-border bg-card px-4 pt-2.5 text-left shadow-[0_-6px_16px_rgba(0,0,0,0.08)] lg:hidden [@media(max-height:450px)]:hidden ${STICKY_BAR_BOTTOM_PADDING_CLASSNAME}`}
     >
       <span className={`min-w-0 flex-1 rounded-xl border px-3 py-2 ${toneAccentClassName}`}>
         <span className="block truncate text-[10px] font-medium uppercase tracking-[0.08em] text-muted-foreground">{primary.label}</span>
@@ -808,7 +811,7 @@ function SegmentedControl({
   size?: "md" | "sm";
   fill?: boolean;
 }) {
-  const buttonSize = size === "md" ? "h-10 text-sm" : "h-8 text-xs";
+  const buttonSize = size === "md" ? "min-h-10 text-xs sm:text-sm" : "min-h-8 text-xs";
   // Четыре и больше сегментов в один ряд не влезают на узком экране (подписи вроде
   // «Вскрытая»/«Россыпью» слипаются) — до sm раскладываем их в два столбца.
   const wraps = fill && options.length > 3;
@@ -827,7 +830,7 @@ function SegmentedControl({
             type="button"
             aria-pressed={active}
             onClick={() => onChange(option.value)}
-            className={`${fill ? "min-w-0 flex-1" : ""} ${wraps ? "basis-[calc(50%-0.125rem)] sm:basis-0" : ""} rounded-lg px-3 font-medium transition-colors ${buttonSize} ${
+            className={`${fill ? "min-w-0 flex-1" : ""} ${wraps ? "basis-[calc(50%-0.125rem)] sm:basis-0" : ""} rounded-lg px-2 font-medium transition-colors sm:px-3 ${buttonSize} ${
               active ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -905,7 +908,7 @@ function RefractoNumberInput({
         step={step}
         allowNegative={min < 0}
         onChange={(event) => onChange(event.target.value)}
-        className="mt-1 h-10 w-full rounded-lg border border-border bg-card px-3 text-base tabular-nums text-foreground shadow-sm focus:border-border focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
+        className="mt-1 h-10 w-full rounded-lg border border-border bg-card px-3 text-base tabular-nums text-foreground shadow-sm focus:border-border focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm [@media(pointer:coarse)]:text-base"
       />
       {helper ? <span className="mt-1 block text-[11px] font-normal leading-4 text-muted-foreground">{helper}</span> : null}
     </label>
@@ -1071,7 +1074,7 @@ function RefractometerFieldsBlock({
                 <select
                   value={String(state.formula ?? "novotny")}
                   onChange={(event) => onChange("formula", event.target.value)}
-                  className="mt-1 h-10 w-full rounded-lg border border-border bg-card px-3 text-base text-foreground shadow-sm focus:border-border focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
+                  className="mt-1 h-10 w-full rounded-lg border border-border bg-card px-3 text-base text-foreground shadow-sm focus:border-border focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm [@media(pointer:coarse)]:text-base"
                 >
                   {REFRACTOMETER_FORMULA_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>{option.label}</option>
@@ -1177,7 +1180,7 @@ function RefractometerResultPanel({ state }: { state: CalculatorState }) {
           <div className="space-y-3 p-5">
             <dl className="grid grid-cols-2 gap-3">
               <div className="min-w-0 rounded-xl border border-border bg-muted/70 px-3 py-2.5">
-                <dt className="truncate text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">ABV оценка</dt>
+                <dt className="truncate text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Оценка ABV</dt>
                 <dd className="mt-1 text-lg font-semibold tabular-nums text-foreground">{view.estimatedABV.toFixed(1)}%</dd>
               </div>
               <div className={`min-w-0 rounded-xl border px-3 py-2.5 ${
@@ -1300,7 +1303,7 @@ function AbvFieldsBlock({
             <select
               value={String(state.abvFormula ?? "standard")}
               onChange={(event) => onChange("abvFormula", event.target.value)}
-              className="mt-1 h-10 w-full rounded-lg border border-border bg-card px-3 text-base text-foreground shadow-sm focus:border-border focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
+              className="mt-1 h-10 w-full rounded-lg border border-border bg-card px-3 text-base text-foreground shadow-sm focus:border-border focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm [@media(pointer:coarse)]:text-base"
             >
               {ABV_FORMULA_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>{option.label}</option>
@@ -1324,7 +1327,7 @@ function AbvFieldsBlock({
             )}
           </label>
           <RefractoNumberInput
-            label="Порция для калорий"
+            label="Объём порции для расчёта калорий"
             unit="мл"
             value={state.servingSizeMl}
             min={1}
@@ -1501,7 +1504,7 @@ function HydrometerFieldsBlock({
             <RefractoNumberInput
               label="Температура калибровки"
               unit="°C"
-              helper="Обычно 20 °C, иногда 15,6 °C — смотри на колбе прибора."
+              helper="Обычно 20 °C, иногда 15,6 °C — смотрите на шкале прибора."
               value={state.calibrationTemperatureC}
               step={0.5}
               onChange={(value) => onChange("calibrationTemperatureC", value)}
@@ -1509,7 +1512,7 @@ function HydrometerFieldsBlock({
             <RefractoNumberInput
               label="Поправка прибора"
               unit={unitLabel}
-              helper={`Если в дистилляте прибор показывает не ${unit === "SG" ? "1.000" : `0 ${unitLabel}`} — впиши разницу (можно минус).`}
+              helper={`Если в дистиллированной воде прибор показывает не ${unit === "SG" ? "1.000" : `0 ${unitLabel}`} — укажите разницу, в том числе отрицательную.`}
               value={state.offset}
               min={-1}
               step={step}
@@ -1552,10 +1555,10 @@ function HydrometerResultPanel({ state }: { state: CalculatorState }) {
     ? ` Итог включает поправку прибора (${view.offsetInUnit > 0 ? "+" : "−"}${Math.abs(view.offsetInUnit).toFixed(deltaDecimals)} ${unitLabel}).`
     : "";
   const directionText = (view.direction === "hot"
-    ? `Проба теплее калибровки на ${Math.abs(view.tempDeltaC)} °C — сырое показание было занижено, температурная поправка добавлена.`
+    ? `Проба теплее калибровки на ${Math.abs(view.tempDeltaC)} °C — показание без поправки было занижено, температурная поправка добавлена.`
     : view.direction === "cold"
-      ? `Проба холоднее калибровки на ${Math.abs(view.tempDeltaC)} °C — сырое показание было завышено, температурная поправка вычтена.`
-      : "Проба у температуры калибровки — температурная поправка минимальна.") + offsetNote;
+      ? `Проба холоднее калибровки на ${Math.abs(view.tempDeltaC)} °C — показание без поправки было завышено, температурная поправка вычтена.`
+      : "Температура пробы близка к температуре калибровки — температурная поправка минимальна.") + offsetNote;
 
   return (
     <aside id="calculator-result" className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
@@ -1625,7 +1628,7 @@ function DilutionFieldsBlock({
   const unitLabel = DILUTION_GRAVITY_UNIT_OPTIONS.find((option) => option.value === unit)?.label ?? unit;
   const gravityStep = unit === "SG" ? 0.001 : 0.1;
   const findOptions = dilutionFindOptions[operation];
-  // К17: «Объём замерен горячим» — по умолчанию выключено (значит объём уже холодный, как и
+  // К17: «Объём измерен на горячем сусле» — по умолчанию выключено (значит объём уже холодный, как и
   // было раньше). Предпросмотр под чекбоксом считает тем же коэффициентом, что и ядро
   // (HOT_WORT_COOLING_SHRINKAGE), чтобы не заводить второе магическое число в UI.
   const currentVolumeMeasuredHot = String(state.currentVolumeMeasuredHot ?? "0") === "1";
@@ -1728,11 +1731,11 @@ function DilutionFieldsBlock({
             className="mt-0.5"
           />
           <span>
-            Объём замерен горячим
+            Объём измерен на горячем сусле
             <span className="mt-0.5 block text-xs font-normal leading-4 text-muted-foreground">
               {currentVolumeMeasuredHot
                 ? `Сразу после кипячения, пока сусло горячее — учитываем усадку при остывании: станет ≈ ${coldVolumePreview}`
-                : "Отметьте, если «Текущий объём» замерен сразу после кипячения — при остывании сусло усаживается примерно на 4%"}
+                : "Отметьте, если «Текущий объём» замерен сразу после кипячения — при остывании объём сусла уменьшается примерно на 4%"}
             </span>
           </span>
         </label>
@@ -1922,7 +1925,7 @@ type GravityPreferenceConfig = {
   // (convertGravityOffsetValue), а не как абсолютная плотность.
   offsetFields?: string[];
   mapPref: (unit: PreferredGravityUnit) => CalculatorGravityUnit;
-  // Значение поля — не всегда «чистая» плотность: у рефрактометра Brix — сырое показание
+  // Значение поля — не всегда «чистая» плотность: у рефрактометра Brix — показание без поправки
   // прибора, а SG/°P — истинная плотность, и конверсия между ними обязана видеть state
   // (WCF). Без хука — обычная convertGravityFieldValue.
   convertValue?: (state: CalculatorState, rawValue: unknown, fromUnit: CalculatorGravityUnit, toUnit: CalculatorGravityUnit) => string;
@@ -1973,7 +1976,13 @@ const applyGravityPreference = (
   return next;
 };
 
-export function CalculatorPageClient({ slug }: { slug: CalculatorSlug }) {
+export function CalculatorPageClient({
+  slug,
+  visibleCalculatorSlugs = getVisibleCalculatorSlugs()
+}: {
+  slug: CalculatorSlug;
+  visibleCalculatorSlugs?: CalculatorSlug[];
+}) {
   const definition = calculatorDefinitionBySlug[slug];
   // Страница калькулятора статическая (generateStaticParams) и не читает
   // searchParams на сервере — состояние из shared-ссылок (?og=…&fg=…) читаем
@@ -2160,11 +2169,12 @@ export function CalculatorPageClient({ slug }: { slug: CalculatorSlug }) {
     label: label || href.split("/").pop()?.replaceAll("-", " ") || href
   }));
   // Внешние назначения (вне /calculators) идут после калькуляторных ссылок.
-  const nextLinks = [...links, ...(definition.catalog.related ?? [])];
+  const nextLinks = [...links, ...(definition.catalog.related ?? [])]
+    .filter((link) => isVisibleCalculatorLink(link.href, visibleCalculatorSlugs));
 
   const gridClassName = isRefractometer
-    ? "grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-6"
-    : "grid gap-4 lg:grid-cols-[minmax(0,1fr)_22rem]";
+    ? "grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-6"
+    : "grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_22rem]";
 
   // keg-carbonation и unit-converter не имеют generic-состояния/результата (свои блоки,
   // своя логика) — для них нет ни липкого мобильного бара, ни ссылки на расчёт.
@@ -2180,7 +2190,7 @@ export function CalculatorPageClient({ slug }: { slug: CalculatorSlug }) {
         <UnitConverterBlock state={state} onChange={handleFieldChange} onReset={resetState} />
       ) : (
         <div className={gridClassName}>
-          <section className="space-y-4">
+          <section className="min-w-0 space-y-4">
             {isRefractometer ? (
               <RefractometerFieldsBlock state={state} onChange={handleFieldChange} onReset={resetState} />
             ) : isAbv ? (

@@ -12,7 +12,7 @@ const hopFormDisplayLabels: Record<string, string> = {
   leaf: "Шишковой",
   cryo: "крио",
   lupulin: "люпулин",
-  lupulin_concentrate: "лупулиновый концентрат",
+  lupulin_concentrate: "люпулиновый концентрат",
   lupomax: "Lupomax"
 };
 

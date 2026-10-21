@@ -167,7 +167,7 @@ export function IngredientEditor({
         ? `Найти ${forcedFermentableGroup.label.toLowerCase()}`
         : pickerSubtype === "fermentable"
           ? "Найти сахар, экстракт или другой сбраживаемый ингредиент"
-          : "Найти солод, сахар или другой ферментируемый ингредиент"
+          : "Найти солод, сахар или другой сбраживаемый ингредиент"
     : {
       hop: "Найти сорт или форму хмеля",
       yeast: "Найти дрожжи",
@@ -198,7 +198,7 @@ export function IngredientEditor({
     category: draft.category
   }) ?? getSectionTitle(draft.category);
   const contextSummary = sourceMode === "use_stock"
-    ? `${contextCategoryLabel} · Из склада`
+    ? `${contextCategoryLabel} · Со склада`
     : draft.category === "fermentable"
       ? `${contextCategoryLabel} · ${sourceMode === "custom" ? "Свой" : "Из каталога"}`
       : resolveInventoryIngredientContextSummary({
@@ -350,7 +350,7 @@ export function IngredientEditor({
   );
 
   const sourceModeMeta: Record<RecipeIngredientEditorSourceMode, { label: string; icon: React.ReactNode; description: string }> = {
-    use_stock: { label: "Из склада", icon: <Package className="h-3.5 w-3.5" />, description: "Использовать уже купленный" },
+    use_stock: { label: "Со склада", icon: <Package className="h-3.5 w-3.5" />, description: "Использовать уже купленный" },
     catalog: { label: "Из каталога", icon: <Search className="h-3.5 w-3.5" />, description: "Подобрать по каталогу" },
     custom: { label: "Свой", icon: <Sparkles className="h-3.5 w-3.5" />, description: "Создать свой" }
   };
@@ -601,7 +601,7 @@ export function IngredientEditor({
                 </label>
                 {(draft.stepMeta.use ?? "mash") === "boil" ? (
                   <label className="space-y-1 text-xs font-medium text-foreground">
-                    Минут от конца
+                    Минут до конца кипячения
                     <NumericInput
                       integer
                       min={0}
@@ -684,17 +684,16 @@ export function IngredientEditor({
                     {showHopTimeHint ? (
                       <p className="text-xs font-normal text-destructive">{hopTimeError}</p>
                     ) : (
-                      <p className="text-xs font-normal text-muted-foreground">Время задаёт горечь (IBU).</p>
+                      <p className="text-xs font-normal text-muted-foreground">Время влияет на расчёт горечи (IBU).</p>
                     )}
                   </label>
                 ) : hopUseType === "dry_hop" ? (
                   <label className="space-y-1 text-xs font-medium text-foreground">
                     Длительность, дн
                     <NumericInput
-                      integer
-                      min={1}
+                      min={0.1}
                       max={365}
-                      step={1}
+                      step={0.1}
                       value={draft.stepMeta.durationDays ?? ""}
                       onChange={(event) => onChange({
                         ...draft,

@@ -61,7 +61,7 @@ export const DuplicateMergeForm = ({ initialSource = null, initialTarget = null 
     <section className="space-y-5">
       <AdminPageHeader
         title="Объединение дубликатов"
-        description="Исходный ингредиент получит статус «объединён», все ссылки на него уедут на итоговую карточку."
+        description="Исходный ингредиент получит статус «объединён». Все ссылки на него будут вести на итоговую карточку."
         backHref="/admin/ingredients"
         backLabel="К каталогу"
       />

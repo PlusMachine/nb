@@ -9,9 +9,10 @@ import { calculateEquipmentVolumePlan } from "@/features/equipment-profiles/volu
 import {
   buildRecipeWaterPlanResult,
   recipeWaterAcidPresentation,
-  type RecipeWaterPlanFermentableInput,
   type RecipeWaterPlanResult
 } from "@/features/recipes/water-plan";
+
+import { buildRecipeWaterPlanFermentables } from "@/features/recipes/water-plan-ingredients";
 
 const ionLabels: Record<"ca" | "mg" | "na" | "cl" | "so4" | "hco3", string> = {
   ca: "Ca",
@@ -34,59 +35,6 @@ const formatMl = (ml: number): string => {
     return "0 мл";
   }
   return `${ml.toFixed(ml >= 10 ? 1 : 2)} мл`;
-};
-
-const isFermentableCategory = (ingredient: RecipeIngredientDto): boolean => (
-  ingredient.ingredientCategory === "fermentable" || ingredient.type === "malt" || ingredient.type === "fermentable"
-);
-
-// Класс/цвет солода для модели pH затора (Ф6/Ф7) несут только "малтовые" технические
-// данные (MaltTechnicalData) — у ферментируемых-не-солодов эти поля не заполняются,
-// классификатор в этом случае падает на ключевые слова имени.
-const resolveMaltFieldsForWaterPlan = (
-  technicalData: RecipeIngredientDto["ingredientTechnicalData"]
-): Pick<RecipeWaterPlanFermentableInput, "maltType" | "colorEbcMin" | "colorEbcMax"> => {
-  if (!technicalData || technicalData.type !== "malt") {
-    return { maltType: null, colorEbcMin: null, colorEbcMax: null };
-  }
-
-  const malt = technicalData as Extract<
-    NonNullable<typeof technicalData>,
-    { type: "malt" }
-  >;
-  return {
-    maltType: malt.maltType ?? null,
-    colorEbcMin: malt.colorEbcMin ?? null,
-    colorEbcMax: malt.colorEbcMax ?? null
-  };
-};
-
-const buildFermentablesForWaterPlan = (
-  ingredients: RecipeIngredientDto[]
-): RecipeWaterPlanFermentableInput[] => {
-  return ingredients
-    .filter(isFermentableCategory)
-    .map((ingredient) => {
-      const unit = ingredient.amountNormalizedUnit;
-      const qty = ingredient.amountNormalizedQuantity;
-      let weightKg = 0;
-      if (unit === "kg") {
-        weightKg = qty;
-      } else if (unit === "g") {
-        weightKg = qty / 1000;
-      }
-
-      return {
-        name:
-          ingredient.ingredientDisplayName
-            ?? ingredient.ingredientDisplayNameRu
-            ?? ingredient.ingredientDisplayNameSnapshot
-            ?? null,
-        subtype: ingredient.ingredientSubtype ?? null,
-        weightKg,
-        ...resolveMaltFieldsForWaterPlan(ingredient.ingredientTechnicalData)
-      };
-    });
 };
 
 const getBatchVolumeLiters = (
@@ -122,7 +70,7 @@ export function PublicRecipeWaterSection({ recipe }: { recipe: RecipeDetailDto }
     return null;
   }
 
-  const fermentables = buildFermentablesForWaterPlan(recipe.ingredients);
+  const fermentables = buildRecipeWaterPlanFermentables(recipe.ingredients);
   const grainKg = fermentables.reduce((acc, item) => acc + (item.weightKg ?? 0), 0);
   const batchVolumeL = getBatchVolumeLiters(
     recipe.batchSizeNormalizedQuantity,
@@ -228,7 +176,7 @@ export function PublicRecipeWaterSection({ recipe }: { recipe: RecipeDetailDto }
         </div>
         {predictedPh != null ? (
           <div>
-            <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Mash pH 20°C</div>
+            <div className="text-[11px] uppercase tracking-wider text-muted-foreground">pH затора при 20 °C</div>
             <div className="mt-0.5 font-semibold text-foreground">{predictedPh.toFixed(2)}</div>
           </div>
         ) : null}

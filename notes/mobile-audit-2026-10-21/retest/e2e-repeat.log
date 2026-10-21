@@ -1,0 +1,29 @@
+
+Running 23 tests using 1 worker
+
+  ✓   1 [phone-320] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет (5.2s)
+  ✓   2 [phone-320] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет (2.1s)
+  ✓   3 [phone-320] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет (2.0s)
+  ✓   4 [phone-320] › e2e/mobile-audit.spec.ts:34:1 › M01: label preview leaves data fields clickable in every format (8.7s)
+  ✓   5 [phone-320] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions (12.6s)
+  ✓   6 [tablet-landscape] › e2e/bjcp-search.spec.ts:46:1 › local search and view filters preserve browser history without RSC navigation (9.9s)
+  ✓   7 [tablet-landscape] › e2e/bjcp-search.spec.ts:72:1 › choosing a family suggestion cancels pending text and keeps the chosen scope (4.7s)
+  ✓   8 [tablet-landscape] › e2e/bjcp-search.spec.ts:86:1 › back cancels an uncommitted query instead of rewriting the restored history (5.2s)
+  ✓   9 [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:12:3 › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow) (6.1s)
+  ✓  10 [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:21:3 › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей (3.1s)
+  ✓  11 [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:34:3 › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением (2.5s)
+  ✓  12 [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:45:3 › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину (2.4s)
+  -  13 [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:61:3 › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой
+  ✓  14 [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:74:3 › Конвертер единиц пивовара › у каждой вкладки группы есть иконка (4.3s)
+  ✓  15 [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:86:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (3.3s)
+  ✓  16 [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:98:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (2.5s)
+  ✓  17 [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:111:3 › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки (2.6s)
+  ✓  18 [tablet-landscape] › e2e/calculators-unit-converter.spec.ts:118:3 › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex) (2.7s)
+  ✓  19 [tablet-landscape] › e2e/mobile-audit.spec.ts:34:1 › M01: label preview leaves data fields clickable in every format (4.7s)
+  ✓  20 [tablet-landscape] › e2e/mobile-audit.spec.ts:53:1 › M02: public navigation and sign-in fit, including tablet breakpoint (2.8s)
+  ✓  21 [tablet-landscape] › e2e/mobile-audit.spec.ts:72:1 › M03/M06: admin navigation and table do not widen document (5.5s)
+  ✓  22 [tablet-landscape] › e2e/mobile-audit.spec.ts:99:1 › M04: filled recipe has compact metrics and working actions (6.9s)
+  ✓  23 [tablet-landscape] › e2e/mobile-audit.spec.ts:124:1 › M05: every dilution operation fits on the narrow screen (5.8s)
+
+  1 skipped
+  22 passed (2.3m)

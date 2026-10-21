@@ -80,7 +80,7 @@ describe("/recipes results", () => {
     const html = renderToStaticMarkup(React.createElement(ToastProvider, null, el));
 
     expect(mocks.searchPublicRecipes).toHaveBeenCalledWith(filters);
-    expect(html).toContain("Найдено 1 рецепт");
+    expect(html).toContain("Найден 1 рецепт");
     expect(html).toContain("Hazy IPA");
     expect(html).toContain('href="/recipes/hazy-ipa"');
   });
@@ -94,7 +94,7 @@ describe("/recipes results", () => {
     // RecipeSaveButton внутри карточек рендерится через useToast() — нужен ToastProvider.
     const html = renderToStaticMarkup(React.createElement(ToastProvider, null, el));
 
-    expect(html).toContain('aria-label="Пагинация"');
+    expect(html).toContain('aria-label="Навигация по страницам"');
     expect(html).toContain('href="/recipes?sort=abv_desc&amp;page=2"');
   });
 

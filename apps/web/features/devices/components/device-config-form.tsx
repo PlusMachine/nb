@@ -42,7 +42,7 @@ const ERROR_TEXT: Record<string, string> = {
   DEVICE_UNREACHABLE: "Устройство не отвечает — проверьте, что оно в сети",
   NOT_FOUND: "Устройство не найдено",
   PROFILE_NAME_REQUIRED: "Укажите имя профиля",
-  INVALID_CONFIG: "Конфиг профиля повреждён",
+  INVALID_CONFIG: "Настройки в профиле повреждены",
   PROFILE_SAVE_FAILED: "Не удалось сохранить профиль",
   FORBIDDEN: "Нет доступа к этому устройству",
   INTERNAL_ERROR: "Внутренняя ошибка. Попробуйте позже"
@@ -332,13 +332,12 @@ export function DeviceConfigForm({ deviceId, deviceName, initialProfiles }: Prop
         <p className="text-sm font-semibold text-warning-subtle-foreground">Как применяются настройки</p>
         <ul className="mt-1 list-disc space-y-1 pl-5 text-xs text-warning-subtle-foreground">
           <li>
-            Поля <strong>безопасности</strong> устройство <strong>зажимает</strong> в свои жёсткие
-            пределы — портал показывает рекомендованные диапазоны, но финальное значение определяет
-            прошивка (интерлоки §5 ослабить удалённо нельзя).
+            Устройство ограничивает настройки безопасности допустимыми значениями.
+            Отключить защиту удалённо нельзя.
           </li>
           <li>
             Изменения вступают в силу <strong>после перезагрузки</strong> устройства. После
-            сохранения здесь отображается уже эффективное (зажатое) значение с прибора.
+            сохранения здесь отображаются значения, принятые устройством.
           </li>
         </ul>
       </Card>
@@ -350,7 +349,7 @@ export function DeviceConfigForm({ deviceId, deviceName, initialProfiles }: Prop
           <p className="text-sm font-medium text-foreground">Не удалось получить настройки</p>
           <p className="mt-1 text-sm text-muted-foreground">{loadError}</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Бэкап-профили ниже доступны и без связи с устройством.
+            Сохранённые профили ниже доступны и без связи с устройством.
           </p>
           <Button variant="outline" className="mt-3" onClick={() => void loadConfig()}>
             Повторить
@@ -365,7 +364,9 @@ export function DeviceConfigForm({ deviceId, deviceName, initialProfiles }: Prop
                 {group.keys.map((key) => (
                   <ConfigField
                     key={key}
-                    descriptor={CONFIG_FIELD_RANGES[key] as ConfigFieldDescriptor}
+                    descriptor={key === "removeMaltPrompt"
+                      ? { ...CONFIG_FIELD_RANGES[key], label: "Напоминание об извлечении дробины" } as ConfigFieldDescriptor
+                      : CONFIG_FIELD_RANGES[key] as ConfigFieldDescriptor}
                     value={getAt(draft, key)}
                     onChange={(v) => update(key, v)}
                   />
@@ -434,8 +435,7 @@ export function DeviceConfigForm({ deviceId, deviceName, initialProfiles }: Prop
             ) : null}
             {saveOk ? (
               <span role="status" className="text-sm text-success">
-                Отправлено. Значения обновлены до эффективных (зажатых прошивкой); применятся после
-                перезагрузки.
+                Настройки сохранены. Показаны значения, принятые устройством с учётом допустимых ограничений. Они вступят в силу после перезагрузки.
               </span>
             ) : null}
             {saveError ? <span role="alert" className="text-sm text-destructive">{saveError}</span> : null}
@@ -445,10 +445,9 @@ export function DeviceConfigForm({ deviceId, deviceName, initialProfiles }: Prop
 
       {/* Бэкап / восстановление профилей. */}
       <Card className="p-5">
-        <h2 className="text-sm font-semibold text-foreground">Бэкап и восстановление профилей</h2>
+        <h2 className="text-sm font-semibold text-foreground">Профили настроек</h2>
         <p className="mt-1 text-xs text-muted-foreground">
-          Сохраните текущий конфиг как именованный профиль и при необходимости примените его к этому
-          (или другому) устройству. Поля безопасности всё равно зажимаются прибором при применении.
+          Профиль позволяет восстановить сохранённые настройки или применить их к другому устройству.
         </p>
 
         <div className="mt-4 flex flex-wrap items-end gap-2">
@@ -466,12 +465,12 @@ export function DeviceConfigForm({ deviceId, deviceName, initialProfiles }: Prop
             disabled={profileBusy || !draft}
             onClick={() => void onSaveProfile()}
           >
-            {profileBusy ? "Сохранение…" : "Сохранить текущий конфиг"}
+            {profileBusy ? "Сохранение…" : "Сохранить профиль"}
           </Button>
         </div>
         {!draft ? (
           <p className="mt-2 text-xs text-muted-foreground">
-            Сохранить можно только при доступном конфиге устройства.
+            Чтобы сохранить профиль, дождитесь загрузки настроек устройства.
           </p>
         ) : null}
         {profileOk ? <p role="status" className="mt-3 text-sm text-success">{profileOk}</p> : null}

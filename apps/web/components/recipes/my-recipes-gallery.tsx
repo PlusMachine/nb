@@ -72,7 +72,7 @@ const PAGE_SIZE = 12;
 
 const sortLabels: Record<SortMode, string> = {
   updated: "Сначала недавние",
-  brewable: "Сначала можно сварить",
+  brewable: "Сначала те, что можно сварить",
   name: "По названию",
   abv: "ABV ↓",
   ibu: "IBU ↓"

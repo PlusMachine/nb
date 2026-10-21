@@ -1,17 +1,10 @@
 import React from "react";
 import Link from "next/link";
-import { Cpu } from "lucide-react";
 
 import { requireUser } from "@/lib/auth";
 import { listBrewBatchesForUser } from "@/features/brew-batches/service";
-import {
-  brewBatchStatusBadgeClass,
-  brewBatchStatusLabels,
-  formatBrewBatchDisplayTitle,
-  isSameTitle,
-  type BrewBatchListItem,
-  type BrewBatchStatus
-} from "@/features/brew-batches/contracts";
+import type { BrewBatchStatus } from "@/features/brew-batches/contracts";
+import { BrewBatchListRow } from "@/features/brew-batches/components/brew-batch-list-row";
 import { NewBrewButton } from "@/components/recipes/new-brew-button";
 
 export const metadata = {
@@ -20,21 +13,6 @@ export const metadata = {
 
 // Активные партии сверху, завершённые/отменённые — ниже.
 const statusOrder: BrewBatchStatus[] = ["brewing", "fermenting", "planned", "completed", "cancelled"];
-
-const dateFormat = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "short", year: "numeric" });
-
-const relevantDate = (batch: BrewBatchListItem): { label: string; value: Date } => {
-  if (batch.status === "completed" && batch.completedAt) {
-    return { label: "Завершена", value: batch.completedAt };
-  }
-  if (batch.startedAt) {
-    return { label: "Начата", value: batch.startedAt };
-  }
-  if (batch.plannedFor) {
-    return { label: "План", value: batch.plannedFor };
-  }
-  return { label: "Создана", value: batch.createdAt };
-};
 
 export default async function BrewBatchesPage() {
   const user = await requireUser();
@@ -67,35 +45,9 @@ export default async function BrewBatchesPage() {
         </section>
       ) : (
         <ul className="space-y-2">
-          {sorted.map((batch) => {
-            const date = relevantDate(batch);
-            return (
-              <li key={batch.id}>
-                <Link
-                  href={`/app/brew-batches/${batch.id}`}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3 transition-colors hover:border-border/70"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate font-medium text-foreground">
-                      {formatBrewBatchDisplayTitle(batch.name, batch.brewNumber)}
-                    </p>
-                    {isSameTitle(batch.name, batch.recipeTitle) ? null : (
-                      <p className="truncate text-sm text-muted-foreground">{batch.recipeTitle}</p>
-                    )}
-                  </div>
-                  <div className="flex shrink-0 items-center gap-3">
-                    {batch.hasDevice ? <Cpu className="h-4 w-4 text-muted-foreground" aria-label="С устройством" /> : null}
-                    <span className="hidden text-xs text-muted-foreground sm:inline">
-                      {date.label} {dateFormat.format(date.value)}
-                    </span>
-                    <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${brewBatchStatusBadgeClass[batch.status]}`}>
-                      {brewBatchStatusLabels[batch.status]}
-                    </span>
-                  </div>
-                </Link>
-              </li>
-            );
-          })}
+          {sorted.map((batch) => (
+            <BrewBatchListRow key={batch.id} batch={batch} />
+          ))}
         </ul>
       )}
     </main>

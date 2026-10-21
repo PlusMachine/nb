@@ -1,0 +1,12 @@
+
+ RUN  v4.0.18 /home/dopefish/projects/nb/packages/content
+
+ ✓ src/bjcp.test.ts (12 tests) 328ms
+ ✓ src/bjcp-images-sync.test.ts (2 tests) 1869ms
+     ✓ keeps public images fully synced with source images  1831ms
+
+ Test Files  2 passed (2)
+      Tests  14 passed (14)
+   Start at  00:35:58
+   Duration  2.81s (transform 153ms, setup 0ms, import 190ms, tests 2.20s, environment 0ms)
+

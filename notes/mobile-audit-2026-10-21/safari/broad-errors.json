@@ -1,0 +1,8 @@
+[
+  {
+    "route": "/market",
+    "profile": "iPhone 13 landscape",
+    "url": "http://127.0.0.1:3100/market",
+    "message": "Unexpected EOF"
+  }
+]

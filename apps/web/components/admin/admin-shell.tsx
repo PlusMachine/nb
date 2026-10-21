@@ -69,7 +69,7 @@ export function AdminShell({ children, role }: AdminShellProps) {
       <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur lg:hidden">
         <AdminWordmark />
         <div className="flex items-center gap-1">
-          <ThemeToggle />
+          <ThemeToggle className="hidden sm:inline-flex" />
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}

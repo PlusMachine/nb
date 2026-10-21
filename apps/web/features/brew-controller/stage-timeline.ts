@@ -76,7 +76,7 @@ export const MACRO_STAGE_MEMBERS: Record<MacroStage, string> = {
   distill_preheat: "Полная мощность до порога голов",
   heads: "Отбор голов",
   hearts: "Отбор тела",
-  tails: "Отбор хвостов, авто-стоп у конечной температуры",
+  tails: "Отбор хвостов, автоматическая остановка при конечной температуре",
   distill_done: "Перегон завершён",
 };
 

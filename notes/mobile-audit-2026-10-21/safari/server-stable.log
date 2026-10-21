@@ -1,0 +1,716 @@
+   ▲ Next.js 15.5.12
+   - Local:        http://127.0.0.1:3100
+   - Network:      http://127.0.0.1:3100
+   - Experiments (use with caution):
+     · serverActions
+
+ ✓ Starting...
+
+   We detected TypeScript in your project and reconfigured your tsconfig.json file for you. Strict-mode is set to false by default.
+   The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+
+   	- include was updated to add '.next-safari-audit/types/**/*.ts'
+
+ ○ Compiling /instrumentation ...
+ ✓ Compiled /instrumentation in 4.4s (1155 modules)
+ ✓ Ready in 7.4s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 867ms (504 modules)
+ ○ Compiling / ...
+Browserslist: browsers data (caniuse-lite) is 8 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+ ✓ Compiled / in 14.9s (2873 modules)
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async RootLayout (app/layout.tsx:77:47)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '848362250',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async HomePage (app/(public)/page.tsx:54:16)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '2693712491',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async PublicLayout (app/(public)/layout.tsx:7:16)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '3395199687',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ GET / 500 in 26973ms
+ ○ Compiling /app ...
+ ✓ Compiled /app in 4.7s (3487 modules)
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async HomePage (app/(public)/page.tsx:54:16)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '2693712491',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async PublicLayout (app/(public)/layout.tsx:7:16)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '3395199687',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async RootLayout (app/layout.tsx:77:47)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '848362250',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async requireUser (lib/auth.ts:193:16)
+    at async AppLayout (app/(app)/layout.tsx:7:16)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '3600546724',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async RootLayout (app/layout.tsx:77:47)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '848362250',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async requireUser (lib/auth.ts:193:16)
+    at async AppZonePage (app/(app)/app/page.tsx:508:16)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '1247800592',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ GET /app 500 in 15786ms
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async requireUser (lib/auth.ts:193:16)
+    at async AppLayout (app/(app)/layout.tsx:7:16)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '3600546724',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async RootLayout (app/layout.tsx:77:47)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '848362250',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async requireUser (lib/auth.ts:193:16)
+    at async AppZonePage (app/(app)/app/page.tsx:508:16)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '1247800592',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ GET /app 500 in 10156ms
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async requireUser (lib/auth.ts:193:16)
+    at async AppZonePage (app/(app)/app/page.tsx:508:16)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '1247800592',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async requireUser (lib/auth.ts:193:16)
+    at async AppLayout (app/(app)/layout.tsx:7:16)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '3600546724',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async RootLayout (app/layout.tsx:77:47)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '848362250',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ GET /app 500 in 10214ms
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async requireUser (lib/auth.ts:193:16)
+    at async AppLayout (app/(app)/layout.tsx:7:16)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '3600546724',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async RootLayout (app/layout.tsx:77:47)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '848362250',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async requireUser (lib/auth.ts:193:16)
+    at async AppZonePage (app/(app)/app/page.tsx:508:16)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '1247800592',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ GET /app 500 in 10178ms
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async RootLayout (app/layout.tsx:77:47)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '848362250',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async requireUser (lib/auth.ts:193:16)
+    at async AppZonePage (app/(app)/app/page.tsx:508:16)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '1247800592',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async requireUser (lib/auth.ts:193:16)
+    at async AppLayout (app/(app)/layout.tsx:7:16)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '3600546724',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ GET /app 500 in 10171ms
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async requireUser (lib/auth.ts:193:16)
+    at async AppLayout (app/(app)/layout.tsx:7:16)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '3600546724',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async RootLayout (app/layout.tsx:77:47)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '848362250',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async requireUser (lib/auth.ts:193:16)
+    at async AppZonePage (app/(app)/app/page.tsx:508:16)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '1247800592',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ GET /app 500 in 10160ms
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async requireUser (lib/auth.ts:193:16)
+    at async AppZonePage (app/(app)/app/page.tsx:508:16)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '1247800592',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async requireUser (lib/auth.ts:193:16)
+    at async AppLayout (app/(app)/layout.tsx:7:16)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '3600546724',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ ⨯ Error: Connection terminated due to connection timeout
+    at async getOrCreateUserByEmail (../../packages/auth/src/service.ts:129:19)
+    at async completeEmailSignIn (../../packages/auth/src/service.ts:311:16)
+    at async getSessionUser (lib/auth.ts:135:14)
+    at async RootLayout (app/layout.tsx:77:47)
+  127 | ): Promise<typeof users.$inferSelect> => {
+  128 |   const normalized = normalizeEmail(email);
+> 129 |   const [found] = await db.select().from(users).where(eq(users.email, normalized));
+      |                   ^
+  130 |   if (found) {
+  131 |     return assertNotBlocked(found);
+  132 |   } {
+  digest: '848362250',
+  [cause]: [Error: Connection terminated unexpectedly]
+}
+ GET /app 500 in 10157ms
+ GET /app 200 in 965ms
+ GET /app 200 in 351ms
+ GET /app 200 in 331ms
+ ○ Compiling /manifest.webmanifest ...
+ ✓ Compiled /manifest.webmanifest in 1254ms (3412 modules)
+ GET /manifest.webmanifest 200 in 1658ms
+ ○ Compiling / ...
+ GET /app 200 in 2174ms
+ ✓ Compiled / in 1102ms (2863 modules)
+ GET / 307 in 2261ms
+ GET /app 200 in 928ms
+ GET /manifest.webmanifest 200 in 116ms
+ GET / 307 in 303ms
+ GET /app 200 in 259ms
+ GET /app 200 in 336ms
+ GET /manifest.webmanifest 200 in 95ms
+ ○ Compiling /beer/[slug] ...
+ ✓ Compiled /beer/[slug] in 1026ms (3520 modules)
+ GET /beer/sample-american-stout 200 in 2725ms
+ GET /app 200 in 1702ms
+ GET /manifest.webmanifest 200 in 116ms
+ GET /manifest.webmanifest 200 in 82ms
+ ○ Compiling /app/ingredients ...
+ ✓ Compiled /app/ingredients in 3.7s (3658 modules)
+ GET /beer/sample-american-stout 200 in 5490ms
+ GET /app/ingredients 200 in 5618ms
+ GET /manifest.webmanifest 200 in 93ms
+ GET /app/ingredients 200 in 483ms
+ GET /manifest.webmanifest 200 in 92ms
+ ○ Compiling /api/recipe-images/[imageId]/[variant] ...
+ ✓ Compiled /api/recipe-images/[imageId]/[variant] in 2.8s (3662 modules)
+ GET /beer/sample-american-stout 200 in 5303ms
+ GET /app/ingredients 200 in 3768ms
+ GET /manifest.webmanifest 200 in 138ms
+ GET /manifest.webmanifest 200 in 79ms
+ GET /api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb 200 in 152ms
+ GET /beer/sample-american-stout 200 in 1470ms
+ GET /app/ingredients 200 in 1434ms
+ GET /manifest.webmanifest 200 in 226ms
+ GET /api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb 200 in 267ms
+ GET /manifest.webmanifest 200 in 111ms
+ GET /beer/pilsner-urquell 200 in 757ms
+ GET /app/ingredients 200 in 700ms
+ GET /manifest.webmanifest 200 in 119ms
+ GET /api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb 200 in 175ms
+ GET /manifest.webmanifest 200 in 86ms
+ GET /beer/pilsner-urquell 200 in 572ms
+ ○ Compiling /app/shopping ...
+ ✓ Compiled /app/shopping in 3.8s (3708 modules)
+ GET /manifest.webmanifest 200 in 3452ms
+ GET /app/shopping 200 in 5536ms
+ GET /manifest.webmanifest 200 in 82ms
+ GET /manifest.webmanifest 200 in 152ms
+ GET /beer/pilsner-urquell 200 in 3369ms
+ GET /app/shopping 200 in 2067ms
+ GET /beer/pilsner-urquell 200 in 363ms
+ GET /manifest.webmanifest 200 in 92ms
+ GET /app/shopping 200 in 298ms
+ GET /manifest.webmanifest 200 in 74ms
+ GET /beer/bell-s-two-hearted-ale 200 in 333ms
+ GET /manifest.webmanifest 200 in 82ms
+ GET /app/shopping 200 in 289ms
+ GET /manifest.webmanifest 200 in 125ms
+ GET /beer/bell-s-two-hearted-ale 200 in 365ms
+ GET /manifest.webmanifest 200 in 68ms
+ GET /app/shopping 200 in 313ms
+ GET /manifest.webmanifest 200 in 80ms
+ GET /beer/bell-s-two-hearted-ale 200 in 329ms
+ GET /manifest.webmanifest 200 in 94ms
+ ○ Compiling /app/equipment ...
+ ✓ Compiled /app/equipment in 1840ms (3752 modules)
+ GET /app/equipment 200 in 3003ms
+ GET /beer/bell-s-two-hearted-ale 200 in 1796ms
+ GET /manifest.webmanifest 200 in 100ms
+ GET /app/equipment 200 in 293ms
+ GET /manifest.webmanifest 200 in 207ms
+ GET /beer/sample-american-stout 200 in 399ms
+ GET /manifest.webmanifest 200 in 73ms
+ GET /app/equipment 200 in 287ms
+ GET /manifest.webmanifest 200 in 89ms
+ ○ Compiling /bjcp ...
+ ✓ Compiled /bjcp in 2.7s (3784 modules)
+ GET /app/equipment 200 in 2868ms
+ GET /manifest.webmanifest 200 in 113ms
+ GET /bjcp 200 in 4506ms
+ GET /manifest.webmanifest 200 in 78ms
+ GET /app/equipment 200 in 324ms
+ GET /manifest.webmanifest 200 in 97ms
+ ○ Compiling /app/devices ...
+ ✓ Compiled /app/devices in 2.6s (3895 modules)
+ GET /app/devices 200 in 4214ms
+ GET /app/devices 200 in 317ms
+ GET /manifest.webmanifest 200 in 125ms
+ GET /bjcp 200 in 1334ms
+ GET /manifest.webmanifest 200 in 111ms
+ POST /app/devices 200 in 539ms
+ GET /app/devices 200 in 391ms
+ GET /manifest.webmanifest 200 in 99ms
+ POST /app/devices 200 in 129ms
+ GET /app/devices 200 in 336ms
+ GET /manifest.webmanifest 200 in 118ms
+ POST /app/devices 200 in 203ms
+ GET /app/devices 200 in 428ms
+ GET /manifest.webmanifest 200 in 120ms
+ POST /app/devices 200 in 251ms
+ ○ Compiling /app/saved ...
+ ✓ Compiled /app/saved in 1429ms (3876 modules)
+ GET /app/saved 200 in 2304ms
+ GET /app/saved 200 in 227ms
+ GET /manifest.webmanifest 200 in 75ms
+ GET /app/saved 200 in 219ms
+ GET /manifest.webmanifest 200 in 71ms
+ GET /app/saved 200 in 323ms
+ GET /manifest.webmanifest 200 in 69ms
+ GET /app/saved 200 in 219ms
+ GET /manifest.webmanifest 200 in 72ms
+ ○ Compiling /app/master ...
+ ✓ Compiled /app/master in 1681ms (3911 modules)
+ GET /app/master 200 in 2241ms
+ GET /app/master 200 in 227ms
+ GET /manifest.webmanifest 200 in 115ms
+ GET /app/master 200 in 222ms
+ GET /manifest.webmanifest 200 in 88ms
+ GET /app/master 200 in 236ms
+ GET /manifest.webmanifest 200 in 87ms
+ GET /app/master 200 in 225ms
+ GET /manifest.webmanifest 200 in 101ms
+ ○ Compiling /profile ...
+ ✓ Compiled /profile in 2.6s (3848 modules)
+ GET /profile 200 in 3234ms
+ GET /profile 200 in 224ms
+ GET /manifest.webmanifest 200 in 92ms
+ GET /profile 200 in 233ms
+ GET /manifest.webmanifest 200 in 75ms
+ GET /profile 200 in 221ms
+ GET /manifest.webmanifest 200 in 79ms
+ GET /profile 200 in 218ms
+ GET /manifest.webmanifest 200 in 84ms
+ ○ Compiling /settings ...
+ ✓ Compiled /settings in 1017ms (3804 modules)
+ GET /settings 307 in 1477ms
+ GET /profile 200 in 279ms
+ GET /settings 307 in 185ms
+ GET /profile 200 in 195ms
+ GET /manifest.webmanifest 200 in 122ms
+ GET /settings 307 in 370ms
+ GET /profile 200 in 338ms
+ GET /manifest.webmanifest 200 in 57ms
+ GET /settings 307 in 188ms
+ GET /profile 200 in 191ms
+ GET /manifest.webmanifest 200 in 64ms
+ GET /settings 307 in 190ms
+ GET /profile 200 in 189ms
+ GET /manifest.webmanifest 200 in 78ms
+ ○ Compiling / ...
+ ✓ Compiled / in 988ms (3048 modules)
+ GET / 200 in 2021ms
+ GET / 200 in 431ms
+ GET /manifest.webmanifest 200 in 80ms
+ POST / 200 in 333ms
+ POST / 200 in 100ms
+ GET / 200 in 459ms
+ GET /manifest.webmanifest 200 in 79ms
+ POST / 200 in 74ms
+ POST / 200 in 63ms
+ ○ Compiling /api/recipe-images/[imageId]/[variant] ...
+ GET / 200 in 1191ms
+ ✓ Compiled /api/recipe-images/[imageId]/[variant] in 1260ms (3020 modules)
+ GET /api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb 200 in 2176ms
+ GET /manifest.webmanifest 200 in 99ms
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /bjcp 200 in 2306ms
+ GET /manifest.webmanifest 200 in 119ms
+ GET / 200 in 1008ms
+ GET /manifest.webmanifest 200 in 111ms
+ GET /api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb 200 in 174ms
+ POST / 200 in 435ms
+ POST / 200 in 107ms
+ ○ Compiling /recipes ...
+ ✓ Compiled /recipes in 2.5s (3864 modules)
+ GET /bjcp 200 in 3475ms
+ GET /manifest.webmanifest 200 in 81ms
+ GET /recipes 200 in 5384ms
+ GET /manifest.webmanifest 200 in 91ms
+ GET /recipes 200 in 1503ms
+ GET /api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb 200 in 234ms
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /bjcp 200 in 1274ms
+ GET /manifest.webmanifest 200 in 72ms
+ GET /manifest.webmanifest 200 in 78ms
+ GET /recipes 200 in 1424ms
+ GET /api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb 200 in 216ms
+ POST /recipes 200 in 327ms
+ GET /manifest.webmanifest 200 in 97ms
+ GET /recipes 200 in 1281ms
+ GET /api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb 200 in 205ms
+ POST /recipes 200 in 69ms
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /manifest.webmanifest 200 in 83ms
+ GET /recipes 200 in 1349ms
+ GET /api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb 200 in 203ms
+ POST /recipes 200 in 148ms
+ ○ Compiling /catalog ...
+ ✓ Compiled /catalog in 4.9s (3899 modules)
+ ⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3525390871' }
+ GET /calculators/unit-converter 200 in 9384ms
+ ✓ Compiled in 6.3s (3889 modules)
+ GET /manifest.webmanifest 200 in 162ms
+ GET /catalog 200 in 12922ms
+ GET /calculators/unit-converter 200 in 2892ms
+ GET /manifest.webmanifest 200 in 122ms
+ GET /manifest.webmanifest 200 in 118ms
+ GET /catalog 200 in 6369ms
+ POST /calculators/unit-converter 200 in 4175ms
+ GET /calculators/unit-converter 200 in 1451ms
+ GET /manifest.webmanifest 200 in 120ms
+ GET /manifest.webmanifest 200 in 121ms
+ GET /catalog 200 in 3185ms
+ POST /calculators/unit-converter 200 in 510ms
+ GET /manifest.webmanifest 200 in 67ms
+ GET /calculators/unit-converter 200 in 999ms
+ GET /catalog 200 in 2181ms
+ GET /manifest.webmanifest 200 in 93ms
+ ✓ Compiled in 17.6s (3867 modules)
+ GET /calculators/unit-converter 200 in 6925ms
+ GET /manifest.webmanifest 200 in 132ms
+ GET /manifest.webmanifest 200 in 110ms
+ GET /catalog 200 in 7944ms
+ POST /calculators/unit-converter 200 in 471ms
+ GET /calculators/unit-converter 200 in 449ms
+ ○ Compiling /articles ...
+ ✓ Compiled /articles in 2.1s (3855 modules)
+ GET /manifest.webmanifest 200 in 96ms
+ GET /articles 200 in 2876ms
+ GET /articles 200 in 298ms
+ GET /manifest.webmanifest 200 in 63ms
+ GET /calculators/unit-converter 200 in 735ms
+ GET /manifest.webmanifest 200 in 93ms
+ POST /calculators/unit-converter 200 in 530ms
+ GET /articles 200 in 306ms
+ ⚠ Server is approaching the used memory threshold, restarting...
+   ▲ Next.js 15.5.12
+   - Local:        http://127.0.0.1:3100
+   - Network:      http://127.0.0.1:3100
+   - Experiments (use with caution):
+     · serverActions
+
+ ✓ Starting...
+ ○ Compiling /instrumentation ...
+ ✓ Compiled /instrumentation in 1658ms (1155 modules)
+ ✓ Ready in 4.7s
+ ✓ Compiled /middleware in 485ms (504 modules)
+ ○ Compiling /calculators/[slug] ...
+Browserslist: browsers data (caniuse-lite) is 8 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+ ✓ Compiled /calculators/[slug] in 10.7s (2687 modules)
+ GET /calculators/unit-converter 200 in 13563ms
+ ○ Compiling /manifest.webmanifest ...
+ ✓ Compiled /manifest.webmanifest in 2.9s (2709 modules)
+ GET /manifest.webmanifest 200 in 3107ms
+ POST /calculators/unit-converter 200 in 2538ms
+ ✓ Compiled in 439ms (583 modules)
+[?25h

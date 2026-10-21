@@ -5,7 +5,11 @@ import { expect, test } from "@playwright/test";
 const GROUPS = ["Плотность", "Цвет", "Объём", "Вес", "Температура", "Давление", "Концентрация"];
 
 test.describe("Конвертер единиц пивовара", () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, context, baseURL }) => {
+    await context.addCookies([
+      { name: "nb_cookie_consent", value: encodeURIComponent("1:necessary"), url: baseURL! },
+      { name: "nb_age_ok", value: "1", url: baseURL! }
+    ]);
     await page.goto("/calculators/unit-converter");
   });
 

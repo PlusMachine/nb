@@ -89,7 +89,7 @@ export function ConnectBatchDialog({ open, deviceId, onClose, onAttached }: Prop
           <p className="text-sm text-muted-foreground">Загружаем партии…</p>
         ) : batches.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Нет партий в статусе «Варка» или «Брожение» — сначала начните варку.
+            Нет партий в статусе «Варится» или «Брожение» — сначала начните варку.
           </p>
         ) : (
           <>

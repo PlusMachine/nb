@@ -19,7 +19,7 @@ import {
 
 import { isUuid } from "@/lib/uuid";
 
-import { fmtDeviceContactAgo } from "./connection";
+import { DEVICE_ONLINE_WITHIN_MS, fmtDeviceContactAgo } from "./connection";
 import { FIRMWARE_UNKNOWN_KEY, type DevicePresence, type FirmwareVersionOption } from "./contracts";
 import { revokeDevice } from "./service";
 import type { DeviceStatus } from "./contracts";
@@ -40,7 +40,7 @@ import type { DeviceStatus } from "./contracts";
 // =============================================================================
 
 /** Прибор считается «в сети», если выходил на связь не дольше этого назад. */
-export const DEVICE_ONLINE_WITHIN_MS = 5 * 60_000;
+export { DEVICE_ONLINE_WITHIN_MS } from "./connection";
 
 export const DEVICE_TELEMETRY_PREVIEW_LIMIT = 12;
 export const DEVICE_EVENTS_PREVIEW_LIMIT = 20;

@@ -83,8 +83,16 @@ function ProcessRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-/** Затирание: только если в рецепте реально заданы шаги затора. */
-export function PublicRecipeMashSection({ processMeta }: { processMeta: RecipeProcessMeta }) {
+/** Затирание: только если в рецепте реально заданы шаги затора. Кипячение —
+ * длительность процесса, поэтому показываем его здесь же (расписание внесений
+ * остаётся в секции «Кипячение»). */
+export function PublicRecipeMashSection({
+  processMeta,
+  boilTimeMinutes
+}: {
+  processMeta: RecipeProcessMeta;
+  boilTimeMinutes?: number | null;
+}) {
   const steps = processMeta.mashProfile.steps;
   if (steps.length === 0) {
     return null;
@@ -94,6 +102,7 @@ export function PublicRecipeMashSection({ processMeta }: { processMeta: RecipePr
     (acc, step) => acc + (Number.isFinite(step.durationMinutes) ? step.durationMinutes : 0),
     0
   );
+  const showBoil = boilTimeMinutes != null && Number.isFinite(boilTimeMinutes) && boilTimeMinutes > 0;
 
   return (
     <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
@@ -114,6 +123,7 @@ export function PublicRecipeMashSection({ processMeta }: { processMeta: RecipePr
             ])}
           />
         ))}
+        {showBoil ? <ProcessRow label="Кипячение" value={`${boilTimeMinutes} мин`} /> : null}
       </ul>
     </section>
   );

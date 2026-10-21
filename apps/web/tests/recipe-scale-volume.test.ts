@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { defaultRecipeProcessMeta, type RecipeDetailDto } from "../features/recipes/contracts";
 import type { IngredientTechnicalData } from "../features/ingredients/contracts";
-import { scaleRecipeDetailForBrew, scaleRecipeToVolume } from "../features/recipes/scale";
+import { scaleRecipeDetailForBrew, scaleRecipeToParams, scaleRecipeToVolume } from "../features/recipes/scale";
 
 const dryYeastTechnicalData: IngredientTechnicalData = { type: "yeast", form: "dry" };
 const liquidYeastTechnicalData: IngredientTechnicalData = { type: "yeast", form: "liquid" };
@@ -312,5 +312,90 @@ describe("scaleRecipeToVolume", () => {
       expect(scaled.ingredients[0]!.amountEnteredUnit).toBe("pack");
       expect(scaled.ingredients[0]!.amountEnteredQuantity).toBe(1);
     });
+  });
+});
+
+describe("scaleRecipeToParams — объём + efficiency", () => {
+  const maltTechnicalData: IngredientTechnicalData = { type: "malt" };
+
+  const buildMaltRecipe = () => buildRecipe({
+    efficiency: 72,
+    ingredients: [
+      {
+        id: "ri-grain",
+        recipeId: "r-1",
+        persistentKey: "00000000-0000-4000-8000-000000000001",
+        displayOrder: 0,
+        ingredientCatalogItemId: "cat-1",
+        userCustomIngredientId: null,
+        type: "malt",
+        ingredientDisplayName: "Pale Malt",
+        ingredientTechnicalData: maltTechnicalData,
+        amountEnteredQuantity: 5,
+        amountEnteredUnit: "kg",
+        amountNormalizedQuantity: 5000,
+        amountNormalizedUnit: "g",
+        stage: "mash",
+        timeOffset: null,
+        stepMeta: null,
+        createdAt: new Date("2026-01-01T00:00:00.000Z"),
+        updatedAt: new Date("2026-01-01T00:00:00.000Z")
+      },
+      {
+        id: "ri-hop",
+        recipeId: "r-1",
+        persistentKey: "00000000-0000-4000-8000-000000000002",
+        displayOrder: 1,
+        ingredientCatalogItemId: "cat-2",
+        userCustomIngredientId: null,
+        type: "hop",
+        ingredientDisplayName: "Citra",
+        amountEnteredQuantity: 50,
+        amountEnteredUnit: "g",
+        amountNormalizedQuantity: 50,
+        amountNormalizedUnit: "g",
+        stage: "boil",
+        timeOffset: 15,
+        stepMeta: null,
+        createdAt: new Date("2026-01-01T00:00:00.000Z"),
+        updatedAt: new Date("2026-01-01T00:00:00.000Z")
+      }
+    ]
+  });
+
+  it("дожимает только засыпь при смене efficiency (72% → 90%) без смены объёма", () => {
+    const view = scaleRecipeToParams(buildMaltRecipe(), { targetLitres: 20, targetEfficiencyPct: 90 });
+
+    expect(view.factor).toBe(1);
+    expect(view.efficiencyFactor).toBeCloseTo(72 / 90, 6);
+    expect(view.scaled).toBe(true);
+    expect(view.targetEfficiencyPct).toBe(90);
+
+    const [grain, hop] = view.ingredients;
+    expect(grain.amountEnteredQuantity).toBeCloseTo(5 * (72 / 90), 2);
+    expect(hop.amountEnteredQuantity).toBe(50); // хмель — только объём
+  });
+
+  it("комбинирует объём и efficiency: 20→40 л и 72%→90%", () => {
+    const view = scaleRecipeToParams(buildMaltRecipe(), { targetLitres: 40, targetEfficiencyPct: 90 });
+
+    expect(view.factor).toBe(2);
+    expect(view.efficiencyFactor).toBeCloseTo(72 / 90, 6);
+
+    const [grain, hop] = view.ingredients;
+    expect(grain.amountEnteredQuantity).toBeCloseTo(5 * 2 * (72 / 90), 2);
+    expect(hop.amountEnteredQuantity).toBe(100);
+  });
+
+  it("без targetEfficiencyPct ведёт себя как scaleRecipeToVolume", () => {
+    const recipe = buildMaltRecipe();
+    const byVolume = scaleRecipeToVolume(recipe, 40);
+    const byParams = scaleRecipeToParams(recipe, { targetLitres: 40 });
+
+    expect(byParams.factor).toBe(byVolume.factor);
+    expect(byParams.efficiencyFactor).toBe(1);
+    expect(byParams.ingredients.map((item) => item.amountEnteredQuantity)).toEqual(
+      byVolume.ingredients.map((item) => item.amountEnteredQuantity)
+    );
   });
 });

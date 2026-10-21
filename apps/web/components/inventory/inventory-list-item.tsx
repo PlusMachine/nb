@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import Link from "next/link";
 import {
   AlertTriangle,
@@ -15,6 +15,10 @@ import {
 import { CountryFlag } from "@/components/shared/country-flag";
 import type { IngredientPickerQuickStartResultByContext } from "@/features/ingredients/contracts";
 import type { InventoryListItemDto } from "@/features/inventory/contracts";
+import {
+  isHopWithUserAlphaOverride,
+  resolveCustomIngredientOwnershipBadgeLabel
+} from "@/features/ingredients/derived-ingredient-presentation";
 import {
   resolveIngredientBrandLabel,
   resolveIngredientCountry,
@@ -93,6 +97,7 @@ type InventoryBadge = {
   key: string;
   label: string;
   accent?: IngredientColorAccent | null;
+  opensEditor?: boolean;
 };
 
 const buildTypedBadges = (item: InventoryListItemDto) => {
@@ -104,11 +109,29 @@ const buildTypedBadges = (item: InventoryListItemDto) => {
   if (technicalData.type === "hop") {
     const hop = technicalData as Extract<NonNullable<typeof technicalData>, { type: "hop" }>;
     const hopFormLabel = formatHopFormLabel(hop.hopForm);
+    const userAlphaOverride = isHopWithUserAlphaOverride({
+      source: item.source.sourceKind === "custom" ? "custom" : "catalog",
+      category: item.source.category,
+      derivedFromIngredientId: item.source.derivedFromIngredientId,
+      hopAlphaAcidPct: item.source.hopAlphaAcidPct ?? hop.alphaAcidPctTypical,
+      derivedFromHopAlphaAcidPct: item.source.derivedFromHopAlphaAcidPct,
+      technicalData: item.source.technicalData,
+      harvestYear: item.source.harvestYear
+    });
     return [
-      hop.alphaAcidPctTypical != null ? { label: `α ${formatValue(hop.alphaAcidPctTypical)}%` } : null,
+      hop.alphaAcidPctTypical != null
+        ? {
+          label: userAlphaOverride
+            ? `α ${formatValue(hop.alphaAcidPctTypical)}% (пользовательская)`
+            : `α ${formatValue(hop.alphaAcidPctTypical)}%`,
+          opensEditor: true
+        }
+        : null,
       hopFormLabel ? { label: hopFormLabel } : null,
-      item.source.harvestYear != null ? { label: `${item.source.harvestYear}` } : null
-    ].filter((badge): badge is { label: string; accent?: IngredientColorAccent | null } => Boolean(badge));
+      item.source.harvestYear != null
+        ? { label: `${item.source.harvestYear}`, opensEditor: true }
+        : null
+    ].filter((badge): badge is { label: string; accent?: IngredientColorAccent | null; opensEditor?: boolean } => Boolean(badge));
   }
 
   if (technicalData.type === "malt" || technicalData.type === "fermentable") {
@@ -167,7 +190,7 @@ const buildTechnicalBadges = (item: InventoryListItemDto) => {
   const badges: InventoryBadge[] = [];
   const seen = new Set<string>();
 
-  const pushBadge = (badge?: { label?: string | null; accent?: IngredientColorAccent | null } | null) => {
+  const pushBadge = (badge?: { label?: string | null; accent?: IngredientColorAccent | null; opensEditor?: boolean } | null) => {
     const trimmed = badge?.label?.trim();
     if (!trimmed) {
       return;
@@ -182,7 +205,8 @@ const buildTechnicalBadges = (item: InventoryListItemDto) => {
     badges.push({
       key: `text:${key}`,
       label: trimmed,
-      accent: badge?.accent
+      accent: badge?.accent,
+      opensEditor: badge?.opensEditor
     });
   };
 
@@ -258,6 +282,7 @@ export function InventoryListItem({
   initialQuickStartDataByContext = null,
   sortEmphasis = null
 }: Props) {
+  const openEditorRef = useRef<(() => void) | null>(null);
   const badges = buildTechnicalBadges(item);
   const { primaryName, secondaryName } = resolveIngredientDisplayNames(item.source);
   const waterTreatmentTechnicalData = item.source.technicalData?.type === "water_treatment"
@@ -307,7 +332,15 @@ export function InventoryListItem({
     ? `/catalog/custom/${item.source.sourceId}`
     : `/catalog/system/${item.source.sourceId}`;
   const ownershipBadgeLabel = item.source.sourceKind === "custom"
-    ? (item.source.derivedFromIngredientId ? "Измененный" : "Свой")
+    ? resolveCustomIngredientOwnershipBadgeLabel({
+      source: "custom",
+      category: item.source.category,
+      derivedFromIngredientId: item.source.derivedFromIngredientId,
+      hopAlphaAcidPct: item.source.hopAlphaAcidPct,
+      derivedFromHopAlphaAcidPct: item.source.derivedFromHopAlphaAcidPct,
+      technicalData: item.source.technicalData,
+      harvestYear: item.source.harvestYear
+    }, "title")
     : null;
 
   const statusBorderColor = isEmpty
@@ -405,6 +438,7 @@ export function InventoryListItem({
             preferredCurrency={preferredCurrency}
             currencyRates={currencyRates}
             initialQuickStartDataByContext={initialQuickStartDataByContext}
+            openRequestRef={openEditorRef}
             renderTrigger={(onClick) => (
               <button
                 type="button"
@@ -442,21 +476,42 @@ export function InventoryListItem({
         <div className="min-w-0 space-y-2">
           {badges.length > 0 ? (
             <div className="flex flex-wrap items-center gap-1.5">
-              {badges.map((badge) => (
-                <span
-                  key={badge.key}
-                  className={`relative inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${
-                    badge.accent
-                      ? "overflow-hidden bg-gradient-to-b from-muted/95 to-muted/90 text-foreground ring-1 ring-border/70"
-                      : "bg-muted/80 text-muted-foreground"
-                  }`}
-                >
-                  {badge.label}
-                  {badge.accent ? (
-                    <IngredientColorAccentStripe accent={badge.accent} widthClassName="w-[3px]" />
-                  ) : null}
-                </span>
-              ))}
+              {badges.map((badge) => {
+                const className = `relative inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${
+                  badge.accent
+                    ? "overflow-hidden bg-gradient-to-b from-muted/95 to-muted/90 text-foreground ring-1 ring-border/70"
+                    : "bg-muted/80 text-muted-foreground"
+                }`;
+                const content = (
+                  <>
+                    {badge.label}
+                    {badge.accent ? (
+                      <IngredientColorAccentStripe accent={badge.accent} widthClassName="w-[3px]" />
+                    ) : null}
+                  </>
+                );
+
+                if (badge.opensEditor) {
+                  return (
+                    <button
+                      key={badge.key}
+                      type="button"
+                      onClick={() => openEditorRef.current?.()}
+                      className={`${className} transition-colors hover:bg-accent hover:text-foreground`}
+                      title="Изменить параметры хмеля"
+                      aria-label={`Изменить: ${badge.label}`}
+                    >
+                      {content}
+                    </button>
+                  );
+                }
+
+                return (
+                  <span key={badge.key} className={className}>
+                    {content}
+                  </span>
+                );
+              })}
               <InventoryPurchaseLinksTrigger
                 reference={{
                   source: item.source.sourceKind,
@@ -533,9 +588,12 @@ export function InventoryListItem({
               <button
                 type="button"
                 onClick={open}
-                className="rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:bg-muted"
+                // На телефоне всегда видна; на sm+ — только при hover карточки (как у удаления).
+                className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-muted text-base font-semibold leading-none text-foreground shadow-sm transition-colors before:absolute before:-inset-1.5 before:content-[''] hover:border-border hover:bg-accent sm:opacity-0 sm:group-hover:opacity-100"
+                aria-label={isEmpty ? "Пополнить" : "Списать или пополнить"}
+                title={isEmpty ? "Пополнить" : "Списать или пополнить"}
               >
-                {isEmpty ? "Пополнить" : "Списать"}
+                ±
               </button>
             )}
           />

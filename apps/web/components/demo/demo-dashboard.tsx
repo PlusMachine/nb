@@ -247,10 +247,6 @@ export function DemoDashboardSection({
         <ShoppingWidget shopping={shopping} />
         <DevicesWidget device={device} now={now} />
       </section>
-
-      <p className="text-sm text-muted-foreground">
-        Один экран собирает партии, склад, нехватки и подключённые приборы — без переходов между разделами.
-      </p>
     </div>
   );
 }

@@ -49,7 +49,7 @@ const slots = (overrides: Partial<LabelSlots> = {}): LabelSlots => ({
   authorName: "Артём",
   bottlingDateText: "11.07.2026",
   qrUrl: null,
-  brandText: "BREWED WITH NB",
+  brandText: "BEWED WITH NB",
   ...overrides
 });
 

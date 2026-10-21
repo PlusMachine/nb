@@ -208,9 +208,10 @@ describe("каталог: обрезка шумного хвоста поиск�
         nameEn: "Citra Cryo",
         itemKind: "hop"
       }),
-      // Шум: «Extra» находится в пределах левенштейн-дистанции 2 от «citra»
-      // (c-i-t-r-a → e-x-t-r-a), но не пересекается по префиксу/подстроке —
-      // единственный путь совпадения для него — tier 9 (fuzzy).
+      // Шум раньше: «Extra» был в пределах левенштейн-дистанции 2 от «citra»
+      // (c-i-t-r-a → e-x-t-r-a). Теперь calcFuzzyBonus требует совпадения первой
+      // буквы и для коротких слов — дистанции ≤1, поэтому Extra не матчится
+      // уже на уровне ранкера (фильтр шума тут запасной).
       buildCatalogItem({
         id: "malt-noise-fuzzy",
         type: "fermentable",
@@ -344,14 +345,13 @@ describe("каталог: обрезка шумного хвоста поиск�
     expect(result.items.map((item) => item.id)).toEqual(["wlp002-yeast"]);
   });
 
-  // Решение (см. decisions в отчёте задачи): в searchUserCatalogIngredients
-  // (пикеры) обрезка НЕ применяется — в отличие от listUserCatalogIngredients
-  // (страница каталога). Для части расходников единственный способ найти товар
-  // по маркетинговому/приоритетному термину — как раз tier 8 (token-scatter) в
-  // buildFallbackRank, и существующий тест "uses manufacturer refinements as a
-  // secondary layer inside a selected consumable group" на это опирается.
-  // Тест ниже фиксирует эту намеренную асимметрию на нашей же fixture.
-  it("searchUserCatalogIngredients (пикеры) намеренно не режет шумный хвост — асимметрия с listUserCatalogIngredients", async () => {
+  // Раньше пикер (searchUserCatalogIngredients) не резал filterRankedCatalogNoise
+  // и «citra» тянул «Extra» через fuzzy (дистанция 2). False-friend закрыт в
+  // calcFuzzyBonus (первая буква + порог по длине) — Extra больше не матчится
+  // ни в каталоге, ни в пикере. Асимметрия «пикер не режет token-scatter» для
+  // расходников по-прежнему намеренна — см. тест manufacturer refinements /
+  // selected consumable group в user-catalog-ingredient-search.test.ts.
+  it("searchUserCatalogIngredients: «citra» не тянет Extra даже без обрезки шума в пикере", async () => {
     mockState.catalogItems = [
       buildCatalogItem({
         id: "citra-main",
@@ -383,8 +383,8 @@ describe("каталог: обрезка шумного хвоста поиск�
 
     const result = await searchUserCatalogIngredients("user-1", { q: "citra", limit: 10 });
 
-    expect(result.items.map((item) => item.id)).toEqual(["citra-main", "malt-noise-fuzzy"]);
-    expect(result.total).toBe(2);
+    expect(result.items.map((item) => item.id)).toEqual(["citra-main"]);
+    expect(result.total).toBe(1);
   });
 });
 
@@ -650,4 +650,82 @@ describe("каталог: параметрические сортировки (3
     expect(colorResult.items.map((item) => item.id)).toEqual(["a-item", "b-item"]);
     expect(attenuationResult.items.map((item) => item.id)).toEqual(["a-item", "b-item"]);
   });
+});
+
+
+describe("catalog category search applies rescue within the selected scope", () => {
+  beforeEach(() => {
+    mockState.catalogItems = [];
+    mockState.customItems = [];
+    mockState.favoriteKeys = new Set();
+  });
+
+  const scopedFixture = () => [
+    buildCatalogItem({ id: "hop-citra", type: "hop", category: "hop", subtype: null,
+      primaryLabelRu: "Citra", secondaryLabelRu: null, displayName: "Citra", displayNameRu: "Citra", displayNameEn: "Citra", nameRu: "Citra", nameEn: "Citra" }),
+    buildCatalogItem({ id: "malt-citro", primaryLabelRu: "Citro", secondaryLabelRu: null,
+      displayName: "Citro", displayNameRu: "Citro", displayNameEn: "Citro", nameRu: "Citro", nameEn: "Citro" })
+  ];
+
+  it("keeps a fuzzy hop hit despite a strong hit in another category", async () => {
+    mockState.catalogItems = scopedFixture();
+    const result = await listUserCatalogIngredients(null, { q: "citro", category: "hop" });
+    expect(result.items.map((item) => item.id)).toEqual(["hop-citra"]);
+    expect(result.searchRescue).toBe("fuzzy");
+    expect(result.total).toBe(1);
+    expect(result.facets.byCategory.hop).toBe(1);
+    expect(result.facets.byCategory.fermentable).toBe(1);
+  });
+
+  it("keeps the global strong-match policy while category counters describe their destinations", async () => {
+    mockState.catalogItems = scopedFixture();
+    const result = await listUserCatalogIngredients(null, { q: "citro" });
+    expect(result.items.map((item) => item.id)).toEqual(["malt-citro"]);
+    expect(result.searchRescue).toBeNull();
+    expect(result.facets.byCategory.hop).toBe(1);
+    const hop = await listUserCatalogIngredients(null, { q: "citro", category: "hop" });
+    expect(hop.total).toBe(result.facets.byCategory.hop);
+  });
+
+  it("keeps exact matches stronger than fuzzy hits inside the same category", async () => {
+    const [hop, other] = scopedFixture();
+    mockState.catalogItems = [hop, { ...other, id: "hop-citro", type: "hop", category: "hop", subtype: null }];
+    const result = await listUserCatalogIngredients(null, { q: "citro", category: "hop" });
+    expect(result.items.map((item) => item.id)).toEqual(["hop-citro"]);
+    expect(result.searchRescue).toBeNull();
+  });
+
+  it("computes subtype counts using the same rescue policy as subtype pages", async () => {
+    const [hop, malt] = scopedFixture();
+    mockState.catalogItems = [{ ...hop, id: "fermentable-citra", type: "fermentable", category: "fermentable", subtype: "fermentable" }, malt];
+    const result = await listUserCatalogIngredients(null, { q: "citro", category: "fermentable", subtype: "fermentable" });
+    expect(result.items.map((item) => item.id)).toEqual(["fermentable-citra"]);
+    expect(result.facets.byFermentableSubtype.fermentable).toBe(1);
+    expect(result.facets.byFermentableSubtype.malt).toBe(1);
+  });
+
+  it("runs layout fallback inside the category even when another category has a literal match", async () => {
+    const [hop, malt] = scopedFixture();
+    mockState.catalogItems = [
+      { ...hop, primaryLabelRu: "Мозаик", displayName: "Мозаик", nameRu: "Мозаик", nameEn: "Mosaic", displayNameRu: "Мозаик", displayNameEn: "Mosaic" },
+      { ...malt, primaryLabelRu: "vjpfbr", displayName: "vjpfbr", nameRu: "vjpfbr", nameEn: "vjpfbr", displayNameRu: "vjpfbr", displayNameEn: "vjpfbr" }
+    ];
+    const result = await listUserCatalogIngredients(null, { q: "vjpfbr", category: "hop" });
+    expect(result.items.map((item) => item.id)).toEqual(["hop-citra"]);
+    expect(result.searchRescue).toBe("layout");
+    expect(result.facets.byCategory.hop).toBe(1);
+    const global = await listUserCatalogIngredients(null, { q: "vjpfbr" });
+    expect(global.items.map((item) => item.id)).toEqual(["malt-citro"]);
+    expect(global.searchRescue).toBeNull();
+  });
+
+  it("never uses catalog matches as a rescue for an empty custom-only view", async () => {
+    mockState.catalogItems = scopedFixture();
+    const result = await listUserCatalogIngredients("user-1", { q: "citro", category: "hop", view: "mine" });
+    expect(result.items).toEqual([]);
+    expect(result.total).toBe(0);
+    expect(result.facets.byCategory.hop).toBe(0);
+    expect(result.searchRescue).toBeNull();
+  });
+
 });

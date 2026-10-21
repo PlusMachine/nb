@@ -1,8 +1,15 @@
+import { XMLParser, XMLValidator } from "fast-xml-parser";
 import type { BitternessFormula } from "@nb/brewing-core";
 
 import type { CanonicalRecipe, CanonicalRecipeIngredient } from "./canonical";
 import { mapRecipeToCanonical } from "./canonical";
-import type { RecipeDetailDto } from "../contracts";
+import { recipeProcessMetaSchema, recipeWaterPlanMetaSchema, recipeCalculationMetaSchema, RECIPE_IMPORT_MAX_INPUT_BYTES, RECIPE_IMPORT_MAX_RECIPES, type RecipeDetailDto } from "../contracts";
+import { equipmentProfileSnapshotSchema } from "../../equipment-profiles/contracts";
+import { buildImportedFermentationProfile } from "./process";
+import { readUnit } from "./readers";
+import { buildRecipeWaterPlanResult } from "../water-plan";
+import { buildRecipeWaterPlanFermentables } from "../water-plan-ingredients";
+import { calculateEquipmentVolumePlan } from "../../equipment-profiles/volume-plan";
 import { lovibondToEbc, toLovibondFromEbc } from "../../ingredients/technical-fields";
 import type { CustomHopForm, CustomPhysicalForm, CustomYeastForm } from "../../inventory/custom-ingredient";
 
@@ -171,12 +178,19 @@ const resolveBeerXmlTime = (ingredient: CanonicalRecipeIngredient) => {
   );
 };
 
+const renderIngredientExtension = (ingredient: CanonicalRecipeIngredient) => [
+  xmlTag("DISPLAY_AMOUNT", `${ingredient.amount} ${ingredient.unit}`, "        ").trimEnd(),
+  xmlTag("NB_INGREDIENT", JSON.stringify({ amount: ingredient.amount, unit: ingredient.unit, stage: ingredient.stage, stepMeta: ingredient.stepMeta ?? null, hopForm: ingredient.hopForm ?? null, yeastForm: ingredient.yeastForm ?? null }), "        ").trimEnd(),
+  xmlTag("TEMPERATURE", readMetaNumber(ingredient.stepMeta, "temperatureC"), "        ").trimEnd(),
+].filter(Boolean).join("\n");
+
 const renderBeerXmlHop = (ingredient: CanonicalRecipeIngredient) => {
   const amount = toBeerXmlAmount(ingredient).amount;
   return [
     "      <HOP>",
     xmlTag("NAME", ingredient.name, "        ").trimEnd(),
     xmlTag("VERSION", 1, "        ").trimEnd(),
+    renderIngredientExtension(ingredient),
     xmlTag("ALPHA", compactNumber(ingredient.hopAlphaAcidPct, 2), "        ").trimEnd(),
     xmlTag("AMOUNT", amount, "        ").trimEnd(),
     xmlTag("USE", mapHopUseToBeerXml(ingredient), "        ").trimEnd(),
@@ -192,6 +206,7 @@ const renderBeerXmlFermentable = (ingredient: CanonicalRecipeIngredient) => {
     "      <FERMENTABLE>",
     xmlTag("NAME", ingredient.name, "        ").trimEnd(),
     xmlTag("VERSION", 1, "        ").trimEnd(),
+    renderIngredientExtension(ingredient),
     xmlTag("TYPE", ingredient.type === "malt" ? "Grain" : "Sugar", "        ").trimEnd(),
     xmlTag("AMOUNT", compactNumber(amountKg ?? ingredient.amount, 6), "        ").trimEnd(),
     xmlTag("YIELD", compactNumber(ingredient.fermentableExtractYieldPct, 2), "        ").trimEnd(),
@@ -207,6 +222,7 @@ const renderBeerXmlYeast = (ingredient: CanonicalRecipeIngredient) => {
     "      <YEAST>",
     xmlTag("NAME", ingredient.name, "        ").trimEnd(),
     xmlTag("VERSION", 1, "        ").trimEnd(),
+    renderIngredientExtension(ingredient),
     xmlTag("TYPE", "Ale", "        ").trimEnd(),
     xmlTag("FORM", mapYeastFormToBeerXml(ingredient.yeastForm), "        ").trimEnd(),
     xmlTag("AMOUNT", amount.amount, "        ").trimEnd(),
@@ -222,6 +238,8 @@ const renderBeerXmlMisc = (ingredient: CanonicalRecipeIngredient) => {
     "      <MISC>",
     xmlTag("NAME", ingredient.name, "        ").trimEnd(),
     xmlTag("VERSION", 1, "        ").trimEnd(),
+    renderIngredientExtension(ingredient),
+    xmlTag("NB_FROM_WATER_PLAN", ingredient.externalImportMeta?.fromWaterPlan === true ? "TRUE" : null, "        ").trimEnd(),
     xmlTag("TYPE", mapMiscTypeToBeerXml(ingredient), "        ").trimEnd(),
     xmlTag("USE", mapMiscUseToBeerXml(ingredient.stage), "        ").trimEnd(),
     xmlTag("TIME", compactNumber(ingredient.timeOffset ?? 0, 0), "        ").trimEnd(),
@@ -338,14 +356,56 @@ const readCanonicalBitternessFormula = (canonical: CanonicalRecipe) => (
 
 const getBoilSizeL = (_recipe: RecipeDetailDto, _canonical: CanonicalRecipe) => null;
 
+const renderBeerXmlStyle = (styleId?: string | null) => {
+  if (!styleId) return "";
+  const code = styleId.match(/^(\d+)([a-z])/i);
+  return ["    <STYLE>", xmlTag("NAME", styleId, "      ").trimEnd(), xmlTag("VERSION", 1, "      ").trimEnd(),
+    xmlTag("CATEGORY_NUMBER", code?.[1], "      ").trimEnd(), xmlTag("STYLE_LETTER", code?.[2]?.toUpperCase(), "      ").trimEnd(),
+    xmlTag("STYLE_GUIDE", "BJCP 2021", "      ").trimEnd(), "    </STYLE>"].filter(Boolean).join("\n");
+};
+const renderBeerXmlFermentation = (canonical: CanonicalRecipe) => {
+  const profile = isRecord(canonical.processMeta?.fermentationProfile) ? canonical.processMeta.fermentationProfile : null;
+  if (!profile) return "";
+  const extras = Array.isArray(profile.extraSteps) ? profile.extraSteps.filter(isRecord) : [];
+  const stages = [{ temperatureC: profile.primaryTemperatureC, durationDays: profile.primaryDurationDays }, ...extras,
+    ...[profile.coldCrash, profile.conditioning].filter((value) => isRecord(value) && value.enabled === true)];
+  return [xmlTag("FERMENTATION_STAGES", Math.min(3, stages.length)).trimEnd(), ...stages.slice(0, 3).flatMap((step, index) => {
+    if (!isRecord(step)) return [];
+    const tag = ["PRIMARY", "SECONDARY", "TERTIARY"][index];
+    return [xmlTag(`${tag}_TEMP`, readFiniteNumber(step.temperatureC)).trimEnd(), xmlTag(`${tag}_AGE`, readFiniteNumber(step.durationDays)).trimEnd()];
+  })].filter(Boolean).join("\n");
+};
+
+const waterPlanIngredients = (recipe: RecipeDetailDto): CanonicalRecipeIngredient[] => {
+  if (!recipe.waterPlanMeta?.setupEnabled) return [];
+  const waterPlanMeta = recipeWaterPlanMetaSchema.parse(recipe.waterPlanMeta);
+  const batchSizeL = recipe.batchSizeNormalizedQuantity / 1000;
+  const fermentables = buildRecipeWaterPlanFermentables(recipe.ingredients);
+  const grainKg = fermentables.reduce((sum, item) => sum + item.weightKg, 0);
+  const equipmentVolumePlan = recipe.equipmentProfileSnapshot ? calculateEquipmentVolumePlan({
+    ...recipe.equipmentProfileSnapshot, targetBatchVolumeL: batchSizeL,
+    grainAbsorptionLPerKg: waterPlanMeta.grainAbsorptionLPerKg ?? recipe.equipmentProfileSnapshot.grainAbsorptionLPerKg,
+  }, grainKg, recipe.boilTimeMinutes) : null;
+  const result = buildRecipeWaterPlanResult({ waterPlanMeta, fallbackBatchVolumeL: batchSizeL, boilTimeMinutes: recipe.boilTimeMinutes, equipmentVolumePlan, grainKg, fermentables });
+  const addition = (name: string, amount: number, unit: "g" | "ml", target: string): CanonicalRecipeIngredient => ({
+    name: `${name} (${target})`, amount, unit, type: "water_treatment", category: "water_treatment", stage: "mash",
+    stepMeta: { waterTarget: target }, externalImportMeta: { fromWaterPlan: true },
+  });
+  return [
+    ...result.totalSaltAdditions.map((salt) => addition(salt.label, salt.grams, "g", salt.target)),
+    ...(result.mashAcidAddition ? [addition(result.mashAcidAddition.label, result.mashAcidAddition.mashAcidMl, "ml", "mash")] : []),
+    ...(result.spargeAcidAddition ? [addition(result.spargeAcidAddition.label, result.spargeAcidAddition.spargeAcidMl, "ml", "sparge")] : []),
+  ].filter((ingredient) => ingredient.amount > 0);
+};
+
 export const exportRecipeToBeerXml = (recipe: RecipeDetailDto) => {
   const canonical = mapRecipeToCanonical(recipe);
   const stats = getRecipeImportStats(recipe);
-  const notes = [canonical.description, canonical.authorNotes].filter(Boolean).join("\n\n") || null;
+  const notes = canonical.description;
   const hops = canonical.ingredients.filter((ingredient) => ingredient.category === "hop");
   const fermentables = canonical.ingredients.filter((ingredient) => ingredient.category === "fermentable");
   const yeasts = canonical.ingredients.filter((ingredient) => ingredient.category === "yeast");
-  const miscs = canonical.ingredients.filter((ingredient) => ingredient.category === "consumable" || ingredient.category === "water_treatment");
+  const miscs = [...canonical.ingredients.filter((ingredient) => ingredient.category === "consumable" || ingredient.category === "water_treatment"), ...waterPlanIngredients(recipe)];
 
   return [
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
@@ -355,6 +415,12 @@ export const exportRecipeToBeerXml = (recipe: RecipeDetailDto) => {
     xmlTag("VERSION", 1, "    ").trimEnd(),
     xmlTag("TYPE", getRecipeType(recipe), "    ").trimEnd(),
     xmlTag("NOTES", notes, "    ").trimEnd(),
+    renderBeerXmlStyle(canonical.styleId),
+    renderBeerXmlFermentation(canonical),
+    xmlTag("NB_PROCESS_META", canonical.processMeta ? JSON.stringify(canonical.processMeta) : null).trimEnd(),
+    xmlTag("NB_WATER_PLAN", canonical.waterPlanMeta ? JSON.stringify(canonical.waterPlanMeta) : null).trimEnd(),
+    xmlTag("NB_CALCULATION_META", canonical.calculationMeta ? JSON.stringify(canonical.calculationMeta) : null).trimEnd(),
+    xmlTag("NB_EQUIPMENT_PROFILE", canonical.equipmentProfileSnapshot ? JSON.stringify({ ...canonical.equipmentProfileSnapshot, id: null, notes: null }) : null).trimEnd(),
     xmlTag("BATCH_SIZE", compactNumber(canonical.batchSizeL ?? 20, 3), "    ").trimEnd(),
     xmlTag("BOIL_SIZE", compactNumber(getBoilSizeL(recipe, canonical), 3), "    ").trimEnd(),
     xmlTag("BOIL_TIME", compactNumber(canonical.boilTimeMinutes ?? 60, 0), "    ").trimEnd(),
@@ -375,28 +441,53 @@ export const exportRecipeToBeerXml = (recipe: RecipeDetailDto) => {
   ].filter(Boolean).join("\n");
 };
 
-const readTag = (xml: string, tag: string) => {
-  const match = xml.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`, "i"));
-  return match?.[1]?.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").trim() ?? null;
+type XmlNode = Record<string, unknown>;
+const readTag = (node: XmlNode, tag: string): string | null => {
+  const value = node[tag];
+  const text = isRecord(value) ? value["#text"] : value;
+  return typeof text === "string" && text.trim() ? text.trim() : null;
 };
-
-const readNumberTag = (xml: string, tag: string) => {
-  const value = readTag(xml, tag);
-  if (!value) return null;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : null;
-};
-
-const readBooleanTag = (xml: string, tag: string) => {
-  const value = readTag(xml, tag)?.toLowerCase();
-  if (!value) return null;
-  if (["true", "1", "yes"].includes(value)) return true;
-  if (["false", "0", "no"].includes(value)) return false;
+const readNumberTag = (node: XmlNode, tag: string) => readFiniteNumber(readTag(node, tag));
+const readBooleanTag = (node: XmlNode, tag: string) => {
+  const value = readTag(node, tag)?.toLowerCase();
+  if (["true", "1", "yes"].includes(value ?? "")) return true;
+  if (["false", "0", "no"].includes(value ?? "")) return false;
   return null;
 };
-
-const readBlocks = (xml: string, tag: string) => Array.from(xml.matchAll(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`, "gi")))
-  .map((match) => match[1] ?? "");
+const readBlocks = (node: XmlNode, tag: string): XmlNode[] => Object.entries(node).flatMap(([key, value]) => {
+  const values = Array.isArray(value) ? value : [value];
+  return values.filter(isRecord).flatMap((child) => key === tag ? [child] : readBlocks(child, tag));
+});
+const readExtension = <T>(node: XmlNode, key: string, schema: { safeParse: (value: unknown) => { success: boolean; data?: T } }, warnings: string[]): T | null => {
+  const text = readTag(node, key);
+  if (!text) return null;
+  try {
+    const parsed = schema.safeParse(JSON.parse(text));
+    if (parsed.success && parsed.data) return parsed.data;
+  } catch { /* Invalid extensions must not override valid standard fields. */ }
+  warnings.push(`Расширение ${key} не распознано; использованы стандартные поля BeerXML.`);
+  return null;
+};
+const restoreIngredient = (node: XmlNode, ingredient: CanonicalRecipeIngredient): CanonicalRecipeIngredient => {
+  const extension = readTag(node, "NB_INGREDIENT");
+  if (!extension) return ingredient;
+  try {
+    const data: unknown = JSON.parse(extension);
+    if (!isRecord(data) || typeof data.amount !== "number" || !Number.isFinite(data.amount) || data.amount <= 0) throw new Error();
+    const unit = readUnit(data.unit, ingredient.unit);
+    const stage = ["mash", "boil", "whirlpool", "fermentation", "packaging", "other"].includes(String(data.stage))
+      ? data.stage as CanonicalRecipeIngredient["stage"] : ingredient.stage;
+    return { ...ingredient, amount: data.amount, unit, stage,
+      hopForm: ["pellet", "whole_cone", "cryo", "lupulin", "standard"].includes(String(data.hopForm)) ? data.hopForm as CustomHopForm : ingredient.hopForm,
+      yeastForm: ["dry", "liquid", "slurry", "culture"].includes(String(data.yeastForm)) ? data.yeastForm as CustomYeastForm : ingredient.yeastForm,
+      stepMeta: isRecord(data.stepMeta) ? data.stepMeta : ingredient.stepMeta };
+  } catch { throw new Error("INVALID_BEERXML"); }
+};
+const readMiscAmount = (node: XmlNode, fallback: number, weight: boolean) => {
+  const display = readTag(node, "DISPLAY_AMOUNT")?.match(/^([\d.]+)\s*(pack(?:s|ages?)?|pkg|items?|units?|pcs)$/i);
+  if (display) return { amount: Number(display[1]), unit: readUnit(display[2], "item") };
+  return { amount: weight ? fallback * 1000 : fallback, unit: weight ? "g" as const : "l" as const };
+};
 
 const mapBeerXmlFermentableType = (rawType: string | null): Pick<CanonicalRecipeIngredient, "type" | "category"> => {
   const normalized = rawType?.toLowerCase() ?? "";
@@ -452,7 +543,7 @@ const mapBeerXmlHopUse = (rawUse: string | null): {
   return { stage: "boil", useType: "boil" };
 };
 
-const buildBeerXmlProcessMeta = (recipeBlock: string): Record<string, unknown> | null => {
+const buildBeerXmlProcessMeta = (recipeBlock: XmlNode, warnings: string[]): Record<string, unknown> | null => {
   const mashSteps = readBlocks(recipeBlock, "MASH_STEP")
     .map((block, index) => {
       const temperatureC = readNumberTag(block, "STEP_TEMP");
@@ -470,22 +561,22 @@ const buildBeerXmlProcessMeta = (recipeBlock: string): Record<string, unknown> |
     .filter((step): step is NonNullable<typeof step> => step !== null)
     .slice(0, 10);
 
-  return mashSteps.length
-    ? { mashProfile: { steps: mashSteps } }
-    : null;
+  const fermentationSteps = ["PRIMARY", "SECONDARY", "TERTIARY"].flatMap((stage) => {
+    const temperatureC = readNumberTag(recipeBlock, `${stage}_TEMP`);
+    const durationDays = readNumberTag(recipeBlock, `${stage}_AGE`);
+    return temperatureC == null && durationDays == null ? [] : [{ name: stage, temperatureC, durationDays }];
+  });
+  const fermentationProfile = buildImportedFermentationProfile(fermentationSteps, warnings);
+  if (readBlocks(recipeBlock, "MASH_STEP").length > 10) warnings.push("Перенесены первые 10 шагов затирания.");
+  return mashSteps.length || fermentationProfile ? {
+    ...(mashSteps.length ? { mashProfile: { steps: mashSteps } } : {}),
+    ...(fermentationProfile ? { fermentationProfile } : {}),
+  } : null;
 };
 
-export const importBeerXmlToCanonicalRecipe = (xml: string): CanonicalRecipe => {
-  const trimmedXml = xml.trim();
-  if (!trimmedXml) {
-    throw new Error("EMPTY_BEERXML");
-  }
-
-  if (!/<RECIPE\b/i.test(trimmedXml)) {
-    throw new Error("INVALID_BEERXML");
-  }
-
-  const recipeBlock = readBlocks(xml, "RECIPE")[0] ?? xml;
+const importRecipeBlock = (recipeBlock: XmlNode): CanonicalRecipe => {
+  const warnings: string[] = [];
+  const waterPlanMeta = readExtension(recipeBlock, "NB_WATER_PLAN", recipeWaterPlanMetaSchema, warnings);
   const hops = readBlocks(recipeBlock, "HOP").map((block): CanonicalRecipeIngredient => {
     const rawUse = readTag(block, "USE");
     const rawForm = readTag(block, "FORM");
@@ -493,29 +584,31 @@ export const importBeerXmlToCanonicalRecipe = (xml: string): CanonicalRecipe => 
     const timeMinutes = readNumberTag(block, "TIME") ?? null;
     const alphaAcidPct = readNumberTag(block, "ALPHA");
     const hopForm = mapBeerXmlHopForm(rawForm);
-    return {
+    return restoreIngredient(block, {
       name: readTag(block, "NAME") ?? "Imported hop",
       type: "hop",
       category: "hop",
       amount: (readNumberTag(block, "AMOUNT") ?? 0) * 1000,
       unit: "g",
       stage: hopUse.stage,
-      timeOffset: timeMinutes,
+      timeOffset: timeMinutes == null ? null : Math.round(timeMinutes),
       hopAlphaAcidPct: alphaAcidPct,
       hopForm,
       stepMeta: {
         useType: hopUse.useType,
         timeMinutes,
+        durationDays: hopUse.stage === "fermentation" && timeMinutes != null ? timeMinutes / 1440 : null,
+        temperatureC: readNumberTag(block, "TEMPERATURE") ?? readNumberTag(block, "HOP_TEMP"),
         hopForm
       },
       externalImportMeta: { source: "beerxml", rawUse, rawForm, alphaAcidPct }
-    };
+    });
   });
   const fermentables = readBlocks(recipeBlock, "FERMENTABLE").map((block): CanonicalRecipeIngredient => {
     const rawType = readTag(block, "TYPE");
     const colorLovibond = readNumberTag(block, "COLOR");
     const yieldPct = readNumberTag(block, "YIELD");
-    return {
+    return restoreIngredient(block, {
       name: readTag(block, "NAME") ?? "Imported fermentable",
       ...mapBeerXmlFermentableType(rawType),
       amount: readNumberTag(block, "AMOUNT") ?? 0,
@@ -524,42 +617,41 @@ export const importBeerXmlToCanonicalRecipe = (xml: string): CanonicalRecipe => 
       fermentableColorEbc: lovibondToEbc(colorLovibond),
       fermentableExtractYieldPct: yieldPct,
       externalImportMeta: { source: "beerxml", rawType, colorLovibond, yieldPct }
-    };
+    });
   });
   const yeasts = readBlocks(recipeBlock, "YEAST").map((block): CanonicalRecipeIngredient => {
-    const amount = readNumberTag(block, "AMOUNT") ?? 1;
+    const amount = readNumberTag(block, "AMOUNT") ?? 0;
     const amountIsWeight = readBooleanTag(block, "AMOUNT_IS_WEIGHT") ?? false;
     const rawForm = readTag(block, "FORM");
     const attenuationPct = readNumberTag(block, "ATTENUATION");
-    return {
+    return restoreIngredient(block, {
       name: readTag(block, "NAME") ?? "Imported yeast",
       type: "yeast",
       category: "yeast",
-      amount: amountIsWeight ? amount * 1000 : amount,
-      unit: amountIsWeight ? "g" : "pack",
+      ...readMiscAmount(block, amount, amountIsWeight),
       stage: "fermentation",
       yeastAttenuationPct: attenuationPct,
       yeastForm: mapBeerXmlYeastForm(rawForm),
       externalImportMeta: { source: "beerxml", rawForm, attenuationPct }
-    };
+    });
   });
-  const miscs = readBlocks(recipeBlock, "MISC").map((block): CanonicalRecipeIngredient => {
+  const miscs = readBlocks(recipeBlock, "MISC").filter((block) => !waterPlanMeta || readTag(block, "NB_FROM_WATER_PLAN") !== "TRUE").map((block): CanonicalRecipeIngredient => {
     const use = readTag(block, "USE")?.toLowerCase() ?? "other";
     const rawType = readTag(block, "TYPE");
     const name = readTag(block, "NAME") ?? "Imported misc";
-    const amount = readNumberTag(block, "AMOUNT") ?? 1;
+    const amount = readNumberTag(block, "AMOUNT") ?? 0;
     const amountIsWeight = readBooleanTag(block, "AMOUNT_IS_WEIGHT") ?? true;
-    return {
+    const waterAgent = rawType?.toLowerCase() === "water agent";
+    return restoreIngredient(block, {
       name,
-      type: "consumable",
-      category: "consumable",
-      amount: amountIsWeight ? amount * 1000 : amount,
-      unit: amountIsWeight ? "g" : "item",
-      stage: use.includes("boil") ? "boil" : use.includes("mash") ? "mash" : use.includes("bott") || use.includes("pack") ? "packaging" : "other",
+      type: waterAgent ? "water_treatment" : "consumable",
+      category: waterAgent ? "water_treatment" : "consumable",
+      ...readMiscAmount(block, amount, amountIsWeight),
+      stage: use.includes("boil") ? "boil" : use.includes("mash") ? "mash" : use.includes("primary") || use.includes("secondary") ? "fermentation" : use.includes("bott") || use.includes("pack") ? "packaging" : "other",
       timeOffset: readNumberTag(block, "TIME"),
       physicalForm: mapBeerXmlPhysicalForm(rawType, name),
       externalImportMeta: { source: "beerxml", rawUse: readTag(block, "USE"), rawType }
-    };
+    });
   });
   const ingredients = [...fermentables, ...hops, ...yeasts, ...miscs];
   if (!ingredients.length) {
@@ -585,13 +677,16 @@ export const importBeerXmlToCanonicalRecipe = (xml: string): CanonicalRecipe => 
     boilTimeMinutes: readNumberTag(recipeBlock, "BOIL_TIME") ?? 60,
     efficiency: readNumberTag(recipeBlock, "EFFICIENCY"),
     description: readTag(recipeBlock, "NOTES"),
-    processMeta: buildBeerXmlProcessMeta(recipeBlock),
-    calculationMeta: {
+    processMeta: readExtension(recipeBlock, "NB_PROCESS_META", recipeProcessMetaSchema, warnings) as unknown as Record<string, unknown> ?? buildBeerXmlProcessMeta(recipeBlock, warnings),
+    waterPlanMeta: waterPlanMeta as unknown as Record<string, unknown> | null,
+    equipmentProfileSnapshot: readExtension(recipeBlock, "NB_EQUIPMENT_PROFILE", equipmentProfileSnapshotSchema, warnings),
+    calculationMeta: readExtension(recipeBlock, "NB_CALCULATION_META", recipeCalculationMetaSchema, warnings) as unknown as Record<string, unknown> ?? {
       bitternessFormula: importedFormulaPreference,
       bitternessSettings: {}
     },
     importMeta: {
       source: "beerxml",
+      warnings,
       importedAt: new Date().toISOString(),
       importedFormulaPreference,
       styleHint,
@@ -606,4 +701,27 @@ export const importBeerXmlToCanonicalRecipe = (xml: string): CanonicalRecipe => 
     },
     ingredients
   };
+};
+
+export const importBeerXmlToCanonicalRecipes = (xml: string): CanonicalRecipe[] => {
+  if (!xml.trim()) throw new Error("EMPTY_BEERXML");
+  if (new TextEncoder().encode(xml).length > RECIPE_IMPORT_MAX_INPUT_BYTES) throw new Error("IMPORT_INPUT_TOO_LARGE");
+  if (/<!\s*(DOCTYPE|ENTITY)\b/i.test(xml) || XMLValidator.validate(xml) !== true) throw new Error("INVALID_BEERXML");
+  const tree: unknown = new XMLParser({ parseTagValue: false, parseAttributeValue: false, trimValues: false, processEntities: true, htmlEntities: true, transformTagName: (name) => name.toUpperCase(), ignoreDeclaration: true }).parse(xml);
+  if (!isRecord(tree)) throw new Error("INVALID_BEERXML");
+  const roots = Object.keys(tree).filter((key) => !key.startsWith("?"));
+  if (roots.length !== 1 || !["RECIPES", "RECIPE"].includes(roots[0]!)) throw new Error("INVALID_BEERXML");
+  // Only direct recipe children belong to this collection; nested recipes are invalid.
+  const container = roots[0] === "RECIPES" ? tree.RECIPES : tree;
+  if (!isRecord(container)) throw new Error("INVALID_BEERXML");
+  const value = container.RECIPE;
+  const blocks = Array.isArray(value) ? value : value ? [value] : [];
+  if (!blocks.length || !blocks.every(isRecord)) throw new Error("INVALID_BEERXML");
+  if (blocks.length > RECIPE_IMPORT_MAX_RECIPES) throw new Error("IMPORT_TOO_MANY_RECIPES");
+  return blocks.map(importRecipeBlock);
+};
+export const importBeerXmlToCanonicalRecipe = (xml: string): CanonicalRecipe => {
+  const recipes = importBeerXmlToCanonicalRecipes(xml);
+  if (recipes.length !== 1) throw new Error("IMPORT_MULTIPLE_RECIPES");
+  return recipes[0]!;
 };

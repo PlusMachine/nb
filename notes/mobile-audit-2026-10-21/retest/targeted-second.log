@@ -1,0 +1,266 @@
+
+Running 18 tests using 1 worker
+
+  ✓   1 [phone-320] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (4.5s)
+  ✓   2 [phone-320] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query (6.6s)
+  ✓   3 [phone-320] › e2e/bjcp-search.spec.ts:46:1 › local search and view filters preserve browser history without RSC navigation (3.9s)
+  ✘   4 [phone-320] › e2e/bjcp-search.spec.ts:72:1 › choosing a family suggestion cancels pending text and keeps the chosen scope (3.6s)
+  ✓   5 [phone-320] › e2e/mobile-audit.spec.ts:31:1 › M01: label preview leaves data fields clickable in every format (4.8s)
+  ✘   6 [phone-320] › e2e/mobile-audit.spec.ts:50:1 › M02: public navigation and sign-in fit, including tablet breakpoint (5.8s)
+  ✘   7 [phone-320] › e2e/mobile-audit.spec.ts:69:1 › M03/M06: admin navigation and table do not widen document (13.5s)
+  ✘   8 [phone-320] › e2e/mobile-audit.spec.ts:96:1 › M04: filled recipe has compact metrics and working actions (1.2m)
+  ✘   9 [phone-320] › e2e/mobile-audit.spec.ts:121:1 › M05: every dilution operation fits on the narrow screen (1.2m)
+  ✓  10 [tablet-landscape] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (55.1s)
+  ✓  11 [tablet-landscape] › e2e/bjcp-search.spec.ts:26:1 › clearing before debounce cannot restore a stale query (16.2s)
+  ✓  12 [tablet-landscape] › e2e/bjcp-search.spec.ts:46:1 › local search and view filters preserve browser history without RSC navigation (5.5s)
+  ✘  13 [tablet-landscape] › e2e/bjcp-search.spec.ts:72:1 › choosing a family suggestion cancels pending text and keeps the chosen scope (5.1s)
+  ✘  14 [tablet-landscape] › e2e/mobile-audit.spec.ts:31:1 › M01: label preview leaves data fields clickable in every format (8.3s)
+
+
+  1) [phone-320] › e2e/bjcp-search.spec.ts:72:1 › choosing a family suggestion cancels pending text and keeps the chosen scope 
+
+    Error: locator.click: Error: strict mode violation: getByRole('option', { name: /IPA, APA и хмелевые стили/ }) resolved to 6 elements:
+        1) <button type="button" role="option" aria-selected="false" id="bjcp-suggestion-style-12C" class="flex w-full items-start justify-between gap-4 px-4 py-3 text-left transition hover:bg-accent bg-card">…</button> aka getByRole('option', { name: '12C · Английский IPA English' })
+        2) <button type="button" role="option" aria-selected="false" id="bjcp-suggestion-style-21A" class="flex w-full items-start justify-between gap-4 px-4 py-3 text-left transition hover:bg-accent bg-card">…</button> aka getByRole('option', { name: '21A · Американский IPA' })
+        3) <button type="button" role="option" aria-selected="false" id="bjcp-suggestion-style-21B" class="flex w-full items-start justify-between gap-4 px-4 py-3 text-left transition hover:bg-accent bg-card">…</button> aka getByRole('option', { name: '21B · Специальный IPA' })
+        4) <button type="button" role="option" aria-selected="false" id="bjcp-suggestion-style-21B-Belgian IPA" class="flex w-full items-start justify-between gap-4 px-4 py-3 text-left transition hover:bg-accent bg-card">…</button> aka getByRole('option', { name: '21B-Belgian IPA' })
+        5) <button type="button" role="option" aria-selected="false" id="bjcp-suggestion-style-21B-Black IPA" class="flex w-full items-start justify-between gap-4 px-4 py-3 text-left transition hover:bg-accent bg-card">…</button> aka getByRole('option', { name: '21B-Black IPA · Чёрный IPA' })
+        6) <button type="button" role="option" aria-selected="false" id="bjcp-suggestion-family-ipa_hoppy" class="flex w-full items-start justify-between gap-4 px-4 py-3 text-left transition hover:bg-accent bg-card">…</button> aka getByRole('option', { name: 'IPA, APA и хмелевые стили 14' })
+
+    Call log:
+      - waiting for getByRole('option', { name: /IPA, APA и хмелевые стили/ })
+
+
+      76 |   const search = page.getByRole("combobox", { name: "Поиск стилей BJCP" });
+      77 |   await search.fill("IPA");
+    > 78 |   await page.getByRole("option", { name: /IPA, APA и хмелевые стили/ }).click();
+         |                                                                         ^
+      79 |   await expect(search).toHaveValue("");
+      80 |   await expect.poll(() => new URL(page.url()).searchParams.get("family")).not.toBeNull();
+      81 |   await page.waitForTimeout(500);
+        at /home/dopefish/projects/nb/apps/web/e2e/bjcp-search.spec.ts:78:73
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-choosing-a-fam-be0d9--and-keeps-the-chosen-scope-phone-320/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-choosing-a-fam-be0d9--and-keeps-the-chosen-scope-phone-320/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-choosing-a-fam-be0d9--and-keeps-the-chosen-scope-phone-320/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-choosing-a-fam-be0d9--and-keeps-the-chosen-scope-phone-320/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [phone-320] › e2e/mobile-audit.spec.ts:50:1 › M02: public navigation and sign-in fit, including tablet breakpoint 
+
+    Error: locator.boundingBox: Error: strict mode violation: getByRole('link', { name: 'Войти', exact: true }) resolved to 2 elements:
+        1) <a href="/login" class="inline-flex min-h-11 items-center rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background transition-colors hover:bg-foreground/90">Войти</a> aka getByRole('banner').getByRole('link', { name: 'Войти' })
+        2) <a href="/login" class="text-muted-foreground transition-colors hover:text-foreground">Войти</a> aka getByRole('contentinfo').getByRole('link', { name: 'Войти' })
+
+    Call log:
+      - waiting for getByRole('link', { name: 'Войти', exact: true })
+
+
+      16 |
+      17 | async function expectControlFits(page: Page, control: ReturnType<Page["getByRole"]>) {
+    > 18 |   const box = await control.boundingBox();
+         |                             ^
+      19 |   expect(box).not.toBeNull();
+      20 |   expect(box!.x).toBeGreaterThanOrEqual(0);
+      21 |   expect(box!.x + box!.width).toBeLessThanOrEqual(page.viewportSize()!.width + 1);
+        at expectControlFits (/home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:18:29)
+        at /home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:54:9
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M02-public-na-2f789-including-tablet-breakpoint-phone-320/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M02-public-na-2f789-including-tablet-breakpoint-phone-320/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M02-public-na-2f789-including-tablet-breakpoint-phone-320/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M02-public-na-2f789-including-tablet-breakpoint-phone-320/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [phone-320] › e2e/mobile-audit.spec.ts:69:1 › M03/M06: admin navigation and table do not widen document 
+
+    Error: locator.click: Error: strict mode violation: getByRole('dialog').getByRole('radio', { name: 'Тёмная тема', exact: true }) resolved to 2 elements:
+        1) <button role="radio" type="button" title="Тёмная тема" aria-checked="false" aria-label="Тёмная тема" class="grid min-h-11 min-w-11 place-items-center rounded-full transition-colors text-muted-foreground hover:text-foreground">…</button> aka getByRole('radio', { name: 'Тёмная тема' }).first()
+        2) <button role="radio" type="button" title="Тёмная тема" aria-checked="false" aria-label="Тёмная тема" class="grid min-h-11 min-w-11 place-items-center rounded-full transition-colors text-muted-foreground hover:text-foreground">…</button> aka getByRole('radio', { name: 'Тёмная тема' }).nth(1)
+
+    Call log:
+      - waiting for getByRole('dialog').getByRole('radio', { name: 'Тёмная тема', exact: true })
+
+
+      78 |     if (page.viewportSize()!.width < 640) {
+      79 |       const theme = page.getByRole("dialog").getByRole("radio", { name: "Тёмная тема", exact: true });
+    > 80 |       await theme.click();
+         |                   ^
+      81 |       await expect(theme).toHaveAttribute("aria-checked", "true");
+      82 |     }
+      83 |     await page.getByRole("dialog").getByRole("button", { name: "Закрыть", exact: true }).click();
+        at /home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:80:19
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-phone-320/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-phone-320/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-phone-320/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M03-M06-admin-20889-table-do-not-widen-document-phone-320/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [phone-320] › e2e/mobile-audit.spec.ts:96:1 › M04: filled recipe has compact metrics and working actions 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.goto: Test timeout of 60000ms exceeded.
+    Call log:
+      - navigating to "http://127.0.0.1:3100/app/recipes/ae29d940-0b2a-4d2e-9995-c112b79e5955/edit", waiting until "networkidle"
+
+
+      4 |
+      5 | async function open(page: Page, path: string) {
+    > 6 |   const response = await page.goto(path, { waitUntil: "networkidle" });
+        |                               ^
+      7 |   expect(response?.status()).toBe(200);
+      8 | }
+      9 |
+        at open (/home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:6:31)
+        at /home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:98:9
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M04-filled-re-6b1a1-metrics-and-working-actions-phone-320/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M04-filled-re-6b1a1-metrics-and-working-actions-phone-320/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M04-filled-re-6b1a1-metrics-and-working-actions-phone-320/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M04-filled-re-6b1a1-metrics-and-working-actions-phone-320/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [phone-320] › e2e/mobile-audit.spec.ts:121:1 › M05: every dilution operation fits on the narrow screen 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.goto: net::ERR_ABORTED; maybe frame was detached?
+    Call log:
+      - navigating to "http://127.0.0.1:3100/calculators/dilution-boiloff", waiting until "networkidle"
+
+
+      4 |
+      5 | async function open(page: Page, path: string) {
+    > 6 |   const response = await page.goto(path, { waitUntil: "networkidle" });
+        |                               ^
+      7 |   expect(response?.status()).toBe(200);
+      8 | }
+      9 |
+        at open (/home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:6:31)
+        at /home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:122:9
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M05-every-dil-465fb-n-fits-on-the-narrow-screen-phone-320/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M05-every-dil-465fb-n-fits-on-the-narrow-screen-phone-320/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M05-every-dil-465fb-n-fits-on-the-narrow-screen-phone-320/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [tablet-landscape] › e2e/bjcp-search.spec.ts:72:1 › choosing a family suggestion cancels pending text and keeps the chosen scope 
+
+    Error: locator.click: Error: strict mode violation: getByRole('option', { name: /IPA, APA и хмелевые стили/ }) resolved to 6 elements:
+        1) <button type="button" role="option" aria-selected="false" id="bjcp-suggestion-style-12C" class="flex w-full items-start justify-between gap-4 px-4 py-3 text-left transition hover:bg-accent bg-card">…</button> aka getByRole('option', { name: '12C · Английский IPA English' })
+        2) <button type="button" role="option" aria-selected="false" id="bjcp-suggestion-style-21A" class="flex w-full items-start justify-between gap-4 px-4 py-3 text-left transition hover:bg-accent bg-card">…</button> aka getByRole('option', { name: '21A · Американский IPA' })
+        3) <button type="button" role="option" aria-selected="false" id="bjcp-suggestion-style-21B" class="flex w-full items-start justify-between gap-4 px-4 py-3 text-left transition hover:bg-accent bg-card">…</button> aka getByRole('option', { name: '21B · Специальный IPA' })
+        4) <button type="button" role="option" aria-selected="false" id="bjcp-suggestion-style-21B-Belgian IPA" class="flex w-full items-start justify-between gap-4 px-4 py-3 text-left transition hover:bg-accent bg-card">…</button> aka getByRole('option', { name: '21B-Belgian IPA' })
+        5) <button type="button" role="option" aria-selected="false" id="bjcp-suggestion-style-21B-Black IPA" class="flex w-full items-start justify-between gap-4 px-4 py-3 text-left transition hover:bg-accent bg-card">…</button> aka getByRole('option', { name: '21B-Black IPA · Чёрный IPA' })
+        6) <button type="button" role="option" aria-selected="false" id="bjcp-suggestion-family-ipa_hoppy" class="flex w-full items-start justify-between gap-4 px-4 py-3 text-left transition hover:bg-accent bg-card">…</button> aka getByRole('option', { name: 'IPA, APA и хмелевые стили 14' })
+
+    Call log:
+      - waiting for getByRole('option', { name: /IPA, APA и хмелевые стили/ })
+
+
+      76 |   const search = page.getByRole("combobox", { name: "Поиск стилей BJCP" });
+      77 |   await search.fill("IPA");
+    > 78 |   await page.getByRole("option", { name: /^IPA, APA и хмелевые стили/ }).click();
+         |                                                                         ^
+      79 |   await expect(search).toHaveValue("");
+      80 |   await expect.poll(() => new URL(page.url()).searchParams.get("family")).not.toBeNull();
+      81 |   await page.waitForTimeout(500);
+        at /home/dopefish/projects/nb/apps/web/e2e/bjcp-search.spec.ts:78:73
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-choosing-a-fam-be0d9--and-keeps-the-chosen-scope-tablet-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-choosing-a-fam-be0d9--and-keeps-the-chosen-scope-tablet-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-choosing-a-fam-be0d9--and-keeps-the-chosen-scope-tablet-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/bjcp-search-choosing-a-fam-be0d9--and-keeps-the-chosen-scope-tablet-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [tablet-landscape] › e2e/mobile-audit.spec.ts:31:1 › M01: label preview leaves data fields clickable in every format 
+
+    Test was interrupted.
+
+    Error: page.goto: Test ended.
+    Call log:
+      - navigating to "http://127.0.0.1:3100/labels", waiting until "networkidle"
+
+
+      4 |
+      5 | async function open(page: Page, path: string) {
+    > 6 |   const response = await page.goto(path, { waitUntil: "domcontentloaded" });
+        |                               ^
+      7 |   expect(response?.status()).toBe(200);
+      8 |   await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
+      9 | }
+        at open (/home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:6:31)
+        at /home/dopefish/projects/nb/apps/web/e2e/mobile-audit.spec.ts:32:9
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M01-label-pre-3cac3-s-clickable-in-every-format-tablet-landscape/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M01-label-pre-3cac3-s-clickable-in-every-format-tablet-landscape/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M01-label-pre-3cac3-s-clickable-in-every-format-tablet-landscape/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../notes/mobile-audit-2026-10-21/retest/playwright/mobile-audit-M01-label-pre-3cac3-s-clickable-in-every-format-tablet-landscape/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6 failed
+    [phone-320] › e2e/bjcp-search.spec.ts:72:1 › choosing a family suggestion cancels pending text and keeps the chosen scope 
+    [phone-320] › e2e/mobile-audit.spec.ts:50:1 › M02: public navigation and sign-in fit, including tablet breakpoint 
+    [phone-320] › e2e/mobile-audit.spec.ts:69:1 › M03/M06: admin navigation and table do not widen document 
+    [phone-320] › e2e/mobile-audit.spec.ts:96:1 › M04: filled recipe has compact metrics and working actions 
+    [phone-320] › e2e/mobile-audit.spec.ts:121:1 › M05: every dilution operation fits on the narrow screen 
+    [tablet-landscape] › e2e/bjcp-search.spec.ts:72:1 › choosing a family suggestion cancels pending text and keeps the chosen scope 
+  1 interrupted
+    [tablet-landscape] › e2e/mobile-audit.spec.ts:31:1 › M01: label preview leaves data fields clickable in every format 
+  4 did not run
+  7 passed (5.8m)

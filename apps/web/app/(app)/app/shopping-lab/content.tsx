@@ -25,7 +25,7 @@ export async function ShoppingLabContent() {
     <main className="space-y-5">
       <div className="space-y-2">
         <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-          Список покупок — черновик IA
+          Список покупок — пробная версия
         </h1>
         <p className="rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground">
           Тестовая страница. Действия (отметки, перенос, добавление) меняют реальные данные вашего склада.

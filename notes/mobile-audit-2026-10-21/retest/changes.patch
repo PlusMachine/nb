@@ -1,0 +1,1015 @@
+--- before/apps/web/components/recipes/labels/label-studio.tsx
++++ after/apps/web/components/recipes/labels/label-studio.tsx
+@@ -748,7 +748,7 @@
+           ) : null}
+         </div>
+ 
+-        <section className="space-y-3 sticky top-[var(--chrome-top,0px)] z-10 lg:col-start-2 lg:row-span-2 lg:top-4 lg:self-start">
++        <section className="space-y-3 lg:sticky lg:col-start-2 lg:row-span-2 lg:top-[calc(var(--chrome-top,0px)+1rem)] lg:z-10 lg:self-start">
+           <div className="flex items-center justify-between">
+             <h2 className="text-sm font-medium text-muted-foreground">Превью</h2>
+             <button
+@@ -885,7 +885,7 @@
+         >
+           <div className="space-y-2 p-5 text-sm">
+             <p>В полях уже есть данные — что с ними сделать?</p>
+-            <p className="text-muted-foreground">Из рецепта приедут: {RECIPE_FIELDS_SUMMARY}.</p>
++            <p className="text-muted-foreground">Из рецепта будут заполнены: {RECIPE_FIELDS_SUMMARY}.</p>
+           </div>
+           <DialogFooter>
+             <Button type="button" variant="outline" onClick={() => setFillOffer(null)}>
+@@ -1068,7 +1068,7 @@
+               // Молча задизейбленный чекбокс не объясняет, что QR вообще бывает и
+               // что для него нужно: цель выше, а гостю — ещё и аккаунт.
+               <p className="text-xs text-muted-foreground">
+-                QR появится, когда выше указан рецепт.
++                Выберите рецепт выше, чтобы добавить QR-код.
+                 {props.loginHref ? (
+                   <>
+                     {" "}
+--- before/apps/web/components/shared/site-header.tsx
++++ after/apps/web/components/shared/site-header.tsx
+@@ -21,6 +21,15 @@
+   useEffect(() => {
+     setMobileOpen(false);
+   }, [pathname]);
++
++  useEffect(() => {
++    const desktopQuery = window.matchMedia("(min-width: 1280px)");
++    const closeOnDesktop = (event: MediaQueryListEvent) => {
++      if (event.matches) setMobileOpen(false);
++    };
++    desktopQuery.addEventListener("change", closeOnDesktop);
++    return () => desktopQuery.removeEventListener("change", closeOnDesktop);
++  }, []);
+ 
+   // Закрытие по клику вне хедера и по Escape.
+   useEffect(() => {
+@@ -46,7 +55,7 @@
+   }, [mobileOpen]);
+ 
+   return (
+-    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur">
++    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur">
+       <div
+         ref={containerRef}
+         className="relative mx-auto flex h-14 max-w-7xl items-center justify-between gap-x-6 px-6"
+@@ -59,7 +68,7 @@
+           >
+             NB
+           </Link>
+-          <nav className="hidden items-center gap-1 text-sm lg:flex" aria-label="Разделы сайта">
++          <nav className="hidden items-center gap-1 text-sm xl:flex" aria-label="Разделы сайта">
+             {publicLinks.map((link) => {
+               const active = isActivePath(pathname, link.href);
+               return (
+@@ -93,14 +102,14 @@
+             onClick={() => setMobileOpen((value) => !value)}
+             aria-label={mobileOpen ? "Закрыть меню" : "Открыть меню"}
+             aria-expanded={mobileOpen}
+-            className="grid min-h-11 min-w-11 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground lg:hidden"
++            className="grid min-h-11 min-w-11 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground xl:hidden"
+           >
+             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+           </button>
+         </div>
+ 
+         {mobileOpen ? (
+-          <div className="absolute inset-x-0 top-full z-50 border-b border-border bg-popover px-6 py-3 shadow-lg lg:hidden">
++          <div className="absolute inset-x-0 top-full z-50 max-h-[calc(100dvh-3.5rem)] overflow-y-auto border-b border-border bg-popover px-6 py-3 shadow-lg xl:hidden">
+             <nav className="flex flex-col gap-1 text-sm" aria-label="Разделы сайта">
+               {publicLinks.map((link) => {
+                 const active = isActivePath(pathname, link.href);
+--- before/apps/web/components/admin/admin-shell.tsx
++++ after/apps/web/components/admin/admin-shell.tsx
+@@ -69,7 +69,7 @@
+       <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur lg:hidden">
+         <AdminWordmark />
+         <div className="flex items-center gap-1">
+-          <ThemeToggle />
++          <ThemeToggle className="hidden sm:inline-flex" />
+           <button
+             type="button"
+             onClick={() => setDrawerOpen(true)}
+--- before/apps/web/components/recipes/recipe-designer/recipe-designer.tsx
++++ after/apps/web/components/recipes/recipe-designer/recipe-designer.tsx
+@@ -778,14 +778,14 @@
+         title: "Сбраживаемое",
+         subtitle: fermentables.length ? `${fermentableTotalKg.toFixed(2)} кг` : undefined,
+         items: fermentables,
+-        empty: "Добавьте солод, сахар, экстракт или другие сбраживаемые.",
++        empty: "Добавьте солод, сахар, экстракт или другие сбраживаемые ингредиенты.",
+       },
+       {
+         category: "hop",
+         title: "Хмель",
+         subtitle: hops.length ? `${hopTotalG.toFixed(0)} г` : undefined,
+         items: hops,
+-        empty: "Пока нет хмеля. Добавьте кипячение, whirlpool, dry hop или dip hop.",
++        empty: "Добавьте хмель на кипячение, вирпул, сухое охмеление или дип-хоп.",
+         renderItems: (items) => {
+           const usedTypes = recipeHopUseTypeUiOrder.filter(
+             (useType) => useType === "boil" || items.some((item) => getHopUseType(item) === useType)
+@@ -877,7 +877,7 @@
+             ? `${computedWaterAdditiveCount + waterTreatments.length} поз.`
+             : undefined,
+         items: waterTreatments,
+-        empty: "Нет добавок воды.",
++        empty: "Добавки для воды пока не внесены.",
+         renderItems: (items) => (
+           <div className="space-y-3">
+             <RecipeWaterAdditivesSection
+@@ -927,7 +927,7 @@
+         title: "Специи и добавки",
+         subtitle: consumables.length ? `${consumables.length} поз.` : undefined,
+         items: consumables,
+-        empty: "Irish Moss, Whirlfloc, нутриенты, цедру, специи и другие рецептные добавки можно держать здесь."
++        empty: "Добавляйте сюда Irish Moss, Whirlfloc, подкормку для дрожжей, цедру, специи и другие добавки."
+       }
+     ];
+ 
+@@ -1452,8 +1452,8 @@
+         onClose={() => setWaterResetConfirmOpen(false)}
+       />
+ 
+-      <div className="sticky top-[var(--chrome-top)] z-30 -mx-4 flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border/70 bg-card/85 px-4 py-2 backdrop-blur supports-[backdrop-filter]:bg-card/70 sm:px-5">
+-        <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ring-inset ${headerSaveStatusMeta.className}`}>
++      <div data-testid="recipe-toolbar" className="sticky top-[var(--chrome-top)] z-30 -mx-4 flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border/70 bg-card/85 px-4 py-2 backdrop-blur supports-[backdrop-filter]:bg-card/70 sm:px-5">
++        <span aria-label={headerSaveStatusMeta.label} title={headerSaveStatusMeta.label} className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ring-inset ${headerSaveStatusMeta.className}`}>
+           {headerSaveStatusMeta.icon}
+           <span className="hidden sm:inline">{headerSaveStatusMeta.label}</span>
+         </span>
+@@ -1474,26 +1474,26 @@
+             предсказуемые 2 ряда вместо 3, экономя ~высоту экрана (UX-находка #25). */}
+         <dl
+           aria-busy={recalculating}
+-          className={`order-last flex basis-full flex-nowrap items-center gap-x-3 overflow-x-auto text-[11px] tabular-nums text-muted-foreground transition-opacity sm:order-none sm:basis-auto sm:flex-wrap sm:gap-y-1 sm:overflow-visible ${recalculating || previewError ? "opacity-50" : ""}`}
++          className={`order-last flex min-w-0 basis-full flex-nowrap items-center gap-x-3 overflow-x-auto text-[11px] tabular-nums text-muted-foreground transition-opacity sm:order-none sm:basis-auto sm:flex-wrap sm:gap-y-1 sm:overflow-visible ${recalculating || previewError ? "opacity-50" : ""}`}
+         >
+           {headerMetrics.map((metric) => (
+-            <div key={metric.label} className="flex items-baseline gap-1">
++            <div key={metric.label} className="flex shrink-0 items-baseline gap-1 whitespace-nowrap">
+               <dt className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{metric.label}</dt>
+               <dd className="font-semibold text-foreground">
+                 {metric.value}
+-                {metric.range ? <span className="ml-1 font-normal text-muted-foreground">({metric.range})</span> : null}
+-                {metric.secondary ? <span className="ml-1 font-normal text-muted-foreground">· {metric.secondary}</span> : null}
++                {metric.range ? <span className="ml-1 hidden font-normal text-muted-foreground sm:inline">({metric.range})</span> : null}
++                {metric.secondary ? <span className="ml-1 hidden font-normal text-muted-foreground sm:inline">· {metric.secondary}</span> : null}
+               </dd>
+             </div>
+           ))}
+           {headerStyle ? (
+-            <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground ring-1 ring-inset ring-ring">
++            <span className="hidden items-center rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground ring-1 ring-inset ring-ring sm:inline-flex">
+               {getBjcpStyleDisplayName(headerStyle)}
+             </span>
+           ) : null}
+         </dl>
+ 
+-        <div className="ml-auto flex items-center gap-1.5">
++        <div className="ml-auto flex shrink-0 items-center gap-1.5">
+           {canManagePublication && savedVisibility === "published" && activeRecipeSlug ? (
+             <a
+               href={`/recipes/${activeRecipeSlug}`}
+@@ -1511,10 +1511,12 @@
+               type="button"
+               onClick={handlePublishClick}
+               disabled={pendingSave}
++              aria-label="Опубликовать"
++              title="Опубликовать"
+               className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-foreground bg-foreground px-3 text-xs font-medium text-background transition-colors hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-60 sm:px-4 sm:text-sm skin-hop:border-primary skin-hop:bg-primary skin-hop:text-primary-foreground skin-hop:hover:bg-primary/90"
+             >
+               <Globe className="h-3.5 w-3.5" />
+-              Опубликовать
++              <span className="hidden sm:inline">Опубликовать</span>
+             </button>
+           ) : null}
+           {canManagePublication && savedVisibility === "published" ? (
+@@ -1869,7 +1871,7 @@
+                 value={authorNotes}
+                 onChange={(event) => setAuthorNotes(event.target.value)}
+                 className="min-h-28 w-full rounded-xl border border-border bg-muted/50 px-3 py-2.5 text-base text-foreground placeholder:text-muted-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
+-                placeholder="Видны только вам — TODO, лоты, наблюдения с прошлых варок…"
++                placeholder="Видны только вам — планы, партии ингредиентов, наблюдения с прошлых варок…"
+               />
+             </div>
+           </details>
+--- before/apps/web/components/recipes/recipe-actions-menu.tsx
++++ after/apps/web/components/recipes/recipe-actions-menu.tsx
+@@ -2,6 +2,7 @@
+ 
+ import React from "react";
+ import Link from "next/link";
++import { useRouter } from "next/navigation";
+ import { FileText, MoreHorizontal, Sticker, Timer, Trash2 } from "lucide-react";
+ 
+ import { Button, buttonVariants, DropdownMenu, type DropdownMenuItem } from "@nb/ui";
+@@ -24,6 +25,7 @@
+   /** Удаление рецепта; undefined — рецепта в БД ещё нет, удалять нечего. */
+   onDelete?: () => void;
+ }) {
++  const router = useRouter();
+   const items: DropdownMenuItem[] = onDelete
+     ? [{
+       key: "delete",
+@@ -33,11 +35,37 @@
+       onSelect: onDelete
+     }]
+     : [];
++  const mobileItems: DropdownMenuItem[] = [
++    ...(labelsHref ? [{
++      key: "labels",
++      label: "Наклейки",
++      icon: <Sticker className="h-4 w-4" aria-hidden />,
++      onSelect: () => router.push(labelsHref)
++    }] : []),
++    {
++      key: "import-export",
++      label: "Импорт / экспорт",
++      icon: <FileText className="h-4 w-4" aria-hidden />,
++      onSelect: onOpenImportExport,
++      disabled: pending
++    },
++    ...items
++  ];
++  const trigger = (
++    <button
++      type="button"
++      aria-label="Действия с рецептом"
++      title="Действия с рецептом"
++      className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
++    >
++      <MoreHorizontal className="h-5 w-5" aria-hidden />
++    </button>
++  );
+ 
+   return (
+-    <div className="flex flex-wrap items-end gap-2">
++    <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+       {labelsHref ? (
+-        <Link href={labelsHref} className={buttonVariants({ variant: "outline", size: "md" })} aria-label="Наклейки" title="Наклейки">
++        <Link href={labelsHref} className={`${buttonVariants({ variant: "outline", size: "md" })} hidden sm:inline-flex`} aria-label="Наклейки" title="Наклейки">
+           <Sticker className="h-4 w-4 text-muted-foreground" />
+           <span className="hidden sm:inline">Наклейки</span>
+         </Link>
+@@ -46,6 +74,7 @@
+         type="button"
+         variant="outline"
+         size="md"
++        className="hidden sm:inline-flex"
+         onClick={onOpenImportExport}
+         disabled={pending}
+         aria-label="Импорт / экспорт"
+@@ -65,22 +94,13 @@
+         <Timer className="h-4 w-4" />
+         <span className="hidden sm:inline">Сварить</span>
+       </Button>
++      <div className="sm:hidden">
++        <DropdownMenu align="end" aria-label="Действия с рецептом" trigger={trigger} items={mobileItems} />
++      </div>
+       {items.length ? (
+-        <DropdownMenu
+-          align="end"
+-          aria-label="Действия с рецептом"
+-          trigger={
+-            <button
+-              type="button"
+-              aria-label="Действия с рецептом"
+-              title="Действия с рецептом"
+-              className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
+-            >
+-              <MoreHorizontal className="h-5 w-5" aria-hidden />
+-            </button>
+-          }
+-          items={items}
+-        />
++        <div className="hidden sm:block">
++          <DropdownMenu align="end" aria-label="Действия с рецептом" trigger={trigger} items={items} />
++        </div>
+       ) : null}
+     </div>
+   );
+--- before/apps/web/components/calculators/calculator-page-client.tsx
++++ after/apps/web/components/calculators/calculator-page-client.tsx
+@@ -809,7 +809,7 @@
+   size?: "md" | "sm";
+   fill?: boolean;
+ }) {
+-  const buttonSize = size === "md" ? "h-10 text-sm" : "h-8 text-xs";
++  const buttonSize = size === "md" ? "min-h-10 text-xs sm:text-sm" : "min-h-8 text-xs";
+   // Четыре и больше сегментов в один ряд не влезают на узком экране (подписи вроде
+   // «Вскрытая»/«Россыпью» слипаются) — до sm раскладываем их в два столбца.
+   const wraps = fill && options.length > 3;
+@@ -828,7 +828,7 @@
+             type="button"
+             aria-pressed={active}
+             onClick={() => onChange(option.value)}
+-            className={`${fill ? "min-w-0 flex-1" : ""} ${wraps ? "basis-[calc(50%-0.125rem)] sm:basis-0" : ""} rounded-lg px-3 font-medium transition-colors ${buttonSize} ${
++            className={`${fill ? "min-w-0 flex-1" : ""} ${wraps ? "basis-[calc(50%-0.125rem)] sm:basis-0" : ""} rounded-lg px-2 font-medium transition-colors sm:px-3 ${buttonSize} ${
+               active ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+             }`}
+           >
+@@ -1178,7 +1178,7 @@
+           <div className="space-y-3 p-5">
+             <dl className="grid grid-cols-2 gap-3">
+               <div className="min-w-0 rounded-xl border border-border bg-muted/70 px-3 py-2.5">
+-                <dt className="truncate text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">ABV оценка</dt>
++                <dt className="truncate text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Оценка ABV</dt>
+                 <dd className="mt-1 text-lg font-semibold tabular-nums text-foreground">{view.estimatedABV.toFixed(1)}%</dd>
+               </div>
+               <div className={`min-w-0 rounded-xl border px-3 py-2.5 ${
+@@ -1325,7 +1325,7 @@
+             )}
+           </label>
+           <RefractoNumberInput
+-            label="Порция для калорий"
++            label="Объём порции для расчёта калорий"
+             unit="мл"
+             value={state.servingSizeMl}
+             min={1}
+@@ -1502,7 +1502,7 @@
+             <RefractoNumberInput
+               label="Температура калибровки"
+               unit="°C"
+-              helper="Обычно 20 °C, иногда 15,6 °C — смотри на колбе прибора."
++              helper="Обычно 20 °C, иногда 15,6 °C — смотрите на шкале прибора."
+               value={state.calibrationTemperatureC}
+               step={0.5}
+               onChange={(value) => onChange("calibrationTemperatureC", value)}
+@@ -1510,7 +1510,7 @@
+             <RefractoNumberInput
+               label="Поправка прибора"
+               unit={unitLabel}
+-              helper={`Если в дистилляте прибор показывает не ${unit === "SG" ? "1.000" : `0 ${unitLabel}`} — впиши разницу (можно минус).`}
++              helper={`Если в дистиллированной воде прибор показывает не ${unit === "SG" ? "1.000" : `0 ${unitLabel}`} — укажите разницу, в том числе отрицательную.`}
+               value={state.offset}
+               min={-1}
+               step={step}
+@@ -1553,10 +1553,10 @@
+     ? ` Итог включает поправку прибора (${view.offsetInUnit > 0 ? "+" : "−"}${Math.abs(view.offsetInUnit).toFixed(deltaDecimals)} ${unitLabel}).`
+     : "";
+   const directionText = (view.direction === "hot"
+-    ? `Проба теплее калибровки на ${Math.abs(view.tempDeltaC)} °C — сырое показание было занижено, температурная поправка добавлена.`
++    ? `Проба теплее калибровки на ${Math.abs(view.tempDeltaC)} °C — показание без поправки было занижено, температурная поправка добавлена.`
+     : view.direction === "cold"
+-      ? `Проба холоднее калибровки на ${Math.abs(view.tempDeltaC)} °C — сырое показание было завышено, температурная поправка вычтена.`
+-      : "Проба у температуры калибровки — температурная поправка минимальна.") + offsetNote;
++      ? `Проба холоднее калибровки на ${Math.abs(view.tempDeltaC)} °C — показание без поправки было завышено, температурная поправка вычтена.`
++      : "Температура пробы близка к температуре калибровки — температурная поправка минимальна.") + offsetNote;
+ 
+   return (
+     <aside id="calculator-result" className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
+@@ -1626,7 +1626,7 @@
+   const unitLabel = DILUTION_GRAVITY_UNIT_OPTIONS.find((option) => option.value === unit)?.label ?? unit;
+   const gravityStep = unit === "SG" ? 0.001 : 0.1;
+   const findOptions = dilutionFindOptions[operation];
+-  // К17: «Объём замерен горячим» — по умолчанию выключено (значит объём уже холодный, как и
++  // К17: «Объём измерен на горячем сусле» — по умолчанию выключено (значит объём уже холодный, как и
+   // было раньше). Предпросмотр под чекбоксом считает тем же коэффициентом, что и ядро
+   // (HOT_WORT_COOLING_SHRINKAGE), чтобы не заводить второе магическое число в UI.
+   const currentVolumeMeasuredHot = String(state.currentVolumeMeasuredHot ?? "0") === "1";
+@@ -1729,11 +1729,11 @@
+             className="mt-0.5"
+           />
+           <span>
+-            Объём замерен горячим
++            Объём измерен на горячем сусле
+             <span className="mt-0.5 block text-xs font-normal leading-4 text-muted-foreground">
+               {currentVolumeMeasuredHot
+                 ? `Сразу после кипячения, пока сусло горячее — учитываем усадку при остывании: станет ≈ ${coldVolumePreview}`
+-                : "Отметьте, если «Текущий объём» замерен сразу после кипячения — при остывании сусло усаживается примерно на 4%"}
++                : "Отметьте, если «Текущий объём» замерен сразу после кипячения — при остывании объём сусла уменьшается примерно на 4%"}
+             </span>
+           </span>
+         </label>
+@@ -1923,7 +1923,7 @@
+   // (convertGravityOffsetValue), а не как абсолютная плотность.
+   offsetFields?: string[];
+   mapPref: (unit: PreferredGravityUnit) => CalculatorGravityUnit;
+-  // Значение поля — не всегда «чистая» плотность: у рефрактометра Brix — сырое показание
++  // Значение поля — не всегда «чистая» плотность: у рефрактометра Brix — показание без поправки
+   // прибора, а SG/°P — истинная плотность, и конверсия между ними обязана видеть state
+   // (WCF). Без хука — обычная convertGravityFieldValue.
+   convertValue?: (state: CalculatorState, rawValue: unknown, fromUnit: CalculatorGravityUnit, toUnit: CalculatorGravityUnit) => string;
+@@ -2171,8 +2171,8 @@
+     .filter((link) => isVisibleCalculatorLink(link.href, visibleCalculatorSlugs));
+ 
+   const gridClassName = isRefractometer
+-    ? "grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-6"
+-    : "grid gap-4 lg:grid-cols-[minmax(0,1fr)_22rem]";
++    ? "grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-6"
++    : "grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_22rem]";
+ 
+   // keg-carbonation и unit-converter не имеют generic-состояния/результата (свои блоки,
+   // своя логика) — для них нет ни липкого мобильного бара, ни ссылки на расчёт.
+@@ -2188,7 +2188,7 @@
+         <UnitConverterBlock state={state} onChange={handleFieldChange} onReset={resetState} />
+       ) : (
+         <div className={gridClassName}>
+-          <section className="space-y-4">
++          <section className="min-w-0 space-y-4">
+             {isRefractometer ? (
+               <RefractometerFieldsBlock state={state} onChange={handleFieldChange} onReset={resetState} />
+             ) : isAbv ? (
+--- before/apps/web/components/admin/admin-data-table.tsx
++++ after/apps/web/components/admin/admin-data-table.tsx
+@@ -109,7 +109,7 @@
+ 
+   return (
+     <div className={className}>
+-      <div className="hidden overflow-x-auto rounded-lg border border-border bg-card lg:block">
++      <div className="relative hidden overflow-x-auto rounded-lg border border-border bg-card lg:block">
+         <Table>
+           <TableHeader>
+             <TableRow>
+--- before/apps/web/components/content/bjcp-catalog.tsx
++++ after/apps/web/components/content/bjcp-catalog.tsx
+@@ -1,6 +1,6 @@
+ "use client";
+ 
+-import React, { Fragment, useDeferredValue, useEffect, useMemo, useRef, useState, useTransition } from "react";
++import React, { Fragment, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, useTransition } from "react";
+ import Link from "next/link";
+ import { usePathname, useRouter, useSearchParams } from "next/navigation";
+ import {
+@@ -159,7 +159,7 @@
+   const pathname = usePathname();
+   const router = useRouter();
+   const searchParams = useSearchParams();
+-  const [isPending, startTransition] = useTransition();
++  const [, startTransition] = useTransition();
+ 
+   const searchParamsKey = searchParams.toString();
+   const state = useMemo(
+@@ -185,6 +185,17 @@
+   }, [state.q]);
+ 
+   useEffect(() => {
++    const restoreSearch = () => {
++      // Назад/вперёд отменяет ещё не применённый ввод, иначе debounce мог бы
++      // переписать только что восстановленную запись истории старым черновиком.
++      setSearchInput(new URL(window.location.href).searchParams.get("q") ?? "");
++      setIsSearchFocused(false);
++    };
++    window.addEventListener("popstate", restoreSearch);
++    return () => window.removeEventListener("popstate", restoreSearch);
++  }, []);
++
++  useEffect(() => {
+     if (!isFiltersOpen) {
+       setDraftFilters(state.filters);
+     }
+@@ -194,26 +205,24 @@
+     setActiveSuggestionIndex(0);
+   }, [deferredSearch]);
+ 
+-  const currentHref = buildBjcpCatalogHref(pathname, state);
+-
+-  const navigateHref = (href: string, mode: "push" | "replace" = "push") => {
+-    if (href === currentHref) {
++  const navigateHref = useCallback((href: string, mode: "push" | "replace" = "push") => {
++    if (href === `${window.location.pathname}${window.location.search}`) {
+       return;
+     }
+ 
+-    startTransition(() => {
+-      if (mode === "replace") {
+-        router.replace(href, { scroll: false });
+-        return;
+-      }
+-
+-      router.push(href, { scroll: false });
+-    });
+-  };
+-
+-  const navigateState = (nextState: BjcpCatalogState, mode: "push" | "replace" = "push") => {
++    // Весь каталог уже загружен в props. Меняем только клиентские фильтры:
++    // History API обновляет useSearchParams без RSC-запроса и поздних ответов,
++    // которые могли возвращать старый запрос после нового ввода или очистки.
++    if (mode === "replace") {
++      window.history.replaceState(null, "", href);
++    } else {
++      window.history.pushState(null, "", href);
++    }
++  }, []);
++
++  const navigateState = useCallback((nextState: BjcpCatalogState, mode: "push" | "replace" = "push") => {
+     navigateHref(buildBjcpCatalogHref(pathname, nextState), mode);
+-  };
++  }, [navigateHref, pathname]);
+ 
+   useEffect(() => {
+     const trimmedInput = searchInput.trim();
+@@ -415,7 +424,7 @@
+   return (
+     <div className="space-y-6">
+       <section className="relative z-30 space-y-5 rounded-[2rem] border border-card/80 bg-card/90 p-5 shadow-[0_36px_100px_-72px_rgba(15,23,42,0.45)] backdrop-blur sm:p-6">
+-        <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
++        <nav aria-label="Навигационная цепочка" className="text-sm text-muted-foreground">
+           <ol className="flex flex-wrap items-center gap-2">
+             <li><Link href="/" className="transition hover:text-foreground">Главная</Link></li>
+             <li aria-hidden="true">/</li>
+@@ -708,7 +717,7 @@
+               </h2>
+ 
+               <span className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground">
+-                {results.styles.length} стилей
++                {formatStyleCountLabel(results.styles.length)}
+               </span>
+             </div>
+ 
+@@ -809,7 +818,7 @@
+             </h2>
+ 
+             <span className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground">
+-              {results.styles.length} стилей
++              {formatStyleCountLabel(results.styles.length)}
+             </span>
+           </div>
+ 
+--- before/apps/web/app/(public)/articles/[slug]/page.tsx
++++ after/apps/web/app/(public)/articles/[slug]/page.tsx
+@@ -7,7 +7,7 @@
+ import { TiptapContent } from "@/components/content/tiptap-content";
+ import { contentArticleTypeLabels } from "@/features/content-articles/contracts";
+ import { getRelatedLinksForArticle } from "@/features/content-articles/related-links";
+-import { buildArticleBlogPostingJsonLd, buildArticleНавигационная цепочкаJsonLd, buildArticleMetadata } from "@/features/content-articles/seo";
++import { buildArticleBlogPostingJsonLd, buildArticleBreadcrumbJsonLd, buildArticleMetadata } from "@/features/content-articles/seo";
+ import { getPublishedContentArticleBySlug } from "@/features/content-articles/service";
+ import { jsonLdScriptProps } from "@/features/ingredients/seo";
+ import { getServerEnv } from "@/lib/env";
+@@ -55,7 +55,7 @@
+ 
+   const { APP_URL } = getServerEnv();
+   const blogPostingJsonLd = buildArticleBlogPostingJsonLd(article, { baseUrl: APP_URL });
+-  const breadcrumbJsonLd = buildArticleНавигационная цепочкаJsonLd(article, { baseUrl: APP_URL });
++  const breadcrumbJsonLd = buildArticleBreadcrumbJsonLd(article, { baseUrl: APP_URL });
+   const relatedLinks = getRelatedLinksForArticle(article.slug);
+   const publishedLabel = article.publishedAt ? dateFmt.format(article.publishedAt) : null;
+ 
+--- before/apps/web/app/(public)/calculators/[slug]/calculator-page-view.tsx
++++ after/apps/web/app/(public)/calculators/[slug]/calculator-page-view.tsx
+@@ -7,7 +7,7 @@
+ import { calculatorHasStickyResultBar, type CalculatorDefinition } from "@/features/calculators/definitions";
+ import type { CalculatorSlug } from "@/features/calculators/catalog";
+ import { getVisibleCalculatorSlugs } from "@/features/calculators/visibility";
+-import { buildCalculatorНавигационная цепочкаJsonLd, buildCalculatorWebAppJsonLd } from "@/features/calculators/seo";
++import { buildCalculatorBreadcrumbJsonLd, buildCalculatorWebAppJsonLd } from "@/features/calculators/seo";
+ import { jsonLdScriptProps } from "@/features/ingredients/seo";
+ import { getServerEnv } from "@/lib/env";
+ 
+@@ -23,7 +23,7 @@
+   visibleCalculatorSlugs?: CalculatorSlug[];
+ }) {
+   const baseUrl = getServerEnv().APP_URL;
+-  const breadcrumbJsonLd = buildCalculatorНавигационная цепочкаJsonLd(definition.catalog, { baseUrl });
++  const breadcrumbJsonLd = buildCalculatorBreadcrumbJsonLd(definition.catalog, { baseUrl });
+   const webAppJsonLd = buildCalculatorWebAppJsonLd(definition.catalog, { baseUrl });
+   const isRefractometer = definition.catalog.slug === "refractometer-correction";
+   // На мобильном липкий бар результата (см. CalculatorPageClient) перекрывает нижнюю часть
+--- before/apps/web/components/content/bjcp-article-page.tsx
++++ after/apps/web/components/content/bjcp-article-page.tsx
+@@ -34,12 +34,12 @@
+   .filter((calculator): calculator is (typeof calculators)[number] => Boolean(calculator));
+ 
+ /** Строит те же URL, что и видимые крошки страницы стиля (см. breadcrumb ниже). */
+-const buildBjcpArticleНавигационная цепочкаJsonLd = (article: ContentArticle, params: { baseUrl: string }) => {
++const buildBjcpArticleBreadcrumbJsonLd = (article: ContentArticle, params: { baseUrl: string }) => {
+   const base = params.baseUrl.replace(/\/$/, "");
+ 
+   return {
+     "@context": "https://schema.org",
+-    "@type": "Навигационная цепочкаList",
++    "@type": "BreadcrumbList",
+     itemListElement: [
+       { "@type": "ListItem", position: 1, name: "Стили пива", item: `${base}/bjcp` },
+       { "@type": "ListItem", position: 2, name: `кат. ${article.category.nameRu}`, item: `${base}/bjcp` }
+@@ -479,7 +479,7 @@
+     : undefined;
+   const passportStats = passportStatDefinitions.map((definition) => resolvePassportStat(article, definition, catalogStyle));
+   const { APP_URL } = getServerEnv();
+-  const breadcrumbJsonLd = buildBjcpArticleНавигационная цепочкаJsonLd(article, { baseUrl: APP_URL });
++  const breadcrumbJsonLd = buildBjcpArticleBreadcrumbJsonLd(article, { baseUrl: APP_URL });
+ 
+   return (
+     <StyleRecipesProvider styleCode={article.bjcpId} initial={initialStyleRecipes}>
+--- before/apps/web/tests/brew-volume-choice.test.tsx
++++ after/apps/web/tests/brew-volume-choice.test.tsx
+@@ -124,7 +124,7 @@
+     );
+ 
+     expect(html).toContain('aria-pressed="true"');
+-    expect(html).toContain("Количества ингредиентов пересчитаны на 20 л");
++    expect(html).toContain("Количество ингредиентов пересчитано на 20 л");
+   });
+ 
+   it("эффективность разошлась → предупреждает про дожим засыпи (солода спишется больше)", () => {
+@@ -158,7 +158,7 @@
+       />
+     );
+ 
+-    expect(html).toContain("Количества ингредиентов пересчитаны на 20 л");
++    expect(html).toContain("Количество ингредиентов пересчитано на 20 л");
+     expect(html).not.toContain("Засыпь");
+   });
+ });
+--- before/apps/web/tests/equipment-profiles-page.test.ts
++++ after/apps/web/tests/equipment-profiles-page.test.ts
+@@ -173,9 +173,9 @@
+     expect(html).not.toContain("Потери и кипячение");
+     expect(html).not.toContain("Кипячение, мин");
+     expect(html).not.toContain("Вода / затор");
+-    expect(html).toContain("Ещё параметры (опционально)");
+-    expect(html).toContain("Макс. объём котла, л (опц)");
+-    expect(html).toContain("Макс. объём заторника, л (опц.)");
++    expect(html).toContain("Дополнительные параметры (необязательно)");
++    expect(html).toContain("Макс. объём котла, л (необязательно)");
++    expect(html).toContain("Макс. объём заторника, л (необязательно)");
+     expect(html).not.toContain("Dead space заторника");
+     expect(html).not.toContain("Dead space промывки");
+     expect(html).not.toContain("Долив воды");
+@@ -201,7 +201,7 @@
+     expect(html).toContain("Гидромодуль, л/кг");
+     expect(html).not.toContain("Потери</h3>");
+     expect(html).not.toContain("Вода / затор");
+-    expect(html).toContain("Ещё параметры (опционально)");
++    expect(html).toContain("Дополнительные параметры (необязательно)");
+     expect(html).not.toContain("Кипячение, мин");
+     expect(html).not.toContain("Дополнительно");
+     expect(html).not.toContain("Dead space заторника");
+--- before/apps/web/tests/ingredient-catalog-metadata-ui.test.ts
++++ after/apps/web/tests/ingredient-catalog-metadata-ui.test.ts
+@@ -719,7 +719,7 @@
+       params: Promise.resolve({ source: "system", id: "catalog-hop-1" })
+     }));
+ 
+-    expect(html).toContain('aria-label="Breadcrumb"');
++    expect(html).toContain('aria-label="Навигационная цепочка"');
+     expect(html).toContain('aria-current="page"');
+     expect(html).toContain("BreadcrumbList");
+   });
+--- before/apps/web/tests/inventory-add-flow.test.ts
++++ after/apps/web/tests/inventory-add-flow.test.ts
+@@ -1086,7 +1086,7 @@
+         { label: "Цвет", value: "3.5 EBC" },
+         { label: "Экстрактивность", value: "81%" }
+       ],
+-      statusBadgeLabel: "ИЗМЕНЕННЫЙ"
++      statusBadgeLabel: "ИЗМЕНЁННЫЙ"
+     });
+ 
+     expect(resolveCatalogBatchOverrideSummaryState({
+@@ -1232,7 +1232,7 @@
+     })).toEqual({
+       isDerivedVariantFlow: true,
+       submitLabel: "Добавить как свой вариант",
+-      noticeText: "Сохранится как ваш измененный вариант ингредиента.",
++      noticeText: "Сохранится как ваш изменённый вариант ингредиента.",
+       inlineHelper: "Каталог не изменится."
+     });
+ 
+--- before/apps/web/tests/inventory-page-foundation.test.ts
++++ after/apps/web/tests/inventory-page-foundation.test.ts
+@@ -223,7 +223,7 @@
+ 
+     expect(html).toContain("Всего позиций");
+     expect(html).toContain("В наличии");
+-    expect(html).toContain("Пустые");
++    expect(html).toContain("Закончились");
+     expect(html).toContain("Сбраживаемые");
+     expect(html).toContain("Хмель");
+   });
+--- before/apps/web/tests/recipe-editor-components.test.ts
++++ after/apps/web/tests/recipe-editor-components.test.ts
+@@ -629,7 +629,7 @@
+       })
+     );
+ 
+-    expect(html).toContain("Предпросмотр статистики");
++    expect(html).toContain("Расчётные показатели");
+     expect(html).toContain("НП");
+     expect(html).toContain("20 л");
+   });
+@@ -710,10 +710,9 @@
+     expect(html).toContain("Со склада");
+   });
+ 
+-  // B2: удалить рецепт можно прямо из редактора (kebab → «Удалить рецепт» с подтверждением).
+-  // Содержимое DropdownMenu живёт в Radix-портале и в статическую разметку не попадает —
+-  // проверяем сам триггер: он появляется, только когда рецепт уже есть в БД.
+-  it("kebab «Действия с рецептом» есть у сохранённого рецепта и отсутствует у несохранённого", () => {
++  // На телефоне импорт/экспорт находится в меню даже у нового рецепта.
++  // Открытие пунктов и переход menu → dialog проверяет mobile-audit.spec.ts.
++  it("меню действий доступно у сохранённого и нового рецепта", () => {
+     const editHtml = renderDesignerMarkup({
+       mode: "edit",
+       initialRecipe: buildRecipeDetail(),
+@@ -722,7 +721,7 @@
+     const createHtml = renderDesignerMarkup({ mode: "create", preferredGravityUnit: "plato" });
+ 
+     expect(editHtml).toContain("Действия с рецептом");
+-    expect(createHtml).not.toContain("Действия с рецептом");
++    expect(createHtml).toContain("Действия с рецептом");
+   });
+ 
+   // B2 (после ревью Н4): порог создания записи в БД — содержание ИЛИ личность.
+--- before/apps/web/tests/recipe-water-flow-ui.test.ts
++++ after/apps/web/tests/recipe-water-flow-ui.test.ts
+@@ -219,7 +219,7 @@
+       html.indexOf("Расширенные настройки"),
+     );
+     expect(html).toContain("Молочная кислота");
+-    expect(html).toContain("Считать пищевую соду (NaHCO3) в авторасчёте");
++    expect(html).toContain("Учитывать пищевую соду (NaHCO3) в авторасчёте");
+     expect(html).not.toContain("добавки рассчитаны");
+     expect(html).not.toContain("Lactic Acid");
+     expect(html).not.toContain("Только минерализация");
+@@ -379,7 +379,7 @@
+ 
+     expect(savedProfiles).toHaveLength(1);
+     expect(getNextSavedSourceWaterProfileName(savedProfiles)).toBe(
+-      "Сохраненный профиль 2",
++      "Сохранённый профиль 2",
+     );
+     expect(meta.sourceProfileMode).toBe("saved");
+     expect(meta.sourceProfileSavedId).toBe("profile-1");
+@@ -663,8 +663,8 @@
+       }),
+     );
+ 
+-    expect(html).toContain("Добавки воды");
+-    expect(html).toContain("Нет добавок воды");
++    expect(html).toContain("Добавки для воды");
++    expect(html).toContain("Добавки для воды пока не внесены");
+     expect(html).not.toContain("Примененный план");
+     expect(html).not.toContain("Применен");
+     expect(html).not.toContain("Не применен");
+@@ -715,7 +715,7 @@
+       }),
+     );
+ 
+-    expect(html).toContain("Нет добавок воды");
++    expect(html).toContain("Добавки для воды пока не внесены");
+     expect(html).not.toContain("Итоговый профиль воды");
+   });
+ 
+@@ -807,7 +807,7 @@
+     const html = renderWaterBlock(manual);
+ 
+     expect(getNextSavedSourceWaterProfileName([])).toBe(
+-      "Сохраненный профиль 1",
++      "Сохранённый профиль 1",
+     );
+     expect(html).toContain("Сохранить");
+     expect(html).not.toContain("Название профиля");
+--- before/apps/web/tests/recipes-page.test.ts
++++ after/apps/web/tests/recipes-page.test.ts
+@@ -80,7 +80,7 @@
+     const html = renderToStaticMarkup(React.createElement(ToastProvider, null, el));
+ 
+     expect(mocks.searchPublicRecipes).toHaveBeenCalledWith(filters);
+-    expect(html).toContain("Найдено 1 рецепт");
++    expect(html).toContain("Найден 1 рецепт");
+     expect(html).toContain("Hazy IPA");
+     expect(html).toContain('href="/recipes/hazy-ipa"');
+   });
+@@ -94,7 +94,7 @@
+     // RecipeSaveButton внутри карточек рендерится через useToast() — нужен ToastProvider.
+     const html = renderToStaticMarkup(React.createElement(ToastProvider, null, el));
+ 
+-    expect(html).toContain('aria-label="Пагинация"');
++    expect(html).toContain('aria-label="Навигация по страницам"');
+     expect(html).toContain('href="/recipes?sort=abv_desc&amp;page=2"');
+   });
+ 
+--- before/apps/web/tests/recipes-read-components.test.ts
++++ after/apps/web/tests/recipes-read-components.test.ts
+@@ -151,8 +151,8 @@
+     expect(html).toContain("Ключевые показатели");
+     expect(html).toContain("OG");
+     expect(html).not.toContain("Прогноз по умолчанию");
+-    expect(html).not.toContain("Ручная attenuation");
+-    expect(html).not.toContain("Ручной FG");
++    expect(html).not.toContain("Аттенюация задана вручную");
++    expect(html).not.toContain("FG задана вручную");
+     expect(html).toContain("ABV");
+     expect(html).toContain("IBU");
+     // Вторая (дублирующая) единица рядом с OG/FG — при основной Plato это SG.
+@@ -220,7 +220,7 @@
+       )
+     );
+ 
+-    expect(html).toContain("Размер партии — 20 л, при эффективности 75%");
++    expect(html).toContain("Объём партии — 20 л, при эффективности 75%");
+     expect(html).toContain("Ингредиенты");
+     expect(html).toContain("Pilsner Malt");
+     expect(html).toContain("Castle Malting");
+@@ -430,7 +430,7 @@
+ 
+     expect(html).not.toContain("Публичный");
+     expect(html).toContain("Ключевые показатели");
+-    expect(html).toContain("Размер партии — 20 л, при эффективности 75%");
++    expect(html).toContain("Объём партии — 20 л, при эффективности 75%");
+     expect(html).toContain("Пересчитать под свои параметры");
+     expect(html).toContain("Ингредиенты");
+     // Объём и кипячение убраны из шапки — живут над ингредиентами / в процессе.
+--- before/apps/web/tests/shopping-page-view.test.ts
++++ after/apps/web/tests/shopping-page-view.test.ts
+@@ -386,7 +386,7 @@
+   it("рендерит полный EmptyState при nothing_to_do", () => {
+     const html = render(baseDto({ emptyReason: "nothing_to_do" }));
+ 
+-    expect(html).toContain("Нехваток пока нет");
++    expect(html).toContain("Список покупок пока пуст");
+     expect(html).toContain("К рецептам");
+     expect(html).toContain("Мои партии");
+     expect(html).not.toContain("Почти хватает на:");
+@@ -404,7 +404,7 @@
+ 
+     expect(html).toContain("Всё нужное уже на складе");
+     expect(html).toContain("Почти хватает на:");
+-    expect(html).not.toContain("Нехваток пока нет");
++    expect(html).not.toContain("Список покупок пока пуст");
+   });
+ });
+ 
+@@ -458,7 +458,7 @@
+   it("EmptyState (nothing_to_do) содержит кнопку «Добавить позицию»", () => {
+     const html = render(baseDto({ emptyReason: "nothing_to_do" }));
+ 
+-    expect(html).toContain("Нехваток пока нет");
++    expect(html).toContain("Список покупок пока пуст");
+     expect(html).toContain("Добавить позицию");
+   });
+ 
+--- before/apps/web/tests/articles-detail-page-wiring.test.ts
++++ after/apps/web/tests/articles-detail-page-wiring.test.ts
+@@ -125,7 +125,7 @@
+ 
+     expect(html).toContain("Как сварить первое пиво");
+     expect(html).toContain("санитайзинг оборудования");
+-    expect(html).toContain('aria-label="Breadcrumb"');
++    expect(html).toContain('aria-label="Навигационная цепочка"');
+     expect(html).toContain("application/ld+json");
+     expect(html).toContain("BlogPosting");
+     expect(html).toContain("BreadcrumbList");
+--- before/apps/web/tests/brew-batches-page-wiring.test.ts
++++ after/apps/web/tests/brew-batches-page-wiring.test.ts
+@@ -266,7 +266,7 @@
+     expect(html).toContain("Итог партии");
+     expect(html).toContain("Склад");
+     expect(html).toContain("Пильзнер");
+-    expect(html).toContain("История движений");
++    expect(html).toContain("История запасов");
+     expect(html).toContain("партия №1");
+   });
+ 
+@@ -297,7 +297,7 @@
+     expect(html).toContain("Заметки о варке");
+     expect(html).not.toContain('id="tasting-notes"');
+     // Склад остаётся доступным и в архиве — что списано и что вернулось.
+-    expect(html).toContain("История движений");
++    expect(html).toContain("История запасов");
+   });
+ });
+ 
+--- before/apps/web/tests/brew-inventory-prep.test.tsx
++++ after/apps/web/tests/brew-inventory-prep.test.tsx
+@@ -203,7 +203,7 @@
+     expect(html).toContain("Склад");
+     expect(html).toContain("Списано");
+     expect(html).toContain("Пильзнер");
+-    expect(html).toContain("История движений");
++    expect(html).toContain("История запасов");
+     expect(html).not.toContain("Списать со склада");
+   });
+ 
+--- before/apps/web/tests/calculators-pages.test.ts
++++ after/apps/web/tests/calculators-pages.test.ts
+@@ -155,7 +155,7 @@
+       }
+ 
+       // Видимые крошки + синхронный BreadcrumbList JSON-LD с той же сущностью.
+-      expect(html).toContain('aria-label="Breadcrumb"');
++      expect(html).toContain('aria-label="Навигационная цепочка"');
+       expect(html).toContain("Калькуляторы");
+       expect(html).toContain(calculator.shortTitle);
+       expect(html).toContain('"@type":"BreadcrumbList"');
+--- before/apps/web/tests/consume-preview-dialog.test.tsx
++++ after/apps/web/tests/consume-preview-dialog.test.tsx
+@@ -84,7 +84,7 @@
+ 
+     expect(html).toContain("US-05");
+     expect(html).toContain("−11 г");
+-    expect(html).toContain("В лоте 11 г");
++    expect(html).toContain("В партии закупки 11 г");
+     expect(html).toContain("Нужно 22 г; спишем 11 г");
+     expect(html).toContain("text-warning");
+     expect(html).not.toContain("checkbox");
+@@ -108,7 +108,7 @@
+     };
+ 
+     const uncheckedHtml = renderRow(line, { checked: false, inventoryItemId: "ii-sub" });
+-    expect(uncheckedHtml).toContain("В лоте 500 г");
++    expect(uncheckedHtml).toContain("В партии закупки 500 г");
+     // Формулировка одна на оба значения exactClamps — сервер клампит короткую
+     // строку в любом случае (Ф4, partial-режим), замена лишь предпочтительнее.
+     expect(uncheckedHtml).toContain("Нужно 2 кг; спишем 500 г");
+--- before/apps/web/tests/ingredient-proposal-moderation-actions.test.ts
++++ after/apps/web/tests/ingredient-proposal-moderation-actions.test.ts
+@@ -129,7 +129,7 @@
+     });
+ 
+     expect(fields).toEqual([
+-      { key: "category", label: "Категория", value: "Ферментируемые" },
++      { key: "category", label: "Категория", value: "Сбраживаемые" },
+       { key: "type", label: "Тип", value: "Хмель" },
+       { key: "subtype", label: "Подтип", value: "солод" },
+       { key: "brand", label: "Бренд", value: "Курский солод" },
+--- before/apps/web/tests/recipe-fg-estimate.test.ts
++++ after/apps/web/tests/recipe-fg-estimate.test.ts
+@@ -475,8 +475,8 @@
+   });
+ 
+   it("uses short manual override labels", () => {
+-    expect(resolveRecipeFgSourceLabel("manual_attenuation_override", null)).toBe("Ручная attenuation");
+-    expect(resolveRecipeFgSourceLabel("manual_fg_override", null)).toBe("Ручной FG");
++    expect(resolveRecipeFgSourceLabel("manual_attenuation_override", null)).toBe("Аттенюация задана вручную");
++    expect(resolveRecipeFgSourceLabel("manual_fg_override", null)).toBe("FG задана вручную");
+   });
+ 
+   it("updates ABV when the new FG estimate changes", () => {
+--- before/apps/web/tests/recipe-match-panel.test.ts
++++ after/apps/web/tests/recipe-match-panel.test.ts
+@@ -126,7 +126,7 @@
+     ]));
+ 
+     expect(html).toContain("Weyermann");
+-    expect(html).toContain("Ферментируемые");
++    expect(html).toContain("Сбраживаемые");
+     expect(html).toMatch(/viewBox="0 0 18 12"/);
+     expect(html).toContain("#DD0000");
+   });
+--- before/apps/web/features/brew-controller/brew-recipe-flow.test.ts
++++ after/apps/web/features/brew-controller/brew-recipe-flow.test.ts
+@@ -106,7 +106,7 @@
+     expect(result.heatingStarted).toBe(false);
+     expect(result.brewBatchId).toBe("batch-3");
+     expect(result.reason).toBe("REJECTED_INTERLOCK");
+-    expect(result.message).toContain("интерлок");
++    expect(result.message).toContain("защитой устройства");
+   });
+ 
+   it("рецепт недоступен: партия не создаётся, устройство не трогаем, id партии — null", async () => {
+--- before/apps/web/features/brew-controller/ferment-profile.test.ts
++++ after/apps/web/features/brew-controller/ferment-profile.test.ts
+@@ -242,7 +242,7 @@
+ 
+   it("hours=0 (держать вручную) → dayLabel без счётчика дней", () => {
+     const progress = buildFermentProgress({ steps, currentIndex: 2, elapsedSec: 5 * 86_400 });
+-    expect(progress.dayLabel).toBe("держится вручную");
++    expect(progress.dayLabel).toBe("до ручного перехода");
+   });
+ 
+   it("подписи ступеней берутся из плана, когда он опознан", () => {
+--- before/apps/web/features/device-streams/alerts.test.ts
++++ after/apps/web/features/device-streams/alerts.test.ts
+@@ -299,7 +299,7 @@
+ 
+     expect(mocks.sendPushToUser).toHaveBeenCalledTimes(1);
+     const [, payload] = mocks.sendPushToUser.mock.calls[0]!;
+-    expect(payload.title).toBe("Брожение не началось?: IPA №7");
++    expect(payload.title).toBe("Брожение не началось? IPA №7");
+     expect(payload.body).toContain("проверьте дрожжи");
+   });
+ 
+@@ -322,7 +322,7 @@
+ 
+     expect(mocks.sendPushToUser).toHaveBeenCalledTimes(1);
+     const [, payload] = mocks.sendPushToUser.mock.calls[0]!;
+-    expect(payload.title).toBe("Похоже, добродило: IPA №7");
++    expect(payload.title).toBe("Брожение, похоже, завершилось: IPA №7");
+     expect(payload.body).toBe("Стабильно 3 дн. Перед розливом подтвердите плотность ареометром.");
+     expect(payload.tag).toBe(`ferment-likely_done-${SESSION_ID}`);
+   });
+--- before/apps/web/components/beer/beer-presentation.tsx
++++ after/apps/web/components/beer/beer-presentation.tsx
+@@ -173,7 +173,7 @@
+ 
+       {/* Одна колонка, прижатая к низу: имя → паспорт → описание → действия.
+           Контент короткий, поэтому на всех экранах помещается без скролла. */}
+-      <div className="relative mx-auto flex w-full max-w-5xl flex-1 flex-col justify-end gap-6 px-6 pb-10 pt-12 sm:gap-7 sm:pb-12">
++      <div className="relative mx-auto flex w-full max-w-5xl flex-1 flex-col justify-end gap-6 px-6 pb-10 pt-12 max-[359px]:gap-4 max-[359px]:px-4 max-[359px]:pb-6 max-[359px]:pt-10 sm:gap-7 sm:pb-12">
+         <div>
+           {beer.style ? (
+             <p className="text-[11px] font-medium uppercase tracking-[0.28em] sm:text-xs" style={{ color: accent }}>
+@@ -234,7 +234,7 @@
+           </div>
+         ) : null}
+ 
+-        <div className="flex flex-wrap items-center gap-x-5 gap-y-4 border-t border-white/10 pt-5">
++        <div className="flex flex-wrap items-center gap-x-5 gap-y-4 border-t border-white/10 pt-5 max-[359px]:gap-y-3 max-[359px]:pt-4">
+           {authorName ? (
+             <div className="flex items-center gap-2.5">
+               {beer.author.image ? (

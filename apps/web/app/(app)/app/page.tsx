@@ -315,20 +315,12 @@ function InventoryWidget({ summary }: { summary: InventorySummaryDto }) {
       <div className="flex flex-col gap-3 rounded-2xl border border-dashed border-border bg-card p-5">
         <WidgetLabel>Склад</WidgetLabel>
         <p className="text-sm text-muted-foreground">Добавьте ингредиенты — рецепты покажут, чего хватает для варки.</p>
-        <div className="mt-auto flex flex-wrap gap-2 pt-1">
-          <Link
-            href="/catalog"
-            className="inline-flex items-center rounded-full bg-foreground px-3 py-1.5 text-xs font-semibold text-background transition-colors hover:bg-foreground/90"
-          >
-            Каталог
-          </Link>
-          <Link
-            href="/app/ingredients"
-            className="inline-flex items-center rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold text-foreground transition-colors hover:border-border"
-          >
-            Склад
-          </Link>
-        </div>
+        <Link
+          href="/app/ingredients"
+          className="mt-auto inline-flex w-fit items-center rounded-full bg-foreground px-3 py-1.5 text-xs font-semibold text-background transition-colors hover:bg-foreground/90"
+        >
+          Добавить на склад
+        </Link>
       </div>
     );
   }
@@ -533,7 +525,7 @@ export default async function AppZonePage() {
       countBrewBatchesForUser(user.id),
       listUserDevices(user.id),
       buildShoppingListForUser(user.id),
-      listFavoriteCalculators(user.id)
+      listFavoriteCalculators(user.id, user.role)
     ]);
 
   const now = new Date();
@@ -581,7 +573,6 @@ export default async function AppZonePage() {
 
   const discoverStrip = (
     <section className="space-y-3">
-      <SectionHeader title="Полезное рядом" />
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {discoverLinks.map((link) => {
           const Icon = link.icon;

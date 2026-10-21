@@ -123,6 +123,11 @@ function StreamDeviceTileCard({
         <div className="min-w-0 space-y-1">
           <div className="flex items-center gap-2">
             <h3 className="truncate text-base font-semibold text-foreground">{tile.name}</h3>
+            {tile.isDemo ? (
+              <span className="inline-flex shrink-0 items-center rounded bg-indigo-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300">
+                Демо
+              </span>
+            ) : null}
             {isFreshRapt ? (
               <span className="inline-flex shrink-0 items-center rounded bg-indigo-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300">
                 обнаружен

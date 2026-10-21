@@ -1,0 +1,42 @@
+{
+  "result": "all stages restored their exact pre-stage bytes",
+  "order": [
+    {
+      "stage": "07",
+      "files": 4,
+      "before_sha256_verified": true
+    },
+    {
+      "stage": "06",
+      "files": 2,
+      "before_sha256_verified": true
+    },
+    {
+      "stage": "05",
+      "files": 6,
+      "before_sha256_verified": true
+    },
+    {
+      "stage": "04",
+      "files": 3,
+      "before_sha256_verified": true
+    },
+    {
+      "stage": "03",
+      "files": 3,
+      "before_sha256_verified": true
+    },
+    {
+      "stage": "02",
+      "files": 2,
+      "before_sha256_verified": true
+    },
+    {
+      "stage": "01",
+      "files": 7,
+      "before_sha256_verified": true
+    }
+  ],
+  "unique_files": 19,
+  "source_files_modified": false
+}

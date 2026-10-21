@@ -28,12 +28,14 @@ export function FeedbackLauncher() {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
   const isAdmin = pathname?.startsWith("/admin");
+  const isPresentation = pathname?.startsWith("/beer/");
   const hidden = isKiosk || isAdmin;
 
   useEffect(() => {
     const node = buttonRef.current;
-    if (hidden || !node) {
-      // Кнопка не смонтирована (админка/киоск) — резервировать под неё нечего.
+    if (hidden || isPresentation || !node) {
+      // На QR-странице кнопка находится сверху; в админке/киоске её нет.
+      // Ни в одном из этих случаев резерв снизу не нужен.
       document.documentElement.style.setProperty(FAB_HEIGHT_VAR, "0px");
       return;
     }
@@ -59,7 +61,7 @@ export function FeedbackLauncher() {
       // под кнопку останется висеть в отступах контента и после её анмаунта.
       document.documentElement.style.setProperty(FAB_HEIGHT_VAR, "0px");
     };
-  }, [hidden]);
+  }, [hidden, isPresentation]);
 
   if (hidden) {
     return null;
@@ -71,10 +73,10 @@ export function FeedbackLauncher() {
       type="button"
       onClick={() => open()}
       aria-label="Обратная связь"
-      className="fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px)+var(--nb-sticky-bar-h,0px))] right-4 z-40 inline-flex items-center gap-2 rounded-full border border-border bg-card/95 px-4 py-2.5 text-sm font-medium text-foreground shadow-lg backdrop-blur-sm transition-colors hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className={`fixed ${isPresentation ? "top-[calc(0.5rem+env(safe-area-inset-top))] h-11 w-11 justify-center" : "bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px)+var(--nb-sticky-bar-h,0px))] min-h-11 px-4 py-2.5"} right-4 z-40 inline-flex items-center gap-2 rounded-full border border-border bg-card/95 text-sm font-medium text-foreground shadow-lg backdrop-blur-sm transition-colors hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring`}
     >
       <MessageSquarePlus className="h-4 w-4" aria-hidden />
-      <span className="hidden sm:inline">Обратная связь</span>
+      {!isPresentation ? <span className="hidden sm:inline [@media(max-height:450px)]:hidden">Обратная связь</span> : null}
     </button>
   );
 }

@@ -71,7 +71,7 @@ import {
 import { buildRecipePublicationChecklist } from "@/features/recipes/publication-validation";
 import type { RecipeImageDto } from "@/features/recipe-images/contracts";
 import { buildRecipeWaterPlanResult } from "@/features/recipes/water-plan";
-import { scaleRecipeToVolume } from "@/features/recipes/scale";
+import { scaleRecipeToVolume, scaleRecipeWaterPlan } from "@/features/recipes/scale";
 
 import {
   buildRecipeEditHref,
@@ -189,6 +189,7 @@ export function RecipeDesigner({
   const [styleId, setStyleId] = useState(initialRecipe?.styleId ?? initialStyleId ?? "");
   const [description, setDescription] = useState(initialRecipe?.description ?? "");
   const [authorNotes, setAuthorNotes] = useState(initialRecipe?.authorNotes ?? "");
+  const [originalBrewfatherJson, setOriginalBrewfatherJson] = useState(() => initialRecipe?.importMeta?.originalRecipe ? JSON.stringify(initialRecipe.importMeta.originalRecipe, null, 2) : "");
   const {
     publicationState,
     setPublicationState,
@@ -363,10 +364,8 @@ export function RecipeDesigner({
   const [scaleBaseVolumeL, setScaleBaseVolumeL] = useState<number | null>(
     () => getBatchVolumeLiters(batchSize.quantity, batchSize.unit)
   );
-  const fermentableWeightKg = useMemo(
-    () => getFermentableWeightTotalKg(ingredients),
-    [ingredients],
-  );
+  const waterPlanFermentables = useMemo(() => getFermentablesForWaterPlan(ingredients), [ingredients]);
+  const mashGrainWeightKg = waterPlanFermentables.reduce((sum, grain) => sum + grain.weightKg, 0);
   const equipmentVolumePlan = useMemo(() => {
     if (!equipmentProfileSnapshot) {
       return null;
@@ -384,7 +383,7 @@ export function RecipeDesigner({
     return {
       ...calculateEquipmentVolumePlan(
         effectiveEquipmentProfile,
-        fermentableWeightKg,
+        mashGrainWeightKg,
         Number(boilTimeMinutes || 0),
       ),
       grainAbsorptionLPerKg: effectiveEquipmentProfile.grainAbsorptionLPerKg,
@@ -393,7 +392,7 @@ export function RecipeDesigner({
     batchVolumeL,
     boilTimeMinutes,
     equipmentProfileSnapshot,
-    fermentableWeightKg,
+    mashGrainWeightKg,
     waterPlanMeta.grainAbsorptionLPerKg,
   ]);
   const waterPlanResult = useMemo(() => buildRecipeWaterPlanResult({
@@ -401,10 +400,10 @@ export function RecipeDesigner({
     fallbackBatchVolumeL: batchVolumeL,
     boilTimeMinutes: Number(boilTimeMinutes || 0),
     equipmentVolumePlan,
-    grainKg: fermentableWeightKg,
+    grainKg: mashGrainWeightKg,
     beerSrm: preview?.color ?? initialRecipe?.color ?? null,
-    fermentables: getFermentablesForWaterPlan(ingredients)
-  }), [batchVolumeL, boilTimeMinutes, equipmentVolumePlan, fermentableWeightKg, ingredients, initialRecipe?.color, preview?.color, waterPlanMeta]);
+    fermentables: waterPlanFermentables
+  }), [batchVolumeL, boilTimeMinutes, equipmentVolumePlan, mashGrainWeightKg, waterPlanFermentables, initialRecipe?.color, preview?.color, waterPlanMeta]);
   const calculatedWaterPlanMeta = useMemo(
     () => setRecipeWaterSaltCalculationMode(waterPlanMeta, "auto"),
     [waterPlanMeta],
@@ -414,10 +413,10 @@ export function RecipeDesigner({
     fallbackBatchVolumeL: batchVolumeL,
     boilTimeMinutes: Number(boilTimeMinutes || 0),
     equipmentVolumePlan,
-    grainKg: fermentableWeightKg,
+    grainKg: mashGrainWeightKg,
     beerSrm: preview?.color ?? initialRecipe?.color ?? null,
-    fermentables: getFermentablesForWaterPlan(ingredients)
-  }), [batchVolumeL, boilTimeMinutes, calculatedWaterPlanMeta, equipmentVolumePlan, fermentableWeightKg, ingredients, initialRecipe?.color, preview?.color]);
+    fermentables: waterPlanFermentables
+  }), [batchVolumeL, boilTimeMinutes, calculatedWaterPlanMeta, equipmentVolumePlan, mashGrainWeightKg, waterPlanFermentables, initialRecipe?.color, preview?.color]);
   const savePayload = useMemo(() => normalizeSavePayload(payload), [payload]);
 
   const currentSignature = useMemo(() => JSON.stringify(payload), [payload]);
@@ -723,9 +722,10 @@ export function RecipeDesigner({
     setIngredients((current) => current.map((ingredient) => {
       const scaledIngredient = scaledByKey.get(ingredient.persistentKey);
       return scaledIngredient
-        ? { ...ingredient, amountEnteredQuantity: String(scaledIngredient.amountEnteredQuantity) }
+        ? { ...ingredient, amountEnteredQuantity: String(scaledIngredient.amountEnteredQuantity), amountEnteredUnit: scaledIngredient.amountEnteredUnit }
         : ingredient;
     }));
+    setWaterPlanMeta((current) => scaleRecipeWaterPlan(current, scaled.factor));
     setScaleBaseVolumeL(batchVolumeL);
   }, [batchVolumeL, ingredients, scaleBaseVolumeL]);
 
@@ -778,14 +778,14 @@ export function RecipeDesigner({
         title: "Сбраживаемое",
         subtitle: fermentables.length ? `${fermentableTotalKg.toFixed(2)} кг` : undefined,
         items: fermentables,
-        empty: "Добавьте солод, сахар, экстракт или другие сбраживаемые.",
+        empty: "Добавьте солод, сахар, экстракт или другие сбраживаемые ингредиенты.",
       },
       {
         category: "hop",
         title: "Хмель",
         subtitle: hops.length ? `${hopTotalG.toFixed(0)} г` : undefined,
         items: hops,
-        empty: "Пока нет хмеля. Добавьте кипячение, whirlpool, dry hop или dip hop.",
+        empty: "Добавьте хмель на кипячение, вирпул, сухое охмеление или дип-хоп.",
         renderItems: (items) => {
           const usedTypes = recipeHopUseTypeUiOrder.filter(
             (useType) => useType === "boil" || items.some((item) => getHopUseType(item) === useType)
@@ -877,7 +877,7 @@ export function RecipeDesigner({
             ? `${computedWaterAdditiveCount + waterTreatments.length} поз.`
             : undefined,
         items: waterTreatments,
-        empty: "Нет добавок воды.",
+        empty: "Добавки для воды пока не внесены.",
         renderItems: (items) => (
           <div className="space-y-3">
             <RecipeWaterAdditivesSection
@@ -927,7 +927,7 @@ export function RecipeDesigner({
         title: "Специи и добавки",
         subtitle: consumables.length ? `${consumables.length} поз.` : undefined,
         items: consumables,
-        empty: "Irish Moss, Whirlfloc, нутриенты, цедру, специи и другие рецептные добавки можно держать здесь."
+        empty: "Добавляйте сюда Irish Moss, Whirlfloc, подкормку для дрожжей, цедру, специи и другие добавки."
       }
     ];
 
@@ -1115,7 +1115,7 @@ export function RecipeDesigner({
     }
   };
 
-  const applyImportedRecipe = React.useCallback((recipe: RecipeDetailDto, message: string) => {
+  const applyImportedRecipe = React.useCallback((recipe: RecipeDetailDto, message: string, importedCount = 1) => {
     const normalizedState = normalizeEditorPublicationState(recipe.publicationState);
     const nextIngredients = recipe.ingredients.map(toDesignerIngredient);
     const nextProcessMeta = cloneRecipeProcessMeta(recipe.processMeta);
@@ -1133,6 +1133,7 @@ export function RecipeDesigner({
     setStyleId(recipe.styleId ?? "");
     setDescription(recipe.description ?? "");
     setAuthorNotes(recipe.authorNotes ?? "");
+    setOriginalBrewfatherJson(recipe.importMeta?.originalRecipe ? JSON.stringify(recipe.importMeta.originalRecipe, null, 2) : "");
     setPublicationState(normalizedState);
     setSavedPublicationState(normalizedState);
     setBatchSize({
@@ -1158,8 +1159,10 @@ export function RecipeDesigner({
     setOpenEditor(null);
     setImportExportOpen(false);
     onRecipeCreated?.(recipe);
-    replaceRecipeEditorUrl(recipe.id);
-  }, [equipmentProfiles, onRecipeCreated]);
+    // Load the new route before further edits. A history-only URL change keeps
+    // the old recipe's route tree until the next save and can close active dialogs.
+    router.replace(`/app/recipes/${recipe.id}/edit?imported=${importedCount}`);
+  }, [equipmentProfiles, onRecipeCreated, router]);
 
   // Ф-«матч импорта»: пакетное сопоставление импортированных (name-only) строк
   // с каталогом. Кандидаты подбирает сервер тем же путём, что и ручной пикер.
@@ -1208,6 +1211,18 @@ export function RecipeDesigner({
     }
   };
 
+  const handledImportRecipeRef = useRef<string | null>(null);
+  useEffect(() => {
+    const importedCount = Number(searchParams.get("imported"));
+    if (!Number.isInteger(importedCount) || importedCount < 1 || !activeRecipeId || initialRecipe?.id !== activeRecipeId || handledImportRecipeRef.current === activeRecipeId) return;
+    handledImportRecipeRef.current = activeRecipeId;
+    if (importedCount === 1) void openImportedCatalogMatch(initialRecipe.ingredients.map(toDesignerIngredient));
+    else show({ title: `Импортировано рецептов: ${importedCount}. Все доступны в разделе «Рецепты».` });
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("imported");
+    router.replace(params.size ? `${pathname}?${params.toString()}` : pathname, { scroll: false });
+  }, [activeRecipeId, initialRecipe, openImportedCatalogMatch, pathname, router, searchParams, show]);
+
   const importedIngredientsCount = useMemo(
     () => ingredients.filter(isImportedDesignerIngredient).length,
     [ingredients]
@@ -1229,8 +1244,7 @@ export function RecipeDesigner({
         return result;
       }
 
-      applyImportedRecipe(result.recipe, result.message);
-      void openImportedCatalogMatch(result.recipe.ingredients.map(toDesignerIngredient));
+      applyImportedRecipe(result.recipe, result.message, result.importedCount ?? 1);
 
       return result;
     } finally {
@@ -1264,8 +1278,7 @@ export function RecipeDesigner({
         return result;
       }
 
-      applyImportedRecipe(result.recipe, result.message);
-      void openImportedCatalogMatch(result.recipe.ingredients.map(toDesignerIngredient));
+      applyImportedRecipe(result.recipe, result.message, result.importedCount ?? 1);
 
       return result;
     } finally {
@@ -1439,8 +1452,8 @@ export function RecipeDesigner({
         onClose={() => setWaterResetConfirmOpen(false)}
       />
 
-      <div className="sticky top-[var(--chrome-top)] z-30 -mx-4 flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border/70 bg-card/85 px-4 py-2 backdrop-blur supports-[backdrop-filter]:bg-card/70 sm:px-5">
-        <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ring-inset ${headerSaveStatusMeta.className}`}>
+      <div data-testid="recipe-toolbar" className="sticky top-[var(--chrome-top)] z-30 -mx-4 flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border/70 bg-card/85 px-4 py-2 backdrop-blur supports-[backdrop-filter]:bg-card/70 sm:px-5">
+        <span aria-label={headerSaveStatusMeta.label} title={headerSaveStatusMeta.label} className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ring-inset ${headerSaveStatusMeta.className}`}>
           {headerSaveStatusMeta.icon}
           <span className="hidden sm:inline">{headerSaveStatusMeta.label}</span>
         </span>
@@ -1461,26 +1474,26 @@ export function RecipeDesigner({
             предсказуемые 2 ряда вместо 3, экономя ~высоту экрана (UX-находка #25). */}
         <dl
           aria-busy={recalculating}
-          className={`order-last flex basis-full flex-nowrap items-center gap-x-3 overflow-x-auto text-[11px] tabular-nums text-muted-foreground transition-opacity sm:order-none sm:basis-auto sm:flex-wrap sm:gap-y-1 sm:overflow-visible ${recalculating || previewError ? "opacity-50" : ""}`}
+          className={`order-last flex min-w-0 basis-full flex-nowrap items-center gap-x-3 overflow-x-auto text-[11px] tabular-nums text-muted-foreground transition-opacity sm:order-none sm:basis-auto sm:flex-wrap sm:gap-y-1 sm:overflow-visible ${recalculating || previewError ? "opacity-50" : ""}`}
         >
           {headerMetrics.map((metric) => (
-            <div key={metric.label} className="flex items-baseline gap-1">
+            <div key={metric.label} className="flex shrink-0 items-baseline gap-1 whitespace-nowrap">
               <dt className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{metric.label}</dt>
               <dd className="font-semibold text-foreground">
                 {metric.value}
-                {metric.range ? <span className="ml-1 font-normal text-muted-foreground">({metric.range})</span> : null}
-                {metric.secondary ? <span className="ml-1 font-normal text-muted-foreground">· {metric.secondary}</span> : null}
+                {metric.range ? <span className="ml-1 hidden font-normal text-muted-foreground sm:inline">({metric.range})</span> : null}
+                {metric.secondary ? <span className="ml-1 hidden font-normal text-muted-foreground sm:inline">· {metric.secondary}</span> : null}
               </dd>
             </div>
           ))}
           {headerStyle ? (
-            <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground ring-1 ring-inset ring-ring">
+            <span className="hidden items-center rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground ring-1 ring-inset ring-ring sm:inline-flex">
               {getBjcpStyleDisplayName(headerStyle)}
             </span>
           ) : null}
         </dl>
 
-        <div className="ml-auto flex items-center gap-1.5">
+        <div className="ml-auto flex shrink-0 items-center gap-1.5">
           {canManagePublication && savedVisibility === "published" && activeRecipeSlug ? (
             <a
               href={`/recipes/${activeRecipeSlug}`}
@@ -1498,10 +1511,12 @@ export function RecipeDesigner({
               type="button"
               onClick={handlePublishClick}
               disabled={pendingSave}
+              aria-label="Опубликовать"
+              title="Опубликовать"
               className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-foreground bg-foreground px-3 text-xs font-medium text-background transition-colors hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-60 sm:px-4 sm:text-sm skin-hop:border-primary skin-hop:bg-primary skin-hop:text-primary-foreground skin-hop:hover:bg-primary/90"
             >
               <Globe className="h-3.5 w-3.5" />
-              Опубликовать
+              <span className="hidden sm:inline">Опубликовать</span>
             </button>
           ) : null}
           {canManagePublication && savedVisibility === "published" ? (
@@ -1627,7 +1642,7 @@ export function RecipeDesigner({
           <div className="mt-3 flex flex-wrap items-start gap-3 rounded-lg bg-warning-subtle px-3 py-2 text-xs text-warning-subtle-foreground ring-1 ring-inset ring-warning/30">
             <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" />
             <span className="min-w-0 flex-1">
-              Показатели автора отличаются от расчёта движка: {statsDivergence.join(", ")}. При сохранении правок применится расчёт.
+              Расчётные показатели отличаются от указанных автором: {statsDivergence.join(", ")}. После сохранения правок останутся пересчитанные значения.
             </span>
             <button
               type="button"
@@ -1682,7 +1697,7 @@ export function RecipeDesigner({
               Импортировано без привязки к каталогу: {importedIngredientsCount}
             </p>
             <p className="mt-0.5 text-xs text-sky-800/80 dark:text-sky-200/80">
-              Сопоставьте позиции с каталогом, чтобы работал склад, покупки и подбор аналогов.
+              Найдите эти ингредиенты в каталоге, чтобы проверить запасы и подобрать замены.
             </p>
           </div>
           <Button type="button" size="sm" disabled={matchPending} onClick={() => void openImportedCatalogMatch()}>
@@ -1833,7 +1848,7 @@ export function RecipeDesigner({
               <textarea
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
-                className="min-h-28 w-full rounded-xl border border-border bg-muted/50 px-3 py-2.5 text-base text-foreground placeholder:text-muted-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
+                className="min-h-28 w-full rounded-xl border border-border bg-muted/50 px-3 py-2.5 text-base text-foreground placeholder:text-muted-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm [@media(pointer:coarse)]:text-base"
                 placeholder="Публичное описание рецепта — что это за пиво, вдохновение, особенности…"
               />
               {sectionErrors.description ? <p className="mt-2 text-xs text-destructive">{sectionErrors.description}</p> : null}
@@ -1855,8 +1870,8 @@ export function RecipeDesigner({
               <textarea
                 value={authorNotes}
                 onChange={(event) => setAuthorNotes(event.target.value)}
-                className="min-h-28 w-full rounded-xl border border-border bg-muted/50 px-3 py-2.5 text-base text-foreground placeholder:text-muted-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
-                placeholder="Видны только вам — TODO, лоты, наблюдения с прошлых варок…"
+                className="min-h-28 w-full rounded-xl border border-border bg-muted/50 px-3 py-2.5 text-base text-foreground placeholder:text-muted-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm [@media(pointer:coarse)]:text-base"
+                placeholder="Видны только вам — планы, партии ингредиентов, наблюдения с прошлых варок…"
               />
             </div>
           </details>
@@ -1932,6 +1947,7 @@ export function RecipeDesigner({
         beerXmlExport={beerXmlExport}
         beerXmlImport={beerXmlImport}
         brewfatherJsonImport={brewfatherJsonImport}
+        originalBrewfatherJson={originalBrewfatherJson}
         onBeerXmlImportChange={setBeerXmlImport}
         onBrewfatherJsonImportChange={setBrewfatherJsonImport}
         onExportBeerXml={handleExportBeerXml}

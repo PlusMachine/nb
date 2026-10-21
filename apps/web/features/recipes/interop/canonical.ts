@@ -3,6 +3,7 @@ import { extractIngredientTechnicalFields, lovibondToEbc } from "@/features/ingr
 import type { CustomHopForm, CustomPhysicalForm, CustomYeastForm } from "@/features/inventory/custom-ingredient";
 import type { InventoryUnit } from "@/features/inventory/units";
 import type { RecipeDetailDto } from "../contracts";
+import type { EquipmentProfileSnapshot } from "../../equipment-profiles/contracts";
 
 export type CanonicalRecipeIngredient = {
   name: string;
@@ -35,6 +36,7 @@ export type CanonicalRecipe = {
   processMeta?: Record<string, unknown> | null;
   calculationMeta?: Record<string, unknown> | null;
   waterPlanMeta?: Record<string, unknown> | null;
+  equipmentProfileSnapshot?: EquipmentProfileSnapshot | null;
   importMeta?: Record<string, unknown> | null;
   ingredients: CanonicalRecipeIngredient[];
 };
@@ -102,6 +104,7 @@ export const mapRecipeToCanonical = (recipe: RecipeDetailDto): CanonicalRecipe =
   processMeta: recipe.processMeta as unknown as Record<string, unknown>,
   calculationMeta: recipe.calculationMeta as unknown as Record<string, unknown> | null,
   waterPlanMeta: recipe.waterPlanMeta as unknown as Record<string, unknown> | null,
+  equipmentProfileSnapshot: recipe.equipmentProfileSnapshot ?? null,
   ingredients: recipe.ingredients.map(mapRecipeIngredientToCanonical)
 });
 
@@ -118,6 +121,7 @@ export const canonicalToRecipeCreatePayload = (canonical: CanonicalRecipe) => ({
   processMeta: canonical.processMeta ?? null,
   calculationMeta: canonical.calculationMeta ?? null,
   waterPlanMeta: canonical.waterPlanMeta ?? null,
+  equipmentProfileSnapshot: canonical.equipmentProfileSnapshot ?? null,
   importMeta: canonical.importMeta ?? null,
   ingredients: canonical.ingredients.map((ingredient) => ({
     type: ingredient.type,

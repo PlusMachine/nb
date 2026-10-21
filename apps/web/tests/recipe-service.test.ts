@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { defaultRecipeProcessMeta } from "../features/recipes/contracts";
 import { toRecipeSlugBase } from "../features/recipes/slug";
+import { starterEquipmentProfileDefaults } from "../features/equipment-profiles/contracts";
 
 vi.mock("server-only", () => ({}));
 
@@ -22,6 +23,9 @@ const { tableRefs, mockState } = vi.hoisted(() => ({
   },
   mockState: {
     idCounter: 0,
+    failIngredientInsertAt: 0,
+    ingredientInsertCount: 0,
+    failStatsWrite: false,
     recipesById: new Map<string, any>(),
     ingredientsByRecipeId: new Map<string, any[]>(),
     catalogById: new Map<string, any>(),
@@ -44,7 +48,18 @@ vi.mock("@nb/db", () => {
     return found?.[1];
   };
 
-  const db = {
+  const db: any = {
+    transaction: async (work: (tx: any) => Promise<unknown>) => {
+      const recipes = structuredClone(mockState.recipesById);
+      const ingredients = structuredClone(mockState.ingredientsByRecipeId);
+      try {
+        return await work(db);
+      } catch (error) {
+        mockState.recipesById = recipes;
+        mockState.ingredientsByRecipeId = ingredients;
+        throw error;
+      }
+    },
     query: {
       recipes: {
         findFirst: async (arg: any) => {
@@ -109,6 +124,10 @@ vi.mock("@nb/db", () => {
         if (table.name === "recipe_ingredients") {
           const payload = Array.isArray(values) ? values : [values];
           for (const value of payload) {
+            mockState.ingredientInsertCount += 1;
+            if (mockState.ingredientInsertCount === mockState.failIngredientInsertAt) {
+              throw new Error("TEST_INGREDIENT_WRITE_FAILED");
+            }
             const row = {
               ...value,
               id: uuid(++mockState.idCounter),
@@ -146,6 +165,9 @@ vi.mock("@nb/db", () => {
       set: (set: any) => ({
         where: (where: any) => ({
           returning: async () => {
+            if (table.name === "recipes" && "og" in set && mockState.failStatsWrite) {
+              throw new Error("TEST_STATS_WRITE_FAILED");
+            }
             if (table.name === "recipe_ingredients") {
               const recipeId = getEqValue(where, "recipeId");
               const id = getEqValue(where, "id");
@@ -244,6 +266,7 @@ vi.mock("@nb/db", () => {
           };
           return {
             limit: resolve,
+            for: resolve,
             then: (onFulfilled: (v: unknown) => unknown, onRejected?: (e: unknown) => unknown) =>
               resolve().then(onFulfilled, onRejected)
           };
@@ -279,8 +302,10 @@ vi.mock("@nb/auth", async (importOriginal) => ({
 import {
   countRecipeBrewBatches,
   createRecipe,
+  createRecipes,
   deleteRecipe,
   getNextDefaultRecipeTitle,
+  getPublicRecipeById,
   getPublicRecipeBySlug,
   getRecipeById,
   previewRecipeDraft,
@@ -357,6 +382,9 @@ const buildReadyPublicPayload = (overrides: Record<string, unknown> = {}) => ({
 describe("recipe service", () => {
   beforeEach(() => {
     mockState.idCounter = 0;
+    mockState.failIngredientInsertAt = 0;
+    mockState.ingredientInsertCount = 0;
+    mockState.failStatsWrite = false;
     mockState.recipesById.clear();
     mockState.ingredientsByRecipeId.clear();
     mockState.catalogById.clear();
@@ -554,6 +582,45 @@ describe("recipe service", () => {
     expect(preview.fgEstimateMode).toBe("default_estimate");
     expect(preview.fgEstimateDetails?.baseAttenuationPct).toBe(75);
     expect(preview.ibu).not.toBeNull();
+  });
+
+  it.each(["tinseth_classic", "tinseth_whirlpool_v2", "rager", "garetz", "noonan_legacy"])(
+    "%s applies equipment hop calibration in preview and persisted stats",
+    async (bitternessFormula) => {
+      const equipmentProfileSnapshot = {
+        ...starterEquipmentProfileDefaults,
+        id: null,
+        snapshotAt: "2026-10-18T00:00:00.000Z",
+        hopUtilizationFactor: 0.7
+      };
+      const payload = buildReadyPrivatePayload({ calculationMeta: { bitternessFormula }, equipmentProfileSnapshot });
+      const baseline = await previewRecipeDraft("u1", {
+        ...payload, equipmentProfileSnapshot: { ...equipmentProfileSnapshot, hopUtilizationFactor: 1 }
+      });
+      const preview = await previewRecipeDraft("u1", payload);
+      expect(preview.ibu).toBeGreaterThan(0);
+      expect(Math.abs(preview.ibu! - baseline.ibu! * 0.7)).toBeLessThanOrEqual(0.1);
+      const recipe = await createRecipe("u1", payload);
+      expect(recipe.ibu).toBe(preview.ibu);
+      expect((await recomputeRecipeStats("u1", recipe.id)).ibu).toBe(preview.ibu);
+      const updated = await updateRecipe("u1", recipe.id, {
+        equipmentProfileSnapshot: { ...equipmentProfileSnapshot, hopUtilizationFactor: 1 }
+      });
+      expect(updated.ibu).toBe(baseline.ibu);
+    }
+  );
+
+  it("passes equipment altitude to Garetz in both preview and saved recipes", async () => {
+    const equipmentProfileSnapshot = {
+      ...starterEquipmentProfileDefaults, id: null, snapshotAt: "2026-10-18T00:00:00.000Z"
+    };
+    const payload = buildReadyPrivatePayload({ calculationMeta: { bitternessFormula: "garetz" }, equipmentProfileSnapshot });
+    const seaLevel = await previewRecipeDraft("u1", payload);
+    const mountainPayload = { ...payload, equipmentProfileSnapshot: { ...equipmentProfileSnapshot, altitudeM: 3000 } };
+    const mountain = await previewRecipeDraft("u1", mountainPayload);
+    expect(Math.abs(mountain.ibu! - seaLevel.ibu! * 0.91)).toBeLessThanOrEqual(0.1);
+    expect((await createRecipe("u1", mountainPayload)).ibu).toBe(mountain.ibu);
+    expect((await previewRecipeDraft("u1", { ...payload, equipmentProfileSnapshot: null })).ibu).toBe(seaLevel.ibu);
   });
 
   it("preview draft uses yeast attenuation and mash profile in FG estimate", async () => {
@@ -1280,4 +1347,79 @@ describe("recipe service", () => {
     // Стиль BJCP при публикации опционален — фиксируем, что валидатор больше не требует styleId.
     expect(thrownError.fieldErrors).not.toHaveProperty("styleId");
   });
+  it("imports a collection atomically and preserves every title", async () => {
+    const imported = await createRecipes("u1", [buildReadyPrivatePayload({title:"Library one"}), buildReadyPrivatePayload({title:"Library two"})]);
+    expect(imported.map((recipe) => recipe.title)).toEqual(["Library one", "Library two"]);
+    expect(imported.every((recipe) => recipe.publicationState === "private")).toBe(true);
+  });
+  it("rolls back the whole collection when an ingredient in a later recipe fails", async () => {
+    mockState.failIngredientInsertAt = buildReadyPrivatePayload().ingredients.length + 1;
+    await expect(createRecipes("u1", [buildReadyPrivatePayload({title:"First"}), buildReadyPrivatePayload({title:"Second"})])).rejects.toThrow("TEST_INGREDIENT_WRITE_FAILED");
+    expect(mockState.recipesById.size).toBe(0);
+    expect(mockState.ingredientsByRecipeId.size).toBe(0);
+  });
+  it("validates every recipe before any collection write", async () => {
+    await expect(createRecipes("u1", [buildReadyPrivatePayload(), buildReadyPrivatePayload({ingredients:[{...buildReadyPrivatePayload().ingredients[0], amountEnteredQuantity:-1}]})])).rejects.toThrow();
+    expect(mockState.recipesById.size).toBe(0);
+  });
+
+  it("rolls back the new recipe and preceding ingredients when a later insert fails", async () => {
+    mockState.failIngredientInsertAt = 2;
+    await expect(createRecipe("u1", buildReadyPrivatePayload())).rejects.toThrow("TEST_INGREDIENT_WRITE_FAILED");
+    expect(mockState.ingredientInsertCount).toBe(2);
+    expect(mockState.recipesById.size).toBe(0);
+    expect(mockState.ingredientsByRecipeId.size).toBe(0);
+  });
+
+  it("rolls back the header and ingredient writes when recalculation cannot be persisted", async () => {
+    const recipe = await createRecipe("u1", buildReadyPrivatePayload());
+    const beforeRecipe = structuredClone(mockState.recipesById.get(recipe.id));
+    const beforeIngredients = structuredClone(mockState.ingredientsByRecipeId.get(recipe.id));
+    mockState.failStatsWrite = true;
+    await expect(updateRecipe("u1", recipe.id, {
+      ...buildReadyPrivatePayload({ title: "Must not be saved", batchSizeEnteredQuantity: 30 })
+    })).rejects.toThrow("TEST_STATS_WRITE_FAILED");
+    expect(mockState.recipesById.get(recipe.id)).toEqual(beforeRecipe);
+    expect(mockState.ingredientsByRecipeId.get(recipe.id)).toEqual(beforeIngredients);
+  });
+
+  it("does not leave a new recipe behind when its statistics fail", async () => {
+    mockState.failStatsWrite = true;
+    await expect(createRecipe("u1", buildReadyPrivatePayload())).rejects.toThrow("TEST_STATS_WRITE_FAILED");
+    expect(mockState.recipesById.size).toBe(0);
+    expect(mockState.ingredientsByRecipeId.size).toBe(0);
+  });
+
+  it("filters private data on every public detail path while preserving the owner's data", async () => {
+    const recipe = await createRecipe("u1", buildReadyPublicPayload({ authorNotes: "SECRET_OWNER_NOTE" }));
+    const stored = mockState.recipesById.get(recipe.id);
+    stored.draftState = { editorText: "SECRET_DRAFT" };
+    stored.importMeta = { raw: "SECRET_IMPORT", originalRecipe: { notes: "SECRET_BREWFATHER_SOURCE", pressure: 10 } };
+    stored.brewPlanMeta = { notes: "SECRET_PLAN" };
+    const line = mockState.ingredientsByRecipeId.get(recipe.id)![0];
+    line.inventorySelectionMeta = { inventoryItemId: "SECRET_STOCK" };
+    line.externalImportMeta = { raw: "SECRET_RAW" };
+    line.stepMeta = { ...line.stepMeta, privateNote: "SECRET_STEP", timeMinutes: 20 };
+
+    for (const detail of [
+      await getPublicRecipeById(recipe.id),
+      await getPublicRecipeBySlug(recipe.slug),
+      await getRecipeById("u2", recipe.id),
+      await getRecipeById(null, recipe.id)
+    ]) {
+      expect(JSON.stringify(detail)).not.toContain("SECRET_");
+      expect(detail.authorNotes).toBeNull();
+      expect(detail.draftState).toBeNull();
+      expect(detail.versions).toEqual([]);
+      expect(detail.ingredients).toHaveLength(3);
+      expect(detail.ingredients[0].amountEnteredQuantity).toBe(recipe.ingredients[0].amountEnteredQuantity);
+      expect(detail.ingredients[0].stepMeta?.timeMinutes).toBe(20);
+    }
+    const owned = await getRecipeById("u1", recipe.id);
+    expect(owned.authorNotes).toBe("SECRET_OWNER_NOTE");
+    expect(owned.importMeta?.originalRecipe).toEqual({ notes: "SECRET_BREWFATHER_SOURCE", pressure: 10 });
+    expect(owned.draftState).toEqual({ editorText: "SECRET_DRAFT" });
+    expect(owned.ingredients[0].inventorySelectionMeta).toEqual({ inventoryItemId: "SECRET_STOCK" });
+  });
+
 });

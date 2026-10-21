@@ -792,18 +792,17 @@ export const brewMeasurements = pgTable("brew_measurements", {
 export const recipeInventoryAllocations = pgTable("recipe_inventory_allocations", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  recipeId: uuid("recipe_id").notNull().references(() => recipes.id, { onDelete: "cascade" }),
-  recipeIngredientId: uuid("recipe_ingredient_id").notNull().references(() => recipeIngredients.id, { onDelete: "cascade" }),
+  // Для партии идентичность требования = brew_batch_id + persistent_key снимка.
+  // Источник может быть изменён/удалён без потери истории и защиты от повторного списания.
+  recipeId: uuid("recipe_id").references(() => recipes.id, { onDelete: "cascade" }),
+  recipeIngredientId: uuid("recipe_ingredient_id").references(() => recipeIngredients.id, { onDelete: "cascade" }),
   recipeIngredientPersistentKey: uuid("recipe_ingredient_persistent_key").notNull(),
   inventoryItemId: uuid("inventory_item_id").notNull().references(() => userIngredients.id, { onDelete: "restrict" }),
   status: recipeInventoryAllocationStatusEnum("status").default("allocated").notNull(),
-  // Партия-потребитель consumed-аллокации: списание на варку (brew-batches/
-  // inventory.ts) привязывает сюда brewBatchId, чтобы завершение/отмена ОДНОЙ
-  // партии не блокировало навсегда повторную варку того же рецепта другой
-  // партией (см. docs/brew-day-assistant-audit-round2.md, П2). NULL — списание
-  // вне партии (из редактора рецепта) или легаси-запись до этой миграции;
-  // консервативно продолжает блокировать реюз рецепта.
-  brewBatchId: uuid("brew_batch_id").references(() => brewBatches.id, { onDelete: "set null" }),
+  // Партия владеет распределением по постоянному ключу строки снимка.
+  // Удаление партии убирает её резервы/аллокации; журнал фактических движений
+  // остаётся в inventory_transactions. NULL — операции вне партии/старые записи.
+  brewBatchId: uuid("brew_batch_id").references(() => brewBatches.id, { onDelete: "cascade" }),
   allocatedQuantityNormalized: doublePrecision("allocated_quantity_normalized").notNull(),
   allocatedNormalizedUnit: varchar("allocated_normalized_unit", { length: 32 }).notNull(),
   allocationMeta: jsonb("allocation_meta").$type<Record<string, unknown>>().default({}).notNull(),

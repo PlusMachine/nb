@@ -40,6 +40,10 @@ import {
 import { resolveEfficiencyFactor, resolveLineScaleFactor } from "./scale";
 import { resolveBrewabilityBadge } from "./brewability-badge";
 import { publiclyVisibleRecipeConditions } from "./visibility";
+import {
+  groupMatchLinesByIngredient,
+  resolveMatchIngredientIdentityKey
+} from "./match-lines";
 import type {
   BrewableRecipeDto,
   RecipeIngredientDto,
@@ -48,6 +52,12 @@ import type {
   RecipeMatchLineDto,
   RecipeMatchLineStatus
 } from "./contracts";
+
+export {
+  collapseMatchLinesForPanel,
+  groupMatchLinesByIngredient,
+  resolveMatchIngredientIdentityKey
+} from "./match-lines";
 
 // Значимость строки в итоговом %: отсутствие базового солода/дрожжей бьёт
 // сильнее, чем недостача щепотки соли.
@@ -104,11 +114,15 @@ export type MatchLineInput = {
   normalizedUnit: InventoryUnit | null;
   /** Ф23: бренд строки — показывается подписью под именем в строках нехватки панели матча. */
   brand?: string | null;
+  /** Код страны каталожной позиции — флаг рядом с брендом в панели матча. */
+  countryCode?: string | null;
 };
 
 export type InventoryMatchEntry = {
   itemId: string;
   key: IngredientMatchKey;
+  /** Русское имя поддерживает старые снимки партий без английского названия сорта. */
+  groupAliases?: string[];
   available: number;
   normalizedUnit: InventoryUnit | null;
   /** Техданные позиции (для сравнения кандидатов замены по EBC/альфе, Ф2). */
@@ -171,6 +185,9 @@ export const buildInventoryEntries = (
       return {
         itemId: item.id,
         key: resolveIngredientMatchKey(profile),
+        groupAliases: profile.category === "hop" && profile.nameEn && profile.name
+          ? [resolveIngredientMatchKey({ ...profile, nameEn: null }).groupKey].filter((key): key is string => Boolean(key))
+          : [],
         available,
         normalizedUnit: parseInventoryUnit(item.normalizedUnit),
         technicalData: profile.technicalData ?? null
@@ -188,10 +205,10 @@ export const indexInventoryEntries = (entries: InventoryMatchEntry[]) => {
       list.push(entry);
       byExact.set(entry.key.exactKey, list);
     }
-    if (entry.key.groupKey) {
-      const list = byGroup.get(entry.key.groupKey) ?? [];
+    for (const groupKey of new Set([entry.key.groupKey, ...(entry.groupAliases ?? [])].filter((key): key is string => Boolean(key)))) {
+      const list = byGroup.get(groupKey) ?? [];
       list.push(entry);
-      byGroup.set(entry.key.groupKey, list);
+      byGroup.set(groupKey, list);
     }
   }
 
@@ -357,10 +374,51 @@ const resolveAddSuggestion = (
   }
 };
 
+/** Текущий остаток позиции: общий бюджет рецепта (если передан) или сырой available. */
+const remainingOf = (
+  entry: InventoryMatchEntry,
+  remainingByItemId: Map<string, number> | undefined
+): number => remainingByItemId?.get(entry.itemId) ?? entry.available;
+
+/**
+ * Списать со складского бюджета столько, сколько строка реально забрала.
+ * Exact-позиции первыми (порядок вставки в chosen), затем замены. Дрожжи
+ * (presence-based) бюджет не трогают — матч по наличию штамма.
+ */
+const depleteRemaining = (
+  chosen: Map<string, { entry: InventoryMatchEntry; tier: "exact" | "substitute" }>,
+  required: number,
+  remainingByItemId: Map<string, number> | undefined
+) => {
+  if (!remainingByItemId || required <= 0) {
+    return;
+  }
+  let need = required;
+  for (const { entry } of chosen.values()) {
+    const avail = remainingByItemId.get(entry.itemId) ?? 0;
+    if (avail <= 0) {
+      continue;
+    }
+    const take = Math.min(need, avail);
+    remainingByItemId.set(entry.itemId, roundTo(avail - take, 3));
+    need = roundTo(need - take, 3);
+    if (need <= 0) {
+      break;
+    }
+  }
+};
+
 export const matchLineAgainstInventory = (
   line: MatchLineInput,
   index: ReturnType<typeof indexInventoryEntries>,
-  factor: number
+  factor: number,
+  /**
+   * Общий бюджет склада на весь рецепт. Без него каждая строка видит полный
+   * остаток (удобно для юнит-тестов одной строки). С ним повторные добавки
+   * одного хмеля (кипячение/вирпул/…) делят один остаток — иначе «Есть 2 из N»
+   * при одной банке Citra на складе.
+   */
+  remainingByItemId?: Map<string, number>
 ): RecipeMatchLineDto => {
   const lineKey = resolveIngredientMatchKey(line.profile);
   const required = roundTo(line.requiredNormalizedQuantity * factor, 3);
@@ -376,7 +434,8 @@ export const matchLineAgainstInventory = (
 
   if (lineKey.exactKey) {
     for (const entry of index.byExact.get(lineKey.exactKey) ?? []) {
-      if (presenceBased ? entry.available > 0 : dimensionMatches(lineKey, line.normalizedUnit, entry)) {
+      const available = remainingOf(entry, remainingByItemId);
+      if (presenceBased ? available > 0 : available > 0 && dimensionMatches(lineKey, line.normalizedUnit, entry)) {
         chosen.set(entry.itemId, { entry, tier: "exact" });
       }
     }
@@ -387,7 +446,8 @@ export const matchLineAgainstInventory = (
       if (chosen.has(entry.itemId)) {
         continue;
       }
-      if (dimensionMatches(lineKey, line.normalizedUnit, entry)) {
+      const available = remainingOf(entry, remainingByItemId);
+      if (available > 0 && dimensionMatches(lineKey, line.normalizedUnit, entry)) {
         chosen.set(entry.itemId, { entry, tier: "substitute" });
       }
     }
@@ -396,9 +456,10 @@ export const matchLineAgainstInventory = (
   let availableExact = 0;
   let availableTotal = 0;
   for (const { entry, tier } of chosen.values()) {
-    availableTotal += entry.available;
+    const available = remainingOf(entry, remainingByItemId);
+    availableTotal += available;
     if (tier === "exact") {
-      availableExact += entry.available;
+      availableExact += available;
     }
   }
   availableExact = roundTo(availableExact, 3);
@@ -406,7 +467,8 @@ export const matchLineAgainstInventory = (
 
   // Наличие штамма = полное покрытие; количество/единицы не сравниваем (иначе
   // паки и граммы дают ложный shortfall). Числа выравниваем под required, чтобы
-  // деталь в панели не показывала «33 г / 1 пакет».
+  // деталь в панели не показывала «33 г / 1 пакет». Бюджет не списываем —
+  // несколько строк одного штамма не должны «съедать» друг друга.
   if (presenceBased) {
     const present = chosen.size > 0;
     const shortfall = present ? 0 : required;
@@ -417,6 +479,7 @@ export const matchLineAgainstInventory = (
       ingredientDisplayName: line.displayName,
       category: line.profile.category ?? null,
       brand: line.brand ?? null,
+      countryCode: line.countryCode ?? null,
       status: present ? "covered" : "missing",
       coveragePercent: present ? 100 : 0,
       requiredQuantityNormalized: required,
@@ -437,8 +500,33 @@ export const matchLineAgainstInventory = (
     availableTotal
   });
 
-  const coverage = required > 0 ? Math.min(availableTotal / required, 1) : (chosen.size > 0 ? 1 : 0);
+  // Бюджет этой позиции уже съели предыдущие добавки того же ингредиента
+  // (кипячение забрало Citra, вирпул видит 0) — это нехватка КОЛИЧЕСТВА, а не
+  // отсутствие типа. Иначе вторая строка уходит в missing и раздувает
+  // «не хватает», хотя хмель на складе был. Не путать с несовпадением
+  // размерности/единицы: там тип «как будто есть», но для строки он не подходит.
+  const compatibleExact = lineKey.exactKey
+    ? (index.byExact.get(lineKey.exactKey) ?? []).filter((entry) => (
+      presenceBased || dimensionMatches(lineKey, line.normalizedUnit, entry)
+    ))
+    : [];
+  const knownExactDepleted = compatibleExact.length > 0
+    && chosen.size === 0
+    && compatibleExact.every((entry) => remainingOf(entry, remainingByItemId) <= 0)
+    && compatibleExact.some((entry) => entry.available > 0);
+  const resolvedStatus: RecipeMatchLineStatus = knownExactDepleted && status === "missing"
+    ? "partial"
+    : status;
+
+  const coverage = required > 0
+    ? Math.min(availableTotal / required, 1)
+    : (chosen.size > 0 || knownExactDepleted ? (knownExactDepleted ? 0 : 1) : 0);
   const shortfall = roundTo(Math.max(required - availableTotal, 0), 3);
+
+  // Списываем то, что строка реально забрала (не больше required и не больше
+  // остатка) — следующая добавка того же хмеля увидит уменьшенный бюджет.
+  const consumed = roundTo(Math.min(required, availableTotal), 3);
+  depleteRemaining(chosen, consumed, remainingByItemId);
 
   return {
     recipeIngredientId: line.id,
@@ -447,7 +535,8 @@ export const matchLineAgainstInventory = (
     ingredientDisplayName: line.displayName,
     category: line.profile.category ?? null,
     brand: line.brand ?? null,
-    status,
+    countryCode: line.countryCode ?? null,
+    status: resolvedStatus,
     coveragePercent: Math.round(coverage * 100),
     requiredQuantityNormalized: required,
     availableQuantityNormalized: availableTotal,
@@ -458,6 +547,41 @@ export const matchLineAgainstInventory = (
     userCustomIngredientId: line.profile.customId ?? null,
     ...resolveAddSuggestion(line, shortfall)
   };
+};
+
+/** Бюджет остатков по itemId для сквозного матча всех строк рецепта. */
+export const buildInventoryRemainingBudget = (
+  index: ReturnType<typeof indexInventoryEntries>
+): Map<string, number> => {
+  const remaining = new Map<string, number>();
+  for (const list of index.byExact.values()) {
+    for (const entry of list) {
+      remaining.set(entry.itemId, entry.available);
+    }
+  }
+  for (const list of index.byGroup.values()) {
+    for (const entry of list) {
+      if (!remaining.has(entry.itemId)) {
+        remaining.set(entry.itemId, entry.available);
+      }
+    }
+  }
+  return remaining;
+};
+
+/**
+ * Матч всех строк рецепта с общим складовым бюджетом (порядок — displayOrder).
+ * Повторные добавки одного ингредиента делят остаток, а не видят его целиком.
+ */
+export const matchRecipeLinesAgainstInventory = (
+  lines: MatchLineInput[],
+  index: ReturnType<typeof indexInventoryEntries>,
+  scaleFactorFor: (line: MatchLineInput) => number
+): RecipeMatchLineDto[] => {
+  const remaining = buildInventoryRemainingBudget(index);
+  return [...lines]
+    .sort((a, b) => a.displayOrder - b.displayOrder || a.id.localeCompare(b.id))
+    .map((line) => matchLineAgainstInventory(line, index, scaleFactorFor(line), remaining));
 };
 
 // Ф6 (P0): userCustomIngredientId в match-DTO — сырой FK кастомного ингредиента
@@ -506,6 +630,41 @@ const resolveMatchLabel = (matchPercent: number): RecipeMatchLabel => {
   return "none";
 };
 
+/**
+ * Ключ «один ингредиент» для счётчиков «Есть N из M» — см. match-lines.ts.
+ * Реэкспорт выше; локальные хелперы группировки тоже оттуда.
+ */
+
+/** Бренд для подписи в панели матча: brand → producer → brandName → manufacturer. */
+const resolveMatchLineBrand = (
+  ingredient: Pick<
+    RecipeIngredientDto,
+    "ingredientBrand" | "ingredientProducer" | "ingredientBrandName" | "ingredientManufacturer"
+  >
+) => (
+  ingredient.ingredientBrand
+  ?? ingredient.ingredientProducer
+  ?? ingredient.ingredientBrandName
+  ?? ingredient.ingredientManufacturer
+  ?? null
+);
+
+/** Покрытие группы = доля закрытого суммарного required (shortfall уже построчный). */
+const groupCoverageRatio = (groupLines: RecipeMatchLineDto[]): number => {
+  let required = 0;
+  let shortfall = 0;
+  for (const line of groupLines) {
+    required += line.requiredQuantityNormalized;
+    shortfall += line.shortfallNormalized;
+  }
+  if (required > 0) {
+    return Math.min(Math.max((required - shortfall) / required, 0), 1);
+  }
+  // Нет количества (пустые/синтетические строки) — среднее построчного %.
+  const avg = groupLines.reduce((sum, line) => sum + line.coveragePercent, 0) / Math.max(groupLines.length, 1);
+  return Math.min(Math.max(avg / 100, 0), 1);
+};
+
 export const summarizeMatch = (recipeId: string, lines: RecipeMatchLineDto[], context: {
   targetBatchVolumeL: number;
   recipeBatchVolumeL: number;
@@ -514,23 +673,38 @@ export const summarizeMatch = (recipeId: string, lines: RecipeMatchLineDto[], co
   // профиль оборудования, чтобы показать подсказку «задайте оборудование».
   hasEquipmentProfile?: boolean | null;
 }): RecipeMatchDto => {
+  // Счётчики и % — по УНИКАЛЬНЫМ ингредиентам (не по строкам рецепта): иначе
+  // Citra 60′ + Citra whirlpool дают «Есть 2 из 8» при одной банке на складе.
+  const groups = groupMatchLinesByIngredient(lines);
+
   let weightSum = 0;
   let weightedCoverage = 0;
-  for (const line of lines) {
-    const weight = weightForCategory(line.category);
+  let coveredLines = 0;
+  let missingCount = 0;
+
+  for (const group of groups) {
+    const weight = weightForCategory(group.category);
     weightSum += weight;
-    weightedCoverage += weight * (line.coveragePercent / 100);
+    weightedCoverage += weight * groupCoverageRatio(group.lines);
+
+    const allMissing = group.lines.every((line) => line.status === "missing");
+    const allFullyCovered = group.lines.every(
+      (line) => line.status === "covered" || line.status === "substitute"
+    );
+    if (allMissing) {
+      missingCount += 1;
+    } else if (allFullyCovered) {
+      coveredLines += 1;
+    }
   }
 
   const matchPercent = weightSum > 0 ? Math.round((weightedCoverage / weightSum) * 100) : 0;
-  const coveredLines = lines.filter((line) => line.status === "covered" || line.status === "substitute").length;
-  const missingCount = lines.filter((line) => line.status === "missing").length;
 
   return {
     recipeId,
     matchPercent,
     label: resolveMatchLabel(matchPercent),
-    totalLines: lines.length,
+    totalLines: groups.length,
     coveredLines,
     missingCount,
     lines: lines.sort((a, b) => a.displayOrder - b.displayOrder),
@@ -676,25 +850,26 @@ export const computeRecipeMatch = async (input: {
     recipe.ingredients.map((ingredient) => ingredient.userCustomIngredientId)
   );
 
-  const lines = recipe.ingredients.map((ingredient): RecipeMatchLineDto => {
+  const lineInputs: MatchLineInput[] = recipe.ingredients.map((ingredient) => {
     const profile = profileFromRecipeIngredientDto(ingredient);
-    const matched = matchLineAgainstInventory(
-      {
-        id: ingredient.id,
-        persistentKey: ingredient.persistentKey,
-        displayOrder: ingredient.displayOrder,
-        displayName: ingredient.ingredientDisplayName ?? ingredient.ingredientDisplayNameSnapshot ?? null,
-        profile,
-        requiredNormalizedQuantity: ingredient.amountNormalizedQuantity,
-        normalizedUnit: parseInventoryUnit(ingredient.amountNormalizedUnit),
-        brand: ingredient.ingredientBrand ?? ingredient.ingredientBrandName ?? null
-      },
-      index,
-      // Дожим — только засыпи: хмель и дрожжи от эффективности затирания не зависят.
-      resolveLineScaleFactor(profile, factor, efficiencyFactor)
-    );
-    return withOwnedCustomIngredientId(matched, ownedCustomIngredientIds);
+    return {
+      id: ingredient.id,
+      persistentKey: ingredient.persistentKey,
+      displayOrder: ingredient.displayOrder,
+      displayName: ingredient.ingredientDisplayName ?? ingredient.ingredientDisplayNameSnapshot ?? null,
+      profile,
+      requiredNormalizedQuantity: ingredient.amountNormalizedQuantity,
+      normalizedUnit: parseInventoryUnit(ingredient.amountNormalizedUnit),
+      brand: resolveMatchLineBrand(ingredient),
+      countryCode: ingredient.ingredientCountryCode ?? null
+    };
   });
+
+  const lines = matchRecipeLinesAgainstInventory(
+    lineInputs,
+    index,
+    (line) => resolveLineScaleFactor(line.profile, factor, efficiencyFactor)
+  ).map((matched) => withOwnedCustomIngredientId(matched, ownedCustomIngredientIds));
 
   return summarizeMatch(recipe.id, lines, { targetBatchVolumeL, recipeBatchVolumeL, hasEquipmentProfile });
 };
@@ -748,7 +923,7 @@ const loadCatalogForRecipes = async (
 };
 
 // Один рецепт (raw-строки) → RecipeMatchDto. Общее тело для findBrewable... и
-// computeRecipeMatchesForUser: профиль строки + matchLineAgainstInventory +
+// computeRecipeMatchesForUser: профиль строки + matchRecipeLinesAgainstInventory +
 // summarizeMatch.
 const computeMatchForRecipeRow = (
   recipe: CandidateRecipeRow,
@@ -760,28 +935,32 @@ const computeMatchForRecipeRow = (
   // строки в БД (не обязательно смотрящему), гейт сужает его до владения.
   ownedCustomIngredientIds: Set<string>
 ): RecipeMatchDto => {
-  const lines = recipe.ingredients.map((row) => {
+  const lineInputs: MatchLineInput[] = recipe.ingredients.map((row) => {
     const catalog = catalogById.get(row.ingredientCatalogItemId ?? "");
     const profile = profileFromRecipeIngredientRow(row, catalog);
-    const matched = matchLineAgainstInventory(
-      {
-        id: row.id,
-        persistentKey: row.persistentKey,
-        displayOrder: row.displayOrder,
-        displayName: row.ingredientDisplayNameSnapshot ?? null,
-        profile,
-        requiredNormalizedQuantity: row.amountNormalizedQuantity,
-        normalizedUnit: parseInventoryUnit(row.amountNormalizedUnit),
-        // Ф23/бэклог: каталог для этих строк уже загружен батчем (loadCatalogForRecipes)
-        // — раньше brand не прокидывался сюда, из-за чего lines[].brand оставался
-        // null во всех батч-путях (рецепты под склад/shopping/матч партии).
-        brand: catalog?.brand ?? null
-      },
-      index,
-      resolveLineScaleFactor(profile, volume.factor, volume.efficiencyFactor)
-    );
-    return withOwnedCustomIngredientId(matched, ownedCustomIngredientIds);
+    return {
+      id: row.id,
+      persistentKey: row.persistentKey,
+      displayOrder: row.displayOrder,
+      displayName: row.ingredientDisplayNameSnapshot ?? null,
+      profile,
+      requiredNormalizedQuantity: row.amountNormalizedQuantity,
+      normalizedUnit: parseInventoryUnit(row.amountNormalizedUnit),
+      // Ф23/бэклог: каталог для этих строк уже загружен батчем (loadCatalogForRecipes)
+      // — раньше brand не прокидывался сюда, из-за чего lines[].brand оставался
+      // null во всех батч-путях (рецепты под склад/shopping/матч партии).
+      // У хмелей brand часто пуст, а страна/производитель живут в producer —
+      // поэтому берём producer как фолбэк (как resolveIngredientBrandLabel).
+      brand: catalog?.brand ?? catalog?.producer ?? null,
+      countryCode: catalog?.countryCode ?? null
+    };
   });
+
+  const lines = matchRecipeLinesAgainstInventory(
+    lineInputs,
+    index,
+    (line) => resolveLineScaleFactor(line.profile, volume.factor, volume.efficiencyFactor)
+  ).map((matched) => withOwnedCustomIngredientId(matched, ownedCustomIngredientIds));
 
   return summarizeMatch(recipe.id, lines, {
     targetBatchVolumeL: volume.targetBatchVolumeL,
@@ -829,10 +1008,22 @@ const toBrewableRecipeDtos = async (
       totalLines: summary.totalLines,
       coveredLines: summary.coveredLines,
       missingCount: summary.missingCount,
-      missingNames: summary.lines
-        .filter((line) => line.status === "missing")
-        .map((line) => line.ingredientDisplayName)
-        .filter((name): name is string => Boolean(name)),
+      missingNames: (() => {
+        const names: string[] = [];
+        const seen = new Set<string>();
+        for (const line of summary.lines) {
+          if (line.status !== "missing" || !line.ingredientDisplayName) {
+            continue;
+          }
+          const key = resolveMatchIngredientIdentityKey(line);
+          if (seen.has(key)) {
+            continue;
+          }
+          seen.add(key);
+          names.push(line.ingredientDisplayName);
+        }
+        return names;
+      })(),
       styleName: style ? style.nameRu ?? style.name : null,
       styleCode: style ? style.bjcpId : null,
       styleHref: getBjcpArticleHrefByStyleId(recipe.styleId),

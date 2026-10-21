@@ -1,0 +1,181 @@
+
+Running 62 tests using 2 workers
+
+  -   2 [mobile] › e2e/batch-menu-pointer-events.spec.ts:58:3 › Меню партии не залипает в pointer-events:none › 10 циклов «Изменить этап…» не оставляют body некликабельным
+  ✓   1 [mobile] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (8.5s)
+  ✓   3 [mobile] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла (8.5s)
+  ✓   4 [mobile] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет (3.7s)
+  ✓   5 [mobile] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (3.7s)
+  ✓   6 [mobile] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (7.3s)
+  ✓   7 [mobile] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла (7.2s)
+  ✓   8 [mobile] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет (1.3s)
+  ✓   9 [mobile] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.1s)
+  ✓  10 [mobile] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (5.0s)
+  ✓  11 [mobile] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла (4.2s)
+  ✓  12 [mobile] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет (2.7s)
+  ✓  13 [mobile] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (2.8s)
+  ✓  14 [mobile] › e2e/beer-presentation.spec.ts:92:3 › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек (9.5s)
+  ✘  15 [mobile] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (14.6s)
+  ✓  16 [mobile] › e2e/calculators-unit-converter.spec.ts:12:3 › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow) (7.4s)
+  ✓  17 [mobile] › e2e/calculators-unit-converter.spec.ts:21:3 › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей (2.0s)
+  -  19 [mobile] › e2e/calculators-unit-converter.spec.ts:45:3 › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину
+  ✓  18 [mobile] › e2e/calculators-unit-converter.spec.ts:34:3 › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением (9.8s)
+  ✓  21 [mobile] › e2e/calculators-unit-converter.spec.ts:74:3 › Конвертер единиц пивовара › у каждой вкладки группы есть иконка (1.4s)
+  ✓  20 [mobile] › e2e/calculators-unit-converter.spec.ts:61:3 › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой (1.6s)
+  ✓  22 [mobile] › e2e/calculators-unit-converter.spec.ts:86:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (2.0s)
+  ✓  23 [mobile] › e2e/calculators-unit-converter.spec.ts:98:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (1.9s)
+  ✓  24 [mobile] › e2e/calculators-unit-converter.spec.ts:111:3 › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки (1.7s)
+  ✓  25 [mobile] › e2e/calculators-unit-converter.spec.ts:118:3 › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex) (1.7s)
+  -  26 [mobile] › e2e/feedback-fab-overlap.spec.ts:95:7 › FAB «Обратная связь» не перекрывает интерактив на странице партии › 1280×800 › форма замера плотности кликабельна после scrollIntoView
+  -  28 [mobile] › e2e/feedback-fab-overlap.spec.ts:111:7 › FAB «Обратная связь» не перекрывает интерактив на странице партии › 1280×800 › резерв под FAB в контенте равен высоте кнопки + 1rem
+  -  29 [mobile] › e2e/feedback-fab-overlap.spec.ts:95:7 › FAB «Обратная связь» не перекрывает интерактив на странице партии › 1440×900 › форма замера плотности кликабельна после scrollIntoView
+  -  27 [mobile] › e2e/feedback-fab-overlap.spec.ts:111:7 › FAB «Обратная связь» не перекрывает интерактив на странице партии › 1440×900 › резерв под FAB в контенте равен высоте кнопки + 1rem
+  -  30 [mobile] › e2e/feedback-fab-overlap.spec.ts:95:7 › FAB «Обратная связь» не перекрывает интерактив на странице партии › 1920×1080 › форма замера плотности кликабельна после scrollIntoView
+  -  31 [mobile] › e2e/feedback-fab-overlap.spec.ts:111:7 › FAB «Обратная связь» не перекрывает интерактив на странице партии › 1920×1080 › резерв под FAB в контенте равен высоте кнопки + 1rem
+  -  32 [tablet] › e2e/batch-menu-pointer-events.spec.ts:58:3 › Меню партии не залипает в pointer-events:none › 10 циклов «Изменить этап…» не оставляют body некликабельным
+  ✓  33 [tablet] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (1.4s)
+  ✓  34 [tablet] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла (1.4s)
+  ✓  35 [tablet] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет (5.1s)
+  ✓  36 [tablet] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (5.2s)
+  ✓  37 [tablet] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (7.0s)
+  ✓  38 [tablet] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла (7.2s)
+  ✘  39 [tablet] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет (30.1s)
+  ✘  40 [tablet] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (30.1s)
+  ✓  42 [tablet] › e2e/beer-presentation.spec.ts:63:7 › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла (10.5s)
+  ✓  41 [tablet] › e2e/beer-presentation.spec.ts:59:7 › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета) (10.6s)
+  ✓  43 [tablet] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет (3.0s)
+  ✓  44 [tablet] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт (3.1s)
+  ✓  45 [tablet] › e2e/beer-presentation.spec.ts:92:3 › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек (3.0s)
+  ✓  47 [tablet] › e2e/calculators-unit-converter.spec.ts:12:3 › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow) (5.6s)
+  ✘  46 [tablet] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it (10.4s)
+  ✓  49 [tablet] › e2e/calculators-unit-converter.spec.ts:34:3 › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением (4.5s)
+  ✓  48 [tablet] › e2e/calculators-unit-converter.spec.ts:21:3 › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей (8.1s)
+  ✓  51 [tablet] › e2e/calculators-unit-converter.spec.ts:61:3 › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой (9.7s)
+  -  50 [tablet] › e2e/calculators-unit-converter.spec.ts:45:3 › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину
+  ✓  52 [tablet] › e2e/calculators-unit-converter.spec.ts:74:3 › Конвертер единиц пивовара › у каждой вкладки группы есть иконка (7.5s)
+  ✓  53 [tablet] › e2e/calculators-unit-converter.spec.ts:86:3 › Конвертер единиц пивовара › запятая — валидный десятичный разделитель (7.6s)
+  ✓  54 [tablet] › e2e/calculators-unit-converter.spec.ts:98:3 › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля (4.7s)
+  ✓  55 [tablet] › e2e/calculators-unit-converter.spec.ts:111:3 › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки (4.6s)
+  -  57 [tablet] › e2e/feedback-fab-overlap.spec.ts:95:7 › FAB «Обратная связь» не перекрывает интерактив на странице партии › 1280×800 › форма замера плотности кликабельна после scrollIntoView
+  -  58 [tablet] › e2e/feedback-fab-overlap.spec.ts:111:7 › FAB «Обратная связь» не перекрывает интерактив на странице партии › 1280×800 › резерв под FAB в контенте равен высоте кнопки + 1rem
+  -  59 [tablet] › e2e/feedback-fab-overlap.spec.ts:95:7 › FAB «Обратная связь» не перекрывает интерактив на странице партии › 1440×900 › форма замера плотности кликабельна после scrollIntoView
+  -  60 [tablet] › e2e/feedback-fab-overlap.spec.ts:111:7 › FAB «Обратная связь» не перекрывает интерактив на странице партии › 1440×900 › резерв под FAB в контенте равен высоте кнопки + 1rem
+  -  61 [tablet] › e2e/feedback-fab-overlap.spec.ts:95:7 › FAB «Обратная связь» не перекрывает интерактив на странице партии › 1920×1080 › форма замера плотности кликабельна после scrollIntoView
+  -  62 [tablet] › e2e/feedback-fab-overlap.spec.ts:111:7 › FAB «Обратная связь» не перекрывает интерактив на странице партии › 1920×1080 › резерв под FAB в контенте равен высоте кнопки + 1rem
+  ✓  56 [tablet] › e2e/calculators-unit-converter.spec.ts:118:3 › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex) (3.8s)
+
+
+  1) [mobile] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it 
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected pattern: /[?&]q=IPA(?:&|$)/
+    Received string:  "http://127.0.0.1:3100/bjcp"
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 5000ms
+        13 × unexpected value "http://127.0.0.1:3100/bjcp"
+
+
+       9 |   // Establish one query, then close suggestions before the next debounce fires.
+      10 |   await search.fill("IPA");
+    > 11 |   await expect(page).toHaveURL(/[?&]q=IPA(?:&|$)/);
+         |                      ^
+      12 |   const query = "несуществующийстильxyz";
+      13 |   await search.fill(query);
+      14 |   await search.press("Escape");
+        at /home/dopefish/projects/nb/apps/web/e2e/bjcp-search.spec.ts:11:22
+
+    Error Context: test-results/bjcp-search-closing-BJCP-s-5c709-arch-and-allows-clearing-it-mobile/error-context.md
+
+  2) [tablet] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет 
+
+    Test timeout of 30000ms exceeded while running "beforeEach" hook.
+
+      51 |   for (const beer of BEERS) {
+      52 |     test.describe(beer.title, () => {
+    > 53 |       test.beforeEach(async ({ page }) => {
+         |            ^
+      54 |         await acceptCookies(page);
+      55 |         await page.goto(`/beer/${beer.slug}`);
+      56 |         await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+        at /home/dopefish/projects/nb/apps/web/e2e/beer-presentation.spec.ts:53:12
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://127.0.0.1:3100/beer/pilsner-urquell", waiting until "load"
+
+
+      53 |       test.beforeEach(async ({ page }) => {
+      54 |         await acceptCookies(page);
+    > 55 |         await page.goto(`/beer/${beer.slug}`);
+         |                    ^
+      56 |         await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+      57 |       });
+      58 |
+        at /home/dopefish/projects/nb/apps/web/e2e/beer-presentation.spec.ts:55:20
+
+    Error Context: test-results/beer-presentation-Страница-262cb-—-вертикального-скролла-нет-tablet/error-context.md
+
+  3) [tablet] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт 
+
+    Test timeout of 30000ms exceeded while running "beforeEach" hook.
+
+      51 |   for (const beer of BEERS) {
+      52 |     test.describe(beer.title, () => {
+    > 53 |       test.beforeEach(async ({ page }) => {
+         |            ^
+      54 |         await acceptCookies(page);
+      55 |         await page.goto(`/beer/${beer.slug}`);
+      56 |         await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+        at /home/dopefish/projects/nb/apps/web/e2e/beer-presentation.spec.ts:53:12
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://127.0.0.1:3100/beer/pilsner-urquell", waiting until "load"
+
+
+      53 |       test.beforeEach(async ({ page }) => {
+      54 |         await acceptCookies(page);
+    > 55 |         await page.goto(`/beer/${beer.slug}`);
+         |                    ^
+      56 |         await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+      57 |       });
+      58 |
+        at /home/dopefish/projects/nb/apps/web/e2e/beer-presentation.spec.ts:55:20
+
+    Error Context: test-results/beer-presentation-Страница-23d36-мя-паспорт-ссылка-на-рецепт-tablet/error-context.md
+
+  4) [tablet] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('heading', { name: 'По запросу ничего не найдено' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByRole('heading', { name: 'По запросу ничего не найдено' })
+
+
+      15 |
+      16 |   await expect(search).toHaveValue(query);
+    > 17 |   await expect(page.getByRole("heading", { name: "По запросу ничего не найдено" })).toBeVisible();
+         |                                                                                     ^
+      18 |   await expect.poll(() => new URL(page.url()).searchParams.get("q")).toBe(query);
+      19 |
+      20 |   await page.getByRole("button", { name: "Очистить поиск", exact: true }).click();
+        at /home/dopefish/projects/nb/apps/web/e2e/bjcp-search.spec.ts:17:85
+
+    Error Context: test-results/bjcp-search-closing-BJCP-s-5c709-arch-and-allows-clearing-it-tablet/error-context.md
+
+  4 failed
+    [mobile] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it 
+    [tablet] › e2e/beer-presentation.spec.ts:71:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет 
+    [tablet] › e2e/beer-presentation.spec.ts:80:7 › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт 
+    [tablet] › e2e/bjcp-search.spec.ts:3:1 › closing BJCP suggestions preserves a pending search and allows clearing it 
+  16 skipped
+  42 passed (2.9m)

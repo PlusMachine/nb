@@ -1,0 +1,120 @@
+--- a/packages/db/src/index.ts
++++ b/packages/db/src/index.ts
+@@ -1,3 +1,4 @@
+ export * from "./client";
+ export * from "./schema";
+ export { and, asc, count, desc, eq, gt, gte, ilike, inArray, isNotNull, isNull, lte, max, notInArray, or, sql } from "drizzle-orm";
++export type { SQLWrapper } from "drizzle-orm";
+--- /dev/null
++++ b/apps/web/lib/search-sql.ts
+@@ -0,0 +1,21 @@
++import { sql, type SQLWrapper } from "@nb/db";
++
++// The same NFKC/case/ё/separator rules as @nb/search. Translate whitespace
++// explicitly so matching does not depend on the PostgreSQL regex locale.
++const searchSeparators = ".,;:!?()[]{}\"“”«»'`´-_/\\|";
++const searchWhitespace = "\t\n\v\f\r \u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u2028\u2029\u202f\u205f\u3000\ufeff";
++const translatedCharacters = searchSeparators + searchWhitespace;
++const translatedSpaces = " ".repeat(translatedCharacters.length);
++
++export const normalizeSearchSql = (column: SQLWrapper) => sql<string>`trim(regexp_replace(
++  translate(replace(lower(normalize(coalesce(${column}, ''), NFKC)), 'ё', 'е'), ${translatedCharacters}, ${translatedSpaces}),
++  ' +', ' ', 'g'
++))`;
++
++// ANY evaluates the normalized field once for the whole set of variants.
++// Expanding normalization into every OR branch repeats Unicode/regexp work.
++export const normalizedSearchMatch = (column: SQLWrapper, patterns: string[]) => (
++  patterns.length === 0
++    ? sql<boolean>`false`
++    : sql<boolean>`${normalizeSearchSql(column)} ilike any(array[${sql.join(patterns.map((pattern) => sql`${pattern}`), sql`, `)}]::text[])`
++);
+--- a/apps/web/features/inventory/service.ts
++++ b/apps/web/features/inventory/service.ts
+@@ -45,6 +45,7 @@
+   updateInventoryQuantitySchema
+ } from "./contracts";
+ import { escapeLikePattern } from "@nb/search";
++import { normalizedSearchMatch } from "@/lib/search-sql";
+ 
+ import type { IngredientCategory, IngredientTechnicalData } from "../ingredients/contracts";
+ import { buildLayoutQueryVariants, buildQueryVariants, normalizeIngredientName } from "../ingredients/normalization";
+@@ -326,7 +327,17 @@
+     )
+   )`);
+ 
+-  return clauses.length === 1 ? clauses[0] : sql<boolean>`(${sql.join(clauses, sql` or `)})`;
++  const normalizedClauses = [
++    userIngredients.ingredientDisplayNameSnapshot, ingredients.nameRu, ingredients.nameEn,
++    ingredients.brand, ingredients.producer, userCustomIngredients.displayName, userCustomIngredients.manufacturer
++  ].map((column) => normalizedSearchMatch(column, terms));
++  normalizedClauses.push(sql<boolean>`exists (
++    select 1 from ${ingredientAliases}
++    where ${ingredientAliases.ingredientId} = ${userIngredients.ingredientCatalogItemId}
++      and ${ingredientAliases.isEnabled}
++      and ${normalizedSearchMatch(ingredientAliases.alias, terms)}
++  )`);
++  return sql<boolean>`(${sql.join([...clauses, ...normalizedClauses], sql` or `)})`;
+ };
+ 
+ const buildLiveInventoryLinkage = (
+--- a/apps/web/features/recipes/service.ts
++++ b/apps/web/features/recipes/service.ts
+@@ -38,6 +38,7 @@
+ import { assertRateLimit } from "@nb/auth";
+ import { getBjcpStyleHeroImageByBjcpId } from "@nb/content";
+ import { normalizeSearchText, swapKeyboardLayout } from "@nb/search";
++import { normalizedSearchMatch } from "@/lib/search-sql";
+ import {
+   createRecipePayloadSchema,
+   defaultRecipeProcessMeta,
+@@ -2683,7 +2684,11 @@
+ 
+   const clauses = [
+     ...scope.titleVariants.map((variant) => ilike(recipes.title, `%${escapeLikePattern(variant)}%`)),
+-    ...scope.titleVariants.map((variant) => ilike(users.displayName, `%${escapeLikePattern(variant)}%`))
++    ...scope.titleVariants.map((variant) => ilike(users.displayName, `%${escapeLikePattern(variant)}%`)),
++    ...(scope.titleVariants.length ? [
++      normalizedSearchMatch(recipes.title, scope.titleVariants.map((variant) => `%${escapeLikePattern(variant)}%`)),
++      normalizedSearchMatch(users.displayName, scope.titleVariants.map((variant) => `%${escapeLikePattern(variant)}%`))
++    ] : [])
+   ];
+   if (scope.styleIds.length) {
+     clauses.push(inArray(recipes.styleId, scope.styleIds));
+--- /dev/null
++++ b/apps/web/tests/search-sql-normalization.test.ts
+@@ -0,0 +1,24 @@
++import { describe, expect, it } from "vitest";
++import { sql } from "@nb/db";
++
++import { normalizeSearchSql } from "../lib/search-sql";
++
++describe("SQL search normalization", () => {
++  it("binds text as values and composes with parameterized LIKE patterns", () => {
++    const value = "Мёд'; drop table recipes; --";
++    const expression = normalizeSearchSql(sql`${value}`);
++    // Inspect parameters through Drizzle's own renderer, without a DB connection.
++    const query = expression.toQuery({
++      casing: { getColumnCasing: () => "" } as never,
++      escapeName: (name) => `"${name}"`,
++      escapeParam: (index) => `$${index + 1}`,
++      escapeString: (text) => `'${text.replaceAll("'", "''")}'`
++    });
++    expect(query.sql).toContain("normalize(coalesce($1, ''), NFKC)");
++    expect(query.sql).not.toContain(value);
++    expect(query.params[0]).toBe(value);
++    expect(query.params[1]).toContain("\\");
++    expect(query.params[1]).toContain("\ufeff");
++    expect(query.params[2]).toMatch(/^ +$/);
++  });
++});
+--- a/apps/web/tests/public-recipes-service.test.ts
++++ b/apps/web/tests/public-recipes-service.test.ts
+@@ -101,6 +101,7 @@
+     return ["sql", out.trim()];
+   };
+   sql.raw = (value: unknown) => ({ raw: String(value) });
++  sql.join = (chunks: unknown[], separator: unknown) => sql`${chunks.map(String).join(String(separator))}`;
+ 
+   return {
+     db,

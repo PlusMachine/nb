@@ -31,7 +31,7 @@ function handleUnsupported(error: unknown): NextResponse | null {
     return NextResponse.json(
       {
         error:
-          "Список рецептов на борту доступен, когда портал в одной сети с устройством (LAN). По облаку он пока недоступен.",
+          "Список рецептов на контроллере доступен, когда сервер NB и устройство находятся в одной локальной сети (LAN). Через облако он пока недоступен.",
         code: "CLOUD_UNSUPPORTED"
       },
       { status: 501 }

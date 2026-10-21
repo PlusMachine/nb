@@ -93,7 +93,9 @@ export async function POST(request: Request) {
   const rawRecipeId = String(formData.get("recipeId") ?? "").trim();
   const rawImageId = String(formData.get("imageId") ?? "").trim();
 
-  if (!(file instanceof File)) {
+  // request.formData() also returns File objects on Node 18, which does not
+  // expose a global File constructor. FormDataEntryValue is string | File.
+  if (!file || typeof file === "string") {
     return NextResponse.json({ ok: false, message: "Файл не найден." }, { status: 400 });
   }
 

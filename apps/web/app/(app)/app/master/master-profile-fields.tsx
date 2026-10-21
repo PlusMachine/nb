@@ -49,8 +49,8 @@ export const buildMasterProfileFormPayload = (values: MasterProfileFormValues): 
 });
 
 const labelClassName = "flex flex-col gap-1 text-sm";
-const inputClassName = "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring";
-const textareaClassName = "min-h-[8rem] rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring";
+const inputClassName = "h-10 rounded-lg border border-border bg-card px-3 text-base sm:text-sm [@media(pointer:coarse)]:text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring";
+const textareaClassName = "min-h-[8rem] rounded-lg border border-border bg-card px-3 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring";
 
 export function MasterProfileFormFields({
   values,
@@ -209,7 +209,7 @@ export function MasterProfileFormFields({
       </div>
 
       <label className={`${labelClassName} sm:w-48`}>
-        <span className="text-muted-foreground">Делаете с (год, опционально)</span>
+        <span className="text-muted-foreground">Год начала работы (необязательно)</span>
         <NumericInput
           className={inputClassName}
           integer

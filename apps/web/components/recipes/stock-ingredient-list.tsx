@@ -12,6 +12,9 @@ import {
 import { CountryFlag } from "@/components/shared/country-flag";
 import type { IngredientCategory, IngredientSubtype, IngredientSuggestionItem, IngredientType } from "@/features/ingredients/contracts";
 import {
+  resolveCustomIngredientOwnershipBadgeLabel
+} from "@/features/ingredients/derived-ingredient-presentation";
+import {
   resolveIngredientBrandLabel
 } from "@/features/ingredients/presentation";
 
@@ -109,11 +112,7 @@ export function StockIngredientList({
             const showSubtitle = shouldSuppressIngredientPickerMetaSummary(item, technicalBadges)
               ? null
               : subtitle;
-            const ownershipBadgeLabel = item.source === "custom"
-              ? item.derivedFromIngredientId
-                ? "ИЗМЕНЕННЫЙ"
-                : "СВОЙ"
-              : null;
+            const ownershipBadgeLabel = resolveCustomIngredientOwnershipBadgeLabel(item);
             return (
               <button
                 key={`${item.inventoryItemId ?? item.id}:${item.source}`}

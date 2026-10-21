@@ -175,7 +175,7 @@ type AlertContext = {
 
 /**
  * Тексты пушей (§5 F6, П5 обязателен у likely_done). Заголовок везде несёт
- * контекст партии (по образцу «Похоже, добродило: <партия>» из спеки — этот
+ * контекст партии (по образцу «Брожение, похоже, завершилось: <партия>» из спеки — этот
  * формат распространён на все пять типов ради единообразия), тело — суть/совет.
  */
 const buildAlertPayload = (type: AlertType, ctx: AlertContext): PushPayload => {
@@ -185,21 +185,21 @@ const buildAlertPayload = (type: AlertType, ctx: AlertContext): PushPayload => {
   switch (type) {
     case "not_started":
       return {
-        title: `Брожение не началось?: ${ctx.batchName}`,
+        title: `Брожение не началось? ${ctx.batchName}`,
         body: "Прошло больше 36 часов, а плотность почти не изменилась — проверьте дрожжи.",
         tag,
         url
       };
     case "possibly_stuck":
       return {
-        title: `Возможен затык: ${ctx.batchName}`,
+        title: `Возможно, брожение остановилось: ${ctx.batchName}`,
         body: "Плотность стабильна, но выше расчётной — похоже, брожение остановилось.",
         tag,
         url
       };
     case "likely_done":
       return {
-        title: `Похоже, добродило: ${ctx.batchName}`,
+        title: `Брожение, похоже, завершилось: ${ctx.batchName}`,
         body: `Стабильно ${ctx.stableDays} дн. Перед розливом подтвердите плотность ареометром.`,
         tag,
         url

@@ -1,0 +1,240 @@
+[
+  {
+    "name": "360px Calculator input/select smoke /calculators/abv-attenuation",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 1,
+    "tabs": 0
+  },
+  {
+    "name": "360px Calculator input/select smoke /calculators/refractometer-correction",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 1,
+    "tabs": 0
+  },
+  {
+    "name": "360px Calculator input/select smoke /calculators/hydrometer-correction",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "name": "360px Calculator input/select smoke /calculators/dilution-boiloff",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "name": "360px Calculator input/select smoke /calculators/ibu",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 2,
+    "tabs": 0
+  },
+  {
+    "name": "360px Calculator input/select smoke /calculators/brewing-water-volume",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 1,
+    "tabs": 0
+  },
+  {
+    "name": "360px Calculator input/select smoke /calculators/mash-infusion",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "name": "360px Calculator input/select smoke /calculators/water-ph",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "name": "360px Calculator input/select smoke /calculators/yeast-starter",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "name": "360px Calculator input/select smoke /calculators/priming-sugar",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "name": "360px Calculator input/select smoke /calculators/keg-carbonation",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 2
+  },
+  {
+    "name": "360px Calculator input/select smoke /calculators/bottling",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 1,
+    "tabs": 0
+  },
+  {
+    "name": "360px Calculator input/select smoke /calculators/speise-krausen",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "name": "360px Calculator input/select smoke /calculators/beer-color",
+    "status": "passed",
+    "modifiedFields": 1,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "name": "360px Calculator input/select smoke /calculators/brewhouse-efficiency",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "name": "360px Calculator input/select smoke /calculators/hop-freshness",
+    "status": "passed",
+    "modifiedFields": 1,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "name": "360px Calculator input/select smoke /calculators/unit-converter",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 7
+  },
+  {
+    "name": "834px Calculator input/select smoke /calculators/abv-attenuation",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 1,
+    "tabs": 0
+  },
+  {
+    "name": "834px Calculator input/select smoke /calculators/refractometer-correction",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 1,
+    "tabs": 0
+  },
+  {
+    "name": "834px Calculator input/select smoke /calculators/hydrometer-correction",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "name": "834px Calculator input/select smoke /calculators/dilution-boiloff",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "name": "834px Calculator input/select smoke /calculators/ibu",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 2,
+    "tabs": 0
+  },
+  {
+    "name": "834px Calculator input/select smoke /calculators/brewing-water-volume",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 1,
+    "tabs": 0
+  },
+  {
+    "name": "834px Calculator input/select smoke /calculators/mash-infusion",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "name": "834px Calculator input/select smoke /calculators/water-ph",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "name": "834px Calculator input/select smoke /calculators/yeast-starter",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "name": "834px Calculator input/select smoke /calculators/priming-sugar",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "name": "834px Calculator input/select smoke /calculators/keg-carbonation",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 2
+  },
+  {
+    "name": "834px Calculator input/select smoke /calculators/bottling",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 1,
+    "tabs": 0
+  },
+  {
+    "name": "834px Calculator input/select smoke /calculators/speise-krausen",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "name": "834px Calculator input/select smoke /calculators/beer-color",
+    "status": "passed",
+    "modifiedFields": 1,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "name": "834px Calculator input/select smoke /calculators/brewhouse-efficiency",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "name": "834px Calculator input/select smoke /calculators/hop-freshness",
+    "status": "passed",
+    "modifiedFields": 1,
+    "selects": 0,
+    "tabs": 0
+  },
+  {
+    "name": "834px Calculator input/select smoke /calculators/unit-converter",
+    "status": "passed",
+    "modifiedFields": 2,
+    "selects": 0,
+    "tabs": 7
+  }
+]

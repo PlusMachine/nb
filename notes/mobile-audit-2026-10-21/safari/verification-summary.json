@@ -1,0 +1,2619 @@
+{
+  "method": "Latest explicit verification for each profile, file and full test title. Original failures remain in raw runs; counts are unique cases, not the sum of executions.",
+  "total": 273,
+  "counts": {
+    "passed": 266,
+    "skipped": 7,
+    "failed": 0,
+    "timedOut": 0,
+    "interrupted": 0
+  },
+  "rawRuns": [
+    {
+      "file": "results.json",
+      "stats": {
+        "startTime": "2026-10-21T21:05:19.994Z",
+        "duration": 1020506.328,
+        "expected": 256,
+        "skipped": 7,
+        "unexpected": 10,
+        "flaky": 0
+      },
+      "failed": [
+        {
+          "key": "ipad-pro|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|запятая — валидный десятичный разделитель",
+          "project": "ipad-pro",
+          "file": "calculators-unit-converter.spec.ts",
+          "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › запятая — валидный десятичный разделитель",
+          "status": "failed",
+          "error": "Error: page.goto: Connection terminated unexpectedly\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3100/calculators/unit-converter\", waiting until \"load\"\u001b[22m\n"
+        },
+        {
+          "key": "ipad-pro|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля",
+          "project": "ipad-pro",
+          "file": "calculators-unit-converter.spec.ts",
+          "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля",
+          "status": "failed",
+          "error": "Error: page.goto: Error receiving data: Connection reset by peer\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3100/calculators/unit-converter\", waiting until \"load\"\u001b[22m\n"
+        },
+        {
+          "key": "ipad-mini|mobile-audit.spec.ts|mobile-audit.spec.ts|M04: filled recipe has compact metrics and working actions",
+          "project": "ipad-mini",
+          "file": "mobile-audit.spec.ts",
+          "title": "mobile-audit.spec.ts › M04: filled recipe has compact metrics and working actions",
+          "status": "failed",
+          "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByTestId('recipe-toolbar')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('recipe-toolbar')\u001b[22m\n"
+        },
+        {
+          "key": "ipad-mini-landscape|mobile-audit.spec.ts|mobile-audit.spec.ts|M03/M06: admin navigation and table do not widen document",
+          "project": "ipad-mini-landscape",
+          "file": "mobile-audit.spec.ts",
+          "title": "mobile-audit.spec.ts › M03/M06: admin navigation and table do not widen document",
+          "status": "failed",
+          "error": "Error: mouse.wheel: Mouse wheel is not supported in mobile WebKit"
+        },
+        {
+          "key": "ipad-pro-landscape|mobile-audit.spec.ts|mobile-audit.spec.ts|M03/M06: admin navigation and table do not widen document",
+          "project": "ipad-pro-landscape",
+          "file": "mobile-audit.spec.ts",
+          "title": "mobile-audit.spec.ts › M03/M06: admin navigation and table do not widen document",
+          "status": "failed",
+          "error": "Error: mouse.wheel: Mouse wheel is not supported in mobile WebKit"
+        },
+        {
+          "key": "iphone-se|safari-interactions.spec.ts|safari-interactions.spec.ts|QR description remains readable and collapses back to the short viewport",
+          "project": "iphone-se",
+          "file": "safari-interactions.spec.ts",
+          "title": "safari-interactions.spec.ts › QR description remains readable and collapses back to the short viewport",
+          "status": "failed",
+          "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/\\/recipes\\/pilsner-urquell$/\u001b[39m\nReceived string:  \u001b[31m\"http://127.0.0.1:3100/beer/pilsner-urquell\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"http://127.0.0.1:3100/beer/pilsner-urquell\"\u001b[22m\n"
+        },
+        {
+          "key": "iphone-se|safari-interactions.spec.ts|safari-interactions.spec.ts|BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+          "project": "iphone-se",
+          "file": "safari-interactions.spec.ts",
+          "title": "safari-interactions.spec.ts › BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+          "status": "timedOut",
+          "error": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m"
+        },
+        {
+          "key": "iphone-13|safari-interactions.spec.ts|safari-interactions.spec.ts|BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+          "project": "iphone-13",
+          "file": "safari-interactions.spec.ts",
+          "title": "safari-interactions.spec.ts › BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+          "status": "timedOut",
+          "error": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m"
+        },
+        {
+          "key": "iphone-landscape|safari-interactions.spec.ts|safari-interactions.spec.ts|QR description remains readable and collapses back to the short viewport",
+          "project": "iphone-landscape",
+          "file": "safari-interactions.spec.ts",
+          "title": "safari-interactions.spec.ts › QR description remains readable and collapses back to the short viewport",
+          "status": "failed",
+          "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/\\/recipes\\/pilsner-urquell$/\u001b[39m\nReceived string:  \u001b[31m\"http://127.0.0.1:3100/beer/pilsner-urquell\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"http://127.0.0.1:3100/beer/pilsner-urquell\"\u001b[22m\n"
+        },
+        {
+          "key": "ipad-mini|safari-interactions.spec.ts|safari-interactions.spec.ts|QR description remains readable and collapses back to the short viewport",
+          "project": "ipad-mini",
+          "file": "safari-interactions.spec.ts",
+          "title": "safari-interactions.spec.ts › QR description remains readable and collapses back to the short viewport",
+          "status": "failed",
+          "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/\\/recipes\\/pilsner-urquell$/\u001b[39m\nReceived string:  \u001b[31m\"http://127.0.0.1:3100/beer/pilsner-urquell\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"http://127.0.0.1:3100/beer/pilsner-urquell\"\u001b[22m\n"
+        }
+      ]
+    },
+    {
+      "file": "interactions-final-results.json",
+      "stats": {
+        "startTime": "2026-10-21T21:14:30.061Z",
+        "duration": 410054.682,
+        "expected": 41,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      },
+      "failed": [
+        {
+          "key": "ipad-pro|safari-interactions.spec.ts|safari-interactions.spec.ts|QR description remains readable and collapses back to the short viewport",
+          "project": "ipad-pro",
+          "file": "safari-interactions.spec.ts",
+          "title": "safari-interactions.spec.ts › QR description remains readable and collapses back to the short viewport",
+          "status": "failed",
+          "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/\\/recipes\\/pilsner-urquell$/\u001b[39m\nReceived string:  \u001b[31m\"http://127.0.0.1:3100/beer/pilsner-urquell\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"http://127.0.0.1:3100/beer/pilsner-urquell\"\u001b[22m\n"
+        }
+      ]
+    },
+    {
+      "file": "verification-final-results.json",
+      "stats": {
+        "startTime": "2026-10-21T21:23:44.786Z",
+        "duration": 257919.773,
+        "expected": 41,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      },
+      "failed": [
+        {
+          "key": "ipad-pro-landscape|mobile-audit.spec.ts|mobile-audit.spec.ts|M03/M06: admin navigation and table do not widen document",
+          "project": "ipad-pro-landscape",
+          "file": "mobile-audit.spec.ts",
+          "title": "mobile-audit.spec.ts › M03/M06: admin navigation and table do not widen document",
+          "status": "failed",
+          "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate"
+        }
+      ]
+    },
+    {
+      "file": "table-final-results.json",
+      "stats": {
+        "startTime": "2026-10-21T21:28:33.966Z",
+        "duration": 43120.001,
+        "expected": 7,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "failed": []
+    }
+  ],
+  "cases": [
+    {
+      "key": "iphone-se|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|маркер шкалы цвета у чёрного пива не выходит за трек",
+      "project": "iphone-se",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|маркер шкалы цвета у чёрного пива не выходит за трек",
+      "project": "iphone-13",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|маркер шкалы цвета у чёрного пива не выходит за трек",
+      "project": "iphone-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|маркер шкалы цвета у чёрного пива не выходит за трек",
+      "project": "ipad-mini",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|маркер шкалы цвета у чёрного пива не выходит за трек",
+      "project": "ipad-mini-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|маркер шкалы цвета у чёрного пива не выходит за трек",
+      "project": "ipad-pro",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|маркер шкалы цвета у чёрного пива не выходит за трек",
+      "project": "ipad-pro-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › маркер шкалы цвета у чёрного пива не выходит за трек",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "project": "iphone-se",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|нет горизонтального скролла",
+      "project": "iphone-se",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|сцена помещается в экран — вертикального скролла нет",
+      "project": "iphone-se",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "project": "iphone-se",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "project": "iphone-13",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|нет горизонтального скролла",
+      "project": "iphone-13",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|сцена помещается в экран — вертикального скролла нет",
+      "project": "iphone-13",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "project": "iphone-13",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "project": "iphone-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|нет горизонтального скролла",
+      "project": "iphone-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|сцена помещается в экран — вертикального скролла нет",
+      "project": "iphone-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "project": "iphone-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "project": "ipad-mini",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|нет горизонтального скролла",
+      "project": "ipad-mini",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|сцена помещается в экран — вертикального скролла нет",
+      "project": "ipad-mini",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "project": "ipad-mini",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "project": "ipad-mini-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|нет горизонтального скролла",
+      "project": "ipad-mini-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|сцена помещается в экран — вертикального скролла нет",
+      "project": "ipad-mini-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "project": "ipad-mini-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "project": "ipad-pro",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|нет горизонтального скролла",
+      "project": "ipad-pro",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|сцена помещается в экран — вертикального скролла нет",
+      "project": "ipad-pro",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "project": "ipad-pro",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "project": "ipad-pro-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|нет горизонтального скролла",
+      "project": "ipad-pro-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › нет горизонтального скролла",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|сцена помещается в экран — вертикального скролла нет",
+      "project": "ipad-pro-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › сцена помещается в экран — вертикального скролла нет",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|стаут (SRM на максимуме шкалы)|главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "project": "ipad-pro-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › стаут (SRM на максимуме шкалы) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "project": "iphone-se",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|нет горизонтального скролла",
+      "project": "iphone-se",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|сцена помещается в экран — вертикального скролла нет",
+      "project": "iphone-se",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "project": "iphone-se",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "project": "iphone-13",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|нет горизонтального скролла",
+      "project": "iphone-13",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|сцена помещается в экран — вертикального скролла нет",
+      "project": "iphone-13",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "project": "iphone-13",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "project": "iphone-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|нет горизонтального скролла",
+      "project": "iphone-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|сцена помещается в экран — вертикального скролла нет",
+      "project": "iphone-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "project": "iphone-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "project": "ipad-mini",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|нет горизонтального скролла",
+      "project": "ipad-mini",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|сцена помещается в экран — вертикального скролла нет",
+      "project": "ipad-mini",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "project": "ipad-mini",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "project": "ipad-mini-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|нет горизонтального скролла",
+      "project": "ipad-mini-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|сцена помещается в экран — вертикального скролла нет",
+      "project": "ipad-mini-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "project": "ipad-mini-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "project": "ipad-pro",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|нет горизонтального скролла",
+      "project": "ipad-pro",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|сцена помещается в экран — вертикального скролла нет",
+      "project": "ipad-pro",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "project": "ipad-pro",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "project": "ipad-pro-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|нет горизонтального скролла",
+      "project": "ipad-pro-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › нет горизонтального скролла",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|сцена помещается в экран — вертикального скролла нет",
+      "project": "ipad-pro-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › сцена помещается в экран — вертикального скролла нет",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|пилснер (светлый, шкалы у нуля)|главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "project": "ipad-pro-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › пилснер (светлый, шкалы у нуля) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "project": "iphone-se",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|нет горизонтального скролла",
+      "project": "iphone-se",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|сцена помещается в экран — вертикального скролла нет",
+      "project": "iphone-se",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "project": "iphone-se",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "project": "iphone-13",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|нет горизонтального скролла",
+      "project": "iphone-13",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|сцена помещается в экран — вертикального скролла нет",
+      "project": "iphone-13",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "project": "iphone-13",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "project": "iphone-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|нет горизонтального скролла",
+      "project": "iphone-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|сцена помещается в экран — вертикального скролла нет",
+      "project": "iphone-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "project": "iphone-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "project": "ipad-mini",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|нет горизонтального скролла",
+      "project": "ipad-mini",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|сцена помещается в экран — вертикального скролла нет",
+      "project": "ipad-mini",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "project": "ipad-mini",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "project": "ipad-mini-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|нет горизонтального скролла",
+      "project": "ipad-mini-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|сцена помещается в экран — вертикального скролла нет",
+      "project": "ipad-mini-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "project": "ipad-mini-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "project": "ipad-pro",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|нет горизонтального скролла",
+      "project": "ipad-pro",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|сцена помещается в экран — вертикального скролла нет",
+      "project": "ipad-pro",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "project": "ipad-pro",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "project": "ipad-pro-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › контент не вылезает за свои блоки (шкалы, длинные названия цвета)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|нет горизонтального скролла",
+      "project": "ipad-pro-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › нет горизонтального скролла",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|сцена помещается в экран — вертикального скролла нет",
+      "project": "ipad-pro-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › сцена помещается в экран — вертикального скролла нет",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|beer-presentation.spec.ts|beer-presentation.spec.ts|Страница пива по QR|IPA (среднее по всем шкалам)|главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "project": "ipad-pro-landscape",
+      "file": "beer-presentation.spec.ts",
+      "title": "beer-presentation.spec.ts › Страница пива по QR › IPA (среднее по всем шкалам) › главное видно без прокрутки: имя, паспорт, ссылка на рецепт",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|bjcp-search.spec.ts|bjcp-search.spec.ts|closing BJCP suggestions preserves a pending search and allows clearing it",
+      "project": "iphone-se",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › closing BJCP suggestions preserves a pending search and allows clearing it",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|bjcp-search.spec.ts|bjcp-search.spec.ts|clearing before debounce cannot restore a stale query",
+      "project": "iphone-se",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › clearing before debounce cannot restore a stale query",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|bjcp-search.spec.ts|bjcp-search.spec.ts|local search and view filters preserve browser history without RSC navigation",
+      "project": "iphone-se",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › local search and view filters preserve browser history without RSC navigation",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|bjcp-search.spec.ts|bjcp-search.spec.ts|choosing a family suggestion cancels pending text and keeps the chosen scope",
+      "project": "iphone-se",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › choosing a family suggestion cancels pending text and keeps the chosen scope",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|bjcp-search.spec.ts|bjcp-search.spec.ts|back cancels an uncommitted query instead of rewriting the restored history",
+      "project": "iphone-se",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › back cancels an uncommitted query instead of rewriting the restored history",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|bjcp-search.spec.ts|bjcp-search.spec.ts|closing BJCP suggestions preserves a pending search and allows clearing it",
+      "project": "iphone-13",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › closing BJCP suggestions preserves a pending search and allows clearing it",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|bjcp-search.spec.ts|bjcp-search.spec.ts|clearing before debounce cannot restore a stale query",
+      "project": "iphone-13",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › clearing before debounce cannot restore a stale query",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|bjcp-search.spec.ts|bjcp-search.spec.ts|local search and view filters preserve browser history without RSC navigation",
+      "project": "iphone-13",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › local search and view filters preserve browser history without RSC navigation",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|bjcp-search.spec.ts|bjcp-search.spec.ts|choosing a family suggestion cancels pending text and keeps the chosen scope",
+      "project": "iphone-13",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › choosing a family suggestion cancels pending text and keeps the chosen scope",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|bjcp-search.spec.ts|bjcp-search.spec.ts|back cancels an uncommitted query instead of rewriting the restored history",
+      "project": "iphone-13",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › back cancels an uncommitted query instead of rewriting the restored history",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|bjcp-search.spec.ts|bjcp-search.spec.ts|closing BJCP suggestions preserves a pending search and allows clearing it",
+      "project": "iphone-landscape",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › closing BJCP suggestions preserves a pending search and allows clearing it",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|bjcp-search.spec.ts|bjcp-search.spec.ts|clearing before debounce cannot restore a stale query",
+      "project": "iphone-landscape",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › clearing before debounce cannot restore a stale query",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|bjcp-search.spec.ts|bjcp-search.spec.ts|local search and view filters preserve browser history without RSC navigation",
+      "project": "iphone-landscape",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › local search and view filters preserve browser history without RSC navigation",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|bjcp-search.spec.ts|bjcp-search.spec.ts|choosing a family suggestion cancels pending text and keeps the chosen scope",
+      "project": "iphone-landscape",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › choosing a family suggestion cancels pending text and keeps the chosen scope",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|bjcp-search.spec.ts|bjcp-search.spec.ts|back cancels an uncommitted query instead of rewriting the restored history",
+      "project": "iphone-landscape",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › back cancels an uncommitted query instead of rewriting the restored history",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|bjcp-search.spec.ts|bjcp-search.spec.ts|closing BJCP suggestions preserves a pending search and allows clearing it",
+      "project": "ipad-mini",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › closing BJCP suggestions preserves a pending search and allows clearing it",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|bjcp-search.spec.ts|bjcp-search.spec.ts|clearing before debounce cannot restore a stale query",
+      "project": "ipad-mini",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › clearing before debounce cannot restore a stale query",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|bjcp-search.spec.ts|bjcp-search.spec.ts|local search and view filters preserve browser history without RSC navigation",
+      "project": "ipad-mini",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › local search and view filters preserve browser history without RSC navigation",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|bjcp-search.spec.ts|bjcp-search.spec.ts|choosing a family suggestion cancels pending text and keeps the chosen scope",
+      "project": "ipad-mini",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › choosing a family suggestion cancels pending text and keeps the chosen scope",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|bjcp-search.spec.ts|bjcp-search.spec.ts|back cancels an uncommitted query instead of rewriting the restored history",
+      "project": "ipad-mini",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › back cancels an uncommitted query instead of rewriting the restored history",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|bjcp-search.spec.ts|bjcp-search.spec.ts|closing BJCP suggestions preserves a pending search and allows clearing it",
+      "project": "ipad-mini-landscape",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › closing BJCP suggestions preserves a pending search and allows clearing it",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|bjcp-search.spec.ts|bjcp-search.spec.ts|clearing before debounce cannot restore a stale query",
+      "project": "ipad-mini-landscape",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › clearing before debounce cannot restore a stale query",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|bjcp-search.spec.ts|bjcp-search.spec.ts|local search and view filters preserve browser history without RSC navigation",
+      "project": "ipad-mini-landscape",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › local search and view filters preserve browser history without RSC navigation",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|bjcp-search.spec.ts|bjcp-search.spec.ts|choosing a family suggestion cancels pending text and keeps the chosen scope",
+      "project": "ipad-mini-landscape",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › choosing a family suggestion cancels pending text and keeps the chosen scope",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|bjcp-search.spec.ts|bjcp-search.spec.ts|back cancels an uncommitted query instead of rewriting the restored history",
+      "project": "ipad-mini-landscape",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › back cancels an uncommitted query instead of rewriting the restored history",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|bjcp-search.spec.ts|bjcp-search.spec.ts|closing BJCP suggestions preserves a pending search and allows clearing it",
+      "project": "ipad-pro",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › closing BJCP suggestions preserves a pending search and allows clearing it",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|bjcp-search.spec.ts|bjcp-search.spec.ts|clearing before debounce cannot restore a stale query",
+      "project": "ipad-pro",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › clearing before debounce cannot restore a stale query",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|bjcp-search.spec.ts|bjcp-search.spec.ts|local search and view filters preserve browser history without RSC navigation",
+      "project": "ipad-pro",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › local search and view filters preserve browser history without RSC navigation",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|bjcp-search.spec.ts|bjcp-search.spec.ts|choosing a family suggestion cancels pending text and keeps the chosen scope",
+      "project": "ipad-pro",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › choosing a family suggestion cancels pending text and keeps the chosen scope",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|bjcp-search.spec.ts|bjcp-search.spec.ts|back cancels an uncommitted query instead of rewriting the restored history",
+      "project": "ipad-pro",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › back cancels an uncommitted query instead of rewriting the restored history",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|bjcp-search.spec.ts|bjcp-search.spec.ts|closing BJCP suggestions preserves a pending search and allows clearing it",
+      "project": "ipad-pro-landscape",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › closing BJCP suggestions preserves a pending search and allows clearing it",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|bjcp-search.spec.ts|bjcp-search.spec.ts|clearing before debounce cannot restore a stale query",
+      "project": "ipad-pro-landscape",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › clearing before debounce cannot restore a stale query",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|bjcp-search.spec.ts|bjcp-search.spec.ts|local search and view filters preserve browser history without RSC navigation",
+      "project": "ipad-pro-landscape",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › local search and view filters preserve browser history without RSC navigation",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|bjcp-search.spec.ts|bjcp-search.spec.ts|choosing a family suggestion cancels pending text and keeps the chosen scope",
+      "project": "ipad-pro-landscape",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › choosing a family suggestion cancels pending text and keeps the chosen scope",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|bjcp-search.spec.ts|bjcp-search.spec.ts|back cancels an uncommitted query instead of rewriting the restored history",
+      "project": "ipad-pro-landscape",
+      "file": "bjcp-search.spec.ts",
+      "title": "bjcp-search.spec.ts › back cancels an uncommitted query instead of rewriting the restored history",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|не выходит за ширину вьюпорта (нет horizontal overflow)",
+      "project": "iphone-se",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|переключение вкладки группы меняет активную карточку без дублей",
+      "project": "iphone-se",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|каждая единица группы — рабочее поле ввода со своим значением",
+      "project": "iphone-se",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|на lg+ экранах конвертер использует доступную ширину контейнера, а не половину",
+      "project": "iphone-se",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину",
+      "status": "skipped",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой",
+      "project": "iphone-se",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|у каждой вкладки группы есть иконка",
+      "project": "iphone-se",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › у каждой вкладки группы есть иконка",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|запятая — валидный десятичный разделитель",
+      "project": "iphone-se",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › запятая — валидный десятичный разделитель",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "iphone-se|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля",
+      "project": "iphone-se",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "iphone-se|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|«Сбросить» возвращает значения, но не уводит с текущей вкладки",
+      "project": "iphone-se",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|вкладки листаются стрелками с клавиатуры (roving tabindex)",
+      "project": "iphone-se",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|не выходит за ширину вьюпорта (нет horizontal overflow)",
+      "project": "iphone-13",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|переключение вкладки группы меняет активную карточку без дублей",
+      "project": "iphone-13",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|каждая единица группы — рабочее поле ввода со своим значением",
+      "project": "iphone-13",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|на lg+ экранах конвертер использует доступную ширину контейнера, а не половину",
+      "project": "iphone-13",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину",
+      "status": "skipped",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой",
+      "project": "iphone-13",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|у каждой вкладки группы есть иконка",
+      "project": "iphone-13",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › у каждой вкладки группы есть иконка",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|запятая — валидный десятичный разделитель",
+      "project": "iphone-13",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › запятая — валидный десятичный разделитель",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "iphone-13|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля",
+      "project": "iphone-13",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "iphone-13|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|«Сбросить» возвращает значения, но не уводит с текущей вкладки",
+      "project": "iphone-13",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|вкладки листаются стрелками с клавиатуры (roving tabindex)",
+      "project": "iphone-13",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|не выходит за ширину вьюпорта (нет horizontal overflow)",
+      "project": "iphone-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|переключение вкладки группы меняет активную карточку без дублей",
+      "project": "iphone-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|каждая единица группы — рабочее поле ввода со своим значением",
+      "project": "iphone-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|на lg+ экранах конвертер использует доступную ширину контейнера, а не половину",
+      "project": "iphone-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину",
+      "status": "skipped",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой",
+      "project": "iphone-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|у каждой вкладки группы есть иконка",
+      "project": "iphone-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › у каждой вкладки группы есть иконка",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|запятая — валидный десятичный разделитель",
+      "project": "iphone-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › запятая — валидный десятичный разделитель",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "iphone-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля",
+      "project": "iphone-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "iphone-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|«Сбросить» возвращает значения, но не уводит с текущей вкладки",
+      "project": "iphone-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|вкладки листаются стрелками с клавиатуры (roving tabindex)",
+      "project": "iphone-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|не выходит за ширину вьюпорта (нет horizontal overflow)",
+      "project": "ipad-mini",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|переключение вкладки группы меняет активную карточку без дублей",
+      "project": "ipad-mini",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|каждая единица группы — рабочее поле ввода со своим значением",
+      "project": "ipad-mini",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|на lg+ экранах конвертер использует доступную ширину контейнера, а не половину",
+      "project": "ipad-mini",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину",
+      "status": "skipped",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой",
+      "project": "ipad-mini",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|у каждой вкладки группы есть иконка",
+      "project": "ipad-mini",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › у каждой вкладки группы есть иконка",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|запятая — валидный десятичный разделитель",
+      "project": "ipad-mini",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › запятая — валидный десятичный разделитель",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "ipad-mini|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля",
+      "project": "ipad-mini",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "ipad-mini|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|«Сбросить» возвращает значения, но не уводит с текущей вкладки",
+      "project": "ipad-mini",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|вкладки листаются стрелками с клавиатуры (roving tabindex)",
+      "project": "ipad-mini",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|не выходит за ширину вьюпорта (нет horizontal overflow)",
+      "project": "ipad-mini-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|переключение вкладки группы меняет активную карточку без дублей",
+      "project": "ipad-mini-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|каждая единица группы — рабочее поле ввода со своим значением",
+      "project": "ipad-mini-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|на lg+ экранах конвертер использует доступную ширину контейнера, а не половину",
+      "project": "ipad-mini-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой",
+      "project": "ipad-mini-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой",
+      "status": "skipped",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|у каждой вкладки группы есть иконка",
+      "project": "ipad-mini-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › у каждой вкладки группы есть иконка",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|запятая — валидный десятичный разделитель",
+      "project": "ipad-mini-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › запятая — валидный десятичный разделитель",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля",
+      "project": "ipad-mini-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|«Сбросить» возвращает значения, но не уводит с текущей вкладки",
+      "project": "ipad-mini-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|вкладки листаются стрелками с клавиатуры (roving tabindex)",
+      "project": "ipad-mini-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|не выходит за ширину вьюпорта (нет horizontal overflow)",
+      "project": "ipad-pro",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|переключение вкладки группы меняет активную карточку без дублей",
+      "project": "ipad-pro",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|каждая единица группы — рабочее поле ввода со своим значением",
+      "project": "ipad-pro",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|на lg+ экранах конвертер использует доступную ширину контейнера, а не половину",
+      "project": "ipad-pro",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину",
+      "status": "skipped",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой",
+      "project": "ipad-pro",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|у каждой вкладки группы есть иконка",
+      "project": "ipad-pro",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › у каждой вкладки группы есть иконка",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|запятая — валидный десятичный разделитель",
+      "project": "ipad-pro",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › запятая — валидный десятичный разделитель",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "ipad-pro|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля",
+      "project": "ipad-pro",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "ipad-pro|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|«Сбросить» возвращает значения, но не уводит с текущей вкладки",
+      "project": "ipad-pro",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|вкладки листаются стрелками с клавиатуры (roving tabindex)",
+      "project": "ipad-pro",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|не выходит за ширину вьюпорта (нет horizontal overflow)",
+      "project": "ipad-pro-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › не выходит за ширину вьюпорта (нет horizontal overflow)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|переключение вкладки группы меняет активную карточку без дублей",
+      "project": "ipad-pro-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › переключение вкладки группы меняет активную карточку без дублей",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|каждая единица группы — рабочее поле ввода со своим значением",
+      "project": "ipad-pro-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › каждая единица группы — рабочее поле ввода со своим значением",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|на lg+ экранах конвертер использует доступную ширину контейнера, а не половину",
+      "project": "ipad-pro-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › на lg+ экранах конвертер использует доступную ширину контейнера, а не половину",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой",
+      "project": "ipad-pro-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › на узких экранах вкладки идут горизонтальным рядом, а не боковой колонкой",
+      "status": "skipped",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|у каждой вкладки группы есть иконка",
+      "project": "ipad-pro-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › у каждой вкладки группы есть иконка",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|запятая — валидный десятичный разделитель",
+      "project": "ipad-pro-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › запятая — валидный десятичный разделитель",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля",
+      "project": "ipad-pro-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|«Сбросить» возвращает значения, но не уводит с текущей вкладки",
+      "project": "ipad-pro-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › «Сбросить» возвращает значения, но не уводит с текущей вкладки",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|calculators-unit-converter.spec.ts|calculators-unit-converter.spec.ts|Конвертер единиц пивовара|вкладки листаются стрелками с клавиатуры (roving tabindex)",
+      "project": "ipad-pro-landscape",
+      "file": "calculators-unit-converter.spec.ts",
+      "title": "calculators-unit-converter.spec.ts › Конвертер единиц пивовара › вкладки листаются стрелками с клавиатуры (roving tabindex)",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|mobile-audit.spec.ts|mobile-audit.spec.ts|M01: label preview leaves data fields clickable in every format",
+      "project": "iphone-se",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M01: label preview leaves data fields clickable in every format",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|mobile-audit.spec.ts|mobile-audit.spec.ts|M02: public navigation and sign-in fit, including tablet breakpoint",
+      "project": "iphone-se",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M02: public navigation and sign-in fit, including tablet breakpoint",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-se|mobile-audit.spec.ts|mobile-audit.spec.ts|M03/M06: admin navigation and table do not widen document",
+      "project": "iphone-se",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M03/M06: admin navigation and table do not widen document",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "table-final-results.json"
+    },
+    {
+      "key": "iphone-se|mobile-audit.spec.ts|mobile-audit.spec.ts|M04: filled recipe has compact metrics and working actions",
+      "project": "iphone-se",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M04: filled recipe has compact metrics and working actions",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "iphone-se|mobile-audit.spec.ts|mobile-audit.spec.ts|M05: every dilution operation fits on the narrow screen",
+      "project": "iphone-se",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M05: every dilution operation fits on the narrow screen",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "iphone-13|mobile-audit.spec.ts|mobile-audit.spec.ts|M01: label preview leaves data fields clickable in every format",
+      "project": "iphone-13",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M01: label preview leaves data fields clickable in every format",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|mobile-audit.spec.ts|mobile-audit.spec.ts|M02: public navigation and sign-in fit, including tablet breakpoint",
+      "project": "iphone-13",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M02: public navigation and sign-in fit, including tablet breakpoint",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-13|mobile-audit.spec.ts|mobile-audit.spec.ts|M03/M06: admin navigation and table do not widen document",
+      "project": "iphone-13",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M03/M06: admin navigation and table do not widen document",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "table-final-results.json"
+    },
+    {
+      "key": "iphone-13|mobile-audit.spec.ts|mobile-audit.spec.ts|M04: filled recipe has compact metrics and working actions",
+      "project": "iphone-13",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M04: filled recipe has compact metrics and working actions",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "iphone-13|mobile-audit.spec.ts|mobile-audit.spec.ts|M05: every dilution operation fits on the narrow screen",
+      "project": "iphone-13",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M05: every dilution operation fits on the narrow screen",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "iphone-landscape|mobile-audit.spec.ts|mobile-audit.spec.ts|M01: label preview leaves data fields clickable in every format",
+      "project": "iphone-landscape",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M01: label preview leaves data fields clickable in every format",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|mobile-audit.spec.ts|mobile-audit.spec.ts|M02: public navigation and sign-in fit, including tablet breakpoint",
+      "project": "iphone-landscape",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M02: public navigation and sign-in fit, including tablet breakpoint",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "iphone-landscape|mobile-audit.spec.ts|mobile-audit.spec.ts|M03/M06: admin navigation and table do not widen document",
+      "project": "iphone-landscape",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M03/M06: admin navigation and table do not widen document",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "table-final-results.json"
+    },
+    {
+      "key": "iphone-landscape|mobile-audit.spec.ts|mobile-audit.spec.ts|M04: filled recipe has compact metrics and working actions",
+      "project": "iphone-landscape",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M04: filled recipe has compact metrics and working actions",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "iphone-landscape|mobile-audit.spec.ts|mobile-audit.spec.ts|M05: every dilution operation fits on the narrow screen",
+      "project": "iphone-landscape",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M05: every dilution operation fits on the narrow screen",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "ipad-mini|mobile-audit.spec.ts|mobile-audit.spec.ts|M01: label preview leaves data fields clickable in every format",
+      "project": "ipad-mini",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M01: label preview leaves data fields clickable in every format",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|mobile-audit.spec.ts|mobile-audit.spec.ts|M02: public navigation and sign-in fit, including tablet breakpoint",
+      "project": "ipad-mini",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M02: public navigation and sign-in fit, including tablet breakpoint",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini|mobile-audit.spec.ts|mobile-audit.spec.ts|M03/M06: admin navigation and table do not widen document",
+      "project": "ipad-mini",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M03/M06: admin navigation and table do not widen document",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "table-final-results.json"
+    },
+    {
+      "key": "ipad-mini|mobile-audit.spec.ts|mobile-audit.spec.ts|M04: filled recipe has compact metrics and working actions",
+      "project": "ipad-mini",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M04: filled recipe has compact metrics and working actions",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "ipad-mini|mobile-audit.spec.ts|mobile-audit.spec.ts|M05: every dilution operation fits on the narrow screen",
+      "project": "ipad-mini",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M05: every dilution operation fits on the narrow screen",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|mobile-audit.spec.ts|mobile-audit.spec.ts|M01: label preview leaves data fields clickable in every format",
+      "project": "ipad-mini-landscape",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M01: label preview leaves data fields clickable in every format",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|mobile-audit.spec.ts|mobile-audit.spec.ts|M02: public navigation and sign-in fit, including tablet breakpoint",
+      "project": "ipad-mini-landscape",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M02: public navigation and sign-in fit, including tablet breakpoint",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|mobile-audit.spec.ts|mobile-audit.spec.ts|M03/M06: admin navigation and table do not widen document",
+      "project": "ipad-mini-landscape",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M03/M06: admin navigation and table do not widen document",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "table-final-results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|mobile-audit.spec.ts|mobile-audit.spec.ts|M04: filled recipe has compact metrics and working actions",
+      "project": "ipad-mini-landscape",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M04: filled recipe has compact metrics and working actions",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|mobile-audit.spec.ts|mobile-audit.spec.ts|M05: every dilution operation fits on the narrow screen",
+      "project": "ipad-mini-landscape",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M05: every dilution operation fits on the narrow screen",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "ipad-pro|mobile-audit.spec.ts|mobile-audit.spec.ts|M01: label preview leaves data fields clickable in every format",
+      "project": "ipad-pro",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M01: label preview leaves data fields clickable in every format",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|mobile-audit.spec.ts|mobile-audit.spec.ts|M02: public navigation and sign-in fit, including tablet breakpoint",
+      "project": "ipad-pro",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M02: public navigation and sign-in fit, including tablet breakpoint",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro|mobile-audit.spec.ts|mobile-audit.spec.ts|M03/M06: admin navigation and table do not widen document",
+      "project": "ipad-pro",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M03/M06: admin navigation and table do not widen document",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "table-final-results.json"
+    },
+    {
+      "key": "ipad-pro|mobile-audit.spec.ts|mobile-audit.spec.ts|M04: filled recipe has compact metrics and working actions",
+      "project": "ipad-pro",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M04: filled recipe has compact metrics and working actions",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "ipad-pro|mobile-audit.spec.ts|mobile-audit.spec.ts|M05: every dilution operation fits on the narrow screen",
+      "project": "ipad-pro",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M05: every dilution operation fits on the narrow screen",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|mobile-audit.spec.ts|mobile-audit.spec.ts|M01: label preview leaves data fields clickable in every format",
+      "project": "ipad-pro-landscape",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M01: label preview leaves data fields clickable in every format",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|mobile-audit.spec.ts|mobile-audit.spec.ts|M02: public navigation and sign-in fit, including tablet breakpoint",
+      "project": "ipad-pro-landscape",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M02: public navigation and sign-in fit, including tablet breakpoint",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|mobile-audit.spec.ts|mobile-audit.spec.ts|M03/M06: admin navigation and table do not widen document",
+      "project": "ipad-pro-landscape",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M03/M06: admin navigation and table do not widen document",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "table-final-results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|mobile-audit.spec.ts|mobile-audit.spec.ts|M04: filled recipe has compact metrics and working actions",
+      "project": "ipad-pro-landscape",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M04: filled recipe has compact metrics and working actions",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|mobile-audit.spec.ts|mobile-audit.spec.ts|M05: every dilution operation fits on the narrow screen",
+      "project": "ipad-pro-landscape",
+      "file": "mobile-audit.spec.ts",
+      "title": "mobile-audit.spec.ts › M05: every dilution operation fits on the narrow screen",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "iphone-se|safari-interactions.spec.ts|safari-interactions.spec.ts|QR description remains readable and collapses back to the short viewport",
+      "project": "iphone-se",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › QR description remains readable and collapses back to the short viewport",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "iphone-se|safari-interactions.spec.ts|safari-interactions.spec.ts|QR feedback leaves recipe actions uncovered and can be opened twice",
+      "project": "iphone-se",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › QR feedback leaves recipe actions uncovered and can be opened twice",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "iphone-se|safari-interactions.spec.ts|safari-interactions.spec.ts|label date and description remain editable with readable touch fields",
+      "project": "iphone-se",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › label date and description remain editable with readable touch fields",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "iphone-se|safari-interactions.spec.ts|safari-interactions.spec.ts|BJCP waits for its handlers before accepting the first query",
+      "project": "iphone-se",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › BJCP waits for its handlers before accepting the first query",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "iphone-se|safari-interactions.spec.ts|safari-interactions.spec.ts|BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+      "project": "iphone-se",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "iphone-se|safari-interactions.spec.ts|safari-interactions.spec.ts|cookie choice closes the banner and survives a reload",
+      "project": "iphone-se",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › cookie choice closes the banner and survives a reload",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "iphone-13|safari-interactions.spec.ts|safari-interactions.spec.ts|QR description remains readable and collapses back to the short viewport",
+      "project": "iphone-13",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › QR description remains readable and collapses back to the short viewport",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "iphone-13|safari-interactions.spec.ts|safari-interactions.spec.ts|QR feedback leaves recipe actions uncovered and can be opened twice",
+      "project": "iphone-13",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › QR feedback leaves recipe actions uncovered and can be opened twice",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "iphone-13|safari-interactions.spec.ts|safari-interactions.spec.ts|label date and description remain editable with readable touch fields",
+      "project": "iphone-13",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › label date and description remain editable with readable touch fields",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "iphone-13|safari-interactions.spec.ts|safari-interactions.spec.ts|BJCP waits for its handlers before accepting the first query",
+      "project": "iphone-13",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › BJCP waits for its handlers before accepting the first query",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "iphone-13|safari-interactions.spec.ts|safari-interactions.spec.ts|BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+      "project": "iphone-13",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "iphone-13|safari-interactions.spec.ts|safari-interactions.spec.ts|cookie choice closes the banner and survives a reload",
+      "project": "iphone-13",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › cookie choice closes the banner and survives a reload",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "iphone-landscape|safari-interactions.spec.ts|safari-interactions.spec.ts|QR description remains readable and collapses back to the short viewport",
+      "project": "iphone-landscape",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › QR description remains readable and collapses back to the short viewport",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "iphone-landscape|safari-interactions.spec.ts|safari-interactions.spec.ts|QR feedback leaves recipe actions uncovered and can be opened twice",
+      "project": "iphone-landscape",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › QR feedback leaves recipe actions uncovered and can be opened twice",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "iphone-landscape|safari-interactions.spec.ts|safari-interactions.spec.ts|label date and description remain editable with readable touch fields",
+      "project": "iphone-landscape",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › label date and description remain editable with readable touch fields",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "iphone-landscape|safari-interactions.spec.ts|safari-interactions.spec.ts|BJCP waits for its handlers before accepting the first query",
+      "project": "iphone-landscape",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › BJCP waits for its handlers before accepting the first query",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "iphone-landscape|safari-interactions.spec.ts|safari-interactions.spec.ts|BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+      "project": "iphone-landscape",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "iphone-landscape|safari-interactions.spec.ts|safari-interactions.spec.ts|cookie choice closes the banner and survives a reload",
+      "project": "iphone-landscape",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › cookie choice closes the banner and survives a reload",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "ipad-mini|safari-interactions.spec.ts|safari-interactions.spec.ts|QR description remains readable and collapses back to the short viewport",
+      "project": "ipad-mini",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › QR description remains readable and collapses back to the short viewport",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "ipad-mini|safari-interactions.spec.ts|safari-interactions.spec.ts|QR feedback leaves recipe actions uncovered and can be opened twice",
+      "project": "ipad-mini",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › QR feedback leaves recipe actions uncovered and can be opened twice",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "ipad-mini|safari-interactions.spec.ts|safari-interactions.spec.ts|label date and description remain editable with readable touch fields",
+      "project": "ipad-mini",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › label date and description remain editable with readable touch fields",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "ipad-mini|safari-interactions.spec.ts|safari-interactions.spec.ts|BJCP waits for its handlers before accepting the first query",
+      "project": "ipad-mini",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › BJCP waits for its handlers before accepting the first query",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "ipad-mini|safari-interactions.spec.ts|safari-interactions.spec.ts|BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+      "project": "ipad-mini",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "ipad-mini|safari-interactions.spec.ts|safari-interactions.spec.ts|cookie choice closes the banner and survives a reload",
+      "project": "ipad-mini",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › cookie choice closes the banner and survives a reload",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|safari-interactions.spec.ts|safari-interactions.spec.ts|QR description remains readable and collapses back to the short viewport",
+      "project": "ipad-mini-landscape",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › QR description remains readable and collapses back to the short viewport",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|safari-interactions.spec.ts|safari-interactions.spec.ts|QR feedback leaves recipe actions uncovered and can be opened twice",
+      "project": "ipad-mini-landscape",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › QR feedback leaves recipe actions uncovered and can be opened twice",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|safari-interactions.spec.ts|safari-interactions.spec.ts|label date and description remain editable with readable touch fields",
+      "project": "ipad-mini-landscape",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › label date and description remain editable with readable touch fields",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|safari-interactions.spec.ts|safari-interactions.spec.ts|BJCP waits for its handlers before accepting the first query",
+      "project": "ipad-mini-landscape",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › BJCP waits for its handlers before accepting the first query",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|safari-interactions.spec.ts|safari-interactions.spec.ts|BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+      "project": "ipad-mini-landscape",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "ipad-mini-landscape|safari-interactions.spec.ts|safari-interactions.spec.ts|cookie choice closes the banner and survives a reload",
+      "project": "ipad-mini-landscape",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › cookie choice closes the banner and survives a reload",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "ipad-pro|safari-interactions.spec.ts|safari-interactions.spec.ts|QR description remains readable and collapses back to the short viewport",
+      "project": "ipad-pro",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › QR description remains readable and collapses back to the short viewport",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "ipad-pro|safari-interactions.spec.ts|safari-interactions.spec.ts|QR feedback leaves recipe actions uncovered and can be opened twice",
+      "project": "ipad-pro",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › QR feedback leaves recipe actions uncovered and can be opened twice",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "ipad-pro|safari-interactions.spec.ts|safari-interactions.spec.ts|label date and description remain editable with readable touch fields",
+      "project": "ipad-pro",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › label date and description remain editable with readable touch fields",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "ipad-pro|safari-interactions.spec.ts|safari-interactions.spec.ts|BJCP waits for its handlers before accepting the first query",
+      "project": "ipad-pro",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › BJCP waits for its handlers before accepting the first query",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "ipad-pro|safari-interactions.spec.ts|safari-interactions.spec.ts|BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+      "project": "ipad-pro",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "ipad-pro|safari-interactions.spec.ts|safari-interactions.spec.ts|cookie choice closes the banner and survives a reload",
+      "project": "ipad-pro",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › cookie choice closes the banner and survives a reload",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|safari-interactions.spec.ts|safari-interactions.spec.ts|QR description remains readable and collapses back to the short viewport",
+      "project": "ipad-pro-landscape",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › QR description remains readable and collapses back to the short viewport",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "verification-final-results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|safari-interactions.spec.ts|safari-interactions.spec.ts|QR feedback leaves recipe actions uncovered and can be opened twice",
+      "project": "ipad-pro-landscape",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › QR feedback leaves recipe actions uncovered and can be opened twice",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|safari-interactions.spec.ts|safari-interactions.spec.ts|label date and description remain editable with readable touch fields",
+      "project": "ipad-pro-landscape",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › label date and description remain editable with readable touch fields",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|safari-interactions.spec.ts|safari-interactions.spec.ts|BJCP waits for its handlers before accepting the first query",
+      "project": "ipad-pro-landscape",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › BJCP waits for its handlers before accepting the first query",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|safari-interactions.spec.ts|safari-interactions.spec.ts|BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+      "project": "ipad-pro-landscape",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › BJCP suggestions fit the viewport and keyboard selection scrolls inside",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    },
+    {
+      "key": "ipad-pro-landscape|safari-interactions.spec.ts|safari-interactions.spec.ts|cookie choice closes the banner and survives a reload",
+      "project": "ipad-pro-landscape",
+      "file": "safari-interactions.spec.ts",
+      "title": "safari-interactions.spec.ts › cookie choice closes the banner and survives a reload",
+      "status": "passed",
+      "error": null,
+      "verifiedBy": "interactions-final-results.json"
+    }
+  ]
+}

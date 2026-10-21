@@ -1,0 +1,239 @@
+- banner:
+  - link "NB":
+    - /url: /app
+  - radiogroup "Тема оформления":
+    - radio "Светлая тема":
+      - img
+    - radio "Тёмная тема":
+      - img
+    - radio "Как в системе" [checked]:
+      - img
+  - 'button "Скин «Хмель»: выключен"':
+    - img
+  - button "Открыть меню":
+    - img
+- main:
+  - main:
+    - navigation "Разделы рецептов":
+      - link "Мои":
+        - /url: /app/recipes
+      - link "Закладки":
+        - /url: /app/saved
+      - link "Найти":
+        - /url: /recipes
+    - heading "Рецепты сообщества" [level=1]
+    - text: Поиск рецептов
+    - searchbox "Поиск рецептов"
+    - text: Сортировка
+    - combobox "Сортировка":
+      - option "Сначала новые" [selected]
+      - option "Популярные"
+      - option "По рейтингу"
+      - option "Крепче"
+      - option "Слабее"
+      - option "Горше"
+      - option "Мягче"
+      - option "Светлее"
+      - option "Темнее"
+      - option "По алфавиту"
+    - paragraph
+    - button "Открыть фильтры"
+    - paragraph: Найдено 46 рецептов
+    - article:
+      - link "Моя APA Amarillo+Cascade":
+        - /url: /recipes/moya-apa-amarillo-cascade-2
+      - text: Американский пейл-эль · 18B
+      - heading "Моя APA Amarillo+Cascade" [level=2]
+      - text: QA Admin 2 ABV 5.5 % IBU 30 OG 13.1 °P SRM 4.5
+      - button "Добавить в закладки"
+    - article:
+      - link "Моя APA Amarillo+Cascade":
+        - /url: /recipes/moya-apa-amarillo-cascade
+      - text: Американский пейл-эль · 18B
+      - heading "Моя APA Amarillo+Cascade" [level=2]
+      - text: QA Admin 2 ABV 5.5 % IBU 30 OG 13.1 °P SRM 4.5
+      - button "Добавить в закладки"
+    - article:
+      - link "Sample · Saison":
+        - /url: /recipes/sample-saison
+      - text: Сэзон · 25B
+      - heading "Sample · Saison" [level=2]
+      - text: QA Admin ABV 7.0 % IBU 32 OG 14.0 °P SRM 5
+      - button "Добавить в закладки"
+    - article:
+      - link "Sample · American Stout":
+        - /url: /recipes/sample-american-stout
+      - text: Американский стаут · 20B
+      - heading "Sample · American Stout" [level=2]
+      - text: QA Admin ABV 6.0 % IBU 52 OG 14.5 °P SRM 45.7
+      - button "Добавить в закладки"
+    - article:
+      - link "Sample · American IPA":
+        - /url: /recipes/sample-american-ipa
+      - text: Американский IPA · 21A
+      - heading "Sample · American IPA" [level=2]
+      - text: QA Admin ABV 5.9 % IBU 45 OG 14.0 °P SRM 8
+      - button "Добавить в закладки"
+    - article:
+      - link "Летний пилснер":
+        - /url: /recipes/letniy-pilsner-2
+      - text: Немецкий пилс · 5D
+      - heading "Летний пилснер" [level=2]
+      - text: Артём Флоу ABV 4.7 % IBU 12 OG 11.0 °P SRM 3.1
+      - button "Добавить в закладки"
+    - article:
+      - link "Sample · Saison":
+        - /url: /recipes/sample-saison-2
+      - text: Сэзон · 25B
+      - heading "Sample · Saison" [level=2]
+      - text: beer.page.test ABV 7.0 % IBU 32 OG 14.0 °P SRM 5
+      - button "Добавить в закладки"
+    - article:
+      - link "Sample · American Stout":
+        - /url: /recipes/sample-american-stout-2
+      - text: Американский стаут · 20B
+      - heading "Sample · American Stout" [level=2]
+      - text: beer.page.test ABV 6.0 % IBU 52 OG 14.5 °P SRM 45.7
+      - button "Добавить в закладки"
+    - article:
+      - link "Sample · American IPA":
+        - /url: /recipes/sample-american-ipa-2
+      - text: Американский IPA · 21A
+      - heading "Sample · American IPA" [level=2]
+      - text: beer.page.test ABV 5.9 % IBU 45 OG 14.0 °P SRM 8
+      - button "Добавить в закладки"
+    - article:
+      - link "Saison Dupont (версия Clone Brews)":
+        - /url: /recipes/saison-dupont-versiya-clone-brews
+      - text: Сэзон · 25B
+      - heading "Saison Dupont (версия Clone Brews)" [level=2]
+      - text: admin ABV 7.1 % IBU 23 OG 16.4 °P SRM 6 4,0 (1)
+      - button "Добавить в закладки"
+    - article:
+      - link "Motor Oil RIS":
+        - /url: /recipes/motor-oil-ris
+      - text: Имперский стаут · 20C
+      - heading "Motor Oil RIS" [level=2]
+      - text: admin ABV 8.3 % IBU 82 OG 21.1 °P SRM 39 4,2 (5)
+      - button "Добавить в закладки"
+    - article:
+      - link "Не более трёх литров в одни руки (Golfovod, бир.рф)":
+        - /url: /recipes/ne-bolee-treh-litrov-v-odni-ruki-golfovod-bir-rf
+      - text: Блонд эль · 18A
+      - heading "Не более трёх литров в одни руки (Golfovod, бир.рф)" [level=2]
+      - text: admin 1 копия ABV 4.2 % IBU 15 OG 10.5 °P SRM 4 4,4 (5)
+      - button "Добавить в закладки"
+    - article:
+      - link "Hefeweizen (Jamil Zainasheff)":
+        - /url: /recipes/hefeweizen-jamil-zainasheff
+      - text: Вайсбир · 10A
+      - heading "Hefeweizen (Jamil Zainasheff)" [level=2]
+      - text: admin ABV 4.8 % IBU 13 OG 12.2 °P SRM 3 4,5 (2)
+      - button "Добавить в закладки"
+    - article:
+      - link "Wee Heavy (Jamil Zainasheff)":
+        - /url: /recipes/wee-heavy-jamil-zainasheff
+      - text: Уи-хеви · 17C
+      - heading "Wee Heavy (Jamil Zainasheff)" [level=2]
+      - text: admin 1 копия ABV 10.6 % IBU 28 OG 23.6 °P SRM 20 4,0 (1)
+      - button "Добавить в закладки"
+    - article:
+      - link "German Weiss с отваркой (Gordon Strong)":
+        - /url: /recipes/german-weiss-s-otvarkoy-gordon-strong
+      - text: Вайсбир · 10A
+      - heading "German Weiss с отваркой (Gordon Strong)" [level=2]
+      - text: admin 1 копия ABV 5.3 % IBU 12 OG 12.4 °P SRM 3 4,7 (3)
+      - button "Добавить в закладки"
+    - article:
+      - link "Pliny the Elder (клон Russian River)":
+        - /url: /recipes/pliny-the-elder-klon-russian-river
+      - text: Двойной IPA · 22A
+      - heading "Pliny the Elder (клон Russian River)" [level=2]
+      - text: admin ABV 8.3 % IBU 100 OG 18.0 °P SRM 8 4,0 (3)
+      - button "Добавить в закладки"
+    - article:
+      - link "Жигулёвское по ГОСТу":
+        - /url: /recipes/zhigulevskoe-po-gostu
+      - text: Международный светлый лагер · 2A
+      - heading "Жигулёвское по ГОСТу" [level=2]
+      - text: admin 1 копия ABV 3.8 % IBU 21 OG 11.0 °P SRM 7
+      - button "Добавить в закладки"
+    - article:
+      - link "Каскад цветочно-ванильный (Граф_Пивоварoff, бир.рф)":
+        - /url: /recipes/kaskad-cvetochno-vanilnyy-graf-pivovaroff-bir-rf
+      - text: Американский пейл-эль · 18B
+      - heading "Каскад цветочно-ванильный (Граф_Пивоварoff, бир.рф)" [level=2]
+      - text: admin 5 копий ABV 6.9 % IBU 17 OG 14.3 °P SRM 4
+      - button "Добавить в закладки"
+    - article:
+      - link "Weihenstephaner Hefeweissbier":
+        - /url: /recipes/weihenstephaner-hefeweissbier
+      - text: Вайсбир · 10A
+      - heading "Weihenstephaner Hefeweissbier" [level=2]
+      - text: admin ABV 5.4 % IBU 14 OG 13.1 °P SRM 4 4,0 (2)
+      - button "Добавить в закладки"
+    - article:
+      - link "Stone IPA":
+        - /url: /recipes/stone-ipa
+      - text: Американский IPA · 21A
+      - heading "Stone IPA" [level=2]
+      - text: admin ABV 6.9 % IBU 77 OG 15.9 °P SRM 8 5,0 (2)
+      - button "Добавить в закладки"
+    - article:
+      - link "Oatmeal Stout (Stephen Galante)":
+        - /url: /recipes/oatmeal-stout-stephen-galante
+      - text: Овсяный стаут · 16B
+      - heading "Oatmeal Stout (Stephen Galante)" [level=2]
+      - text: admin ABV 5.0 % IBU 33 OG 12.9 °P SRM 39 4,4 (5)
+      - button "Добавить в закладки"
+    - article:
+      - link "Stone Pataskala Red X IPA":
+        - /url: /recipes/stone-pataskala-red-x-ipa
+      - text: Специальный IPA · 21B
+      - heading "Stone Pataskala Red X IPA" [level=2]
+      - text: admin ABV 7.3 % IBU 74 OG 16.6 °P SRM 15
+      - button "Добавить в закладки"
+    - article:
+      - link "Pilsner Urquell":
+        - /url: /recipes/pilsner-urquell
+      - text: Чешский премиальный светлый лагер · 3B
+      - heading "Pilsner Urquell" [level=2]
+      - text: admin 1 копия ABV 4.4 % IBU 40 OG 11.9 °P SRM 4 4,7 (3)
+      - button "Добавить в закладки"
+    - article:
+      - link "Saison Dupont в стиле (Paul Zocco)":
+        - /url: /recipes/saison-dupont-v-stile-paul-zocco
+      - text: Сэзон · 25B
+      - heading "Saison Dupont в стиле (Paul Zocco)" [level=2]
+      - text: admin ABV 6.5 % IBU 25 OG 13.3 °P SRM 5
+      - button "Добавить в закладки"
+    - navigation "Пагинация":
+      - text: "1"
+      - link "2":
+        - /url: /recipes?page=2
+      - link "Дальше":
+        - /url: /recipes?page=2
+- navigation "Быстрая навигация":
+  - link "Обзор":
+    - /url: /app
+    - img
+    - text: Обзор
+  - link "Рецепты":
+    - /url: /app/recipes
+    - img
+    - text: Рецепты
+  - link "Склад":
+    - /url: /app/ingredients
+    - img
+    - text: Склад
+  - link "Партии":
+    - /url: /app/brew-batches
+    - img
+    - text: Партии
+  - button "Ещё":
+    - img
+    - text: Ещё
+- button "Обратная связь"
+- region "Notifications (F8)":
+  - list
+- alert

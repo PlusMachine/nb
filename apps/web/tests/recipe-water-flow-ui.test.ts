@@ -219,7 +219,7 @@ describe("recipe water flow UI", () => {
       html.indexOf("Расширенные настройки"),
     );
     expect(html).toContain("Молочная кислота");
-    expect(html).toContain("Считать пищевую соду (NaHCO3) в авторасчёте");
+    expect(html).toContain("Учитывать пищевую соду (NaHCO3) в авторасчёте");
     expect(html).not.toContain("добавки рассчитаны");
     expect(html).not.toContain("Lactic Acid");
     expect(html).not.toContain("Только минерализация");
@@ -379,7 +379,7 @@ describe("recipe water flow UI", () => {
 
     expect(savedProfiles).toHaveLength(1);
     expect(getNextSavedSourceWaterProfileName(savedProfiles)).toBe(
-      "Сохраненный профиль 2",
+      "Сохранённый профиль 2",
     );
     expect(meta.sourceProfileMode).toBe("saved");
     expect(meta.sourceProfileSavedId).toBe("profile-1");
@@ -663,8 +663,8 @@ describe("recipe water flow UI", () => {
       }),
     );
 
-    expect(html).toContain("Добавки воды");
-    expect(html).toContain("Нет добавок воды");
+    expect(html).toContain("Добавки для воды");
+    expect(html).toContain("Добавки для воды пока не внесены");
     expect(html).not.toContain("Примененный план");
     expect(html).not.toContain("Применен");
     expect(html).not.toContain("Не применен");
@@ -715,7 +715,7 @@ describe("recipe water flow UI", () => {
       }),
     );
 
-    expect(html).toContain("Нет добавок воды");
+    expect(html).toContain("Добавки для воды пока не внесены");
     expect(html).not.toContain("Итоговый профиль воды");
   });
 
@@ -807,7 +807,7 @@ describe("recipe water flow UI", () => {
     const html = renderWaterBlock(manual);
 
     expect(getNextSavedSourceWaterProfileName([])).toBe(
-      "Сохраненный профиль 1",
+      "Сохранённый профиль 1",
     );
     expect(html).toContain("Сохранить");
     expect(html).not.toContain("Название профиля");

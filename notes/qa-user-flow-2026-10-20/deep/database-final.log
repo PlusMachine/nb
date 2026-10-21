@@ -1,0 +1,13 @@
+
+ RUN  v4.0.18 /home/dopefish/projects/nb/apps/web
+
+(node:150986) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ integration/user-flow.integration.test.ts (20 tests) 3669ms
+     ✓ repeated additions share both lots without double booking  333ms
+
+ Test Files  1 passed (1)
+      Tests  20 passed (20)
+   Start at  23:01:32
+   Duration  5.18s (transform 877ms, setup 57ms, import 1.18s, tests 3.67s, environment 0ms)
+

@@ -235,7 +235,7 @@ export function BrewJournal({
               disabled={busy}
               placeholder={gravityPlaceholder}
               aria-label={`Плотность, ${gravityUnitLabels[preferredGravityUnit]}`}
-              className="h-9 w-28 rounded-md border border-border px-2 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
+              className="h-9 w-28 rounded-md border border-border px-2 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm [@media(pointer:coarse)]:text-base"
             />
           </label>
           <label className="flex flex-col gap-1">
@@ -246,7 +246,7 @@ export function BrewJournal({
               onChange={(event) => setTakenAt(event.target.value)}
               disabled={busy}
               aria-label="Когда сделан замер"
-              className="h-9 rounded-md border border-border px-2 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
+              className="h-9 rounded-md border border-border px-2 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm [@media(pointer:coarse)]:text-base"
             />
           </label>
           <label className="flex min-w-[8rem] flex-1 flex-col gap-1">
@@ -259,7 +259,7 @@ export function BrewJournal({
               placeholder="напр. внёс дрожжи"
               maxLength={500}
               aria-label="Заметка к замеру"
-              className="h-9 w-full rounded-md border border-border px-2 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
+              className="h-9 w-full rounded-md border border-border px-2 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm [@media(pointer:coarse)]:text-base"
             />
           </label>
           <Button type="submit" size="sm" disabled={busy}>

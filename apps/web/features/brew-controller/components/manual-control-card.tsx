@@ -131,7 +131,7 @@ export function ManualControlCard({ telemetry, hasDevice, controlsHeld, isLive, 
           disabled={controlsDisabled}
           onClick={() => void runFeedback(cmdExitManual(), "Выход из ручного режима")}
         >
-          Выйти из ручного
+          Выйти из ручного режима
         </Button>
       </div>
 
@@ -282,8 +282,8 @@ export function ManualControlCard({ telemetry, hasDevice, controlsHeld, isLive, 
       </div>
 
       <p className="mt-3 text-xs text-muted-foreground">
-        Нагрев на плате гаснет при потере связи (≈45&nbsp;с без команд) и по макс. времени
-        (30&nbsp;мин). Пока эта карта открыта и вы управляете — нагрев поддерживается.
+        Контроллер выключает нагрев при потере связи (≈45&nbsp;с без команд) и по истечении максимального времени работы
+        (30&nbsp;мин). Пока эта панель открыта и вы управляете — нагрев поддерживается.
       </p>
       {msg ? <p className="mt-2 text-sm text-muted-foreground">{msg}</p> : null}
     </section>

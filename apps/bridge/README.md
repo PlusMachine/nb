@@ -8,7 +8,7 @@ MQTT-соединение с брокером, пишет телеметрию/�
 ```
 ESP32 / device-sim ──MQTT──▶ mosquitto ──▶ apps/bridge ──┬─▶ Postgres (@nb/db)
                                    ▲                       └─▶ WebSocket ──▶ браузер/портал
-                                   └──────── cmd (QoS1) ───────── bridge ◀── command (WS)
+                                   └──────── cmd (QoS1) ───────── HTTP API ◀── портал
 ```
 
 LAN/симуляторный путь (`features/brew-controller` → `lanTransport`) работает
@@ -96,14 +96,14 @@ sha256 (схема `@nb/auth.hashToken`) и ищет живую сессию в 
 > Альтернатива (prod-friendly): вместо длинноживущего `nb_session` выдавать
 > короткоживущий одноразовый bridge-ticket тем же механизмом суб-протокола.
 
-**Ownership:** подписка и команда на устройство разрешены, только если
-`brew_devices.userId == userId` сессии (проверка на **каждое** действие, не
-доверяем подписке). Чужую телеметрию клиент не получает в принципе.
+**Ownership:** подписка разрешена, только если `brew_devices.userId == userId`
+сессии. Проверка выполняется при подписке.
 
-**Команды:** на клиента — sliding-window rate-limit (10 команд / 10 с). Принятая
-команда (`CommandSchema`) пишется строкой аудита `device_commands` (`status=sent`)
-и публикуется в `brewforge/<id>/cmd` (QoS1). Ack из `.../cmd/ack` переводит строку
-в `acked/failed`.
+**Команды:** WS отклоняет `type: "command"` с ошибкой `commands require HTTP API`.
+Используйте HTTP API портала (`POST /api/devices/:id/command` или endpoint партии):
+там проверяются сессия, владелец, право управления (lease), свежесть телеметрии
+для соответствующих команд и лимиты запросов. Контракт MQTT и прошивки не меняется.
+Мост продолжает принимать и рассылать подтверждения `.../cmd/ack`.
 
 Сообщения (JSON):
 
@@ -111,7 +111,6 @@ sha256 (схема `@nb/auth.hashToken`) и ищет живую сессию в 
 // client → bridge
 { "type": "subscribe",   "deviceId": "bf-xxxx" }
 { "type": "unsubscribe", "deviceId": "bf-xxxx" }
-{ "type": "command",     "deviceId": "bf-xxxx", "command": { /* Command */ } }
 
 // bridge → client
 { "type": "ready" }
@@ -119,7 +118,6 @@ sha256 (схема `@nb/auth.hashToken`) и ищет живую сессию в 
 { "type": "unsubscribed", "deviceId": "bf-xxxx" }
 { "type": "telemetry",   "deviceId": "bf-xxxx", "data": { /* Telemetry */ } }
 { "type": "ack",         "deviceId": "bf-xxxx", "data": { /* Ack */ } }
-{ "type": "command-accepted", "deviceId": "bf-xxxx", "commandId": "<uuid>" }
 { "type": "error", "error": "<reason>" }
 ```
 

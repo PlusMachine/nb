@@ -5,8 +5,11 @@ import { FileText } from "lucide-react";
 import { Button, Dialog, DialogCloseButton, DialogHeader } from "@nb/ui";
 
 import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
-import { importBeerXmlToCanonicalRecipe } from "@/features/recipes/interop/beerxml";
-import { importBrewfatherJsonToCanonicalRecipe } from "@/features/recipes/interop/brewfather-json";
+import { importBeerXmlToCanonicalRecipes } from "@/features/recipes/interop/beerxml";
+import { importBrewfatherJsonToCanonicalRecipes } from "@/features/recipes/interop/brewfather-json";
+import { RECIPE_IMPORT_MAX_INPUT_BYTES } from "@/features/recipes/contracts";
+import { importWarnings } from "@/features/recipes/interop/readers";
+import { recipeImportErrorMessage } from "@/features/recipes/interop/errors";
 import type { CanonicalRecipe } from "@/features/recipes/interop/canonical";
 import { defaultPreferredGravityUnit, formatGravity, type PreferredGravityUnit } from "@/features/system/gravity-units";
 
@@ -20,6 +23,7 @@ type ImportExportStatus = {
   tone: "pending" | "success" | "error" | "info";
   message: string;
   details?: string[];
+  importCompleted?: boolean;
 };
 
 type ImportFormat = "beerxml" | "brewfather_json";
@@ -32,6 +36,8 @@ type ImportRecipeSummary = {
   stats: string;
   mash: string;
   ingredientPreview: string;
+  warnings: string[];
+  recipes?: Array<{ title: string; ingredientCount: number }>;
 };
 
 type ImportRecipeSummaryResult = {
@@ -60,6 +66,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> => (
 );
 
 const readFiniteNumber = (value: unknown) => {
+  if (value == null || typeof value === "boolean" || (typeof value === "string" && !value.trim())) return null;
   const parsed = typeof value === "number" ? value : Number(value);
   return Number.isFinite(parsed) ? parsed : null;
 };
@@ -134,12 +141,15 @@ const summarizeCanonicalRecipe = (
     ingredientBreakdown: ingredientBreakdown || "категории не определены",
     parameters: parameters || "объём и процесс не указаны",
     stats: statsLabel || "расчётные показатели в файле не указаны",
-    mash: mashStepCount ? `${mashStepCount} шаг(а) затирания` : "профиль затирания не найден",
-    ingredientPreview: ingredientPreview || "позиции не найдены"
+    mash: mashStepCount ? `Шагов затирания: ${mashStepCount}` : "профиль затирания не найден",
+    ingredientPreview: ingredientPreview || "позиции не найдены",
+    warnings: importWarnings(canonical.importMeta),
   };
 };
 
 const mapImportSummaryError = (error: unknown) => {
+  const specificMessage = recipeImportErrorMessage(error);
+  if (specificMessage) return specificMessage;
   if (error instanceof SyntaxError) {
     return "JSON не удалось прочитать: проверьте синтаксис файла.";
   }
@@ -153,7 +163,7 @@ const mapImportSummaryError = (error: unknown) => {
   }
 
   if (error.message === "INVALID_BEERXML") {
-    return "BeerXML не распознан: в файле не найден блок RECIPE.";
+    return "BeerXML повреждён или не содержит корректных блоков RECIPE.";
   }
 
   if (error.message === "INVALID_BREWFATHER_JSON") {
@@ -164,6 +174,9 @@ const mapImportSummaryError = (error: unknown) => {
     return "В рецепте не найдены ингредиенты для импорта.";
   }
 
+  if (error.message === "IMPORT_INPUT_TOO_LARGE") return "Файл превышает 8 МБ. Разделите библиотеку на несколько файлов.";
+  if (error.message === "IMPORT_TOO_MANY_RECIPES") return "За один раз можно импортировать до 100 рецептов. Разделите библиотеку на несколько файлов.";
+  if (error.message.startsWith("UNSUPPORTED_IMPORT_UNIT:")) return `Единица измерения не поддерживается: ${error.message.split(":").slice(1).join(":").trim()}. Укажите массу, объём или число упаковок в Brewfather и повторите экспорт.`;
   return error.message;
 };
 
@@ -178,13 +191,27 @@ export const buildImportRecipeSummary = (
   }
 
   try {
-    const canonical = format === "beerxml"
-      ? importBeerXmlToCanonicalRecipe(trimmed)
-      : importBrewfatherJsonToCanonicalRecipe(JSON.parse(trimmed));
-    return {
-      ok: true,
-      summary: summarizeCanonicalRecipe(canonical, preferredGravityUnit)
-    };
+    const recipes = format === "beerxml"
+      ? importBeerXmlToCanonicalRecipes(trimmed)
+      : importBrewfatherJsonToCanonicalRecipes(JSON.parse(trimmed));
+    for (const recipe of recipes) {
+      if (!recipe.ingredients.length || recipe.ingredients.some((line) => !Number.isFinite(line.amount) || line.amount <= 0)) {
+        throw new Error(`«${recipe.title}»: количество каждого ингредиента должно быть больше нуля.`);
+      }
+    }
+    const summary = summarizeCanonicalRecipe(recipes[0]!, preferredGravityUnit);
+    if (recipes.length > 1) {
+      summary.title = `Рецептов: ${recipes.length}`;
+      summary.ingredientCountLabel = `${recipes.reduce((sum, recipe) => sum + recipe.ingredients.length, 0)} поз. всего`;
+      summary.parameters = "Все рецепты будут доступны только вам";
+      summary.ingredientBreakdown = "Состав указан для каждого рецепта в списке";
+      summary.stats = "Показатели сохраняются отдельно для каждого рецепта";
+      summary.mash = `Всего шагов затирания: ${recipes.reduce((sum, recipe) => sum + readMashStepCount(recipe), 0)}`;
+      summary.ingredientPreview = "Полный состав доступен после открытия рецепта";
+      summary.recipes = recipes.map((recipe) => ({ title: recipe.title, ingredientCount: recipe.ingredients.length }));
+      summary.warnings = recipes.flatMap((recipe) => importWarnings(recipe.importMeta).map((warning) => `${recipe.title}: ${warning}`));
+    }
+    return { ok: true, summary };
   } catch (error) {
     return {
       ok: false,
@@ -213,6 +240,7 @@ function ImportSummaryCard({ result }: { result: ImportRecipeSummaryResult | nul
     <div className="rounded-lg border border-border bg-card px-3 py-3 text-sm text-foreground">
       <p className="text-xs font-semibold uppercase text-muted-foreground">Сводка импорта</p>
       <h5 className="mt-1 text-base font-semibold text-foreground">{summary.title}</h5>
+      {summary.recipes ? <ul className="mt-2 max-h-48 list-disc overflow-auto pl-5 text-sm">{summary.recipes.map((recipe, index) => <li key={index}>{recipe.title} — {recipe.ingredientCount} поз.</li>)}</ul> : null}
       <dl className="mt-3 grid gap-2 sm:grid-cols-2">
         <div>
           <dt className="text-xs text-muted-foreground">Ингредиенты</dt>
@@ -231,6 +259,7 @@ function ImportSummaryCard({ result }: { result: ImportRecipeSummaryResult | nul
           <dd className="font-medium text-foreground">{summary.stats}</dd>
         </div>
       </dl>
+      {summary.warnings.length ? <div className="mt-3 rounded border border-warning/30 bg-warning-subtle p-3 text-xs"><p className="font-semibold">Проверьте после переноса</p><ul className="mt-1 max-h-48 list-disc overflow-auto pl-4">{summary.warnings.map((warning, index) => <li key={index}>{warning}</li>)}</ul></div> : null}
       <p className="mt-3 text-xs text-muted-foreground">Затирание: {summary.mash}</p>
       <p className="mt-1 text-xs text-muted-foreground">Позиции: {summary.ingredientPreview}</p>
     </div>
@@ -257,6 +286,7 @@ export function ImportExportModal({
   beerXmlExport,
   beerXmlImport,
   brewfatherJsonImport,
+  originalBrewfatherJson,
   onBeerXmlImportChange,
   onBrewfatherJsonImportChange,
   onExportBeerXml,
@@ -271,6 +301,7 @@ export function ImportExportModal({
   beerXmlExport: string;
   beerXmlImport: string;
   brewfatherJsonImport: string;
+  originalBrewfatherJson?: string;
   onBeerXmlImportChange: (next: string) => void;
   onBrewfatherJsonImportChange: (next: string) => void;
   onExportBeerXml: () => Promise<ImportExportActionResult>;
@@ -312,7 +343,7 @@ export function ImportExportModal({
   const fileAccept = format === "beerxml"
     ? ".xml,.beerxml,application/xml,text/xml"
     : ".json,application/json";
-  const dirty = isImportExportModalDirty({ importText, statusTone: status?.tone ?? null });
+  const dirty = isImportExportModalDirty({ importText, statusTone: status?.importCompleted ? "success" : null });
 
   const handleFile = (file: File | null) => {
     if (!file) return;
@@ -325,12 +356,16 @@ export function ImportExportModal({
       setStatus({
         tone: "error",
         message: format === "beerxml"
-          ? "Выберите BeerXML файл с расширением .xml или .beerxml."
-          : "Выберите Brewfather JSON файл с расширением .json."
+          ? "Выберите файл BeerXML с расширением .xml или .beerxml."
+          : "Выберите файл Brewfather в формате JSON с расширением .json."
       });
       return;
     }
 
+    if (file.size > RECIPE_IMPORT_MAX_INPUT_BYTES) {
+      setStatus({ tone: "error", message: "Файл превышает 8 МБ. Разделите библиотеку на несколько файлов." });
+      return;
+    }
     const reader = new FileReader();
     setStatus({ tone: "pending", message: `Читаем файл ${file.name}...` });
     reader.onerror = () => {
@@ -377,6 +412,7 @@ export function ImportExportModal({
       if (result.ok) {
         setStatus({
           tone: "success",
+          importCompleted: true,
           message: result.message || `${formatLabel} импортирован. Открываем рецепт...`
         });
       } else {
@@ -404,7 +440,7 @@ export function ImportExportModal({
     }
 
     setLocalPending(true);
-    setStatus({ tone: "pending", message: "Готовим BeerXML экспорт..." });
+    setStatus({ tone: "pending", message: "Готовим экспорт в BeerXML…" });
     try {
       const result = await onExportBeerXml();
       const details = formatFieldErrors(result.fieldErrors);
@@ -416,7 +452,7 @@ export function ImportExportModal({
     } catch (error) {
       setStatus({
         tone: "error",
-        message: "BeerXML экспорт не удалось подготовить.",
+        message: "Не удалось подготовить экспорт в BeerXML.",
         details: [error instanceof Error ? error.message : "Неизвестная ошибка."]
       });
     } finally {
@@ -467,7 +503,7 @@ export function ImportExportModal({
               <h4 className="text-sm font-semibold text-foreground">2. Формат импорта</h4>
               <div className="grid gap-2 sm:grid-cols-2">
                 <button type="button" onClick={() => setFormat("beerxml")} className={`rounded-lg px-3 py-3 text-sm ${format === "beerxml" ? "bg-foreground text-background" : "border border-border bg-card text-foreground"}`}>BeerXML</button>
-                <button type="button" onClick={() => setFormat("brewfather_json")} className={`rounded-lg px-3 py-3 text-sm ${format === "brewfather_json" ? "bg-foreground text-background" : "border border-border bg-card text-foreground"}`}>Импорт из Brewfather (тестовая поддержка)</button>
+                <button type="button" onClick={() => setFormat("brewfather_json")} className={`rounded-lg px-3 py-3 text-sm ${format === "brewfather_json" ? "bg-foreground text-background" : "border border-border bg-card text-foreground"}`}>Импорт из Brewfather</button>
               </div>
             </section>
           ) : null}
@@ -486,10 +522,11 @@ export function ImportExportModal({
           {mode === "import" ? (
             <section className="space-y-2">
               <h4 className="text-sm font-semibold text-foreground">3. Вставьте текст или загрузите файл</h4>
+              <p className="text-xs text-muted-foreground">{format === "brewfather_json" ? "В Brewfather экспортируйте рецепт в JSON или используйте резервную копию из Settings → Data → Export. Поддерживаются один рецепт, массив и раздел recipes резервной копии. Переносится до 100 рецептов за раз, размер файла — до 8 МБ. Склад и история варок не импортируются. Исходный JSON рецепта сохраняется для владельца." : "Поддерживается один рецепт или коллекция RECIPES: до 100 рецептов, до 8 МБ."} Все импортированные рецепты будут доступны только вам.</p>
               <input type="file" accept={fileAccept} onChange={(event) => handleFile(event.target.files?.[0] ?? null)} className="block w-full text-sm text-muted-foreground" />
               <textarea
                 value={importText}
-                onChange={(event) => setImportText(event.target.value)}
+                onChange={(event) => { setStatus(null); setImportText(event.target.value); }}
                 className="min-h-56 w-full rounded-lg border border-border bg-muted px-3 py-2 font-mono text-xs text-foreground"
                 placeholder={format === "beerxml" ? "<RECIPES>...</RECIPES>" : "{\"name\":\"Recipe\"}"}
               />
@@ -497,15 +534,17 @@ export function ImportExportModal({
               <Button
                 type="button"
                 size="sm"
-                disabled={busy || !importText.trim()}
+                disabled={busy || !importText.trim() || !importSummary?.ok}
                 onClick={() => void handleImport()}
               >
-                {busy ? "Импортируем..." : "Импортировать"}
+                {busy ? "Импортируем..." : importSummary?.ok && importSummary.summary.recipes ? `Импортировать рецепты (${importSummary.summary.recipes.length})` : "Импортировать"}
               </Button>
             </section>
           ) : (
             <section className="space-y-2">
               <h4 className="text-sm font-semibold text-foreground">2. Экспорт BeerXML</h4>
+              <p className="text-xs text-muted-foreground">В файл входят описание, ингредиенты и процесс. Личные заметки автора в файл не включаются. Дополнительные поля NB позволяют восстановить настройки воды и этапы варки при повторном импорте.</p>
+              {originalBrewfatherJson ? <div className="rounded border border-border p-3 text-xs"><p>Исходный рецепт Brewfather доступен только владельцу и содержит все поля исходного JSON, включая заметки.</p><a className="mt-1 inline-block underline" href={`data:application/json;charset=utf-8,${encodeURIComponent(originalBrewfatherJson)}`} download="original-brewfather-recipe.json">Скачать исходный Brewfather JSON</a></div> : null}
               <Button
                 type="button"
                 size="sm"

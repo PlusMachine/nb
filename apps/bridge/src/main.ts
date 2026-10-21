@@ -36,9 +36,6 @@ function main(): void {
     },
   });
 
-  // Замыкаем цикл: команды из WS публикуются в MQTT.
-  ws.setCommandPublisher((deviceId, command) => mqttBridge.publishCommand(deviceId, command));
-
   // Периодический health-лог.
   const health = setInterval(() => {
     console.log(

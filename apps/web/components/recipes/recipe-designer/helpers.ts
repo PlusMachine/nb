@@ -63,6 +63,7 @@ import {
   type RecipeWaterPlanMeta
 } from "@/features/recipes/contracts";
 import { getRecipePublicationFieldErrors } from "@/features/recipes/publication-validation";
+import { buildWaterPlanFermentables } from "@/features/recipes/water-plan-ingredients";
 import {
   type RecipeWaterPlanFermentableInput,
   type RecipeWaterPlanResult
@@ -494,6 +495,7 @@ export const cloneRecipeCalculationMeta = (value?: RecipeCalculationMeta | null)
 
 export const cloneRecipeWaterPlanMeta = (value?: RecipeWaterPlanMeta | null): RecipeWaterPlanMeta => ({
   setupEnabled: value?.setupEnabled ?? false,
+  mashAcidificationEnabled: value?.mashAcidificationEnabled,
   engine: value?.engine ?? "balanced_default",
   phModel: value?.phModel ?? "hybrid_mash_ph_v1",
   sourceProfileMode: value?.sourceProfileMode ?? "preset",
@@ -1684,6 +1686,7 @@ export const getCategoryRows = (ingredients: DesignerIngredient[], category: Ing
 
 export const getFermentableWeightTotalKg = (ingredients: DesignerIngredient[]) => {
   return ingredients.reduce((sum, ingredient) => {
+    if (ingredient.category !== "fermentable") return sum;
     const quantity = Number(ingredient.amountEnteredQuantity);
     if (!Number.isFinite(quantity) || quantity <= 0) {
       return sum;
@@ -1764,37 +1767,18 @@ export const getIngredientWeightKg = (ingredient: DesignerIngredient): number =>
   return convertWeight({ value: quantity, unit: ingredient.amountEnteredUnit as "g" | "kg" | "oz" | "lb" }, "kg").value;
 };
 
-// Класс/цвет солода для модели pH затора (Ф6/Ф7) несут только "малтовые" технические
-// данные (MaltTechnicalData) — у ферментируемых-не-солодов эти поля не заполняются,
-// классификатор в этом случае падает на ключевые слова имени.
-const resolveMaltFieldsForWaterPlan = (
-  technicalData: DesignerIngredient["technicalData"]
-): Pick<RecipeWaterPlanFermentableInput, "maltType" | "colorEbcMin" | "colorEbcMax"> => {
-  if (!technicalData || technicalData.type !== "malt") {
-    return { maltType: null, colorEbcMin: null, colorEbcMax: null };
-  }
-
-  const malt = technicalData as Extract<
-    NonNullable<typeof technicalData>,
-    { type: "malt" }
-  >;
-  return {
-    maltType: malt.maltType ?? null,
-    colorEbcMin: malt.colorEbcMin ?? null,
-    colorEbcMax: malt.colorEbcMax ?? null
-  };
-};
-
 export const getFermentablesForWaterPlan = (ingredients: DesignerIngredient[]): RecipeWaterPlanFermentableInput[] => (
-  ingredients
-    .filter((ingredient) => ingredient.category === "fermentable")
-    .map((ingredient) => ({
-      name: ingredient.selectedName,
-      subtype: ingredient.subtype,
-      weightKg: getIngredientWeightKg(ingredient),
-      ...resolveMaltFieldsForWaterPlan(ingredient.technicalData)
-    }))
-    .filter((ingredient) => ingredient.weightKg > 0)
+  buildWaterPlanFermentables(ingredients.map((ingredient) => ({
+    name: ingredient.selectedName,
+    category: ingredient.category,
+    type: ingredient.type,
+    subtype: ingredient.subtype,
+    stage: ingredient.stage,
+    stepMeta: ingredient.stepMeta,
+    quantity: Number(ingredient.amountEnteredQuantity),
+    unit: ingredient.amountEnteredUnit,
+    technicalData: ingredient.technicalData
+  })))
 );
 
 export const getFermentablePercentage = (ingredient: DesignerIngredient, totalKg: number): number | null => {
@@ -1892,7 +1876,6 @@ export const getIngredientDraftFieldError = (ingredient: DesignerIngredient) => 
       label: "Длительность",
       min: 0,
       max: 365,
-      integer: true,
       exclusiveMin: true
     });
     if (durationError) {

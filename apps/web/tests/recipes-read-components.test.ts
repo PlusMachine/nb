@@ -151,8 +151,8 @@ describe("recipes read components", () => {
     expect(html).toContain("Ключевые показатели");
     expect(html).toContain("OG");
     expect(html).not.toContain("Прогноз по умолчанию");
-    expect(html).not.toContain("Ручная attenuation");
-    expect(html).not.toContain("Ручной FG");
+    expect(html).not.toContain("Аттенюация задана вручную");
+    expect(html).not.toContain("FG задана вручную");
     expect(html).toContain("ABV");
     expect(html).toContain("IBU");
     // Вторая (дублирующая) единица рядом с OG/FG — при основной Plato это SG.
@@ -188,14 +188,11 @@ describe("recipes read components", () => {
       preferredGravityUnit: "plato"
     }));
 
-    // Стиль в подзаголовке не дублируем (он в шапке страницы) — блок показывает
-    // сами метрики с диапазонами стиля.
-    expect(html).not.toContain("BJCP:");
     expect(html).toContain("Ключевые показатели");
     expect(html).not.toContain("Соответствие стилю");
   });
 
-  it("называет стиль с кодом BJCP рядом с вердиктом и помечает диапазоны словом «стиль»", () => {
+  it("называет стиль с кодом BJCP рядом с вердиктом и ссылается на статью BJCP (перелинковка M8)", () => {
     const html = renderToStaticMarkup(React.createElement(RecipeStatsSummary, {
       recipe: {
         ...recipeDetail,
@@ -206,16 +203,24 @@ describe("recipes read components", () => {
 
     expect(html).toContain("BJCP Американский IPA · 21A");
     expect(html).toContain("стиль ");
+    // Ссылка помечена иконкой «внешняя ссылка», поэтому текст не сразу перед </a>.
+    expect(html).toMatch(/<a[^>]+href="\/bjcp\/[^"]+"[^>]*>BJCP Американский IPA · 21A.*?<\/a>/);
   });
 
   it("renders ingredients and meta sections", () => {
     const html = renderToStaticMarkup(
       React.createElement("div", null,
-        React.createElement(RecipeIngredientsSection, { ingredients: recipeDetail.ingredients }),
+        React.createElement(RecipeIngredientsSection, {
+          ingredients: recipeDetail.ingredients,
+          batchSizeEnteredQuantity: recipeDetail.batchSizeEnteredQuantity,
+          batchSizeEnteredUnit: recipeDetail.batchSizeEnteredUnit,
+          efficiency: recipeDetail.efficiency
+        }),
         React.createElement(RecipeMetaSection, { recipe: recipeDetail })
       )
     );
 
+    expect(html).toContain("Объём партии — 20 л, при эффективности 75%");
     expect(html).toContain("Ингредиенты");
     expect(html).toContain("Pilsner Malt");
     expect(html).toContain("Castle Malting");
@@ -423,32 +428,27 @@ describe("recipes read components", () => {
       React.createElement(ToastProvider, null, React.createElement(PublicRecipePage, { recipe: recipeDetail }))
     );
 
-    expect(html).toContain("Публичный");
+    expect(html).not.toContain("Публичный");
     expect(html).toContain("Ключевые показатели");
+    expect(html).toContain("Объём партии — 20 л, при эффективности 75%");
+    expect(html).toContain("Пересчитать под свои параметры");
     expect(html).toContain("Ингредиенты");
+    // Объём и кипячение убраны из шапки — живут над ингредиентами / в процессе.
+    expect(html).not.toContain("мин кипячения");
     // Пустого плейсхолдера обложки больше нет; оценки рендерятся внизу страницы.
     expect(html).not.toContain("пока не добавлено");
     expect(html).toContain("Оценки");
   });
 
-  it("links the style name in the recipe header to its BJCP article (перелинковка M8)", () => {
+  it("does not duplicate style badge in the public recipe header", () => {
     const html = renderToStaticMarkup(
       React.createElement(ToastProvider, null, React.createElement(PublicRecipeHeader, {
         recipe: { ...recipeDetail, styleId: "21A" }
       }))
     );
 
-    expect(html).toContain("BJCP Американский IPA");
-    // Ссылка помечена иконкой «внешняя ссылка», поэтому текст не сразу перед </a>.
-    expect(html).toMatch(/<a[^>]+href="\/bjcp\/[^"]+"[^>]*>BJCP Американский IPA.*?<\/a>/);
-  });
-
-  it("does not link the style name when the recipe has no resolvable style", () => {
-    const html = renderToStaticMarkup(
-      React.createElement(ToastProvider, null, React.createElement(PublicRecipeHeader, { recipe: recipeDetail }))
-    );
-
-    expect(html).not.toContain('href="/bjcp/');
+    expect(html).not.toContain("BJCP Американский IPA");
+    expect(html).not.toContain("Публичный");
   });
 
   const similarRecipeFixture = (overrides: Partial<PublicRecipeListItem> = {}): PublicRecipeListItem => ({

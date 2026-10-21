@@ -182,10 +182,12 @@ export const addSelectedIngredientAction = async (_prevState: AddIngredientResul
   const fermentableColorEbc = String(formData.get("fermentableColorEbc") ?? "").trim() || null;
   const fermentableExtractYieldPct = String(formData.get("fermentableExtractYieldPct") ?? "").trim() || null;
   const hopAlphaAcidPct = String(formData.get("hopAlphaAcidPct") ?? "").trim() || null;
+  const harvestYear = String(formData.get("harvestYear") ?? "").trim() || null;
   const hasDerivedCatalogOverrideRequest = Boolean(
     fermentableColorEbc
     || fermentableExtractYieldPct
     || hopAlphaAcidPct
+    || harvestYear
   );
 
   if (userCustomIngredientId) {
@@ -249,7 +251,8 @@ export const addSelectedIngredientAction = async (_prevState: AddIngredientResul
         ingredientCatalogItemId,
         fermentableColorEbc,
         fermentableExtractYieldPct,
-        hopAlphaAcidPct
+        hopAlphaAcidPct,
+        harvestYear
       });
 
       if (source.sourceKind === "catalog") {
@@ -358,6 +361,8 @@ export const updateInventoryItemAction = async (payload: {
   ingredientCatalogItemId?: string | null;
   userCustomIngredientId?: string | null;
   waterTreatmentConcentrationPct?: string | null;
+  hopAlphaAcidPct?: string | null;
+  harvestYear?: string | null;
   enteredQuantity: string;
   enteredUnit: string;
   priceInputMode?: string | null;
@@ -377,6 +382,8 @@ export const updateInventoryItemAction = async (payload: {
     const preferredCurrency = user.preferredCurrency ?? "RUB";
     const priceInputAmountMinor = parseOptionalMoney(payload.priceInputAmount ?? payload.purchasePrice ?? payload.purchasePriceMinor ?? null);
     const waterTreatmentConcentrationPct = String(payload.waterTreatmentConcentrationPct ?? "").trim() || null;
+    const hopAlphaAcidPct = String(payload.hopAlphaAcidPct ?? "").trim() || null;
+    const harvestYear = String(payload.harvestYear ?? "").trim() || null;
 
     const parsed = updateInventoryItemSchema.parse({
       ingredientCatalogItemId: payload.ingredientCatalogItemId ?? null,
@@ -389,21 +396,23 @@ export const updateInventoryItemAction = async (payload: {
       purchasedAt: parseOptionalDate(payload.purchasedAt ?? null),
       freshnessDate: parseOptionalDate(payload.freshnessDate ?? null),
       notes: String(payload.notes ?? "").trim() || null,
-      waterTreatmentConcentrationPct
+      waterTreatmentConcentrationPct,
+      hopAlphaAcidPct,
+      harvestYear
     });
 
-    await updateInventoryItem(user.id, payload.inventoryItemId, parsed, { preferredCurrency });
-    if (payload.purchaseLinksTouched) {
+    const updated = await updateInventoryItem(user.id, payload.inventoryItemId, parsed, { preferredCurrency });
+    if (payload.purchaseLinksTouched && updated) {
       const purchaseLinks = normalizeIngredientPurchaseLinkInputs(payload.purchaseLinks ?? []);
-      const reference = parsed.userCustomIngredientId
+      const reference = updated.userCustomIngredientId
         ? {
           source: "custom" as const,
-          id: parsed.userCustomIngredientId
+          id: updated.userCustomIngredientId
         }
-        : parsed.ingredientCatalogItemId
+        : updated.ingredientCatalogItemId
           ? {
             source: "catalog" as const,
-            id: parsed.ingredientCatalogItemId
+            id: updated.ingredientCatalogItemId
           }
           : null;
 
@@ -413,7 +422,7 @@ export const updateInventoryItemAction = async (payload: {
     }
     revalidatePath("/app/ingredients");
 
-    return { ok: true, message: "Карточка ингредиента обновлена." };
+    return { ok: true, message: "Карточка ингредиента обновлёна." };
   } catch (error) {
     if (error instanceof Error && error.message === "NOT_FOUND") {
       return { ok: false, message: "Позиция не найдена или недоступна." };
@@ -439,7 +448,7 @@ export const updateInventoryInlineAction = async (payload: {
     await updateInventoryQuantity(user.id, payload.inventoryItemId, parsed);
     revalidatePath("/app/ingredients");
 
-    return { ok: true, message: "Остаток обновлен." };
+    return { ok: true, message: "Остаток обновлён." };
   } catch (error) {
     if (error instanceof Error && error.message === "NOT_FOUND") {
       return { ok: false, message: "Позиция не найдена или недоступна." };
@@ -455,7 +464,7 @@ export const setInventoryItemEmptyAction = async (inventoryItemId: string): Prom
     await setInventoryItemQuantityToZero(user.id, inventoryItemId);
     revalidatePath("/app/ingredients");
 
-    return { ok: true, message: "Остаток обнулен. Позиция останется в разделе «Пустые»." };
+    return { ok: true, message: "Остаток обнулён. Чтобы увидеть позицию, включите «Показать закончившиеся»." };
   } catch (error) {
     if (error instanceof Error && error.message === "NOT_FOUND") {
       return { ok: false, message: "Позиция не найдена или недоступна." };
@@ -471,7 +480,7 @@ export const deleteInventoryItemAction = async (inventoryItemId: string): Promis
     await deleteInventoryItem(user.id, inventoryItemId);
     revalidatePath("/app/ingredients");
 
-    return { ok: true, message: "Ингредиент удален из запасов." };
+    return { ok: true, message: "Ингредиент удалён из запасов." };
   } catch (error) {
     if (error instanceof Error && error.message === "NOT_FOUND") {
       return { ok: false, message: "Позиция не найдена или уже недоступна." };
@@ -491,7 +500,7 @@ export const getInventoryItemMovementsAction = async (
     const movements = await listInventoryItemMovements(user.id, inventoryItemId);
     return { ok: true, movements };
   } catch {
-    return { ok: false, message: "Не удалось загрузить журнал движений." };
+    return { ok: false, message: "Не удалось загрузить историю запасов." };
   }
 };
 

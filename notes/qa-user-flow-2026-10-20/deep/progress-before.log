@@ -1,0 +1,70 @@
+
+Running 3 tests using 3 workers
+
+  ✓  1 e2e/brew-day-progress.spec.ts:29:1 › two clicks on one pending step send only one request (568ms)
+  ✘  2 e2e/brew-day-progress.spec.ts:10:1 › a saved step preserves another step's pending optimistic mark (5.5s)
+  ✘  3 e2e/brew-day-progress.spec.ts:19:1 › a network failure rolls back only its step, preserving another pending mark (5.5s)
+
+
+  1) e2e/brew-day-progress.spec.ts:10:1 › a saved step preserves another step's pending optimistic mark 
+
+    Error: expect(received).toMatchObject(expected)
+
+    - Expected  - 3
+    + Received  + 0
+
+      Object {
+        "a": Object {
+          "done": true,
+        },
+    -   "b": Object {
+    -     "done": true,
+    -   },
+      }
+
+    Call Log:
+    - Timeout 5000ms exceeded while waiting on the predicate
+
+      13 |   await page.getByRole("button", { name: "b", exact: true }).click();
+      14 |   await settle(page, 0, { a: done });
+    > 15 |   await expect.poll(() => state(page)).toMatchObject({ a: { done: true }, b: { done: true } });
+         |                                        ^
+      16 |   await settle(page, 1, { a: done, b: done }, 2);
+      17 | });
+      18 |
+        at /home/dopefish/projects/nb/apps/web/e2e/brew-day-progress.spec.ts:15:40
+
+    Error Context: test-results/brew-day-progress-a-saved--e9f63-p-s-pending-optimistic-mark/error-context.md
+
+  2) e2e/brew-day-progress.spec.ts:19:1 › a network failure rolls back only its step, preserving another pending mark 
+
+    Error: expect(received).toMatchObject(expected)
+
+    - Expected  - 5
+    + Received  + 1
+
+    - Object {
+    -   "b": Object {
+    -     "done": true,
+    -   },
+    - }
+    + Object {}
+
+    Call Log:
+    - Timeout 5000ms exceeded while waiting on the predicate
+
+      23 |   await page.evaluate(() => (window as any).progressHarness.fail(0));
+      24 |   await expect(page.getByRole("alert")).toBeVisible();
+    > 25 |   await expect.poll(() => state(page)).toMatchObject({ b: { done: true } });
+         |                                        ^
+      26 |   await settle(page, 1, { b: done }, 2);
+      27 | });
+      28 |
+        at /home/dopefish/projects/nb/apps/web/e2e/brew-day-progress.spec.ts:25:40
+
+    Error Context: test-results/brew-day-progress-a-networ-ce13c-erving-another-pending-mark/error-context.md
+
+  2 failed
+    e2e/brew-day-progress.spec.ts:10:1 › a saved step preserves another step's pending optimistic mark 
+    e2e/brew-day-progress.spec.ts:19:1 › a network failure rolls back only its step, preserving another pending mark 
+  1 passed (8.3s)

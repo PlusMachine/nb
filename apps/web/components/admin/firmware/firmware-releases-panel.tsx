@@ -361,7 +361,7 @@ export function FirmwareReleasesPanel({ releases }: { releases: AdminFirmwareRel
               id="firmware-yank-reason"
               value={yankReason}
               onChange={(event) => setYankReason(event.target.value)}
-              placeholder="Например: кирпичит плату при OTA с 2.0.x"
+              placeholder="Например: устройство не запускается после обновления с версии 2.0.x"
               className="h-20 w-full rounded-lg border border-input bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
