@@ -26,7 +26,7 @@ function describeOtaError(message: string): string {
     case "OTA_UNSUPPORTED":
       return "Для этого устройства обновление по сети недоступно.";
     case "CLOUD_BROKER_UNREACHABLE":
-      return "Нет связи с облачным брокером. Повторите чуть позже.";
+      return "Нет связи с облачным сервисом управления. Повторите чуть позже.";
     case "DEVICE_NO_LOCAL_URL":
       return "У устройства не задан локальный адрес и облако недоступно.";
     default:

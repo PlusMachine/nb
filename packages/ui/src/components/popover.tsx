@@ -18,6 +18,8 @@ type PopoverProps = {
   onOpenChange?: (open: boolean) => void;
   /** Переопределить ширину контента, если он шире дефолтного max-w-sm. */
   contentClassName?: string;
+  portalContainer?: HTMLElement | null;
+  "aria-label"?: string;
 };
 
 type AnchoredPopoverProps = React.ComponentPropsWithoutRef<typeof RadixPopover.Content> & {
@@ -48,7 +50,7 @@ export function AnchoredPopover({
   );
 }
 
-export function Popover({ trigger, children, align = "center", side = "bottom", onOpenChange, contentClassName }: PopoverProps) {
+export function Popover({ trigger, children, align = "center", side = "bottom", onOpenChange, contentClassName, portalContainer, "aria-label": ariaLabel }: PopoverProps) {
   const [open, setOpenState] = React.useState(false);
 
   const setOpen = React.useCallback(
@@ -64,12 +66,13 @@ export function Popover({ trigger, children, align = "center", side = "bottom", 
   return (
     <RadixPopover.Root open={open} onOpenChange={setOpen}>
       <RadixPopover.Trigger asChild>{trigger({ open })}</RadixPopover.Trigger>
-      <RadixPopover.Portal>
+      <RadixPopover.Portal container={portalContainer}>
         <RadixPopover.Content
           align={align}
           side={side}
           sideOffset={8}
           collisionPadding={8}
+          aria-label={ariaLabel}
           className={cn(
             "z-[110] w-max max-w-sm rounded-xl border border-border bg-popover p-3 text-sm text-popover-foreground shadow-lg outline-none",
             contentClassName

@@ -151,7 +151,7 @@ const userFacingIngredientKindOptions = [
   {
     value: "consumable",
     label: "Добавка или расходник",
-    description: "Специи, травы, осветлители, санитайзеры, тара",
+    description: "Специи, травы, осветлители, дезинфицирующие средства и тара",
     category: "consumable",
     subtype: "other",
     icon: Package
@@ -906,7 +906,7 @@ export function CustomCatalogIngredientForm({
             });
           }}
         >
-          {isPending ? "Сохраняем..." : submitLabel}
+          {isPending ? "Сохраняем…" : submitLabel}
         </Button>
       </div>
     </div>

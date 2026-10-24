@@ -32,7 +32,7 @@ export const adminCatalogSortLabels: Record<AdminCatalogSortOption, string> = {
   brand: "По бренду",
   catalog: "По каталогу",
   name: "По названию",
-  updated: "По обновлению",
+  updated: "По дате изменения",
   completeness: "По полноте"
 };
 

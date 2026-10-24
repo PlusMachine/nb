@@ -68,7 +68,7 @@ export const splitActiveBrews = (items: ActiveBrewProgressItem[], now: Date): Da
   return { attention, planned };
 };
 
-// --- Чеклист первого круга -----------------------------------------------------
+// --- Действия для первого входа ------------------------------------------------
 
 export type OnboardingStepKey = "stock" | "recipe" | "brew";
 
@@ -93,14 +93,14 @@ export type DashboardOnboardingStepsInput = {
 export type DashboardOnboarding = {
   steps: OnboardingStep[];
   complete: boolean;
-  /** Первый непройденный шаг — его чеклист подсвечивает как текущий. */
+  /** Следующее основное действие: рецепт или варка. Склад необязателен. */
   currentKey: OnboardingStepKey | null;
 };
 
 /**
- * Прогресс первого круга склад → рецепт → варка. Чеклист живёт на дашборде,
- * пока круг не замкнут, и целиком исчезает после первой варки. Сохранённый
- * чужой рецепт закрывает шаг «рецепт» наравне со своим — варить можно любой.
+ * Выбор действий до первой варки. Учёт склада необязателен: начать можно со
+ * своего или сохранённого рецепта. После первой партии знакомство завершено,
+ * даже если склад пуст или рецепт впоследствии удалён.
  */
 export const buildDashboardOnboarding = ({
   inventoryTotalItems,
@@ -109,15 +109,6 @@ export const buildDashboardOnboarding = ({
   brewBatchCount
 }: DashboardOnboardingStepsInput): DashboardOnboarding => {
   const steps: OnboardingStep[] = [
-    {
-      key: "stock",
-      title: "Пополните склад",
-      hint: "Занесите остатки — рецепты покажут, чего хватает для варки.",
-      done: inventoryTotalItems > 0,
-      // Склад наполняется через модалку на /app/ingredients (поиск + свой),
-      // а не через публичный хаб /catalog — тот для browse, не для учёта остатков.
-      links: [{ href: "/app/ingredients", label: "Добавить на склад" }]
-    },
     {
       key: "recipe",
       title: "Найдите или создайте рецепт",
@@ -129,6 +120,13 @@ export const buildDashboardOnboarding = ({
       ]
     },
     {
+      key: "stock",
+      title: "Пополните склад",
+      hint: "Занесите остатки — рецепты покажут, чего хватает для варки.",
+      done: inventoryTotalItems > 0,
+      links: [{ href: "/app/ingredients", label: "Добавить на склад" }]
+    },
+    {
       key: "brew",
       title: "Запустите первую варку",
       done: brewBatchCount > 0,
@@ -136,8 +134,8 @@ export const buildDashboardOnboarding = ({
     }
   ];
 
-  const complete = steps.every((step) => step.done);
-  const currentKey = steps.find((step) => !step.done)?.key ?? null;
+  const complete = brewBatchCount > 0;
+  const currentKey = complete ? null : recipeCount + savedRecipeCount > 0 ? "brew" : "recipe";
 
   return { steps, complete, currentKey };
 };

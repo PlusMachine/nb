@@ -80,8 +80,8 @@ const SECTION_TITLE: Record<"brew" | "distill", string> = {
   distill: "Ход перегона",
 };
 const SEGMENTS_ARIA_LABEL: Record<"brew" | "distill", string> = {
-  brew: "Стадии варки",
-  distill: "Стадии перегона",
+  brew: "Этапы варки",
+  distill: "Этапы перегона",
 };
 
 export function StageTimeline({ telemetry, hasDevice }: Props) {

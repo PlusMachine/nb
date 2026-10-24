@@ -19,7 +19,7 @@ describe("derived-ingredient-presentation", () => {
 
     expect(isHopWithUserAlphaOverride(item)).toBe(true);
     expect(resolveCustomIngredientOwnershipBadgeLabel(item)).toBeNull();
-    expect(formatHopAlphaAcidStatLabel(6.1, { userOverride: true })).toBe("Альфа 6.1% (пользовательская)");
+    expect(formatHopAlphaAcidStatLabel(6.1, { userOverride: true })).toBe("Альфа 6.1% (ваше значение)");
   });
 
   it("for legacy derived hops without stored catalog alpha treats missing harvest as user alpha override", () => {

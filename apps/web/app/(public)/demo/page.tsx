@@ -43,7 +43,7 @@ const DemoPult = dynamic(() => import("@/components/demo/demo-pult").then((mod) 
 
 const title = "Демо";
 const description =
-  "Мастерская пивовара изнутри: рецепты, склад, варочный день с автоматикой BrewForge и брожение — на реалистичных примерах, без регистрации.";
+  "Посмотрите, как устроен NB: склад, рецепты и помощник варки. Входить в аккаунт не нужно.";
 
 export const metadata: Metadata = {
   title,
@@ -115,15 +115,15 @@ export default async function DemoPage() {
     <main className="space-y-16 pb-24 pt-8">
       <section className="overflow-hidden rounded-[2.75rem] border border-border/80 bg-card/90 px-6 py-10 shadow-[0_45px_120px_-70px_rgba(15,23,42,0.45)] backdrop-blur sm:px-8 lg:px-10">
         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Демо</p>
-        <h1 className="mt-3 max-w-2xl text-balance text-4xl font-semibold leading-[0.98] text-foreground sm:text-5xl lg:text-6xl" style={{ fontFamily: "var(--font-display)" }}>
-          Мастерская пивовара — изнутри
+        <h1 className="mt-3 max-w-2xl break-words text-balance text-3xl font-semibold leading-[0.98] text-foreground min-[360px]:text-4xl sm:text-5xl lg:text-6xl" style={{ fontFamily: "var(--font-display)" }}>
+          Попробуйте NB без регистрации
         </h1>
         <p className="mt-5 max-w-xl text-pretty text-lg leading-8 text-muted-foreground">
           Так выглядит NB, когда склад заполнен, рецепты сохранены, а варка идёт прямо сейчас. Все данные на этой странице — примеры.
         </p>
         <div className="mt-7 flex flex-wrap gap-3">
           <Link href="/login" className="inline-flex items-center rounded-full bg-foreground px-5 py-3 text-sm font-semibold text-background transition-colors hover:bg-foreground/90">
-            Завести свою мастерскую
+            Войти или создать аккаунт
           </Link>
           <Link href="/recipes" className="inline-flex items-center rounded-full border border-border bg-card px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:border-border">
             Смотреть рецепты
@@ -166,7 +166,7 @@ export default async function DemoPage() {
             поэтому пульт всегда тёмный независимо от темы посетителя — без хардкод-hex. */}
         <div className="dark overflow-hidden rounded-[2rem] border border-border bg-background p-6 text-foreground sm:p-8">
           <h3 className="text-xl font-semibold" style={{ fontFamily: "var(--font-display)" }}>
-            Или на автомате: BrewForge
+            Варка с BrewForge
           </h3>
           <div className="mt-5">
             <DemoPult initialHistory={buildMashHistory(now)} />
@@ -201,7 +201,7 @@ export default async function DemoPage() {
 
       <section className="space-y-5">
         <h2 className="text-3xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
-          Уже открыто без входа
+          Доступно без регистрации
         </h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <OpenSurfaceCard href="/catalog" title="Каталог ингредиентов" />
@@ -217,7 +217,7 @@ export default async function DemoPage() {
           className="group flex flex-col gap-2 rounded-[1.25rem] border border-border bg-card p-6 transition hover:-translate-y-0.5 hover:border-border hover:shadow-md"
         >
           <span className="text-xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
-            Завести свою мастерскую
+            Войти или создать аккаунт
           </span>
         </Link>
       </section>

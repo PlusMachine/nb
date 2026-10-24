@@ -142,7 +142,7 @@ describe("describeIngredientProposalPayload", () => {
   });
 
   it("подписывает источник заявки, неизвестный — как есть", () => {
-    expect(formatIngredientProposalSourceLabel("recipe_designer")).toBe("Мастер рецептов");
+    expect(formatIngredientProposalSourceLabel("recipe_designer")).toBe("Редактор рецептов");
     expect(formatIngredientProposalSourceLabel("import_v9")).toBe("import_v9");
   });
 });

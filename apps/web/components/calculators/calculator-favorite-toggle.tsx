@@ -70,7 +70,7 @@ export function CalculatorFavoriteToggle({
   return (
     <button
       type="button"
-      aria-label={isFavorite ? "Убрать из избранного" : "В избранное"}
+      aria-label={isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
       aria-pressed={isFavorite}
       disabled={isPending}
       onPointerDown={(event) => {

@@ -157,7 +157,7 @@ describe("inventory usability components", () => {
     expect(fermentableHtml).toContain("Сахара и сиропы");
     expect(fermentableHtml).toContain("Фрукты и соки");
 
-    expect(consumableHtml).toContain("Санитайзеры");
+    expect(consumableHtml).toContain("Дезинфицирующие средства");
     expect(consumableHtml).toContain("Мойка");
     expect(consumableHtml).toContain("Тара и укупорка");
     expect(consumableHtml).toContain("Газы");

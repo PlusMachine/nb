@@ -159,7 +159,7 @@ function StreamDeviceTileCard({
           </p>
         </div>
       ) : (
-        <p className="mt-3 text-sm text-muted-foreground">Ждём первый пакет…</p>
+        <p className="mt-3 text-sm text-muted-foreground">Ждём первые показания…</p>
       )}
 
       {tile.spark.length >= 2 ? <Sparkline values={tile.spark} muted={stale} /> : null}
@@ -258,7 +258,7 @@ function BrewforgeDeviceTileCard({
               {snap!.primaryC !== null ? `${snap!.primaryC.toFixed(1)}°` : "—"}
             </p>
             <p className="mt-0.5 text-xs text-muted-foreground tabular-nums">
-              уставка {snap!.setpointC !== null ? `${snap!.setpointC.toFixed(1)}°` : "—"}
+              задано {snap!.setpointC !== null ? `${snap!.setpointC.toFixed(1)}°` : "—"}
             </p>
           </div>
           <div className="text-right">
@@ -271,7 +271,7 @@ function BrewforgeDeviceTileCard({
           </div>
         </div>
       ) : (
-        <p className="mt-3 text-sm text-muted-foreground">Нет телеметрии — откройте пульт.</p>
+        <p className="mt-3 text-sm text-muted-foreground">Показаний пока нет. Откройте пульт.</p>
       )}
 
       {/* Sparkline недавней температуры. */}
@@ -341,7 +341,7 @@ function Sparkline({ values, muted }: { values: number[]; muted: boolean }) {
       className="mt-3 h-7 w-full"
       preserveAspectRatio="none"
       role="img"
-      aria-label="Тренд температуры"
+      aria-label="График температуры"
     >
       <path
         d={d}

@@ -1,0 +1,3048 @@
+--- a/apps/web/app/(admin)/admin/articles/page.tsx
++++ b/apps/web/app/(admin)/admin/articles/page.tsx
+@@ -164,7 +164,7 @@
+         getRowLabel={(article) => article.title}
+         empty={
+           <p className="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
+-            {q || status ? "Ничего не найдено." : "Пока нет статей. Создайте первый гайд или обзор."}
++            {q || status ? "Ничего не найдено." : "Статей пока нет. Создайте статью или обзор."}
+           </p>
+         }
+       />
+--- a/apps/web/app/(admin)/admin/masters/[id]/page.tsx
++++ b/apps/web/app/(admin)/admin/masters/[id]/page.tsx
+@@ -45,7 +45,7 @@
+ 
+       <div className="space-y-2">
+         <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
+-          Превью черновика
++          Предпросмотр черновика
+         </span>
+         <div className="rounded-2xl border-2 border-dashed border-border p-1">
+           <MasterPageView snapshot={previewSnapshot} container="div" />
+--- a/apps/web/app/(app)/app/brew-batches/[id]/actions.ts
++++ b/apps/web/app/(app)/app/brew-batches/[id]/actions.ts
+@@ -114,7 +114,7 @@
+       isFinal: parsed.isFinal ?? false
+     });
+     revalidateBatch(brewBatchId);
+-    return { ok: true, message: parsed.isFinal ? "Финальный замер (FG) добавлен." : "Замер добавлен." };
++    return { ok: true, message: parsed.isFinal ? "Замер конечной плотности (КП) добавлен." : "Замер добавлен." };
+   } catch (error) {
+     if (error instanceof ZodError) {
+       return { ok: false, message: firstZodMessage(error) };
+@@ -158,7 +158,7 @@
+     const user = await requireUser();
+     await setBrewMeasurementFinal(user.id, brewBatchId, measurementId, isFinal);
+     revalidateBatch(brewBatchId);
+-    return { ok: true, message: isFinal ? "Замер отмечен как финальный (FG)." : "Отметка FG снята." };
++    return { ok: true, message: isFinal ? "Замер отмечен как конечная плотность (КП)." : "Отметка конечной плотности снята." };
+   } catch (error) {
+     if (error instanceof Error && error.message === "NOT_FOUND") {
+       return { ok: false, message: "Замер не найден." };
+--- a/apps/web/app/(app)/app/ingredients/actions.ts
++++ b/apps/web/app/(app)/app/ingredients/actions.ts
+@@ -422,7 +422,7 @@
+     }
+     revalidatePath("/app/ingredients");
+ 
+-    return { ok: true, message: "Карточка ингредиента обновлёна." };
++    return { ok: true, message: "Карточка ингредиента обновлена." };
+   } catch (error) {
+     if (error instanceof Error && error.message === "NOT_FOUND") {
+       return { ok: false, message: "Позиция не найдена или недоступна." };
+--- a/apps/web/app/(app)/app/page.tsx
++++ b/apps/web/app/(app)/app/page.tsx
+@@ -383,7 +383,7 @@
+             Для запланированных партий всё в наличии
+           </p>
+         ) : (
+-          <p className="text-sm text-muted-foreground">Считается по запланированным партиям: чего не хватает — попадёт сюда.</p>
++          <p className="text-sm text-muted-foreground">Здесь появятся ингредиенты, которых не хватает для запланированных партий.</p>
+         )}
+       </div>
+     );
+@@ -661,7 +661,7 @@
+           {/* Секция про подбор, а не про обещание: сюда попадают и рецепты с
+               бейджем «Почти хватает» (все ингредиенты есть, количества местами
+               впритык) — заголовок «Можно сварить сейчас» им противоречил. */}
+-          <SectionHeader title="Рецепты под ваш склад" />
++          <SectionHeader title="Рецепты под ваши запасы" />
+           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+             {brewableCards.map((recipe) => (
+               <BrewableRecipeCard
+--- a/apps/web/app/(app)/app/recipes/actions.ts
++++ b/apps/web/app/(app)/app/recipes/actions.ts
+@@ -185,11 +185,11 @@
+     }
+ 
+     if (error.message === "INVALID_BEERXML") {
+-      return { ok: false, message: "BeerXML повреждён или не содержит корректных блоков RECIPE." };
++      return { ok: false, message: "Не удалось найти рецепты в файле BeerXML. Проверьте файл или экспортируйте его заново." };
+     }
+ 
+     if (error.message === "INVALID_BREWFATHER_JSON") {
+-      return { ok: false, message: "Brewfather JSON не распознан: проверьте, что выбран экспорт рецепта из Brewfather." };
++      return { ok: false, message: "Не удалось прочитать рецепт Brewfather. Загрузите JSON-файл, экспортированный из Brewfather." };
+     }
+ 
+     if (error.message === "INVALID_IMPORT_RECIPE") {
+@@ -785,7 +785,7 @@
+ 
+     return {
+       ok: true,
+-      message: "Фото удалёно."
++      message: "Фото удалено."
+     };
+   } catch (error) {
+     if (isRecipeImagesSchemaMissing(error)) {
+@@ -814,7 +814,7 @@
+ 
+     return {
+       ok: true,
+-      message: "Обложка обновлёна.",
++      message: "Обложка обновлена.",
+       image
+     };
+   } catch (error) {
+--- a/apps/web/app/(public)/brewforge/page.tsx
++++ b/apps/web/app/(public)/brewforge/page.tsx
+@@ -36,7 +36,7 @@
+ const features = [
+   {
+     icon: Thermometer,
+-    title: "Затирание по профилю"
++    title: "Затирание по рецепту"
+   },
+   {
+     icon: Timer,
+@@ -59,7 +59,7 @@
+           </span>
+         </div>
+         <h1 className="mt-3 max-w-2xl text-balance text-3xl font-semibold leading-tight text-foreground sm:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
+-          Автоматика варочного дня
++          Автоматика для пивоварни
+         </h1>
+         <p className="mt-3 max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
+           Контроллер, который ведёт варку по рецепту с сайта: держит паузы затирания,
+--- a/apps/web/app/(public)/calculators/page.tsx
++++ b/apps/web/app/(public)/calculators/page.tsx
+@@ -9,7 +9,7 @@
+ 
+ export const metadata: Metadata = {
+   title: "Калькуляторы для пивоварения",
+-  description: "Автономные пивоваренные расчёты для варки, брожения и розлива.",
++  description: "Расчёты для варки, брожения и розлива.",
+   alternates: {
+     canonical: "/calculators"
+   },
+@@ -21,7 +21,7 @@
+     siteName: getServerEnv().SITE_NAME,
+     url: "/calculators",
+     title: "Калькуляторы для пивоварения",
+-    description: "Автономные пивоваренные расчёты для варки, брожения и розлива.",
++    description: "Расчёты для варки, брожения и розлива.",
+     images: [getSectionOgImage("calculators")]
+   }
+ };
+--- a/apps/web/app/(public)/catalog/content.tsx
++++ b/apps/web/app/(public)/catalog/content.tsx
+@@ -179,7 +179,7 @@
+           <h1 className="text-3xl font-semibold tracking-tight text-foreground">Каталог ингредиентов</h1>
+           <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
+             {canManage
+-              ? "Общий каталог и ваши ингредиенты — в одном разделе."
++              ? "Ингредиенты из общего каталога и добавленные вами."
+               : "Открытый справочник ингредиентов для домашних пивоваров: солод, хмель, дрожжи и не только."}
+           </p>
+         </div>
+@@ -207,12 +207,12 @@
+       {visibleSections.length === 0 ? (
+         <section className="rounded-[28px] border border-dashed border-border bg-muted px-6 py-10 text-center">
+           <h2 className="text-lg font-semibold text-foreground">
+-            {view === "mine" ? "У вас пока нет пользовательских ингредиентов" : "По текущим условиям ничего не найдено"}
++            {view === "mine" ? "Вы ещё не добавили свои ингредиенты" : "Ничего не найдено"}
+           </h2>
+           <p className="mt-2 text-sm text-muted-foreground">
+             {view === "mine"
+               ? "Создайте свой ингредиент с нуля или сделайте свой вариант на основе ингредиента из общего каталога."
+-              : "Попробуйте изменить запрос, фильтр категории или сортировку."}
++              : "Попробуйте другое название или измените фильтры."}
+           </p>
+           {q || canManage ? (
+             <div className="mt-5 flex flex-wrap justify-center gap-3">
+@@ -442,12 +442,12 @@
+       {result.items.length === 0 ? (
+         <section className="rounded-[28px] border border-dashed border-border bg-muted px-6 py-10 text-center">
+           <h2 className="text-lg font-semibold text-foreground">
+-            {view === "mine" ? "У вас пока нет пользовательских ингредиентов" : "По текущим условиям ничего не найдено"}
++            {view === "mine" ? "Вы ещё не добавили свои ингредиенты" : "Ничего не найдено"}
+           </h2>
+           <p className="mt-2 text-sm text-muted-foreground">
+             {view === "mine"
+               ? "Создайте свой ингредиент с нуля или сделайте свой вариант на основе ингредиента из общего каталога."
+-              : "Попробуйте изменить запрос, фильтр категории или сортировку."}
++              : "Попробуйте другое название или измените фильтры."}
+           </p>
+           {showOtherCategoriesButton || q || canManage ? (
+             <div className="mt-5 flex flex-wrap justify-center gap-3">
+--- a/apps/web/app/(public)/demo/page.tsx
++++ b/apps/web/app/(public)/demo/page.tsx
+@@ -43,7 +43,7 @@
+ 
+ const title = "Демо";
+ const description =
+-  "Мастерская пивовара изнутри: рецепты, склад, варочный день с автоматикой BrewForge и брожение — на реалистичных примерах, без регистрации.";
++  "Посмотрите, как устроен NB: склад, рецепты и помощник варки. Входить в аккаунт не нужно.";
+ 
+ export const metadata: Metadata = {
+   title,
+@@ -116,7 +116,7 @@
+       <section className="overflow-hidden rounded-[2.75rem] border border-border/80 bg-card/90 px-6 py-10 shadow-[0_45px_120px_-70px_rgba(15,23,42,0.45)] backdrop-blur sm:px-8 lg:px-10">
+         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Демо</p>
+         <h1 className="mt-3 max-w-2xl text-balance text-4xl font-semibold leading-[0.98] text-foreground sm:text-5xl lg:text-6xl" style={{ fontFamily: "var(--font-display)" }}>
+-          Мастерская пивовара — изнутри
++          Попробуйте NB без регистрации
+         </h1>
+         <p className="mt-5 max-w-xl text-pretty text-lg leading-8 text-muted-foreground">
+           Так выглядит NB, когда склад заполнен, рецепты сохранены, а варка идёт прямо сейчас. Все данные на этой странице — примеры.
+@@ -166,7 +166,7 @@
+             поэтому пульт всегда тёмный независимо от темы посетителя — без хардкод-hex. */}
+         <div className="dark overflow-hidden rounded-[2rem] border border-border bg-background p-6 text-foreground sm:p-8">
+           <h3 className="text-xl font-semibold" style={{ fontFamily: "var(--font-display)" }}>
+-            Или на автомате: BrewForge
++            Варка с BrewForge
+           </h3>
+           <div className="mt-5">
+             <DemoPult initialHistory={buildMashHistory(now)} />
+@@ -201,7 +201,7 @@
+ 
+       <section className="space-y-5">
+         <h2 className="text-3xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
+-          Уже открыто без входа
++          Доступно без регистрации
+         </h2>
+         <div className="grid gap-4 sm:grid-cols-2">
+           <OpenSurfaceCard href="/catalog" title="Каталог ингредиентов" />
+--- a/apps/web/app/(public)/page.tsx
++++ b/apps/web/app/(public)/page.tsx
+@@ -18,7 +18,7 @@
+ import { getSectionOgImage } from "@/features/og/section";
+ import { jsonLdScriptProps } from "@/features/ingredients/seo";
+ import "./home.css";
+-const HOME_DESCRIPTION = "Весь функционал NB бесплатен: склад ингредиентов, рецепты сообщества, мастер рецептов, история партий, этикетки, каталог ингредиентов на русском и калькуляторы пивовара.";
++const HOME_DESCRIPTION = "NB — бесплатный помощник домашнего пивовара: склад ингредиентов, рецепты, журнал партий, этикетки и калькуляторы. Каталог ингредиентов — на русском.";
+ export const metadata: Metadata = {
+   description: HOME_DESCRIPTION,
+   openGraph: {
+--- a/apps/web/app/(public)/recipes/[slug]/error.tsx
++++ b/apps/web/app/(public)/recipes/[slug]/error.tsx
+@@ -7,7 +7,7 @@
+ export default function PublicRecipeError({ reset }: { error: Error; reset: () => void }) {
+   return (
+     <RecipeErrorState
+-      title="Не удалось загрузить публичный рецепт"
++      title="Не удалось загрузить рецепт"
+       message="Попробуйте обновить страницу. Если проблема сохраняется, вернитесь позже."
+       reset={reset}
+     />
+--- a/apps/web/app/(public)/recipes/error.tsx
++++ b/apps/web/app/(public)/recipes/error.tsx
+@@ -7,7 +7,7 @@
+ export default function PublicRecipesError({ reset }: { error: Error; reset: () => void }) {
+   return (
+     <RecipeErrorState
+-      title="Не удалось загрузить публичные рецепты"
++      title="Не удалось загрузить рецепты сообщества"
+       message="Попробуйте обновить страницу. Если проблема сохраняется, вернитесь позже."
+       reset={reset}
+     />
+--- a/apps/web/app/(public)/recipes/id/[id]/error.tsx
++++ b/apps/web/app/(public)/recipes/id/[id]/error.tsx
+@@ -7,7 +7,7 @@
+ export default function PublicRecipeError({ reset }: { error: Error; reset: () => void }) {
+   return (
+     <RecipeErrorState
+-      title="Не удалось загрузить публичный рецепт"
++      title="Не удалось загрузить рецепт"
+       message="Попробуйте обновить страницу. Если проблема сохраняется, вернитесь позже."
+       reset={reset}
+     />
+--- a/apps/web/components/admin/admin-bulk-failures.tsx
++++ b/apps/web/components/admin/admin-bulk-failures.tsx
+@@ -30,7 +30,7 @@
+     >
+       <div className="flex items-start justify-between gap-3">
+         <div className="space-y-2">
+-          <p className="font-medium">Не прошло: {countAdminBulkFailures(failed)}</p>
++          <p className="font-medium">Не удалось обработать: {countAdminBulkFailures(failed)}</p>
+           <ul className="space-y-1">
+             {failed.map((group) => (
+               <li key={group.reason}>
+--- a/apps/web/components/admin/push/push-subscriptions-table.tsx
++++ b/apps/web/components/admin/push/push-subscriptions-table.tsx
+@@ -128,7 +128,7 @@
+         title="Удалить подписку?"
+         description={
+           target
+-            ? `Устройство «${target.browser} · ${target.platform}» пользователя ${target.userName} перестанет получать пуши. Подписаться заново можно из браузера.`
++            ? `Устройство «${target.browser} · ${target.platform}» пользователя ${target.userName} перестанет получать уведомления. Включить их снова можно в браузере.`
+             : ""
+         }
+         confirmLabel="Удалить"
+--- a/apps/web/components/admin/recipes/admin-recipes-list.tsx
++++ b/apps/web/components/admin/recipes/admin-recipes-list.tsx
+@@ -70,7 +70,7 @@
+       show(failedCount > 0
+         ? {
+           title: `Скрыто рецептов: ${result.processed}`,
+-          description: `Не прошло: ${failedCount} (${describeRecipeBulkFailures(result.failed)}).`,
++          description: `Не удалось обработать: ${failedCount} (${describeRecipeBulkFailures(result.failed)}).`,
+           tone: "warning"
+         }
+         : {
+--- a/apps/web/components/calculators/calculator-page-client.tsx
++++ b/apps/web/components/calculators/calculator-page-client.tsx
+@@ -965,7 +965,7 @@
+         {wcf != null && trueBrix != null ? (
+           <span>{refracto} ÷ {trueBrix.toFixed(1)} Brix = <strong className="text-foreground">{wcf}</strong></span>
+         ) : (
+-          <span className="text-xs text-muted-foreground">Коэффициент = показание рефрактометра ÷ Brix по ареометру</span>
++          <span className="text-xs text-muted-foreground">Коэффициент = показание рефрактометра ÷ показание ареометра в °Bx</span>
+         )}
+       </div>
+ 
+@@ -1082,10 +1082,10 @@
+                 </select>
+               </label>
+               <div className="min-w-0">
+-                <span className="block text-xs font-medium text-muted-foreground">Шкала OG</span>
++                <span className="block text-xs font-medium text-muted-foreground">Шкала начальной плотности</span>
+                 <div className="mt-1">
+                   <SegmentedControl
+-                    ariaLabel="Шкала OG"
++                    ariaLabel="Шкала начальной плотности"
+                     size="sm"
+                     fill={false}
+                     options={refractometerOgUnitOptions}
+@@ -1108,7 +1108,7 @@
+             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-card shadow-sm">
+               <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90" />
+             </div>
+-            Калибровка коэффициента
++            Настроить поправочный коэффициент
+           </summary>
+           <div className="mt-4 space-y-4">
+             <p className="text-[11px] leading-4 text-muted-foreground">
+@@ -1135,7 +1135,7 @@
+       <aside id="calculator-result" className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
+         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Скорректированная плотность</p>
+-          <p className="mt-2 text-sm leading-5 text-muted-foreground">Проверьте входные значения.</p>
++          <p className="mt-2 text-sm leading-5 text-muted-foreground">Проверьте введённые значения.</p>
+         </div>
+       </aside>
+     );
+@@ -1157,7 +1157,7 @@
+   const attenuationText = view.attenuationBand === "low"
+     ? "Ниже 65% — брожение, возможно, не завершено."
+     : view.attenuationBand === "high"
+-      ? "Выше 80% — сухой профиль (лагеры, сэзоны, дикие дрожжи)."
++      ? "Выше 80% — пиво обычно получается сухим; такое сбраживание встречается у лагеров, сэзонов и пива на диких дрожжах."
+       : "65–80% — нормально для большинства элей.";
+ 
+   return (
+@@ -1180,7 +1180,7 @@
+           <div className="space-y-3 p-5">
+             <dl className="grid grid-cols-2 gap-3">
+               <div className="min-w-0 rounded-xl border border-border bg-muted/70 px-3 py-2.5">
+-                <dt className="truncate text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Оценка ABV</dt>
++                <dt className="truncate text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Расчётная крепость</dt>
+                 <dd className="mt-1 text-lg font-semibold tabular-nums text-foreground">{view.estimatedABV.toFixed(1)}%</dd>
+               </div>
+               <div className={`min-w-0 rounded-xl border px-3 py-2.5 ${
+@@ -1349,7 +1349,7 @@
+       <aside id="calculator-result" className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
+         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Крепость</p>
+-          <p className="mt-2 text-sm leading-5 text-muted-foreground">Проверьте входные значения.</p>
++          <p className="mt-2 text-sm leading-5 text-muted-foreground">Проверьте введённые значения.</p>
+         </div>
+       </aside>
+     );
+@@ -1358,7 +1358,7 @@
+   const attenuationText = view.attenuationBand === "low"
+     ? "Ниже 65% — брожение, возможно, не завершено."
+     : view.attenuationBand === "high"
+-      ? "Выше 80% — сухой профиль (лагеры, сэзоны, дикие дрожжи)."
++      ? "Выше 80% — пиво обычно получается сухим; такое сбраживание встречается у лагеров, сэзонов и пива на диких дрожжах."
+       : "65–80% — нормально для большинства элей.";
+ 
+   // OG/FG в чипах — в единице ввода (как у AbvFieldsBlock), плюс второй слой мельче рядом.
+@@ -1534,7 +1534,7 @@
+       <aside id="calculator-result" className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
+         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Скорректированная плотность</p>
+-          <p className="mt-2 text-sm leading-5 text-muted-foreground">Проверьте входные значения.</p>
++          <p className="mt-2 text-sm leading-5 text-muted-foreground">Проверьте введённые значения.</p>
+         </div>
+       </aside>
+     );
+@@ -1805,7 +1805,7 @@
+       <aside id="calculator-result" className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
+         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Результат</p>
+-          <p className="mt-2 text-sm leading-5 text-muted-foreground">Проверьте входные значения.</p>
++          <p className="mt-2 text-sm leading-5 text-muted-foreground">Проверьте введённые значения.</p>
+         </div>
+       </aside>
+     );
+@@ -2098,7 +2098,7 @@
+       // error.message из core — техническое сообщение на английском (имя JS-переменной);
+       // пользователю показываем только понятный русский текст.
+       return {
+-        primary: { label: "Расчёт недоступен", value: "—", helper: "Проверьте входные значения." },
++        primary: { label: "Расчёт недоступен", value: "—", helper: "Проверьте введённые значения." },
+         stats: [],
+         warnings: [],
+         links: []
+--- a/apps/web/components/content/article-editor-form.tsx
++++ b/apps/web/components/content/article-editor-form.tsx
+@@ -114,7 +114,7 @@
+         <div className="grid gap-4 sm:grid-cols-[1fr_12rem]">
+           <label className={labelClass}>
+             <span className="text-muted-foreground">Заголовок</span>
+-            <input className={inputClass} value={title} onChange={(event) => setTitle(event.target.value)} maxLength={180} placeholder="Название гайда или обзора" />
++            <input className={inputClass} value={title} onChange={(event) => setTitle(event.target.value)} maxLength={180} placeholder="Название статьи или обзора" />
+           </label>
+           <label className={labelClass}>
+             <span className="text-muted-foreground">Тип</span>
+@@ -127,7 +127,7 @@
+         </div>
+ 
+         <label className={labelClass}>
+-          <span className="text-muted-foreground">Аннотация (необязательно — иначе соберём из текста)</span>
++          <span className="text-muted-foreground">Аннотация (если оставить пустой, она будет составлена из текста статьи)</span>
+           <textarea className="min-h-[4rem] rounded-lg border border-border px-3 py-2 text-sm [@media(pointer:coarse)]:text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring" value={excerpt} onChange={(event) => setExcerpt(event.target.value)} maxLength={500} />
+         </label>
+ 
+--- a/apps/web/components/content/bjcp-filter-sheet.tsx
++++ b/apps/web/components/content/bjcp-filter-sheet.tsx
+@@ -33,7 +33,7 @@
+       onOpenChange={(next) => {
+         if (!next) onClose();
+       }}
+-      title="Уточнить каталог"
++      title="Фильтры стилей"
+       side="right"
+     >
+       <div className="space-y-6">
+--- a/apps/web/components/content/content-body-editor.tsx
++++ b/apps/web/components/content/content-body-editor.tsx
+@@ -35,7 +35,7 @@
+       )}
+       <span className="min-w-0 space-y-0.5">
+         <span className="block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+-          {src ? "Фото" : "Фото — слот"}
++          {src ? "Фото" : "Место для фото"}
+         </span>
+         <span className="block truncate text-sm text-foreground">{caption ?? hint ?? "Без подписи"}</span>
+       </span>
+@@ -82,7 +82,7 @@
+         figure: () => ReactNodeViewRenderer(FigureNodeView),
+         widget: () => ReactNodeViewRenderer(WidgetNodeView)
+       }),
+-      Placeholder.configure({ placeholder: "Напишите гайд или обзор…" })
++      Placeholder.configure({ placeholder: "Напишите статью или обзор…" })
+     ],
+     []
+   );
+--- a/apps/web/components/feedback/feedback-queue.tsx
++++ b/apps/web/components/feedback/feedback-queue.tsx
+@@ -73,13 +73,13 @@
+ 
+             {item.resolutionNote ? (
+               <p className="rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground">
+-                Резолюция: {item.resolutionNote}
++                Решение: {item.resolutionNote}
+               </p>
+             ) : null}
+ 
+             <div className="grid gap-1.5">
+               <label htmlFor={noteId} className="text-sm font-medium text-foreground">
+-                Заметка к резолюции
++                Комментарий к решению
+               </label>
+               <Textarea
+                 id={noteId}
+--- a/apps/web/components/home/home-experience.tsx
++++ b/apps/web/components/home/home-experience.tsx
+@@ -77,12 +77,12 @@
+           <Link className="home-text-action" href={homeLoginHref(`/recipes/${item.slug}`)}>Взять за основу <ArrowRight /></Link></div></article>;
+         })}</div> : <div className="home-empty"><p>Рецепты сообщества пока не опубликованы.</p><Link href={homeLoginHref("/app/recipes/new")}>Создать свой рецепт <ArrowRight /></Link></div>}
+     </section>
+-    <section id="home-master"><div className="home-section-heading"><div><h2>Мастер рецептов</h2><p className="home-section-lead">Рассчитайте рецепт под своё оборудование и объём варки.</p></div><Link href={homeLoginHref("/app/recipes/new")}>Создать рецепт ↗</Link></div>
+-      {recipe && scaled && preview ? <div className="home-master"><div className="home-master-title"><select aria-label="Рецепт в мастере" value={selected} onChange={event => {
++    <section id="home-master"><div className="home-section-heading"><div><h2>Редактор рецептов</h2><p className="home-section-lead">Рассчитайте рецепт под своё оборудование и объём варки.</p></div><Link href={homeLoginHref("/app/recipes/new")}>Создать рецепт ↗</Link></div>
++      {recipe && scaled && preview ? <div className="home-master"><div className="home-master-title"><select aria-label="Пример рецепта" value={selected} onChange={event => {
+             setSelected(event.target.value);
+             setVolumeFactor(1);
+           }}>{previews.map(item => <option key={item.recipe.id} value={item.recipe.id}>{item.recipe.title}</option>)}</select><label>Объём партии<select aria-label="Объём партии" value={volumeFactor} onChange={event => setVolumeFactor(Number(event.target.value))}>{[1, .5, 2].map(factor => <option key={factor} value={factor}>{homeNumber(scaled.baseBatchLitres * factor)} л</option>)}</select></label></div>
+-        <div className="home-master-tabs" role="tablist" aria-label="Возможности мастера">{tabs.map(([key, label]) => <button type="button" id={`home-tab-${key}`} key={key} role="tab" aria-controls={`home-panel-${key}`} aria-selected={tab === key} onClick={() => setTab(key!)}>{label}</button>)}</div>
++        <div className="home-master-tabs" role="tablist" aria-label="Разделы редактора">{tabs.map(([key, label]) => <button type="button" id={`home-tab-${key}`} key={key} role="tab" aria-controls={`home-panel-${key}`} aria-selected={tab === key} onClick={() => setTab(key!)}>{label}</button>)}</div>
+         <div className="home-master-panels">
+           <div role="tabpanel" id="home-panel-composition" aria-labelledby="home-tab-composition" hidden={tab !== "composition"}><div className="home-two-columns"><div><h3>Ингредиенты</h3><dl className="home-facts">{scaled.ingredients.map(line => <div key={line.id}><dt>{line.displayNameRu || line.displayName || "Ингредиент"}<small>{{
+                           mash: "Затирание",
+@@ -98,7 +98,7 @@
+           <div role="tabpanel" id="home-panel-process" aria-labelledby="home-tab-process" hidden={tab !== "process"}><div className="home-two-columns"><div><h3>Затирание</h3>{recipe.processMeta.mashProfile.steps.length ? <ol className="home-process-steps">{recipe.processMeta.mashProfile.steps.map(step => <li key={step.id}><span>{step.name}</span><strong>{homeNumber(step.temperatureC)} °C<small>{homeNumber(step.durationMinutes)} мин</small></strong></li>)}</ol> : <p className="home-panel-empty">Паузы затирания в этом рецепте не заданы.</p>}<dl className="home-facts"><div><dt>Кипячение</dt><dd>{homeNumber(recipe.boilTimeMinutes)} мин</dd></div></dl></div><div><h3>Брожение</h3><dl className="home-facts"><div><dt>Температура брожения</dt><dd>{metricValue(recipe.processMeta.fermentationProfile.primaryTemperatureC, " °C")}</dd></div><div><dt>Длительность</dt><dd>{metricValue(recipe.processMeta.fermentationProfile.primaryDurationDays, " дн.")}</dd></div>{recipe.processMeta.fermentationProfile.coldCrash.enabled && <div><dt>Колд-краш</dt><dd>{metricValue(recipe.processMeta.fermentationProfile.coldCrash.temperatureC, " °C")} · {metricValue(recipe.processMeta.fermentationProfile.coldCrash.durationDays, " дн.")}</dd></div>}</dl></div></div></div>
+           <div role="tabpanel" id="home-panel-equipment" aria-labelledby="home-tab-equipment" hidden={tab !== "equipment"}><EquipmentPanel recipe={recipe} /></div>
+         </div><ul className="home-master-capabilities"><li><FileInput />Импорт: BeerXML, Brewfather</li><li><History />Версии рецепта</li><li><Users />Публикация в сообществе</li></ul>
+-      </div> : <div className="home-empty"><p>Создайте рецепт, задайте объём и подберите ингредиенты.</p><Link className="home-button" href={homeLoginHref("/app/recipes/new")}>Открыть мастер <ArrowRight /></Link></div>}
++      </div> : <div className="home-empty"><p>Создайте рецепт, задайте объём и подберите ингредиенты.</p><Link className="home-button" href={homeLoginHref("/app/recipes/new")}>Открыть редактор <ArrowRight /></Link></div>}
+       <div className="home-consume"><div><h3>Автоматическое списание со склада</h3><Link href={homeLoginHref(recipe ? `/recipes/${recipe.slug}` : "/app/brew-batches")} className="home-button home-primary">Создать партию <ArrowRight /></Link></div>{recipe && <div className="home-consume-lines"><div className="home-consume-head"><span>Ингредиент</span><span>На варку</span></div>{requirements.map(line => <div key={line.key}><span>{line.name}</span><strong>{homeQuantity(line.quantity, line.unit)}</strong></div>)}</div>}</div>
+     </section>
+   </>;
+@@ -160,7 +160,7 @@
+   factor: number;
+ }) {
+   const water = scaleRecipeWaterPlan(recipe.waterPlanMeta, factor);
+-  return water?.setupEnabled ? <div className="home-two-columns"><div><h3>Профиль воды</h3><dl className="home-facts"><div><dt>Исходная вода</dt><dd>{water.sourceProfileName || (water.sourceProfileMode === "ro_distilled" ? "Обратный осмос" : "Вода рецепта")}</dd></div><div><dt>Целевой профиль</dt><dd>{water.targetProfileName || "По рецепту"}</dd></div></dl>{water.targetProfile && <><div className="home-ions">{([["ca", "Ca²⁺"], ["mg", "Mg²⁺"], ["na", "Na⁺"], ["cl", "Cl⁻"], ["so4", "SO₄²⁻"], ["hco3", "HCO₃⁻"]] as const).map(([key, label]) => <div key={key}><span>{label}</span><strong>{homeNumber(water.targetProfile![key])}</strong></div>)}</div><p className="home-panel-note">Целевые концентрации, мг/л</p></>}</div><div><h3>Вода на варку</h3><dl className="home-facts"><div><dt>Заторная</dt><dd>{metricValue(water.mashWaterVolumeL, " л")}</dd></div><div><dt>Промывочная</dt><dd>{metricValue(water.spargeWaterVolumeL, " л")}</dd></div><div><dt>Целевой pH затора</dt><dd>{metricValue(water.targetMashPh, "", 2)}</dd></div></dl></div></div> : <div className="home-panel-empty"><h3>Водоподготовка</h3><p>Профиль воды для этого рецепта ещё не настроен.</p><Link href={homeLoginHref("/app/recipes/new")}>Настроить воду в мастере ↗</Link></div>;
++  return water?.setupEnabled ? <div className="home-two-columns"><div><h3>Профиль воды</h3><dl className="home-facts"><div><dt>Исходная вода</dt><dd>{water.sourceProfileName || (water.sourceProfileMode === "ro_distilled" ? "Обратный осмос" : "Вода рецепта")}</dd></div><div><dt>Целевой профиль</dt><dd>{water.targetProfileName || "По рецепту"}</dd></div></dl>{water.targetProfile && <><div className="home-ions">{([["ca", "Ca²⁺"], ["mg", "Mg²⁺"], ["na", "Na⁺"], ["cl", "Cl⁻"], ["so4", "SO₄²⁻"], ["hco3", "HCO₃⁻"]] as const).map(([key, label]) => <div key={key}><span>{label}</span><strong>{homeNumber(water.targetProfile![key])}</strong></div>)}</div><p className="home-panel-note">Целевые концентрации, мг/л</p></>}</div><div><h3>Вода на варку</h3><dl className="home-facts"><div><dt>Заторная</dt><dd>{metricValue(water.mashWaterVolumeL, " л")}</dd></div><div><dt>Промывочная</dt><dd>{metricValue(water.spargeWaterVolumeL, " л")}</dd></div><div><dt>Целевой pH затора</dt><dd>{metricValue(water.targetMashPh, "", 2)}</dd></div></dl></div></div> : <div className="home-panel-empty"><h3>Водоподготовка</h3><p>Профиль воды для этого рецепта ещё не настроен.</p><Link href={homeLoginHref("/app/recipes/new")}>Настроить воду в редакторе ↗</Link></div>;
+ }
+ function EquipmentPanel({
+   recipe
+--- a/apps/web/components/ingredients/admin-catalog-list.tsx
++++ b/apps/web/components/ingredients/admin-catalog-list.tsx
+@@ -131,7 +131,7 @@
+       show(failedCount > 0
+         ? {
+           title: `Готово частично — ${done}`,
+-          description: `Не прошло: ${failedCount} (${describeCatalogBulkFailures(result.failed)}).`,
++          description: `Не удалось обработать: ${failedCount} (${describeCatalogBulkFailures(result.failed)}).`,
+           tone: "warning"
+         }
+         : {
+@@ -242,7 +242,7 @@
+                 {primaryName}
+               </Link>
+               {secondaryName ? <p className="text-xs text-muted-foreground">{secondaryName}</p> : null}
+-              {aliasesPreview ? <p className="text-xs text-muted-foreground">Алиасы: {aliasesPreview}</p> : null}
++              {aliasesPreview ? <p className="text-xs text-muted-foreground">Другие названия: {aliasesPreview}</p> : null}
+             </div>
+           );
+         }
+--- a/apps/web/components/ingredients/admin-catalog-toolbar.tsx
++++ b/apps/web/components/ingredients/admin-catalog-toolbar.tsx
+@@ -93,7 +93,7 @@
+             onChange={(event) => setInputValue(event.target.value)}
+             onFocus={onFocus}
+             onBlur={onBlur}
+-            placeholder="Название, бренд, производитель, алиас"
++            placeholder="Название, бренд, производитель или другое название"
+             className="pr-10"
+           />
+           {isPending ? (
+--- a/apps/web/components/ingredients/admin-ingredient-form.tsx
++++ b/apps/web/components/ingredients/admin-ingredient-form.tsx
+@@ -154,14 +154,14 @@
+ }) => (
+   <div className="space-y-3">
+     {rows.length === 0 ? (
+-      <p className="text-sm text-muted-foreground">Алиасов нет.</p>
++      <p className="text-sm text-muted-foreground">Другие названия не указаны.</p>
+     ) : (
+       <ul className="space-y-2">
+         {rows.map((row, index) => (
+           <li key={row.id ?? `alias-${index}`} className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_10rem_auto_auto] sm:items-center">
+             <Input
+               value={row.alias}
+-              aria-label={`Алиас ${index + 1}`}
++              aria-label={`Другое название ${index + 1}`}
+               placeholder="Альтернативное название"
+               onChange={(event) => onChange(rows.map((item, itemIndex) => (
+                 itemIndex === index ? { ...item, alias: event.target.value } : item
+@@ -169,7 +169,7 @@
+             />
+             <Select
+               value={row.locale}
+-              aria-label={`Язык алиаса ${index + 1}`}
++              aria-label={`Язык названия ${index + 1}`}
+               onChange={(event) => onChange(rows.map((item, itemIndex) => (
+                 itemIndex === index
+                   ? { ...item, locale: event.target.value as AdminAliasRow["locale"] }
+@@ -193,7 +193,7 @@
+               type="button"
+               size="sm"
+               variant="ghost"
+-              aria-label={`Удалить алиас ${index + 1}`}
++              aria-label={`Удалить название ${index + 1}`}
+               onClick={() => onChange(rows.filter((_, itemIndex) => itemIndex !== index))}
+             >
+               <Trash2 className="h-4 w-4 text-destructive" aria-hidden />
+@@ -204,7 +204,7 @@
+     )}
+     <Button type="button" size="sm" variant="outline" onClick={() => onChange([...rows, createAdminAliasRow()])}>
+       <Plus className="h-4 w-4" aria-hidden />
+-      Добавить алиас
++      Добавить название
+     </Button>
+   </div>
+ );
+@@ -609,7 +609,7 @@
+       </section>
+ 
+       <section className={sectionClassName}>
+-        <h2 className={sectionTitleClassName}>Алиасы</h2>
++        <h2 className={sectionTitleClassName}>Другие названия</h2>
+         <AliasEditor rows={aliasRows} onChange={setAliasRows} />
+       </section>
+ 
+--- a/apps/web/components/ingredients/catalog-items-list.tsx
++++ b/apps/web/components/ingredients/catalog-items-list.tsx
+@@ -106,7 +106,7 @@
+     const colorLabel = formatColorBadge(item);
+     return [
+       colorLabel ? { key: "color", label: colorLabel, accent: resolveIngredientColorAccent(technicalData) } : null,
+-      item.fermentableExtractYieldPct != null ? { key: "extract", label: `Экстракт ${formatValue(item.fermentableExtractYieldPct)}%` } : null,
++      item.fermentableExtractYieldPct != null ? { key: "extract", label: `Экстрактивность ${formatValue(item.fermentableExtractYieldPct)}%` } : null,
+       technicalData && technicalData.type === "malt" && technicalData.proteinPct != null
+         ? { key: "protein", label: `Белок ${formatValue((technicalData as Extract<IngredientTechnicalData, { type: "malt" }>).proteinPct ?? 0)}%` }
+         : null
+@@ -369,7 +369,7 @@
+                         {badge.label}
+                       </span>
+                     ))}
+-                    {keyStats.length === 0 ? <span className="text-xs text-muted-foreground">Без ключевых параметров</span> : null}
++                    {keyStats.length === 0 ? <span className="text-xs text-muted-foreground">Параметры не указаны</span> : null}
+                   </div>
+                 </td>
+               </tr>
+--- a/apps/web/components/ingredients/custom-catalog-ingredient-form.tsx
++++ b/apps/web/components/ingredients/custom-catalog-ingredient-form.tsx
+@@ -151,7 +151,7 @@
+   {
+     value: "consumable",
+     label: "Добавка или расходник",
+-    description: "Специи, травы, осветлители, санитайзеры, тара",
++    description: "Специи, травы, осветлители, дезинфицирующие средства и тара",
+     category: "consumable",
+     subtype: "other",
+     icon: Package
+--- a/apps/web/components/ingredients/ingredient-catalog-toolbar.tsx
++++ b/apps/web/components/ingredients/ingredient-catalog-toolbar.tsx
+@@ -60,7 +60,7 @@
+ 
+ const sortLabels: Record<IngredientCatalogSortOption, string> = {
+   name: "По названию",
+-  updated: "По обновлению",
++  updated: "По дате изменения",
+   category: "По категории",
+   brand: "По бренду",
+   alpha: "По альфа-кислоте",
+--- a/apps/web/components/ingredients/ingredient-picker.tsx
++++ b/apps/web/components/ingredients/ingredient-picker.tsx
+@@ -2223,7 +2223,7 @@
+     throw new Error(data.error ?? "Не удалось отправить предложение.");
+   }
+ 
+-  return data.message ?? "Предложение отправлено в очередь модерации.";
++  return data.message ?? "Ингредиент отправлен на проверку.";
+ };
+ 
+ export const IngredientPicker = ({
+--- a/apps/web/components/ingredients/moderation-queue.tsx
++++ b/apps/web/components/ingredients/moderation-queue.tsx
+@@ -131,7 +131,7 @@
+                   }))
+                 }
+                 placeholder="Найдите итоговый ингредиент"
+-                emptyCta={<p className="text-xs text-muted-foreground">Не нашли? Предложить / создать свой ингредиент</p>}
++                emptyCta={<p className="text-xs text-muted-foreground">Не нашли ингредиент? Предложите его в каталог или создайте свой.</p>}
+               />
+               {target ? (
+                 <p className="text-xs text-muted-foreground">Объединить с: «{target.displayName}»</p>
+--- a/apps/web/components/inventory/catalog-ingredient-form.tsx
++++ b/apps/web/components/inventory/catalog-ingredient-form.tsx
+@@ -520,9 +520,9 @@
+     const currentExtract = formatCatalogBatchNumber(
+       hasTechnicalOverrides ? overrides.fermentableExtractYieldPct : defaults.fermentableExtractYieldPct,
+       "%"
+-    ) ?? "Экстракт не указан";
++    ) ?? "Экстрактивность не указана";
+     const catalogColor = formatCatalogBatchNumber(defaults.fermentableColorEbc, " EBC") ?? "Цвет не указан";
+-    const catalogExtract = formatCatalogBatchNumber(defaults.fermentableExtractYieldPct, "%") ?? "Экстракт не указан";
++    const catalogExtract = formatCatalogBatchNumber(defaults.fermentableExtractYieldPct, "%") ?? "Экстрактивность не указана";
+ 
+     return {
+       currentEntries: [
+--- a/apps/web/components/inventory/custom-ingredient-form.tsx
++++ b/apps/web/components/inventory/custom-ingredient-form.tsx
+@@ -853,7 +853,7 @@
+         <>
+           <div className="rounded-xl border border-border p-4">
+             <div className="mb-3">
+-              <h3 className="text-sm font-medium text-foreground">Количество и единица учёта</h3>
++              <h3 className="text-sm font-medium text-foreground">Количество и единица измерения</h3>
+             </div>
+ 
+             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2" data-testid="custom-required-fields">
+--- a/apps/web/components/inventory/inventory-list-item.tsx
++++ b/apps/web/components/inventory/inventory-list-item.tsx
+@@ -122,7 +122,7 @@
+       hop.alphaAcidPctTypical != null
+         ? {
+           label: userAlphaOverride
+-            ? `α ${formatValue(hop.alphaAcidPctTypical)}% (пользовательская)`
++            ? `α ${formatValue(hop.alphaAcidPctTypical)}% (ваше значение)`
+             : `α ${formatValue(hop.alphaAcidPctTypical)}%`,
+           opensEditor: true
+         }
+--- a/apps/web/components/inventory/inventory-price-input.tsx
++++ b/apps/web/components/inventory/inventory-price-input.tsx
+@@ -157,7 +157,7 @@
+                 preferredCurrency,
+                 inventoryUnitShortLabels[effectivePriceUnit]
+               )}`
+-            : "Цена относится ко всему количеству в карточке."
++            : "Стоимость всего указанного количества."
+         );
+ 
+   return (
+@@ -168,7 +168,7 @@
+             Цена {priceInputMode === "per_display_unit" ? `за ${inventoryUnitShortLabels[effectivePriceUnit]}` : "за всё количество"}
+           </p>
+         </div>
+-        <div className="grid grid-cols-2 gap-1 rounded-md bg-muted p-1 text-xs" role="group" aria-label="Режим цены">
++        <div className="grid grid-cols-2 gap-1 rounded-md bg-muted p-1 text-xs" role="group" aria-label="Как указана цена">
+           {inventoryPriceInputModes.map((mode) => {
+             const active = priceInputMode === mode;
+             return (
+@@ -178,7 +178,7 @@
+                 onClick={() => onPriceInputModeChange(mode)}
+                 className={`rounded px-2 py-1.5 ${active ? "bg-card shadow" : "text-muted-foreground"}`}
+               >
+-                {mode === "total" ? "За всё" : "За единицу"}
++                {mode === "total" ? "За всё количество" : "За единицу"}
+               </button>
+             );
+           })}
+--- a/apps/web/components/masters/admin/master-content-moderation.tsx
++++ b/apps/web/components/masters/admin/master-content-moderation.tsx
+@@ -217,7 +217,7 @@
+         </div>
+ 
+         {galleryImages.length === 0 ? (
+-          <p className="text-sm text-muted-foreground">Фото вне товаров нет.</p>
++          <p className="text-sm text-muted-foreground">В общей галерее пока нет фото.</p>
+         ) : (
+           <ul className="flex flex-wrap gap-3">
+             {galleryImages.map((image) => (
+--- a/apps/web/components/masters/admin/master-moderation-panel.tsx
++++ b/apps/web/components/masters/admin/master-moderation-panel.tsx
+@@ -188,7 +188,7 @@
+       <ConfirmActionDialog
+         open={unlistOpen}
+         title="Снять с витрины?"
+-        description="Публичная страница мастера станет недоступна. Контент сохранится — вернуть видимость можно в любой момент."
++        description="Страница мастера станет недоступна посетителям. Все материалы сохранятся — страницу можно будет вернуть на витрину."
+         confirmLabel="Снять с витрины"
+         pendingLabel="Снимаем…"
+         pending={isPending}
+--- a/apps/web/components/recipes/brew-preparation-summary.tsx
++++ b/apps/web/components/recipes/brew-preparation-summary.tsx
+@@ -7,7 +7,7 @@
+   const n = (value: number) => Number(value.toFixed(1));
+   return (
+     <div className="space-y-2 text-xs leading-5">
+-      <p className="font-medium text-foreground">Цели варки: {preview.og != null ? `OG ${preview.og.toFixed(3)} SG` : "OG —"}
++      <p className="font-medium text-foreground">Расчётные параметры: {preview.og != null ? `OG ${preview.og.toFixed(3)} SG` : "OG —"}
+         {preview.abv != null ? ` · ABV ${n(preview.abv)}%` : ""}{preview.ibu != null ? ` · IBU ${Math.round(preview.ibu)}` : ""}
+         {preview.color != null ? ` · ${n(preview.color)} SRM` : ""}</p>
+       <p className="text-muted-foreground">Затор: {n(preview.mashWaterL)} л · промывка: {n(preview.spargeWaterL)} л. Авторские показатели могут отличаться от расчёта по составу.</p>
+--- a/apps/web/components/recipes/brew-volume-choice.tsx
++++ b/apps/web/components/recipes/brew-volume-choice.tsx
+@@ -203,7 +203,7 @@
+           Количество ингредиентов пересчитано на {formatBrewVolumeL(targetVolumeL)}.
+           {efficiencyDiffers ? (
+             <>
+-              {" "}Засыпь — под вашу эффективность {formatPercent(profile.brewhouseEfficiencyPct)}
++              {" "}Засыпь пересчитана с учётом вашей эффективности {formatPercent(profile.brewhouseEfficiencyPct)}
+               {" "}(у автора {formatPercent(recipeEfficiencyPct as number)}), чтобы сохранить расчётную начальную плотность.
+             </>
+           ) : null}
+--- a/apps/web/components/recipes/brewable-recipes-section.tsx
++++ b/apps/web/components/recipes/brewable-recipes-section.tsx
+@@ -126,7 +126,7 @@
+         <div className="flex h-6 w-6 items-center justify-center rounded-md bg-warning-subtle text-warning-subtle-foreground">
+           <Beer className="h-3.5 w-3.5" />
+         </div>
+-        <h2 className="text-base font-semibold text-foreground">Рецепты под ваш склад</h2>
++        <h2 className="text-base font-semibold text-foreground">Рецепты под ваши запасы</h2>
+         <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
+           {recipes.length}
+         </span>
+--- a/apps/web/components/recipes/import-export-modal.tsx
++++ b/apps/web/components/recipes/import-export-modal.tsx
+@@ -163,11 +163,11 @@
+   }
+ 
+   if (error.message === "INVALID_BEERXML") {
+-    return "BeerXML повреждён или не содержит корректных блоков RECIPE.";
++    return "Не удалось найти рецепты в файле BeerXML. Проверьте файл или экспортируйте его заново.";
+   }
+ 
+   if (error.message === "INVALID_BREWFATHER_JSON") {
+-    return "Brewfather JSON не распознан: проверьте, что выбран экспорт рецепта из Brewfather.";
++    return "Не удалось прочитать рецепт Brewfather. Загрузите JSON-файл, экспортированный из Brewfather.";
+   }
+ 
+   if (error.message === "IMPORT_RECIPE_EMPTY") {
+@@ -522,7 +522,7 @@
+           {mode === "import" ? (
+             <section className="space-y-2">
+               <h4 className="text-sm font-semibold text-foreground">3. Вставьте текст или загрузите файл</h4>
+-              <p className="text-xs text-muted-foreground">{format === "brewfather_json" ? "В Brewfather экспортируйте рецепт в JSON или используйте резервную копию из Settings → Data → Export. Поддерживаются один рецепт, массив и раздел recipes резервной копии. Переносится до 100 рецептов за раз, размер файла — до 8 МБ. Склад и история варок не импортируются. Исходный JSON рецепта сохраняется для владельца." : "Поддерживается один рецепт или коллекция RECIPES: до 100 рецептов, до 8 МБ."} Все импортированные рецепты будут доступны только вам.</p>
++              <p className="text-xs text-muted-foreground">{format === "brewfather_json" ? "В Brewfather экспортируйте рецепт в JSON или скачайте резервную копию: Settings → Data → Export. Можно загрузить один или несколько рецептов, в том числе из резервной копии: до 100 рецептов и до 8 МБ. Склад и история варок не переносятся. Исходный файл рецепта сохранится и будет доступен только вам." : "Можно загрузить один рецепт или несколько рецептов в одном файле: до 100 рецептов и до 8 МБ."} Все импортированные рецепты будут доступны только вам.</p>
+               <input type="file" accept={fileAccept} onChange={(event) => handleFile(event.target.files?.[0] ?? null)} className="block w-full text-sm text-muted-foreground" />
+               <textarea
+                 value={importText}
+--- a/apps/web/components/recipes/labels/label-studio.tsx
++++ b/apps/web/components/recipes/labels/label-studio.tsx
+@@ -750,13 +750,13 @@
+ 
+         <section className="space-y-3 lg:sticky lg:col-start-2 lg:row-span-2 lg:top-[calc(var(--chrome-top,0px)+1rem)] lg:z-10 lg:self-start">
+           <div className="flex items-center justify-between">
+-            <h2 className="text-sm font-medium text-muted-foreground">Превью</h2>
++            <h2 className="text-sm font-medium text-muted-foreground">Предпросмотр</h2>
+             <button
+               type="button"
+               onClick={() => setPrintView((prev) => !prev)}
+               className="text-xs text-muted-foreground hover:text-foreground"
+             >
+-              {printView ? "Показать чётко" : "Как напечатается"}
++              {printView ? "Показать со сглаживанием" : "Показать как при печати"}
+             </button>
+           </div>
+           <div className="flex justify-center overflow-auto rounded-lg border border-border bg-muted/30 p-4">
+@@ -767,12 +767,12 @@
+                 type="button"
+                 onClick={() => setZoomed(true)}
+                 className="group relative cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+-                aria-label="Открыть превью во весь экран"
++                aria-label="Открыть предпросмотр во весь экран"
+               >
+                 {/* eslint-disable-next-line @next/next/no-img-element -- превью — blob-URL с сервера, не статический актив */}
+                 <img
+                   src={shownSrc}
+-                  alt={`Превью наклейки «${fields.title}»`}
++                  alt={`Предпросмотр этикетки «${fields.title}»`}
+                   className={`max-h-[560px] w-auto max-w-full border border-border bg-white shadow-sm transition-opacity ${
+                     previewLoading ? "opacity-60" : "opacity-100"
+                   }`}
+@@ -796,7 +796,7 @@
+           </div>
+           {previewFailed ? (
+             <p className="rounded-md border border-destructive/30 bg-destructive-subtle px-2 py-1.5 text-xs text-destructive-subtle-foreground">
+-              Не удалось обновить превью.
++              Не удалось обновить предпросмотр.
+             </p>
+           ) : null}
+           {isSheet ? (
+@@ -856,13 +856,13 @@
+           />
+         </section>
+ 
+-        <Dialog open={zoomed && shownSrc !== null} onOpenChange={setZoomed} title="Превью наклейки" size="lg">
++        <Dialog open={zoomed && shownSrc !== null} onOpenChange={setZoomed} title="Предпросмотр этикетки" size="lg">
+           <div className="flex max-h-[86vh] justify-center overflow-auto bg-muted/30 p-4">
+             {shownSrc ? (
+               // eslint-disable-next-line @next/next/no-img-element -- тот же blob-URL, что и в колонке превью
+               <img
+                 src={shownSrc}
+-                alt={`Превью наклейки «${fields.title}»`}
++                alt={`Предпросмотр этикетки «${fields.title}»`}
+                 className="h-auto w-auto max-w-full border border-border bg-white shadow-sm"
+                 style={printView ? { imageRendering: "pixelated" } : undefined}
+               />
+@@ -940,9 +940,9 @@
+             <Field id="lb-style" label="Стиль" value={fields.style} maxLength={LABEL_FIELD_LIMITS.style} onChange={setField("style")} onBlur={flushSync} className="sm:col-span-2" />
+             {/* На 360px три узкие колонки в один ряд не влезают читаемо — стек до sm. */}
+             <div className="grid grid-cols-1 gap-3 sm:col-span-2 sm:grid-cols-3">
+-              <Field id="lb-abv" label="ABV" value={fields.abv} maxLength={LABEL_FIELD_LIMITS.abv} onChange={setField("abv")} onBlur={flushSync} placeholder="~5.2%" inputMode="decimal" />
+-              <Field id="lb-ibu" label="IBU" value={fields.ibu} maxLength={LABEL_FIELD_LIMITS.ibu} onChange={setField("ibu")} onBlur={flushSync} placeholder="38" inputMode="decimal" />
+-              <Field id="lb-ebc" label="EBC" value={fields.ebc} maxLength={LABEL_FIELD_LIMITS.ebc} onChange={setField("ebc")} onBlur={flushSync} placeholder="12" inputMode="decimal" />
++              <Field id="lb-abv" label="Крепость, % об." value={fields.abv} maxLength={LABEL_FIELD_LIMITS.abv} onChange={setField("abv")} onBlur={flushSync} placeholder="~5.2%" inputMode="decimal" />
++              <Field id="lb-ibu" label="Горечь, IBU" value={fields.ibu} maxLength={LABEL_FIELD_LIMITS.ibu} onChange={setField("ibu")} onBlur={flushSync} placeholder="38" inputMode="decimal" />
++              <Field id="lb-ebc" label="Цвет, EBC" value={fields.ebc} maxLength={LABEL_FIELD_LIMITS.ebc} onChange={setField("ebc")} onBlur={flushSync} placeholder="12" inputMode="decimal" />
+             </div>
+             {/* Шкала — не настройка сайта, а свойство наклейки: печатают её для
+                 тех, кто будет пить пиво, а не для владельца профиля. Переключение
+@@ -969,8 +969,8 @@
+                 ))}
+               </div>
+             </div>
+-            <Field id="lb-og" label="OG" value={fields.og} maxLength={LABEL_FIELD_LIMITS.og} onChange={setField("og")} onBlur={flushSync} placeholder={GRAVITY_PLACEHOLDERS[gravityUnit].og} inputMode="decimal" />
+-            <Field id="lb-fg" label="FG" value={fields.fg} maxLength={LABEL_FIELD_LIMITS.fg} onChange={setField("fg")} onBlur={flushSync} placeholder={GRAVITY_PLACEHOLDERS[gravityUnit].fg} inputMode="decimal" />
++            <Field id="lb-og" label="Начальная плотность" value={fields.og} maxLength={LABEL_FIELD_LIMITS.og} onChange={setField("og")} onBlur={flushSync} placeholder={GRAVITY_PLACEHOLDERS[gravityUnit].og} inputMode="decimal" />
++            <Field id="lb-fg" label="Конечная плотность" value={fields.fg} maxLength={LABEL_FIELD_LIMITS.fg} onChange={setField("fg")} onBlur={flushSync} placeholder={GRAVITY_PLACEHOLDERS[gravityUnit].fg} inputMode="decimal" />
+             <Field id="lb-malts" label="Солод (через запятую)" value={fields.malts} maxLength={LABEL_FIELD_LIMITS.malts} onChange={setField("malts")} onBlur={flushSync} className="sm:col-span-2" />
+             <Field id="lb-hops" label="Хмель (через запятую)" value={fields.hops} maxLength={LABEL_FIELD_LIMITS.hops} onChange={setField("hops")} onBlur={flushSync} className="sm:col-span-2" />
+             <Field id="lb-yeast" label="Дрожжи" value={fields.yeast} maxLength={LABEL_FIELD_LIMITS.yeast} onChange={setField("yeast")} onBlur={flushSync} className="sm:col-span-2" />
+@@ -1007,7 +1007,7 @@
+             <Field id="lb-volume" label="Объём тары" value={fields.volume} maxLength={LABEL_FIELD_LIMITS.volume} onChange={setField("volume")} onBlur={flushSync} placeholder="0,5 л" />
+             <Field id="lb-batch" label="Партия №" value={fields.batch} maxLength={LABEL_FIELD_LIMITS.batch} onChange={setField("batch")} onBlur={flushSync} placeholder="3" />
+             <Field id="lb-author" label="Автор" value={fields.author} maxLength={LABEL_FIELD_LIMITS.author} onChange={setField("author")} onBlur={flushSync} />
+-            <Field id="lb-brand" label="Марка внизу" value={fields.brand} maxLength={LABEL_FIELD_LIMITS.brand} onChange={setField("brand")} onBlur={flushSync} />
++            <Field id="lb-brand" label="Подпись внизу этикетки" value={fields.brand} maxLength={LABEL_FIELD_LIMITS.brand} onChange={setField("brand")} onBlur={flushSync} />
+             <div>
+               <label htmlFor="lb-date" className="mb-1 block text-xs font-medium text-muted-foreground">
+                 Дата розлива
+--- a/apps/web/components/recipes/my-recipes-gallery.tsx
++++ b/apps/web/components/recipes/my-recipes-gallery.tsx
+@@ -269,8 +269,8 @@
+ 
+   const statusOptions: { value: StatusFilter; label: string; count: number }[] = [
+     { value: "all", label: "Все", count: statusCounts.all },
+-    { value: "private", label: "Приватные", count: statusCounts.private },
+-    { value: "published", label: "Публичные", count: statusCounts.published }
++    { value: "private", label: "Только мне", count: statusCounts.private },
++    { value: "published", label: "Опубликованные", count: statusCounts.published }
+   ];
+ 
+   const getMatch = matchCtx?.getMatch;
+--- a/apps/web/components/recipes/owner-recipe-card.tsx
++++ b/apps/web/components/recipes/owner-recipe-card.tsx
+@@ -298,7 +298,7 @@
+               className="pointer-events-auto relative z-10 inline-flex items-center gap-1 font-medium text-primary transition-colors hover:text-primary/80"
+             >
+               <ExternalLink className="h-3 w-3" aria-hidden />
+-              Публичная страница
++              Посмотреть публикацию
+             </Link>
+           ) : null}
+         </div>
+@@ -376,7 +376,7 @@
+               className="pointer-events-auto relative z-10 inline-flex items-center gap-1 font-medium text-primary transition-colors hover:text-primary/80"
+             >
+               <ExternalLink className="h-3 w-3" aria-hidden />
+-              Публичная страница
++              Посмотреть публикацию
+             </Link>
+           ) : null}
+         </div>
+--- a/apps/web/components/recipes/public-recipe-process-section.tsx
++++ b/apps/web/components/recipes/public-recipe-process-section.tsx
+@@ -223,7 +223,7 @@
+           })}
+         </ul>
+       ) : (
+-        <p className="text-sm text-muted-foreground">Внесений на кипячении нет.</p>
++        <p className="text-sm text-muted-foreground">Во время кипячения ингредиенты не добавляются.</p>
+       )}
+     </section>
+   );
+--- a/apps/web/components/recipes/recipe-designer/ingredient-editor.tsx
++++ b/apps/web/components/recipes/recipe-designer/ingredient-editor.tsx
+@@ -366,7 +366,7 @@
+       <div className="sticky top-0 z-10 flex shrink-0 items-start justify-between gap-3 border-b border-border bg-card px-4 py-3 sm:px-6 sm:py-4">
+         <div className="min-w-0">
+           <h3 className="truncate text-base font-semibold text-foreground sm:text-lg">
+-            {isWaterTreatmentAddFlow ? "Новая соль для воды" : isExisting ? "Редактор позиции" : "Новая позиция"}
++            {isWaterTreatmentAddFlow ? "Добавить соль в воду" : isExisting ? "Редактировать ингредиент" : "Добавить ингредиент"}
+           </h3>
+           <p className="mt-0.5 truncate text-xs text-muted-foreground">{contextCategoryLabel}</p>
+         </div>
+--- a/apps/web/components/recipes/recipe-designer/recipe-designer.tsx
++++ b/apps/web/components/recipes/recipe-designer/recipe-designer.tsx
+@@ -867,7 +867,7 @@
+         category: "yeast",
+         title: "Дрожжи",
+         items: yeasts,
+-        empty: "Добавьте дрожжи для публикации рецепта."
++        empty: "Укажите дрожжи, которые используются в рецепте. Это нужно для публикации."
+       },
+       {
+         category: "water_treatment",
+@@ -941,7 +941,7 @@
+       onSave={saveEditor}
+       onCancel={() => requestCloseEditor()}
+       onDelete={openEditor.localId ? () => deleteIngredient(openEditor.localId!) : undefined}
+-      saveLabel={openEditor.localId ? "Сохранить позицию" : openEditor.category === "water_treatment" ? "Добавить соль" : "Добавить позицию"}
++      saveLabel={openEditor.localId ? "Сохранить ингредиент" : openEditor.category === "water_treatment" ? "Добавить соль" : "Добавить ингредиент"}
+       fieldError={editorFieldError}
+     />
+   ) : null;
+@@ -1787,7 +1787,7 @@
+                           disabled={!waterPlanMeta.setupEnabled}
+                           className="inline-flex h-8 items-center rounded-lg border border-border bg-card px-2.5 text-xs font-medium text-muted-foreground shadow-sm transition-colors hover:border-border hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50 sm:h-9 sm:px-3 sm:text-sm"
+                         >
+-                          <span className="hidden sm:inline">Сбросить воду</span>
++                          <span className="hidden sm:inline">Сбросить настройки воды</span>
+                           <span className="sm:hidden">Сброс</span>
+                         </button>
+                       </>
+@@ -1875,7 +1875,7 @@
+                 <FileText className="h-4 w-4" />
+               </div>
+               <span className="text-[15px]">Описание рецепта</span>
+-              <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">публично</span>
++              <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">видно всем</span>
+               <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90" />
+             </summary>
+             <div className="p-4">
+@@ -1883,7 +1883,7 @@
+                 value={description}
+                 onChange={(event) => setDescription(event.target.value)}
+                 className="min-h-28 w-full rounded-xl border border-border bg-muted/50 px-3 py-2.5 text-base text-foreground placeholder:text-muted-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm [@media(pointer:coarse)]:text-base"
+-                placeholder="Публичное описание рецепта — что это за пиво, вдохновение, особенности…"
++                placeholder="Расскажите, какое пиво получится и что учесть при варке."
+               />
+               {sectionErrors.description ? <p className="mt-2 text-xs text-destructive">{sectionErrors.description}</p> : null}
+             </div>
+@@ -1896,7 +1896,7 @@
+               <span className="text-[15px]">Личные заметки</span>
+               <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                 <Lock className="h-3 w-3" />
+-                приватно
++                только вам
+               </span>
+               <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90" />
+             </summary>
+@@ -1915,7 +1915,7 @@
+       <ConfirmActionDialog
+         open={publishConfirmOpen}
+         title="Опубликовать рецепт?"
+-        description="После публикации он станет доступен по публичной ссылке."
++        description="Рецепт станет доступен всем по ссылке."
+         confirmLabel="Опубликовать"
+         pendingLabel="Публикуем..."
+         tone="primary"
+@@ -1931,7 +1931,7 @@
+       <ConfirmActionDialog
+         open={makePrivateConfirmOpen}
+         title="Скрыть публикацию рецепта?"
+-        description="После этого публичная страница перестанет быть доступна."
++        description="Рецепт больше не будет доступен другим пользователям по ссылке."
+         confirmLabel="Скрыть публикацию"
+         pendingLabel="Меняем доступ..."
+         pending={pendingSave}
+--- a/apps/web/components/recipes/recipe-designer/recipe-profiles.tsx
++++ b/apps/web/components/recipes/recipe-designer/recipe-profiles.tsx
+@@ -132,7 +132,7 @@
+         <div className="mt-4 space-y-4">
+           <div className="grid gap-3 sm:grid-cols-2">
+             <label className="space-y-1 text-[11px] font-medium text-muted-foreground">
+-              Осн. температура, °C
++              Температура основного брожения, °C
+               <NumericInput
+                 min={-10}
+                 max={50}
+@@ -149,7 +149,7 @@
+               />
+             </label>
+             <label className="space-y-1 text-[11px] font-medium text-muted-foreground">
+-              Осн. длительность, дн
++              Длительность основного брожения, дни
+               <NumericInput
+                 min={0.1}
+                 max={365}
+--- a/apps/web/components/recipes/recipe-designer/recipe-style-stats-block.tsx
++++ b/apps/web/components/recipes/recipe-designer/recipe-style-stats-block.tsx
+@@ -109,7 +109,7 @@
+         <div className="flex min-w-0 flex-col gap-0.5">
+           <div className="flex min-w-0 items-center gap-2">
+             <h2 className="truncate text-sm font-semibold text-foreground">
+-              {hasSelectedStyle ? "Попадание в стиль" : "Расчёт показателей"}
++              {hasSelectedStyle ? "Сравнение со стилем" : "Расчёт показателей"}
+             </h2>
+             {comparableItems.length > 0 ? (
+               <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${overallFit ? "bg-success-subtle text-success-subtle-foreground ring-1 ring-inset ring-success/30" : "bg-muted text-muted-foreground ring-1 ring-inset ring-border"}`}>
+--- a/apps/web/components/recipes/recipe-stats-summary.tsx
++++ b/apps/web/components/recipes/recipe-stats-summary.tsx
+@@ -167,7 +167,7 @@
+   return (
+     <section className={compact ? "border-b border-border py-4" : "rounded-2xl border border-border bg-card p-5 shadow-sm"}>
+       <div className={compact ? "mb-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2" : "mb-4 flex flex-wrap items-center justify-between gap-2"}>
+-        <h2 className="text-base font-semibold text-foreground">Ключевые показатели</h2>
++        <h2 className="text-base font-semibold text-foreground">Параметры рецепта</h2>
+         <div className={compact ? "contents" : "flex flex-wrap items-center gap-3"}>
+           {styleChipText ? (
+             styleHref ? (
+--- a/apps/web/components/recipes/recipes-empty-state.tsx
++++ b/apps/web/components/recipes/recipes-empty-state.tsx
+@@ -32,7 +32,7 @@
+ 
+   return (
+     <section className="rounded-2xl border border-dashed border-border bg-muted p-10 text-center">
+-      <h2 className="text-lg font-semibold text-foreground">Публичных рецептов пока нет</h2>
++      <h2 className="text-lg font-semibold text-foreground">Пока нет опубликованных рецептов</h2>
+       <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+         <Link
+           href="/app/recipes/new"
+--- a/apps/web/components/recipes/stock-ingredient-list.tsx
++++ b/apps/web/components/recipes/stock-ingredient-list.tsx
+@@ -80,7 +80,7 @@
+         if (!controller.signal.aborted) {
+           setItems([]);
+           onOverflowChange?.(false);
+-          console.error("Не удалось загрузить складские позиции для рецепта.", error);
++          console.error("Не удалось загрузить ингредиенты со склада.", error);
+         }
+       } finally {
+         if (!controller.signal.aborted) {
+--- a/apps/web/components/recipes/water-setup-wizard.tsx
++++ b/apps/web/components/recipes/water-setup-wizard.tsx
+@@ -2185,7 +2185,7 @@
+               size="sm"
+               onClick={() => setResetConfirmOpen(true)}
+             >
+-              Сбросить воду
++              Сбросить настройки воды
+             </Button>
+           ) : null}
+         </div>
+@@ -2455,7 +2455,7 @@
+               }}
+             />
+             <TargetModeButton
+-              label="Ионы вручную"
++              label="Ввести состав вручную"
+               selected={targetModeSelection.manual}
+               onClick={() => {
+                 setTargetProfileSaveMessage(null);
+@@ -2506,8 +2506,8 @@
+                     setTargetQuery(event.target.value);
+                     setShowAllTargetProfiles(false);
+                   }}
+-                  placeholder="IPA, lager, blanche, стаут..."
+-                  aria-label="IPA, lager, blanche, стаут..."
++                  placeholder="IPA, лагер, бланш, стаут…"
++                  aria-label="IPA, лагер, бланш, стаут…"
+                   className="h-full min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
+                 />
+               </label>
+--- a/apps/web/components/shared/site-footer.tsx
++++ b/apps/web/components/shared/site-footer.tsx
+@@ -17,7 +17,7 @@
+             NB
+           </p>
+           <p className="max-w-xs text-sm leading-6 text-muted-foreground">
+-            Платформа для домашних пивоваров: каталог ингредиентов, склад, рецепты и BJCP в одном месте.
++            Рецепты, склад ингредиентов и расчёты для домашнего пивоварения.
+           </p>
+           <p className="max-w-xs text-xs leading-5 text-muted-foreground">
+             18+ · Материалы носят информационный характер. Чрезмерное употребление алкоголя вредит вашему здоровью.
+@@ -60,7 +60,7 @@
+       </div>
+       <div className="border-t border-border">
+         <p className="mx-auto max-w-7xl px-6 py-4 text-xs text-muted-foreground">
+-          © {year} NB — платформа для домашних пивоваров
++          © {year} NB — помощник домашнего пивовара
+         </p>
+       </div>
+     </footer>
+--- a/apps/web/components/shopping/manual-item-form.tsx
++++ b/apps/web/components/shopping/manual-item-form.tsx
+@@ -69,7 +69,7 @@
+     const hasQuantity = quantity.trim() !== "";
+     const hasUnit = unit !== "";
+     if (hasQuantity !== hasUnit) {
+-      setError("Количество и единица указываются вместе.");
++      setError("Укажите и количество, и единицу измерения.");
+       return;
+     }
+ 
+--- a/apps/web/components/shopping/manual-item-row.tsx
++++ b/apps/web/components/shopping/manual-item-row.tsx
+@@ -105,7 +105,7 @@
+     const hasQuantity = editQuantity.trim() !== "";
+     const hasUnit = editUnit !== "";
+     if (hasQuantity !== hasUnit) {
+-      setEditError("Количество и единица указываются вместе.");
++      setEditError("Укажите и количество, и единицу измерения.");
+       return;
+     }
+ 
+--- a/apps/web/components/shopping/shopping-list-view.tsx
++++ b/apps/web/components/shopping/shopping-list-view.tsx
+@@ -358,7 +358,7 @@
+           href="/app/recipes"
+           className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
+         >
+-          Запланируйте варку — соберём точный список
++          Запланируйте варку, чтобы составить список покупок
+         </Link>
+       ) : null}
+     </div>
+--- a/apps/web/components/shopping/transfer-dialog.tsx
++++ b/apps/web/components/shopping/transfer-dialog.tsx
+@@ -220,7 +220,7 @@
+         title: result.message,
+         tone: "success",
+         description: result.skippedCount > 0
+-          ? `Не перенесено: ${result.skippedCount} — отметки устарели.`
++          ? `Не перенесено: ${result.skippedCount} — список покупок изменился. Обновите его и проверьте выбранные позиции.`
+           : undefined,
+         action: { label: "Запасы", onClick: () => router.push("/app/ingredients") }
+       });
+--- a/apps/web/components/theme/theme-toggle.tsx
++++ b/apps/web/components/theme/theme-toggle.tsx
+@@ -32,7 +32,7 @@
+   const { preference, setPreference, skin, setSkin } = useTheme();
+   const hopActive = skin === "hop";
+   const CurrentIcon = options.find(option => option.value === preference)!.Icon;
+-  const skinLabel = hopActive ? "Скин «Хмель»: включён" : "Скин «Хмель»: выключен";
++  const skinLabel = hopActive ? "Оформление «Хмель» включено" : "Оформление «Хмель» выключено";
+   const triggerRef = React.useRef<HTMLButtonElement>(null);
+   const [portalContainer, setPortalContainer] = React.useState<HTMLElement | null>(null);
+ 
+--- a/apps/web/features/brew-batches/components/brew-completion-summary.tsx
++++ b/apps/web/features/brew-batches/components/brew-completion-summary.tsx
+@@ -68,7 +68,7 @@
+ 
+   return (
+     <section className="space-y-4 rounded-2xl border border-border bg-card p-5 shadow-sm">
+-      <h2 className="text-base font-semibold text-foreground">Итог партии</h2>
++      <h2 className="text-base font-semibold text-foreground">Итоги партии</h2>
+ 
+       <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+         <StatTile
+--- a/apps/web/features/brew-batches/components/brew-day-board.tsx
++++ b/apps/web/features/brew-batches/components/brew-day-board.tsx
+@@ -85,7 +85,7 @@
+       <div className="rounded-2xl border border-success/30 bg-success-subtle/60 p-5">
+         <div className="flex items-center gap-2 text-success">
+           <CheckCircle2 className="h-5 w-5" aria-hidden />
+-          <p className="text-sm font-semibold">Варочный день пройден</p>
++          <p className="text-sm font-semibold">Варка завершена</p>
+         </div>
+         <p className="mt-1 text-sm text-success">Перелейте сусло в ферментер, внесите дрожжи и поставьте на брожение.</p>
+         <div className="mt-3 flex flex-wrap items-center gap-3">
+@@ -107,7 +107,7 @@
+               disabled={lastDoneBusy}
+             >
+               <Undo2 className="h-4 w-4" aria-hidden />
+-              Вернуть шаг
++              Отметить невыполненным
+             </Button>
+           ) : null}
+         </div>
+@@ -185,10 +185,10 @@
+               size="sm"
+               onClick={() => patchStep(lastDone.id, { done: false })}
+               disabled={lastDoneBusy}
+-              aria-label="Вернуть шаг"
++              aria-label="Отметить невыполненным"
+             >
+               <Undo2 className="h-4 w-4" aria-hidden />
+-              Вернуть шаг
++              Отметить невыполненным
+             </Button>
+           ) : null}
+           <Button
+--- a/apps/web/features/brew-batches/components/brew-journal.tsx
++++ b/apps/web/features/brew-batches/components/brew-journal.tsx
+@@ -239,7 +239,7 @@
+             />
+           </label>
+           <label className="flex flex-col gap-1">
+-            <span className="text-[11px] text-muted-foreground">Когда (по умолч. — сейчас)</span>
++            <span className="text-[11px] text-muted-foreground">Дата и время замера</span>
+             <input
+               type="datetime-local"
+               value={takenAt}
+@@ -276,7 +276,7 @@
+             disabled={busy}
+             className="h-3.5 w-3.5 rounded border-border text-foreground focus:ring-ring"
+           />
+-          Это финальный замер (FG)
++          Это замер конечной плотности (КП)
+         </label>
+         {error ? <p role="alert" className="text-xs text-destructive">{error}</p> : null}
+       </form>
+@@ -284,7 +284,7 @@
+       {/* История замеров */}
+       {measurements.length === 0 ? (
+         <p className="rounded-xl border border-dashed border-border bg-muted p-4 text-center text-sm text-muted-foreground">
+-          Пока нет замеров. Внесите начальную плотность (OG), затем финальную (FG) — посчитаем ABV и сбраживание.
++          Замеров пока нет. Запишите начальную и конечную плотность, чтобы рассчитать крепость и степень сбраживания.
+         </p>
+       ) : (
+         <ul className="divide-y divide-border">
+@@ -306,8 +306,8 @@
+                   type="button"
+                   onClick={() => toggleFinal(measurement.id, !measurement.isFinal)}
+                   disabled={busy}
+-                  aria-label={measurement.isFinal ? "Снять отметку FG" : "Отметить финальным (FG)"}
+-                  title={measurement.isFinal ? "Снять отметку FG" : "Отметить финальным (FG)"}
++                  aria-label={measurement.isFinal ? "Снять отметку конечной плотности" : "Отметить как конечную плотность"}
++                  title={measurement.isFinal ? "Снять отметку конечной плотности" : "Отметить как конечную плотность"}
+                   className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition disabled:opacity-60 ${measurement.isFinal ? "text-warning-subtle-foreground hover:bg-warning-subtle" : "text-muted-foreground hover:bg-muted hover:text-muted-foreground"}`}
+                 >
+                   {togglingId === measurement.id ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Flag className={`h-4 w-4 ${measurement.isFinal ? "fill-warning" : ""}`} aria-hidden />}
+--- a/apps/web/features/brew-batches/components/fermenter-panel.tsx
++++ b/apps/web/features/brew-batches/components/fermenter-panel.tsx
+@@ -70,7 +70,7 @@
+         <FermenterPicker brewBatchId={brewBatchId} candidates={candidates} />
+       ) : null}
+ 
+-      {status.kind === "no-data" ? <p className="text-sm text-muted-foreground">Телеметрии с прибора пока нет.</p> : null}
++      {status.kind === "no-data" ? <p className="text-sm text-muted-foreground">Показаний с прибора пока нет.</p> : null}
+ 
+       {status.kind === "fermenting" || status.kind === "mode-mismatch" ? (
+         <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 tabular-nums">
+--- a/apps/web/features/brew-batches/dashboard.ts
++++ b/apps/web/features/brew-batches/dashboard.ts
+@@ -74,7 +74,7 @@
+       const since = item.lastMeasurementAt ?? item.startedAt ?? item.createdAt;
+       const days = Math.max(daysBetween(since, now), 0);
+       if (days >= STALE_MEASUREMENT_DAYS) {
+-        return { tone: "warn", text: `${days} ${russianDays(days)} без замера — проверьте FG` };
++        return { tone: "warn", text: `${days} ${russianDays(days)} без замера — проверьте конечную плотность` };
+       }
+       return { tone: "info", text: "Брожение идёт" };
+     }
+--- a/apps/web/features/brew-controller/components/control-dock.tsx
++++ b/apps/web/features/brew-controller/components/control-dock.tsx
+@@ -96,7 +96,7 @@
+       ) : null}
+       {otherSessionHolds ? (
+         <p className="mt-1 text-sm text-warning-subtle-foreground">
+-          Устройством управляют из другого сеанса. Запросите передачу управления.
++          Управление уже открыто в другом окне или на другом устройстве. Запросите передачу управления.
+         </p>
+       ) : null}
+     </div>
+--- a/apps/web/features/brew-controller/components/control-lease-badge.tsx
++++ b/apps/web/features/brew-controller/components/control-lease-badge.tsx
+@@ -54,7 +54,7 @@
+     return (
+       <span className="inline-flex items-center gap-2 rounded-full bg-warning-subtle px-3 py-1 text-xs font-medium text-warning-subtle-foreground">
+         <ShieldQuestion className="h-3.5 w-3.5" aria-hidden />
+-        Управляет другой сеанс
++        Управление открыто в другом окне или на другом устройстве
+         {lease.takeoverByMe ? (
+           <span className="rounded-md bg-warning-subtle px-2 py-0.5 text-[11px] font-semibold text-warning-subtle-foreground">
+             Управление запрошено…
+--- a/apps/web/features/brew-controller/components/kiosk-shell.tsx
++++ b/apps/web/features/brew-controller/components/kiosk-shell.tsx
+@@ -137,7 +137,7 @@
+           <button
+             type="button"
+             onClick={onExit}
+-            aria-label="Выйти из киоска"
++            aria-label="Выйти из полноэкранного режима"
+             className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-border text-muted-foreground transition hover:bg-accent hover:text-foreground"
+           >
+             <Minimize2 className="h-5 w-5" aria-hidden />
+--- a/apps/web/features/brew-controller/components/manual-control-card.tsx
++++ b/apps/web/features/brew-controller/components/manual-control-card.tsx
+@@ -205,7 +205,7 @@
+         ) : (
+           <HoldToConfirmButton
+             label="Включить нагрев"
+-            holdingLabel="Держите для включения…"
++            holdingLabel="Удерживайте для включения…"
+             disabled={controlsDisabled}
+             icon={<Flame className="h-4 w-4" aria-hidden />}
+             onConfirm={() => {
+--- a/apps/web/features/brew-controller/components/onboard-recipes-panel.tsx
++++ b/apps/web/features/brew-controller/components/onboard-recipes-panel.tsx
+@@ -90,7 +90,7 @@
+         code?: string;
+       };
+       if (res.status === 501 && body.code === "CLOUD_UNSUPPORTED") {
+-        setUnsupported(body.error ?? "Список рецептов пивоварни недоступен по облаку");
++        setUnsupported(body.error ?? "Список рецептов пивоварни недоступен через облако");
+         setSlots(null);
+         return;
+       }
+@@ -163,7 +163,7 @@
+           code?: string;
+         };
+         if (res.status === 501 && body.code === "CLOUD_UNSUPPORTED") {
+-          setPushError(body.error ?? "Недоступно по облаку");
++          setPushError(body.error ?? "Недоступно через облако");
+           return;
+         }
+         if (!res.ok || typeof body.slot !== "number") {
+@@ -244,7 +244,7 @@
+ 
+             {isFull ? (
+               <label className="block text-xs font-medium text-muted-foreground">
+-                Пивоварня заполнена — что заменить
++                Память рецептов заполнена. Выберите рецепт для замены.
+                 <select
+                   value={replaceSlot ?? ""}
+                   onChange={(e) => {
+--- a/apps/web/features/brew-controller/components/status-pill.tsx
++++ b/apps/web/features/brew-controller/components/status-pill.tsx
+@@ -33,7 +33,7 @@
+   if (!hasDevice) return { key: "no-device", label: "Нет устройства", cls: "bg-muted text-muted-foreground" };
+   if (isStale) return { key: "stale", label: "Данные устарели", cls: "bg-warning-subtle text-warning-subtle-foreground" };
+   if (conn === "online") return { key: "online", label: "На связи", cls: "bg-success-subtle text-success-subtle-foreground" };
+-  if (conn === "offline") return { key: "offline", label: "Офлайн", cls: "bg-warning-subtle text-warning-subtle-foreground" };
++  if (conn === "offline") return { key: "offline", label: "Не в сети", cls: "bg-warning-subtle text-warning-subtle-foreground" };
+   if (conn === "error") return { key: "error", label: "Ошибка связи", cls: "bg-destructive-subtle text-destructive-subtle-foreground" };
+   return { key: "connecting", label: "Подключение…", cls: "bg-muted text-muted-foreground" };
+ }
+--- a/apps/web/features/brew-controller/device-mode.test.ts
++++ b/apps/web/features/brew-controller/device-mode.test.ts
+@@ -140,8 +140,8 @@
+     }
+   });
+ 
+-  it("FERMENT (21) → «Ферментация»", () => {
+-    expect(deriveTileBadge(STAGE_NUM.FERMENT)).toBe("Ферментация");
++  it("FERMENT (21) → «Брожение»", () => {
++    expect(deriveTileBadge(STAGE_NUM.FERMENT)).toBe("Брожение");
+   });
+ 
+   it("MANUAL → «Ручной»", () => {
+@@ -180,9 +180,9 @@
+     }
+   });
+ 
+-  it("PAUSED/FAULT с pausedFrom=FERMENT → «Ферментация»", () => {
+-    expect(deriveTileBadge(STAGE_NUM.PAUSED, STAGE_NUM.FERMENT)).toBe("Ферментация");
+-    expect(deriveTileBadge(STAGE_NUM.FAULT, STAGE_NUM.FERMENT)).toBe("Ферментация");
++  it("PAUSED/FAULT с pausedFrom=FERMENT → «Брожение»", () => {
++    expect(deriveTileBadge(STAGE_NUM.PAUSED, STAGE_NUM.FERMENT)).toBe("Брожение");
++    expect(deriveTileBadge(STAGE_NUM.FAULT, STAGE_NUM.FERMENT)).toBe("Брожение");
+   });
+ 
+   it("PAUSED/FAULT с pausedFrom из варочной стадии → «Варка»", () => {
+--- a/apps/web/features/brew-controller/device-mode.ts
++++ b/apps/web/features/brew-controller/device-mode.ts
+@@ -17,7 +17,7 @@
+ export const APP_MODE_LABELS: Record<AppMode, string> = {
+   brew: "Варка",
+   distill: "Дистилляция",
+-  ferment: "Ферментация",
++  ferment: "Брожение",
+ };
+ 
+ /**
+--- a/apps/web/features/brew-controller/kiosk-status.test.ts
++++ b/apps/web/features/brew-controller/kiosk-status.test.ts
+@@ -9,9 +9,9 @@
+     ).toBeNull();
+   });
+ 
+-  it("conn=offline → красный «Прибор офлайн», даже если isStale=false", () => {
++  it("conn=offline → красный «Прибор не в сети», даже если isStale=false", () => {
+     const banner = kioskOfflineBanner({ conn: "offline", isStale: false, lastFrameAtMs: null, nowMs: 1_000 });
+-    expect(banner).toEqual({ tone: "red", title: "Прибор офлайн", detail: "" });
++    expect(banner).toEqual({ tone: "red", title: "Прибор не в сети", detail: "" });
+   });
+ 
+   it("isStale=true (conn≠offline) → амбер «Данные устарели»", () => {
+@@ -21,7 +21,7 @@
+ 
+   it("conn=offline перевешивает isStale (обрыв связи важнее устаревания)", () => {
+     const banner = kioskOfflineBanner({ conn: "offline", isStale: true, lastFrameAtMs: null, nowMs: 1_000 });
+-    expect(banner?.title).toBe("Прибор офлайн");
++    expect(banner?.title).toBe("Прибор не в сети");
+   });
+ 
+   it("conn=error/connecting без isStale → баннера нет (совпадает с noFreshTelemetry дока)", () => {
+@@ -48,7 +48,7 @@
+ 
+ describe("wakeLockHintMessage", () => {
+   it("engaged=true → сообщает, что экран не будет гаснуть", () => {
+-    expect(wakeLockHintMessage(true)).toBe("Экран не будет гаснуть, пока открыт киоск");
++    expect(wakeLockHintMessage(true)).toBe("Экран не будет гаснуть, пока открыт полноэкранный пульт");
+   });
+ 
+   it("engaged=false → честная подсказка про настройки устройства (LAN/no-support, §9)", () => {
+--- a/apps/web/features/brew-controller/kiosk-status.ts
++++ b/apps/web/features/brew-controller/kiosk-status.ts
+@@ -44,7 +44,7 @@
+   const detail = lastFrameAtMs === null ? "" : `последний кадр ${fmtAgo(nowMs - lastFrameAtMs)}`;
+ 
+   if (conn === "offline") {
+-    return { tone: "red", title: "Прибор офлайн", detail };
++    return { tone: "red", title: "Прибор не в сети", detail };
+   }
+   if (isStale) {
+     return { tone: "amber", title: "Данные устарели", detail };
+@@ -55,6 +55,6 @@
+ /** Одноразовая подсказка про Wake Lock при первом входе в киоск (§9, §12.4). */
+ export function wakeLockHintMessage(engaged: boolean): string {
+   return engaged
+-    ? "Экран не будет гаснуть, пока открыт киоск"
++    ? "Экран не будет гаснуть, пока открыт полноэкранный пульт"
+     : "Включите «не гасить экран» в настройках устройства";
+ }
+--- a/apps/web/features/brew-controller/stage-labels.test.ts
++++ b/apps/web/features/brew-controller/stage-labels.test.ts
+@@ -42,6 +42,6 @@
+     expect(stageLabel("DISTILL_HEADS")).toBe("Отбор голов");
+     expect(stageLabel("DISTILL_HEARTS")).toBe("Отбор тела");
+     expect(stageLabel("DISTILL_TAILS")).toBe("Отбор хвостов");
+-    expect(stageLabel("FERMENT")).toBe("Ферментация");
++    expect(stageLabel("FERMENT")).toBe("Брожение");
+   });
+ });
+--- a/apps/web/features/brew-controller/stage-labels.ts
++++ b/apps/web/features/brew-controller/stage-labels.ts
+@@ -31,7 +31,7 @@
+   DISTILL_HEADS: "Отбор голов",
+   DISTILL_HEARTS: "Отбор тела",
+   DISTILL_TAILS: "Отбор хвостов",
+-  FERMENT: "Ферментация",
++  FERMENT: "Брожение",
+ };
+ 
+ /** Человекочитаемая подпись стадии для UI (вместо сырого машинного имени). */
+--- a/apps/web/features/brew-controller/telemetry-annotations.ts
++++ b/apps/web/features/brew-controller/telemetry-annotations.ts
+@@ -48,7 +48,7 @@
+   [STAGE_NUM.DISTILL_HEADS]: "Головы",
+   [STAGE_NUM.DISTILL_HEARTS]: "Тело",
+   [STAGE_NUM.DISTILL_TAILS]: "Хвосты",
+-  [STAGE_NUM.FERMENT]: "Ферментация",
++  [STAGE_NUM.FERMENT]: "Брожение",
+ };
+ 
+ /** Компактная подпись стадии по числовому значению bf_stage_t. */
+--- a/apps/web/features/calculators/catalog.ts
++++ b/apps/web/features/calculators/catalog.ts
+@@ -102,7 +102,7 @@
+     title: "Крепость, сбраживание и калории",
+     seoTitle: "Калькулятор ABV — крепость, сбраживание и калории",
+     shortTitle: "Крепость и сбраживание",
+-    description: "ABV, ABW, степень сбраживания и калорийность по OG и FG.",
++    description: "Крепость, степень сбраживания и калорийность по начальной и конечной плотности.",
+     seoDescription: "Считает крепость пива (ABV и ABW), степень сбраживания и калорийность порции по начальной и конечной плотности (OG и FG) — по стандартной формуле или уточнённой для крепкого пива.",
+     intro: "Используйте после замера начальной и конечной плотности или для быстрой проверки прогноза рецепта.",
+     whenToUse: "Когда есть OG и FG, нужно понять крепость, степень сбраживания и примерную калорийность порции.",
+@@ -148,7 +148,7 @@
+     title: "Поправка ареометра по температуре",
+     seoTitle: "Калькулятор поправки ареометра по температуре",
+     shortTitle: "Поправка ареометра",
+-    description: "Температурная поправка SG/Plato относительно калибровки прибора.",
++    description: "Поправка плотности с учётом температуры пробы и калибровки ареометра.",
+     seoDescription: "Приводит показания ареометра к температуре калибровки прибора: горячая или холодная проба искажает плотность, калькулятор пересчитывает SG или Plato с поправкой на фактическую температуру.",
+     intro: "Ареометр калибруется на конкретную температуру, поэтому горячая или холодная проба требует поправки.",
+     whenToUse: "Когда проба заметно теплее или холоднее температуры калибровки ареометра.",
+@@ -240,9 +240,9 @@
+     title: "Инфузионное затирание",
+     seoTitle: "Калькулятор температуры заторной воды",
+     shortTitle: "Инфузионное затирание",
+-    description: "Температура заторной воды на старте, долив на следующую паузу (кипятком или холодной водой) и лестница ступенчатого затора целиком.",
+-    seoDescription: "Считает температуру заторной воды по гидромодулю и целевой температуре, долив на следующую ступень — кипятком вверх или холодной водой вниз — и лестницу пауз ступенчатого затора по тепловому балансу зерна и воды.",
+-    intro: "Перед засыпью — какой температуры взять воду на старт; дальше — сколько долить на следующую паузу (кипятка, а перегрели — холодной воды) или сразу вся лестница пауз ступенчатого затора.",
++    description: "Температура воды в начале затирания и объёмы долива для перехода между паузами.",
++    seoDescription: "Рассчитывает температуру воды в начале затирания и объём долива для следующей паузы. Можно рассчитать одну паузу или всю последовательность с учётом теплового баланса зерна и воды.",
++    intro: "Перед засыпью рассчитайте температуру воды. Затем определите, сколько горячей или холодной воды долить для следующей паузы.",
+     whenToUse: "Перед засыпью зерна в воду, при переходе на следующую температурную ступень доливом — включая обратную задачу «перегрел затор — сколько долить холодной» — и при планировании ступенчатого затора целиком.",
+     section: "Варка и рецепт",
+     groups: ["Варка", "Вода"],
+@@ -419,7 +419,7 @@
+     formula: "MCU = сумма(вес в фунтах × цвет в Lovibond) / объём в галлонах; SRM = 1,4922 × MCU^0,6859; EBC = SRM × 1,97.",
+     assumptions: sharedAssumptions,
+     commonMistakes: ["Вводят цвет солода не в той шкале: у поставщиков встречается и EBC, и Lovibond, а разница между ними — почти в два раза."],
+-    nextSteps: ["Сравните с калькулятором воды и pH затора.", "Сопоставьте цвет и IBU для баланса рецепта."],
++    nextSteps: ["Сравните с калькулятором воды и pH затора.", "Сравните рассчитанный цвет с диапазоном выбранного стиля."],
+     meaning: ["SRM/EBC дают числовую оценку цвета, но реальный оттенок зависит от мутности и стекла."]
+   },
+   {
+@@ -450,9 +450,9 @@
+     title: "Свежесть хмеля и потеря альфа-кислот",
+     seoTitle: "Калькулятор свежести хмеля и потери альфа-кислот",
+     shortTitle: "Свежесть хмеля",
+-    description: "Оценка текущей альфа-кислоты, коэффициента свежести и новой навески.",
++    description: "Оценка остаточного содержания альфа-кислот и массы хмеля для той же горечи.",
+     seoDescription: "Оценивает текущую альфа-кислоту хмеля и потерю AA% при хранении по HSI-подобному коэффициенту, возрасту, температуре и типу упаковки — чтобы не завысить расчёт IBU старым или вскрытым хмелем.",
+-    intro: "Помогает не завысить расчёт IBU старым или вскрытым хмелем.",
++    intro: "Помогает учесть потерю альфа-кислот при хранении хмеля в расчёте горечи.",
+     whenToUse: "Перед внесением старого хмеля или пересчётом рецепта под другую упаковку.",
+     section: "Дрожжи и хмель",
+     groups: ["Сырье"],
+@@ -464,7 +464,7 @@
+     formula: "Потеря альфа-кислот моделируется по HSI-подобному коэффициенту, возрасту, температуре хранения, типу упаковки и форме хмеля.",
+     assumptions: [...sharedAssumptions, "HSI здесь — коэффициент по мотивам индекса свежести хмеля (Hop Storage Index), а не спектрофотометрический показатель A275/A325 из лаборатории.", "Модель свежести приблизительная и не заменяет лабораторный анализ AA%."],
+     commonMistakes: ["Возраст хмеля считают от даты покупки, а не от урожая — AA% на упаковке измерен при сборе, и потеря альфа-кислот идёт с того момента."],
+-    nextSteps: ["Передайте расчётный AA% в IBU."],
++    nextSteps: ["Используйте рассчитанное содержание альфа-кислот в калькуляторе горечи."],
+     meaning: ["Коэффициент свежести 0.80 — от исходной альфа-кислоты осталось ~80%."]
+   },
+   {
+--- a/apps/web/features/calculators/definitions.ts
++++ b/apps/web/features/calculators/definitions.ts
+@@ -282,7 +282,7 @@
+   shrinkage_suspiciously_high: { text: "Усадка больше 20% — похоже на опечатку (обычно ~4%).", tone: "warning" },
+   mash_water_capped: { text: "Вся вода уходит в затор — на промывку не остаётся.", tone: "info" },
+   no_viable_cells: { text: "По расчёту живых клеток не осталось — для стартера нужны свежие дрожжи.", tone: "warning" },
+-  hops_too_old: { text: "Хмель на пределе модели — расчёту не стоит доверять.", tone: "warning" },
++  hops_too_old: { text: "Условия хранения выходят за пределы этой модели. Результат расчёта ненадёжен.", tone: "warning" },
+   strike_temp_above_boiling: { text: "Расчётная температура воды выше кипения — с таким объёмом и гидромодулем цель недостижима. Добавьте воды или снизьте целевую температуру.", tone: "warning" },
+   strike_temp_near_boiling: { text: "Расчётная температура воды у самого кипения — проверьте объём воды и зерна.", tone: "warning" },
+   mash_thickness_unusual: { text: "Гидромодуль вне обычного диапазона 2–5 л/кг — проверьте объём воды и вес зерна.", tone: "warning" },
+@@ -467,7 +467,7 @@
+ const pitchStatusLabels = {
+   underpitch: "Недосев",
+   ok: "Норма",
+-  overpitch: "Перебор"
++  overpitch: "Избыток"
+ } as const;
+ 
+ const formatHopUse = (use: HopAdditionInput["use"]) => hopUseLabels[String(use ?? "")] ?? "Другое";
+@@ -1553,7 +1553,7 @@
+       const links: CalculatorResultLink[] = [];
+ 
+       if (mode === "post_fermentation") {
+-        stats.push({ label: "Оценка ABV", value: formatPercent(view.estimatedABV, 1) });
++        stats.push({ label: "Расчётная крепость", value: formatPercent(view.estimatedABV, 1) });
+         stats.push({
+           label: "Сбраживание",
+           value: formatPercent(view.attenuation),
+@@ -1934,7 +1934,7 @@
+         const gramsPerMl = result.totalSugarGrams / syrupVolumeMl;
+         stats.push(
+           { label: "Объём сиропа", value: `≈ ${Math.round(syrupVolumeMl)} мл`, helper: `${formatGrams(result.totalSugarGrams)} сахара + ${Math.round(syrupWaterMl)} мл воды` },
+-          { label: "Крепость сиропа", value: `≈ ${(gramsPerMl * 10).toFixed(1)} г/10 мл` }
++          { label: "Концентрация сиропа", value: `≈ ${(gramsPerMl * 10).toFixed(1)} г/10 мл` }
+         );
+       }
+ 
+@@ -2302,7 +2302,7 @@
+         ? `${formatLiters(result.starterVolumeL)} стартера`
+         : starterMode === "none" && result.pitchStatus === "underpitch"
+           ? "Дрожжей не хватает — добавьте пакет или сделайте стартер"
+-          : "Без стартера по расчёту";
++          : "Стартер не нужен по расчёту";
+ 
+       const stats: CalculatorResultStat[] = [
+         { label: "Нужно клеток", value: `${compactNumber(result.requiredCellsBillion, 0)} млрд` },
+@@ -2320,7 +2320,7 @@
+ 
+       return {
+         primary: {
+-          label: "Статус внесения",
++          label: "Количество дрожжей",
+           value: formatPitchStatus(result.pitchStatus),
+           helper: primaryHelper,
+           tone: result.pitchStatus === "ok" ? "good" : "warning"
+@@ -2421,7 +2421,7 @@
+     fields: [
+       selectField("methodPreset", "Метод", [
+         { value: "BIAB", label: "BIAB" },
+-        { value: "allInOne", label: "Система All-in-one" },
++        { value: "allInOne", label: "Автоматическая пивоварня (all-in-one)" },
+         { value: "mashTunWithSparge", label: "Заторник + промывка" },
+         { value: "extract", label: "Экстракт" }
+       ], {
+@@ -2687,7 +2687,7 @@
+     // объёма/температуры — не заставляем переписывать их вручную заново.
+     modeHint: (state) => (
+       s(state.mode, "strike") === "strike"
+-        ? "Затёрли — переключитесь на «Ступенчатый затор», объём воды и температура затора перенесутся."
++        ? "Начали затирание? Переключитесь на «Ступенчатый затор»: объём воды и температура сохранятся."
+         : null
+     ),
+     calculate: (state) => {
+@@ -2695,7 +2695,7 @@
+ 
+       if (view.mode === "infusion") {
+         return {
+-          primary: { label: view.cooling ? "Долить холодной" : "Долить кипятка", value: formatLiters(view.infusionVolumeL) },
++          primary: { label: view.cooling ? "Долить холодной воды" : "Долить кипятка", value: formatLiters(view.infusionVolumeL) },
+           stats: [
+             { label: "Всего воды", value: formatLiters(view.newTotalWaterL) },
+             { label: "Новый гидромодуль", value: `${view.newThicknessLPerKg.toFixed(2)} л/кг` }
+@@ -3236,9 +3236,9 @@
+       const residualCo2IsManual = nOrUndefined(state.residualCo2) != null;
+ 
+       return {
+-        primary: { label: "Добавить сусло", value: formatLiters(result.speiseVolumeToAddL), helper: `Финальный объём ${formatLiters(result.finalVolumeL)}` },
++        primary: { label: "Добавить сусло", value: formatLiters(result.speiseVolumeToAddL), helper: `Итоговый объём ${formatLiters(result.finalVolumeL)}` },
+         stats: [
+-          { label: "Изменение ABV", value: formatPercent(result.approximateAbvChange, 2), helper: "дображивание в бутылке" },
++          { label: "Изменение крепости", value: formatPercent(result.approximateAbvChange, 2), helper: "дображивание в бутылке" },
+           { label: "Остаточный CO₂", value: `${result.residualCo2.toFixed(2)} об.`, helper: residualCo2IsManual ? undefined : "по температуре пива" }
+         ],
+         warnings: translateCoreWarnings(result.warnings),
+@@ -3258,7 +3258,7 @@
+       targetAmountG: 50
+     },
+     fields: [
+-      numberField("originalAlphaAcidPercent", "Исходный AA", "%", { min: 0, step: 0.1 }),
++      numberField("originalAlphaAcidPercent", "Исходное содержание альфа-кислот, %", "%", { min: 0, step: 0.1 }),
+       dateField("packageDate", "Дата упаковки", { helper: "Пусто — считаем хмель свежим" }),
+       dateField("openedDate", "Дата вскрытия", { advanced: true }),
+       numberField("storageTemperatureC", "Температура хранения", "°C", { step: 1 }),
+@@ -3300,7 +3300,7 @@
+ 
+       return {
+         primary: {
+-          label: "Текущий AA",
++          label: "Остаточное содержание альфа-кислот, %",
+           value: formatPercent(result.estimatedCurrentAA, 2),
+           helper: `Потеряно ~${lostBitternessPercent}% горечи`,
+           tone: result.freshnessFactor >= 0.85 ? "good" : "warning"
+@@ -3308,7 +3308,7 @@
+         stats,
+         warnings: translateCoreWarnings(result.warnings),
+         links: [
+-          { label: "Использовать новый AA% в IBU", href: buildCalculatorHref("ibu", { aa: result.estimatedCurrentAA }) },
++          { label: "Использовать в расчёте горечи", href: buildCalculatorHref("ibu", { aa: result.estimatedCurrentAA }) },
+           ...relatedLinks(["unit-converter"])
+         ]
+       };
+--- a/apps/web/features/content/bjcp-card-stats.ts
++++ b/apps/web/features/content/bjcp-card-stats.ts
+@@ -18,10 +18,10 @@
+ 
+ const shortStatFallbackLabels = {
+   missing: "не указано",
+-  sameAsBase: "как база",
+-  byBase: "по базе",
+-  strongerThanBase: "крепче базы",
+-  darkerThanBase: "темнее базы",
++  sameAsBase: "как у базового стиля",
++  byBase: "по базовому стилю",
++  strongerThanBase: "крепче базового стиля",
++  darkerThanBase: "темнее базового стиля",
+   bySubtype: "по подстилю",
+   byDeclaredBeer: "по заявленному"
+ } as const;
+--- a/apps/web/features/content-articles/contracts.ts
++++ b/apps/web/features/content-articles/contracts.ts
+@@ -10,7 +10,7 @@
+ export type ContentArticleStatus = (typeof contentArticleStatuses)[number];
+ 
+ export const contentArticleTypeLabels: Record<ContentArticleType, string> = {
+-  guide: "Гайд",
++  guide: "Статья",
+   review: "Обзор"
+ };
+ 
+--- a/apps/web/features/device-streams/actions.ts
++++ b/apps/web/features/device-streams/actions.ts
+@@ -215,8 +215,8 @@
+   SESSION_INVALID_BATCH_STATUS: "Привязать ареометр можно только к партии в статусе «Варится» или «Брожение».",
+   SESSION_DEVICE_BUSY: "У этого устройства уже есть активный сеанс. Сначала завершите его.",
+   SESSION_NOT_FOUND: "Сеанс не найден.",
+-  SESSION_TEMP_CORRIDOR_INCOMPLETE: "Заполните обе границы коридора (или обе очистите).",
+-  SESSION_TEMP_CORRIDOR_INVALID_RANGE: "Нижняя граница коридора должна быть меньше верхней.",
++  SESSION_TEMP_CORRIDOR_INCOMPLETE: "Заполните обе границы диапазона или очистите оба поля.",
++  SESSION_TEMP_CORRIDOR_INVALID_RANGE: "Минимальная температура должна быть ниже максимальной.",
+   RATE_LIMITED: ERROR_MESSAGES.RATE_LIMITED
+ };
+ 
+--- a/apps/web/features/device-streams/alerts.test.ts
++++ b/apps/web/features/device-streams/alerts.test.ts
+@@ -354,7 +354,7 @@
+ 
+     expect(mocks.sendPushToUser).toHaveBeenCalledTimes(1);
+     const [, payload] = mocks.sendPushToUser.mock.calls[0]!;
+-    expect(payload.body).toBe("Температура 25°C вне коридора 18–22 °C.");
++    expect(payload.body).toBe("Температура 25°C вне заданного диапазона 18–22 °C.");
+     expect(payload.tag).toBe(`ferment-temp_out-${SESSION_ID}`);
+   });
+ 
+--- a/apps/web/features/device-streams/alerts.ts
++++ b/apps/web/features/device-streams/alerts.ts
+@@ -206,8 +206,8 @@
+       };
+     case "temp_out":
+       return {
+-        title: `Температура вне коридора: ${ctx.batchName}`,
+-        body: `Температура ${fmtTemp(ctx.tempC!)}°C вне коридора ${fmtTemp(ctx.tempMinC!)}–${fmtTemp(ctx.tempMaxC!)} °C.`,
++        title: `Температура вне заданного диапазона: ${ctx.batchName}`,
++        body: `Температура ${fmtTemp(ctx.tempC!)}°C вне заданного диапазона ${fmtTemp(ctx.tempMinC!)}–${fmtTemp(ctx.tempMaxC!)} °C.`,
+         tag,
+         url
+       };
+--- a/apps/web/features/device-streams/components/batch-ferment-block.tsx
++++ b/apps/web/features/device-streams/components/batch-ferment-block.tsx
+@@ -120,7 +120,7 @@
+     <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+       <SummaryTile label="Плотность сейчас" value={gravityText} />
+       <SummaryTile label="Сбраживание" value={attText} />
+-      <SummaryTile label="ABV, оценка" value={abvText} />
++      <SummaryTile label="Расчётная крепость" value={abvText} />
+       <SummaryTile label="Температура" value={tempText} />
+     </div>
+   );
+--- a/apps/web/features/device-streams/components/ferment-chart.tsx
++++ b/apps/web/features/device-streams/components/ferment-chart.tsx
+@@ -416,7 +416,7 @@
+   if (geom.empty) {
+     return (
+       <p className="text-sm text-muted-foreground">
+-        {geom.hasAnyDataEver ? "Нет точек в выбранном периоде." : "Замеров пока нет."}
++        {geom.hasAnyDataEver ? "За выбранный период нет показаний." : "Замеров пока нет."}
+       </p>
+     );
+   }
+--- a/apps/web/features/device-streams/components/rapt-connect-screen.tsx
++++ b/apps/web/features/device-streams/components/rapt-connect-screen.tsx
+@@ -159,7 +159,7 @@
+       onIntegrationChange(result.integration);
+       setCopiedUrl(false);
+       setRotateOpen(false);
+-      show({ title: "URL перевыпущен. Старый больше не работает", tone: "success" });
++      show({ title: "Создан новый адрес подключения. Старый больше не работает.", tone: "success" });
+     } finally {
+       setRotatePending(false);
+     }
+@@ -196,13 +196,13 @@
+             </div>
+           ) : (
+             <p className="text-sm text-muted-foreground">
+-              URL показывается один раз. Перевыпустите, чтобы получить новый.{" "}
++              Адрес подключения показывается только один раз. Если вы его не сохранили, создайте новый.{" "}
+               <button
+                 type="button"
+                 className="font-medium text-foreground underline underline-offset-2"
+                 onClick={() => setRotateOpen(true)}
+               >
+-                Перевыпустить URL
++                Создать новый адрес
+               </button>
+             </p>
+           )}
+@@ -254,7 +254,7 @@
+           ) : (
+             <div className="flex items-center gap-2 rounded-xl border border-border p-4 text-sm text-muted-foreground">
+               <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+-              Ждём первый пакет…
++              Ждём первые показания…
+             </div>
+           )}
+         </div>
+@@ -273,10 +273,10 @@
+ 
+       <ConfirmActionDialog
+         open={rotateOpen}
+-        title="Перевыпустить URL?"
++        title="Создать новый адрес подключения?"
+         description="Старый URL перестанет работать сразу — вебхук на RAPT-портале, использующий его, перестанет присылать данные, пока вы не пропишете новый."
+-        confirmLabel="Перевыпустить"
+-        pendingLabel="Перевыпускаем…"
++        confirmLabel="Создать адрес"
++        pendingLabel="Создаём адрес…"
+         tone="danger"
+         pending={rotatePending}
+         onConfirm={() => void submitRotate()}
+--- a/apps/web/features/device-streams/components/rapt-integration-card.tsx
++++ b/apps/web/features/device-streams/components/rapt-integration-card.tsx
+@@ -56,7 +56,7 @@
+       onIntegrationChange(result.integration);
+       setCopied(false);
+       setRotateOpen(false);
+-      show({ title: "URL перевыпущен. Старый больше не работает", tone: "success" });
++      show({ title: "Создан новый адрес подключения. Старый больше не работает.", tone: "success" });
+     } finally {
+       setRotatePending(false);
+     }
+@@ -85,7 +85,7 @@
+         {integration.webhookUrl ? (
+           <p className="truncate font-mono text-xs text-muted-foreground">{integration.webhookUrl}</p>
+         ) : (
+-          <p className="text-xs text-muted-foreground">URL показывается один раз. Перевыпустите, чтобы получить новый.</p>
++          <p className="text-xs text-muted-foreground">Адрес подключения показывается только один раз. Если вы его не сохранили, создайте новый.</p>
+         )}
+       </div>
+       <div className="flex flex-wrap items-center gap-2">
+@@ -95,7 +95,7 @@
+           </Button>
+         ) : null}
+         <Button variant="outline" size="sm" onClick={() => setRotateOpen(true)}>
+-          Перевыпустить URL
++          Создать новый адрес
+         </Button>
+         <Button variant="dangerOutline" size="sm" onClick={() => setDeleteOpen(true)}>
+           Удалить подключение
+@@ -104,10 +104,10 @@
+ 
+       <ConfirmActionDialog
+         open={rotateOpen}
+-        title="Перевыпустить URL?"
++        title="Создать новый адрес подключения?"
+         description="Старый URL перестанет работать сразу — вебхук на RAPT-портале, использующий его, перестанет присылать данные, пока вы не пропишете новый."
+-        confirmLabel="Перевыпустить"
+-        pendingLabel="Перевыпускаем…"
++        confirmLabel="Создать адрес"
++        pendingLabel="Создаём адрес…"
+         tone="danger"
+         pending={rotatePending}
+         onConfirm={() => void submitRotate()}
+--- a/apps/web/features/device-streams/components/session-temp-corridor-control.tsx
++++ b/apps/web/features/device-streams/components/session-temp-corridor-control.tsx
+@@ -47,8 +47,8 @@
+ 
+   const corridorLabel =
+     tempMinC !== null && tempMaxC !== null
+-      ? `Коридор: ${formatTempValue(tempMinC)}–${formatTempValue(tempMaxC)} °C`
+-      : "Коридор не задан";
++      ? `Диапазон: ${formatTempValue(tempMinC)}–${formatTempValue(tempMaxC)} °C`
++      : "Диапазон не задан";
+ 
+   const openDialog = () => {
+     setMinValue(tempMinC !== null ? String(tempMinC) : "");
+@@ -66,7 +66,7 @@
+         setError(result.message);
+         return;
+       }
+-      show({ title: min !== null ? "Коридор обновлён" : "Коридор снят", tone: "success" });
++      show({ title: min !== null ? "Диапазон обновлён" : "Ограничение температуры снято", tone: "success" });
+       router.refresh();
+       setOpen(false);
+     } finally {
+@@ -84,7 +84,7 @@
+       return;
+     }
+     if (trimmedMin === "" || trimmedMax === "") {
+-      setError("Заполните обе границы коридора (или обе очистите).");
++      setError("Заполните обе границы диапазона или очистите оба поля.");
+       return;
+     }
+ 
+@@ -95,7 +95,7 @@
+       return;
+     }
+     if (min >= max) {
+-      setError("Нижняя граница коридора должна быть меньше верхней.");
++      setError("Минимальная температура должна быть ниже максимальной.");
+       return;
+     }
+     await save(min, max);
+@@ -138,7 +138,7 @@
+         onOpenChange={(next) => {
+           if (!next && !pending) setOpen(false);
+         }}
+-        title="Температурный коридор"
++        title="Допустимый диапазон температуры"
+         size="sm"
+       >
+         <div className="space-y-3 p-5">
+@@ -173,7 +173,7 @@
+             </label>
+           </div>
+           <p className="text-xs leading-5 text-muted-foreground">
+-            Уведомим, если температура выйдет за коридор дольше получаса. Оставьте поля пустыми, чтобы снять коридор.
++            Уведомим, если температура будет вне заданного диапазона дольше получаса. Чтобы убрать ограничение, очистите оба поля.
+           </p>
+           {error ? (
+             <p role="alert" className="text-xs text-destructive">
+--- a/apps/web/features/device-streams/components/stream-device-console.tsx
++++ b/apps/web/features/device-streams/components/stream-device-console.tsx
+@@ -259,7 +259,7 @@
+       setUrlExpanded(true);
+       setCopied(false);
+       setRotateOpen(false);
+-      show({ title: "URL перевыпущен. Старый больше не работает", tone: "success" });
++      show({ title: "Создан новый адрес подключения. Старый больше не работает.", tone: "success" });
+     });
+   };
+ 
+@@ -319,7 +319,7 @@
+         {status.readingsCount === 0 ? (
+           <div className="flex items-center gap-2 text-sm text-muted-foreground">
+             <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+-            Ждём первый пакет…
++            Ждём первые показания…
+           </div>
+         ) : celebrated && latest ? (
+           <div className="rounded-xl border border-success/30 bg-success-subtle p-4">
+@@ -383,13 +383,13 @@
+                 </div>
+               ) : (
+                 <p className="mt-3 text-sm text-muted-foreground">
+-                  URL показывается один раз. Перевыпустите, чтобы получить новый.{" "}
++                  Адрес подключения показывается только один раз. Если вы его не сохранили, создайте новый.{" "}
+                   <button
+                     type="button"
+                     className="font-medium text-foreground underline underline-offset-2"
+                     onClick={() => setRotateOpen(true)}
+                   >
+-                    Перевыпустить URL
++                    Создать новый адрес
+                   </button>
+                 </p>
+               )
+@@ -405,7 +405,7 @@
+         </Button>
+         {!isRaptDevice ? (
+           <Button variant="outline" onClick={() => setRotateOpen(true)}>
+-            Перевыпустить URL
++            Создать новый адрес
+           </Button>
+         ) : null}
+         <Button variant="dangerOutline" onClick={() => setDeleteOpen(true)}>
+@@ -475,10 +475,10 @@
+       {/* Перевыпустить URL. */}
+       <ConfirmActionDialog
+         open={rotateOpen}
+-        title="Перевыпустить URL?"
++        title="Создать новый адрес подключения?"
+         description="Старый URL перестанет работать сразу — устройство с этим адресом в настройках не сможет присылать данные, пока вы не укажете новый адрес."
+-        confirmLabel="Перевыпустить"
+-        pendingLabel="Перевыпускаем…"
++        confirmLabel="Создать адрес"
++        pendingLabel="Создаём адрес…"
+         tone="danger"
+         pending={rotatePending}
+         onConfirm={submitRotate}
+--- a/apps/web/features/devices/components/device-config-form.tsx
++++ b/apps/web/features/devices/components/device-config-form.tsx
+@@ -415,7 +415,7 @@
+           {/* Панель сохранения. */}
+           <Card className="flex flex-wrap items-center gap-3 p-5">
+             <Button onClick={() => void onSave()} disabled={saving || !dirty}>
+-              {saving ? "Сохранение…" : "Сохранить на устройство"}
++              {saving ? "Сохранение…" : "Сохранить на устройстве"}
+             </Button>
+             {dirty ? (
+               <Button
+--- a/apps/web/features/devices/components/device-header.tsx
++++ b/apps/web/features/devices/components/device-header.tsx
+@@ -91,7 +91,7 @@
+             <button
+               type="button"
+               onClick={onKioskEnter}
+-              aria-label="Киоск"
++              aria-label="Полноэкранный пульт"
+               className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-muted-foreground transition hover:bg-accent hover:text-foreground"
+             >
+               <Maximize2 className="h-4 w-4" aria-hidden />
+--- a/apps/web/features/devices/components/device-tile.tsx
++++ b/apps/web/features/devices/components/device-tile.tsx
+@@ -159,7 +159,7 @@
+           </p>
+         </div>
+       ) : (
+-        <p className="mt-3 text-sm text-muted-foreground">Ждём первый пакет…</p>
++        <p className="mt-3 text-sm text-muted-foreground">Ждём первые показания…</p>
+       )}
+ 
+       {tile.spark.length >= 2 ? <Sparkline values={tile.spark} muted={stale} /> : null}
+@@ -271,7 +271,7 @@
+           </div>
+         </div>
+       ) : (
+-        <p className="mt-3 text-sm text-muted-foreground">Нет телеметрии — откройте пульт.</p>
++        <p className="mt-3 text-sm text-muted-foreground">Показаний пока нет. Откройте пульт.</p>
+       )}
+ 
+       {/* Sparkline недавней температуры. */}
+--- a/apps/web/features/devices/components/devices-manager.tsx
++++ b/apps/web/features/devices/components/devices-manager.tsx
+@@ -394,7 +394,7 @@
+               className="rounded-xl border border-border p-4 text-left transition hover:border-foreground/40 hover:bg-accent"
+             >
+               <p className="text-sm font-semibold text-foreground">RAPT Cloud</p>
+-              <p className="mt-1 text-xs text-muted-foreground">Pill, камера ферментации, BrewZilla</p>
++              <p className="mt-1 text-xs text-muted-foreground">Pill, камера брожения, BrewZilla</p>
+             </button>
+           </div>
+         </Card>
+--- a/apps/web/features/devices/pairing-error-text.ts
++++ b/apps/web/features/devices/pairing-error-text.ts
+@@ -18,12 +18,12 @@
+   INVALID_CLAIM_CODE: "Код привязки неверен или истёк. Сгенерируйте новый на устройстве.",
+   CLAIM_CODE_REQUIRED: "Введите код привязки устройства — одного аппаратного идентификатора недостаточно.",
+   CLAIM_CODE_OR_HARDWARE_ID_REQUIRED: "Укажите код привязки.",
+-  HARDWARE_ID_REQUIRED: "Для прямой привязки укажите hardware ID устройства.",
++  HARDWARE_ID_REQUIRED: "Для прямого подключения укажите аппаратный идентификатор устройства.",
+   CLAIM_CODE_OWNED_BY_OTHER_USER: "Этот код выпущен для другого аккаунта.",
+   CLAIM_CODE_ALREADY_CONSUMED: "Код привязки уже использован. Сгенерируйте новый на устройстве.",
+   DEVICE_OWNED_BY_OTHER_USER: "Устройство уже привязано к другому аккаунту.",
+   NOT_FOUND: "Устройство не найдено.",
+-  DEMO_NOT_AVAILABLE: "Демо-пивоварня недоступна в этом окружении.",
++  DEMO_NOT_AVAILABLE: "Демо-пивоварня здесь недоступна.",
+   INTERNAL_ERROR: "Внутренняя ошибка. Попробуйте позже."
+ };
+ 
+--- a/apps/web/features/ingredients/admin-page-model.ts
++++ b/apps/web/features/ingredients/admin-page-model.ts
+@@ -32,7 +32,7 @@
+   brand: "По бренду",
+   catalog: "По каталогу",
+   name: "По названию",
+-  updated: "По обновлению",
++  updated: "По дате изменения",
+   completeness: "По полноте"
+ };
+ 
+--- a/apps/web/features/ingredients/consumables.ts
++++ b/apps/web/features/ingredients/consumables.ts
+@@ -309,7 +309,7 @@
+   coffee_cacao: "Кофе/какао",
+   wood_aging: "Дерево/выдержка",
+   flavoring: "Ароматизаторы",
+-  sanitizer: "Санитайзеры",
++  sanitizer: "Дезинфицирующие средства",
+   cleaner: "Мойка",
+   packaging: "Тара и укупорка",
+   gas: "Газы",
+@@ -325,10 +325,10 @@
+   coffee_cacao: "Кофе, какао, кокос, ореховые и десертные добавки",
+   wood_aging: "Дубовая щепа, кубики, спирали и древесина для выдержки",
+   flavoring: "Фруктовые, десертные, бочковые и хмелевые ароматизаторы",
+-  sanitizer: "No-rinse, йодофор и CIP-санитайзеры",
++  sanitizer: "Средства без смывания, средства на основе йода и средства для дезинфекции без разборки оборудования (CIP)",
+   cleaner: "Щелочная, кислородная и кислотная мойка",
+-  packaging: "Тара, крышки, пробки и расходка для розлива",
+-  gas: "CO2 и газовая расходка",
++  packaging: "Тара, крышки, пробки и расходные материалы для розлива",
++  gas: "CO₂ и расходные материалы для газового оборудования",
+   other: "Прочие добавки"
+ };
+ 
+@@ -407,7 +407,7 @@
+   pre_clean: "Замачивание",
+   pre_packaging: "Перед розливом",
+   primary: "Брожение",
+-  sanitation: "Санитация",
++  sanitation: "Дезинфекция",
+   secondary: "Брожение",
+   water_treatment: "Водоподготовка",
+   whirlpool: "Вирпул"
+--- a/apps/web/features/ingredients/derived-ingredient-presentation.ts
++++ b/apps/web/features/ingredients/derived-ingredient-presentation.ts
+@@ -98,7 +98,7 @@
+   options?: { userOverride?: boolean }
+ ) => {
+   const label = `Альфа ${formatStatNumber(alphaPct)}%`;
+-  return options?.userOverride ? `${label} (пользовательская)` : label;
++  return options?.userOverride ? `${label} (ваше значение)` : label;
+ };
+ 
+ export const formatHopAlphaAcidAaValue = (
+@@ -106,7 +106,7 @@
+   options?: { userOverride?: boolean }
+ ) => {
+   const label = `${formatStatNumber(alphaPct)}% AA`;
+-  return options?.userOverride ? `${label} (пользовательская)` : label;
++  return options?.userOverride ? `${label} (ваше значение)` : label;
+ };
+ 
+ export const formatHopAlphaAcidDetailValue = (
+@@ -114,7 +114,7 @@
+   options?: { userOverride?: boolean }
+ ) => {
+   const label = `${formatStatNumber(alphaPct)}%`;
+-  return options?.userOverride ? `${label} (пользовательская)` : label;
++  return options?.userOverride ? `${label} (ваше значение)` : label;
+ };
+ 
+ export const readDerivedFromHopAlphaAcidPct = (properties: Record<string, unknown> | null | undefined): number | null => (
+--- a/apps/web/features/ingredients/picker-quick-start.ts
++++ b/apps/web/features/ingredients/picker-quick-start.ts
+@@ -272,7 +272,7 @@
+   acid: "Кислоты",
+   base: "Щёлочи",
+   dechlorination: "Дехлорирование",
+-  water_source: "База воды"
++  water_source: "Исходная вода"
+ };
+ 
+ export const ingredientPickerWaterTreatmentQuickStartGroupOrder = [
+--- a/apps/web/features/ingredients/proposal-presentation.ts
++++ b/apps/web/features/ingredients/proposal-presentation.ts
+@@ -10,7 +10,7 @@
+ /** Откуда пришла заявка — значение proposed_ingredients.source_type. */
+ const proposalSourceLabels: Record<string, string> = {
+   ingredient_picker_gap: "Подбор ингредиента",
+-  recipe_designer: "Мастер рецептов",
++  recipe_designer: "Редактор рецептов",
+   inventory: "Мой склад"
+ };
+ 
+--- a/apps/web/features/inventory/page-model.ts
++++ b/apps/web/features/inventory/page-model.ts
+@@ -64,7 +64,7 @@
+   default: "По умолчанию",
+   name: "По названию",
+   quantity: "По количеству",
+-  updated: "По обновлению",
++  updated: "По дате изменения",
+   best_before: "По сроку годности",
+   price: "По цене"
+ };
+--- a/apps/web/features/masters/seo.ts
++++ b/apps/web/features/masters/seo.ts
+@@ -37,7 +37,7 @@
+ 
+ const MARKET_LIST_TITLE = "Маркет пивоварного оборудования от мастеров";
+ const MARKET_LIST_DESCRIPTION =
+-  "Пивоварное оборудование ручной работы: ЦКТ и ёмкости, автоматика для варки, чиллеры, мельницы — от мастеров из комьюнити. Контакты и фото — напрямую, без посредников.";
++  "Пивоварное оборудование от мастеров сообщества: ЦКТ и другие ёмкости, автоматика, чиллеры и мельницы. Фотографии и контакты мастеров.";
+ 
+ // "market" — ключ реестра обложек разделов (features/og/section.ts,
+ // SECTION_HUBS.market), типизирован SectionOgKey — getSectionOgImage резолвит
+--- a/apps/web/features/notifications/components/notification-opt-in.tsx
++++ b/apps/web/features/notifications/components/notification-opt-in.tsx
+@@ -50,7 +50,7 @@
+     return (
+       <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-muted p-4 text-sm text-muted-foreground">
+         <Bell className="h-4 w-4 text-muted-foreground" aria-hidden />
+-        Пуши на iPhone приходят только в установленное приложение: в Safari — «Поделиться» → «На экран „Домой“».
++        На iPhone уведомления доступны только после установки приложения. В Safari нажмите «Поделиться» → «На экран „Домой“».
+       </div>
+     );
+   }
+--- a/apps/web/features/notifications/push-events.test.ts
++++ b/apps/web/features/notifications/push-events.test.ts
+@@ -400,7 +400,7 @@
+     const payload = fermentWatchdogNotification({ deviceId: "dev-1", deviceName: "Ферментер" }, 45);
+     expect(payload).toEqual({
+       title: "⚠ Ферментер",
+-      body: "Прибор молчит 45 мин",
++      body: "Нет связи с прибором 45 мин",
+       tag: "dev-1:ferment-watchdog",
+       url: "/app/devices/dev-1",
+     });
+--- a/apps/web/features/recipes/admin-page-model.ts
++++ b/apps/web/features/recipes/admin-page-model.ts
+@@ -27,7 +27,7 @@
+ 
+ export const adminRecipeStatusLabels: Record<AdminRecipeStatus, string> = {
+   published: "Опубликован",
+-  private: "Приватный",
++  private: "Только автору",
+   draft: "Черновик",
+   hidden: "Скрыт"
+ };
+@@ -35,7 +35,7 @@
+ export const adminRecipeStatusFilterLabels: Record<AdminRecipeStatusFilter, string> = {
+   all: "Все",
+   published: "Опубликованные",
+-  private: "Приватные",
++  private: "Доступные только автору",
+   draft: "Черновики",
+   hidden: "Скрытые"
+ };
+@@ -51,7 +51,7 @@
+ export type AdminRecipeSort = (typeof adminRecipeSorts)[number];
+ 
+ export const adminRecipeSortLabels: Record<AdminRecipeSort, string> = {
+-  updated: "По обновлению",
++  updated: "По дате изменения",
+   created: "По дате создания",
+   rating: "По рейтингу",
+   title: "По названию"
+--- a/apps/web/features/recipes/contracts.ts
++++ b/apps/web/features/recipes/contracts.ts
+@@ -60,8 +60,8 @@
+ 
+ export const recipePublicationStateLabels: Record<RecipePublicationState, string> = {
+   draft: "Черновик",
+-  private: "Приватный",
+-  published: "Публичный"
++  private: "Только мне",
++  published: "Опубликован"
+ };
+ 
+ const numberField = () => z.coerce.number({
+--- a/apps/web/features/shopping/actions.ts
++++ b/apps/web/features/shopping/actions.ts
+@@ -201,7 +201,7 @@
+     const result = await transferCheckedToStock(user.id, parsed.lines);
+ 
+     if (result.transferredCount === 0) {
+-      return { ok: false, message: "Нечего переносить — отметки устарели, обновите список." };
++      return { ok: false, message: "Список покупок изменился. Обновите его и снова выберите, что перенести на склад." };
+     }
+ 
+     revalidatePath("/app/shopping");
+--- a/apps/web/features/shopping/contracts.ts
++++ b/apps/web/features/shopping/contracts.ts
+@@ -228,7 +228,7 @@
+   if (hasQuantity !== hasUnit) {
+     ctx.addIssue({
+       code: z.ZodIssueCode.custom,
+-      message: "Количество и единица указываются вместе.",
++      message: "Укажите и количество, и единицу измерения.",
+       path: ["quantity"]
+     });
+   }
+--- a/apps/web/features/shopping/copy-text.ts
++++ b/apps/web/features/shopping/copy-text.ts
+@@ -8,7 +8,7 @@
+ // выводится. Секция «Своё» — всегда последней, только если есть неотмеченные
+ // ручные позиции.
+ const COPY_TEXT_HEADER = "Список покупок — nb";
+-const MANUAL_ITEMS_GROUP_LABEL = "Своё";
++const MANUAL_ITEMS_GROUP_LABEL = "Добавлено вручную";
+ 
+ export function buildShoppingListCopyText(input: {
+   groups: Pick<ShoppingListGroupDto, "label" | "items">[];
+--- a/apps/web/tests/admin-ingredient-form.test.tsx
++++ b/apps/web/tests/admin-ingredient-form.test.tsx
+@@ -65,7 +65,7 @@
+     expect(html).toContain('name="displayModeRu"');
+     expect(html).toContain("Атрибуты");
+     expect(html).toContain("Источники");
+-    expect(html).toContain("Алиасы");
++    expect(html).toContain("Другие названия");
+     expect(html).not.toContain("Варианты упаковки");
+     expect(html).toContain("Cascade");
+     expect(html).toContain("Каскад");
+@@ -86,7 +86,7 @@
+       }
+     }));
+ 
+-    // Алиасы редактируются полями, а не сырым JSON: значение попадает в input.
++    // Другие названия редактируются полями, а не сырым JSON: значение попадает в input.
+     expect(html).toContain('value="Цитра"');
+   });
+ 
+--- a/apps/web/tests/app-dashboard-wiring.test.ts
++++ b/apps/web/tests/app-dashboard-wiring.test.ts
+@@ -290,7 +290,7 @@
+     expect(html).toContain("в наличии");
+     // shopping: empty reason for no planned brews (раздел «Чего не хватает», S4)
+     expect(html).toContain("Чего не хватает");
+-    expect(html).toContain("Считается по запланированным партиям");
++    expect(html).toContain("Здесь появятся ингредиенты, которых не хватает для запланированных партий.");
+     // devices: soft CTA to connect
+     expect(html).toContain('href="/app/devices"');
+     expect(html).toContain("Подключить");
+@@ -365,7 +365,7 @@
+   it("keeps the old empty-state card when nothing is checked either", async () => {
+     const html = renderToStaticMarkup(await AppZonePage());
+ 
+-    expect(html).toContain("Считается по запланированным партиям");
++    expect(html).toContain("Здесь появятся ингредиенты, которых не хватает для запланированных партий.");
+     expect(html).not.toContain("Куплено:");
+   });
+ 
+@@ -425,7 +425,7 @@
+   it("surfaces recipes matched against the user's stock", async () => {
+     const html = renderToStaticMarkup(await AppZonePage());
+ 
+-    expect(html).toContain("Рецепты под ваш склад");
++    expect(html).toContain("Рецепты под ваши запасы");
+     expect(html).toContain("My IPA");
+     expect(html).toContain('href="/app/recipes/r-9/edit"');
+   });
+@@ -460,7 +460,7 @@
+ 
+     const html = renderToStaticMarkup(await AppZonePage());
+ 
+-    expect(html).toContain("Рецепты под ваш склад");
++    expect(html).toContain("Рецепты под ваши запасы");
+     expect(html).toContain("Почти хватает");
+     expect(html).not.toContain("Хватает всего");
+   });
+--- a/apps/web/tests/bjcp-card-stats.test.ts
++++ b/apps/web/tests/bjcp-card-stats.test.ts
+@@ -20,8 +20,8 @@
+     const style = catalog.styles.find((item) => item.bjcpId === "27-Kellerbier");
+ 
+     expect(style).toBeDefined();
+-    expect(getBjcpCardStatDisplay(style!, "abv").value).toBe("как база");
+-    expect(getBjcpCardStatDisplay(style!, "ibu").value).toBe("как база");
++    expect(getBjcpCardStatDisplay(style!, "abv").value).toBe("как у базового стиля");
++    expect(getBjcpCardStatDisplay(style!, "ibu").value).toBe("как у базового стиля");
+   });
+ 
+   it("shows concise subtype fallback labels for specialty IPA parent entries", async () => {
+@@ -43,7 +43,7 @@
+     const style = catalog.styles.find((item) => item.bjcpId === "33A");
+ 
+     expect(style).toBeDefined();
+-    expect(getBjcpCardColorInfo(style!).value).toBe("темнее базы");
++    expect(getBjcpCardColorInfo(style!).value).toBe("темнее базового стиля");
+     expect(getBjcpCardColorInfo(style!)).toMatchObject({
+       startHex: "#EAB308",
+       averageHex: "#A16207",
+@@ -65,7 +65,7 @@
+ 
+     expect(style).toBeDefined();
+     expect(getBjcpCardColorInfo(style!)).toMatchObject({
+-      value: "по базе",
++      value: "по базовому стилю",
+       startHex: "#FDE047",
+       averageHex: "#FB923C",
+       endHex: "#F43F5E"
+--- a/apps/web/tests/brew-batches-page-wiring.test.ts
++++ b/apps/web/tests/brew-batches-page-wiring.test.ts
+@@ -263,7 +263,7 @@
+   it("показывает склад партии: что списано и историю движений", async () => {
+     const html = await renderDetail();
+ 
+-    expect(html).toContain("Итог партии");
++    expect(html).toContain("Итоги партии");
+     expect(html).toContain("Склад");
+     expect(html).toContain("Пильзнер");
+     expect(html).toContain("История запасов");
+--- a/apps/web/tests/brew-nudge.test.ts
++++ b/apps/web/tests/brew-nudge.test.ts
+@@ -84,7 +84,7 @@
+       NOW
+     );
+     expect(nudge.tone).toBe("warn");
+-    expect(nudge.text).toBe(`${STALE_MEASUREMENT_DAYS} ${russianDays(STALE_MEASUREMENT_DAYS)} без замера — проверьте FG`);
++    expect(nudge.text).toBe(`${STALE_MEASUREMENT_DAYS} ${russianDays(STALE_MEASUREMENT_DAYS)} без замера — проверьте конечную плотность`);
+   });
+ 
+   it("stays info while measurements are fresh", () => {
+--- a/apps/web/tests/brewable-recipe-card.test.tsx
++++ b/apps/web/tests/brewable-recipe-card.test.tsx
+@@ -107,11 +107,11 @@
+ // Н7: заголовок секции не должен противоречить бейджам внутри — в секцию попадают
+ // и «Почти хватает» (дашборд), и «Не хватает N» («Мой склад»).
+ describe("BrewableRecipesSection — заголовок", () => {
+-  it("называется «Рецепты под ваш склад», а не обещает «Можно сварить»", () => {
++  it("называется «Рецепты под ваши запасы», а не обещает «Можно сварить»", () => {
+     const html = renderToStaticMarkup(
+       <BrewableRecipesSection recipes={[dto({ coveredLines: 2, matchPercent: 69 })]} />
+     );
+-    expect(html).toContain("Рецепты под ваш склад");
++    expect(html).toContain("Рецепты под ваши запасы");
+     expect(html).not.toContain("Можно сварить");
+   });
+ });
+--- a/apps/web/tests/calculators-yeast-starter-stats.test.ts
++++ b/apps/web/tests/calculators-yeast-starter-stats.test.ts
+@@ -34,7 +34,7 @@
+     expect(Number.parseFloat(gravityStat!.value)).toBeLessThan(10);
+   });
+ 
+-  it("статус — одно слово из нового набора (Недосев/Норма/Перебор), не старые разговорные фразы", () => {
++  it("статус — одно слово из нового набора (Недосев/Норма/Избыток), не старые разговорные фразы", () => {
+     const underpitch = definition.calculate({ ...definition.defaults, gravityUnit: "SG", gravity: 1.05 });
+     expect(underpitch.primary.value).toBe("Недосев");
+     expect(underpitch.primary.value).not.toBe("Мало дрожжей");
+@@ -46,7 +46,7 @@
+       packsCount: 4,
+       cellsPerPackBillion: 200
+     });
+-    expect(overpitch.primary.value).toBe("Перебор");
++    expect(overpitch.primary.value).toBe("Избыток");
+     expect(overpitch.primary.value).not.toBe("С запасом");
+ 
+     const ok = definition.calculate({
+--- a/apps/web/tests/derived-ingredient-presentation.test.ts
++++ b/apps/web/tests/derived-ingredient-presentation.test.ts
+@@ -19,7 +19,7 @@
+ 
+     expect(isHopWithUserAlphaOverride(item)).toBe(true);
+     expect(resolveCustomIngredientOwnershipBadgeLabel(item)).toBeNull();
+-    expect(formatHopAlphaAcidStatLabel(6.1, { userOverride: true })).toBe("Альфа 6.1% (пользовательская)");
++    expect(formatHopAlphaAcidStatLabel(6.1, { userOverride: true })).toBe("Альфа 6.1% (ваше значение)");
+   });
+ 
+   it("for legacy derived hops without stored catalog alpha treats missing harvest as user alpha override", () => {
+--- a/apps/web/tests/ingredient-catalog-metadata-ui.test.ts
++++ b/apps/web/tests/ingredient-catalog-metadata-ui.test.ts
+@@ -451,7 +451,7 @@
+     }));
+ 
+     expect(html).toContain("Солод");
+-    expect(html).toContain("Экстракт 80%");
++    expect(html).toContain("Экстрактивность 80%");
+     expect(html).not.toContain("Экст-ть");
+     expect(html).toContain("linear-gradient(180deg");
+   });
+@@ -560,7 +560,7 @@
+       searchParams: Promise.resolve({ q: "zzz-no-match" })
+     }));
+ 
+-    expect(html).toContain("По текущим условиям ничего не найдено");
++    expect(html).toContain("Ничего не найдено");
+     expect(html).toContain("Сбросить поиск");
+   });
+ 
+--- a/apps/web/tests/ingredient-proposal-moderation-actions.test.ts
++++ b/apps/web/tests/ingredient-proposal-moderation-actions.test.ts
+@@ -142,7 +142,7 @@
+   });
+ 
+   it("подписывает источник заявки, неизвестный — как есть", () => {
+-    expect(formatIngredientProposalSourceLabel("recipe_designer")).toBe("Мастер рецептов");
++    expect(formatIngredientProposalSourceLabel("recipe_designer")).toBe("Редактор рецептов");
+     expect(formatIngredientProposalSourceLabel("import_v9")).toBe("import_v9");
+   });
+ });
+--- a/apps/web/tests/inventory-add-flow.test.ts
++++ b/apps/web/tests/inventory-add-flow.test.ts
+@@ -221,7 +221,7 @@
+     }));
+ 
+     expect(html).toContain("Параметры ингредиента");
+-    expect(html).toContain("Количество и единица учёта");
++    expect(html).toContain("Количество и единица измерения");
+     expect(html).toContain('data-testid="custom-required-fields"');
+     expect(html).toContain('data-testid="custom-optional-disclosure"');
+     expect(html).toContain("Цена, даты и заметки");
+@@ -337,7 +337,7 @@
+ 
+     expect(html).toContain('data-testid="custom-ingredient-create-panel"');
+     expect(html).toContain("Параметры ингредиента");
+-    expect(html).toContain("Количество и единица учёта");
++    expect(html).toContain("Количество и единица измерения");
+   });
+ 
+   // П3: панель прокидывает предзаполненное имя из deeplink-а в форму создания.
+@@ -371,7 +371,7 @@
+     expect(html).toContain("Экстрактивность, %");
+     expect(html).toContain("Страна");
+     expect(html).toContain("Создать свой ингредиент");
+-    expect(html).not.toContain("Количество и единица учёта");
++    expect(html).not.toContain("Количество и единица измерения");
+     expect(html).not.toContain('data-testid="custom-required-fields"');
+     expect(html).not.toContain('data-testid="custom-optional-disclosure"');
+     expect(html).not.toContain("Создать и добавить в запасы");
+@@ -694,7 +694,7 @@
+         brands: [],
+         groups: [{
+           type: "consumable_group",
+-          label: "Санитайзеры",
++          label: "Дезинфицирующие средства",
+           normalizedLabel: "sanitizer",
+           value: "sanitizer",
+           count: 8,
+@@ -764,7 +764,7 @@
+     expect(html).toContain("Только избранные");
+     expect(html).toContain("Только свои");
+     expect(html).toContain("По группе");
+-    expect(html).toContain("Санитайзеры");
++    expect(html).toContain("Дезинфицирующие средства");
+     expect(html).toContain("Мойка");
+     expect(html).toContain("Техдобавки");
+     expect(html).toContain("Фильтрация затора");
+@@ -788,7 +788,7 @@
+     }));
+ 
+     expect(html).toContain('data-testid="catalog-consumable-group-switch"');
+-    expect(html).toContain("Санитайзеры");
++    expect(html).toContain("Дезинфицирующие средства");
+     expect(html).toContain("Мойка");
+     expect(html).toContain("Тара и укупорка");
+     expect(html).toContain("Газы");
+@@ -1105,7 +1105,7 @@
+       hasTechnicalOverrides: true
+     })).toEqual({
+       currentEntries: [
+-        { label: "Альфа-кислота", value: "6.1% AA (пользовательская)" }
++        { label: "Альфа-кислота", value: "6.1% AA (ваше значение)" }
+       ],
+       catalogEntries: [
+         { label: "Альфа-кислота", value: "5.5% AA" }
+--- a/apps/web/tests/inventory-usability-components.test.ts
++++ b/apps/web/tests/inventory-usability-components.test.ts
+@@ -157,7 +157,7 @@
+     expect(fermentableHtml).toContain("Сахара и сиропы");
+     expect(fermentableHtml).toContain("Фрукты и соки");
+ 
+-    expect(consumableHtml).toContain("Санитайзеры");
++    expect(consumableHtml).toContain("Дезинфицирующие средства");
+     expect(consumableHtml).toContain("Мойка");
+     expect(consumableHtml).toContain("Тара и укупорка");
+     expect(consumableHtml).toContain("Газы");
+--- a/apps/web/tests/owner-recipe-card.test.tsx
++++ b/apps/web/tests/owner-recipe-card.test.tsx
+@@ -43,18 +43,18 @@
+ };
+ 
+ describe("OwnerRecipeCard", () => {
+-  it("published → показывает бейдж «Публичный»", () => {
++  it("published → показывает бейдж «Опубликован»", () => {
+     const html = renderToStaticMarkup(
+       <OwnerRecipeCard recipe={{ ...baseRecipe, publicationState: "published" }} preferredGravityUnit="plato" />
+     );
+-    expect(html).toContain("Публичный");
++    expect(html).toContain("Опубликован");
+   });
+ 
+   it("private → статус-бейдж не рендерится вовсе", () => {
+     const html = renderToStaticMarkup(
+       <OwnerRecipeCard recipe={{ ...baseRecipe, publicationState: "private" }} preferredGravityUnit="plato" />
+     );
+-    expect(html).not.toContain("Публичный");
++    expect(html).not.toContain("Опубликован");
+     expect(html).not.toContain("Приватный");
+   });
+ 
+--- a/apps/web/tests/public-recipe-presentation.test.tsx
++++ b/apps/web/tests/public-recipe-presentation.test.tsx
+@@ -17,7 +17,7 @@
+     const plain = renderToStaticMarkup(<RecipeStatsSummary recipe={recipe} preferredGravityUnit={unit} variant="plain" />);
+ 
+     expect(textContent(plain)).toBe(textContent(card));
+-    expect(plain).toContain("Ключевые показатели");
++    expect(plain).toContain("Параметры рецепта");
+     expect(plain).toContain("В стиле");
+     expect(trackGeometry(plain)).toHaveLength(10);
+     expect(trackGeometry(plain)).toEqual(trackGeometry(card));
+--- a/apps/web/tests/public-recipe-process-section.test.ts
++++ b/apps/web/tests/public-recipe-process-section.test.ts
+@@ -199,6 +199,6 @@
+     const html = renderBoil(60, []);
+     expect(html).toContain("Кипячение");
+     expect(html).toContain("60 мин");
+-    expect(html).toContain("Внесений на кипячении нет.");
+-  });
+-});
++    expect(html).toContain("Во время кипячения ингредиенты не добавляются.");
++  });
++});
+--- a/apps/web/tests/recipe-editor-components.test.ts
++++ b/apps/web/tests/recipe-editor-components.test.ts
+@@ -1041,7 +1041,7 @@
+       preferredGravityUnit: "plato"
+     });
+ 
+-    expect(html).toContain(">Попадание в стиль</h2>");
++    expect(html).toContain(">Сравнение со стилем</h2>");
+     expect(html).toContain('href="/bjcp/bjcp-1a-american-light-lager"');
+     expect(html).toContain(">BJCP Американский лёгкий лагер</span>");
+     expect(html).not.toContain("Ваш рецепт и");
+@@ -1058,7 +1058,7 @@
+       preferredGravityUnit: "plato"
+     });
+ 
+-    expect(html).toContain(">Попадание в стиль</h2>");
++    expect(html).toContain(">Сравнение со стилем</h2>");
+     // Длинное имя стиля не должно приводить к переносу/обрезке заголовка — оно вынесено отдельной строкой.
+     expect(html).toContain(">BJCP Американский лёгкий лагер</span>");
+     expect(html).not.toContain("Ваш рецепт и");
+--- a/apps/web/tests/recipe-water-flow-ui.test.ts
++++ b/apps/web/tests/recipe-water-flow-ui.test.ts
+@@ -206,7 +206,7 @@
+     expect(html).toContain("4. pH и подкисление");
+     expect(html).not.toContain("5. Что добавить");
+     expect(html).toContain("Из каталога");
+-    expect(html).toContain("Ионы вручную");
++    expect(html).toContain("Ввести состав вручную");
+     expect(html).not.toContain("Сохраненные");
+     expect(html).not.toContain("Сбалансированный лагер");
+     expect(html).not.toContain("IPA, lager, blanche, стаут...");
+--- a/apps/web/tests/recipes-page.test.ts
++++ b/apps/web/tests/recipes-page.test.ts
+@@ -106,7 +106,7 @@
+     // RecipeSaveButton внутри карточек рендерится через useToast() — нужен ToastProvider.
+     const html = renderToStaticMarkup(React.createElement(ToastProvider, null, el));
+ 
+-    expect(html).toContain("Публичных рецептов пока нет");
++    expect(html).toContain("Пока нет опубликованных рецептов");
+   });
+ 
+   it("shows the «no results» empty state when filters are active but nothing matches", async () => {
+--- a/apps/web/tests/recipes-read-components.test.ts
++++ b/apps/web/tests/recipes-read-components.test.ts
+@@ -148,7 +148,7 @@
+   it("renders stats summary", () => {
+     const html = renderToStaticMarkup(React.createElement(RecipeStatsSummary, { recipe: recipeDetail, preferredGravityUnit: "plato" }));
+ 
+-    expect(html).toContain("Ключевые показатели");
++    expect(html).toContain("Параметры рецепта");
+     expect(html).toContain("OG");
+     expect(html).not.toContain("Прогноз по умолчанию");
+     expect(html).not.toContain("Аттенюация задана вручную");
+@@ -188,7 +188,7 @@
+       preferredGravityUnit: "plato"
+     }));
+ 
+-    expect(html).toContain("Ключевые показатели");
++    expect(html).toContain("Параметры рецепта");
+     expect(html).not.toContain("Соответствие стилю");
+   });
+ 
+@@ -429,7 +429,7 @@
+     );
+ 
+     expect(html).not.toContain("Публичный");
+-    expect(html).toContain("Ключевые показатели");
++    expect(html).toContain("Параметры рецепта");
+     expect(html).toContain("Объём партии — 20 л, при эффективности 75%");
+     expect(html).toContain("Пересчитать под свои параметры");
+     expect(html).toContain("Ингредиенты");
+@@ -505,8 +505,8 @@
+     expect(listErrorHtml).toContain("Не удалось загрузить");
+     expect(detailErrorHtml).toContain("Не удалось загрузить рецепт");
+     expect(detailErrorHtml).toContain("Повторить");
+-    expect(publicErrorHtml).toContain("Не удалось загрузить публичный рецепт");
+-    expect(publicListErrorHtml).toContain("Не удалось загрузить публичные рецепты");
++    expect(publicErrorHtml).toContain("Не удалось загрузить рецепт");
++    expect(publicListErrorHtml).toContain("Не удалось загрузить рецепты сообщества");
+     expect(publicNotFoundHtml).toContain("Рецепт не найден");
+   });
+ });
+--- a/apps/web/tests/shopping-copy-text.test.ts
++++ b/apps/web/tests/shopping-copy-text.test.ts
+@@ -73,7 +73,7 @@
+         "• Pale Ale (Курский солод) — 4,2 кг",
+         "Хмель:",
+         "• Citra — 50 г (нужно 37 г)",
+-        "Своё:",
++        "Добавлено вручную:",
+         "• Дезинфектант Star San"
+       ].join("\n")
+     );
+@@ -148,7 +148,7 @@
+       manualItems: [manualItem({ name: "Дезинфектант Star San", quantityLabel: null })]
+     });
+ 
+-    expect(text).toBe(["Список покупок — nb", "Своё:", "• Дезинфектант Star San"].join("\n"));
++    expect(text).toBe(["Список покупок — nb", "Добавлено вручную:", "• Дезинфектант Star San"].join("\n"));
+   });
+ 
+   it("всё отмечено → null", () => {
+@@ -169,7 +169,7 @@
+     expect(buildShoppingListCopyText({ groups: [], manualItems: [] })).toBeNull();
+   });
+ 
+-  it("нет ручных позиций → нет секции «Своё:»", () => {
++  it("нет ручных позиций → нет секции «Добавлено вручную:»", () => {
+     const text = buildShoppingListCopyText({
+       groups: [
+         {
+--- a/apps/web/tests/shopping-page-view.test.ts
++++ b/apps/web/tests/shopping-page-view.test.ts
+@@ -362,7 +362,7 @@
+       })
+     );
+ 
+-    expect(html).toContain("Запланируйте варку — соберём точный список");
++    expect(html).toContain("Запланируйте варку, чтобы составить список покупок");
+     expect(html).toContain('href="/app/recipes"');
+     // Без блока «Добавить на склад» в этом сценарии.
+     expect(html).not.toMatch(/<h2[^>]*>Список покупок<\/h2>/);
+@@ -380,7 +380,7 @@
+       })
+     );
+ 
+-    expect(html).not.toContain("Запланируйте варку — соберём точный список");
++    expect(html).not.toContain("Запланируйте варку, чтобы составить список покупок");
+   });
+ 
+   it("рендерит полный EmptyState при nothing_to_do", () => {
+--- a/apps/web/tests/user-catalog-ingredient-search.test.ts
++++ b/apps/web/tests/user-catalog-ingredient-search.test.ts
+@@ -777,7 +777,7 @@
+         subtype: "process_aid",
+         itemKind: "process_aid",
+         sourceCategory: "process_aid",
+-        subcategory: "Санитайзеры",
++        subcategory: "Дезинфицирующие средства",
+         primaryLabelRu: "Star San",
+         displayName: "Star San",
+         nameRu: "Star San",
+@@ -1343,7 +1343,7 @@
+     });
+ 
+     expect(result.refinements.slice(0, 2)).toMatchObject([
+-      { type: "consumable_group", label: "Санитайзеры", value: "sanitizer", count: 1 },
++      { type: "consumable_group", label: "Дезинфицирующие средства", value: "sanitizer", count: 1 },
+       { type: "consumable_group", label: "Мойка", value: "cleaner", count: 2 }
+     ]);
+     expect(result.appliedManufacturer).toBeNull();
+--- a/packages/brewing-core/src/styles/taglines.ts
++++ b/packages/brewing-core/src/styles/taglines.ts
+@@ -9,167 +9,167 @@
+ export const BEER_STYLE_TAGLINE_MAX_LENGTH = 220;
+ 
+ export const beerStyleTaglinesRu: Record<string, string> = {
+-  "1A": "Ледяной, лёгкий до прозрачности лагер почти без вкусовых акцентов: сплошная свежесть, газ и жажда, которой он не оставляет ни шанса.",
+-  "1B": "Светлый, звонко газированный лагер с чистым зерновым тоном и едва заметной горчинкой. Пиво без претензий: его пьют холодным и большими глотками.",
+-  "1C": "Золотистый эль, сваренный с лагерной аккуратностью: мягкое зерно, чистый вкус, шелковистая текстура. Характера больше, чем у светлого лагера, лёгкости — не меньше.",
++  "1A": "Лёгкий лагер с мягким вкусом и выраженной карбонизацией.",
++  "1B": "Светлый лагер с зерновыми нотами, слабой горечью и выраженной карбонизацией.",
++  "1C": "Золотистый эль с мягким зерновым вкусом и шелковистой текстурой.",
+   "1D": "Светлое пшеничное с хлебно-зерновым тоном, лёгким телом и высокой газацией. Без банана и гвоздики — просто чистое освежающее пиво.",
+ 
+-  "2A": "Классический светлый лагер интернационального образца: ровный, чистый, хорошо газированный, с деликатной горчинкой. Универсальное пиво к любому столу.",
+-  "2B": "Янтарный лагер с карамельно-тостовой солодовой ноткой и мягкой горечью. Пьётся легко, а вкус теплее и круглее, чем у светлого собрата.",
+-  "2C": "Тёмный лагер с лёгкой карамельной сладостью и намёком на жареный солод. Мягкий, округлый, без горькой обжарки — тёмное пиво для тех, кто любит полегче.",
++  "2A": "Светлый лагер с чистым вкусом, мягкой горечью и выраженной карбонизацией.",
++  "2B": "Янтарный лагер с нотами карамели и поджаренного хлеба, мягкой горечью.",
++  "2C": "Тёмный лагер с лёгкой карамельной сладостью и мягкими нотами обжаренного солода.",
+ 
+-  "3A": "Лёгкий чешский лагер с хлебным солодом и травяным жатецким хмелем. Сессионное пиво, ради которого в Чехии заходят в пивную каждый вечер.",
+-  "3B": "Золотой чешский лагер с густой пеной, богатым солодом и длинной благородной горечью жатецкого хмеля. Эталон, с которого начался весь пилснер.",
+-  "3C": "Янтарный чешский лагер: карамель, хлебная корочка и травяной хмель в спокойном равновесии. Пиво неторопливое и уютное.",
++  "3A": "Лёгкий чешский лагер с хлебными нотами солода и травяным ароматом жатецкого хмеля.",
++  "3B": "Золотистый чешский лагер с густой пеной, насыщенным солодовым вкусом и долгой хмелевой горечью.",
++  "3C": "Янтарный чешский лагер с нотами карамели, хлебной корочки и травяного хмеля.",
+   "3D": "Тёмный чешский лагер с какао, карамелью и мягким жареным солодом. Полнотелый, но питкий, без сухой горечи.",
+ 
+-  "4A": "Золотистый баварский лагер, где на первом плане мягкий хлебный солод, а хмель лишь подводит черту. Пиво, которое пьют литровыми кружками и не устают.",
+-  "4B": "Праздничный лагер Октоберфеста: светлый, солодовый, крепче обычного — и при этом опасно питкий.",
+-  "4C": "Светлый бок: густой хлебный солод, заметная крепость и неожиданно сухой финиш, который зовёт к следующему глотку.",
++  "4A": "Золотистый баварский лагер с мягким хлебным вкусом солода и сдержанной хмелевой горечью.",
++  "4B": "Светлый солодовый лагер Октоберфеста, более крепкий, чем обычный светлый лагер.",
++  "4C": "Крепкий светлый бок с насыщенным хлебным вкусом и сухим послевкусием.",
+ 
+-  "5A": "Облегчённый немецкий лагер: алкоголя мало, а солод и травяной хмель на месте. Пиво для долгого разговора.",
+-  "5B": "Кёльнский эль, сваренный с лагерной чистотой: блестяще-светлый, тонкий, с лёгкой фруктовой ноткой и сухим финишем. Пьётся быстрее, чем успеваешь заметить.",
+-  "5C": "Золотистый экспортный лагер: солоднее пилса, горче хеллеса. Крепкое, уверенное пиво в дортмундской манере.",
+-  "5D": "Освежающий светлый лагер с сухим финишем и звонкой хмелевой горечью. Немецкая классика: строго, чисто и очень освежающе.",
++  "5A": "Немецкий лагер невысокой крепости с солодовым вкусом и травяными нотами хмеля.",
++  "5B": "Светлый кёльнский эль с чистым вкусом, лёгкими фруктовыми нотами и сухим послевкусием.",
++  "5C": "Золотистый дортмундский лагер: более солодовый, чем пилс, и более горький, чем хеллес.",
++  "5D": "Светлый немецкий лагер с выраженной хмелевой горечью и сухим послевкусием.",
+ 
+-  "6A": "Янтарный лагер с тостовым, почти хлебным солодом и чистым сухим финишем. Мартовское пиво, дозревшее к осенним праздникам.",
+-  "6B": "Копчёный лагер из Бамберга: буковый дым и костёр, а за ними — спокойный тостовый солод. Пиво, которое не спутать ни с чем.",
+-  "6C": "Тёмный бок: густой хлебно-тостовый солод, тёмные фрукты и мягкое алкогольное тепло. Пиво для холодного вечера.",
++  "6A": "Янтарный лагер с нотами поджаренного хлеба и чистым сухим послевкусием.",
++  "6B": "Копчёный лагер из Бамберга с ароматом букового дыма и вкусом поджаренного хлеба.",
++  "6C": "Тёмный бок с насыщенным хлебным вкусом, нотами тёмных фруктов и согревающим послевкусием.",
+ 
+-  "7A": "Медно-янтарный лагер венской школы: гладкий тостовый солод, спокойная горечь, суховатый финиш. Элегантность без излишеств.",
+-  "7B": "Дюссельдорфский эль, вызревший на холоде: тёмно-янтарный, чистый, с богатым солодом и уверенной горечью. Эль с повадками лагера.",
++  "7A": "Медно-янтарный венский лагер с нотами поджаренного хлеба, мягкой горечью и суховатым послевкусием.",
++  "7B": "Тёмно-янтарный дюссельдорфский эль с насыщенным солодовым вкусом и выраженной горечью. Выдерживается на холоде.",
+ 
+   "8A": "Тёмно-коричневый баварский лагер с ароматом свежего хлеба и корочки. Насыщенный, но легко пьющийся, без жжёной горечи.",
+-  "8B": "Чёрный лагер: лёгкий, сухой, с тонкой ноткой кофе и шоколада. Тёмное пиво, которое пьётся как светлое.",
++  "8B": "Чёрный лагер с лёгким телом, сухим вкусом и тонкими нотами кофе и шоколада.",
+ 
+-  "9A": "Монастырский «жидкий хлеб»: густая карамель, тёмные фрукты, изюм и согревающий финиш. Пиво, которым можно поститься.",
+-  "9B": "Бок, вымороженный до концентрата: плотный, тягучий, с тёмными фруктами и бархатным алкогольным теплом. Пьётся малыми глотками.",
+-  "9C": "Тёмный портер, сваренный по-лагерному: сливовое варенье, шоколад, лёгкая обжарка и мягкая крепость. Балтийская классика для долгих зим.",
++  "9A": "Крепкий солодовый лагер с нотами карамели, тёмных фруктов и изюма, согревающим послевкусием.",
++  "9B": "Крепкий бок, полученный вымораживанием: плотный, с нотами тёмных фруктов и выраженным алкогольным теплом.",
++  "9C": "Тёмный портер низового брожения с нотами сливы, шоколада и обжаренного солода.",
+ 
+-  "10A": "Баварское пшеничное: мутное, пышное, с ароматом банана и гвоздики. Живая шапка пены и жажда, снятая с первого глотка.",
++  "10A": "Мутное баварское пшеничное пиво с ароматом банана и гвоздики, пышной пеной.",
+   "10B": "Тёмное баварское пшеничное: банан и гвоздика ложатся на тёмный хлеб и карамель. Пышное, полнотелое, но лёгкое на вкус.",
+-  "10C": "Крепкое пшеничное с характером бока: банан, гвоздика, изюм и хлебная сладость. Мощно, ароматно и обманчиво мягко.",
++  "10C": "Крепкое пшеничное пиво с хлебной сладостью и нотами банана, гвоздики и изюма.",
+ 
+-  "11A": "Британский биттер в самой скромной своей форме: медный, лёгкий, с бисквитным солодом и травяной горечью. Пиво паба, а не бутылки.",
+-  "11B": "Английский биттер покрепче: карамельный солод, фруктовые эфиры и суховатая горечь. Пинта, за которой идёт вторая.",
+-  "11C": "Плотный английский биттер: карамель, тёмные фрукты и уверенная хмелевая горечь. Пиво для неспешного вечера у барной стойки.",
++  "11A": "Лёгкий медный биттер с бисквитными нотами солода и травяной хмелевой горечью.",
++  "11B": "Английский биттер с карамельным солодом, фруктовыми нотами и суховатой горечью.",
++  "11C": "Плотный английский биттер с нотами карамели и тёмных фруктов, выраженной хмелевой горечью.",
+ 
+-  "12A": "Британский ответ лагеру: светлый, сухой, с цитрусово-травяным хмелем. Летняя пинта, лёгкая и звонкая.",
++  "12A": "Светлый британский эль с сухим вкусом и цитрусово-травяным ароматом хмеля.",
+   "12B": "Золотистый австралийский эль: сильно газированный, сухой, с грушево-яблочной фруктовостью и пряным хмелем. Пиво для жары.",
+-  "12C": "Британский IPA: землистый и травяной хмель, бисквитный солод и сухая, отчётливая горечь. Тот самый эль, что когда-то плыл в Индию.",
++  "12C": "Британский IPA с бисквитными нотами солода, землистым и травяным хмелевым ароматом, отчётливой горечью.",
+ 
+-  "13A": "Тёмный эль, слабый по алкоголю и щедрый на вкус: карамель, орех, лёгкий шоколад. Пиво рабочего дня.",
+-  "13B": "Коричневый английский эль: орех, карамель, тост — мягко, округло, без обжарки. Уютное пиво без затей.",
+-  "13C": "Английский портер: шоколад, карамель, лёгкая обжарка и мягкая горечь. Лондонская классика в тёмном стекле.",
++  "13A": "Тёмный эль невысокой крепости с нотами карамели, орехов и лёгкого шоколада.",
++  "13B": "Коричневый английский эль с мягким вкусом орехов, карамели и поджаренного хлеба.",
++  "13C": "Английский портер с нотами шоколада, карамели и обжаренного солода, мягкой горечью.",
+ 
+-  "14A": "Лёгкий шотландский эль: солодовая сладость, карамель и ирис при совсем небольшой крепости. Тихое, домашнее пиво.",
+-  "14B": "Шотландский эль умеренной крепости: карамель, ирис, лёгкая фруктовость и суховатый финиш. Солод здесь правит балом.",
++  "14A": "Шотландский эль невысокой крепости с солодовой сладостью, нотами карамели и ириса.",
++  "14B": "Шотландский эль умеренной крепости с нотами карамели, ириса и фруктов, суховатым послевкусием.",
+   "14C": "Плотный шотландский эль: густая карамель, ирис и сухофрукты, которые сдерживает лёгкая сухость обжаренного солода. Богато, но не приторно.",
+ 
+-  "15A": "Красноватый ирландский эль: карамель, бисквит и сухой поджаристый финиш. Питкое пиво, простое и честное.",
+-  "15B": "Чёрный сухой стаут: кофе, жареный ячмень, кремовая пена и горькая сухая точка в финише. Пинта из Дублина.",
+-  "15C": "Плотный чёрный стаут: эспрессо, горький шоколад и сухая обжаренная горечь. Гуще и крепче привычной пинты.",
++  "15A": "Красноватый ирландский эль с нотами карамели, бисквита и поджаренного хлеба, сухим послевкусием.",
++  "15B": "Чёрный сухой стаут с нотами кофе и жареного ячменя, кремовой пеной и горьким послевкусием.",
++  "15C": "Плотный крепкий стаут с нотами эспрессо, горького шоколада и выраженной горечью обжаренного солода.",
+ 
+-  "16A": "Молочный стаут: кофе со сливками, тёмный шоколад и мягкая молочная сладость. Бархат в бокале.",
+-  "16B": "Овсяный стаут: шелковистое тело, кофе и тёмный шоколад, ни капли резкости. Тёмное пиво, гладкое, как сливки.",
+-  "16C": "Сладкий тропический стаут: тёмный солод, спелые фрукты и патока. Много вкуса и никакой жжёной горечи — пиво жарких стран.",
+-  "16D": "Крепкий экспортный стаут: густая обжарка, чёрный кофе, лакрица и сухой финиш. Сварен с запасом крепости для дальней дороги.",
++  "16A": "Молочный стаут с нотами кофе со сливками и тёмного шоколада, мягкой сладостью.",
++  "16B": "Овсяный стаут с мягкой шелковистой текстурой и нотами кофе и тёмного шоколада.",
++  "16C": "Сладкий тропический стаут с нотами тёмного солода, спелых фруктов и патоки.",
++  "16D": "Крепкий экспортный стаут с выраженным вкусом обжаренного солода, нотами кофе и лакрицы, сухим послевкусием.",
+ 
+-  "17A": "Крепкий английский эль: карамель, сухофрукты, эфиры и мягкое алкогольное тепло. Пиво из погреба, к которому возвращаются годами.",
+-  "17B": "Выдержанный английский эль: изюм, патока, лёгкая кожа и древесная нотка времени. Пиво, которому идёт возраст.",
+-  "17C": "Шотландский тяжеловес: густая карамель, ирис, сухофрукты и плотное согревающее тело. Пиво к камину.",
++  "17A": "Крепкий английский эль с нотами карамели и сухофруктов, мягким алкогольным теплом.",
++  "17B": "Выдержанный английский эль с нотами изюма, патоки, кожи и древесины.",
++  "17C": "Крепкий плотный шотландский эль с нотами карамели, ириса и сухофруктов, согревающим послевкусием.",
+   "17D": "Английское ячменное вино: густая карамель, апельсиновый мармелад, сухофрукты и бархатное тепло. Пьётся малыми глотками, как крепкое вино.",
+ 
+-  "18A": "Золотистый эль без острых углов: мягкий солод, тонкий хмель, чистый вкус. С него удобно начинать знакомство с крафтом.",
+-  "18B": "Светлый американский эль: цитрус, хвоя и косточковые фрукты от американского хмеля на мягкой солодовой основе. Свежесть и бодрая горчинка.",
++  "18A": "Золотистый эль с мягким солодовым вкусом, тонким хмелевым ароматом и чистым послевкусием.",
++  "18B": "Светлый американский эль с мягкой солодовой основой и хмелевыми нотами цитрусов, хвои и косточковых фруктов.",
+ 
+-  "19A": "Янтарный американский эль: карамельный солод и цитрусовый хмель тянут одеяло каждый на себя — в этом весь смысл.",
+-  "19B": "Пиво калифорнийских старателей: лагерные дрожжи бродят в тепле — отсюда лёгкая фруктовость поверх поджаристого солода и смолистого хмеля.",
+-  "19C": "Коричневый американский эль: шоколад и карамель солода, а поверх — цитрусовый хмель. Тёмное пиво с крафтовым акцентом.",
++  "19A": "Янтарный американский эль с карамельным солодом и цитрусовым хмелевым ароматом.",
++  "19B": "Калифорнийское пиво на лагерных дрожжах при тёплом брожении. Во вкусе — поджаренный солод, смолистый хмель и лёгкие фруктовые ноты.",
++  "19C": "Коричневый американский эль с шоколадно-карамельными нотами солода и цитрусовым хмелевым ароматом.",
+ 
+-  "20A": "Американский портер: тёмный шоколад, кофе, обжарка — и хмелевая горечь, которой не бывает у британцев.",
+-  "20B": "Чёрный американский стаут: жжёный кофе, тёмный шоколад и смолистый хмель. Крепко, горько, без компромиссов.",
+-  "20C": "Имперский стаут: густой, как патока, с эспрессо, чёрным шоколадом, изюмом и долгим алкогольным теплом. Пиво для маленького бокала и длинного вечера.",
++  "20A": "Американский портер с нотами тёмного шоколада, кофе и обжаренного солода, выраженной хмелевой горечью.",
++  "20B": "Американский стаут с нотами жжёного кофе, тёмного шоколада и смолистого хмеля.",
++  "20C": "Плотный имперский стаут с нотами эспрессо, тёмного шоколада и изюма, долгим согревающим послевкусием.",
+ 
+-  "21A": "Американский IPA: цитрус, хвоя, тропические фрукты — и сухая горечь, которая держит весь этот хмелевой напор.",
+-  "21B": "IPA со сдвигом: узнаваемая хмелевая горечь и сухой финиш, но собранные вокруг собственной идеи — своего солода, своих дрожжей, своего цвета.",
+-  "21B-belgian-ipa": "Бельгийский IPA: американский хмель встречает бельгийские дрожжи — цитрус и хвоя поверх перечной пряности и сухого финиша.",
+-  "21B-black-ipa": "Чёрный IPA: цвет и лёгкая обжарка от тёмного солода, аромат и вкус — от хмеля. Тёмное пиво, которое ведёт себя как IPA.",
+-  "21B-brown-ipa": "Коричневый IPA: ореховый и карамельный солод под плотным слоем цитрусового хмеля. Браун-эль, выросший в IPA.",
+-  "21B-brut-ipa": "Брют IPA: выброжен досуха, как игристое, — почти без сладости, с колючей газацией и ярким хмелевым ароматом.",
+-  "21B-red-ipa": "Красный IPA: карамельный солод и рубиновый цвет держат удар смолистого американского хмеля.",
++  "21A": "Американский IPA с выраженной хмелевой горечью, ароматами цитрусов, хвои и тропических фруктов.",
++  "21B": "IPA с выраженной хмелевой горечью и сухим послевкусием. Характер зависит от выбранного солода, дрожжей и других особенностей рецепта.",
++  "21B-belgian-ipa": "Бельгийский IPA с цитрусово-хвойным хмелевым ароматом, перечной пряностью дрожжей и сухим послевкусием.",
++  "21B-black-ipa": "Чёрный IPA с выраженным хмелевым ароматом и лёгкими нотами обжаренного солода.",
++  "21B-brown-ipa": "Коричневый IPA с орехово-карамельными нотами солода и выраженным цитрусовым хмелевым ароматом.",
++  "21B-brut-ipa": "Очень сухой IPA с выраженной карбонизацией и ярким хмелевым ароматом, почти без сладости.",
++  "21B-red-ipa": "Красный IPA рубинового цвета с карамельным солодом и смолистыми нотами американского хмеля.",
+   "21B-rye-ipa": "Ржаной IPA: пряная, чуть перечная рожь добавляет хмелевой горечи остроты и сухости.",
+-  "21B-white-ipa": "Белый IPA: витбир и IPA в одном бокале — кориандр, цитрусовая цедра и пшеничная мягкость под хмелевым напором.",
+-  "21C": "Мутный IPA новой волны: сок манго и цитруса, мягкая бархатная текстура и почти незаметная горечь. Хмель без единой колючки.",
++  "21B-white-ipa": "Белый IPA сочетает пшеничную мягкость витбира, кориандр и цитрусовую цедру с выраженным хмелевым ароматом.",
++  "21C": "Мутный IPA с ароматом манго и цитрусов, мягкой текстурой и сдержанной горечью.",
+ 
+-  "22A": "Двойной IPA: концентрированный хмель — смола, цитрус, тропики — на сухом крепком теле. Мощно, но всё ещё пьётся.",
+-  "22B": "Крепкий американский эль: карамельный солод и щедрый хмель в тяжёлом весе. Пиво с характером и градусом.",
+-  "22C": "Американское ячменное вино: густая карамель, сухофрукты и мощная хмелевая горечь, сглаженная алкогольным теплом. Взрослеет в подвале годами.",
++  "22A": "Крепкий двойной IPA с сухим вкусом и насыщенным хмелевым ароматом: смола, цитрусы и тропические фрукты.",
++  "22B": "Крепкий американский эль с насыщенным карамельным вкусом и выраженной хмелевой горечью.",
++  "22C": "Американское ячменное вино с нотами карамели и сухофруктов, выраженной хмелевой горечью и алкогольным теплом.",
+   "22D": "Пшеничное вино: крепкий эль на пшенице — хлебная сладость, медовые тона и плотная кремовая текстура.",
+ 
+-  "23A": "Берлинское белое: почти невесомое, колюче-кислое и предельно освежающее. Летнее пиво, которое в Берлине разбавляли сиропом.",
++  "23A": "Лёгкое берлинское пшеничное пиво с выраженной кислинкой.",
+   "23B": "Фламандский красный: выдержка в дубовых бочках даёт вишню, кислинку и танины. Пиво, похожее на молодое вино.",
+-  "23C": "Старый бурый фламандец: изюм, карамель, вишнёвая кислинка и мягкая солодовая глубина. Кислое пиво без резкости.",
+-  "23D": "Дикое брюссельское пиво, сброжённое тем, что прилетело из воздуха. Кислое, землистое, фермерское — и совершенно живое.",
+-  "23E": "Купаж молодого и выдержанного ламбика: шампанская газация, лимонная кислинка и сложный характер дикого брожения. Пиво, которое открывают как игристое.",
+-  "23F": "Ламбик, настоянный на ягодах: вишня или малина ложатся на дикую кислоту и придают ей сочность. Сухо, кисло, ароматно.",
+-  "23G": "Солоноватое пшеничное с кориандром: лёгкая молочная кислинка, щепотка соли и звонкая свежесть. Жажду снимает мгновенно.",
++  "23C": "Фламандский коричневый эль с нотами изюма и карамели, мягкой вишнёвой кислинкой.",
++  "23D": "Ламбик спонтанного брожения с кислым вкусом и землистыми нотами.",
++  "23E": "Купаж молодого и выдержанного ламбика с выраженной карбонизацией, лимонной кислинкой и сложным ароматом дикого брожения.",
++  "23F": "Фруктовый ламбик с сухим кислым вкусом и ароматом вишни, малины или других ягод.",
++  "23G": "Лёгкое пшеничное пиво с кориандром, мягкой молочной кислинкой и солоноватым вкусом.",
+ 
+   "24A": "Бельгийское белое: мутное, мягкое, с апельсиновой цедрой и кориандром. Пшеничная лёгкость и цитрусовая свежесть.",
+-  "24B": "Медный бельгийский эль на каждый день: тостовый солод, груша и лёгкая пряность дрожжей при спокойной горечи.",
++  "24B": "Медный бельгийский эль с нотами поджаренного хлеба, груши и лёгких пряностей, мягкой горечью.",
+   "24C": "Французское «пиво для хранения»: солодовое, гладкое, с хлебной сладостью и чистым вкусом после холодной выдержки. Крепкое, но сдержанное.",
+ 
+   "25A": "Золотистый бельгийский эль: медовая сладость, груша и лёгкая перечная пряность, финиш сухой и мягкий.",
+-  "25B": "Фермерский эль Валлонии: сухой, искристый, с перцем, цитрусом и травами. Варили его для полевых работ, а пьют круглый год.",
+-  "25C": "Светлый бельгийский тяжеловес: обманчиво лёгкий на вид, фруктовый и пряный, с сухим финишем, за которым прячутся градусы.",
++  "25B": "Сухой валлонский эль с выраженной карбонизацией, нотами перца, цитрусов и трав.",
++  "25C": "Крепкий светлый бельгийский эль с фруктово-пряным ароматом и сухим послевкусием.",
+ 
+   "26A": "Монастырское столовое пиво: светлое, сухое, пряное и горьковатое — то, что монахи варили для себя.",
+-  "26B": "Траппистский дуббель: тёмная карамель, изюм, слива и пряность дрожжей на сухом финише. Тёплое и глубокое пиво.",
+-  "26C": "Траппистский трипель: золотой, пряный, с грушей и перцем, шампанской газацией и сухим финишем. Крепость прячется до последнего.",
+-  "26D": "Тёмный бельгийский тяжеловес: сушёные фрукты, карамель, пряность и бархатное тепло. Сложное пиво для медленного вечера.",
++  "26B": "Бельгийский дуббель с нотами тёмной карамели, изюма, сливы и пряностей, сухим послевкусием.",
++  "26C": "Крепкий золотистый трипель с нотами груши и перца, выраженной карбонизацией и сухим послевкусием.",
++  "26D": "Крепкий тёмный бельгийский эль с нотами сухофруктов, карамели и пряностей, согревающим послевкусием.",
+ 
+   "27-kellerbier": "Погребное пиво: нефильтрованный лагер прямо из бочки — мутноватый, свежий, с живым дрожжевым и хмелевым характером.",
+-  "27-kentucky-common": "Тёмное пиво старого Луисвилла: кукуруза, лёгкая обжарка и едва уловимая кислинка. Быстрое пиво американских салунов.",
+-  "27-lichtenhainer": "Копчёно-кислое пшеничное из Тюрингии: дым и молочная кислинка в лёгком освежающем теле. Забытая редкость.",
+-  "27-london-brown-ale": "Лондонский браун: тёмный и сладковатый, с орехом и карамелью, при совсем небольшой крепости. Мягкое пиво без всякой горечи.",
+-  "27-piwo-grodziskie": "Гродзиское: пшеничное пиво на дубовом дыме — лёгкое, сильно газированное, сухое. Польская гордость, воскрешённая из небытия.",
+-  "27-pre-prohibition-lager": "Американский лагер эпохи до Сухого закона: кукурузная сладость, зерновая основа и настоящая хмелевая горечь, о которой потом забыли.",
+-  "27-pre-prohibition-porter": "Портер старой Америки: тёмный, с зерновым вкусом, с патокой и мягкой обжаркой. Вкус XIX века.",
+-  "27-roggenbier": "Ржаное баварское: пряная рожь, хлебная корка и дрожжевой банан с гвоздикой. Пиво со вкусом чёрного хлеба.",
+-  "27-sahti": "Финский сахти: сусло цедят через можжевельник, варки нет вовсе, брожение — на хлебных дрожжах. Банан, специи и смолистая хвоя.",
++  "27-kentucky-common": "Тёмное пиво из Луисвилла с нотами кукурузы, обжаренного солода и едва заметной кислинкой.",
++  "27-lichtenhainer": "Лёгкое пшеничное пиво из Тюрингии с копчёным ароматом и молочной кислинкой.",
++  "27-london-brown-ale": "Тёмный лондонский браун-эль невысокой крепости с орехово-карамельным вкусом и слабой горечью.",
++  "27-piwo-grodziskie": "Гродзиское: лёгкое сухое пшеничное пиво с выраженной карбонизацией и ароматом дубового дыма.",
++  "27-pre-prohibition-lager": "Американский лагер в стиле до сухого закона: зерновой вкус, кукурузная сладость и выраженная хмелевая горечь.",
++  "27-pre-prohibition-porter": "Американский портер старого образца с зерновым вкусом, нотами патоки и обжаренного солода.",
++  "27-roggenbier": "Баварское ржаное пиво с хлебными и пряными нотами, ароматом банана и гвоздики.",
++  "27-sahti": "Финский сахти с можжевеловым ароматом, нотами банана, пряностей и хвои.",
+ 
+-  "28A": "Пиво на бретте: дикие дрожжи вытягивают из базового стиля сухость, тропическую фруктовость и лёгкий сарайный оттенок.",
+-  "28B": "Смешанное брожение в дубе: кислота, фанк и фруктовая глубина, которых не получить обычными дрожжами. Пиву нужны годы, чтобы дозреть.",
+-  "28C": "Дикое брожение плюс фрукты, дерево или специи: кислота и фанк сплетаются с добавками в многослойный живой вкус.",
+-  "28D": "Чистая молочная кислинка без всякого фанка: светлое, лёгкое, звонко-кислое и очень освежающее.",
++  "28A": "Пиво с дрожжами Brettanomyces: сухое, с тропическими фруктовыми нотами.",
++  "28B": "Пиво смешанного брожения, выдержанное в дубе, с кислым вкусом и сложным фруктовым ароматом.",
++  "28C": "Пиво дикого брожения с фруктами, древесными нотами или пряностями. Вкус кислый, с характерными нотами дикого брожения.",
++  "28D": "Лёгкое светлое пиво с чистой молочной кислинкой.",
+ 
+-  "29A": "Пиво с настоящими фруктами: ягодный или цитрусовый тон вплетён во вкус, но пиво остаётся пивом.",
+-  "29B": "Фрукты и специи в одном бокале: сочность и пряность усиливают друг друга, не заглушая пивную основу.",
+-  "29C": "Фруктовое пиво с добавкой характера: мёд, особый сахар или необычная технология делают фруктовый профиль глубже.",
+-  "29D": "Пиво с виноградом: винная кислотность и ягодный аромат сусла срастаются с пивной основой. На стыке бокала и пинты.",
++  "29A": "Фруктовое пиво с выраженными ягодными или цитрусовыми нотами и узнаваемой солодовой основой.",
++  "29B": "Пиво с фруктами и специями, сочетающее фруктовый аромат, пряность и вкус базового пива.",
++  "29C": "Фруктовое пиво с дополнительными ингредиентами или особенностями приготовления: например, с мёдом или специальными сахарами.",
++  "29D": "Пиво с виноградом, винной кислинкой и ягодным ароматом.",
+ 
+-  "30A": "Пиво со специями, травами или овощами: добавка ведёт аромат и вкус, но пиво под ней по-прежнему узнаётся.",
+-  "30B": "Осеннее пиво: тыква, корица, мускат и имбирь на тёплой солодовой основе. Вкус урожая и первых холодов.",
+-  "30C": "Зимнее пиво: тёмное, крепкое, с пряностями, сухофруктами и согревающим финишем. Праздничный бокал в холодный вечер.",
+-  "30D": "Специи, травы или овощи плюс ещё один приём — дым, дерево, фрукты. Всё это должно звучать вместе, не заглушая друг друга.",
++  "30A": "Пиво со специями, травами или овощами, которые дополняют аромат и вкус базового пива.",
++  "30B": "Осеннее пиво с солодовым вкусом и нотами тыквы, корицы, мускатного ореха и имбиря.",
++  "30C": "Крепкое тёмное зимнее пиво с нотами пряностей и сухофруктов, согревающим послевкусием.",
++  "30D": "Пиво со специями, травами или овощами и дополнительными особенностями: копчёными, древесными или фруктовыми нотами.",
+ 
+-  "31A": "Пиво на нестандартном зерне: рожь, овёс, спельта или гречка вносят свою фактуру и хлебный характер.",
+-  "31B": "Пиво на особых сахарах: мёд, кленовый сироп, патока или пальмовый сахар добавляют аромат и сухость. Но это по-прежнему пиво.",
++  "31A": "Пиво с рожью, овсом, спельтой, гречкой или другим нетипичным для базового стиля зерном.",
++  "31B": "Пиво с мёдом, кленовым сиропом, патокой или пальмовым сахаром, которые добавляют свои оттенки аромата и вкуса.",
+ 
+-  "32A": "Классический стиль под дымом: копчёный солод добавляет костра и копчёностей, не ломая узнаваемый профиль.",
+-  "32B": "Дым и что-то ещё — фрукты, специи, бочка. Сложное копчёное пиво, которое держится на балансе.",
++  "32A": "Пиво классического стиля с копчёным солодом, ароматом дыма и копчёностей.",
++  "32B": "Копчёное пиво с дополнительными фруктовыми, пряными или бочковыми нотами.",
+ 
+   "33A": "Пиво, выдержанное на древесине: ваниль, тост, кокос и мягкие танины дуба поверх базового вкуса.",
+-  "33B": "Пиво, выдержанное в бочке из-под бурбона, рома или вина: к дубу добавляется дух того, что жило в бочке раньше, — ваниль, карамель, алкогольное тепло.",
++  "33B": "Пиво, выдержанное в бочке из-под бурбона, рома или вина, с древесными нотами и ароматом напитка, который был в бочке раньше.",
+ 
+-  "34A": "Домашняя версия конкретного коммерческого сорта — того, что не укладывается ни в один стиль гайдлайна.",
+-  "34B": "Два стиля в одном бокале: гибрид берёт лучшее от каждого и не притворяется ни одним из них.",
+-  "34C": "Пиво вне правил: своя идея, свои ингредиенты, свой процесс. Стиля для него ещё не придумали.",
++  "34A": "Домашняя версия конкретного коммерческого пива, которое не укладывается в категории справочника BJCP.",
++  "34B": "Пиво, сочетающее характерные признаки двух стилей.",
++  "34C": "Экспериментальное пиво с необычными ингредиентами или способом приготовления, не относящееся к установленным стилям.",
+ 
+-  "X1": "Аргентинский золотистый эль: мягкий солод, деликатная фруктовость и лёгкая горчинка. Пиво, созданное, чтобы пить его много.",
+-  "X2": "Аргентинский IPA: местный хмель даёт цитрус и травы, горечь уверенная, но не жёсткая. Южноамериканское прочтение жанра.",
+-  "X3": "Итальянский эль с виноградом: сусло местных лоз приносит винную кислинку и ягодный аромат. Пиво с виноградника.",
+-  "X4": "Бразильский кислый: свежие тропические фрукты и чистая молочная кислинка в лёгком пшеничном теле. Пиво пляжной жары.",
++  "X1": "Аргентинский золотистый эль с мягким солодовым вкусом, лёгкими фруктовыми нотами и слабой горечью.",
++  "X2": "Аргентинский IPA с цитрусовыми и травяными нотами местного хмеля, выраженной, но мягкой горечью.",
++  "X3": "Итальянский эль с виноградным суслом, винной кислинкой и ягодным ароматом.",
++  "X4": "Лёгкое бразильское кислое пиво с тропическими фруктами и чистой молочной кислинкой.",
+   "X5": "Новозеландский пилснер: сухая лагерная основа и хмель Южного полушария — маракуйя, грейпфрут, свежая трава."
+ };
+ 
+--- a/packages/push/src/notification.ts
++++ b/packages/push/src/notification.ts
+@@ -24,7 +24,7 @@
+   CONTINUE_DOUGH: "Продолжить засыпку солода?",
+   ADD_MALT: "Засыпьте солод",
+   IODINE: "Йодная проба",
+-  REMOVE_MALT: "Удалите солод",
++  REMOVE_MALT: "Извлеките дробину",
+   RESUME_BREW: "Возобновить варку после перезагрузки?",
+ };
+ 
+@@ -138,7 +138,7 @@
+ export function fermentWatchdogNotification(ctx: NotificationContext, minutes: number): PushPayload {
+   return {
+     title: `⚠ ${ctx.deviceName}`,
+-    body: `Прибор молчит ${minutes} мин`,
++    body: `Нет связи с прибором ${minutes} мин`,
+     tag: `${ctx.deviceId}:ferment-watchdog`,
+     url: `/app/devices/${ctx.deviceId}`,
+   };
+@@ -188,7 +188,7 @@
+   brewBatchId: string,
+ ): PushPayload {
+   return {
+-    title: `Ареометр молчит: ${ctx.deviceName}`,
++    title: `Нет данных от ареометра: ${ctx.deviceName}`,
+     body: `Нет данных ${silentHours} ч. Партия «${batchName}»`,
+     tag: `${ctx.deviceId}:stream-silence`,
+     url: `/app/brew-batches/${brewBatchId}`,

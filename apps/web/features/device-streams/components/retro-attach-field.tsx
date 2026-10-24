@@ -49,7 +49,7 @@ export function RetroAttachField({ deviceId, checked, onCheckedChange }: Props) 
   return (
     <label className="flex items-start gap-2 text-sm text-foreground">
       <Checkbox checked={checked} onCheckedChange={onCheckedChange} className="mt-0.5" />
-      Забрать данные с {dateFmt.format(new Date(preview.oldestTs))} ({preview.count} {pluralize(preview.count, ["точка", "точки", "точек"])})
+      Добавить в сеанс показания с {dateFmt.format(new Date(preview.oldestTs))} ({preview.count} {pluralize(preview.count, ["показание", "показания", "показаний"])})
     </label>
   );
 }

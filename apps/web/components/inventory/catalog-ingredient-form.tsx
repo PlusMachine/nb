@@ -520,9 +520,9 @@ export const resolveCatalogBatchOverrideSummaryState = ({
     const currentExtract = formatCatalogBatchNumber(
       hasTechnicalOverrides ? overrides.fermentableExtractYieldPct : defaults.fermentableExtractYieldPct,
       "%"
-    ) ?? "Экстракт не указан";
+    ) ?? "Экстрактивность не указана";
     const catalogColor = formatCatalogBatchNumber(defaults.fermentableColorEbc, " EBC") ?? "Цвет не указан";
-    const catalogExtract = formatCatalogBatchNumber(defaults.fermentableExtractYieldPct, "%") ?? "Экстракт не указан";
+    const catalogExtract = formatCatalogBatchNumber(defaults.fermentableExtractYieldPct, "%") ?? "Экстрактивность не указана";
 
     return {
       currentEntries: [
@@ -1542,7 +1542,7 @@ export function CatalogIngredientForm({
 
       {selected ? (
         <button type="submit" disabled={pending} className="w-full rounded-md bg-foreground px-4 py-2.5 text-sm text-background disabled:opacity-60">
-          {pending ? "Сохранение..." : derivedVariantPresentation.submitLabel}
+          {pending ? "Сохраняем…" : derivedVariantPresentation.submitLabel}
         </button>
       ) : null}
     </form>

@@ -37,7 +37,7 @@ const resolveMasterCoverImagePath = (snapshot: MasterPublishedSnapshot): string 
 
 const MARKET_LIST_TITLE = "Маркет пивоварного оборудования от мастеров";
 const MARKET_LIST_DESCRIPTION =
-  "Пивоварное оборудование ручной работы: ЦКТ и ёмкости, автоматика для варки, чиллеры, мельницы — от мастеров из комьюнити. Контакты и фото — напрямую, без посредников.";
+  "Пивоварное оборудование от мастеров сообщества: ЦКТ и другие ёмкости, автоматика, чиллеры и мельницы. Фотографии и контакты мастеров.";
 
 // "market" — ключ реестра обложек разделов (features/og/section.ts,
 // SECTION_HUBS.market), типизирован SectionOgKey — getSectionOgImage резолвит

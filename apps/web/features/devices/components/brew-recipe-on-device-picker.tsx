@@ -137,14 +137,14 @@ export function BrewRecipeOnDevicePicker({ open, onOpenChange, deviceId, deviceN
     <Dialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Сварить рецепт на пивоварне"
+      title="Сварить на пивоварне по рецепту"
       hideTitle
       size="md"
       guard={{ isDirty: () => submitting, onGuardedClose: () => {} }}
     >
       <DialogHeader>
         <div>
-          <h2 className="text-base font-semibold text-foreground">Сварить рецепт</h2>
+          <h2 className="text-base font-semibold text-foreground">Сварить по рецепту</h2>
           <p className="mt-1 text-sm leading-6 text-muted-foreground">
             {screen === "pick" ? "Выберите рецепт для этой пивоварни." : "Подтвердите запуск нагрева."}
           </p>
@@ -173,7 +173,7 @@ export function BrewRecipeOnDevicePicker({ open, onOpenChange, deviceId, deviceN
             {tab === "mine" ? (
               pushableRecipes.length === 0 ? (
                 <p className="py-4 text-sm text-muted-foreground">
-                  У вас пока нет рецептов. Создайте рецепт, чтобы сварить его на этой пивоварне.
+                  У вас пока нет рецептов. Создайте рецепт, чтобы варить по нему на этой пивоварне.
                 </p>
               ) : (
                 <ul className="max-h-72 space-y-2 overflow-y-auto">
@@ -259,7 +259,7 @@ export function BrewRecipeOnDevicePicker({ open, onOpenChange, deviceId, deviceN
                 <div>
                   <p className="font-semibold">Запуск включит нагрев</p>
                   <p className="mt-1 text-xs leading-5 text-warning-subtle-foreground">
-                    Пивоварня «{deviceName ?? "—"}» начнёт нагрев ТЭНов по рецепту «{selected?.title ?? "—"}».
+                    Пивоварня «{deviceName ?? "—"}» включит нагрев по рецепту «{selected?.title ?? "—"}».
                     Убедитесь, что в ёмкости есть вода, а оборудование под присмотром.
                   </p>
                 </div>

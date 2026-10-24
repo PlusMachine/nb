@@ -1,0 +1,441 @@
+--- a/apps/web/tests/labels-layout.test.ts
++++ b/apps/web/tests/labels-layout.test.ts
+@@ -355,9 +355,11 @@
+     for (const [id, text] of Object.entries(beerStyleTaglinesRu)) {
+       for (const preset of ["L", "LW"] as const) {
+         for (const template of ["typographic", "craft"] as const) {
+-          const state = resolveDescriptionPrintState({ template, preset, dpi: 203, slots: { ...rich, description: text } });
+-          if (state === "dropped") {
+-            dropped.push(`${id} ${preset}/${template}`);
++          for (const dpi of [203, 300] as const) {
++            const state = resolveDescriptionPrintState({ template, preset, dpi, slots: { ...rich, description: text } });
++            if (state === "dropped") {
++              dropped.push(`${id} ${preset}/${template}/${dpi}`);
++            }
+           }
+         }
+       }
+--- a/apps/web/e2e/mobile-audit.spec.ts
++++ b/apps/web/e2e/mobile-audit.spec.ts
+@@ -36,7 +36,7 @@
+   await page.getByRole("button", { name: "Крафт", exact: true }).click();
+   for (const format of ["43×25 мм", "58×40 мм", "75×120 мм", "120×75 мм", "Лист A4"]) {
+     await page.getByRole("button", { name: format, exact: true }).first().click();
+-    const preview = page.getByRole("img", { name: /Превью наклейки/ });
++    const preview = page.getByRole("img", { name: /Предпросмотр этикетки/ });
+     await expect(preview).toBeVisible({ timeout: 20_000 });
+     await expect.poll(() => preview.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
+     for (const field of ["Название", "Стиль", "Автор"]) {
+@@ -48,6 +48,14 @@
+     }
+     await expectDocumentFits(page);
+   }
++  await page.setViewportSize({ width: 1280, height: 900 });
++  await page.evaluate(() => { document.documentElement.style.fontSize = "200%"; });
++  for (const text of ["Крепость, % об.", "Горечь, IBU", "Цвет, EBC", "Начальная плотность", "Конечная плотность"]) {
++    const label = page.getByText(text, { exact: true });
++    await expect(label).toBeVisible();
++    expect(await label.evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
++  }
++  await expectDocumentFits(page);
+ });
+ 
+ test("M02: public navigation and sign-in fit, including tablet breakpoint", async ({ page, context, baseURL }) => {
+@@ -55,6 +63,7 @@
+   await open(page, "/calculators/abv-attenuation");
+   await expectDocumentFits(page);
+   await expectControlFits(page, page.getByRole("banner").getByRole("link", { name: "Войти", exact: true }));
++  if (page.viewportSize()!.width >= 1280) await page.setViewportSize({ width: 834, height: 1112 });
+   await expectControlFits(page, page.getByRole("button", { name: "Открыть меню", exact: true }));
+   await page.getByRole("button", { name: "Открыть меню", exact: true }).click();
+   await expect(page.getByRole("navigation", { name: "Разделы сайта" }).last()).toBeVisible();
+@@ -64,9 +73,10 @@
+   await expectControlFits(page, page.getByRole("banner").getByRole("link", { name: "Войти", exact: true }));
+   await page.setViewportSize({ width: 844, height: 390 });
+   await page.getByRole("button", { name: "Открыть меню", exact: true }).click();
++  await page.getByRole("button", { name: "Тема оформления", exact: true }).last().click();
+   const theme = page.getByRole("radio", { name: "Тёмная тема", exact: true }).last();
+   await theme.click();
+-  await expect(theme).toHaveAttribute("aria-checked", "true");
++  await expect(page.locator("html")).toHaveClass(/dark/);
+ });
+ 
+ test("M03/M06: admin navigation and table do not widen document", async ({ page, context, baseURL }) => {
+@@ -79,9 +89,10 @@
+     await menu.click();
+     await expect(page.getByRole("dialog")).toBeVisible();
+     if (page.viewportSize()!.width < 640) {
+-      const theme = page.getByRole("dialog").getByRole("radio", { name: "Тёмная тема", exact: true });
++      await page.getByRole("dialog").getByRole("button", { name: "Тема оформления", exact: true }).click();
++      const theme = page.getByRole("radio", { name: "Тёмная тема", exact: true });
+       await theme.click();
+-      await expect(theme).toHaveAttribute("aria-checked", "true");
++      await expect(page.locator("html")).toHaveClass(/dark/);
+     }
+     await page.getByRole("dialog").getByRole("button", { name: "Закрыть", exact: true }).click();
+     await expect(page.getByRole("dialog")).toBeHidden();
+@@ -115,7 +126,7 @@
+     expect((await toolbar.locator("dl").boundingBox())!.height).toBeLessThanOrEqual(24);
+   }
+   for (let cycle = 0; cycle < 2; cycle++) {
+-    if (page.viewportSize()!.width < 640) {
++    if (page.viewportSize()!.width < 768) {
+       await toolbar.getByRole("button", { name: "Действия с рецептом", exact: true }).click();
+       await page.getByRole("menuitem", { name: "Импорт / экспорт", exact: true }).click();
+     } else {
+--- a/apps/web/e2e/theme-menu.spec.ts
++++ b/apps/web/e2e/theme-menu.spec.ts
+@@ -21,9 +21,9 @@
+   await expect(themeTrigger(page)).toBeFocused();
+ 
+   await themeTrigger(page).click();
+-  await page.getByRole("button", { name: "Скин «Хмель»: выключен", exact: true }).click();
++  await page.getByRole("button", { name: "Оформление «Хмель» выключено", exact: true }).click();
+   await expect(page.locator("html")).toHaveClass(/skin-hop/);
+-  await expect(page.getByRole("button", { name: "Скин «Хмель»: включён", exact: true })).toHaveAttribute("aria-pressed", "true");
++  await expect(page.getByRole("button", { name: "Оформление «Хмель» включено", exact: true })).toHaveAttribute("aria-pressed", "true");
+   await page.keyboard.press("Escape");
+   await expect(themeTrigger(page)).toBeFocused();
+ 
+@@ -48,7 +48,7 @@
+   await expect(page.locator("html")).not.toHaveClass(/dark/);
+ 
+   await themeTrigger(page).click();
+-  await page.getByRole("button", { name: "Скин «Хмель»: включён", exact: true }).click();
++  await page.getByRole("button", { name: "Оформление «Хмель» включено", exact: true }).click();
+   await expect(page.locator("html")).not.toHaveClass(/skin-hop/);
+   await page.getByRole("radio", { name: "Светлая тема", exact: true }).click();
+   await expect(page.locator("html")).not.toHaveClass(/dark/);
+--- a/apps/web/e2e/brewforge-demo.spec.ts
++++ b/apps/web/e2e/brewforge-demo.spec.ts
+@@ -11,7 +11,7 @@
+   await page.context().addCookies([{ name: "nb_dev_guest", value: "1", url: baseURL! }]);
+   await page.goto("/brewforge");
+   await page.getByRole("button", { name: "Только необходимые", exact: true }).click();
+-  await expect(page.getByRole("heading", { name: "Автоматика варочного дня", exact: true })).toBeVisible();
++  await expect(page.getByRole("heading", { name: "Автоматика для пивоварни", exact: true })).toBeVisible();
+   await expect(page.getByText("История температуры", { exact: true })).toBeVisible();
+   await expect(page.getByText("Ход варки", { exact: true })).toBeVisible();
+   await expect(page.getByText("Контур", { exact: true })).toBeVisible();
+--- a/apps/web/features/brew-controller/components/control-lease-badge.tsx
++++ b/apps/web/features/brew-controller/components/control-lease-badge.tsx
+@@ -27,19 +27,19 @@
+   // Я держу аренду.
+   if (lease?.heldByMe) {
+     return (
+-      <div className="inline-flex flex-wrap items-center gap-2">
++      <div className="inline-flex max-w-full flex-wrap items-center gap-2">
+         <span className="inline-flex items-center gap-1.5 rounded-full bg-success-subtle px-3 py-1 text-xs font-medium text-success-subtle-foreground">
+-          <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
++          <ShieldCheck className="h-3.5 w-3.5 shrink-0" aria-hidden />
+           Вы управляете
+         </span>
+         {lease.takeoverRequested ? (
+-          <span className="inline-flex items-center gap-2 rounded-full bg-warning-subtle px-3 py-1 text-xs font-medium text-warning-subtle-foreground">
+-            Запрошена передача управления
++          <span className="inline-flex max-w-full flex-wrap items-center gap-x-2 gap-y-1 rounded-xl bg-warning-subtle px-3 py-2 text-xs font-medium text-warning-subtle-foreground">
++            <span className="min-w-0 flex-1 basis-48">Запрошена передача управления</span>
+             <button
+               type="button"
+               onClick={onRelease}
+               disabled={pending}
+-              className="rounded-md bg-warning px-2 py-0.5 text-[11px] font-semibold text-warning-foreground hover:bg-warning/90 disabled:opacity-50"
++              className="ml-auto shrink-0 whitespace-nowrap rounded-md bg-warning px-2 py-0.5 text-[11px] font-semibold text-warning-foreground hover:bg-warning/90 disabled:opacity-50"
+             >
+               Передать
+             </button>
+@@ -52,11 +52,11 @@
+   // Держит другой валидный сеанс.
+   if (lease?.held) {
+     return (
+-      <span className="inline-flex items-center gap-2 rounded-full bg-warning-subtle px-3 py-1 text-xs font-medium text-warning-subtle-foreground">
+-        <ShieldQuestion className="h-3.5 w-3.5" aria-hidden />
+-        Управление открыто в другом окне или на другом устройстве
++      <span className="inline-flex max-w-full flex-wrap items-center gap-x-2 gap-y-1 rounded-xl bg-warning-subtle px-3 py-2 text-xs font-medium text-warning-subtle-foreground">
++        <ShieldQuestion className="h-3.5 w-3.5 shrink-0" aria-hidden />
++        <span className="min-w-0 flex-1 basis-48">Управление открыто в другом окне или на другом устройстве</span>
+         {lease.takeoverByMe ? (
+-          <span className="rounded-md bg-warning-subtle px-2 py-0.5 text-[11px] font-semibold text-warning-subtle-foreground">
++          <span className="ml-auto shrink-0 whitespace-nowrap rounded-md bg-warning-subtle px-2 py-0.5 text-[11px] font-semibold text-warning-subtle-foreground">
+             Управление запрошено…
+           </span>
+         ) : (
+@@ -64,7 +64,7 @@
+             type="button"
+             onClick={onRequestTakeover}
+             disabled={pending}
+-            className="rounded-md bg-warning px-2 py-0.5 text-[11px] font-semibold text-warning-foreground hover:bg-warning/90 disabled:opacity-50"
++            className="ml-auto shrink-0 whitespace-nowrap rounded-md bg-warning px-2 py-0.5 text-[11px] font-semibold text-warning-foreground hover:bg-warning/90 disabled:opacity-50"
+           >
+             Запросить управление
+           </button>
+@@ -76,7 +76,7 @@
+   // Аренда свободна / идёт подключение.
+   return (
+     <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
+-      <Radio className="h-3.5 w-3.5" aria-hidden />
++      <Radio className="h-3.5 w-3.5 shrink-0" aria-hidden />
+       Управление свободно
+     </span>
+   );
+--- a/apps/web/features/labels/templates/blocks.ts
++++ b/apps/web/features/labels/templates/blocks.ts
+@@ -519,41 +519,46 @@
+   const maxLines = params.maxLines ?? 3;
+ 
+   for (let lines = maxLines; lines >= 1; lines -= 1) {
+-    const fitted = fitTextLines(source, {
+-      fontId: "body",
+-      maxWidthPx: params.width,
+-      maxLines: lines,
+-      maxSizePx: mm(2.5),
+-      minSizePx: mm(2)
+-    });
+-    if (fitted.lines.length === 0) {
+-      continue;
+-    }
+-    const lineHeight = Math.round(fitted.fontSizePx * 1.32);
+-    const height = fitted.lines.length * lineHeight;
+-    if (params.maxHeightPx !== undefined && height > params.maxHeightPx) {
+-      continue;
+-    }
+-    const trimmed = fitted.lines.join(" ") !== source;
+-    if (trimmed && fitted.lines.length < DESCRIPTION_MIN_TRIMMED_LINES) {
+-      break;
+-    }
+-    const parts = fitted.lines.map((line, index) =>
+-      textEl({
+-        x: params.cx,
+-        y: params.y + fitted.fontSizePx + index * lineHeight,
++    // Округление миллиметров в пиксели зависит от dpi. Если строкам не хватает
++    // пары пикселей по высоте, сначала уменьшаем кегль в допустимых пределах.
++    for (let maxSizePx = mm(2.5); maxSizePx >= mm(2);) {
++      const fitted = fitTextLines(source, {
+         fontId: "body",
+-        sizePx: fitted.fontSizePx,
+-        text: line,
+-        anchor: "middle"
+-      })
+-    );
+-    return {
+-      svg: `<g ${DESCRIPTION_SVG_ATTR}="${trimmed ? "trimmed" : "full"}">${parts.join("")}</g>`,
+-      height,
+-      trimmed,
+-      printedChars: fitted.lines.join(" ").length
+-    };
++        maxWidthPx: params.width,
++        maxLines: lines,
++        maxSizePx,
++        minSizePx: mm(2)
++      });
++      if (fitted.lines.length === 0) {
++        break;
++      }
++      const lineHeight = Math.round(fitted.fontSizePx * 1.32);
++      const height = fitted.lines.length * lineHeight;
++      if (params.maxHeightPx !== undefined && height > params.maxHeightPx) {
++        maxSizePx = fitted.fontSizePx - 1;
++        continue;
++      }
++      const trimmed = fitted.lines.join(" ") !== source;
++      if (trimmed && fitted.lines.length < DESCRIPTION_MIN_TRIMMED_LINES) {
++        break;
++      }
++      const parts = fitted.lines.map((line, index) =>
++        textEl({
++          x: params.cx,
++          y: params.y + fitted.fontSizePx + index * lineHeight,
++          fontId: "body",
++          sizePx: fitted.fontSizePx,
++          text: line,
++          anchor: "middle"
++        })
++      );
++      return {
++        svg: `<g ${DESCRIPTION_SVG_ATTR}="${trimmed ? "trimmed" : "full"}">${parts.join("")}</g>`,
++        height,
++        trimmed,
++        printedChars: fitted.lines.join(" ").length
++      };
++    }
+   }
+ 
+   // Не влезло ни одной полноценной строки — описание не печатаем (но и не молчим).
+--- a/apps/web/components/recipes/recipe-actions-menu.tsx
++++ b/apps/web/components/recipes/recipe-actions-menu.tsx
+@@ -72,25 +72,25 @@
+   );
+ 
+   return (
+-    <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
++    <div className="flex min-w-0 max-w-full flex-wrap items-center justify-end gap-1.5 md:gap-2">
+       {labelsHref ? (
+-        <Link href={labelsHref} className={`${buttonVariants({ variant: "outline", size: "md" })} hidden sm:inline-flex`} aria-label="Наклейки" title="Наклейки">
++        <Link href={labelsHref} className={`${buttonVariants({ variant: "outline", size: "md" })} hidden md:inline-flex`} aria-label="Наклейки" title="Наклейки">
+           <Sticker className="h-4 w-4 text-muted-foreground" />
+-          <span className="hidden sm:inline">Наклейки</span>
++          <span className="hidden md:inline">Наклейки</span>
+         </Link>
+       ) : null}
+       <Button
+         type="button"
+         variant="outline"
+         size="md"
+-        className="hidden sm:inline-flex"
++        className="hidden md:inline-flex"
+         onClick={onOpenImportExport}
+         disabled={pending}
+         aria-label="Импорт / экспорт"
+         title="Импорт / экспорт"
+       >
+         <FileText className="h-4 w-4 text-muted-foreground" />
+-        <span className="hidden sm:inline">Импорт / экспорт</span>
++        <span className="hidden md:inline">Импорт / экспорт</span>
+       </Button>
+       <Button
+         type="button"
+@@ -104,7 +104,7 @@
+         <Timer className="h-4 w-4" />
+         <span>Сварить</span>
+       </Button>
+-      <div className="sm:hidden">
++      <div className="md:hidden">
+         <DropdownMenu
+           align="end"
+           aria-label="Действия с рецептом"
+@@ -115,7 +115,7 @@
+         />
+       </div>
+       {items.length ? (
+-        <div className="hidden sm:block">
++        <div className="hidden md:block">
+           <DropdownMenu align="end" aria-label="Действия с рецептом" trigger={trigger} items={items} />
+         </div>
+       ) : null}
+--- a/apps/web/components/inventory/inventory-price-input.tsx
++++ b/apps/web/components/inventory/inventory-price-input.tsx
+@@ -162,13 +162,13 @@
+ 
+   return (
+     <div className="rounded-md border p-3">
+-      <div className="flex items-center justify-between gap-3">
++      <div className="flex flex-wrap items-center justify-between gap-3">
+         <div>
+           <p className="text-sm font-medium">
+             Цена {priceInputMode === "per_display_unit" ? `за ${inventoryUnitShortLabels[effectivePriceUnit]}` : "за всё количество"}
+           </p>
+         </div>
+-        <div className="grid grid-cols-2 gap-1 rounded-md bg-muted p-1 text-xs" role="group" aria-label="Как указана цена">
++        <div className="grid w-full grid-cols-2 gap-1 rounded-md bg-muted p-1 text-xs sm:w-auto" role="group" aria-label="Как указана цена">
+           {inventoryPriceInputModes.map((mode) => {
+             const active = priceInputMode === mode;
+             return (
+--- a/apps/web/components/recipes/recipe-designer/recipe-designer.tsx
++++ b/apps/web/components/recipes/recipe-designer/recipe-designer.tsx
+@@ -1525,18 +1525,18 @@
+           ) : null}
+         </dl>
+ 
+-        <div className="ml-auto flex shrink-0 items-center gap-1.5">
++        <div className="ml-auto flex min-w-0 max-w-full flex-wrap items-center justify-end gap-1.5">
+           {canManagePublication && savedVisibility === "published" && activeRecipeSlug ? (
+             <a
+               href={`/recipes/${activeRecipeSlug}`}
+               target="_blank"
+               rel="noreferrer"
+-              className="hidden h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted sm:inline-flex sm:text-sm"
++              className="hidden h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted md:inline-flex md:text-sm"
+               title="Посмотреть публикацию"
+               aria-label="Посмотреть публикацию"
+             >
+               <ExternalLink className="h-3.5 w-3.5" />
+-              <span className="hidden sm:inline">Посмотреть публикацию</span>
++              <span className="hidden md:inline">Посмотреть публикацию</span>
+             </a>
+           ) : null}
+           {canManagePublication && savedVisibility === "private" ? (
+@@ -1546,10 +1546,10 @@
+               disabled={pendingSave}
+               aria-label="Опубликовать"
+               title="Опубликовать"
+-              className="hidden h-9 items-center gap-1.5 rounded-lg border border-foreground bg-foreground px-3 text-xs font-medium text-background transition-colors hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-60 sm:inline-flex sm:px-4 sm:text-sm skin-hop:border-primary skin-hop:bg-primary skin-hop:text-primary-foreground skin-hop:hover:bg-primary/90"
++              className="hidden h-9 items-center gap-1.5 rounded-lg border border-foreground bg-foreground px-3 text-xs font-medium text-background transition-colors hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-60 md:inline-flex md:px-4 md:text-sm skin-hop:border-primary skin-hop:bg-primary skin-hop:text-primary-foreground skin-hop:hover:bg-primary/90"
+             >
+               <Globe className="h-3.5 w-3.5" />
+-              <span className="hidden sm:inline">Опубликовать</span>
++              <span className="hidden md:inline">Опубликовать</span>
+             </button>
+           ) : null}
+           {canManagePublication && savedVisibility === "published" ? (
+@@ -1561,10 +1561,10 @@
+               }}
+               disabled={pendingSave}
+               aria-label="Скрыть публикацию"
+-              className="hidden h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60 sm:inline-flex sm:text-sm"
++              className="hidden h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60 md:inline-flex md:text-sm"
+             >
+               <Lock className="h-3.5 w-3.5" />
+-              <span className="hidden sm:inline">Скрыть публикацию</span>
++              <span className="hidden md:inline">Скрыть публикацию</span>
+             </button>
+           ) : null}
+           <RecipeActionsMenu
+--- a/apps/web/components/recipes/labels/label-studio.tsx
++++ b/apps/web/components/recipes/labels/label-studio.tsx
+@@ -939,7 +939,7 @@
+             <Field id="lb-title" label="Название" value={fields.title} maxLength={LABEL_FIELD_LIMITS.title} onChange={setField("title")} onBlur={flushSync} placeholder={defaults.title} className="sm:col-span-2" />
+             <Field id="lb-style" label="Стиль" value={fields.style} maxLength={LABEL_FIELD_LIMITS.style} onChange={setField("style")} onBlur={flushSync} className="sm:col-span-2" />
+             {/* На 360px три узкие колонки в один ряд не влезают читаемо — стек до sm. */}
+-            <div className="grid grid-cols-1 gap-3 sm:col-span-2 sm:grid-cols-3">
++            <div className="grid grid-cols-1 gap-3 sm:col-span-2 sm:grid-cols-[repeat(auto-fit,minmax(min(100%,7rem),1fr))]">
+               <Field id="lb-abv" label="Крепость, % об." value={fields.abv} maxLength={LABEL_FIELD_LIMITS.abv} onChange={setField("abv")} onBlur={flushSync} placeholder="~5.2%" inputMode="decimal" />
+               <Field id="lb-ibu" label="Горечь, IBU" value={fields.ibu} maxLength={LABEL_FIELD_LIMITS.ibu} onChange={setField("ibu")} onBlur={flushSync} placeholder="38" inputMode="decimal" />
+               <Field id="lb-ebc" label="Цвет, EBC" value={fields.ebc} maxLength={LABEL_FIELD_LIMITS.ebc} onChange={setField("ebc")} onBlur={flushSync} placeholder="12" inputMode="decimal" />
+--- a/apps/web/app/(public)/demo/page.tsx
++++ b/apps/web/app/(public)/demo/page.tsx
+@@ -115,7 +115,7 @@
+     <main className="space-y-16 pb-24 pt-8">
+       <section className="overflow-hidden rounded-[2.75rem] border border-border/80 bg-card/90 px-6 py-10 shadow-[0_45px_120px_-70px_rgba(15,23,42,0.45)] backdrop-blur sm:px-8 lg:px-10">
+         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Демо</p>
+-        <h1 className="mt-3 max-w-2xl text-balance text-4xl font-semibold leading-[0.98] text-foreground sm:text-5xl lg:text-6xl" style={{ fontFamily: "var(--font-display)" }}>
++        <h1 className="mt-3 max-w-2xl break-words text-balance text-3xl font-semibold leading-[0.98] text-foreground min-[360px]:text-4xl sm:text-5xl lg:text-6xl" style={{ fontFamily: "var(--font-display)" }}>
+           Попробуйте NB без регистрации
+         </h1>
+         <p className="mt-5 max-w-xl text-pretty text-lg leading-8 text-muted-foreground">
+--- /dev/null
++++ b/apps/web/e2e/copy-layout.config.ts
+@@ -0,0 +1,34 @@
++import { defineConfig } from "@playwright/test";
++
++const webkitLaunch = process.env.NB_WEBKIT_EXECUTABLE
++  ? { executablePath: process.env.NB_WEBKIT_EXECUTABLE }
++  : undefined;
++
++export default defineConfig({
++  testDir: ".",
++  testMatch: ["mobile-audit.spec.ts", "theme-menu.spec.ts", "brewforge-demo.spec.ts"],
++  outputDir: "../../../notes/copy-layout-audit-2026-10-23/e2e-results",
++  fullyParallel: true,
++  workers: 2,
++  timeout: 45_000,
++  expect: { timeout: 15_000 },
++  reporter: [
++    ["list"],
++    ["json", { outputFile: "../../../notes/copy-layout-audit-2026-10-23/e2e.json" }]
++  ],
++  use: {
++    baseURL: process.env.E2E_BASE_URL ?? "http://127.0.0.1:3010",
++    locale: "ru-RU",
++    timezoneId: "Europe/Moscow",
++    screenshot: "only-on-failure"
++  },
++  projects: [
++    { name: "mobile", use: { browserName: "chromium", viewport: { width: 320, height: 844 } } },
++    { name: "tablet640", use: { browserName: "chromium", viewport: { width: 640, height: 1000 } } },
++    { name: "tablet", use: { browserName: "chromium", viewport: { width: 834, height: 1112 } } },
++    { name: "desktop", use: { browserName: "chromium", viewport: { width: 1440, height: 900 } } },
++    { name: "safari-mobile", use: { browserName: "webkit", launchOptions: webkitLaunch, viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true } },
++    { name: "safari-tablet", use: { browserName: "webkit", launchOptions: webkitLaunch, viewport: { width: 834, height: 1112 }, isMobile: true, hasTouch: true } },
++    { name: "safari-desktop", use: { browserName: "webkit", launchOptions: webkitLaunch, viewport: { width: 1280, height: 900 } } }
++  ]
++});

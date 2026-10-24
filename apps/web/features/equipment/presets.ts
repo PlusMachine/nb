@@ -1,6 +1,6 @@
 import type { EquipmentProfilePayload } from "../equipment-profiles/contracts";
 
-import { buildStarterEquipmentProfileDefaults } from "./defaults";
+import { buildStarterEquipmentProfileDefaults, formatEquipmentProfileName } from "./defaults";
 
 /**
  * Пресеты популярных пивоварен.
@@ -161,7 +161,7 @@ export const equipmentPresets: EquipmentPreset[] = [
       minMashVolumeL: null,
       maxMashVolumeL: 27,
       maxKettleVolumeL: 28,
-      notes: "Заявленный выход 23 л не учитывает усадку при остывании: холодного сусла в ферментере будет ~22 л.\nС верхним ситом засыпь можно поднять с 8 до 9 кг."
+      notes: "Заявленный выход 23 л не учитывает уменьшение объёма при остывании: холодного сусла в ферментере будет ~22 л.\nС верхним ситом засыпь можно поднять с 8 до 9 кг."
     }
   }),
   preset({
@@ -574,7 +574,7 @@ export const equipmentPresets: EquipmentPreset[] = [
 export const equipmentStarterPresets = [
   {
     id: "starter_20l",
-    label: "Профиль оборудования (1)",
+    label: formatEquipmentProfileName(1),
     description: "Эффективность 70%, поглощение воды зерном 0,80 л/кг.",
     profile: buildStarterEquipmentProfileDefaults()
   }

@@ -122,7 +122,7 @@ const buildTypedBadges = (item: InventoryListItemDto) => {
       hop.alphaAcidPctTypical != null
         ? {
           label: userAlphaOverride
-            ? `α ${formatValue(hop.alphaAcidPctTypical)}% (пользовательская)`
+            ? `α ${formatValue(hop.alphaAcidPctTypical)}% (ваше значение)`
             : `α ${formatValue(hop.alphaAcidPctTypical)}%`,
           opensEditor: true
         }

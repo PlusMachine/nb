@@ -42,6 +42,6 @@ describe("stageLabel", () => {
     expect(stageLabel("DISTILL_HEADS")).toBe("Отбор голов");
     expect(stageLabel("DISTILL_HEARTS")).toBe("Отбор тела");
     expect(stageLabel("DISTILL_TAILS")).toBe("Отбор хвостов");
-    expect(stageLabel("FERMENT")).toBe("Ферментация");
+    expect(stageLabel("FERMENT")).toBe("Брожение");
   });
 });

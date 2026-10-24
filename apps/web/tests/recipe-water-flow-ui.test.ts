@@ -200,13 +200,13 @@ describe("recipe water flow UI", () => {
     expect(html).toContain("2. Целевой профиль");
     expect(html).toContain("3. Объём воды");
     expect(html).not.toContain("Редактировать исходную воду вручную");
-    expect(html).toContain("Водопоглощение дробиной, л/кг");
+    expect(html).toContain("Поглощение воды зерном, л/кг");
     expect(html).toContain("Сейчас: 0.80 л/кг");
     expect(html).not.toContain("Итоговый профиль воды");
     expect(html).toContain("4. pH и подкисление");
     expect(html).not.toContain("5. Что добавить");
     expect(html).toContain("Из каталога");
-    expect(html).toContain("Ионы вручную");
+    expect(html).toContain("Ввести состав вручную");
     expect(html).not.toContain("Сохраненные");
     expect(html).not.toContain("Сбалансированный лагер");
     expect(html).not.toContain("IPA, lager, blanche, стаут...");

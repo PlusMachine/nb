@@ -81,7 +81,7 @@ export function FermentRangePanel({ sessions, manualMeasurements, gravityUnit, d
 
   const stats = useMemo(() => (selection ? computeRangeStats(sessions, selection) : null), [sessions, selection]);
 
-  const pointsWord = (count: number) => pluralize(count, ["точка", "точки", "точек"]);
+  const pointsWord = (count: number) => pluralize(count, ["показание", "показания", "показаний"]);
 
   /**
    * Выделение может накрывать несколько сеансов — каждый *Action мутирует СВОЙ сеанс
@@ -119,7 +119,7 @@ export function FermentRangePanel({ sessions, manualMeasurements, gravityUnit, d
         });
         return result.ok ? { ok: true, affected: result.result.affected } : { ok: false, message: result.message };
       });
-      if (outcome.hasFailure) show({ title: outcome.firstErrorMessage ?? "Не удалось исключить часть точек.", tone: "danger" });
+      if (outcome.hasFailure) show({ title: outcome.firstErrorMessage ?? "Не удалось исключить часть показаний.", tone: "danger" });
       if (outcome.hasSuccess) {
         show({ title: `Исключено ${outcome.affected} ${pointsWord(outcome.affected)}`, tone: "success" });
         setSelection(null);
@@ -144,7 +144,7 @@ export function FermentRangePanel({ sessions, manualMeasurements, gravityUnit, d
         });
         return result.ok ? { ok: true, affected: result.result.affected } : { ok: false, message: result.message };
       });
-      if (outcome.hasFailure) show({ title: outcome.firstErrorMessage ?? "Не удалось вернуть часть точек.", tone: "danger" });
+      if (outcome.hasFailure) show({ title: outcome.firstErrorMessage ?? "Не удалось вернуть часть показаний.", tone: "danger" });
       if (outcome.hasSuccess) {
         show({ title: `Возвращено ${outcome.affected} ${pointsWord(outcome.affected)}`, tone: "success" });
         setSelection(null);
@@ -170,10 +170,10 @@ export function FermentRangePanel({ sessions, manualMeasurements, gravityUnit, d
         return result.ok ? { ok: true, affected: result.result.deletedCount } : { ok: false, message: result.message };
       });
       if (!outcome.hasSuccess) {
-        setDeleteError(outcome.firstErrorMessage ?? "Не удалось удалить точки. Попробуйте ещё раз.");
+        setDeleteError(outcome.firstErrorMessage ?? "Не удалось удалить показания. Попробуйте ещё раз.");
         return;
       }
-      if (outcome.hasFailure) show({ title: outcome.firstErrorMessage ?? "Часть точек не удалось удалить.", tone: "danger" });
+      if (outcome.hasFailure) show({ title: outcome.firstErrorMessage ?? "Часть показаний не удалось удалить.", tone: "danger" });
       show({ title: `Удалено ${outcome.affected} ${pointsWord(outcome.affected)}`, tone: "success" });
       setDeleteOpen(false);
       setSelection(null);
@@ -201,17 +201,17 @@ export function FermentRangePanel({ sessions, manualMeasurements, gravityUnit, d
           {stats.excludable > 0 ? (
             <Button type="button" variant="outline" size="sm" onClick={() => void excludeRange()} disabled={pending}>
               {pending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
-              Исключить точки ({stats.excludable})
+              Исключить показания ({stats.excludable})
             </Button>
           ) : null}
           {stats.excluded > 0 ? (
             <Button type="button" variant="outline" size="sm" onClick={() => void restoreRange()} disabled={pending}>
               {pending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
-              Вернуть точки ({stats.excluded})
+              Вернуть показания ({stats.excluded})
             </Button>
           ) : null}
           <Button type="button" variant="dangerOutline" size="sm" onClick={() => setDeleteOpen(true)} disabled={pending}>
-            Удалить точки ({stats.total})
+            Удалить показания ({stats.total})
           </Button>
         </div>
       ) : null}
@@ -219,7 +219,7 @@ export function FermentRangePanel({ sessions, manualMeasurements, gravityUnit, d
       <ConfirmActionDialog
         open={deleteOpen}
         title={`Удалить ${stats?.total ?? 0} ${pointsWord(stats?.total ?? 0)}?`}
-        description="Точки будут удалены безвозвратно. График и оценка состояния брожения будут пересчитаны без них."
+        description="Показания будут удалены безвозвратно. График и оценка состояния брожения будут пересчитаны без них."
         confirmLabel="Удалить"
         pendingLabel="Удаляем…"
         pending={pending}

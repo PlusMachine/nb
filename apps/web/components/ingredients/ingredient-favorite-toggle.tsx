@@ -19,7 +19,7 @@ export function IngredientFavoriteToggle({
   reference,
   initialFavorite = false,
   className = "",
-  label = "Переключить избранное",
+  label = "Избранный ингредиент",
   size = "sm",
   suppressParentInteraction = false,
   onFavoriteChange

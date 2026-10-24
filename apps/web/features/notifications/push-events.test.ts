@@ -378,7 +378,7 @@ describe("notificationFor — ферментация (H3)", () => {
     const edge: TelemetryEdge = { kind: "ferment-deviation", primaryC: 20.3, setpointC: 18 };
     expect(notificationFor(edge, ctx)).toEqual({
       title: "Ферментер",
-      body: "Отклонение от уставки: 20.3° при уставке 18.0°",
+      body: "Температура отклонилась от заданной: сейчас 20.3° (задано 18.0°).",
       tag: "dev-1:ferment-deviation",
       url: "/app/devices/dev-1",
     });
@@ -400,7 +400,7 @@ describe("fermentWatchdogNotification (H3, офлайн-watchdog §12.2)", () =>
     const payload = fermentWatchdogNotification({ deviceId: "dev-1", deviceName: "Ферментер" }, 45);
     expect(payload).toEqual({
       title: "⚠ Ферментер",
-      body: "Прибор молчит 45 мин",
+      body: "Нет связи с прибором 45 мин",
       tag: "dev-1:ferment-watchdog",
       url: "/app/devices/dev-1",
     });

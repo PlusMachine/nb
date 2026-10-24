@@ -1,0 +1,91 @@
+{
+  "date": "2026-10-24",
+  "passes": 7,
+  "files": 21,
+  "styles": 128,
+  "changed_text_fields": 1010,
+  "category_overviews": 30,
+  "family_descriptions": 12,
+  "second_pass": {
+    "changed_text_fields": 100,
+    "styles": 68,
+    "files": 20
+  },
+  "final_pass": {
+    "changed_text_fields": 274,
+    "styles": 109,
+    "style_fields": 253,
+    "category_fields": 20,
+    "family_fields": 1,
+    "files": 21
+  },
+  "wording_pass": {
+    "changed_text_fields": 80,
+    "styles": 41,
+    "category_fields": 1,
+    "files": 16
+  },
+  "checks": {
+    "json_parse": "passed",
+    "unique_style_ids": "128 / 128",
+    "change_logs_match_current_files_and_historical_snapshot": "passed",
+    "only_documented_russian_fields_changed": "passed",
+    "english_originals_statistics_ids_names_tags_examples_structure_unchanged": "passed",
+    "numbers_within_edited_text_unchanged": "passed",
+    "report_entry_counts_and_unique_ids": "passed",
+    "english_excerpts_match_source": "passed",
+    "scoped_git_diff_check": "passed",
+    "content_tests": {
+      "status": "passed",
+      "tests": 14,
+      "test_files": 2,
+      "command": "corepack pnpm --filter @nb/content test",
+      "note": "Пройдены после полной вычитки 128 стилей и синхронизации повторных копий."
+    },
+    "full_english_before_after_paragraphs_in_meaning_report": "passed",
+    "new_audit_english_and_short_description_references_match_source": "passed",
+    "report_javascript_syntax": "passed",
+    "six_change_logs_reconstruct_current_and_historical_files": "passed",
+    "complete_before_after_and_available_english_in_natural_wording_report": "passed",
+    "seven_change_logs_reconstruct_current_and_historical_files": "passed",
+    "full_paragraphs_in_three_column_report": "passed",
+    "complete_primary_review_inventory": "1350 / 1350",
+    "nested_ipa_descriptions_match_canonical_text": "passed"
+  },
+  "references": [
+    "https://www.bjcp.org/beer-styles/introduction-to-beer-styles/",
+    "https://www.bjcp.org/style/2021/29/",
+    "https://styles.bjcp.org/bjcp-2021-beer",
+    "https://styles.bjcp.org/bjcp-2021-beer/b/x1-dorada-pampeana",
+    "https://styles.bjcp.org/bjcp-2021-beer/1/1c-cream-ale"
+  ],
+  "meaning_audit": {
+    "reviewed_previous_fields": 675,
+    "changed_text_fields": 37,
+    "primary_card_fields": 31,
+    "nested_copies": 6,
+    "styles": 25,
+    "files": 12,
+    "before_snapshot": "Text immediately before this semantic audit",
+    "source_for_short_descriptions": "Overall Impression, explicitly labelled as reference rather than literal original"
+  },
+  "natural_wording": {
+    "changed_text_fields": 45,
+    "files": 12,
+    "style_fields": 43,
+    "category_fields": 2,
+    "notes": "User feedback: dry versions may quench thirst better; medium/ordinary strength in prose; Pilsner malt names with sentence-level agreement."
+  },
+  "full_language": {
+    "reviewed_primary_fields": 1350,
+    "reviewed_styles": 128,
+    "reviewed_family_descriptions": 12,
+    "reviewed_category_overviews": 41,
+    "changed_text_fields": 528,
+    "primary_fields": 475,
+    "synchronized_copies": 53,
+    "styles_with_primary_changes": 123,
+    "files": 20,
+    "source": "English text embedded in unchanged source JSON; Overall Impression explicitly labelled as a reference for short summaries."
+  }
+}

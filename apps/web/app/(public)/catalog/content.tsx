@@ -179,7 +179,7 @@ const renderCatalogHub = async ({
           <h1 className="text-3xl font-semibold tracking-tight text-foreground">Каталог ингредиентов</h1>
           <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
             {canManage
-              ? "Общий каталог и ваши ингредиенты — в одном разделе."
+              ? "Ингредиенты из общего каталога и добавленные вами."
               : "Открытый справочник ингредиентов для домашних пивоваров: солод, хмель, дрожжи и не только."}
           </p>
         </div>
@@ -207,12 +207,12 @@ const renderCatalogHub = async ({
       {visibleSections.length === 0 ? (
         <section className="rounded-[28px] border border-dashed border-border bg-muted px-6 py-10 text-center">
           <h2 className="text-lg font-semibold text-foreground">
-            {view === "mine" ? "У вас пока нет пользовательских ингредиентов" : "По текущим условиям ничего не найдено"}
+            {view === "mine" ? "Вы ещё не добавили свои ингредиенты" : "Ничего не найдено"}
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
             {view === "mine"
               ? "Создайте свой ингредиент с нуля или сделайте свой вариант на основе ингредиента из общего каталога."
-              : "Попробуйте изменить запрос, фильтр категории или сортировку."}
+              : "Попробуйте другое название или измените фильтры."}
           </p>
           {q || canManage ? (
             <div className="mt-5 flex flex-wrap justify-center gap-3">
@@ -442,12 +442,12 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
       {result.items.length === 0 ? (
         <section className="rounded-[28px] border border-dashed border-border bg-muted px-6 py-10 text-center">
           <h2 className="text-lg font-semibold text-foreground">
-            {view === "mine" ? "У вас пока нет пользовательских ингредиентов" : "По текущим условиям ничего не найдено"}
+            {view === "mine" ? "Вы ещё не добавили свои ингредиенты" : "Ничего не найдено"}
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
             {view === "mine"
               ? "Создайте свой ингредиент с нуля или сделайте свой вариант на основе ингредиента из общего каталога."
-              : "Попробуйте изменить запрос, фильтр категории или сортировку."}
+              : "Попробуйте другое название или измените фильтры."}
           </p>
           {showOtherCategoriesButton || q || canManage ? (
             <div className="mt-5 flex flex-wrap justify-center gap-3">

@@ -43,18 +43,18 @@ const baseRecipe: OwnerRecipeCardDto = {
 };
 
 describe("OwnerRecipeCard", () => {
-  it("published → показывает бейдж «Публичный»", () => {
+  it("published → показывает бейдж «Опубликован»", () => {
     const html = renderToStaticMarkup(
       <OwnerRecipeCard recipe={{ ...baseRecipe, publicationState: "published" }} preferredGravityUnit="plato" />
     );
-    expect(html).toContain("Публичный");
+    expect(html).toContain("Опубликован");
   });
 
   it("private → статус-бейдж не рендерится вовсе", () => {
     const html = renderToStaticMarkup(
       <OwnerRecipeCard recipe={{ ...baseRecipe, publicationState: "private" }} preferredGravityUnit="plato" />
     );
-    expect(html).not.toContain("Публичный");
+    expect(html).not.toContain("Опубликован");
     expect(html).not.toContain("Приватный");
   });
 

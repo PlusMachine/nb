@@ -65,7 +65,7 @@ describe("admin ingredient form", () => {
     expect(html).toContain('name="displayModeRu"');
     expect(html).toContain("Атрибуты");
     expect(html).toContain("Источники");
-    expect(html).toContain("Алиасы");
+    expect(html).toContain("Другие названия");
     expect(html).not.toContain("Варианты упаковки");
     expect(html).toContain("Cascade");
     expect(html).toContain("Каскад");
@@ -86,7 +86,7 @@ describe("admin ingredient form", () => {
       }
     }));
 
-    // Алиасы редактируются полями, а не сырым JSON: значение попадает в input.
+    // Другие названия редактируются полями, а не сырым JSON: значение попадает в input.
     expect(html).toContain('value="Цитра"');
   });
 

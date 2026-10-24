@@ -32,7 +32,7 @@ export function RecipesEmptyState({
 
   return (
     <section className="rounded-2xl border border-dashed border-border bg-muted p-10 text-center">
-      <h2 className="text-lg font-semibold text-foreground">Публичных рецептов пока нет</h2>
+      <h2 className="text-lg font-semibold text-foreground">Пока нет опубликованных рецептов</h2>
       <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
         <Link
           href="/app/recipes/new"

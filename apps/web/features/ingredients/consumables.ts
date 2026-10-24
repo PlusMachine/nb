@@ -309,7 +309,7 @@ export const consumablePickerGroupLabels: Record<string, string> = {
   coffee_cacao: "Кофе/какао",
   wood_aging: "Дерево/выдержка",
   flavoring: "Ароматизаторы",
-  sanitizer: "Санитайзеры",
+  sanitizer: "Дезинфицирующие средства",
   cleaner: "Мойка",
   packaging: "Тара и укупорка",
   gas: "Газы",
@@ -325,10 +325,10 @@ export const consumablePickerGroupDescriptions: Record<string, string> = {
   coffee_cacao: "Кофе, какао, кокос, ореховые и десертные добавки",
   wood_aging: "Дубовая щепа, кубики, спирали и древесина для выдержки",
   flavoring: "Фруктовые, десертные, бочковые и хмелевые ароматизаторы",
-  sanitizer: "No-rinse, йодофор и CIP-санитайзеры",
+  sanitizer: "Средства без смывания, средства на основе йода и средства для дезинфекции без разборки оборудования (CIP)",
   cleaner: "Щелочная, кислородная и кислотная мойка",
-  packaging: "Тара, крышки, пробки и расходка для розлива",
-  gas: "CO2 и газовая расходка",
+  packaging: "Тара, крышки, пробки и расходные материалы для розлива",
+  gas: "CO₂ и расходные материалы для газового оборудования",
   other: "Прочие добавки"
 };
 
@@ -407,7 +407,7 @@ const consumableUsageStageLabels: Record<string, string> = {
   pre_clean: "Замачивание",
   pre_packaging: "Перед розливом",
   primary: "Брожение",
-  sanitation: "Санитация",
+  sanitation: "Дезинфекция",
   secondary: "Брожение",
   water_treatment: "Водоподготовка",
   whirlpool: "Вирпул"

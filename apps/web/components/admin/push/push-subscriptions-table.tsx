@@ -128,7 +128,7 @@ export function PushSubscriptionsTable({ items }: { items: PushSubscriptionAdmin
         title="Удалить подписку?"
         description={
           target
-            ? `Устройство «${target.browser} · ${target.platform}» пользователя ${target.userName} перестанет получать пуши. Подписаться заново можно из браузера.`
+            ? `Устройство «${target.browser} · ${target.platform}» пользователя ${target.userName} перестанет получать уведомления. Включить их снова можно в браузере.`
             : ""
         }
         confirmLabel="Удалить"

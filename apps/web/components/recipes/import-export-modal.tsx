@@ -163,11 +163,11 @@ const mapImportSummaryError = (error: unknown) => {
   }
 
   if (error.message === "INVALID_BEERXML") {
-    return "BeerXML повреждён или не содержит корректных блоков RECIPE.";
+    return "Не удалось найти рецепты в файле BeerXML. Проверьте файл или экспортируйте его заново.";
   }
 
   if (error.message === "INVALID_BREWFATHER_JSON") {
-    return "Brewfather JSON не распознан: проверьте, что выбран экспорт рецепта из Brewfather.";
+    return "Не удалось прочитать рецепт Brewfather. Загрузите JSON-файл, экспортированный из Brewfather.";
   }
 
   if (error.message === "IMPORT_RECIPE_EMPTY") {
@@ -522,7 +522,7 @@ export function ImportExportModal({
           {mode === "import" ? (
             <section className="space-y-2">
               <h4 className="text-sm font-semibold text-foreground">3. Вставьте текст или загрузите файл</h4>
-              <p className="text-xs text-muted-foreground">{format === "brewfather_json" ? "В Brewfather экспортируйте рецепт в JSON или используйте резервную копию из Settings → Data → Export. Поддерживаются один рецепт, массив и раздел recipes резервной копии. Переносится до 100 рецептов за раз, размер файла — до 8 МБ. Склад и история варок не импортируются. Исходный JSON рецепта сохраняется для владельца." : "Поддерживается один рецепт или коллекция RECIPES: до 100 рецептов, до 8 МБ."} Все импортированные рецепты будут доступны только вам.</p>
+              <p className="text-xs text-muted-foreground">{format === "brewfather_json" ? "В Brewfather экспортируйте рецепт в JSON или скачайте резервную копию: Settings → Data → Export. Можно загрузить один или несколько рецептов, в том числе из резервной копии: до 100 рецептов и до 8 МБ. Склад и история варок не переносятся. Исходный файл рецепта сохранится и будет доступен только вам." : "Можно загрузить один рецепт или несколько рецептов в одном файле: до 100 рецептов и до 8 МБ."} Все импортированные рецепты будут доступны только вам.</p>
               <input type="file" accept={fileAccept} onChange={(event) => handleFile(event.target.files?.[0] ?? null)} className="block w-full text-sm text-muted-foreground" />
               <textarea
                 value={importText}
@@ -566,14 +566,14 @@ export function ImportExportModal({
                   onClick={() => void navigator.clipboard?.writeText(beerXmlExport)}
                   className="rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground disabled:opacity-50"
                 >
-                  Копировать
+                  Скопировать BeerXML
                 </button>
                 <a
                   href={beerXmlExport ? `data:text/xml;charset=utf-8,${encodeURIComponent(beerXmlExport)}` : undefined}
                   download="recipe.beerxml"
                   className={`rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground ${beerXmlExport ? "" : "pointer-events-none opacity-50"}`}
                 >
-                  Скачать
+                  Скачать BeerXML
                 </a>
               </div>
             </section>

@@ -1,14 +1,14 @@
 import React from "react";
 import Link from "next/link";
 
-// Табы раздела «Склад»: «Запасы» (/app/ingredients) и «Чего не хватает»
+// Табы раздела «Склад»: «Запасы» (/app/ingredients) и «Купить»
 // (/app/shopping — производная витрина склада: нехватки под запланированные
 // партии). Визуальный язык — RecipeTabs (components/recipes/recipe-tabs.tsx);
 // активный таб известен каждой странице статически, поэтому серверный
 // компонент без usePathname.
 const inventoryTabs = [
   { key: "stock", href: "/app/ingredients", label: "Запасы" },
-  { key: "missing", href: "/app/shopping", label: "Чего не хватает" }
+  { key: "missing", href: "/app/shopping", label: "Купить" }
 ] as const;
 
 type InventoryTabKey = (typeof inventoryTabs)[number]["key"];

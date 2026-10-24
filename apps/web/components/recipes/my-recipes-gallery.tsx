@@ -269,8 +269,8 @@ function RecipesGalleryInner({
 
   const statusOptions: { value: StatusFilter; label: string; count: number }[] = [
     { value: "all", label: "Все", count: statusCounts.all },
-    { value: "private", label: "Приватные", count: statusCounts.private },
-    { value: "published", label: "Публичные", count: statusCounts.published }
+    { value: "private", label: "Только мне", count: statusCounts.private },
+    { value: "published", label: "Опубликованные", count: statusCounts.published }
   ];
 
   const getMatch = matchCtx?.getMatch;

@@ -22,7 +22,7 @@ export function ManualItemsGroup({ items }: { items: ShoppingManualItemDto[] }) 
             icon={Package}
             iconColorClassName="text-muted-foreground"
             iconBgClassName="bg-muted"
-            label="Своё"
+            label="Добавлено вручную"
             count={items.length}
           />
           <ul className="mt-1 divide-y divide-border">

@@ -106,7 +106,7 @@ const buildKeyStats = (item: UserCatalogIngredientDto): KeyStatBadge[] => {
     const colorLabel = formatColorBadge(item);
     return [
       colorLabel ? { key: "color", label: colorLabel, accent: resolveIngredientColorAccent(technicalData) } : null,
-      item.fermentableExtractYieldPct != null ? { key: "extract", label: `Экстракт ${formatValue(item.fermentableExtractYieldPct)}%` } : null,
+      item.fermentableExtractYieldPct != null ? { key: "extract", label: `Экстрактивность ${formatValue(item.fermentableExtractYieldPct)}%` } : null,
       technicalData && technicalData.type === "malt" && technicalData.proteinPct != null
         ? { key: "protein", label: `Белок ${formatValue((technicalData as Extract<IngredientTechnicalData, { type: "malt" }>).proteinPct ?? 0)}%` }
         : null
@@ -369,7 +369,7 @@ export const CatalogItemsList = ({ items, hideSubtypeBadge, canManage }: Catalog
                         {badge.label}
                       </span>
                     ))}
-                    {keyStats.length === 0 ? <span className="text-xs text-muted-foreground">Без ключевых параметров</span> : null}
+                    {keyStats.length === 0 ? <span className="text-xs text-muted-foreground">Параметры не указаны</span> : null}
                   </div>
                 </td>
               </tr>

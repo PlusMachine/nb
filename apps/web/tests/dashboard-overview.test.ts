@@ -96,7 +96,7 @@ describe("splitActiveBrews", () => {
 });
 
 describe("buildDashboardOnboarding", () => {
-  it("walks stock -> recipe -> brew and reports the first incomplete step", () => {
+  it("offers recipes first and keeps stock independent from the brewing path", () => {
     const onboarding = buildDashboardOnboarding({
       inventoryTotalItems: 4,
       recipeCount: 0,
@@ -104,15 +104,15 @@ describe("buildDashboardOnboarding", () => {
       brewBatchCount: 0
     });
 
-    expect(onboarding.steps.map((s) => s.key)).toEqual(["stock", "recipe", "brew"]);
-    expect(onboarding.steps.map((s) => s.done)).toEqual([true, false, false]);
+    expect(onboarding.steps.map((s) => s.key)).toEqual(["recipe", "stock", "brew"]);
+    expect(onboarding.steps.map((s) => s.done)).toEqual([false, true, false]);
     expect(onboarding.currentKey).toBe("recipe");
     expect(onboarding.complete).toBe(false);
   });
 
   it("counts a saved community recipe toward the recipe step", () => {
     const onboarding = buildDashboardOnboarding({
-      inventoryTotalItems: 1,
+      inventoryTotalItems: 0,
       recipeCount: 0,
       savedRecipeCount: 2,
       brewBatchCount: 0
@@ -122,16 +122,28 @@ describe("buildDashboardOnboarding", () => {
     expect(onboarding.currentKey).toBe("brew");
   });
 
-  it("completes once all three steps are done", () => {
+  it("completes after the first brew even without stock or a remaining recipe", () => {
     const onboarding = buildDashboardOnboarding({
-      inventoryTotalItems: 1,
-      recipeCount: 1,
+      inventoryTotalItems: 0,
+      recipeCount: 0,
       savedRecipeCount: 0,
       brewBatchCount: 1
     });
 
     expect(onboarding.complete).toBe(true);
     expect(onboarding.currentKey).toBeNull();
+  });
+
+  it("does not make stock the next action when an own recipe already exists", () => {
+    const onboarding = buildDashboardOnboarding({
+      inventoryTotalItems: 0,
+      recipeCount: 1,
+      savedRecipeCount: 0,
+      brewBatchCount: 0
+    });
+
+    expect(onboarding.currentKey).toBe("brew");
+    expect(onboarding.complete).toBe(false);
   });
 
   it("points the stock step at inventory add, not the public catalog hub", () => {

@@ -25,7 +25,7 @@ export function PublicRecipeHeader({ recipe }: { recipe: RecipeDetailDto }) {
           ) : null}
         </div>
 
-        <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="space-y-4">
           <h1 className="break-words text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{recipe.title}</h1>
           <div className="flex flex-wrap items-center gap-2">
             <BrewRecipeButton recipeId={recipe.id} slug={recipe.slug} recipeTitle={recipe.title} />

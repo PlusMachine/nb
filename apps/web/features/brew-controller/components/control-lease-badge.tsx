@@ -27,19 +27,19 @@ export function ControlLeaseBadge({ lease, hasDevice, onRequestTakeover, onRelea
   // Я держу аренду.
   if (lease?.heldByMe) {
     return (
-      <div className="inline-flex flex-wrap items-center gap-2">
+      <div className="inline-flex max-w-full flex-wrap items-center gap-2">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-success-subtle px-3 py-1 text-xs font-medium text-success-subtle-foreground">
-          <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
+          <ShieldCheck className="h-3.5 w-3.5 shrink-0" aria-hidden />
           Вы управляете
         </span>
         {lease.takeoverRequested ? (
-          <span className="inline-flex items-center gap-2 rounded-full bg-warning-subtle px-3 py-1 text-xs font-medium text-warning-subtle-foreground">
-            Запрошена передача управления
+          <span className="inline-flex max-w-full flex-wrap items-center gap-x-2 gap-y-1 rounded-xl bg-warning-subtle px-3 py-2 text-xs font-medium text-warning-subtle-foreground">
+            <span className="min-w-0 flex-1 basis-48">Запрошена передача управления</span>
             <button
               type="button"
               onClick={onRelease}
               disabled={pending}
-              className="rounded-md bg-warning px-2 py-0.5 text-[11px] font-semibold text-warning-foreground hover:bg-warning/90 disabled:opacity-50"
+              className="ml-auto shrink-0 whitespace-nowrap rounded-md bg-warning px-2 py-0.5 text-[11px] font-semibold text-warning-foreground hover:bg-warning/90 disabled:opacity-50"
             >
               Передать
             </button>
@@ -52,11 +52,11 @@ export function ControlLeaseBadge({ lease, hasDevice, onRequestTakeover, onRelea
   // Держит другой валидный сеанс.
   if (lease?.held) {
     return (
-      <span className="inline-flex items-center gap-2 rounded-full bg-warning-subtle px-3 py-1 text-xs font-medium text-warning-subtle-foreground">
-        <ShieldQuestion className="h-3.5 w-3.5" aria-hidden />
-        Управляет другой сеанс
+      <span className="inline-flex max-w-full flex-wrap items-center gap-x-2 gap-y-1 rounded-xl bg-warning-subtle px-3 py-2 text-xs font-medium text-warning-subtle-foreground">
+        <ShieldQuestion className="h-3.5 w-3.5 shrink-0" aria-hidden />
+        <span className="min-w-0 flex-1 basis-48">Управление открыто в другом окне или на другом устройстве</span>
         {lease.takeoverByMe ? (
-          <span className="rounded-md bg-warning-subtle px-2 py-0.5 text-[11px] font-semibold text-warning-subtle-foreground">
+          <span className="ml-auto shrink-0 whitespace-nowrap rounded-md bg-warning-subtle px-2 py-0.5 text-[11px] font-semibold text-warning-subtle-foreground">
             Управление запрошено…
           </span>
         ) : (
@@ -64,7 +64,7 @@ export function ControlLeaseBadge({ lease, hasDevice, onRequestTakeover, onRelea
             type="button"
             onClick={onRequestTakeover}
             disabled={pending}
-            className="rounded-md bg-warning px-2 py-0.5 text-[11px] font-semibold text-warning-foreground hover:bg-warning/90 disabled:opacity-50"
+            className="ml-auto shrink-0 whitespace-nowrap rounded-md bg-warning px-2 py-0.5 text-[11px] font-semibold text-warning-foreground hover:bg-warning/90 disabled:opacity-50"
           >
             Запросить управление
           </button>
@@ -76,7 +76,7 @@ export function ControlLeaseBadge({ lease, hasDevice, onRequestTakeover, onRelea
   // Аренда свободна / идёт подключение.
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
-      <Radio className="h-3.5 w-3.5" aria-hidden />
+      <Radio className="h-3.5 w-3.5 shrink-0" aria-hidden />
       Управление свободно
     </span>
   );

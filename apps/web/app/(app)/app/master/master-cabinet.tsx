@@ -104,7 +104,7 @@ function StatusPanel({
           {isPending ? (
             <Button type="button" variant="outline" size="sm" disabled={busy} onClick={onWithdraw}>
               {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
-              Отозвать
+              Отозвать заявку
             </Button>
           ) : (
             <Button type="button" size="sm" disabled={busy || hasUnsavedProfile} onClick={onSubmit}>

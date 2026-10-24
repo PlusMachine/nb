@@ -14,7 +14,7 @@ export { CalculatorCard } from "./calculator-card";
 export function CalculatorsIndex({ calculators }: { calculators: CalculatorCardItem[] }) {
   return (
     <main className="pb-16 pt-5 sm:pt-6">
-      <section className="mb-5 rounded-2xl border border-border bg-card px-4 py-3.5 shadow-sm sm:mb-6 sm:px-5">
+      <section className="mb-5 border-b border-border pb-4 sm:mb-6">
         <div className="max-w-3xl">
           <h1 className="text-2xl font-semibold leading-tight text-foreground sm:text-3xl">
             Калькуляторы для пивоварения

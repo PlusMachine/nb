@@ -93,7 +93,7 @@ export function AdminCatalogToolbar({ basePath, q, category, status, sort, pageS
             onChange={(event) => setInputValue(event.target.value)}
             onFocus={onFocus}
             onBlur={onBlur}
-            placeholder="Название, бренд, производитель, алиас"
+            placeholder="Название, бренд, производитель или другое название"
             className="pr-10"
           />
           {isPending ? (

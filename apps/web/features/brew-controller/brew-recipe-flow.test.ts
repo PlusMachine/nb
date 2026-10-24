@@ -84,7 +84,7 @@ describe("startBrewOnDeviceFromRecipeAction", () => {
     expect(result.heatingStarted).toBe(false);
     expect(result.brewBatchId).toBe("batch-2");
     expect(result.reason).toBe("REMOTE_DISABLED");
-    expect(result.message).toContain("слот 2");
+    expect(result.message).toContain("ячейку памяти № 2");
     expect(result.message).toContain("Включите удалённое управление");
   });
 

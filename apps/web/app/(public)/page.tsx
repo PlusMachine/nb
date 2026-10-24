@@ -1,44 +1,29 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowRight, Clock } from "lucide-react";
-import { getBjcpCatalogData } from "@nb/content";
-
-import { HomeBrewforge } from "@/components/home/home-brewforge";
-import { HomeCalculators } from "@/components/home/home-calculators";
-import { HomeInventory } from "@/components/home/home-inventory";
-import { HomeLoop } from "@/components/home/home-loop";
-import { HomeStyleVitals } from "@/components/home/home-style-vitals";
-import { RecipesGrid } from "@/components/recipes/recipes-grid";
+import { ArrowRight, Wheat, Leaf, FlaskConical, Plus } from "lucide-react";
+import { getBjcpCatalogData, type BjcpCatalogStyle } from "@nb/content";
+import { BeerPresentation } from "@/components/beer/beer-presentation";
+import { getBeerPresentationBySlug } from "@/features/beer-page/service";
+import { HomeExperience, HomeLabels, type HomeRecipePreview } from "@/components/home/home-experience";
+import { HomeBrewPreview } from "@/components/home/home-brew-preview";
+import { buildBrewPlanSnapshot } from "@/features/brew-batches/brew-plan";
+import { buildBrewDaySteps } from "@/features/brew-batches/brew-day";
 import { getSessionUser } from "@/lib/auth";
 import { getServerEnv } from "@/lib/env";
-import { srmToHex } from "@/features/recipes/beer-color";
-import { buildHeroStyleVitals } from "@/features/home/style-vitals";
-import {
-  getHomeFeaturedContentArticles,
-  getHomeLatestPublicRecipes,
-  getHomePublicRecipeFamilyCounts
-} from "@/features/home/home-data-cache";
-import { jsonLdScriptProps } from "@/features/ingredients/seo";
-import { contentArticleTypeLabels } from "@/features/content-articles/contracts";
+import { getHomeFeaturedContentArticles, getHomeLatestPublicRecipes, getHomePublicRecipeDetails } from "@/features/home/home-data-cache";
+import { getHomeIngredients, getHomeLabelImages } from "@/features/home/landing-data";
+import { homeAuthorName, homeLoginHref, homeNumber, homeStyleDescriptions, pickHomeArticles } from "@/features/home/landing-model";
+import { parseNumericRange } from "@/features/home/style-vitals";
+import { getCalculatorBySlug, type CalculatorSlug } from "@/features/calculators/catalog";
+import { isCalculatorPublic } from "@/features/calculators/visibility";
 import { articleCoverFromSlug } from "@/features/content-articles/article-cover";
 import { getSectionOgImage } from "@/features/og/section";
-
-// Спектр стилей BJCP для баннера — из той же SRM-палитры, что и весь сайт
-// (srmToHex по опорным SRM), а не отдельный набор хексов.
-const BJCP_SPECTRUM = `linear-gradient(90deg, ${[1, 2, 3, 5, 7, 10, 13, 16, 20, 26, 34, 45]
-  .map((srm, index, list) => `${srmToHex(srm)} ${Math.round((index / (list.length - 1)) * 100)}%`)
-  .join(", ")})`;
-
-const HOME_DESCRIPTION =
-  "Соберите рецепт, сверьте со складом и сварите по шагам. Рецепты сообщества, стили BJCP, калькуляторы пивовара и наша автоматика BrewForge.";
-
+import { jsonLdScriptProps } from "@/features/ingredients/seo";
+import "./home.css";
+const HOME_DESCRIPTION = "NB — бесплатный помощник домашнего пивовара: склад ингредиентов, рецепты, журнал партий, этикетки и калькуляторы. Каталог ингредиентов — на русском.";
 export const metadata: Metadata = {
   description: HOME_DESCRIPTION,
-  // openGraph страницы ЗАМЕЩАЕТ openGraph родительского layout целиком (не
-  // мёржится) — без своего блока сайтовый og:image/siteName/locale терялись бы.
-  // Повторяем поля корневого layout (type/locale/siteName/url) + описание
-  // главной + брендовую обложку раздела (Ф3, docs/specs/og-images.md §5.8).
   openGraph: {
     type: "website",
     locale: "ru_RU",
@@ -48,214 +33,104 @@ export const metadata: Metadata = {
     images: [getSectionOgImage("home")]
   }
 };
-
-export default async function HomePage() {
-  // Залогиненному главная не нужна — его дом это мастерская (единый app-хром).
-  const user = await getSessionUser();
-  if (user) {
-    redirect("/app");
+const calculatorCards: {
+  slug: CalculatorSlug;
+  image: number;
+  title: string;
+  description: string;
+  action: string;
+}[] = [{
+  slug: "abv-attenuation",
+  image: 2,
+  title: "Крепость и сбраживание",
+  description: "По начальной и конечной плотности",
+  action: "Рассчитать крепость"
+}, {
+  slug: "keg-carbonation",
+  image: 1,
+  title: "Карбонизация в кеге",
+  description: "Давление CO₂ с учётом температуры пива",
+  action: "Рассчитать давление"
+}, {
+  slug: "refractometer-correction",
+  image: 3,
+  title: "Поправка рефрактометра",
+  description: "Плотность с поправкой на спирт",
+  action: "Скорректировать показания"
+}, {
+  slug: "hydrometer-correction",
+  image: 4,
+  title: "Поправка ареометра",
+  description: "Плотность с учётом температуры пробы",
+  action: "Скорректировать показания"
+}, {
+  slug: "unit-converter",
+  image: 6,
+  title: "Перевод единиц",
+  description: "Плотность, цвет, объём, масса и температура",
+  action: "Перевести единицы"
+}];
+function rangeText(value: string | null | undefined, suffix = "") {
+  const range = parseNumericRange(value);
+  return range ? `${homeNumber(range.min)}${range.max !== range.min ? `–${homeNumber(range.max)}` : ""}${suffix}` : "—";
+}
+function recipeRanges(style?: BjcpCatalogStyle): HomeRecipePreview["ranges"] {
+  const result: HomeRecipePreview["ranges"] = {};
+  if (!style) return result;
+  for (const [key, raw, factor] of [["og", style.vitalStatistics.og, 1], ["abv", style.vitalStatistics.abv, 1], ["ibu", style.vitalStatistics.ibu, 1], ["ebc", style.vitalStatistics.srm, 1.97]] as const) {
+    const range = parseNumericRange(raw);
+    if (range) result[key] = [range.min * factor, range.max * factor];
   }
-
-  const [featuredGuides, bjcpCatalog, familyCounts, latestRecipes] = await Promise.all([
-    getHomeFeaturedContentArticles(3),
-    getBjcpCatalogData(),
-    getHomePublicRecipeFamilyCounts(),
-    getHomeLatestPublicRecipes()
-  ]);
-  const { APP_URL, SITE_NAME } = getServerEnv();
-  const organizationJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: SITE_NAME,
-    url: APP_URL,
-    logo: `${APP_URL}/images/pwa/icon-512.png`
-  };
-  // alternateName сознательно не задан: второго устоявшегося имени у проекта
-  // нет (вопрос NB vs hmelo открыт) — добавить при выборе бренда, см. плейбук §14.
-  const websiteJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: SITE_NAME,
-    url: APP_URL
-  };
-  const heroStyles = buildHeroStyleVitals(bjcpCatalog.styles);
-  const bjcpStyleCount = bjcpCatalog.styles.length;
-  // Семейства стилей с рецептами на витрине — тот же контракт, что табы фильтра
-  // /recipes (?family=), пустые скрываются (как и там).
-  const recipeFamilies = [...bjcpCatalog.families]
-    .sort((left, right) => left.sortOrder - right.sortOrder)
-    .map((family) => ({ id: family.id, name: family.nameRu, count: familyCounts[family.id] ?? 0 }))
-    .filter((family) => family.count > 0);
-
-  // Порядок секций: свежий контент (рецепты, гайды) → продуктовая история
-  // (мастерская, склад, BrewForge) → инструменты → финальный CTA.
-  return (
-    <main className="space-y-16 pb-24 pt-8">
-      <section className="relative nb-grain overflow-hidden rounded-[2.75rem] border border-border/80 bg-card/90 px-6 py-10 shadow-[0_45px_120px_-70px_rgba(15,23,42,0.45)] backdrop-blur sm:px-8 lg:px-10">
-        <div aria-hidden className="pointer-events-none absolute inset-0 hidden skin-hop:block">
-          <span className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 12% 0%, hsl(var(--primary) / 0.17), transparent 55%)" }} />
-          <span className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 100% 100%, hsl(var(--foreground) / 0.06), transparent 45%)" }} />
-        </div>
-        <div className="relative z-10 grid items-center gap-8 lg:grid-cols-[1.15fr_1fr] lg:gap-12">
-          <div className="space-y-6">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Домашнее пивоварение</p>
-            <h1 className="max-w-2xl text-balance text-4xl font-semibold leading-[0.98] text-foreground sm:text-5xl lg:text-6xl" style={{ fontFamily: "var(--font-display)" }}>
-              Сварите своё пиво — от рецепта до розлива
-            </h1>
-            <p className="max-w-xl text-pretty text-lg leading-8 text-muted-foreground">
-              Рассчитайте рецепт, проверьте запасы и ведите варку по шагам.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Link href="/login?next=/app/recipes/new" className="inline-flex items-center rounded-full bg-foreground px-5 py-3 text-sm font-semibold text-background transition-colors hover:bg-foreground/90 skin-hop:bg-primary skin-hop:text-primary-foreground skin-hop:hover:bg-primary/90">
-                Собрать рецепт
-              </Link>
-              <Link href="/recipes" className="inline-flex items-center rounded-full border border-border bg-card px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:border-border">
-                Смотреть рецепты
-              </Link>
-            </div>
-          </div>
-
-          {heroStyles.length ? <HomeStyleVitals styles={heroStyles} /> : null}
-        </div>
-      </section>
-
-      <section className="space-y-5">
-        <div className="flex items-end justify-between gap-4">
-          <h2 className="text-3xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
-            Рецепты сообщества
-          </h2>
-          <Link href="/recipes" className="text-sm font-semibold text-foreground">Все рецепты</Link>
-        </div>
-        {recipeFamilies.length ? (
-          <div className="flex flex-wrap gap-2">
-            {recipeFamilies.map((family) => (
-              <Link
-                key={family.id}
-                href={`/recipes?family=${encodeURIComponent(family.id)}`}
-                className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-border hover:bg-muted"
-              >
-                {family.name}
-                <span className="text-xs tabular-nums text-muted-foreground">{family.count}</span>
-              </Link>
-            ))}
-          </div>
-        ) : null}
-        {latestRecipes.items.length ? <RecipesGrid recipes={latestRecipes.items} /> : null}
-      </section>
-
-      <section className="space-y-5">
-        <div className="flex items-end justify-between gap-4">
-          <h2 className="text-3xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
-            Разобраться
-          </h2>
-          <Link href="/articles" className="text-sm font-semibold text-foreground">Все статьи</Link>
-        </div>
-        {featuredGuides.length ? (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredGuides.map((guide) => {
-              const cover = articleCoverFromSlug(guide.slug);
-              return (
-              <Link
-                key={guide.id}
-                href={`/articles/${guide.slug}`}
-                className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition hover:border-border hover:shadow-md skin-hop:duration-200 skin-hop:hover:-translate-y-0.5"
-              >
-                {guide.coverImageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={guide.coverImageUrl}
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                    className="h-40 w-full object-cover"
-                  />
-                ) : (
-                  <div className="relative flex h-40 w-full items-center justify-center overflow-hidden nb-grain" style={{ background: cover.background }} aria-hidden>
-                    <span aria-hidden className="absolute inset-0 hidden skin-hop:block" style={{ background: "radial-gradient(circle at 82% 18%, hsl(var(--primary) / 0.45), transparent 55%)" }} />
-                    <span aria-hidden className="absolute inset-0 hidden skin-hop:block opacity-40" style={{ backgroundImage: "radial-gradient(hsl(var(--primary) / 0.5) 1.5px, transparent 1.5px)", backgroundSize: "16px 16px", backgroundPosition: "4px 4px" }} />
-                    <span
-                      className="text-6xl font-semibold leading-none opacity-25 skin-hop:hidden"
-                      style={{ color: cover.textColor, fontFamily: "var(--font-display)" }}
-                    >
-                      {guide.title.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                )}
-                <div className="flex flex-1 flex-col gap-2 p-4">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-warning-subtle-foreground">{contentArticleTypeLabels[guide.type]}</span>
-                  <h3 className="text-lg font-semibold leading-snug text-foreground group-hover:text-foreground">{guide.title}</h3>
-                  {guide.excerpt ? <p className="line-clamp-2 text-sm text-muted-foreground">{guide.excerpt}</p> : null}
-                  <span className="mt-auto inline-flex items-center gap-1 pt-2 text-xs text-muted-foreground">
-                    <Clock className="h-3.5 w-3.5" aria-hidden /> {guide.readingMinutes} мин
-                  </span>
-                </div>
-              </Link>
-              );
-            })}
-          </div>
-        ) : null}
-
-        <Link
-          href="/bjcp"
-          className="group block overflow-hidden rounded-[1.25rem] border border-border bg-card shadow-sm transition hover:border-border hover:shadow-md"
-        >
-          <div className="h-3.5" style={{ background: BJCP_SPECTRUM }} aria-hidden />
-          <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 sm:px-6">
-            <div>
-              <div className="text-[17px] font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
-                Стили пива — справочник BJCP 2021
-              </div>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {bjcpStyleCount} стилей: от чешского пилснера до имперского стаута
-              </p>
-            </div>
-            <span className="inline-flex items-center rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground transition-colors group-hover:border-border">
-              Открыть справочник
-            </span>
-          </div>
-        </Link>
-      </section>
-
-      <section className="space-y-5">
-        <div className="flex items-end justify-between gap-4">
-          <h2 className="text-3xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
-            В мастерской
-          </h2>
-        </div>
-        <HomeLoop />
-      </section>
-
-      <HomeInventory />
-
-      <HomeBrewforge />
-
-      <HomeCalculators />
-
-      <section className="grid gap-4 sm:grid-cols-2">
-        <Link
-          href="/login?next=/app/recipes/new"
-          className="group rounded-[1.25rem] border border-border bg-card p-6 transition hover:-translate-y-0.5 hover:border-border hover:shadow-md"
-        >
-          <span className="flex items-center gap-2 text-xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
-            Начать с рецепта
-            <ArrowRight className="ml-auto h-5 w-5 text-muted-foreground transition group-hover:translate-x-1 group-hover:text-muted-foreground" aria-hidden />
-          </span>
-        </Link>
-        <Link
-          href="/login?next=/app/ingredients"
-          className="group rounded-[1.25rem] border border-border bg-card p-6 transition hover:-translate-y-0.5 hover:border-border hover:shadow-md"
-        >
-          <span className="flex items-center gap-2 text-xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
-            Начать со склада
-            <ArrowRight className="ml-auto h-5 w-5 text-muted-foreground transition group-hover:translate-x-1 group-hover:text-muted-foreground" aria-hidden />
-          </span>
-        </Link>
-      </section>
-
-      {/* JSON-LD в конце main: первым ребёнком <script> участвует в space-y-16
-          и сдвигает видимый контент вниз на его величину. */}
-      <script {...jsonLdScriptProps(organizationJsonLd)} />
-      <script {...jsonLdScriptProps(websiteJsonLd)} />
-    </main>
-  );
+  return result;
+}
+export default async function HomePage() {
+  const user = await getSessionUser();
+  if (user) redirect("/app");
+  const [latest, catalog, ingredients, featuredArticles] = await Promise.all([getHomeLatestPublicRecipes(), getBjcpCatalogData(), getHomeIngredients(), getHomeFeaturedContentArticles(6)]);
+  const articles = pickHomeArticles(featuredArticles);
+  const details = await getHomePublicRecipeDetails(latest.items.map(recipe => recipe.id));
+  const previews: HomeRecipePreview[] = details.flatMap(recipe => {
+    const card = latest.items.find(item => item.id === recipe.id);
+    return card ? [{
+      recipe,
+      card,
+      ranges: recipeRanges(catalog.styles.find(style => style.bjcpId === card.style?.code))
+    }] : [];
+  });
+  const first = previews[0];
+  const brewSteps = first ? buildBrewDaySteps(buildBrewPlanSnapshot(first.recipe))
+    .filter(group => group.stage !== "fermentation" && group.stage !== "packaging")
+    .flatMap(group => group.steps) : [];
+  const [labels, beer] = first ? await Promise.all([getHomeLabelImages(first.recipe), getBeerPresentationBySlug({
+    slug: first.recipe.slug
+  })]) : [null, null];
+  const styles = ["4A", "21A", "15B"].flatMap(code => catalog.styles.find(style => style.bjcpId === code) ?? []);
+  const env = getServerEnv();
+  return <main className="home-main">
+    <script {...jsonLdScriptProps({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: env.SITE_NAME,
+      url: env.APP_URL,
+      logo: `${env.APP_URL}/images/pwa/icon-512.png`
+    })} />
+    <script {...jsonLdScriptProps({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: env.SITE_NAME,
+      url: env.APP_URL
+    })} />
+    <HomeExperience previews={previews} />
+    {first && <HomeBrewPreview key={first.recipe.id} recipe={first.recipe} steps={brewSteps} />}
+    {first && labels ? <HomeLabels images={labels} title={first.recipe.title} slug={first.recipe.slug} author={homeAuthorName(first.recipe.authorDisplayName)} beerPreview={beer ? <BeerPresentation beer={{ ...beer, author: { ...beer.author, displayName: homeAuthorName(beer.author.displayName) } }} embedded /> : null} /> : <section><div className="home-section-heading"><div><h2>Этикетки для вашего пива</h2><p className="home-section-lead">Распечатайте этикетку. По QR-коду гости откроют описание вашего пива.</p></div></div><Link href="/labels" className="home-button">Создать свою этикетку <ArrowRight /></Link></section>}
+    <section id="home-catalog"><div className="home-section-heading"><h2>Каталог ингредиентов<br />на русском</h2><Link href="/catalog">Все ингредиенты ↗</Link></div><div className="home-catalog-grid">{ingredients.map(item => <article key={item.id} className={`home-ingredient ${item.category}`}><div className="home-ingredient-top"><span>{item.category === "fermentable" ? "Солод" : item.category === "hop" ? "Хмель" : "Дрожжи"}</span>{item.category === "hop" ? <Leaf /> : item.category === "yeast" ? <FlaskConical /> : <Wheat />}</div><div className="home-ingredient-name">{item.producer && <span>{item.producer}</span>}<h3><Link href={`/catalog/system/${item.id}`}>{item.name}</Link></h3></div><div className="home-ingredient-bottom">{item.metric && <span>{item.metric} <strong>{item.value}</strong></span>}<Link href={homeLoginHref(`/app/ingredients?addSource=catalog&addId=${encodeURIComponent(item.id)}`)}><Plus />На склад</Link></div></article>)}</div>{!ingredients.length && <p className="home-panel-empty">В каталоге пока нет опубликованных ингредиентов.</p>}</section>
+    <section id="home-styles"><div className="home-section-heading"><h2>Стили пива</h2><Link href="/bjcp">Справочник BJCP · 2021 ↗</Link></div><div className="home-style-grid">{styles.map(style => <article className="home-style" key={style.bjcpId}><Link href={`/bjcp/${style.slug}`} className="home-style-photo" aria-label={style.title}>{style.heroImageUrl && <img src={style.heroImageUrl} alt={style.title} loading="lazy" />}</Link><div className="home-style-body"><span className="home-style-code">{style.bjcpId} · {style.familyNameRu}</span><h3><Link href={`/bjcp/${style.slug}`}>{style.title}</Link></h3><p>{homeStyleDescriptions[style.bjcpId] ?? style.description}</p><dl><div><dt>Крепость</dt><dd>{rangeText(style.vitalStatistics.abv, "%")}</dd></div><div><dt>Горечь, IBU</dt><dd>{rangeText(style.vitalStatistics.ibu)}</dd></div></dl><Link href={`/bjcp/${style.slug}`} className="home-inline-link">О стиле ↗</Link></div></article>)}</div></section>
+    <section id="home-calculators"><div className="home-section-heading"><h2>Калькуляторы</h2><span>Без регистрации</span></div><div className="home-calculator-grid">{calculatorCards.filter(item => isCalculatorPublic(item.slug)).map((item, index) => <Link key={item.slug} href={getCalculatorBySlug(item.slug)!.href} className={`home-calculator ${index === 0 ? "featured" : ""}`} style={{
+          backgroundImage: `url('/images/calculators/${item.image}-Photoroom.png')`
+        }}><div><h3>{item.title}</h3><p>{item.description}</p></div><span className="home-calculator-action">{item.action}<ArrowRight /></span></Link>)}</div></section>
+    <section id="home-articles"><div className="home-section-heading"><h2>Статьи о пивоварении</h2>{articles.length > 0 && <Link href="/articles">Все статьи ↗</Link>}</div>{articles.length > 0 ? <div className="home-article-grid" data-count={articles.length}>{articles.map((article, index) => <article key={article.id} className={index === 0 ? "home-article-feature" : "home-article-topic"}>{index === 0 && <Link href={`/articles/${article.slug}`} className="home-article-photo" aria-label={article.title} style={article.coverImageUrl ? undefined : {
+            background: articleCoverFromSlug(article.slug).background
+          }}>{article.coverImageUrl && <img src={article.coverImageUrl} alt="" loading="lazy" />}</Link>}<div><h3><Link href={`/articles/${article.slug}`}>{article.title}</Link></h3>{index === 0 && article.excerpt && <p>{article.slug === "kontrol-temperatury-brozheniya" ? "Как поддерживать температуру во время брожения." : article.excerpt}</p>}<Link href={`/articles/${article.slug}`} className="home-inline-link">Читать статью <ArrowRight /></Link></div></article>)}</div> : <div className="home-articles-coming"><p>Готовим к публикации</p><div><h3>Как сварить первое пиво</h3><h3>Сколько сахара добавить перед розливом</h3><h3>Как понять, что брожение закончилось</h3></div></div>}</section>
+    <section className="home-final"><h2>Начните с рецепта или запасов</h2><div className="home-actions"><Link href={homeLoginHref("/app/ingredients?add=1")} className="home-button home-primary">Добавить запасы <ArrowRight /></Link><Link href={homeLoginHref("/app/recipes/new")} className="home-button">Создать рецепт</Link></div></section>
+  </main>;
 }

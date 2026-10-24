@@ -126,7 +126,7 @@ export function BrewableRecipesSection({ recipes }: { recipes: BrewableRecipeDto
         <div className="flex h-6 w-6 items-center justify-center rounded-md bg-warning-subtle text-warning-subtle-foreground">
           <Beer className="h-3.5 w-3.5" />
         </div>
-        <h2 className="text-base font-semibold text-foreground">Рецепты под ваш склад</h2>
+        <h2 className="text-base font-semibold text-foreground">Рецепты под ваши запасы</h2>
         <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
           {recipes.length}
         </span>

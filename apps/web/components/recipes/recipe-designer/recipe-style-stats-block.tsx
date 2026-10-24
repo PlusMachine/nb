@@ -109,7 +109,7 @@ export function RecipeStyleStatsBlock({
         <div className="flex min-w-0 flex-col gap-0.5">
           <div className="flex min-w-0 items-center gap-2">
             <h2 className="truncate text-sm font-semibold text-foreground">
-              {hasSelectedStyle ? "Попадание в стиль" : "Расчёт показателей"}
+              {hasSelectedStyle ? "Сравнение со стилем" : "Расчёт показателей"}
             </h2>
             {comparableItems.length > 0 ? (
               <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${overallFit ? "bg-success-subtle text-success-subtle-foreground ring-1 ring-inset ring-success/30" : "bg-muted text-muted-foreground ring-1 ring-inset ring-border"}`}>

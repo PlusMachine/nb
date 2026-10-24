@@ -7,7 +7,7 @@ export function BrewPreparationSummary({ preview }: { preview: BrewPreparationPr
   const n = (value: number) => Number(value.toFixed(1));
   return (
     <div className="space-y-2 text-xs leading-5">
-      <p className="font-medium text-foreground">Цели варки: {preview.og != null ? `OG ${preview.og.toFixed(3)} SG` : "OG —"}
+      <p className="font-medium text-foreground">Расчётные параметры: {preview.og != null ? `OG ${preview.og.toFixed(3)} SG` : "OG —"}
         {preview.abv != null ? ` · ABV ${n(preview.abv)}%` : ""}{preview.ibu != null ? ` · IBU ${Math.round(preview.ibu)}` : ""}
         {preview.color != null ? ` · ${n(preview.color)} SRM` : ""}</p>
       <p className="text-muted-foreground">Затор: {n(preview.mashWaterL)} л · промывка: {n(preview.spargeWaterL)} л. Авторские показатели могут отличаться от расчёта по составу.</p>

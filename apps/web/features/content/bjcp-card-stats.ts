@@ -18,10 +18,10 @@ export type BjcpCardColorInfo = BjcpCardStatDisplay & {
 
 const shortStatFallbackLabels = {
   missing: "не указано",
-  sameAsBase: "как база",
-  byBase: "по базе",
-  strongerThanBase: "крепче базы",
-  darkerThanBase: "темнее базы",
+  sameAsBase: "как у базового стиля",
+  byBase: "по базовому стилю",
+  strongerThanBase: "крепче базового стиля",
+  darkerThanBase: "темнее базового стиля",
   bySubtype: "по подстилю",
   byDeclaredBeer: "по заявленному"
 } as const;

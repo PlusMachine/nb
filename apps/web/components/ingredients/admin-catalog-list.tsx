@@ -131,7 +131,7 @@ export function AdminCatalogList({ items, basePath, q, category, status, sort, p
       show(failedCount > 0
         ? {
           title: `Готово частично — ${done}`,
-          description: `Не прошло: ${failedCount} (${describeCatalogBulkFailures(result.failed)}).`,
+          description: `Не удалось обработать: ${failedCount} (${describeCatalogBulkFailures(result.failed)}).`,
           tone: "warning"
         }
         : {
@@ -242,7 +242,7 @@ export function AdminCatalogList({ items, basePath, q, category, status, sort, p
                 {primaryName}
               </Link>
               {secondaryName ? <p className="text-xs text-muted-foreground">{secondaryName}</p> : null}
-              {aliasesPreview ? <p className="text-xs text-muted-foreground">Алиасы: {aliasesPreview}</p> : null}
+              {aliasesPreview ? <p className="text-xs text-muted-foreground">Другие названия: {aliasesPreview}</p> : null}
             </div>
           );
         }

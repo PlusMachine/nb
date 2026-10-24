@@ -7,7 +7,7 @@ import { RecipeErrorState } from "@/components/recipes/recipe-error-state";
 export default function PublicRecipesError({ reset }: { error: Error; reset: () => void }) {
   return (
     <RecipeErrorState
-      title="Не удалось загрузить публичные рецепты"
+      title="Не удалось загрузить рецепты сообщества"
       message="Попробуйте обновить страницу. Если проблема сохраняется, вернитесь позже."
       reset={reset}
     />

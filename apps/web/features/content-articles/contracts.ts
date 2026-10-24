@@ -10,7 +10,7 @@ export const contentArticleStatuses = ["draft", "published", "archived"] as cons
 export type ContentArticleStatus = (typeof contentArticleStatuses)[number];
 
 export const contentArticleTypeLabels: Record<ContentArticleType, string> = {
-  guide: "Гайд",
+  guide: "Статья",
   review: "Обзор"
 };
 

@@ -106,7 +106,7 @@ describe("/recipes results", () => {
     // RecipeSaveButton внутри карточек рендерится через useToast() — нужен ToastProvider.
     const html = renderToStaticMarkup(React.createElement(ToastProvider, null, el));
 
-    expect(html).toContain("Публичных рецептов пока нет");
+    expect(html).toContain("Пока нет опубликованных рецептов");
   });
 
   it("shows the «no results» empty state when filters are active but nothing matches", async () => {

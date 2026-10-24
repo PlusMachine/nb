@@ -67,7 +67,7 @@ export function SessionBoundsControl({
       }
       const detached = result.result.detachedReadingsCount;
       show({
-        title: detached > 0 ? `Отвязано ${detached} ${pluralize(detached, ["точка", "точки", "точек"])}` : "Границы сеанса обновлены",
+        title: detached > 0 ? `Из сеанса исключено ${detached} ${pluralize(detached, ["показание", "показания", "показаний"])}` : "Период сеанса изменён",
         tone: "success"
       });
       router.refresh();
@@ -80,14 +80,14 @@ export function SessionBoundsControl({
   return (
     <>
       <Button type="button" variant="ghost" size="sm" onClick={openDialog}>
-        Изменить границы
+        Изменить период
       </Button>
       <Dialog
         open={open}
         onOpenChange={(next) => {
           if (!next && !pending) setOpen(false);
         }}
-        title="Границы сеанса"
+        title="Начало и окончание сеанса"
         size="sm"
       >
         <div className="space-y-3 p-5">
@@ -112,7 +112,7 @@ export function SessionBoundsControl({
             />
           </label>
           <p className="text-xs leading-5 text-muted-foreground">
-            Точки за пределами новых границ будут отвязаны от сеанса (не удалены).
+            Показания за пределами выбранного периода будут исключены из сеанса, но сохранятся в истории устройства.
           </p>
           {error ? (
             <p role="alert" className="text-xs text-destructive">

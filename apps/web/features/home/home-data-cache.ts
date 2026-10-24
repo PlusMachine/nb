@@ -1,8 +1,9 @@
+import { pickHomeRecipes } from "./landing-model";
 import { listFeaturedContentArticles } from "@/features/content-articles/service";
 import type { ContentArticleListItem } from "@/features/content-articles/contracts";
 import { parsePublicRecipeFilters } from "@/features/recipes/public-recipe-query";
-import { getPublicRecipeFamilyCounts, searchPublicRecipes } from "@/features/recipes/service";
-import type { PublicRecipeListResult } from "@/features/recipes/contracts";
+import { getPublicRecipeById, getPublicRecipeFamilyCounts, searchPublicRecipes } from "@/features/recipes/service";
+import type { PublicRecipeDetailDto, PublicRecipeListResult } from "@/features/recipes/contracts";
 
 /**
  * Процессный in-memory TTL-кэш горячих выборок анонимной главной
@@ -49,13 +50,13 @@ export const getHomePublicRecipeFamilyCounts = async (): Promise<Record<string, 
 };
 
 // Фиксированные фильтры «свежих» рецептов главной (те же, что раньше собирались
-// прямо в page.tsx): newest, страница 1, 3 карточки. parsePublicRecipeFilters
+// прямо в page.tsx): newest, страница 1. Из 12 свежих выбираем 3 разных стиля. parsePublicRecipeFilters
 // чистая (без БД) — считаем один раз при загрузке модуля.
 const LATEST_RECIPES_FILTERS = {
   ...parsePublicRecipeFilters({}),
   sort: "newest" as const,
   page: 1,
-  pageSize: 3
+  pageSize: 12
 };
 
 let latestRecipesSlot: CacheSlot<PublicRecipeListResult> = null;
@@ -71,7 +72,8 @@ export const getHomeLatestPublicRecipes = async (): Promise<PublicRecipeListResu
   if (!bypassCache && isFresh(latestRecipesSlot)) {
     return copyRecipeListResult(latestRecipesSlot.value);
   }
-  const value = await searchPublicRecipes(LATEST_RECIPES_FILTERS);
+  const result = await searchPublicRecipes(LATEST_RECIPES_FILTERS);
+  const value = { ...result, pageSize: 3, items: pickHomeRecipes(result.items) };
   if (!bypassCache) {
     latestRecipesSlot = { value, loadedAt: Date.now() };
   }
@@ -81,6 +83,27 @@ export const getHomeLatestPublicRecipes = async (): Promise<PublicRecipeListResu
 // Ключ по limit (не только 3) — на случай, если функцию позже переиспользуют
 // с другим лимитом; отдельная главная всегда зовёт с одним и тем же значением.
 const featuredArticlesSlots = new Map<number, CacheSlot<ContentArticleListItem[]>>();
+const recipeDetailSlots = new Map<string, CacheSlot<PublicRecipeDetailDto>>();
+
+export const getHomePublicRecipeDetails = async (ids: string[]): Promise<PublicRecipeDetailDto[]> => {
+  const values = await Promise.all(ids.slice(0, 3).map(async (id) => {
+    const cached = recipeDetailSlots.get(id) ?? null;
+    if (!bypassCache && isFresh(cached)) return cached.value;
+    try {
+      // Only the public projection: no author notes, drafts or private versions.
+      const value = await getPublicRecipeById(id);
+      if (!bypassCache) {
+        if (recipeDetailSlots.size >= 3) recipeDetailSlots.clear();
+        recipeDetailSlots.set(id, { value, loadedAt: Date.now() });
+      }
+      return value;
+    } catch (error) {
+      if (error instanceof Error && error.message === "NOT_FOUND") return null;
+      throw error;
+    }
+  }));
+  return values.filter((value): value is PublicRecipeDetailDto => value !== null);
+};
 
 export const getHomeFeaturedContentArticles = async (limit = 3): Promise<ContentArticleListItem[]> => {
   const cached = featuredArticlesSlots.get(limit) ?? null;
@@ -104,4 +127,5 @@ export const invalidateHomeDataCache = () => {
   familyCountsSlot = null;
   latestRecipesSlot = null;
   featuredArticlesSlots.clear();
+  recipeDetailSlots.clear();
 };

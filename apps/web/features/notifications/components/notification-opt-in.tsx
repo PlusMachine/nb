@@ -50,7 +50,7 @@ export function NotificationOptIn() {
     return (
       <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-muted p-4 text-sm text-muted-foreground">
         <Bell className="h-4 w-4 text-muted-foreground" aria-hidden />
-        Пуши на iPhone приходят только в установленное приложение: в Safari — «Поделиться» → «На экран „Домой“».
+        На iPhone уведомления доступны только после установки приложения. В Safari нажмите «Поделиться» → «На экран „Домой“».
       </div>
     );
   }

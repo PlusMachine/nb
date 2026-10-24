@@ -17,7 +17,7 @@ export type { AppMode };
 export const APP_MODE_LABELS: Record<AppMode, string> = {
   brew: "Варка",
   distill: "Дистилляция",
-  ferment: "Ферментация",
+  ferment: "Брожение",
 };
 
 /**

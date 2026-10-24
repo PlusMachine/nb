@@ -47,14 +47,14 @@ export const appNavGroups: AppNavItem[][] = [
   [
     { href: "/app/equipment", label: "Оборудование", icon: Wrench },
     // Раздел в разработке: в production пункт видит только админ (requiresDevicesAccess).
-    { href: "/app/devices", label: "Устройства", icon: Cpu, requiresDevicesAccess: true },
+    { href: "/app/devices", label: "Приборы", icon: Cpu, requiresDevicesAccess: true },
     // Кабинет мастера (docs/masters-showcase.md): пункт видят только владельцы
     // профиля (requiresMasterProfile → resolveAppNavGroups). Вход «стать
     // мастером» — CTA на витрине /masters, не постоянный пункт меню.
     { href: "/app/master", label: "Моя витрина", icon: Hammer, requiresMasterProfile: true }
   ],
   [
-    { href: "/catalog", label: "Каталог", icon: Library },
+    { href: "/catalog", label: "Ингредиенты", icon: Library },
     { href: "/articles", label: "Статьи", icon: BookOpen },
     { href: "/bjcp", label: "Стили пива", icon: Sparkles },
     { href: "/calculators", label: "Калькуляторы", icon: Calculator },
@@ -88,7 +88,7 @@ export const publicLinks: { href: string; label: string }[] = [
   { href: "/bjcp", label: "Стили пива" },
   { href: "/calculators", label: "Калькуляторы" },
   { href: "/articles", label: "Статьи" },
-  { href: "/catalog", label: "Каталог" },
+  { href: "/catalog", label: "Ингредиенты" },
   { href: "/market", label: "Маркет" },
   { href: "/brewforge", label: "BrewForge" }
 ];

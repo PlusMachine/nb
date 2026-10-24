@@ -64,13 +64,13 @@ function TelemetryTable({ samples, total }: { samples: AdminDeviceTelemetrySampl
                 Время
               </th>
               <th scope="col" className="pb-2 pr-3 font-medium">
-                Стадия
+                Этап
               </th>
               <th scope="col" className="pb-2 pr-3 font-medium">
                 Температура
               </th>
               <th scope="col" className="pb-2 pr-3 font-medium">
-                Уставка
+                Заданная температура
               </th>
               <th scope="col" className="pb-2 font-medium">
                 Нагрев

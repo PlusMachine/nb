@@ -60,8 +60,8 @@ export const recipeMashPhModelLabels: Record<MashPhModel, string> = {
 
 export const recipePublicationStateLabels: Record<RecipePublicationState, string> = {
   draft: "Черновик",
-  private: "Приватный",
-  published: "Публичный"
+  private: "Только мне",
+  published: "Опубликован"
 };
 
 const numberField = () => z.coerce.number({
@@ -228,7 +228,7 @@ export const recipeWaterPlanMetaSchema = z.object({
   mashWaterVolumeL: numberField().min(0, "Объём заторной воды не может быть меньше 0 л.").optional().nullable(),
   spargeWaterVolumeL: numberField().min(0, "Объём промывочной воды не может быть меньше 0 л.").optional().nullable(),
   totalWaterVolumeL: numberField().min(0, "Общий объём воды не может быть меньше 0 л.").optional().nullable(),
-  grainAbsorptionLPerKg: numberField().min(0, "Водопоглощение дробиной не может быть меньше 0 л/кг.").max(5, "Водопоглощение дробиной не может быть больше 5 л/кг.").optional().nullable(),
+  grainAbsorptionLPerKg: numberField().min(0, "Поглощение воды зерном не может быть меньше 0 л/кг.").max(5, "Поглощение воды зерном не может быть больше 5 л/кг.").optional().nullable(),
   allowedSalts: z.array(z.string()).optional().default([]),
   allowedAcids: z.array(z.string()).optional().default([]),
   manualSaltAdditions: z.array(z.object({

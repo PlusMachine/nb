@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-24",
+  "widths": [
+    320,
+    360,
+    390,
+    430,
+    639,
+    640,
+    767,
+    768,
+    834,
+    1023,
+    1024,
+    1280,
+    1440,
+    1920
+  ],
+  "successfulViewportChecks": 1316,
+  "realPaths": 69,
+  "componentFixtureStates": 5,
+  "unresolvedLayoutIssues": [],
+  "runtimePageErrors": [],
+  "e2e": {
+    "startTime": "2026-10-23T21:14:55.105Z",
+    "duration": 217840.511,
+    "expected": 50,
+    "skipped": 6,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "unitTests": 116,
+  "finalLabelBrowserRetest": {
+    "chromium": true,
+    "webkit": true,
+    "fontScalePercent": 200
+  },
+  "changedFiles": [
+    "apps/web/app/(public)/demo/page.tsx",
+    "apps/web/components/inventory/inventory-price-input.tsx",
+    "apps/web/components/recipes/labels/label-studio.tsx",
+    "apps/web/components/recipes/recipe-actions-menu.tsx",
+    "apps/web/components/recipes/recipe-designer/recipe-designer.tsx",
+    "apps/web/e2e/brewforge-demo.spec.ts",
+    "apps/web/e2e/copy-layout.config.ts",
+    "apps/web/e2e/mobile-audit.spec.ts",
+    "apps/web/e2e/theme-menu.spec.ts",
+    "apps/web/features/brew-controller/components/control-lease-badge.tsx",
+    "apps/web/features/labels/templates/blocks.ts",
+    "apps/web/tests/labels-layout.test.ts"
+  ],
+  "historicalHarnessIssuesResolved": [
+    "guest pages without main: heading wait and explicit retest",
+    "theme popover closed on selection: assert applied theme",
+    "editor without h1: main wait and explicit retest",
+    "refractometer calibrator is summary: click summary and retest",
+    "native fullscreen prevents viewport resize: inspect 320x844 native fullscreen and exit",
+    "text200_labels: final grid retested in both engines"
+  ],
+  "constraints": [
+    "No physical iPhone/iPad or printer validation",
+    "Device commands only in local simulator; controller rare states used actual components with inert test callbacks",
+    "Temperature Save omitted after automatic approval review; dialog opened and cancelled"
+  ],
+  "typecheckPassed": true,
+  "diffWhitespaceCheckPassed": true,
+  "temporaryRouteRemoved": true,
+  "browserClosed": true,
+  "qaServerStopped": true
+}

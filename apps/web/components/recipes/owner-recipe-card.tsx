@@ -298,7 +298,7 @@ export function OwnerRecipeCard({
               className="pointer-events-auto relative z-10 inline-flex items-center gap-1 font-medium text-primary transition-colors hover:text-primary/80"
             >
               <ExternalLink className="h-3 w-3" aria-hidden />
-              Публичная страница
+              Посмотреть публикацию
             </Link>
           ) : null}
         </div>
@@ -376,7 +376,7 @@ export function OwnerRecipeRow({
               className="pointer-events-auto relative z-10 inline-flex items-center gap-1 font-medium text-primary transition-colors hover:text-primary/80"
             >
               <ExternalLink className="h-3 w-3" aria-hidden />
-              Публичная страница
+              Посмотреть публикацию
             </Link>
           ) : null}
         </div>

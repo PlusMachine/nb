@@ -366,7 +366,7 @@ export function IngredientEditor({
       <div className="sticky top-0 z-10 flex shrink-0 items-start justify-between gap-3 border-b border-border bg-card px-4 py-3 sm:px-6 sm:py-4">
         <div className="min-w-0">
           <h3 className="truncate text-base font-semibold text-foreground sm:text-lg">
-            {isWaterTreatmentAddFlow ? "Новая соль для воды" : isExisting ? "Редактор позиции" : "Новая позиция"}
+            {isWaterTreatmentAddFlow ? "Добавить соль в воду" : isExisting ? "Редактировать ингредиент" : "Добавить ингредиент"}
           </h3>
           <p className="mt-0.5 truncate text-xs text-muted-foreground">{contextCategoryLabel}</p>
         </div>
@@ -711,7 +711,7 @@ export function IngredientEditor({
                   </label>
                 ) : (
                   <label className="space-y-1 text-xs font-medium text-foreground">
-                    Этап добавления
+                    Этап внесения
                     <input
                       value={draft.stepMeta.stageLabel ?? ""}
                       onChange={(event) => onChange({
@@ -781,7 +781,7 @@ export function IngredientEditor({
             {draft.category === "water_treatment" ? (
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className="space-y-1 text-xs font-medium text-foreground">
-                  Стадия
+                  Этап внесения
                   <select
                     value={draft.stage}
                     onChange={(event) => onChange({ ...draft, stage: event.target.value as DesignerIngredient["stage"] })}
@@ -816,7 +816,7 @@ export function IngredientEditor({
             {draft.category === "consumable" ? (
               <div className="grid gap-3 sm:grid-cols-2">
                 <fieldset className="space-y-1">
-                  <legend className="text-xs font-medium text-foreground">Стадия добавления</legend>
+                  <legend className="text-xs font-medium text-foreground">Этап внесения</legend>
                   <div className="flex flex-wrap gap-1.5" data-testid="recipe-consumable-stage-options">
                     {visibleConsumableStageOptions.map((stage) => {
                       const active = draft.stage === stage;

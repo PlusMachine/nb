@@ -157,7 +157,7 @@ export function FermentProfileEditor({ planSteps, planError, saving, onSave }: P
           Добавить ступень
         </Button>
         <Button size="sm" onClick={() => void save()} disabled={saving}>
-          {saving ? "Сохранение…" : "Сохранить профиль"}
+          {saving ? "Сохраняем…" : "Сохранить профиль"}
         </Button>
       </div>
 

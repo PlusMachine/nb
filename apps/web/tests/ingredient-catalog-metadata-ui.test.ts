@@ -451,7 +451,7 @@ describe("ingredient catalog metadata ui", () => {
     }));
 
     expect(html).toContain("Солод");
-    expect(html).toContain("Экстракт 80%");
+    expect(html).toContain("Экстрактивность 80%");
     expect(html).not.toContain("Экст-ть");
     expect(html).toContain("linear-gradient(180deg");
   });
@@ -502,7 +502,7 @@ describe("ingredient catalog metadata ui", () => {
       searchParams: Promise.resolve({})
     }));
 
-    expect(html).toContain("санитайзер");
+    expect(html).toContain("дезинфицирующее средство");
   });
 
   it("hides catalog hub sections with zero total", async () => {
@@ -560,7 +560,7 @@ describe("ingredient catalog metadata ui", () => {
       searchParams: Promise.resolve({ q: "zzz-no-match" })
     }));
 
-    expect(html).toContain("По текущим условиям ничего не найдено");
+    expect(html).toContain("Ничего не найдено");
     expect(html).toContain("Сбросить поиск");
   });
 

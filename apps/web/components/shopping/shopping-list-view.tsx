@@ -117,7 +117,7 @@ function BuySection({ list }: { list: ShoppingListDto }) {
   const hasBrews = list.plannedBrews.length > 0;
 
   return (
-    <section className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
+    <section>
       <BuySectionHeader groups={list.groups} manualItems={list.manualItems} checkedCount={list.checkedCount} />
       {hasBrews ? (
         <>
@@ -358,7 +358,7 @@ export function ShoppingListView({ list }: { list: ShoppingListDto }) {
           href="/app/recipes"
           className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
-          Запланируйте варку — соберём точный список
+          Запланируйте варку, чтобы составить список покупок
         </Link>
       ) : null}
     </div>

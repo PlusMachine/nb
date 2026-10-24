@@ -132,7 +132,7 @@ export function RecipeProfiles({
         <div className="mt-4 space-y-4">
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="space-y-1 text-[11px] font-medium text-muted-foreground">
-              Осн. температура, °C
+              Температура основного брожения, °C
               <NumericInput
                 min={-10}
                 max={50}
@@ -149,7 +149,7 @@ export function RecipeProfiles({
               />
             </label>
             <label className="space-y-1 text-[11px] font-medium text-muted-foreground">
-              Осн. длительность, дн
+              Длительность основного брожения, дни
               <NumericInput
                 min={0.1}
                 max={365}

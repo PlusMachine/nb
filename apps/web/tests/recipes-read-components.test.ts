@@ -148,7 +148,7 @@ describe("recipes read components", () => {
   it("renders stats summary", () => {
     const html = renderToStaticMarkup(React.createElement(RecipeStatsSummary, { recipe: recipeDetail, preferredGravityUnit: "plato" }));
 
-    expect(html).toContain("Ключевые показатели");
+    expect(html).toContain("Параметры рецепта");
     expect(html).toContain("OG");
     expect(html).not.toContain("Прогноз по умолчанию");
     expect(html).not.toContain("Аттенюация задана вручную");
@@ -188,7 +188,7 @@ describe("recipes read components", () => {
       preferredGravityUnit: "plato"
     }));
 
-    expect(html).toContain("Ключевые показатели");
+    expect(html).toContain("Параметры рецепта");
     expect(html).not.toContain("Соответствие стилю");
   });
 
@@ -429,7 +429,7 @@ describe("recipes read components", () => {
     );
 
     expect(html).not.toContain("Публичный");
-    expect(html).toContain("Ключевые показатели");
+    expect(html).toContain("Параметры рецепта");
     expect(html).toContain("Объём партии — 20 л, при эффективности 75%");
     expect(html).toContain("Пересчитать под свои параметры");
     expect(html).toContain("Ингредиенты");
@@ -505,8 +505,8 @@ describe("recipes read components", () => {
     expect(listErrorHtml).toContain("Не удалось загрузить");
     expect(detailErrorHtml).toContain("Не удалось загрузить рецепт");
     expect(detailErrorHtml).toContain("Повторить");
-    expect(publicErrorHtml).toContain("Не удалось загрузить публичный рецепт");
-    expect(publicListErrorHtml).toContain("Не удалось загрузить публичные рецепты");
+    expect(publicErrorHtml).toContain("Не удалось загрузить рецепт");
+    expect(publicListErrorHtml).toContain("Не удалось загрузить рецепты сообщества");
     expect(publicNotFoundHtml).toContain("Рецепт не найден");
   });
 });

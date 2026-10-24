@@ -21,7 +21,7 @@ export function DistillLoopStrip({ telemetry }: Props) {
     <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
       <p className="text-sm font-semibold text-foreground">Контур</p>
       <dl className="mt-3 space-y-2 text-sm">
-        <Row label="Скважность нагрева" value={telemetry ? `${telemetry.heatDutyPct}%` : "—"} />
+        <Row label="Доля времени нагрева" value={telemetry ? `${telemetry.heatDutyPct}%` : "—"} />
         <Row label="Нагрев (ТЭН)" value={<Pill on={telemetry?.heatOn ?? false} />} />
         {valveOn !== undefined ? <Row label="Клапан отбора" value={<Pill on={valveOn} />} /> : null}
         <Row

@@ -82,7 +82,7 @@ export async function startBrewOnDeviceFromRecipeAction(input: {
       // сообщаем — переход к партии только по клику пользователя, не молча.
       return {
         ok: true,
-        message: `Рецепт загружен в слот ${outcome.slot ?? 0} и выбран. Включите удалённое управление на устройстве или запустите варку вручную.`,
+        message: `Рецепт загружен в ячейку памяти № ${outcome.slot ?? 0} и выбран. Включите удалённое управление на устройстве или запустите варку вручную.`,
         heatingStarted: false,
         brewBatchId,
         reason: outcome.reason

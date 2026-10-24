@@ -10,12 +10,14 @@ vi.mock("server-only", () => ({}));
 
 const mocks = vi.hoisted(() => ({
   searchPublicRecipes: vi.fn(),
+  getPublicRecipeById: vi.fn(),
   getPublicRecipeFamilyCounts: vi.fn(),
   listFeaturedContentArticles: vi.fn()
 }));
 
 vi.mock("@/features/recipes/service", () => ({
   searchPublicRecipes: mocks.searchPublicRecipes,
+  getPublicRecipeById: mocks.getPublicRecipeById,
   getPublicRecipeFamilyCounts: mocks.getPublicRecipeFamilyCounts
 }));
 
@@ -40,6 +42,7 @@ const loadHomeCache = async () => {
 beforeEach(() => {
   Object.values(mocks).forEach((mock) => mock.mockReset());
   mocks.searchPublicRecipes.mockResolvedValue(recipeList("Скрытая IPA"));
+  mocks.getPublicRecipeById.mockResolvedValue({ id: "r-1", title: "Public", authorNotes: null, draftState: null });
   mocks.getPublicRecipeFamilyCounts.mockResolvedValue({ ipa: 3 });
   mocks.listFeaturedContentArticles.mockResolvedValue([{ id: "a-1", slug: "kak-svarit-pervoe-pivo" }]);
 });
@@ -50,6 +53,21 @@ afterEach(() => {
 });
 
 describe("features/home/home-data-cache", () => {
+  it("uses the public recipe projection and clears details after moderation", async () => {
+    const cache = await loadHomeCache();
+    expect(await cache.getHomePublicRecipeDetails(["r-1"])).toHaveLength(1);
+    await cache.getHomePublicRecipeDetails(["r-1"]);
+    expect(mocks.getPublicRecipeById).toHaveBeenCalledTimes(1);
+    mocks.getPublicRecipeById.mockRejectedValue(new Error("NOT_FOUND"));
+    cache.invalidateHomeDataCache();
+    expect(await cache.getHomePublicRecipeDetails(["r-1"])).toEqual([]);
+  });
+
+  it("does not turn a database failure into an empty community", async () => {
+    const cache = await loadHomeCache();
+    mocks.getPublicRecipeById.mockRejectedValue(new Error("DATABASE_UNAVAILABLE"));
+    await expect(cache.getHomePublicRecipeDetails(["r-1"])).rejects.toThrow("DATABASE_UNAVAILABLE");
+  });
   it("лента и счётчики берутся из слота, пока он свеж", async () => {
     const cache = await loadHomeCache();
 

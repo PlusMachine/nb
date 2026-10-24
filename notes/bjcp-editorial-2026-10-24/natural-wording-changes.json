@@ -1,0 +1,769 @@
+[
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_01.json",
+    "id": "1C",
+    "path": [
+      "styles",
+      2,
+      "sections_ru",
+      "mouthfeel"
+    ],
+    "field": "mouthfeel",
+    "before": "Тело обычно лёгкое, иногда среднее; пиво освежает и мягко ощущается во рту. Степень сбраживания — от средней до высокой. При более высокой степени сбраживания пиво может хорошо утолять жажду. Карбонизация высокая.",
+    "source_en": "Generally light and crisp, although body can reach medium. Smooth mouthfeel with medium to high attenuation; higher attenuation levels can lend a “thirst quenching” quality. High carbonation.",
+    "after": "Тело обычно лёгкое, иногда среднее; пиво освежает и мягко ощущается во рту. Степень сбраживания — от средней до высокой. Более сухие версии могут лучше утолять жажду. Карбонизация высокая.",
+    "reasons": [
+      "По замечанию пользователя: высокая степень сбраживания описана через более сухой вкус. Слово «могут» сохраняет возможность, выраженную в оригинале через can lend."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_03.json",
+    "id": "7A",
+    "path": [
+      "styles",
+      3,
+      "sections_ru",
+      "comments"
+    ],
+    "field": "comments",
+    "before": "Это повседневное пиво стандартной крепости, а не фестивальный сорт. Многие традиционные коммерческие образцы со временем стали слаще, а доля несоложёных добавок в их составе выросла, из-за чего сегодня нередко напоминают скорее International Amber Lager или даже International Dark Lager.",
+    "source_en": "A standard-strength everyday beer, not a beer brewed for festivals. Many traditional examples have become sweeter and more adjunct-laden, now seeming more like International Amber or Dark Lagers.",
+    "after": "Это повседневное пиво средней крепости, а не фестивальный сорт. Многие традиционные коммерческие образцы со временем стали слаще, а доля несоложёных добавок в их составе выросла, из-за чего сегодня нередко напоминают скорее International Amber Lager или даже International Dark Lager.",
+    "reasons": [
+      "По замечанию пользователя: standard-strength в описательном тексте передано как «средней крепости», без изменения диапазонов алкоголя."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_09.json",
+    "id": "19",
+    "path": [
+      "categories",
+      2,
+      "overview_ru"
+    ],
+    "field": "overview_ru",
+    "before": "В эту категорию входят современные американские янтарные и коричневые эли, а также лагеры, сброженные при повышенной температуре. Всё это пиво стандартной крепости; вкус может быть сбалансированным или с преобладанием горечи.",
+    "after": "В эту категорию входят современные американские янтарные и коричневые эли, а также лагеры, сброженные при повышенной температуре. Всё это пиво средней крепости; вкус может быть сбалансированным или с преобладанием горечи.",
+    "reasons": [
+      "По замечанию пользователя: standard-strength в описательном тексте передано как «средней крепости», без изменения диапазонов алкоголя."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_09.json",
+    "id": "19C",
+    "path": [
+      "styles",
+      6,
+      "description_short_ru"
+    ],
+    "field": "description_short_ru",
+    "before": "Американский эль стандартной крепости, в котором солодовая основа с шоколадом и карамелью сочетается с заметным, но не конфликтующим хмелем.",
+    "after": "Американский эль средней крепости, в котором солодовая основа с шоколадом и карамелью сочетается с заметным, но не конфликтующим хмелем.",
+    "reasons": [
+      "По замечанию пользователя: standard-strength в описательном тексте передано как «средней крепости», без изменения диапазонов алкоголя."
+    ],
+    "comparison_en": "A malty but hoppy standard-strength American ale frequently with chocolate and caramel flavors. The hop flavor and aroma complement and enhance the malt rather than clashing with it.",
+    "comparison_source_field": "overall_impression"
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_09.json",
+    "id": "19C",
+    "path": [
+      "styles",
+      6,
+      "sections_ru",
+      "overall_impression"
+    ],
+    "field": "overall_impression",
+    "before": "Солодовый, но при этом хмелевой американский эль стандартной крепости, часто с оттенками шоколада и карамели. Хмелевой аромат и вкус должны не спорить с солодом, а дополнять и подчёркивать его.",
+    "source_en": "A malty but hoppy standard-strength American ale frequently with chocolate and caramel flavors. The hop flavor and aroma complement and enhance the malt rather than clashing with it.",
+    "after": "Солодовый, но при этом хмелевой американский эль средней крепости, часто с оттенками шоколада и карамели. Хмелевой аромат и вкус должны не спорить с солодом, а дополнять и подчёркивать его.",
+    "reasons": [
+      "По замечанию пользователя: standard-strength в описательном тексте передано как «средней крепости», без изменения диапазонов алкоголя."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_10.json",
+    "id": "21B-Red IPA",
+    "path": [
+      "styles",
+      4,
+      "defined_subtypes",
+      3,
+      "sections_ru",
+      "comments"
+    ],
+    "field": "comments",
+    "before": "Стиль выделен отдельно от American Amber Ale, чтобы отчётливее отделять более крепкие и сильно охмелённые версии от более сбалансированных образцов стандартной крепости.",
+    "source_en": "Separated from American Amber Ale to better differentiate stronger, highly hopped examples from more balanced, standard-strength beers.",
+    "after": "Стиль выделен отдельно от American Amber Ale, чтобы отчётливее отделять более крепкие и сильно охмелённые версии от более сбалансированных образцов средней крепости.",
+    "reasons": [
+      "По замечанию пользователя: standard-strength в описательном тексте передано как «средней крепости», без изменения диапазонов алкоголя."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_13.json",
+    "id": "25B",
+    "path": [
+      "styles",
+      1,
+      "sections_ru",
+      "comments"
+    ],
+    "field": "comments",
+    "before": "Базовым описанием здесь считается светлая версия стандартной крепости; далее допускаются вариации по цвету и крепости. Тёмные версии обычно более солодовые, с менее выраженной хмелевой горечью, поэтому кажутся более уравновешенными. У крепких вариантов обычно больше солодовой глубины, насыщенности, тепла и тела просто за счёт более высокой плотности. Между крепостью и цветом прямой связи нет. Кислинка полностью необязательна; если она есть на низком или умеренном уровне, то может частично заменять горечь в балансе. Сезон не должен одновременно быть и кислым, и горьким. Из-за очень высокой степени сбраживания пиво может казаться горче, чем предполагают цифры IBU. Светлые версии часто горче и более хмелевые, чем тёмные. Подбор дрожжей сильно влияет на соотношение фруктовых и пряных нот, поэтому стиль допускает широкий диапазон интерпретаций. В США стиль часто называют farmhouse ale / фермерским элем, но в Европе этот термин употребляют редко: там это скорее часть более широкой группы ремесленных элей. Brettanomyces для стиля нехарактерен; Brett-версии следует относить к 28A Brett Beer. Grisette — известный подтип сезона, исторически популярный у шахтёров; его можно заявлять как 25B Saison, Session Strength, с пометкой, что характер задаёт пшеница.",
+    "source_en": "This style generally describes the standard-strength pale version, followed by differences for variations in strength and color. Darker versions tend to have more malt character and less apparent hop bitterness, yielding a more balanced presentation. Stronger versions often have more malt flavor, richness, warmth, and body simply due to the higher gravity. There is no correlation between strength and color. Sourness is totally optional, and if present at low to moderate levels, it may substitute somewhat for bitterness in the balance. A Saison should not be both sour and bitter at the same time. The high attenuation may make the beer seem more bitter than the IBUs suggest. Pale versions are often more bitter and hoppy than darker versions. Yeast selection often drives the balance of fruity and spicy notes, and can change the character significantly; allow for a range of interpretations. Often called Farmhouse ales in the US, but this term is not common in Europe where they are simply part of a larger grouping of artisanal ales. Brettanomyces is not typical for this style; Saisons with Brett should be entered in the 28A Brett Beer style. A Grisette is a well-known type of Saison popular with miners; enter Grisette as 25B Saison, Session Strength, Comment: Grisette with wheat as the character grain.",
+    "after": "Базовым описанием здесь считается светлая версия средней крепости; далее допускаются вариации по цвету и крепости. Тёмные версии обычно более солодовые, с менее выраженной хмелевой горечью, поэтому кажутся более уравновешенными. У крепких вариантов обычно больше солодовой глубины, насыщенности, тепла и тела просто за счёт более высокой плотности. Между крепостью и цветом прямой связи нет. Кислинка полностью необязательна; если она есть на низком или умеренном уровне, то может частично заменять горечь в балансе. Сезон не должен одновременно быть и кислым, и горьким. Из-за очень высокой степени сбраживания пиво может казаться горче, чем предполагают цифры IBU. Светлые версии часто горче и более хмелевые, чем тёмные. Подбор дрожжей сильно влияет на соотношение фруктовых и пряных нот, поэтому стиль допускает широкий диапазон интерпретаций. В США стиль часто называют farmhouse ale / фермерским элем, но в Европе этот термин употребляют редко: там это скорее часть более широкой группы ремесленных элей. Brettanomyces для стиля нехарактерен; Brett-версии следует относить к 28A Brett Beer. Grisette — известный подтип сезона, исторически популярный у шахтёров; его можно заявлять как 25B Saison, Session Strength, с пометкой, что характер задаёт пшеница.",
+    "reasons": [
+      "По замечанию пользователя: standard-strength в описательном тексте передано как «средней крепости», без изменения диапазонов алкоголя."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_13.json",
+    "id": "25B",
+    "path": [
+      "styles",
+      1,
+      "sections_ru",
+      "style_comparison"
+    ],
+    "field": "style_comparison",
+    "before": "Светлая версия стандартной крепости похожа на Belgian Blond Ale, но сильнее выброжена, суше, хмелевее и горче, а дрожжевой характер у неё выразительнее. В крепкой светлой версии стиль может напоминать Belgian Tripel, но обычно остаётся более зерновым, чуть более простоватым, деревенским по характеру и иногда имеет более выраженную пряность дрожжей.",
+    "source_en": "The pale, standard strength versions is like a more highly-attenuated, hoppy, and bitter Belgian Blond Ale with a stronger yeast character. At super strength and pale color, similar to a Belgian Tripel, but often with more of a grainy, rustic quality and sometimes with a spicier yeast character.",
+    "after": "Светлая версия средней крепости похожа на Belgian Blond Ale, но сильнее выброжена, суше, хмелевее и горче, а дрожжевой характер у неё выразительнее. В крепкой светлой версии стиль может напоминать Belgian Tripel, но обычно остаётся более зерновым, чуть более простоватым, деревенским по характеру и иногда имеет более выраженную пряность дрожжей.",
+    "reasons": [
+      "По замечанию пользователя: standard-strength в описательном тексте передано как «средней крепости», без изменения диапазонов алкоголя."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_20.json",
+    "id": "21B-Red IPA",
+    "path": [
+      "styles",
+      3,
+      "sections_ru",
+      "comments"
+    ],
+    "field": "comments",
+    "before": "Стиль выделен отдельно от American Amber Ale, чтобы отчётливее отделять более крепкие и сильно охмелённые версии от более сбалансированных образцов стандартной крепости.",
+    "source_en": "Separated from American Amber Ale to better differentiate stronger, highly hopped examples from more balanced, standard-strength beers.",
+    "after": "Стиль выделен отдельно от American Amber Ale, чтобы отчётливее отделять более крепкие и сильно охмелённые версии от более сбалансированных образцов средней крепости.",
+    "reasons": [
+      "По замечанию пользователя: standard-strength в описательном тексте передано как «средней крепости», без изменения диапазонов алкоголя."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_10.json",
+    "id": "21B-Brown IPA",
+    "path": [
+      "styles",
+      4,
+      "defined_subtypes",
+      2,
+      "sections_ru",
+      "comments"
+    ],
+    "field": "comments",
+    "before": "Стиль выделен отдельно от American Brown Ale, чтобы лучше отделять более крепкие и сильно охмелённые версии от более ровных и стандартных по крепости образцов.",
+    "source_en": "Separated from American Brown Ale to better differentiate stronger, highly hopped examples from more balanced, standard-strength beers.",
+    "after": "Стиль выделен отдельно от American Brown Ale, чтобы лучше отделять более крепкие и сильно охмелённые версии от более сбалансированных образцов средней крепости.",
+    "reasons": [
+      "По замечанию пользователя: standard-strength в описательном тексте передано как «средней крепости», без изменения диапазонов алкоголя."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_20.json",
+    "id": "21B-Brown IPA",
+    "path": [
+      "styles",
+      2,
+      "sections_ru",
+      "comments"
+    ],
+    "field": "comments",
+    "before": "Стиль выделен отдельно от American Brown Ale, чтобы лучше отделять более крепкие и сильно охмелённые версии от более ровных и стандартных по крепости образцов.",
+    "source_en": "Separated from American Brown Ale to better differentiate stronger, highly hopped examples from more balanced, standard-strength beers.",
+    "after": "Стиль выделен отдельно от American Brown Ale, чтобы лучше отделять более крепкие и сильно охмелённые версии от более сбалансированных образцов средней крепости.",
+    "reasons": [
+      "По замечанию пользователя: standard-strength в описательном тексте передано как «средней крепости», без изменения диапазонов алкоголя."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_05.json",
+    "id": "11C",
+    "path": [
+      "styles",
+      5,
+      "sections_ru",
+      "comments"
+    ],
+    "field": "comments",
+    "before": "В современной Англии обозначение ESB — это торговая марка Fuller’s, а не название общего класса пива. Это очень известный, но при этом уникальный сорт с мощным и сложным солодовым профилем, нехарактерным для большинства других strong bitter. Из-за этого судьи иногда слишком сурово оценивают традиционные английские strong bitter, ожидая именно профиль Fuller’s ESB. В США же ESB часто используют как общее обозначение солодового, горького, рыжеватого британского эля стандартной по местным меркам крепости, и потому американские крафтовые версии могут ошибочно восприниматься как эталон стиля.",
+    "source_en": "In England today, “ESB” is a Fullers trademark, and no one thinks of it as a generic class of beer. It is a unique (but very well-known) beer that has a very strong, complex malt profile not found in other examples, often leading judges to overly penalize traditional English strong bitters. In America, ESB has been co-opted to describe a malty, bitter, reddish, standard-strength (for the US) British-type ale, and is a popular craft beer style. This may cause some judges to think of US brewpub ESBs as representative of this style.",
+    "after": "В современной Англии обозначение ESB — это торговая марка Fuller’s, а не название общего класса пива. Это очень известный, но при этом уникальный сорт с мощным и сложным солодовым профилем, нехарактерным для большинства других strong bitter. Из-за этого судьи иногда слишком сурово оценивают традиционные английские strong bitter, ожидая именно профиль Fuller’s ESB. В США же ESB часто используют как общее обозначение солодового, горького, рыжеватого британского эля обычной по американским меркам крепости, и потому американские крафтовые версии могут ошибочно восприниматься как эталон стиля.",
+    "reasons": [
+      "Standard-strength (for the US) передано естественным оборотом «обычной по американским меркам крепости»; сохранена привязка к США."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_10.json",
+    "id": "21B-Black IPA",
+    "path": [
+      "styles",
+      4,
+      "defined_subtypes",
+      1,
+      "sections_ru",
+      "comments"
+    ],
+    "field": "comments",
+    "before": "Большинство образцов находится в стандартном диапазоне крепости. Слишком экстремальные варианты начинают напоминать крупный и сильно охмелённый porter, что ухудшает питкость.",
+    "source_en": "Most examples are standard strength. Strong examples can sometimes seem like big, hoppy porters if made too extreme, which hurts their drinkability.",
+    "after": "Большинство образцов имеет обычную для IPA крепость. Слишком экстремальные варианты начинают напоминать крупный и сильно охмелённый porter, что ухудшает питкость.",
+    "reasons": [
+      "В контексте Specialty IPA standard обозначает обычную крепость IPA наряду с session и double. Убрана калька, сохранено значение категории крепости."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_20.json",
+    "id": "21B-Black IPA",
+    "path": [
+      "styles",
+      1,
+      "sections_ru",
+      "comments"
+    ],
+    "field": "comments",
+    "before": "Большинство образцов находится в стандартном диапазоне крепости. Слишком экстремальные варианты начинают напоминать мощный, сильно охмелённый портер, что ухудшает питкость.",
+    "source_en": "Most examples are standard strength. Strong examples can sometimes seem like big, hoppy porters if made too extreme, which hurts their drinkability.",
+    "after": "Большинство образцов имеет обычную для IPA крепость. Слишком экстремальные варианты начинают напоминать мощный, сильно охмелённый портер, что ухудшает питкость.",
+    "reasons": [
+      "В контексте Specialty IPA standard обозначает обычную крепость IPA наряду с session и double. Убрана калька, сохранено значение категории крепости."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_09.json",
+    "id": "19B",
+    "path": [
+      "styles",
+      5,
+      "description_short_ru"
+    ],
+    "field": "description_short_ru",
+    "before": "Стандартное по крепости пиво с поджаренно-карамельной солодовой основой, уверенной горечью, фруктовыми оттенками и грубоватым хмелевым характером с древесными нотами.",
+    "after": "Пиво средней крепости с поджаренно-карамельной солодовой основой, уверенной горечью, фруктовыми оттенками и грубоватым хмелевым характером с древесными нотами.",
+    "reasons": [
+      "По замечанию пользователя: standard-strength в описательном тексте передано как «средней крепости», без изменения диапазонов алкоголя."
+    ],
+    "comparison_en": "A toasty and caramelly, fairly bitter, standard-strength beer with an interesting fruitiness and rustic, woody hop character. Smooth and well carbonated.",
+    "comparison_source_field": "overall_impression"
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_09.json",
+    "id": "19B",
+    "path": [
+      "styles",
+      5,
+      "sections_ru",
+      "overall_impression"
+    ],
+    "field": "overall_impression",
+    "before": "Поджаренно-карамельное, довольно горькое пиво стандартной крепости с интересной фруктовостью и грубоватым хмелевым характером с древесными нотами. Гладкое по ощущению и хорошо насыщенное углекислотой.",
+    "source_en": "A toasty and caramelly, fairly bitter, standard-strength beer with an interesting fruitiness and rustic, woody hop character. Smooth and well carbonated.",
+    "after": "Довольно горькое пиво средней крепости с поджаристыми и карамельными нотами, интересными фруктовыми оттенками и грубоватыми древесными нотами хмеля. Мягко ощущается во рту, хорошо газировано.",
+    "reasons": [
+      "По замечанию пользователя: «средней крепости» вместо «стандартной». Toasty and caramelly раскрыто как поджаристые и карамельные ноты; smooth — как мягкое ощущение во рту, well carbonated — как хорошая газация. Не добавлены новые ингредиенты или степени интенсивности."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_01.json",
+    "id": "3A",
+    "path": [
+      "styles",
+      7,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Мягкая вода с низким содержанием сульфатов и карбонатов. Традиционный чешский хмель. Чешский пилснерский солод. Чешские лагерные дрожжи. Низкая минерализация воды даёт характерную мягкую, округлую хмелевую выразительность даже при высокой норме охмеления.",
+    "source_en": "Soft water with low sulfate and carbonate content. Traditional Czech hops. Czech Pilsner malt. Czech lager yeast. Low ion water provides a distinctively soft, rounded hop profile despite high hopping rates.",
+    "after": "Мягкая вода с низким содержанием сульфатов и карбонатов. Традиционный чешский хмель. Чешский солод пилснер. Чешские лагерные дрожжи. Низкая минерализация воды даёт характерную мягкую, округлую хмелевую выразительность даже при высокой норме охмеления.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_01.json",
+    "id": "3C",
+    "path": [
+      "styles",
+      9,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Пилснерский и карамельный солод; при необходимости также венский и мюнхенский солод. Вода с низкой минерализацией. Традиционный чешский хмель. Чешские лагерные дрожжи.",
+    "source_en": "Pilsner and caramel malts, but Vienna and Munich malts may also be used. Low mineral content water. Traditional Czech hops. Czech lager yeast.",
+    "after": "Солод пилснер и карамельный солод; при необходимости также венский и мюнхенский солод. Вода с низкой минерализацией. Традиционный чешский хмель. Чешские лагерные дрожжи.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_01.json",
+    "id": "3D",
+    "path": [
+      "styles",
+      10,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Чаще всего используются пилснерский и тёмный карамельный солода с добавлением обесгорченных обжаренных солодов; также допустимы венский и мюнхенский солод. Вода с низкой минерализацией. Традиционный чешский хмель. Чешские лагерные дрожжи.",
+    "source_en": "Pilsner and dark caramel malts with the addition of debittered roasted malts are most common, but additions of Vienna or Munich malt are also appropriate. Low mineral content water. Traditional Czech hops. Czech lager yeast.",
+    "after": "Чаще всего используются солод пилснер и тёмный карамельный солод с добавлением обесгорченных обжаренных солодов; также допустимы венский и мюнхенский солод. Вода с низкой минерализацией. Традиционный чешский хмель. Чешские лагерные дрожжи.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_02.json",
+    "id": "4",
+    "path": [
+      "categories",
+      0,
+      "overview_ru"
+    ],
+    "field": "overview_ru",
+    "before": "В эту категорию входят светлые немецкие лагеры крепости от vollbier до starkbier. Во вкусе преобладает пилснерский солод, при этом пиво хорошо выброжено.",
+    "after": "В эту категорию входят светлые немецкие лагеры крепости от vollbier до starkbier. Во вкусе преобладает солод пилснер, при этом пиво хорошо выброжено.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_02.json",
+    "id": "4A",
+    "path": [
+      "styles",
+      0,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Континентальный пилснерский солод, традиционные немецкие хмели и немецкие лагерные дрожжи с чистым профилем брожения.",
+    "source_en": "Continental Pilsner malt. Traditional German hops. Clean German lager yeast.",
+    "after": "Континентальный солод пилснер, традиционные немецкие хмели и немецкие лагерные дрожжи с чистым профилем брожения.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_02.json",
+    "id": "4B",
+    "path": [
+      "styles",
+      1,
+      "sections_ru",
+      "flavor"
+    ],
+    "field": "flavor",
+    "before": "В начале глотка солодовый вкус выражен от умеренного до умеренно сильного: лёгкие поджаристые тона и оттенки хлебного теста создают впечатление мягкой солодовой насыщенности. Горечь от умеренной до умеренно низкой; баланс однозначно смещён в солодовую сторону. Пиво хорошо выброжено и освежает, но не кажется сухим. Хмелевой вкус — от умеренно слабого до умеренного, цветочный, травянистый или пряный. Брожение чистое. Основу вкуса составляет пилснерский солод, дополненный лёгкими поджаристыми нюансами. Горечь поддерживает профиль, но финиш всё равно должен оставаться солодовым и выразительным.",
+    "source_en": "Medium to medium-high malty flavor initially, with a lightly toasty, bread dough quality and an impression of soft malty richness. Medium to medium-low bitterness, definitely malty in the balance. Well-attenuated and crisp, but not dry. Medium-low to medium floral, herbal, or spicy hop flavor. Clean fermentation profile. The taste is mostly of Pils malt, but with slightly toasty hints. The bitterness is supportive, but still should yield a malty, flavorful finish.",
+    "after": "В начале глотка солодовый вкус выражен от умеренного до умеренно сильного: лёгкие поджаристые тона и оттенки хлебного теста создают впечатление мягкой солодовой насыщенности. Горечь от умеренной до умеренно низкой; баланс однозначно смещён в солодовую сторону. Пиво хорошо выброжено и освежает, но не кажется сухим. Хмелевой вкус — от умеренно слабого до умеренного, цветочный, травянистый или пряный. Брожение чистое. Основу вкуса составляет солод пилснер, дополненный лёгкими поджаристыми нюансами. Горечь поддерживает профиль, но финиш всё равно должен оставаться солодовым и выразительным.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_02.json",
+    "id": "4B",
+    "path": [
+      "styles",
+      1,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Основа засыпи — преимущественно пилснерский солод, с добавлением части венского или мюнхенского солода для усиления солодовой насыщенности. Различия между коммерческими образцами чаще связаны с производителем солода и выбором дрожжей, а не с радикально разным составом засыпи.",
+    "source_en": "Majority Pils malt, but with some Vienna or Munich malt to increase maltiness. Differences in commercial examples are mostly due to different maltsters and yeast, not major grist differences.",
+    "after": "Основа засыпи — преимущественно солод пилснер, с добавлением части венского или мюнхенского солода для усиления солодовой насыщенности. Различия между коммерческими образцами чаще связаны с производителем солода и выбором дрожжей, а не с радикально разным составом засыпи.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_02.json",
+    "id": "4C",
+    "path": [
+      "styles",
+      2,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Смесь пилснерского, венского и мюнхенского солодов. Несоложёные добавки не используются. Можно использовать небольшое количество светлого карамельного солода. Хмель — традиционный немецкий. Лагерные дрожжи с чистым профилем брожения. Отварочное затирание традиционно, но кипячение здесь менее интенсивное, чем у Dunkles Bock, чтобы не набирать лишний цвет. Вода мягкая.",
+    "source_en": "A mix of Pils, Vienna, and Munich malts. No adjuncts. Light use of pale crystal type malts possible. Traditional German hops. Clean lager yeast. Decoction mash is traditional, but boiling is less than in Dunkles Bock to restrain color development. Soft water.",
+    "after": "Смесь солода пилснер с венским и мюнхенским солодами. Несоложёные добавки не используются. Можно использовать небольшое количество светлого карамельного солода. Хмель — традиционный немецкий. Лагерные дрожжи с чистым профилем брожения. Отварочное затирание традиционно, но кипячение здесь менее интенсивное, чем у Dunkles Bock, чтобы не набирать лишний цвет. Вода мягкая.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_02.json",
+    "id": "5A",
+    "path": [
+      "styles",
+      3,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Континентальный пилснерский солод, немецкие лагерные дрожжи и традиционные немецкие хмели.",
+    "source_en": "Continental Pils malt. German lager yeast. Traditional German hops.",
+    "after": "Континентальный солод пилснер, немецкие лагерные дрожжи и традиционные немецкие хмели.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_02.json",
+    "id": "5B",
+    "path": [
+      "styles",
+      4,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Традиционные немецкие хмели. Немецкий пилснерский, светлый (пейл) или венский солод. Немецкие элевые дрожжи с высокой степенью сбраживания и чистым профилем брожения. Допустимо небольшое количество пшеничного солода. Современная коммерческая практика — брожение примерно при 15 °C, затем холодная выдержка около точки замерзания до месяца и подача максимально свежим.",
+    "source_en": "Traditional German hops. German Pils, Pale, or Vienna malt. Attenuative, clean German ale yeast. Occasional small use of wheat malt. Current commercial practice is to ferment around 15 °C, cold condition near freezing for up to a month, and serve fresh.",
+    "after": "Традиционные немецкие хмели. Немецкие солода: пилснер, светлый (пейл) или венский. Немецкие элевые дрожжи с высокой степенью сбраживания и чистым профилем брожения. Допустимо небольшое количество пшеничного солода. Современная коммерческая практика — брожение примерно при 15 °C, затем холодная выдержка около точки замерзания до месяца и подача максимально свежим.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_02.json",
+    "id": "5C",
+    "path": [
+      "styles",
+      5,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Вода с заметной минерализацией и высоким содержанием сульфатов, карбонатов и хлоридов. Традиционные немецкие или чешские хмели. Пилснерский солод. Немецкие лагерные дрожжи. Отварочное затирание традиционно.",
+    "source_en": "Minerally water with high levels of sulfates, carbonates, and chlorides. Traditional German or Czech hops. Pilsner malt. German lager yeast. Decoction mash traditional.",
+    "after": "Вода с заметной минерализацией и высоким содержанием сульфатов, карбонатов и хлоридов. Традиционные немецкие или чешские хмели. Солод пилснер. Немецкие лагерные дрожжи. Отварочное затирание традиционно.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_02.json",
+    "id": "5D",
+    "path": [
+      "styles",
+      6,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Континентальный пилснерский солод, традиционные немецкие хмели и немецкие лагерные дрожжи с чистым профилем брожения.",
+    "source_en": "Continental Pilsner malt. Traditional German hops. Clean German lager yeast.",
+    "after": "Континентальный солод пилснер, традиционные немецкие хмели и немецкие лагерные дрожжи с чистым профилем брожения.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_03.json",
+    "id": "7A",
+    "path": [
+      "styles",
+      3,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Традиционно используется венский солод наилучшего качества, хотя также возможны пилснерский и мюнхенский солод. Хмель — традиционный континентальный. Немецкие лагерные дрожжи с чистым профилем брожения. Для цвета и лёгкой сладости допустимы небольшие количества специальных солодов.",
+    "source_en": "Traditionally, best-quality Vienna malt, but can also use Pils and Munich malts. Traditional continental hops. Clean German lager yeast. May use small amounts of specialty malts for color and sweetness.",
+    "after": "Традиционно используется венский солод наилучшего качества, хотя также возможны солод пилснер и мюнхенский солод. Хмель — традиционный континентальный. Немецкие лагерные дрожжи с чистым профилем брожения. Для цвета и лёгкой сладости допустимы небольшие количества специальных солодов.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_03.json",
+    "id": "7B",
+    "path": [
+      "styles",
+      4,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Засыпь варьирует, но обычно состоит из немецких базовых солодов — чаще всего пилснерского, иногда с мюнхенским — с небольшими количествами карамельных, шоколадных или жжёных солодов. Возможна доля пшеницы, в том числе обжаренной. Традиционен Spalt, но подходят и другие классические немецкие или чешские хмели. Элевые дрожжи с высокой степенью сбраживания и чистым профилем брожения. Традиционно применяется ступенчатое затирание. Брожение идёт при прохладных элевых температурах, затем пиво выдерживают при низкой температуре.",
+    "source_en": "Grists vary, but usually consist of German base malts (usually Pils, sometimes Munich) with small amounts of crystal, chocolate, or black malts. May include some wheat, including roasted wheat. Spalt hops are traditional, but other traditional German or Czech hops can be used. Clean, highly attenuative ale yeast. A step mash program is traditional. Fermented at cool ale temperatures, then cold conditioned.",
+    "after": "Засыпь варьирует, но обычно состоит из немецких базовых солодов — чаще всего солода пилснер, иногда с добавлением мюнхенского — с небольшими количествами карамельных, шоколадных или жжёных солодов. Возможна доля пшеницы, в том числе обжаренной. Традиционен Spalt, но подходят и другие классические немецкие или чешские хмели. Элевые дрожжи с высокой степенью сбраживания и чистым профилем брожения. Традиционно применяется ступенчатое затирание. Брожение идёт при прохладных элевых температурах, затем пиво выдерживают при низкой температуре.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_04.json",
+    "id": "8B",
+    "path": [
+      "styles",
+      1,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Основу засыпи составляют немецкие мюнхенский и пилснерский солода. Тёмные обжаренные солода без оболочки придают обжаренные тона без подгорелого вкуса. Традиционно используют немецкие сорта хмеля и немецкие лагерные дрожжи с чистым профилем брожения.",
+    "source_en": "German Munich malt and Pilsner malts for the base, with huskless dark roasted malts that add roast flavors without burnt flavors. German hop varieties and clean German lager yeasts are traditional.",
+    "after": "Основу засыпи составляют солода немецкого производства — мюнхенский и пилснер. Тёмные обжаренные солода без оболочки придают обжаренные тона без подгорелого вкуса. Традиционно используют немецкие сорта хмеля и немецкие лагерные дрожжи с чистым профилем брожения.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_04.json",
+    "id": "9A",
+    "path": [
+      "styles",
+      2,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Обычно используют пилснерский, венский и мюнхенский солода. Иногда для коррекции цвета добавляют немного тёмного солода. Хмель — традиционный немецкий. Немецкие лагерные дрожжи с чистым профилем брожения. Отварочное затирание исторически характерно.",
+    "source_en": "Pils, Vienna, Munich malts. Occasionally dark malt for color adjustment. Traditional German hops. Clean German lager yeast. Decoction mashing is traditional.",
+    "after": "Обычно используют солод пилснер, венский и мюнхенский солода. Иногда для коррекции цвета добавляют немного тёмного солода. Хмель — традиционный немецкий. Немецкие лагерные дрожжи с чистым профилем брожения. Отварочное затирание исторически характерно.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_05.json",
+    "id": "10A",
+    "path": [
+      "styles",
+      0,
+      "sections_ru",
+      "flavor"
+    ],
+    "field": "flavor",
+    "before": "Вкус банана и гвоздики — от слабого до умеренно сильного, обычно хорошо сбалансирован. Пшеничный вкус мягкий, от слабого до умеренного: хлебный, тестяной или зерновой; его поддерживает лёгкая зерновая сладость пилснерского солода. Горечь очень низкая или умеренно низкая. Вкус округлый, выразительный, с относительно сухим финишем. Лёгкая ванильность допустима. Очень слабый цветочный, пряный или травянистый хмелевой вкус возможен, но не обязателен. Ощущение сладости, если и возникает, связано скорее с низкой горечью, а не с остаточным сахаром; слишком сладкий или тяжёлый финиш ухудшает питкость. Жвачка, кислинка и дымность недопустимы. Профиль банана и гвоздики важен, но не должен становиться чрезмерным и разбалансированным.",
+    "source_en": "Low to moderately strong banana and clove flavor, often well balanced. Low to moderate soft, somewhat bready, doughy, or grainy wheat flavor supported by the slight Pils malt grainy sweetness. Very low to moderately low bitterness. Well-rounded, flavorful palate with a relatively dry finish. Light vanilla optional. Very low floral, spicy, or herbal hop flavor optional. Any impression of sweetness is due more to low bitterness than any residual sweetness; a sweet or heavy finish impairs drinkability. Bubblegum, sourness, or smoke are faults. While the banana-and-clove profile is important, it should not be so strong as to be extreme and unbalanced.",
+    "after": "Вкус банана и гвоздики — от слабого до умеренно сильного, обычно хорошо сбалансирован. Пшеничный вкус мягкий, от слабого до умеренного: хлебный, тестяной или зерновой; его поддерживает лёгкая зерновая сладость солода пилснер. Горечь очень низкая или умеренно низкая. Вкус округлый, выразительный, с относительно сухим финишем. Лёгкая ванильность допустима. Очень слабый цветочный, пряный или травянистый хмелевой вкус возможен, но не обязателен. Ощущение сладости, если и возникает, связано скорее с низкой горечью, а не с остаточным сахаром; слишком сладкий или тяжёлый финиш ухудшает питкость. Жвачка, кислинка и дымность недопустимы. Профиль банана и гвоздики важен, но не должен становиться чрезмерным и разбалансированным.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_05.json",
+    "id": "10A",
+    "path": [
+      "styles",
+      0,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Пшеничный солод — не менее половины засыпи. Пилснерский солод. Традиционно — отварочное затирание. Вайценовые дрожжи и сравнительно прохладное брожение.",
+    "source_en": "Malted wheat, at least half the grist. Pilsner malt. Decoction mash traditional. Weizen yeast, cool fermentation temperatures.",
+    "after": "Пшеничный солод — не менее половины засыпи. Солод пилснер. Традиционно — отварочное затирание. Вайценовые дрожжи и сравнительно прохладное брожение.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_05.json",
+    "id": "10B",
+    "path": [
+      "styles",
+      1,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Пшеничный солод — не менее половины засыпи. В основе могут быть мюнхенский, венский или пилснерский солод. Для цвета и нюансов используют тёмный пшеничный солод, карамельный пшеничный солод или другие окрашивающие солоды. Традиционно — отварочное затирание, вайценовые дрожжи и прохладное брожение.",
+    "source_en": "Malted wheat, at least half the grist. Munich, Vienna, or Pilsner malt. Dark wheat, caramel wheat, or color malt. Decoction mash traditional. Weizen yeast, cool fermentation temperatures.",
+    "after": "Пшеничный солод — не менее половины засыпи. В основе могут быть мюнхенский или венский солод либо солод пилснер. Для цвета и нюансов используют тёмный пшеничный солод, карамельный пшеничный солод или другие окрашивающие солоды. Традиционно — отварочное затирание, вайценовые дрожжи и прохладное брожение.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_05.json",
+    "id": "10C",
+    "path": [
+      "styles",
+      2,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Пшеничный солод — не менее половины засыпи. В основе — мюнхенский, венский или пилснерский солод. Возможно использование небольшого количества окрашивающих солодов. Традиционно — отварочное затирание, вайценовые дрожжи и прохладное брожение.",
+    "source_en": "Malted wheat, at least half the grist. Munich, Vienna, or Pilsner malt. Color malts may be used sparingly. Decoction mash traditional. Weizen yeast, cool fermentation temperatures.",
+    "after": "Пшеничный солод — не менее половины засыпи. В основе — мюнхенский или венский солод либо солод пилснер. Возможно использование небольшого количества окрашивающих солодов. Традиционно — отварочное затирание, вайценовые дрожжи и прохладное брожение.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_11.json",
+    "id": "23A",
+    "path": [
+      "styles",
+      4,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Пилснерский солод. Обычно используется и пшеничный солод, нередко не менее половины засыпи. Резкую кислотность даёт совместное брожение элевых дрожжей и молочнокислых бактерий; её могут дополнительно усиливать смешивание пива разного возраста в ходе брожения и холодная выдержка. Традиционно отварочное затирание с охмелением затора. Немецкие учёные-пивовары считают, что Brett необходим для формирования правильного фруктово-цветочного профиля.",
+    "source_en": "Pilsner malt. Usually wheat malt, often at least half the grist. A symbiotic co-fermentation with top-fermenting yeast and LAB provides the sharp sourness, which may be enhanced by blending of beers of different ages during fermentation and by cool aging. Decoction mashing with mash hopping is traditional. German brewing scientists believe that Brett is essential to get the correct, fruity-floral flavor profile.",
+    "after": "Солод пилснер. Обычно используется и пшеничный солод, нередко не менее половины засыпи. Резкую кислотность даёт совместное брожение элевых дрожжей и молочнокислых бактерий; её могут дополнительно усиливать смешивание пива разного возраста в ходе брожения и холодная выдержка. Традиционно отварочное затирание с охмелением затора. Немецкие учёные-пивовары считают, что Brett необходим для формирования правильного фруктово-цветочного профиля.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "28D",
+    "path": [
+      "styles",
+      3,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Засыпь в основном или полностью состоит из светлого базового, пилснерского или пшеничного солода в любых сочетаниях. Для более насыщенного солодового вкуса допустимы солода щадящей сушки. Для тела можно использовать солода типа Carapils. Светлые сахара допустимы, если нужно поднять плотность, не утяжеляя тело. Лактоза и мальтодекстрин не допускаются. Пиво можно получить подкислением сусла в варочном котле, совместным брожением дрожжей и молочнокислых бактерий или с помощью специальных дрожжей, вырабатывающих молочную кислоту. Brett не используется.",
+    "source_en": "Most or all of the grist is pale, Pils, or wheat malt in any combination. Lightly-kilned malts for more malt depth may be employed. Carapils-type malts can be used for body. Pale sugars can be used to increase gravity without body. No lactose or maltodextrin. May be produced by kettle souring, co-fermentation culture (yeast and LAB), or using specialty yeast that produce lactic acid. No Brett.",
+    "after": "Засыпь в основном или полностью состоит из светлого базового солода, солода пилснер или пшеничного солода в любых сочетаниях. Для более насыщенного солодового вкуса допустимы солода щадящей сушки. Для тела можно использовать солода типа Carapils. Светлые сахара допустимы, если нужно поднять плотность, не утяжеляя тело. Лактоза и мальтодекстрин не допускаются. Пиво можно получить подкислением сусла в варочном котле, совместным брожением дрожжей и молочнокислых бактерий или с помощью специальных дрожжей, вырабатывающих молочную кислоту. Brett не используется.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "29D",
+    "path": [
+      "styles",
+      7,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Светлый базовый солод — пилснерский или пейл-эль; в небольших количествах допустимы светлые карамельные или пшеничные солода. Виноградное сусло — красных или белых сортов, чаще свежее — обычно составляет 15–20% общей засыпи, но может превышать и 40%. Виноградное сусло должно пройти брожение вместе с пивом; смешивание вина и пива не предусмотрено. Чаще используют дрожжи с фруктово-пряным профилем, но допустимы и нейтральные штаммы. Хмель подбирают так, чтобы он дополнял общий профиль. Сухое охмеление в этом стиле не применяется. Дуб допустим, но не обязателен; он не должен быть чрезмерным и не должен быть сильнее, чем в вине.",
+    "source_en": "Pils or pale base malt, limited pale crystal or wheat malts. Grape must (red or white varieties, typically fresh must) is usually 15 – 20% of the total grist, but can exceed 40%. The must is fermented with the beer, not a blending of wine and beer. Fruity-spicy yeast are most common but neutral varieties can be used. Hops should be selected to complement the overall profile. This beer is not dry-hopped. Oak is allowable, but not required, and it should not be overpowering, or at levels stronger than found in wine.",
+    "after": "Светлый базовый солод — пилснер или пейл-эль; в небольших количествах допустимы светлые карамельные или пшеничные солода. Виноградное сусло — красных или белых сортов, чаще свежее — обычно составляет 15–20% общей засыпи, но может превышать и 40%. Виноградное сусло должно пройти брожение вместе с пивом; смешивание вина и пива не предусмотрено. Чаще используют дрожжи с фруктово-пряным профилем, но допустимы и нейтральные штаммы. Хмель подбирают так, чтобы он дополнял общий профиль. Сухое охмеление в этом стиле не применяется. Дуб допустим, но не обязателен; он не должен быть чрезмерным и не должен быть сильнее, чем в вине.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_19.json",
+    "id": "X1",
+    "path": [
+      "styles",
+      0,
+      "sections_ru",
+      "history"
+    ],
+    "field": "history",
+    "before": "На раннем этапе аргентинские домашние пивовары были сильно ограничены в сырье: экстрактов не было, в распоряжении фактически имелись только пилснерский солод, хмель Cascade и сухие дрожжи вроде Nottingham, Windsor или Safale. Из этих ингредиентов и выросла локальная версия Blond Ale, получившая имя Dorada Pampeana.",
+    "source_en": "At the beginning Argentine homebrewers were very limited: there weren’t extract, they could use only pils malt, Cascade hops and dry yeast, commonly Nottingham, Windsor or Safale. With these ingredients, Argentine brewers developed a specific version of Blond Ale, named Dorada Pampeana.",
+    "after": "На раннем этапе аргентинские домашние пивовары были сильно ограничены в сырье: экстрактов не было, в распоряжении фактически имелись только солод пилснер, хмель Cascade и сухие дрожжи вроде Nottingham, Windsor или Safale. Из этих ингредиентов и выросла локальная версия Blond Ale, получившая имя Dorada Pampeana.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_19.json",
+    "id": "X1",
+    "path": [
+      "styles",
+      0,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Обычно используют только светлый или пилснерский солод, иногда — с небольшими долями карамельного солода. Наиболее типичен хмель Cascade. Американские дрожжи с чистым профилем брожения, британские с лёгкими фруктовыми нотами или дрожжи для кёльша. Пиво обычно проходит холодную выдержку.",
+    "source_en": "Usually only pale or pils malt, although may include low rates of caramelized malt. Commonly Cascade hops. Clean American yeast, slightly fruity British or Kölsch, usually packaged in cold.",
+    "after": "Обычно используют только светлый солод или солод пилснер, иногда — с небольшими долями карамельного солода. Наиболее типичен хмель Cascade. Американские дрожжи с чистым профилем брожения, британские с лёгкими фруктовыми нотами или дрожжи для кёльша. Пиво обычно проходит холодную выдержку.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_19.json",
+    "id": "X3",
+    "path": [
+      "styles",
+      2,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Чаще всего основу составляет пилснерский или другой светлый базовый солод с небольшим количеством специальных солодов, если они вообще используются. Доля винограда может доходить до 40% от общей засыпи. Сам виноград или виноградное сусло, иногда предварительно долго уваренное, можно вносить на разных стадиях: во время кипячения, но чаще — в первичное или вторичное брожение. Дрожжи могут давать как нейтральный профиль, так и фруктово-пряный — например, английские или бельгийские штаммы. Винные дрожжи тоже допустимы, в том числе в сочетании с другими. Хмель — главным образом из Старого Света, чаще немецкий или английский, и в небольших количествах, чтобы не перетягивать внимание на себя.",
+    "source_en": "Pils in most of cases or pale base malt with some special malts (if any). Grape content can represent up to 40% of whole grist. Grape or grape must, sometimes extensively boiled before use, can be used at different stages: during boiling or more commonly during primary/secondary fermentation. Yeast can show a neutral character (more common) or a fruity/spicy profile (English and Belgian strains). Wine yeast can be used also in conjunction with other yeasts. Old World hop varieties, mainly German or English, are used in low quantities in order not to excessively characterize the beer.",
+    "after": "Чаще всего основу составляет солод пилснер или другой светлый базовый солод с небольшим количеством специальных солодов, если они вообще используются. Доля винограда может доходить до 40% от общей засыпи. Сам виноград или виноградное сусло, иногда предварительно долго уваренное, можно вносить на разных стадиях: во время кипячения, но чаще — в первичное или вторичное брожение. Дрожжи могут давать как нейтральный профиль, так и фруктово-пряный — например, английские или бельгийские штаммы. Винные дрожжи тоже допустимы, в том числе в сочетании с другими. Хмель — главным образом из Старого Света, чаще немецкий или английский, и в небольших количествах, чтобы не перетягивать внимание на себя.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_19.json",
+    "id": "X4",
+    "path": [
+      "styles",
+      3,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Основа — пилснерский солод в сочетании с пшеничным солодом или несоложёной пшеницей. Чаще всего используют подкисление сусла в варочном котле с помощью Lactobacillus, после чего сбраживают пиво нейтральными элевыми дрожжами. Фрукты обычно добавляют на поздних стадиях брожения. Как правило, это свежие сезонные фрукты, нередко тропические. Специи, травы и овощные добавки возможны, но они всегда должны подчёркивать фруктовый характер, не перебивая его.",
+    "source_en": "Pilsner malt with wheat malt or unmalted wheat. Kettle sour technique with Lacto is most common, followed by fermentation with a neutral ale yeast. Fruit typically added late in fermentation. Fresh seasonal fruit, often tropical. Spices, Herbs, and Vegetables are optional, but always should support and enhance the fruit presentation.",
+    "after": "Основа — солод пилснер в сочетании с пшеничным солодом или несоложёной пшеницей. Чаще всего используют подкисление сусла в варочном котле с помощью Lactobacillus, после чего сбраживают пиво нейтральными элевыми дрожжами. Фрукты обычно добавляют на поздних стадиях брожения. Как правило, это свежие сезонные фрукты, нередко тропические. Специи, травы и овощные добавки возможны, но они всегда должны подчёркивать фруктовый характер, не перебивая его.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_19.json",
+    "id": "X5",
+    "path": [
+      "styles",
+      4,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Типичны новозеландские хмели — например, Motueka, Riwaka, Nelson Sauvin; для горечи нередко используют Pacific Jade. Допустимы и другие сорта хмеля Нового Света из Австралии или США, если они дают схожий профиль. Базовый солод — светлый, пилснерский или пейл-эль, иногда с небольшой долей пшеничного солода. Вода сравнительно слабо минерализована, обычно с преобладанием хлоридов над сульфатами. Лагерные дрожжи с чистым профилем брожения либо элевые с очень нейтральным профилем.",
+    "source_en": "New Zealand hop varieties, such as Motueka, Riwaka, Nelson Sauvin, often with Pacific Jade for bittering. Other new world varieties from Australia or the US may be used, if they have similar characteristics. Pale base malts, Pilsner or pale types, perhaps with a small percentage of wheat malt. Fairly low-mineral water, typically with more chloride than sulfate. Clean lager yeast or very neutral ale yeast.",
+    "after": "Типичны новозеландские хмели — например, Motueka, Riwaka, Nelson Sauvin; для горечи нередко используют Pacific Jade. Допустимы и другие сорта хмеля Нового Света из Австралии или США, если они дают схожий профиль. Базовый солод — светлый, пилснер или пейл-эль, иногда с небольшой долей пшеничного солода. Вода сравнительно слабо минерализована, обычно с преобладанием хлоридов над сульфатами. Лагерные дрожжи с чистым профилем брожения либо элевые с очень нейтральным профилем.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_20.json",
+    "id": "21B-Brut IPA",
+    "path": [
+      "styles",
+      6,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Пилснерский или другой очень светлый базовый солод с добавлением до 40 % несоложёного сырья. Карамельный солод и лактоза недопустимы. Используются ферменты, например амилоглюкозидаза. Используют современные американские сорта хмеля или сорта из других стран Нового Света с интенсивным ароматом и высоким содержанием масел. Их вносят преимущественно в конце кипячения или после него, чтобы подчеркнуть аромат и вкус и свести горечь к минимуму. Дрожжи нейтральные.",
+    "source_en": "Pilsner or very pale base malts with up to 40% adjuncts. No crystal malt or lactose. Enzymes, such as amyloglucosidase. Highly aromatic, oil-heavy, modern American or New World hops used in a variety of late-hopping or post-boil procedures to emphasize hop aroma and flavor and to minimize bitterness. Neutral yeast.",
+    "after": "Солод пилснер или другой очень светлый базовый солод с добавлением до 40 % несоложёного сырья. Карамельный солод и лактоза недопустимы. Используются ферменты, например амилоглюкозидаза. Используют современные американские сорта хмеля или сорта из других стран Нового Света с интенсивным ароматом и высоким содержанием масел. Их вносят преимущественно в конце кипячения или после него, чтобы подчеркнуть аромат и вкус и свести горечь к минимуму. Дрожжи нейтральные.",
+    "reasons": [
+      "По замечанию пользователя: название солода Pilsner передано как «солод пилснер». Согласование и порядок слов исправлены в пределах предложения; состав засыпи сохранён."
+    ]
+  }
+]

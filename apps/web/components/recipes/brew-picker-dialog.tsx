@@ -373,7 +373,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
     <Dialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Сварить рецепт"
+      title="Сварить по рецепту"
       hideTitle
       size="md"
       guard={{ isDirty: () => submitting, onGuardedClose: () => {} }}
@@ -542,7 +542,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
                   <div>
                     <p className="font-semibold">Запуск включит нагрев</p>
                     <p className="mt-1 text-xs leading-5 text-warning-subtle-foreground">
-                      Устройство «{selectedDevice?.name ?? "—"}» начнёт нагрев ТЭНов по рецепту. Убедитесь, что в
+                      Устройство «{selectedDevice?.name ?? "—"}» включит нагрев по рецепту. Убедитесь, что в
                       ёмкости есть вода, а оборудование под присмотром.
                     </p>
                   </div>

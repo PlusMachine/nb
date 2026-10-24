@@ -1,19 +1,19 @@
-// Чистая логика «день-1» дашборда: пользователь без единого рецепта, позиции
-// склада и активной варки ещё не прошёл первый круг склад→рецепт→варка,
-// поэтому вместо «С возвращением» и стат-сетки с нулями показываем явный
-// порядок первого пути. Вынесено из page.tsx, чтобы покрывать тестом без
-// рендера всей страницы.
+// Первый вход без собственных данных. История партий учитывается отдельно от
+// активных варок: завершивший первую варку не должен снова попасть в знакомство
+// после очистки рецептов и склада.
 
 export type DashboardOnboardingInput = {
   recipeCount: number;
   inventoryTotalItems: number;
   activeBrewCount: number;
+  brewBatchCount: number;
 };
 
 export const isNewUserDashboard = ({
   recipeCount,
   inventoryTotalItems,
-  activeBrewCount
+  activeBrewCount,
+  brewBatchCount
 }: DashboardOnboardingInput): boolean => (
-  recipeCount === 0 && inventoryTotalItems === 0 && activeBrewCount === 0
+  recipeCount === 0 && inventoryTotalItems === 0 && activeBrewCount === 0 && brewBatchCount === 0
 );

@@ -53,7 +53,7 @@ export default async function ArticlesPage() {
             <Link
               key={article.id}
               href={`/articles/${article.slug}`}
-              className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition hover:border-border hover:shadow-md skin-hop:duration-200 skin-hop:hover:-translate-y-0.5"
+              className="group flex flex-col"
             >
               {article.coverImageUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -62,11 +62,11 @@ export default async function ArticlesPage() {
                   alt={article.title}
                   loading="lazy"
                   decoding="async"
-                  className="h-40 w-full object-cover"
+                  className="h-40 w-full rounded-xl object-cover"
                 />
               ) : (
                 <div
-                  className="relative flex h-40 w-full items-center justify-center overflow-hidden nb-grain"
+                  className="relative flex h-40 w-full items-center justify-center overflow-hidden rounded-xl nb-grain"
                   style={{ background: cover.background }}
                   aria-hidden
                 >
@@ -91,11 +91,11 @@ export default async function ArticlesPage() {
                   </span>
                 </div>
               )}
-              <div className="flex flex-1 flex-col gap-2 p-4">
+              <div className="flex flex-1 flex-col gap-2 border-b border-border py-4">
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-warning-subtle-foreground">
                   {contentArticleTypeLabels[article.type]}
                 </span>
-                <h2 className="text-lg font-semibold leading-snug text-foreground group-hover:text-foreground">{article.title}</h2>
+                <h2 className="text-lg font-semibold leading-snug text-foreground underline-offset-4 group-hover:underline">{article.title}</h2>
                 {article.excerpt ? <p className="line-clamp-3 text-sm text-muted-foreground">{article.excerpt}</p> : null}
                 <div className="mt-auto flex items-center gap-3 pt-2 text-xs text-muted-foreground">
                   <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" aria-hidden /> {article.readingMinutes} мин</span>

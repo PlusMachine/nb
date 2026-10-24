@@ -1,0 +1,247 @@
+--- a/apps/web/app/(admin)/admin/articles/actions.ts
++++ b/apps/web/app/(admin)/admin/articles/actions.ts
+@@ -93,7 +93,7 @@
+     const user = await requireContentRole("editor");
+     const article = await setContentArticleFeatured(actorFrom(user), articleId, featured);
+     revalidateAll(article.id, article.slug);
+-    return { ok: true, message: featured ? "Добавлено на главную." : "Убрано с главной.", articleId: article.id };
++    return { ok: true, message: featured ? "Статья выбрана для главной. На главной показываются только опубликованные статьи." : "Статья убрана из подборки для главной.", articleId: article.id };
+   } catch (error) {
+     return mapError(error);
+   }
+--- a/apps/web/app/(admin)/admin/articles/page.tsx
++++ b/apps/web/app/(admin)/admin/articles/page.tsx
+@@ -111,7 +111,7 @@
+           <Badge size="sm" tone={statusTones[article.status]}>
+             {contentArticleStatusLabels[article.status]}
+           </Badge>
+-          {article.isFeatured ? <Badge size="sm" tone="info">На главной</Badge> : null}
++          {article.isFeatured ? <Badge size="sm" tone="info">Выбрана для главной</Badge> : null}
+         </div>
+       )
+     },
+@@ -152,7 +152,7 @@
+             status,
+             pageSize: pageSize === defaultAdminArticlesPageSize ? undefined : String(pageSize)
+           }}
+-          placeholder="Заголовок, адрес страницы, автор"
++          placeholder="Заголовок, автор или часть адреса"
+         />
+         <AdminFilterTabs label="Статусы" tabs={tabs} activeKey={status ?? "all"} />
+       </div>
+--- a/apps/web/app/api/brew-batches/[id]/command/route.ts
++++ b/apps/web/app/api/brew-batches/[id]/command/route.ts
+@@ -69,7 +69,7 @@
+         return NextResponse.json(
+           {
+             error:
+-              "Управление открыто в другом окне или на другом устройстве. Запросите передачу управления.",
++              "Сейчас вы не управляете устройством. Обновите страницу и при необходимости запросите управление.",
+             code: "NO_CONTROL_LEASE",
+           },
+           { status: 409 },
+--- a/apps/web/app/api/devices/[id]/command/route.ts
++++ b/apps/web/app/api/devices/[id]/command/route.ts
+@@ -70,7 +70,7 @@
+         return NextResponse.json(
+           {
+             error:
+-              "Управление открыто в другом окне или на другом устройстве. Запросите передачу управления.",
++              "Сейчас вы не управляете устройством. Обновите страницу и при необходимости запросите управление.",
+             code: "NO_CONTROL_LEASE",
+           },
+           { status: 409 },
+--- a/apps/web/components/calculators/calculator-page-client.tsx
++++ b/apps/web/components/calculators/calculator-page-client.tsx
+@@ -1734,7 +1734,7 @@
+             Объём измерен на горячем сусле
+             <span className="mt-0.5 block text-xs font-normal leading-4 text-muted-foreground">
+               {currentVolumeMeasuredHot
+-                ? `Сразу после кипячения, пока сусло горячее — учитываем уменьшение объёма при остывании: станет ≈ ${coldVolumePreview}`
++                ? `После охлаждения объём сусла составит примерно ${coldVolumePreview}. Этот объём используется в расчёте.`
+                 : "Отметьте, если «Текущий объём» замерен сразу после кипячения — при остывании объём сусла уменьшается примерно на 4%"}
+             </span>
+           </span>
+--- a/apps/web/components/content/article-editor-form.tsx
++++ b/apps/web/components/content/article-editor-form.tsx
+@@ -182,7 +182,7 @@
+         <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-4 shadow-sm">
+           <span className="text-sm text-muted-foreground">
+             Статус: <span className="font-medium text-foreground">{contentArticleStatusLabels[article.status]}</span>
+-            {article.isFeatured ? <span className="ml-2 text-warning-subtle-foreground">· на главной</span> : null}
++            {article.isFeatured ? <span className="ml-2 text-warning-subtle-foreground">· выбрана для главной</span> : null}
+           </span>
+           <div className="ml-auto flex flex-wrap gap-2">
+             {isPublished ? (
+@@ -198,7 +198,7 @@
+             {capabilities.canFeatureOnHome ? (
+               <Button type="button" variant="outline" size="sm" disabled={busy} onClick={() => run(() => setContentArticleFeaturedAction(article.id, !article.isFeatured), () => router.refresh())}>
+                 <Star className={`h-4 w-4 ${article.isFeatured ? "fill-warning text-warning" : ""}`} aria-hidden />
+-                {article.isFeatured ? "Убрать с главной" : "Показать на главной"}
++                {article.isFeatured ? "Убрать из подборки" : "Выбрать для главной"}
+               </Button>
+             ) : null}
+             {capabilities.canDelete ? (
+--- a/apps/web/features/brew-controller/components/live-dashboard-view.tsx
++++ b/apps/web/features/brew-controller/components/live-dashboard-view.tsx
+@@ -272,7 +272,7 @@
+ 
+       {otherSessionControls ? (
+         <div className="rounded-2xl border border-warning/30 bg-warning-subtle p-4 text-sm text-warning-subtle-foreground" role="status">
+-          Управление открыто в другом окне или на другом устройстве — здесь доступен только просмотр. Показания могут быть неполными или обновляться с задержкой. Чтобы взять управление, нажмите «Запросить управление» на панели ниже.
++          Управление открыто в другом окне или на другом устройстве — здесь доступен только просмотр. Показания могут быть неполными или обновляться с задержкой. Чтобы взять управление, нажмите «Запросить управление».
+         </div>
+       ) : null}
+ 
+--- a/apps/web/features/brew-controller/kiosk-status.test.ts
++++ b/apps/web/features/brew-controller/kiosk-status.test.ts
+@@ -37,7 +37,7 @@
+     const now = 10 * 60_000; // t=10 мин
+     const lastFrame = now - 5 * 60_000; // кадр 5 мин назад
+     const banner = kioskOfflineBanner({ conn: "offline", isStale: false, lastFrameAtMs: lastFrame, nowMs: now });
+-    expect(banner?.detail).toBe("последние данные 5 мин назад");
++    expect(banner?.detail).toBe("последние данные получены 5 мин назад");
+   });
+ 
+   it("lastFrameAtMs=null (кадра не было ни разу) → detail пустой, без вранья о времени", () => {
+--- a/apps/web/features/brew-controller/kiosk-status.ts
++++ b/apps/web/features/brew-controller/kiosk-status.ts
+@@ -41,7 +41,7 @@
+   nowMs: number;
+ }): KioskOfflineBanner | null {
+   const { conn, isStale, lastFrameAtMs, nowMs } = input;
+-  const detail = lastFrameAtMs === null ? "" : `последние данные ${fmtAgo(nowMs - lastFrameAtMs)}`;
++  const detail = lastFrameAtMs === null ? "" : `последние данные получены ${fmtAgo(nowMs - lastFrameAtMs)}`;
+ 
+   if (conn === "offline") {
+     return { tone: "red", title: "Прибор не в сети", detail };
+--- a/apps/web/features/calculators/catalog.ts
++++ b/apps/web/features/calculators/catalog.ts
+@@ -229,7 +229,7 @@
+     href: "/calculators/brewing-water-volume",
+     relatedSlugs: ["water-ph", "dilution-boiloff", "ibu", "unit-converter", "mash-infusion"],
+     related: [{ href: "/recipes", label: "Рецепты сообщества" }],
+-    formula: "Всего воды = объём до кипячения + впитывание зерном + потери в котле. Объём до кипячения = горячий объём после кипячения + выкипание, а горячий объём после кипячения считается от объёма в ферментер и потерь на осадок/чиллер с поправкой на уменьшение объёма при охлаждении.",
++    formula: "Общий объём воды складывается из объёма сусла до кипячения, воды, поглощаемой зерном, и потерь в котле. Объём сусла до кипячения = его объём после кипячения + выкипевшая вода. Чтобы определить объём горячего сусла после кипячения, складываем нужный объём в ферментере и потери на осадке и в чиллере, затем учитываем уменьшение объёма при охлаждении.",
+     assumptions: [...sharedAssumptions, "Уменьшение объёма при охлаждении по умолчанию 4%."],
+     commonMistakes: ["Оставляют нулевые потери на осадок и в котле — расчёт сойдётся, но пива в ферментере окажется меньше.", "Путают объём в ферментер и объём после кипячения."],
+     nextSteps: ["Перенесите объёмы затора и промывки в калькулятор воды и pH.", "Уточните своё выкипание по реальным варкам."],
+@@ -242,8 +242,8 @@
+     shortTitle: "Инфузионное затирание",
+     description: "Температура воды в начале затирания и объёмы долива для перехода между паузами.",
+     seoDescription: "Рассчитывает температуру воды в начале затирания и объём долива для следующей паузы. Можно рассчитать одну паузу или всю последовательность с учётом теплового баланса зерна и воды.",
+-    intro: "Перед засыпью рассчитайте температуру воды. Затем определите, сколько горячей или холодной воды долить для следующей паузы.",
+-    whenToUse: "Перед засыпью зерна в воду, при переходе на следующую температурную ступень доливом — включая обратную задачу «перегрел затор — сколько долить холодной» — и при планировании всей последовательности пауз затирания.",
++    intro: "Перед добавлением зерна рассчитайте температуру воды. Затем определите, сколько горячей или холодной воды долить для следующей паузы.",
++    whenToUse: "Перед добавлением зерна в воду, при расчёте долива для следующей температурной паузы и при планировании всей последовательности пауз. Подходит и для расчёта холодной воды, если нужно остудить перегретый затор.",
+     section: "Варка и рецепт",
+     groups: ["Варка", "Вода"],
+     aliases: ["заторная вода", "затирание", "strike", "инфузия", "паузы", "мэш-аут", "температура затора", "гидромодуль", "mash", "инфузионное затирание", "настойное затирание", "долив кипятка", "ступенчатое затирание", "ступенчатый затор", "step mash", "перегрел затор", "остудить затор"],
+@@ -252,11 +252,11 @@
+     href: "/calculators/mash-infusion",
+     relatedSlugs: ["brewing-water-volume", "water-ph", "brewhouse-efficiency", "unit-converter"],
+     related: [{ href: "/recipes", label: "Рецепты сообщества" }],
+-    formula: "Температура заторной воды считается из теплового баланса: вода отдаёт тепло зерну (и, если задано, холодному заторнику), пока всё не выровняется на целевой температуре затора. Теплоёмкость зерна — 0,41 л·°C/кг воды. Долив на следующую ступень считается тем же балансом в обратную сторону: сколько воды нужно подмешать в уже тёплый затор, чтобы сдвинуть его к новой температуре. В режиме «Долив на ступень» направление определяет само уравнение: пауза выше текущей — долив кипятка поднимает температуру, пауза ниже — долив холодной воды её опускает. «Ступенчатое затирание» повторяет расчёт для всех пауз последовательно, всегда доливом кипятка: каждый следующий долив считается уже от выросшего объёма воды в заторе, а не от стартового, а пауза ниже предыдущей считается остыванием затора без долива.",
++    formula: "Температура заторной воды рассчитывается по тепловому балансу. При смешивании вода отдаёт тепло зерну. Если заданы параметры заторника, учитывается и его теплоёмкость. После смешивания затор должен достичь заданной температуры. В расчёте теплоёмкость 1 кг зерна приравнивается к теплоёмкости 0,41 л воды. Для перехода к следующей паузе тот же тепловой баланс позволяет определить объём долива. В режиме «Долив на ступень» калькулятор определяет объём горячей воды для повышения температуры или холодной — для понижения. В режиме «Ступенчатое затирание» объём долива рассчитывается последовательно для всех пауз с учётом воды, добавленной ранее. Температура воды для долива задаётся в поле «Температура долива». Для перехода к более низкой температуре в этом режиме расчёт предполагает остывание затора без долива.",
+     assumptions: [...sharedAssumptions, "Расчёт не учитывает теплопотери в воздух во время самого затирания — только тепловой баланс воды, зерна и (опционально) заторника в момент смешивания."],
+-    commonMistakes: ["Холодный заторник забирает несколько градусов у заторной воды — прогрейте его заранее или укажите теплоёмкость.", "Температуру затора мерят до того, как засыпь размешана и прогрелась равномерно — показание получается неточным.", "При затирании с несколькими паузами забывают, что каждый долив увеличивает объём воды в заторе — следующая ступень считается уже от него, а не от стартового объёма.", "Пробуют поднять температуру доливом холодной воды или опустить доливом кипятка — по факту это разные расчёты (кипяток поднимает, холодная вода опускает). В режиме «Долив на ступень» калькулятор сам определяет нужный по направлению паузы; в режиме «Ступенчатое затирание» доливы всегда кипятком, а пауза с более низкой температурой — остывание без долива."],
++    commonMistakes: ["Холодный заторник забирает несколько градусов у заторной воды — прогрейте его заранее или укажите теплоёмкость.", "Температуру затора мерят до того, как засыпь размешана и прогрелась равномерно — показание получается неточным.", "При расчёте нескольких пауз используют исходный объём воды для каждого долива. Нужно учитывать воду, добавленную на предыдущих паузах.", "Выбирают неподходящую температуру воды для долива. Для нагрева температура воды должна быть выше нужной температуры затора, для охлаждения — ниже. В режиме «Долив на ступень» калькулятор выбирает расчёт нагрева или охлаждения по температуре следующей паузы. В режиме «Ступенчатое затирание» снижение температуры предполагает остывание без долива."],
+     nextSteps: ["Перенесите объём воды в калькулятор воды на варку.", "Проверьте профиль воды и pH после того, как определитесь с объёмами."],
+-    meaning: ["Чем гуще затор (меньше воды на кг зерна), тем горячее нужна заторная вода на ту же целевую температуру.", "Долив на следующую ступень — тот же расчёт в обратную сторону: сколько воды подмешать, чтобы сдвинуть уже тёплый затор к нужной температуре, будь то нагрев кипятком или охлаждение холодной водой.", "При ступенчатом затирании объём воды нарастает от паузы к паузе — к мэш-ауту затор обычно заметно жиже, чем на старте затирания."]
++    meaning: ["Чем гуще затор (чем меньше воды приходится на килограмм зерна), тем горячее должна быть вода, чтобы получить ту же температуру затора.", "Расчёт долива показывает, сколько горячей или холодной воды нужно добавить, чтобы получить нужную температуру затора.", "При каждом доливе объём воды в заторе увеличивается. Поэтому к мэш-ауту затор обычно становится жиже, чем в начале затирания."]
+   },
+   {
+     slug: "water-ph",
+--- a/apps/web/features/calculators/definitions.ts
++++ b/apps/web/features/calculators/definitions.ts
+@@ -279,7 +279,7 @@
+   residual_exceeds_target: { text: "В пиве уже достаточно CO₂ для выбранного уровня карбонизации — сахар не нужен.", tone: "info" },
+   speise_target_already_reached: { text: "Пиво уже карбонизировано до цели — добавка не нужна.", tone: "info" },
+   bottling_loss_exceeds_volume: { text: "Потери при розливе не меньше объёма пива — бутылок не получится. Проверьте «Потери при розливе».", tone: "warning" },
+-  shrinkage_suspiciously_high: { text: "Уменьшение объёма при охлаждении больше 20% — похоже на опечатку (обычно ~4%).", tone: "warning" },
++  shrinkage_suspiciously_high: { text: "Объём при охлаждении уменьшается более чем на 20% — проверьте значение (обычно около 4%).", tone: "warning" },
+   mash_water_capped: { text: "Вся вода уходит в затор — на промывку не остаётся.", tone: "info" },
+   no_viable_cells: { text: "По расчёту живых клеток не осталось — для стартера нужны свежие дрожжи.", tone: "warning" },
+   hops_too_old: { text: "Условия хранения выходят за пределы этой модели. Результат расчёта ненадёжен.", tone: "warning" },
+@@ -288,7 +288,7 @@
+   mash_thickness_unusual: { text: "Гидромодуль вне обычного диапазона 2–5 л/кг — проверьте объём воды и вес зерна.", tone: "warning" },
+   infusion_temp_not_above_target: { text: "Вода для долива не горячее целевой температуры — так затор не нагреть. Возьмите воду горячее.", tone: "warning" },
+   infusion_volume_excessive: { text: "Долив больше 60% текущего объёма затора — проверьте температуры и объём воды.", tone: "warning" },
+-  infusion_step_downward: { text: "Следующая пауза не выше текущей — доливом температуру не снизить, долив не нужен.", tone: "info" },
++  infusion_step_downward: { text: "Температура следующей паузы не выше текущей. Долив горячей воды не нужен; для более низкой температуры дайте затору остыть.", tone: "info" },
+   cooling_step_not_downward: { text: "Следующая пауза не ниже текущей — охлаждением температуру не поднять, долив не нужен.", tone: "info" },
+   cooling_water_not_below_target: { text: "Вода для охлаждения не холоднее целевой температуры — так затор не остудить. Возьмите воду холоднее.", tone: "warning" },
+   cooling_volume_excessive: { text: "Охлаждающий долив больше 60% текущего объёма затора — проверьте температуры и объём воды.", tone: "warning" },
+@@ -1908,7 +1908,7 @@
+         min: 0,
+         step: 10,
+         advanced: true,
+-        helper: "Если вносите праймер сиропом: растворяете весь сахар в этой воде и кипятите. Покажем объём и концентрацию сиропа."
++        helper: "Укажите, сколько воды используете для сиропа. Растворите в ней весь рассчитанный сахар и прокипятите. Покажем объём и концентрацию сиропа."
+       })
+     ],
+     calculate: (state) => {
+@@ -2687,7 +2687,7 @@
+     // объёма/температуры — не заставляем переписывать их вручную заново.
+     modeHint: (state) => (
+       s(state.mode, "strike") === "strike"
+-        ? "Начали затирание? Переключитесь на «Ступенчатое затирание»: объём воды и температура сохранятся."
++        ? "Для расчёта следующих пауз выберите «Ступенчатое затирание»: введённые объём воды и температура затора сохранятся."
+         : null
+     ),
+     calculate: (state) => {
+--- a/apps/web/features/device-streams/components/retro-attach-field.tsx
++++ b/apps/web/features/device-streams/components/retro-attach-field.tsx
+@@ -49,7 +49,7 @@
+   return (
+     <label className="flex items-start gap-2 text-sm text-foreground">
+       <Checkbox checked={checked} onCheckedChange={onCheckedChange} className="mt-0.5" />
+-      Включить показания с {dateFmt.format(new Date(preview.oldestTs))} ({preview.count} {pluralize(preview.count, ["точка", "точки", "точек"])})
++      Добавить в сеанс показания с {dateFmt.format(new Date(preview.oldestTs))} ({preview.count} {pluralize(preview.count, ["точка", "точки", "точек"])})
+     </label>
+   );
+ }
+--- a/apps/web/features/device-streams/components/session-bounds-control.tsx
++++ b/apps/web/features/device-streams/components/session-bounds-control.tsx
+@@ -67,7 +67,7 @@
+       }
+       const detached = result.result.detachedReadingsCount;
+       show({
+-        title: detached > 0 ? `Отвязано ${detached} ${pluralize(detached, ["точка", "точки", "точек"])}` : "Период сеанса изменён",
++        title: detached > 0 ? `Из сеанса исключено ${detached} ${pluralize(detached, ["измерение", "измерения", "измерений"])}` : "Период сеанса изменён",
+         tone: "success"
+       });
+       router.refresh();
+--- a/apps/web/features/device-streams/components/session-temp-corridor-control.tsx
++++ b/apps/web/features/device-streams/components/session-temp-corridor-control.tsx
+@@ -138,7 +138,7 @@
+         onOpenChange={(next) => {
+           if (!next && !pending) setOpen(false);
+         }}
+-        title="Диапазон температуры для уведомлений"
++        title="Уведомления об отклонении температуры"
+         size="sm"
+       >
+         <div className="space-y-3 p-5">
+--- a/apps/web/features/notifications/push-events.test.ts
++++ b/apps/web/features/notifications/push-events.test.ts
+@@ -378,7 +378,7 @@
+     const edge: TelemetryEdge = { kind: "ferment-deviation", primaryC: 20.3, setpointC: 18 };
+     expect(notificationFor(edge, ctx)).toEqual({
+       title: "Ферментер",
+-      body: "Отклонение от заданной температуры: 20.3° при заданной 18.0°",
++      body: "Температура отклонилась от заданной: сейчас 20.3° (задано 18.0°).",
+       tag: "dev-1:ferment-deviation",
+       url: "/app/devices/dev-1",
+     });
+--- a/packages/push/src/notification.ts
++++ b/packages/push/src/notification.ts
+@@ -97,7 +97,7 @@
+   if (edge.kind === "ferment-deviation") {
+     return {
+       title: ctx.deviceName,
+-      body: `Отклонение от заданной температуры: ${fmtC(edge.primaryC)} при заданной ${fmtC(edge.setpointC)}`,
++      body: `Температура отклонилась от заданной: сейчас ${fmtC(edge.primaryC)} (задано ${fmtC(edge.setpointC)}).`,
+       tag: `${ctx.deviceId}:ferment-deviation`,
+       url,
+     };

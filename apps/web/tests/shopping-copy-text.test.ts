@@ -73,7 +73,7 @@ describe("buildShoppingListCopyText", () => {
         "• Pale Ale (Курский солод) — 4,2 кг",
         "Хмель:",
         "• Citra — 50 г (нужно 37 г)",
-        "Своё:",
+        "Добавлено вручную:",
         "• Дезинфектант Star San"
       ].join("\n")
     );
@@ -148,7 +148,7 @@ describe("buildShoppingListCopyText", () => {
       manualItems: [manualItem({ name: "Дезинфектант Star San", quantityLabel: null })]
     });
 
-    expect(text).toBe(["Список покупок — nb", "Своё:", "• Дезинфектант Star San"].join("\n"));
+    expect(text).toBe(["Список покупок — nb", "Добавлено вручную:", "• Дезинфектант Star San"].join("\n"));
   });
 
   it("всё отмечено → null", () => {
@@ -169,7 +169,7 @@ describe("buildShoppingListCopyText", () => {
     expect(buildShoppingListCopyText({ groups: [], manualItems: [] })).toBeNull();
   });
 
-  it("нет ручных позиций → нет секции «Своё:»", () => {
+  it("нет ручных позиций → нет секции «Добавлено вручную:»", () => {
     const text = buildShoppingListCopyText({
       groups: [
         {

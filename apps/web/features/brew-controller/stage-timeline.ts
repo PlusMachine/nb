@@ -68,7 +68,7 @@ export const MACRO_STAGE_LABELS: Record<MacroStage, string> = {
 
 /** Стадии, которые входят в каждую макро-стадию (для интерактивной подсказки). */
 export const MACRO_STAGE_MEMBERS: Record<MacroStage, string> = {
-  mash: "Засыпь, паузы затора, мэшаут, промывка",
+  mash: "Засыпь, паузы затора, мэш-аут, промывка",
   boil: "Выход на кипение и кипячение",
   hop_stand: "Вирпул / хопстенд",
   cooling: "Охлаждение до температуры внесения дрожжей",

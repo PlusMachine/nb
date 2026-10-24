@@ -15,11 +15,12 @@ const nextConfig: NextConfig = {
   // web-push — node-библиотека (crypto/https), только серверная: не бандлим, грузим
   // через require в рантайме (импортируется @nb/push из серверного роута/моста).
   // @resvg/resvg-js — нативный .node-бинарь (рендер наклеек), webpack его не парсит.
-  serverExternalPackages: ["web-push", "@resvg/resvg-js"],
+  serverExternalPackages: ["web-push", "@resvg/resvg-js", "opentype.js"],
   // TTF читаются по динамическому пути (fontDirs/labelFontsDir) — file tracing сам
   // их не находит, без этого standalone-сборка останется без шрифтов. Нужно и
   // наклейкам, и OG-карточкам (features/og/fonts.ts берёт те же Rubik TTF).
   outputFileTracingIncludes: {
+    "/": ["./features/labels/fonts/**/*"],
     "/api/labels/[recipeId]": ["./features/labels/fonts/**/*"],
     "/api/og/recipes/[slug]": ["./features/labels/fonts/**/*"],
     // Ф2: остальные рантайм-роуты OG-карточек (Satori читает те же Rubik TTF).

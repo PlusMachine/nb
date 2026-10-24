@@ -69,7 +69,7 @@ export function ManualItemForm({ variant = "listFooter" }: Props) {
     const hasQuantity = quantity.trim() !== "";
     const hasUnit = unit !== "";
     if (hasQuantity !== hasUnit) {
-      setError("Количество и единица указываются вместе.");
+      setError("Укажите и количество, и единицу измерения.");
       return;
     }
 
@@ -131,7 +131,7 @@ export function ManualItemForm({ variant = "listFooter" }: Props) {
     return (
       <button type="button" onClick={openForm} className={collapsedButtonClassName[variant]}>
         <Plus className="h-4 w-4" aria-hidden />
-        Добавить позицию
+        Добавить в покупки
       </button>
     );
   }

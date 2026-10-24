@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { AppShell } from "@/components/app/app-shell";
 import { SiteFooter } from "@/components/shared/site-footer";
 import { SiteHeader } from "@/components/shared/site-header";
+import { HomeHeader } from "@/components/home/home-header";
 import { resolveContentWidthClass, type AppChromeUser } from "@/lib/navigation";
 
 type PublicShellProps = {
@@ -23,6 +24,10 @@ export function PublicShell({ user, children }: PublicShellProps) {
 
   if (user && pathname !== "/login" && pathname !== "/demo") {
     return <AppShell user={user}>{children}</AppShell>;
+  }
+
+  if (pathname === "/") {
+    return <div className="home-shell"><HomeHeader />{children}<SiteFooter /></div>;
   }
 
   return (

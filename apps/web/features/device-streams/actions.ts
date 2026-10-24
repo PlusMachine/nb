@@ -215,8 +215,8 @@ const SESSION_ERROR_MESSAGES: Record<string, string> = {
   SESSION_INVALID_BATCH_STATUS: "Привязать ареометр можно только к партии в статусе «Варится» или «Брожение».",
   SESSION_DEVICE_BUSY: "У этого устройства уже есть активный сеанс. Сначала завершите его.",
   SESSION_NOT_FOUND: "Сеанс не найден.",
-  SESSION_TEMP_CORRIDOR_INCOMPLETE: "Заполните обе границы коридора (или обе очистите).",
-  SESSION_TEMP_CORRIDOR_INVALID_RANGE: "Нижняя граница коридора должна быть меньше верхней.",
+  SESSION_TEMP_CORRIDOR_INCOMPLETE: "Заполните обе границы диапазона или очистите оба поля.",
+  SESSION_TEMP_CORRIDOR_INVALID_RANGE: "Минимальная температура должна быть ниже максимальной.",
   RATE_LIMITED: ERROR_MESSAGES.RATE_LIMITED
 };
 
@@ -398,7 +398,7 @@ const CORRECTIONS_ERROR_MESSAGES: Record<string, string> = {
   CALIBRATION_NO_NEARBY_POINT: "Рядом с этим замером нет показаний устройства (в пределах 2 часов). Калибровка невозможна.",
   SESSION_BOUNDS_INVALID_RANGE: "Начало сеанса должно быть раньше конца.",
   SESSION_BOUNDS_END_IN_FUTURE: "Дата окончания не может быть в будущем.",
-  CURVE_INSUFFICIENT_POINTS: "Недостаточно показаний устройства для оценки (нужно минимум 3 точки).",
+  CURVE_INSUFFICIENT_POINTS: "Недостаточно показаний устройства для оценки (нужно минимум 3 показания).",
   CURVE_NOT_STABLE: "Плотность на кривой ещё не стабилизировалась — рано считать брожение завершённым.",
   RATE_LIMITED: ERROR_MESSAGES.RATE_LIMITED,
   BREW_MEASUREMENT_QUOTA_REACHED: "Достигнут предел числа замеров для этой партии (300)."

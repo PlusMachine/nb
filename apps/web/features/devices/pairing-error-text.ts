@@ -18,12 +18,12 @@ export const PAIRING_ERROR_TEXT: Record<string, string> = {
   INVALID_CLAIM_CODE: "Код привязки неверен или истёк. Сгенерируйте новый на устройстве.",
   CLAIM_CODE_REQUIRED: "Введите код привязки устройства — одного аппаратного идентификатора недостаточно.",
   CLAIM_CODE_OR_HARDWARE_ID_REQUIRED: "Укажите код привязки.",
-  HARDWARE_ID_REQUIRED: "Для прямой привязки укажите hardware ID устройства.",
+  HARDWARE_ID_REQUIRED: "Для прямого подключения укажите аппаратный идентификатор устройства.",
   CLAIM_CODE_OWNED_BY_OTHER_USER: "Этот код выпущен для другого аккаунта.",
   CLAIM_CODE_ALREADY_CONSUMED: "Код привязки уже использован. Сгенерируйте новый на устройстве.",
   DEVICE_OWNED_BY_OTHER_USER: "Устройство уже привязано к другому аккаунту.",
   NOT_FOUND: "Устройство не найдено.",
-  DEMO_NOT_AVAILABLE: "Демо-пивоварня недоступна в этом окружении.",
+  DEMO_NOT_AVAILABLE: "Демо-пивоварня здесь недоступна.",
   INTERNAL_ERROR: "Внутренняя ошибка. Попробуйте позже."
 };
 

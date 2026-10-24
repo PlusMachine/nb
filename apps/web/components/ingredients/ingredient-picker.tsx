@@ -2223,7 +2223,7 @@ const defaultProposeIngredient = async ({
     throw new Error(data.error ?? "Не удалось отправить предложение.");
   }
 
-  return data.message ?? "Предложение отправлено в очередь модерации.";
+  return data.message ?? "Ингредиент отправлен на проверку.";
 };
 
 export const IngredientPicker = ({

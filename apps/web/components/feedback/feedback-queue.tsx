@@ -73,13 +73,13 @@ export function FeedbackQueue({ items }: { items: FeedbackDto[] }) {
 
             {item.resolutionNote ? (
               <p className="rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground">
-                Резолюция: {item.resolutionNote}
+                Решение: {item.resolutionNote}
               </p>
             ) : null}
 
             <div className="grid gap-1.5">
               <label htmlFor={noteId} className="text-sm font-medium text-foreground">
-                Заметка к резолюции
+                Комментарий к решению
               </label>
               <Textarea
                 id={noteId}

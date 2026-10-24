@@ -157,60 +157,53 @@ function SectionHeader({
   );
 }
 
-// --- Чеклист первого круга ---------------------------------------------------
+// --- Действия для первого входа ----------------------------------------------
 
-function OnboardingChecklist({ onboarding }: { onboarding: DashboardOnboarding }) {
-  const doneCount = onboarding.steps.filter((step) => step.done).length;
+function OnboardingChoices({
+  onboarding,
+  showBrewAction = true
+}: {
+  onboarding: DashboardOnboarding;
+  showBrewAction?: boolean;
+}) {
+  if (onboarding.complete) return null;
+  const hasRecipe = onboarding.steps.some((step) => step.key === "recipe" && step.done);
+  const choices = onboarding.steps.filter((step) => step.key !== "brew" || (hasRecipe && showBrewAction));
   return (
-    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-foreground">С чего начать</h2>
-        <span className="text-xs tabular-nums text-muted-foreground">
-          {doneCount} из {onboarding.steps.length}
-        </span>
-      </div>
-      <ol className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-        {onboarding.steps.map((step, index) => {
-          const isCurrent = step.key === onboarding.currentKey;
+    <section className="space-y-4">
+      <h2 className="text-2xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>С чего начать</h2>
+      <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {choices.map((step) => {
           return (
             <li
               key={step.key}
-              className={`flex flex-col gap-3 rounded-xl border p-4 ${
-                step.done ? "border-border bg-muted" : isCurrent ? "border-border shadow-sm" : "border-border"
+              className={`flex flex-col gap-3 rounded-xl border bg-card p-4 ${
+                step.key === "recipe" ? "border-foreground py-5" : "border-border"
               }`}
             >
-              <div className="flex items-center gap-2.5">
-                {step.done ? (
-                  <CircleCheck className="h-6 w-6 shrink-0 text-success" aria-label="Сделано" />
-                ) : (
-                  <span
-                    className={`grid h-6 w-6 shrink-0 place-items-center rounded-full text-xs font-semibold ${
-                      isCurrent ? "bg-foreground text-background" : "bg-muted text-muted-foreground"
-                    }`}
-                  >
-                    {index + 1}
-                  </span>
-                )}
-                <p className={`text-sm font-semibold ${step.done ? "text-muted-foreground" : "text-foreground"}`}>{step.title}</p>
-              </div>
-              {step.done || !step.hint ? null : <p className="text-xs leading-snug text-muted-foreground">{step.hint}</p>}
-              {step.done ? null : (
-                <div className="flex flex-wrap gap-2">
-                  {step.links.map((link) => (
+              <h3 className="text-sm font-semibold text-foreground">{step.title}</h3>
+              {step.hint ? <p className="text-sm leading-relaxed text-muted-foreground">{step.hint}</p> : null}
+              <div className="mt-auto flex flex-wrap gap-2">
+                {step.key === "brew" ? <NewBrewButton /> : (
+                  step.links.map((link, index) => (
                     <Link
                       key={link.href}
                       href={link.href}
-                      className="inline-flex items-center rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-foreground transition-colors hover:border-border hover:bg-accent"
+                      className={`inline-flex min-h-11 items-center rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+                        step.key === "recipe" && index === 0
+                          ? "border-foreground bg-foreground text-background hover:bg-foreground/90"
+                          : "border-border bg-card text-foreground hover:bg-accent"
+                      }`}
                     >
                       {link.label}
                     </Link>
-                  ))}
-                </div>
-              )}
+                  ))
+                )}
+              </div>
             </li>
           );
         })}
-      </ol>
+      </ul>
     </section>
   );
 }
@@ -390,7 +383,7 @@ function ShoppingWidget({ shopping }: { shopping: ShoppingListDto }) {
             Для запланированных партий всё в наличии
           </p>
         ) : (
-          <p className="text-sm text-muted-foreground">Считается по запланированным партиям: чего не хватает — попадёт сюда.</p>
+          <p className="text-sm text-muted-foreground">Здесь появятся ингредиенты, которых не хватает для запланированных партий.</p>
         )}
       </div>
     );
@@ -443,7 +436,7 @@ function DevicesWidget({ devices }: { devices: DeviceDto[] }) {
   if (devices.length === 0) {
     return (
       <div className="flex flex-col gap-3 rounded-2xl border border-dashed border-border bg-card p-5">
-        <WidgetLabel>Оборудование</WidgetLabel>
+        <WidgetLabel>Приборы</WidgetLabel>
         <p className="text-sm text-muted-foreground">
           Подключите BrewForge или цифровой ареометр, чтобы вести варку и брожение из приложения.
         </p>
@@ -465,7 +458,7 @@ function DevicesWidget({ devices }: { devices: DeviceDto[] }) {
   return (
     <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-5 shadow-sm">
       <div className="flex items-center justify-between">
-        <WidgetLabel>Оборудование</WidgetLabel>
+        <WidgetLabel>Приборы</WidgetLabel>
         <Link href="/app/devices" className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">
           Все
         </Link>
@@ -534,7 +527,8 @@ export default async function AppZonePage() {
   const isNewUser = isNewUserDashboard({
     recipeCount,
     inventoryTotalItems: inventory.totalItems,
-    activeBrewCount: activeBrews.length
+    activeBrewCount: activeBrews.length,
+    brewBatchCount
   });
 
   const onboarding = buildDashboardOnboarding({
@@ -593,15 +587,14 @@ export default async function AppZonePage() {
     </section>
   );
 
-  // День-1: пустые виджеты не несут ценности — только приветствие, первый круг
-  // и мостик к витрине знаний.
+  // Первый вход: выбор задачи и ссылки на разделы вместо пустых виджетов.
   if (isNewUser) {
     return (
       <div className="space-y-8">
-        <h1 className="text-2xl font-semibold text-foreground sm:text-3xl" style={{ fontFamily: "var(--font-display)" }}>
+        <h1 className="text-sm font-normal text-muted-foreground">
           Добро пожаловать, {greetingName}
         </h1>
-        <OnboardingChecklist onboarding={onboarding} />
+        <OnboardingChoices onboarding={onboarding} />
         {discoverStrip}
       </div>
     );
@@ -609,7 +602,7 @@ export default async function AppZonePage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-semibold text-foreground sm:text-3xl" style={{ fontFamily: "var(--font-display)" }}>
+      <h1 className="text-sm font-normal text-muted-foreground">
         С возвращением, {greetingName}
       </h1>
 
@@ -646,8 +639,8 @@ export default async function AppZonePage() {
           «Сварить», иначе с дашборда неясно, где запланировать варку. */}
       {attentionShown.length === 0 && planned.length === 0 ? (
         <section className="space-y-3">
-          <SectionHeader title="Партии" button={<NewBrewButton size="sm" />} />
-          <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-border bg-card p-8 text-center">
+          <h2 className="text-2xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>Партии</h2>
+          <div className="space-y-4 rounded-xl border border-border bg-card p-4">
             <p className="text-sm text-muted-foreground">
               Активных партий нет. Выберите рецепт и запланируйте варочный день.
             </p>
@@ -668,7 +661,7 @@ export default async function AppZonePage() {
           {/* Секция про подбор, а не про обещание: сюда попадают и рецепты с
               бейджем «Почти хватает» (все ингредиенты есть, количества местами
               впритык) — заголовок «Можно сварить сейчас» им противоречил. */}
-          <SectionHeader title="Рецепты под ваш склад" />
+          <SectionHeader title="Рецепты под ваши запасы" />
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {brewableCards.map((recipe) => (
               <BrewableRecipeCard
@@ -718,9 +711,8 @@ export default async function AppZonePage() {
         </section>
       ) : null}
 
-      {/* Чеклист первого круга — внизу: верх дашборда отдан работающим блокам,
-          а не призывам; у дня-1 (isNewUser) чеклист наоборот герой. */}
-      {onboarding.complete ? null : <OnboardingChecklist onboarding={onboarding} />}
+      {/* В обзоре вход в варку уже есть у партий; знакомство его не повторяет. */}
+      <OnboardingChoices onboarding={onboarding} showBrewAction={false} />
 
       {discoverStrip}
     </div>

@@ -118,7 +118,7 @@ export function ConnectBatchDialog({ open, deviceId, onClose, onAttached }: Prop
           Отмена
         </Button>
         <Button type="button" onClick={() => void submit()} disabled={pending || !brewBatchId || loading}>
-          {pending ? "Привязываем…" : "Привязать"}
+          {pending ? "Привязываем…" : "Привязать к партии"}
         </Button>
       </DialogFooter>
     </Dialog>

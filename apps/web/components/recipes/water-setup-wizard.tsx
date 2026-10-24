@@ -2185,7 +2185,7 @@ export function WaterSetupWizard({
               size="sm"
               onClick={() => setResetConfirmOpen(true)}
             >
-              Сбросить воду
+              Сбросить настройки воды
             </Button>
           ) : null}
         </div>
@@ -2455,7 +2455,7 @@ export function WaterSetupWizard({
               }}
             />
             <TargetModeButton
-              label="Ионы вручную"
+              label="Ввести состав вручную"
               selected={targetModeSelection.manual}
               onClick={() => {
                 setTargetProfileSaveMessage(null);
@@ -2506,8 +2506,8 @@ export function WaterSetupWizard({
                     setTargetQuery(event.target.value);
                     setShowAllTargetProfiles(false);
                   }}
-                  placeholder="IPA, lager, blanche, стаут..."
-                  aria-label="IPA, lager, blanche, стаут..."
+                  placeholder="IPA, лагер, бланш, стаут…"
+                  aria-label="IPA, лагер, бланш, стаут…"
                   className="h-full min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
                 />
               </label>
@@ -2685,7 +2685,7 @@ export function WaterSetupWizard({
                 3. Объём воды
               </h3>
               <label className="block text-xs font-medium text-muted-foreground">
-                Водопоглощение дробиной, л/кг
+                Поглощение воды зерном, л/кг
                 <NumericInput
                   min={0}
                   max={5}

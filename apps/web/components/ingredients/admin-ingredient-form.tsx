@@ -154,14 +154,14 @@ const AliasEditor = ({
 }) => (
   <div className="space-y-3">
     {rows.length === 0 ? (
-      <p className="text-sm text-muted-foreground">Алиасов нет.</p>
+      <p className="text-sm text-muted-foreground">Другие названия не указаны.</p>
     ) : (
       <ul className="space-y-2">
         {rows.map((row, index) => (
           <li key={row.id ?? `alias-${index}`} className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_10rem_auto_auto] sm:items-center">
             <Input
               value={row.alias}
-              aria-label={`Алиас ${index + 1}`}
+              aria-label={`Другое название ${index + 1}`}
               placeholder="Альтернативное название"
               onChange={(event) => onChange(rows.map((item, itemIndex) => (
                 itemIndex === index ? { ...item, alias: event.target.value } : item
@@ -169,7 +169,7 @@ const AliasEditor = ({
             />
             <Select
               value={row.locale}
-              aria-label={`Язык алиаса ${index + 1}`}
+              aria-label={`Язык названия ${index + 1}`}
               onChange={(event) => onChange(rows.map((item, itemIndex) => (
                 itemIndex === index
                   ? { ...item, locale: event.target.value as AdminAliasRow["locale"] }
@@ -193,7 +193,7 @@ const AliasEditor = ({
               type="button"
               size="sm"
               variant="ghost"
-              aria-label={`Удалить алиас ${index + 1}`}
+              aria-label={`Удалить название ${index + 1}`}
               onClick={() => onChange(rows.filter((_, itemIndex) => itemIndex !== index))}
             >
               <Trash2 className="h-4 w-4 text-destructive" aria-hidden />
@@ -204,7 +204,7 @@ const AliasEditor = ({
     )}
     <Button type="button" size="sm" variant="outline" onClick={() => onChange([...rows, createAdminAliasRow()])}>
       <Plus className="h-4 w-4" aria-hidden />
-      Добавить алиас
+      Добавить название
     </Button>
   </div>
 );
@@ -609,7 +609,7 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
       </section>
 
       <section className={sectionClassName}>
-        <h2 className={sectionTitleClassName}>Алиасы</h2>
+        <h2 className={sectionTitleClassName}>Другие названия</h2>
         <AliasEditor rows={aliasRows} onChange={setAliasRows} />
       </section>
 
@@ -658,7 +658,7 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
 
       <div className="flex flex-wrap gap-3">
         <Button type="submit" size="md" disabled={isSubmitting || jsonError !== null}>
-          {isSubmitting ? "Сохраняем..." : initial?.id ? "Сохранить" : "Создать"}
+          {isSubmitting ? "Сохраняем…" : initial?.id ? "Сохранить" : "Создать"}
         </Button>
         <Link
           href="/admin/ingredients"

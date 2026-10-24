@@ -114,7 +114,7 @@ export function ArticleEditorForm({
         <div className="grid gap-4 sm:grid-cols-[1fr_12rem]">
           <label className={labelClass}>
             <span className="text-muted-foreground">Заголовок</span>
-            <input className={inputClass} value={title} onChange={(event) => setTitle(event.target.value)} maxLength={180} placeholder="Название гайда или обзора" />
+            <input className={inputClass} value={title} onChange={(event) => setTitle(event.target.value)} maxLength={180} placeholder="Название статьи или обзора" />
           </label>
           <label className={labelClass}>
             <span className="text-muted-foreground">Тип</span>
@@ -127,7 +127,7 @@ export function ArticleEditorForm({
         </div>
 
         <label className={labelClass}>
-          <span className="text-muted-foreground">Аннотация (необязательно — иначе соберём из текста)</span>
+          <span className="text-muted-foreground">Аннотация (если оставить пустой, она будет составлена из текста статьи)</span>
           <textarea className="min-h-[4rem] rounded-lg border border-border px-3 py-2 text-sm [@media(pointer:coarse)]:text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring" value={excerpt} onChange={(event) => setExcerpt(event.target.value)} maxLength={500} />
         </label>
 
@@ -182,7 +182,7 @@ export function ArticleEditorForm({
         <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-4 shadow-sm">
           <span className="text-sm text-muted-foreground">
             Статус: <span className="font-medium text-foreground">{contentArticleStatusLabels[article.status]}</span>
-            {article.isFeatured ? <span className="ml-2 text-warning-subtle-foreground">· на главной</span> : null}
+            {article.isFeatured ? <span className="ml-2 text-warning-subtle-foreground">· выбрана для главной</span> : null}
           </span>
           <div className="ml-auto flex flex-wrap gap-2">
             {isPublished ? (
@@ -198,7 +198,7 @@ export function ArticleEditorForm({
             {capabilities.canFeatureOnHome ? (
               <Button type="button" variant="outline" size="sm" disabled={busy} onClick={() => run(() => setContentArticleFeaturedAction(article.id, !article.isFeatured), () => router.refresh())}>
                 <Star className={`h-4 w-4 ${article.isFeatured ? "fill-warning text-warning" : ""}`} aria-hidden />
-                {article.isFeatured ? "Убрать с главной" : "На главную"}
+                {article.isFeatured ? "Убрать из подборки" : "Выбрать для главной"}
               </Button>
             ) : null}
             {capabilities.canDelete ? (

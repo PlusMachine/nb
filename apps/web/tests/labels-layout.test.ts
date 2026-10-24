@@ -355,9 +355,11 @@ describe("описание и переключатели блоков (75×120 �
     for (const [id, text] of Object.entries(beerStyleTaglinesRu)) {
       for (const preset of ["L", "LW"] as const) {
         for (const template of ["typographic", "craft"] as const) {
-          const state = resolveDescriptionPrintState({ template, preset, dpi: 203, slots: { ...rich, description: text } });
-          if (state === "dropped") {
-            dropped.push(`${id} ${preset}/${template}`);
+          for (const dpi of [203, 300] as const) {
+            const state = resolveDescriptionPrintState({ template, preset, dpi, slots: { ...rich, description: text } });
+            if (state === "dropped") {
+              dropped.push(`${id} ${preset}/${template}/${dpi}`);
+            }
           }
         }
       }

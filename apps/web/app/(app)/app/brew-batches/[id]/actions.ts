@@ -114,7 +114,7 @@ export const addBrewMeasurementAction = async (
       isFinal: parsed.isFinal ?? false
     });
     revalidateBatch(brewBatchId);
-    return { ok: true, message: parsed.isFinal ? "Финальный замер (FG) добавлен." : "Замер добавлен." };
+    return { ok: true, message: parsed.isFinal ? "Замер конечной плотности (КП) добавлен." : "Замер добавлен." };
   } catch (error) {
     if (error instanceof ZodError) {
       return { ok: false, message: firstZodMessage(error) };
@@ -158,7 +158,7 @@ export const setBrewMeasurementFinalAction = async (
     const user = await requireUser();
     await setBrewMeasurementFinal(user.id, brewBatchId, measurementId, isFinal);
     revalidateBatch(brewBatchId);
-    return { ok: true, message: isFinal ? "Замер отмечен как финальный (FG)." : "Отметка FG снята." };
+    return { ok: true, message: isFinal ? "Замер отмечен как конечная плотность (КП)." : "Отметка конечной плотности снята." };
   } catch (error) {
     if (error instanceof Error && error.message === "NOT_FOUND") {
       return { ok: false, message: "Замер не найден." };

@@ -131,7 +131,7 @@ export const ModerationQueue = ({ initialItems }: { initialItems: QueueItem[] })
                   }))
                 }
                 placeholder="Найдите итоговый ингредиент"
-                emptyCta={<p className="text-xs text-muted-foreground">Не нашли? Предложить / создать свой ингредиент</p>}
+                emptyCta={<p className="text-xs text-muted-foreground">Не нашли ингредиент? Предложите его в каталог или создайте свой.</p>}
               />
               {target ? (
                 <p className="text-xs text-muted-foreground">Объединить с: «{target.displayName}»</p>

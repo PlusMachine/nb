@@ -137,7 +137,7 @@ export function KioskShell({
           <button
             type="button"
             onClick={onExit}
-            aria-label="Выйти из киоска"
+            aria-label="Выйти из полноэкранного режима"
             className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-border text-muted-foreground transition hover:bg-accent hover:text-foreground"
           >
             <Minimize2 className="h-5 w-5" aria-hidden />

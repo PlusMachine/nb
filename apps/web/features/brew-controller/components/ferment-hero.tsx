@@ -66,7 +66,7 @@ export function FermentHero({ telemetry, current, next, dayLabel, chart, size = 
             </p>
           )}
           <p className={kiosk ? "mt-2 text-base text-muted-foreground" : "mt-1 text-sm text-muted-foreground"}>
-            Уставка:{" "}
+            Задано:{" "}
             <span
               className={
                 kiosk ? "text-xl font-medium text-foreground tabular-nums" : "font-medium text-foreground tabular-nums"

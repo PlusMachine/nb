@@ -101,20 +101,20 @@ export function FermentProfileCard({ progress, skipDisabled, onSkipToNext, savin
           {editing ? (
             <>
               <label className="flex items-center gap-2 text-sm text-muted-foreground">
-                Уставка
+                Заданная температура
                 <NumericInput
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
                   min={-2}
                   max={40}
                   autoFocus
-                  aria-label="Уставка текущей ступени, °C"
+                  aria-label="Заданная температура текущей ступени, °C"
                   className="h-9 w-20 rounded-md border border-border px-2 text-sm tabular-nums focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
                 />
                 <span className="text-muted-foreground">°C</span>
               </label>
               <Button size="sm" onClick={() => void commit()} disabled={savingSetpoint}>
-                {savingSetpoint ? "Сохранение…" : "Сохранить"}
+                {savingSetpoint ? "Сохраняем…" : "Сохранить"}
               </Button>
               <Button size="sm" variant="outline" onClick={() => setEditing(false)} disabled={savingSetpoint}>
                 Отмена
@@ -123,11 +123,11 @@ export function FermentProfileCard({ progress, skipDisabled, onSkipToNext, savin
           ) : (
             <>
               <span className="text-sm text-muted-foreground">
-                Уставка сейчас:{" "}
+                Задано сейчас:{" "}
                 <span className="font-medium tabular-nums text-foreground">{current.tempC.toFixed(1)} °C</span>
               </span>
               <Button size="sm" variant="outline" onClick={startEdit}>
-                Изменить уставку
+                Изменить температуру
               </Button>
             </>
           )}

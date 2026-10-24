@@ -63,7 +63,7 @@ export function MonitorHero({ telemetry, remaining, chart, size = "default" }: P
             </p>
           )}
           <p className={kiosk ? "mt-2 text-base text-muted-foreground" : "mt-1 text-sm text-muted-foreground"}>
-            Уставка:{" "}
+            Задано:{" "}
             <span
               className={
                 kiosk ? "text-xl font-medium text-foreground tabular-nums" : "font-medium text-foreground tabular-nums"
@@ -74,7 +74,7 @@ export function MonitorHero({ telemetry, remaining, chart, size = "default" }: P
           </p>
         </div>
         <div className="text-right">
-          <p className={kiosk ? "text-base text-muted-foreground" : "text-sm text-muted-foreground"}>Стадия</p>
+          <p className={kiosk ? "text-base text-muted-foreground" : "text-sm text-muted-foreground"}>Этап</p>
           <p className={kiosk ? "mt-1 text-4xl font-semibold text-foreground" : "mt-1 text-2xl font-semibold text-foreground"}>
             {telemetry ? stageLabel(telemetry.stageName) : "—"}
           </p>

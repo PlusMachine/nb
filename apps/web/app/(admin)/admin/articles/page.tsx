@@ -111,7 +111,7 @@ export default async function AdminArticlesPage({ searchParams }: Props) {
           <Badge size="sm" tone={statusTones[article.status]}>
             {contentArticleStatusLabels[article.status]}
           </Badge>
-          {article.isFeatured ? <Badge size="sm" tone="info">На главной</Badge> : null}
+          {article.isFeatured ? <Badge size="sm" tone="info">Выбрана для главной</Badge> : null}
         </div>
       )
     },
@@ -152,7 +152,7 @@ export default async function AdminArticlesPage({ searchParams }: Props) {
             status,
             pageSize: pageSize === defaultAdminArticlesPageSize ? undefined : String(pageSize)
           }}
-          placeholder="Заголовок, слаг, автор"
+          placeholder="Заголовок, автор или часть адреса"
         />
         <AdminFilterTabs label="Статусы" tabs={tabs} activeKey={status ?? "all"} />
       </div>
@@ -164,7 +164,7 @@ export default async function AdminArticlesPage({ searchParams }: Props) {
         getRowLabel={(article) => article.title}
         empty={
           <p className="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
-            {q || status ? "Ничего не найдено." : "Пока нет статей. Создайте первый гайд или обзор."}
+            {q || status ? "Ничего не найдено." : "Статей пока нет. Создайте статью или обзор."}
           </p>
         }
       />

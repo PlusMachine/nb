@@ -290,7 +290,7 @@ describe("App dashboard", () => {
     expect(html).toContain("в наличии");
     // shopping: empty reason for no planned brews (раздел «Чего не хватает», S4)
     expect(html).toContain("Чего не хватает");
-    expect(html).toContain("Считается по запланированным партиям");
+    expect(html).toContain("Здесь появятся ингредиенты, которых не хватает для запланированных партий.");
     // devices: soft CTA to connect
     expect(html).toContain('href="/app/devices"');
     expect(html).toContain("Подключить");
@@ -365,7 +365,7 @@ describe("App dashboard", () => {
   it("keeps the old empty-state card when nothing is checked either", async () => {
     const html = renderToStaticMarkup(await AppZonePage());
 
-    expect(html).toContain("Считается по запланированным партиям");
+    expect(html).toContain("Здесь появятся ингредиенты, которых не хватает для запланированных партий.");
     expect(html).not.toContain("Куплено:");
   });
 
@@ -425,7 +425,7 @@ describe("App dashboard", () => {
   it("surfaces recipes matched against the user's stock", async () => {
     const html = renderToStaticMarkup(await AppZonePage());
 
-    expect(html).toContain("Рецепты под ваш склад");
+    expect(html).toContain("Рецепты под ваши запасы");
     expect(html).toContain("My IPA");
     expect(html).toContain('href="/app/recipes/r-9/edit"');
   });
@@ -460,7 +460,7 @@ describe("App dashboard", () => {
 
     const html = renderToStaticMarkup(await AppZonePage());
 
-    expect(html).toContain("Рецепты под ваш склад");
+    expect(html).toContain("Рецепты под ваши запасы");
     expect(html).toContain("Почти хватает");
     expect(html).not.toContain("Хватает всего");
   });
@@ -546,15 +546,15 @@ describe("App dashboard", () => {
     expect(occurrences).toBe(1);
   });
 
-  it("keeps the onboarding checklist until the first brew loop is complete", async () => {
-    // recipes exist, but no brews yet -> checklist stays with brew step pending
+  it("keeps task choices below the overview and offers brewing only once", async () => {
     mocks.countBrewBatchesForUser.mockResolvedValue(0);
     mocks.listActiveBrewBatchesForUser.mockResolvedValue([]);
 
     const html = renderToStaticMarkup(await AppZonePage());
 
     expect(html).toContain("С чего начать");
-    expect(html).toContain("Запустите первую варку");
+    expect(html).not.toContain("Запустите первую варку");
+    expect(html.split('href="/app/recipes?intent=brew"').length - 1).toBe(1);
     // working blocks own the top of the page; the checklist trails after them
     const recipesIndex = html.indexOf("Мои рецепты");
     const checklistIndex = html.indexOf("С чего начать");
@@ -562,13 +562,13 @@ describe("App dashboard", () => {
     expect(recipesIndex).toBeLessThan(checklistIndex);
   });
 
-  it("hides the onboarding checklist once stock, recipe and brew all exist", async () => {
+  it("hides task choices once the first brew exists", async () => {
     const html = renderToStaticMarkup(await AppZonePage());
 
     expect(html).not.toContain("С чего начать");
   });
 
-  it("greets a first-time user with the onboarding path instead of empty widgets", async () => {
+  it("offers a recipe before optional stock on the first visit", async () => {
     mocks.countRecipesForAuthor.mockResolvedValue(0);
     mocks.countSavedRecipes.mockResolvedValue(0);
     mocks.getInventorySummaries.mockResolvedValue(emptyInventory);
@@ -582,13 +582,14 @@ describe("App dashboard", () => {
     expect(html).toContain("Добро пожаловать, Brewer");
     expect(html).not.toContain("С возвращением");
     expect(html).toContain("С чего начать");
-    // first loop in order: stock -> recipe -> brew
     const stockIndex = html.indexOf("Пополните склад");
     const recipeIndex = html.indexOf("Найдите или создайте рецепт");
-    const brewIndex = html.indexOf("Запустите первую варку");
-    expect(stockIndex).toBeGreaterThan(-1);
-    expect(stockIndex).toBeLessThan(recipeIndex);
-    expect(recipeIndex).toBeLessThan(brewIndex);
+    expect(recipeIndex).toBeGreaterThan(-1);
+    expect(recipeIndex).toBeLessThan(stockIndex);
+    expect(html).not.toContain("Запустите первую варку");
+    expect(html).not.toContain("0 из 3");
+    expect(html).toContain('href="/recipes"');
+    expect(html).toContain('href="/app/recipes/new"');
     // stock CTA goes to inventory add — not the public catalog hub
     expect(html).toContain("Добавить на склад");
     expect(html).toContain('href="/app/ingredients"');
@@ -600,6 +601,36 @@ describe("App dashboard", () => {
     expect(html).toContain('href="/articles"');
     expect(html).toContain('href="/bjcp"');
     expect(html).toContain('href="/calculators"');
+  });
+
+  it("offers brewing a saved community recipe with an empty stock", async () => {
+    mocks.countRecipesForAuthor.mockResolvedValue(0);
+    mocks.countSavedRecipes.mockResolvedValue(1);
+    mocks.getInventorySummaries.mockResolvedValue(emptyInventory);
+    mocks.listActiveBrewBatchesForUser.mockResolvedValue([]);
+    mocks.countBrewBatchesForUser.mockResolvedValue(0);
+    mocks.findBrewableOwnRecipesForUser.mockResolvedValue([]);
+
+    const html = renderToStaticMarkup(await AppZonePage());
+
+    expect(html).toContain("Запустите первую варку");
+    expect(html).toContain("Добавить на склад");
+    expect(html.split('href="/app/recipes?intent=brew"').length - 1).toBe(1);
+  });
+
+  it("does not return to onboarding after a brew when recipes and stock are empty", async () => {
+    mocks.countRecipesForAuthor.mockResolvedValue(0);
+    mocks.getInventorySummaries.mockResolvedValue(emptyInventory);
+    mocks.listActiveBrewBatchesForUser.mockResolvedValue([]);
+    mocks.countBrewBatchesForUser.mockResolvedValue(1);
+    mocks.findBrewableOwnRecipesForUser.mockResolvedValue([]);
+
+    const html = renderToStaticMarkup(await AppZonePage());
+
+    expect(html).toContain("С возвращением");
+    expect(html).not.toContain("С чего начать");
+    expect(html).not.toContain("Добро пожаловать");
+    expect(html.split('href="/app/recipes?intent=brew"').length - 1).toBe(1);
   });
 
   it("sends an empty inventory widget straight to stock add, not the catalog hub", async () => {

@@ -159,7 +159,7 @@ export function RaptConnectScreen({ preferredGravityUnit, onBack, onDone, onInte
       onIntegrationChange(result.integration);
       setCopiedUrl(false);
       setRotateOpen(false);
-      show({ title: "URL перевыпущен. Старый больше не работает", tone: "success" });
+      show({ title: "Создан новый адрес подключения. Старый больше не работает.", tone: "success" });
     } finally {
       setRotatePending(false);
     }
@@ -184,25 +184,25 @@ export function RaptConnectScreen({ preferredGravityUnit, onBack, onDone, onInte
         <div className="space-y-4">
           {integration.webhookUrl ? (
             <div className="space-y-1.5">
-              <p className="text-xs font-medium text-muted-foreground">URL вебхука</p>
+              <p className="text-xs font-medium text-muted-foreground">Адрес подключения</p>
               <div className="flex flex-wrap items-center gap-2">
                 <code className="break-all rounded-md bg-muted px-3 py-2 text-sm text-foreground">
                   {integration.webhookUrl}
                 </code>
                 <Button variant="outline" onClick={() => void copyUrl()}>
-                  {copiedUrl ? "Скопировано" : "Скопировать"}
+                  {copiedUrl ? "Адрес скопирован" : "Скопировать адрес"}
                 </Button>
               </div>
             </div>
           ) : (
             <p className="text-sm text-muted-foreground">
-              URL показывается один раз. Перевыпустите, чтобы получить новый.{" "}
+              Адрес подключения показывается только один раз. Если вы его не сохранили, создайте новый.{" "}
               <button
                 type="button"
                 className="font-medium text-foreground underline underline-offset-2"
                 onClick={() => setRotateOpen(true)}
               >
-                Перевыпустить URL
+                Создать новый адрес
               </button>
             </p>
           )}
@@ -214,7 +214,7 @@ export function RaptConnectScreen({ preferredGravityUnit, onBack, onDone, onInte
                 {integration.payloadTemplate}
               </pre>
               <Button variant="outline" onClick={() => void copyTemplate()}>
-                {copiedTemplate ? "Скопировано" : "Скопировать шаблон"}
+                {copiedTemplate ? "Шаблон скопирован" : "Скопировать шаблон"}
               </Button>
             </div>
           </div>
@@ -254,7 +254,7 @@ export function RaptConnectScreen({ preferredGravityUnit, onBack, onDone, onInte
           ) : (
             <div className="flex items-center gap-2 rounded-xl border border-border p-4 text-sm text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-              Ждём первый пакет…
+              Ждём первые показания…
             </div>
           )}
         </div>
@@ -273,10 +273,10 @@ export function RaptConnectScreen({ preferredGravityUnit, onBack, onDone, onInte
 
       <ConfirmActionDialog
         open={rotateOpen}
-        title="Перевыпустить URL?"
+        title="Создать новый адрес подключения?"
         description="Старый URL перестанет работать сразу — вебхук на RAPT-портале, использующий его, перестанет присылать данные, пока вы не пропишете новый."
-        confirmLabel="Перевыпустить"
-        pendingLabel="Перевыпускаем…"
+        confirmLabel="Создать адрес"
+        pendingLabel="Создаём адрес…"
         tone="danger"
         pending={rotatePending}
         onConfirm={() => void submitRotate()}

@@ -228,7 +228,7 @@ const applyManualItemQuantityUnitPairRefine = (
   if (hasQuantity !== hasUnit) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: "Количество и единица указываются вместе.",
+      message: "Укажите и количество, и единицу измерения.",
       path: ["quantity"]
     });
   }

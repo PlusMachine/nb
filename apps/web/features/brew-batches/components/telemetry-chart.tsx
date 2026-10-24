@@ -207,7 +207,7 @@ export function TelemetryChart({ source, hasDevice, initial, live }: Props) {
         <h2 className="text-sm font-semibold text-foreground">История температуры</h2>
         <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
           <Legend color="hsl(var(--chart-temp))" label="Температура" />
-          <Legend color="hsl(var(--chart-setpoint))" label="Уставка" dashed />
+          <Legend color="hsl(var(--chart-setpoint))" label="Заданная температура" dashed />
           <Legend color="hsl(var(--chart-heater))" label="Нагрев, %" />
           <EventLegend />
         </div>
@@ -225,7 +225,7 @@ export function TelemetryChart({ source, hasDevice, initial, live }: Props) {
               viewBox={`0 0 ${VB_W} ${VB_H}`}
               className="h-auto w-full"
               role="img"
-              aria-label="График температуры, уставки и скважности нагрева во времени с отметками стадий"
+              aria-label="График фактической и заданной температуры и доли времени нагрева с отметками этапов"
               preserveAspectRatio="none"
             >
               {/* Полосы стадий (фон, нейтральные; авария — светло-красная). */}

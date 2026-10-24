@@ -84,7 +84,7 @@ describe("resolveBrewNudge — fermenting", () => {
       NOW
     );
     expect(nudge.tone).toBe("warn");
-    expect(nudge.text).toBe(`${STALE_MEASUREMENT_DAYS} ${russianDays(STALE_MEASUREMENT_DAYS)} без замера — проверьте FG`);
+    expect(nudge.text).toBe(`${STALE_MEASUREMENT_DAYS} ${russianDays(STALE_MEASUREMENT_DAYS)} без замера — проверьте конечную плотность`);
   });
 
   it("stays info while measurements are fresh", () => {

@@ -132,3 +132,18 @@ describe("TelemetrySchema", () => {
     },
   );
 });
+
+describe("телеметрия BrewForge 2.2", () => {
+  it("сохраняет необязательное текущее внесение и настроенные выходы", () => {
+    const pendingHop = { index: 0, name: "Magnum", amountG: 20, count: 1 };
+    const outputs = [{ role: "heater1", label: "ТЭН 1", on: true }];
+    const parsed = TelemetrySchema.parse({ ...baseFrame, pendingHop, outputs });
+    expect(parsed.pendingHop).toEqual(pendingHop);
+    expect(parsed.outputs).toEqual(outputs);
+    expect(TelemetrySchema.parse(baseFrame).pendingHop).toBeUndefined();
+    expect(TelemetrySchema.parse(baseFrame).outputs).toBeUndefined();
+  });
+  it("отвергает индекс вне массива хмеля", () => {
+    expect(TelemetrySchema.safeParse({ ...baseFrame, pendingHop: { index: 12, name: "X", amountG: 1, count: 1 } }).success).toBe(false);
+  });
+});

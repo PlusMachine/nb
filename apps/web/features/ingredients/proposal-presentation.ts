@@ -10,7 +10,7 @@ import { formatIngredientSubtypeLabel, ingredientCategoryLabels } from "./presen
 /** Откуда пришла заявка — значение proposed_ingredients.source_type. */
 const proposalSourceLabels: Record<string, string> = {
   ingredient_picker_gap: "Подбор ингредиента",
-  recipe_designer: "Мастер рецептов",
+  recipe_designer: "Редактор рецептов",
   inventory: "Мой склад"
 };
 

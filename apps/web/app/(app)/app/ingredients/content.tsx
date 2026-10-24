@@ -269,7 +269,7 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
             initialDisplayName={addName ?? null}
             initialQuantity={(initialSelection || addName) ? addQty ?? null : null}
             initialUnit={(initialSelection || addName) ? addUnit ?? null : null}
-            openOnMount={Boolean(initialSelection) || Boolean(addName)}
+            openOnMount={resolvedParams.add === "1" || Boolean(initialSelection) || Boolean(addName)}
           />
         </div>
       </section>

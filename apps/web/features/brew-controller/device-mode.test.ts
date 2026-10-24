@@ -140,8 +140,8 @@ describe("deriveTileBadge", () => {
     }
   });
 
-  it("FERMENT (21) → «Ферментация»", () => {
-    expect(deriveTileBadge(STAGE_NUM.FERMENT)).toBe("Ферментация");
+  it("FERMENT (21) → «Брожение»", () => {
+    expect(deriveTileBadge(STAGE_NUM.FERMENT)).toBe("Брожение");
   });
 
   it("MANUAL → «Ручной»", () => {
@@ -180,9 +180,9 @@ describe("deriveTileBadge", () => {
     }
   });
 
-  it("PAUSED/FAULT с pausedFrom=FERMENT → «Ферментация»", () => {
-    expect(deriveTileBadge(STAGE_NUM.PAUSED, STAGE_NUM.FERMENT)).toBe("Ферментация");
-    expect(deriveTileBadge(STAGE_NUM.FAULT, STAGE_NUM.FERMENT)).toBe("Ферментация");
+  it("PAUSED/FAULT с pausedFrom=FERMENT → «Брожение»", () => {
+    expect(deriveTileBadge(STAGE_NUM.PAUSED, STAGE_NUM.FERMENT)).toBe("Брожение");
+    expect(deriveTileBadge(STAGE_NUM.FAULT, STAGE_NUM.FERMENT)).toBe("Брожение");
   });
 
   it("PAUSED/FAULT с pausedFrom из варочной стадии → «Варка»", () => {

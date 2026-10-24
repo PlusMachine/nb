@@ -185,11 +185,11 @@ const mapRecipeImportError = (error: unknown, formatLabel: string): RecipeEditor
     }
 
     if (error.message === "INVALID_BEERXML") {
-      return { ok: false, message: "BeerXML повреждён или не содержит корректных блоков RECIPE." };
+      return { ok: false, message: "Не удалось найти рецепты в файле BeerXML. Проверьте файл или экспортируйте его заново." };
     }
 
     if (error.message === "INVALID_BREWFATHER_JSON") {
-      return { ok: false, message: "Brewfather JSON не распознан: проверьте, что выбран экспорт рецепта из Brewfather." };
+      return { ok: false, message: "Не удалось прочитать рецепт Brewfather. Загрузите JSON-файл, экспортированный из Brewfather." };
     }
 
     if (error.message === "INVALID_IMPORT_RECIPE") {
@@ -785,7 +785,7 @@ export const deleteRecipeImageAction = async (
 
     return {
       ok: true,
-      message: "Фото удалёно."
+      message: "Фото удалено."
     };
   } catch (error) {
     if (isRecipeImagesSchemaMissing(error)) {
@@ -814,7 +814,7 @@ export const setRecipeCoverImageAction = async (
 
     return {
       ok: true,
-      message: "Обложка обновлёна.",
+      message: "Обложка обновлена.",
       image
     };
   } catch (error) {

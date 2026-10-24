@@ -64,7 +64,7 @@ export function ConnectDeviceDialog({ open, title, brewBatchId, devices, cancelL
         setError(result.message);
         return;
       }
-      show({ title: `«${result.session.deviceName}» подключён к партии`, tone: "success" });
+      show({ title: `Устройство «${result.session.deviceName}» привязано к партии`, tone: "success" });
       router.refresh();
       if (onAttached) {
         onAttached();
@@ -107,7 +107,7 @@ export function ConnectDeviceDialog({ open, title, brewBatchId, devices, cancelL
           {cancelLabel}
         </Button>
         <Button type="button" onClick={() => void submit()} disabled={pending || !deviceId}>
-          {pending ? "Привязываем…" : "Привязать"}
+          {pending ? "Привязываем…" : "Привязать к партии"}
         </Button>
       </DialogFooter>
     </Dialog>

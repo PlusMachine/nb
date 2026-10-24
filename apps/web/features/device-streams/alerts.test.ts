@@ -354,7 +354,7 @@ describe("processIngestAlerts — температурный коридор (§5
 
     expect(mocks.sendPushToUser).toHaveBeenCalledTimes(1);
     const [, payload] = mocks.sendPushToUser.mock.calls[0]!;
-    expect(payload.body).toBe("Температура 25°C вне коридора 18–22 °C.");
+    expect(payload.body).toBe("Температура 25°C вне заданного диапазона 18–22 °C.");
     expect(payload.tag).toBe(`ferment-temp_out-${SESSION_ID}`);
   });
 

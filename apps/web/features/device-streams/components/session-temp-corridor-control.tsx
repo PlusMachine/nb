@@ -47,8 +47,8 @@ export function SessionTempCorridorControl({ sessionId, tempMinC, tempMaxC, aler
 
   const corridorLabel =
     tempMinC !== null && tempMaxC !== null
-      ? `Коридор: ${formatTempValue(tempMinC)}–${formatTempValue(tempMaxC)} °C`
-      : "Коридор не задан";
+      ? `Диапазон: ${formatTempValue(tempMinC)}–${formatTempValue(tempMaxC)} °C`
+      : "Диапазон не задан";
 
   const openDialog = () => {
     setMinValue(tempMinC !== null ? String(tempMinC) : "");
@@ -66,7 +66,7 @@ export function SessionTempCorridorControl({ sessionId, tempMinC, tempMaxC, aler
         setError(result.message);
         return;
       }
-      show({ title: min !== null ? "Коридор обновлён" : "Коридор снят", tone: "success" });
+      show({ title: min !== null ? "Диапазон обновлён" : "Уведомления об отклонении температуры отключены", tone: "success" });
       router.refresh();
       setOpen(false);
     } finally {
@@ -84,7 +84,7 @@ export function SessionTempCorridorControl({ sessionId, tempMinC, tempMaxC, aler
       return;
     }
     if (trimmedMin === "" || trimmedMax === "") {
-      setError("Заполните обе границы коридора (или обе очистите).");
+      setError("Заполните обе границы диапазона или очистите оба поля.");
       return;
     }
 
@@ -95,7 +95,7 @@ export function SessionTempCorridorControl({ sessionId, tempMinC, tempMaxC, aler
       return;
     }
     if (min >= max) {
-      setError("Нижняя граница коридора должна быть меньше верхней.");
+      setError("Минимальная температура должна быть ниже максимальной.");
       return;
     }
     await save(min, max);
@@ -138,7 +138,7 @@ export function SessionTempCorridorControl({ sessionId, tempMinC, tempMaxC, aler
         onOpenChange={(next) => {
           if (!next && !pending) setOpen(false);
         }}
-        title="Температурный коридор"
+        title="Уведомления об отклонении температуры"
         size="sm"
       >
         <div className="space-y-3 p-5">
@@ -173,7 +173,7 @@ export function SessionTempCorridorControl({ sessionId, tempMinC, tempMaxC, aler
             </label>
           </div>
           <p className="text-xs leading-5 text-muted-foreground">
-            Уведомим, если температура выйдет за коридор дольше получаса. Оставьте поля пустыми, чтобы снять коридор.
+            Уведомим, если температура будет вне заданного диапазона дольше получаса. Чтобы отключить эти уведомления, очистите оба поля.
           </p>
           {error ? (
             <p role="alert" className="text-xs text-destructive">

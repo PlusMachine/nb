@@ -45,7 +45,7 @@ export default async function AdminMasterModerationPage({
 
       <div className="space-y-2">
         <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
-          Превью черновика
+          Предпросмотр черновика
         </span>
         <div className="rounded-2xl border-2 border-dashed border-border p-1">
           <MasterPageView snapshot={previewSnapshot} container="div" />

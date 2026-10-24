@@ -107,11 +107,11 @@ describe("BrewabilityBadgePill — единственный источник т�
 // Н7: заголовок секции не должен противоречить бейджам внутри — в секцию попадают
 // и «Почти хватает» (дашборд), и «Не хватает N» («Мой склад»).
 describe("BrewableRecipesSection — заголовок", () => {
-  it("называется «Рецепты под ваш склад», а не обещает «Можно сварить»", () => {
+  it("называется «Рецепты под ваши запасы», а не обещает «Можно сварить»", () => {
     const html = renderToStaticMarkup(
       <BrewableRecipesSection recipes={[dto({ coveredLines: 2, matchPercent: 69 })]} />
     );
-    expect(html).toContain("Рецепты под ваш склад");
+    expect(html).toContain("Рецепты под ваши запасы");
     expect(html).not.toContain("Можно сварить");
   });
 });

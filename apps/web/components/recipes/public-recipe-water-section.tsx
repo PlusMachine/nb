@@ -149,7 +149,7 @@ export function PublicRecipeWaterSection({ recipe }: { recipe: RecipeDetailDto }
   }
 
   return (
-    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+    <section className="border-t border-border pt-5">
       <div className="mb-3 flex items-center gap-2">
         <div className="flex h-7 w-7 items-center justify-center rounded-md bg-sky-50 dark:bg-sky-500/15">
           <Droplets className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
@@ -159,12 +159,12 @@ export function PublicRecipeWaterSection({ recipe }: { recipe: RecipeDetailDto }
 
       <div className="grid gap-3 text-sm sm:grid-cols-3">
         {targetName ? (
-          <div>
+          <div className="rounded-lg border border-border bg-card px-3 py-2.5">
             <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Целевой профиль</div>
             <div className="mt-0.5 truncate font-semibold text-foreground">{targetName}</div>
           </div>
         ) : null}
-        <div>
+        <div className="rounded-lg border border-border bg-card px-3 py-2.5">
           <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
             {isSplit ? "Объёмы воды" : "Всего воды"}
           </div>
@@ -175,7 +175,7 @@ export function PublicRecipeWaterSection({ recipe }: { recipe: RecipeDetailDto }
           </div>
         </div>
         {predictedPh != null ? (
-          <div>
+          <div className="rounded-lg border border-border bg-card px-3 py-2.5">
             <div className="text-[11px] uppercase tracking-wider text-muted-foreground">pH затора при 20 °C</div>
             <div className="mt-0.5 font-semibold text-foreground">{predictedPh.toFixed(2)}</div>
           </div>
@@ -189,7 +189,7 @@ export function PublicRecipeWaterSection({ recipe }: { recipe: RecipeDetailDto }
             {saltRows.map((row) => (
               <li
                 key={row.key}
-                className="flex items-baseline justify-between gap-2 rounded-lg bg-muted px-3 py-2 text-sm"
+                className="flex items-baseline justify-between gap-2 rounded-lg border border-border bg-muted px-3 py-2 text-sm"
               >
                 <span className="min-w-0 truncate text-foreground">
                   {row.label}
@@ -203,7 +203,7 @@ export function PublicRecipeWaterSection({ recipe }: { recipe: RecipeDetailDto }
             {acidRows.map((row) => (
               <li
                 key={row.key}
-                className="flex items-baseline justify-between gap-2 rounded-lg bg-muted px-3 py-2 text-sm"
+                className="flex items-baseline justify-between gap-2 rounded-lg border border-border bg-muted px-3 py-2 text-sm"
               >
                 <span className="min-w-0 truncate text-foreground">
                   {row.label}
@@ -220,7 +220,7 @@ export function PublicRecipeWaterSection({ recipe }: { recipe: RecipeDetailDto }
 
       <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-6">
         {(["ca", "mg", "na", "cl", "so4", "hco3"] as const).map((key) => (
-          <div key={key} className="rounded-lg bg-muted px-2 py-2 text-center">
+          <div key={key} className="rounded-lg border border-border bg-muted px-2 py-2 text-center">
             <div className="text-[11px] font-medium uppercase text-muted-foreground">{ionLabels[key]}</div>
             <div className="mt-0.5 text-sm font-semibold tabular-nums text-foreground">
               {Math.round(finalProfile[key])}

@@ -1,24 +1,14 @@
-import { starterEquipmentProfileDefaults, type EquipmentProfilePayload } from "../equipment-profiles/contracts";
+import { DEFAULT_EQUIPMENT_PROFILE_NAME, starterEquipmentProfileDefaults, type EquipmentProfilePayload } from "../equipment-profiles/contracts";
 
-const profileNamePattern = /^Профиль оборудования (?:\((\d+)\)|(\d+))$/;
-
-export const formatEquipmentProfileName = (index: number) => `Профиль оборудования (${index})`;
+export const formatEquipmentProfileName = (index: number) => index === 1
+  ? DEFAULT_EQUIPMENT_PROFILE_NAME
+  : `${DEFAULT_EQUIPMENT_PROFILE_NAME} (${index})`;
 
 export const buildNextEquipmentProfileName = (profiles: Array<{ name: string }>) => {
-  const usedIndexes = new Set<number>();
-
-  for (const profile of profiles) {
-    const match = profile.name.match(profileNamePattern);
-    const rawIndex = match?.[1] ?? match?.[2];
-    const index = rawIndex ? Number.parseInt(rawIndex, 10) : NaN;
-
-    if (Number.isInteger(index) && index > 0) {
-      usedIndexes.add(index);
-    }
-  }
+  const usedNames = new Set(profiles.map((profile) => profile.name.trim()));
 
   let nextIndex = 1;
-  while (usedIndexes.has(nextIndex)) {
+  while (usedNames.has(formatEquipmentProfileName(nextIndex))) {
     nextIndex += 1;
   }
 

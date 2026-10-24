@@ -372,7 +372,7 @@ export function IngredientPurchaseLinksEditor({
                   ) : null}
                   <div className="flex flex-wrap gap-2">
                     <Button type="button" size="sm" onClick={saveDraft} disabled={isPending}>
-                      {isPending ? "Сохраняем..." : "Сохранить"}
+                      {isPending ? "Сохраняем…" : "Сохранить"}
                     </Button>
                     <Button type="button" variant="outline" size="sm" onClick={cancelEdit}>
                       Отмена
@@ -445,7 +445,7 @@ export function IngredientPurchaseLinksEditor({
           ) : null}
           <div className="flex flex-wrap gap-2">
             <Button type="button" size="sm" onClick={saveDraft} disabled={isPending}>
-              {isPending ? "Сохраняем..." : "Добавить"}
+              {isPending ? "Сохраняем…" : "Добавить"}
             </Button>
             <Button type="button" variant="outline" size="sm" onClick={cancelEdit}>
               Отмена

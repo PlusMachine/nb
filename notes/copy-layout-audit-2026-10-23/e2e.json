@@ -1,0 +1,2236 @@
+{
+  "config": {
+    "argv": [
+      "/home/dopefish/.nvm/versions/node/v20.20.0/bin/node",
+      "/home/dopefish/projects/nb/node_modules/@playwright/test/cli.js",
+      "test",
+      "--config=e2e/copy-layout.config.ts"
+    ],
+    "configFile": "/home/dopefish/projects/nb/apps/web/e2e/copy-layout.config.ts",
+    "rootDir": "/home/dopefish/projects/nb/apps/web/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 2
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/copy-layout-audit-2026-10-23/e2e-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "mobile",
+        "name": "mobile",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "theme-menu.spec.ts",
+          "brewforge-demo.spec.ts"
+        ],
+        "timeout": 45000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/copy-layout-audit-2026-10-23/e2e-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "tablet640",
+        "name": "tablet640",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "theme-menu.spec.ts",
+          "brewforge-demo.spec.ts"
+        ],
+        "timeout": 45000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/copy-layout-audit-2026-10-23/e2e-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "tablet",
+        "name": "tablet",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "theme-menu.spec.ts",
+          "brewforge-demo.spec.ts"
+        ],
+        "timeout": 45000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/copy-layout-audit-2026-10-23/e2e-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "desktop",
+        "name": "desktop",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "theme-menu.spec.ts",
+          "brewforge-demo.spec.ts"
+        ],
+        "timeout": 45000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/copy-layout-audit-2026-10-23/e2e-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "safari-mobile",
+        "name": "safari-mobile",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "theme-menu.spec.ts",
+          "brewforge-demo.spec.ts"
+        ],
+        "timeout": 45000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/copy-layout-audit-2026-10-23/e2e-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "safari-tablet",
+        "name": "safari-tablet",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "theme-menu.spec.ts",
+          "brewforge-demo.spec.ts"
+        ],
+        "timeout": 45000
+      },
+      {
+        "outputDir": "/home/dopefish/projects/nb/notes/copy-layout-audit-2026-10-23/e2e-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "safari-desktop",
+        "name": "safari-desktop",
+        "testDir": "/home/dopefish/projects/nb/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-audit.spec.ts",
+          "theme-menu.spec.ts",
+          "brewforge-demo.spec.ts"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "../../../notes/copy-layout-audit-2026-10-23/e2e.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.1",
+    "workers": 2,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "brewforge-demo.spec.ts",
+      "file": "brewforge-demo.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "BrewForge показывает полный пульт и выполняет команды в локальном симуляторе",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile",
+              "projectName": "mobile",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 15190,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:14:55.720Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e2e66996d754cbd604a3-e4f7629fd0f42d3b1f11",
+          "file": "brewforge-demo.spec.ts",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "BrewForge показывает полный пульт и выполняет команды в локальном симуляторе",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "tablet640",
+              "projectName": "tablet640",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 9552,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:15:34.495Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e2e66996d754cbd604a3-50fae6381454780a1f6c",
+          "file": "brewforge-demo.spec.ts",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "BrewForge показывает полный пульт и выполняет команды в локальном симуляторе",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "tablet",
+              "projectName": "tablet",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 14433,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:15:48.813Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e2e66996d754cbd604a3-19912e7ecdcafd0e4b7a",
+          "file": "brewforge-demo.spec.ts",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "BrewForge показывает полный пульт и выполняет команды в локальном симуляторе",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 9871,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:16:09.061Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e2e66996d754cbd604a3-4c0ad2d149c1917d8051",
+          "file": "brewforge-demo.spec.ts",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "BrewForge показывает полный пульт и выполняет команды в локальном симуляторе",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "safari-mobile",
+              "projectName": "safari-mobile",
+              "results": [
+                {
+                  "workerIndex": 8,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 29636,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:16:44.257Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e2e66996d754cbd604a3-44fb2757821912b68929",
+          "file": "brewforge-demo.spec.ts",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "BrewForge показывает полный пульт и выполняет команды в локальном симуляторе",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "safari-tablet",
+              "projectName": "safari-tablet",
+              "results": [
+                {
+                  "workerIndex": 10,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 9915,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:17:26.224Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e2e66996d754cbd604a3-c7003e87f5eb2a3de9d3",
+          "file": "brewforge-demo.spec.ts",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "BrewForge показывает полный пульт и выполняет команды в локальном симуляторе",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "safari-desktop",
+              "projectName": "safari-desktop",
+              "results": [
+                {
+                  "workerIndex": 12,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 10037,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:17:57.945Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e2e66996d754cbd604a3-24ffe01b466e6fe7b34b",
+          "file": "brewforge-demo.spec.ts",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "mobile-audit.spec.ts",
+      "file": "mobile-audit.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "M01: label preview leaves data fields clickable in every format",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile",
+              "projectName": "mobile",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 8707,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:14:55.766Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-3b5e961d98b86836bc58",
+          "file": "mobile-audit.spec.ts",
+          "line": 34,
+          "column": 1
+        },
+        {
+          "title": "M02: public navigation and sign-in fit, including tablet breakpoint",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile",
+              "projectName": "mobile",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 5003,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:15:04.605Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-36d629c83c4e75495ee0",
+          "file": "mobile-audit.spec.ts",
+          "line": 53,
+          "column": 1
+        },
+        {
+          "title": "M03/M06: admin navigation and table do not widen document",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile",
+              "projectName": "mobile",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 6500,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:15:09.627Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-542b4a9bc03938de66f0",
+          "file": "mobile-audit.spec.ts",
+          "line": 74,
+          "column": 1
+        },
+        {
+          "title": "M04: filled recipe has compact metrics and working actions",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile",
+              "projectName": "mobile",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 12726,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:15:11.022Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-3a487dfb2c89f0390418",
+          "file": "mobile-audit.spec.ts",
+          "line": 110,
+          "column": 1
+        },
+        {
+          "title": "M05: every dilution operation fits on the narrow screen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile",
+              "projectName": "mobile",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 3722,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:15:16.140Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-1fbd804e21fafd330e78",
+          "file": "mobile-audit.spec.ts",
+          "line": 135,
+          "column": 1
+        },
+        {
+          "title": "M01: label preview leaves data fields clickable in every format",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "tablet640",
+              "projectName": "tablet640",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 2796,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:15:36.194Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-99b16b742adc85651141",
+          "file": "mobile-audit.spec.ts",
+          "line": 34,
+          "column": 1
+        },
+        {
+          "title": "M02: public navigation and sign-in fit, including tablet breakpoint",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "tablet640",
+              "projectName": "tablet640",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 1648,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:15:39.088Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-2f57b5b38b4645878f44",
+          "file": "mobile-audit.spec.ts",
+          "line": 53,
+          "column": 1
+        },
+        {
+          "title": "M03/M06: admin navigation and table do not widen document",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "tablet640",
+              "projectName": "tablet640",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 2178,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:15:40.746Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-09fd1b90b5e9205eba88",
+          "file": "mobile-audit.spec.ts",
+          "line": 74,
+          "column": 1
+        },
+        {
+          "title": "M04: filled recipe has compact metrics and working actions",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "tablet640",
+              "projectName": "tablet640",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 5215,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:15:42.935Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-5ceb49964c2d1bde8495",
+          "file": "mobile-audit.spec.ts",
+          "line": 110,
+          "column": 1
+        },
+        {
+          "title": "M05: every dilution operation fits on the narrow screen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "tablet640",
+              "projectName": "tablet640",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2059,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:15:44.160Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-a8aaa90f2f58ae0aa085",
+          "file": "mobile-audit.spec.ts",
+          "line": 135,
+          "column": 1
+        },
+        {
+          "title": "M01: label preview leaves data fields clickable in every format",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "tablet",
+              "projectName": "tablet",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3488,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:15:56.451Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-759f12be0f5bdcb077c7",
+          "file": "mobile-audit.spec.ts",
+          "line": 34,
+          "column": 1
+        },
+        {
+          "title": "M02: public navigation and sign-in fit, including tablet breakpoint",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "tablet",
+              "projectName": "tablet",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1644,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:16:00.037Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-f9c50fbf43cbffab76ce",
+          "file": "mobile-audit.spec.ts",
+          "line": 53,
+          "column": 1
+        },
+        {
+          "title": "M03/M06: admin navigation and table do not widen document",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "tablet",
+              "projectName": "tablet",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1994,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:16:01.693Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-009d5fb85a92bf3d639b",
+          "file": "mobile-audit.spec.ts",
+          "line": 74,
+          "column": 1
+        },
+        {
+          "title": "M04: filled recipe has compact metrics and working actions",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "tablet",
+              "projectName": "tablet",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 4966,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:16:03.487Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-e95a2e274b890e6e59ad",
+          "file": "mobile-audit.spec.ts",
+          "line": 110,
+          "column": 1
+        },
+        {
+          "title": "M05: every dilution operation fits on the narrow screen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "tablet",
+              "projectName": "tablet",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3199,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:16:03.697Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-2462633b78176553d3e4",
+          "file": "mobile-audit.spec.ts",
+          "line": 135,
+          "column": 1
+        },
+        {
+          "title": "M01: label preview leaves data fields clickable in every format",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 7,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6047,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:16:11.986Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-01f11b7841bbd09d919a",
+          "file": "mobile-audit.spec.ts",
+          "line": 34,
+          "column": 1
+        },
+        {
+          "title": "M02: public navigation and sign-in fit, including tablet breakpoint",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 7,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3076,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:16:18.134Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-c0267b7b19ecfe0b870c",
+          "file": "mobile-audit.spec.ts",
+          "line": 53,
+          "column": 1
+        },
+        {
+          "title": "M03/M06: admin navigation and table do not widen document",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 21667,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:16:19.043Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-4c06c4ef418b091f8313",
+          "file": "mobile-audit.spec.ts",
+          "line": 74,
+          "column": 1
+        },
+        {
+          "title": "M04: filled recipe has compact metrics and working actions",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 7,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 22260,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:16:21.226Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-c91049d5a5e08ad2c123",
+          "file": "mobile-audit.spec.ts",
+          "line": 110,
+          "column": 1
+        },
+        {
+          "title": "M05: every dilution operation fits on the narrow screen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 2730,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:16:40.857Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-a212ee20c7d5a3e11e04",
+          "file": "mobile-audit.spec.ts",
+          "line": 135,
+          "column": 1
+        },
+        {
+          "title": "M01: label preview leaves data fields clickable in every format",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "safari-mobile",
+              "projectName": "safari-mobile",
+              "results": [
+                {
+                  "workerIndex": 9,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 3889,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:17:09.863Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-4783dc396503b6ade294",
+          "file": "mobile-audit.spec.ts",
+          "line": 34,
+          "column": 1
+        },
+        {
+          "title": "M02: public navigation and sign-in fit, including tablet breakpoint",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "safari-mobile",
+              "projectName": "safari-mobile",
+              "results": [
+                {
+                  "workerIndex": 9,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 2601,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:17:13.922Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-e6d1d49151db5c11dceb",
+          "file": "mobile-audit.spec.ts",
+          "line": 53,
+          "column": 1
+        },
+        {
+          "title": "M03/M06: admin navigation and table do not widen document",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "safari-mobile",
+              "projectName": "safari-mobile",
+              "results": [
+                {
+                  "workerIndex": 8,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3775,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:17:14.854Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-7114963e9aa107cab578",
+          "file": "mobile-audit.spec.ts",
+          "line": 74,
+          "column": 1
+        },
+        {
+          "title": "M04: filled recipe has compact metrics and working actions",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "safari-mobile",
+              "projectName": "safari-mobile",
+              "results": [
+                {
+                  "workerIndex": 9,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 8799,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:17:16.537Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-c8991e4b1cd8741dcbce",
+          "file": "mobile-audit.spec.ts",
+          "line": 110,
+          "column": 1
+        },
+        {
+          "title": "M05: every dilution operation fits on the narrow screen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "safari-mobile",
+              "projectName": "safari-mobile",
+              "results": [
+                {
+                  "workerIndex": 8,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3263,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:17:18.655Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-4249be76034152a8d4bd",
+          "file": "mobile-audit.spec.ts",
+          "line": 135,
+          "column": 1
+        },
+        {
+          "title": "M01: label preview leaves data fields clickable in every format",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "safari-tablet",
+              "projectName": "safari-tablet",
+              "results": [
+                {
+                  "workerIndex": 11,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3964,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:17:29.694Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-5f6e242c1bcc85c1c7ed",
+          "file": "mobile-audit.spec.ts",
+          "line": 34,
+          "column": 1
+        },
+        {
+          "title": "M02: public navigation and sign-in fit, including tablet breakpoint",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "safari-tablet",
+              "projectName": "safari-tablet",
+              "results": [
+                {
+                  "workerIndex": 11,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2304,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:17:33.757Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-d1d2bce21a2b7d93d798",
+          "file": "mobile-audit.spec.ts",
+          "line": 53,
+          "column": 1
+        },
+        {
+          "title": "M03/M06: admin navigation and table do not widen document",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "safari-tablet",
+              "projectName": "safari-tablet",
+              "results": [
+                {
+                  "workerIndex": 11,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 9492,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:17:36.079Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-ca3b49bce777c2c99147",
+          "file": "mobile-audit.spec.ts",
+          "line": 74,
+          "column": 1
+        },
+        {
+          "title": "M04: filled recipe has compact metrics and working actions",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "safari-tablet",
+              "projectName": "safari-tablet",
+              "results": [
+                {
+                  "workerIndex": 10,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 20138,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:17:36.287Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-b8e7c279a73e95bb51fa",
+          "file": "mobile-audit.spec.ts",
+          "line": 110,
+          "column": 1
+        },
+        {
+          "title": "M05: every dilution operation fits on the narrow screen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "safari-tablet",
+              "projectName": "safari-tablet",
+              "results": [
+                {
+                  "workerIndex": 11,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 11380,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:17:45.586Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-4f84f16bd7f15b5b888d",
+          "file": "mobile-audit.spec.ts",
+          "line": 135,
+          "column": 1
+        },
+        {
+          "title": "M01: label preview leaves data fields clickable in every format",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "safari-desktop",
+              "projectName": "safari-desktop",
+              "results": [
+                {
+                  "workerIndex": 13,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 4596,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:18:05.178Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-590986a74d9b0aec254a",
+          "file": "mobile-audit.spec.ts",
+          "line": 34,
+          "column": 1
+        },
+        {
+          "title": "M02: public navigation and sign-in fit, including tablet breakpoint",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "safari-desktop",
+              "projectName": "safari-desktop",
+              "results": [
+                {
+                  "workerIndex": 12,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2655,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:18:08.096Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-43390e4225fcec0debb2",
+          "file": "mobile-audit.spec.ts",
+          "line": 53,
+          "column": 1
+        },
+        {
+          "title": "M03/M06: admin navigation and table do not widen document",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "safari-desktop",
+              "projectName": "safari-desktop",
+              "results": [
+                {
+                  "workerIndex": 13,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 11661,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:18:09.882Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-845111f15c19f4d02210",
+          "file": "mobile-audit.spec.ts",
+          "line": 74,
+          "column": 1
+        },
+        {
+          "title": "M04: filled recipe has compact metrics and working actions",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "safari-desktop",
+              "projectName": "safari-desktop",
+              "results": [
+                {
+                  "workerIndex": 12,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 18195,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:18:10.770Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-06ff8ec9134b554e280b",
+          "file": "mobile-audit.spec.ts",
+          "line": 110,
+          "column": 1
+        },
+        {
+          "title": "M05: every dilution operation fits on the narrow screen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "safari-desktop",
+              "projectName": "safari-desktop",
+              "results": [
+                {
+                  "workerIndex": 13,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 3530,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:18:21.561Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "49c66a255e65644dcdb8-74e608ed90a92cb543b1",
+          "file": "mobile-audit.spec.ts",
+          "line": 135,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "theme-menu.spec.ts",
+      "file": "theme-menu.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "выбор темы в публичной шапке сохраняет режим и независимый скин",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile",
+              "projectName": "mobile",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 15672,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:15:19.884Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "94a1b280792aa1fc01a2-bf6533c3c0562989be2d",
+          "file": "theme-menu.spec.ts",
+          "line": 9,
+          "column": 1
+        },
+        {
+          "title": "меню темы внутри мобильной панели принимает клики и закрывается отдельно",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile",
+              "projectName": "mobile",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 10038,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:15:23.773Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "94a1b280792aa1fc01a2-9d12a53311350cf71317",
+          "file": "theme-menu.spec.ts",
+          "line": 57,
+          "column": 1
+        },
+        {
+          "title": "выбор темы в публичной шапке сохраняет режим и независимый скин",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "tablet640",
+              "projectName": "tablet640",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 9491,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:15:46.239Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "94a1b280792aa1fc01a2-ba426b832c8d03abcd1e",
+          "file": "theme-menu.spec.ts",
+          "line": 9,
+          "column": 1
+        },
+        {
+          "title": "меню темы внутри мобильной панели принимает клики и закрывается отдельно",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [
+                {
+                  "type": "skip",
+                  "description": "мобильная панель навигации",
+                  "location": {
+                    "file": "/home/dopefish/projects/nb/apps/web/e2e/theme-menu.spec.ts",
+                    "line": 58,
+                    "column": 8
+                  }
+                }
+              ],
+              "expectedStatus": "skipped",
+              "projectId": "tablet640",
+              "projectName": "tablet640",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 1,
+                  "status": "skipped",
+                  "duration": 78,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:15:48.169Z",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "мобильная панель навигации",
+                      "location": {
+                        "file": "/home/dopefish/projects/nb/apps/web/e2e/theme-menu.spec.ts",
+                        "line": 58,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "skipped"
+            }
+          ],
+          "id": "94a1b280792aa1fc01a2-f2ab6c4fc74199ede788",
+          "file": "theme-menu.spec.ts",
+          "line": 57,
+          "column": 1
+        },
+        {
+          "title": "выбор темы в публичной шапке сохраняет режим и независимый скин",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "tablet",
+              "projectName": "tablet",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4543,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:16:06.917Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "94a1b280792aa1fc01a2-a337edab6ea7270f21c5",
+          "file": "theme-menu.spec.ts",
+          "line": 9,
+          "column": 1
+        },
+        {
+          "title": "меню темы внутри мобильной панели принимает клики и закрывается отдельно",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [
+                {
+                  "type": "skip",
+                  "description": "мобильная панель навигации",
+                  "location": {
+                    "file": "/home/dopefish/projects/nb/apps/web/e2e/theme-menu.spec.ts",
+                    "line": 58,
+                    "column": 8
+                  }
+                }
+              ],
+              "expectedStatus": "skipped",
+              "projectId": "tablet",
+              "projectName": "tablet",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 1,
+                  "status": "skipped",
+                  "duration": 75,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:16:08.483Z",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "мобильная панель навигации",
+                      "location": {
+                        "file": "/home/dopefish/projects/nb/apps/web/e2e/theme-menu.spec.ts",
+                        "line": 58,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "skipped"
+            }
+          ],
+          "id": "94a1b280792aa1fc01a2-50e0392904f0767bfb74",
+          "file": "theme-menu.spec.ts",
+          "line": 57,
+          "column": 1
+        },
+        {
+          "title": "выбор темы в публичной шапке сохраняет режим и независимый скин",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 25629,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:16:43.618Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "94a1b280792aa1fc01a2-21e3f72ea0196e5ddc51",
+          "file": "theme-menu.spec.ts",
+          "line": 9,
+          "column": 1
+        },
+        {
+          "title": "меню темы внутри мобильной панели принимает клики и закрывается отдельно",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [
+                {
+                  "type": "skip",
+                  "description": "мобильная панель навигации",
+                  "location": {
+                    "file": "/home/dopefish/projects/nb/apps/web/e2e/theme-menu.spec.ts",
+                    "line": 58,
+                    "column": 8
+                  }
+                }
+              ],
+              "expectedStatus": "skipped",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 7,
+                  "parallelIndex": 0,
+                  "status": "skipped",
+                  "duration": 99,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:16:43.642Z",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "мобильная панель навигации",
+                      "location": {
+                        "file": "/home/dopefish/projects/nb/apps/web/e2e/theme-menu.spec.ts",
+                        "line": 58,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "skipped"
+            }
+          ],
+          "id": "94a1b280792aa1fc01a2-8b57a096c2dc98708d6c",
+          "file": "theme-menu.spec.ts",
+          "line": 57,
+          "column": 1
+        },
+        {
+          "title": "выбор темы в публичной шапке сохраняет режим и независимый скин",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "safari-mobile",
+              "projectName": "safari-mobile",
+              "results": [
+                {
+                  "workerIndex": 8,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6970,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:17:21.949Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "94a1b280792aa1fc01a2-b374608aa720f5803dc5",
+          "file": "theme-menu.spec.ts",
+          "line": 9,
+          "column": 1
+        },
+        {
+          "title": "меню темы внутри мобильной панели принимает клики и закрывается отдельно",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [
+                {
+                  "type": "skip",
+                  "description": "мобильная панель навигации",
+                  "location": {
+                    "file": "/home/dopefish/projects/nb/apps/web/e2e/theme-menu.spec.ts",
+                    "line": 58,
+                    "column": 8
+                  }
+                }
+              ],
+              "expectedStatus": "skipped",
+              "projectId": "safari-mobile",
+              "projectName": "safari-mobile",
+              "results": [
+                {
+                  "workerIndex": 9,
+                  "parallelIndex": 1,
+                  "status": "skipped",
+                  "duration": 233,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:17:25.473Z",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "мобильная панель навигации",
+                      "location": {
+                        "file": "/home/dopefish/projects/nb/apps/web/e2e/theme-menu.spec.ts",
+                        "line": 58,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "skipped"
+            }
+          ],
+          "id": "94a1b280792aa1fc01a2-aa633b3a4b1fb2a8f401",
+          "file": "theme-menu.spec.ts",
+          "line": 57,
+          "column": 1
+        },
+        {
+          "title": "выбор темы в публичной шапке сохраняет режим и независимый скин",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "safari-tablet",
+              "projectName": "safari-tablet",
+              "results": [
+                {
+                  "workerIndex": 10,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 7895,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:17:56.585Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "94a1b280792aa1fc01a2-72fe1463f3e2cd33b086",
+          "file": "theme-menu.spec.ts",
+          "line": 9,
+          "column": 1
+        },
+        {
+          "title": "меню темы внутри мобильной панели принимает клики и закрывается отдельно",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [
+                {
+                  "type": "skip",
+                  "description": "мобильная панель навигации",
+                  "location": {
+                    "file": "/home/dopefish/projects/nb/apps/web/e2e/theme-menu.spec.ts",
+                    "line": 58,
+                    "column": 8
+                  }
+                }
+              ],
+              "expectedStatus": "skipped",
+              "projectId": "safari-tablet",
+              "projectName": "safari-tablet",
+              "results": [
+                {
+                  "workerIndex": 11,
+                  "parallelIndex": 0,
+                  "status": "skipped",
+                  "duration": 239,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:17:57.113Z",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "мобильная панель навигации",
+                      "location": {
+                        "file": "/home/dopefish/projects/nb/apps/web/e2e/theme-menu.spec.ts",
+                        "line": 58,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "skipped"
+            }
+          ],
+          "id": "94a1b280792aa1fc01a2-a21b1ae2516e1c81ce1e",
+          "file": "theme-menu.spec.ts",
+          "line": 57,
+          "column": 1
+        },
+        {
+          "title": "выбор темы в публичной шапке сохраняет режим и независимый скин",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "safari-desktop",
+              "projectName": "safari-desktop",
+              "results": [
+                {
+                  "workerIndex": 13,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 8326,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:18:25.118Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "94a1b280792aa1fc01a2-a928cf338fa98eb7fd35",
+          "file": "theme-menu.spec.ts",
+          "line": 9,
+          "column": 1
+        },
+        {
+          "title": "меню темы внутри мобильной панели принимает клики и закрывается отдельно",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [
+                {
+                  "type": "skip",
+                  "description": "мобильная панель навигации",
+                  "location": {
+                    "file": "/home/dopefish/projects/nb/apps/web/e2e/theme-menu.spec.ts",
+                    "line": 58,
+                    "column": 8
+                  }
+                }
+              ],
+              "expectedStatus": "skipped",
+              "projectId": "safari-desktop",
+              "projectName": "safari-desktop",
+              "results": [
+                {
+                  "workerIndex": 12,
+                  "parallelIndex": 0,
+                  "status": "skipped",
+                  "duration": 567,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T21:18:29.138Z",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "мобильная панель навигации",
+                      "location": {
+                        "file": "/home/dopefish/projects/nb/apps/web/e2e/theme-menu.spec.ts",
+                        "line": 58,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "skipped"
+            }
+          ],
+          "id": "94a1b280792aa1fc01a2-b84c354ebe4cb304d761",
+          "file": "theme-menu.spec.ts",
+          "line": 57,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-23T21:14:55.105Z",
+    "duration": 217840.511,
+    "expected": 50,
+    "skipped": 6,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

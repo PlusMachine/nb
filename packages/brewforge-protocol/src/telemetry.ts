@@ -3,17 +3,9 @@
 //  Снимок bf_brew_state_t + конверт (deviceId/fw/ts/seq/uptime/promptSeq).
 //  Топик: brewforge/<deviceId>/telemetry (QoS0, retained, ~1 Гц).
 //
-//  ⚠ НАХОДКА пакета 4-B (сверка с components/comms/bf_proto.c/bf_state.h): поля
-//  `hops_acked`/`eta_remaining_min` УЖЕ считает process (components/process/
-//  bf_process.c:1131,1135, публикуются в bf_brew_state_t) — ЧЕК-ЛИСТ хмеля §3.2 и
-//  ETA варки §C реализованы на устройстве. Но bf_proto_telemetry_json их пока НЕ
-//  сериализует в JSON (grep по bf_proto.c — ни "hopsAcked", ни "etaRemainingMin" не
-//  встречаются) — это пробел ПРОШИВКИ (вне scope портального пакета, read-only).
-//  Здесь их сознательно НЕ добавляем как optional-«заглушку под будущее»: схема
-//  должна отражать ФАКТИЧЕСКИЙ провод, а не то, что «скоро появится» — иначе UI-код
-//  начнёт молча получать `undefined` и решит, что это «нет данных», хотя на самом
-//  деле устройство просто не отправляет уже готовое значение. Добавить оба поля
-//  сюда СИНХРОННО с починкой bf_proto_telemetry_json — отдельный тикет прошивки.
+//  Совместимость: новые поля optional. 2.2 добавляет pendingHop (одно текущее
+//  внесение с индексом для ACK_HOP) и outputs (только настроенные выходы).
+//  nextHop* по-прежнему описывают будущее внесение; их смысл не меняется.
 // =============================================================================
 import { z } from "zod";
 import {
@@ -69,6 +61,21 @@ export const TelemetrySchema = z.object({
   setpointC: z.number(),
   heatMode: z.number().int(),       // числовое значение bf_heat_mode_t
   heatDutyPct: z.number().int(),    // целевая скважность окна, %
+  // 2.2: optional — старые прошивки остаются совместимы.
+  pendingHop: z.object({
+    index: z.number().int().min(-1).max(11),
+    name: z.string(),
+    amountG: z.number().int().nonnegative(),
+    count: z.number().int().min(0).max(12),
+  }).optional(),
+  outputs: z.array(z.object({
+    role: z.enum(["heater1", "heater2", "pump1", "pump2", "valve", "cooler"]),
+    label: z.string(),
+    on: z.boolean(),
+  })).max(6).optional(),
+  heat1On: z.boolean().optional(),
+  heat2On: z.boolean().optional(),
+  manualCutoff: z.boolean().optional(),
   heatOn: z.boolean(),              // мгновенное состояние основного SSR
   spargeHeatOn: z.boolean(),
   pumpOn: z.boolean(),

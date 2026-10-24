@@ -98,7 +98,7 @@ export const formatHopAlphaAcidStatLabel = (
   options?: { userOverride?: boolean }
 ) => {
   const label = `Альфа ${formatStatNumber(alphaPct)}%`;
-  return options?.userOverride ? `${label} (пользовательская)` : label;
+  return options?.userOverride ? `${label} (ваше значение)` : label;
 };
 
 export const formatHopAlphaAcidAaValue = (
@@ -106,7 +106,7 @@ export const formatHopAlphaAcidAaValue = (
   options?: { userOverride?: boolean }
 ) => {
   const label = `${formatStatNumber(alphaPct)}% AA`;
-  return options?.userOverride ? `${label} (пользовательская)` : label;
+  return options?.userOverride ? `${label} (ваше значение)` : label;
 };
 
 export const formatHopAlphaAcidDetailValue = (
@@ -114,7 +114,7 @@ export const formatHopAlphaAcidDetailValue = (
   options?: { userOverride?: boolean }
 ) => {
   const label = `${formatStatNumber(alphaPct)}%`;
-  return options?.userOverride ? `${label} (пользовательская)` : label;
+  return options?.userOverride ? `${label} (ваше значение)` : label;
 };
 
 export const readDerivedFromHopAlphaAcidPct = (properties: Record<string, unknown> | null | undefined): number | null => (

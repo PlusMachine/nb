@@ -114,7 +114,7 @@ describe("equipment profiles page", () => {
     }
 
     expect(mocks.listEquipmentProfiles).toHaveBeenCalledWith("00000000-0000-4000-8000-000000000002");
-    expect(html).toContain("Профили оборудования");
+    expect(html).toContain("Настройки пивоварни");
     expect(html).toContain("2 профиля");
     expect(html).toContain("основной: Garage BIAB");
     expect(html).toContain("Garage BIAB");
@@ -122,7 +122,7 @@ describe("equipment profiles page", () => {
     expect(html).toContain("Основной");
     expect(html).toContain("Типичный объём партии");
     expect(html).toContain("Эффективность");
-    expect(html).toContain("Испарение");
+    expect(html).toContain("Скорость выкипания");
     expect(html).toContain("Редактировать");
     expect(html).toContain("Дублировать");
     expect(html).toContain("Сделать основным");
@@ -162,12 +162,12 @@ describe("equipment profiles page", () => {
     }
 
     expect(html).toContain("Новый профиль");
-    expect(html).toContain("Профиль оборудования (1)");
+    expect(html).toContain("Моя пивоварня");
     expect(html).toContain("Создать профиль");
     expect(html).not.toContain("Начните с рабочих значений");
     expect(html.match(/Создать профиль/g) ?? []).toHaveLength(1);
     expect(html).toContain("Типичный объём партии, л");
-    expect(html).toContain("Испарение, л/ч");
+    expect(html).toContain("Скорость выкипания, л/ч");
     expect(html).toContain("Гидромодуль, л/кг");
     expect(html).not.toContain("Потери</h3>");
     expect(html).not.toContain("Потери и кипячение");
@@ -197,7 +197,7 @@ describe("equipment profiles page", () => {
     expect(html).toContain("Garage BIAB");
     expect(html).toContain("Pilot Kettle");
     expect(html).toContain("Сохранить профиль");
-    expect(html).toContain("Испарение, л/ч");
+    expect(html).toContain("Скорость выкипания, л/ч");
     expect(html).toContain("Гидромодуль, л/кг");
     expect(html).not.toContain("Потери</h3>");
     expect(html).not.toContain("Вода / затор");
@@ -213,13 +213,21 @@ describe("equipment profiles page", () => {
   it("builds the next default equipment profile name from existing profiles", async () => {
     const { buildNextEquipmentProfileName } = await import("../features/equipment/defaults");
 
-    expect(buildNextEquipmentProfileName([])).toBe("Профиль оборудования (1)");
-    expect(buildNextEquipmentProfileName([{ name: "Профиль оборудования (1)" }])).toBe("Профиль оборудования (2)");
+    expect(buildNextEquipmentProfileName([])).toBe("Моя пивоварня");
+    expect(buildNextEquipmentProfileName([{ name: "Моя пивоварня" }])).toBe("Моя пивоварня (2)");
+    expect(buildNextEquipmentProfileName([
+      { name: "Моя пивоварня" },
+      { name: "Моя пивоварня (3)" },
+      { name: "Garage BIAB" }
+    ])).toBe("Моя пивоварня (2)");
     expect(buildNextEquipmentProfileName([
       { name: "Профиль оборудования (1)" },
-      { name: "Профиль оборудования (3)" },
       { name: "Garage BIAB" }
-    ])).toBe("Профиль оборудования (2)");
+    ])).toBe("Моя пивоварня");
+    expect(buildNextEquipmentProfileName([
+      { name: " Моя пивоварня " },
+      { name: "Моя пивоварня (2)" }
+    ])).toBe("Моя пивоварня (3)");
   });
 
   it("creates equipment profile from form data", async () => {
@@ -256,6 +264,7 @@ describe("equipment profiles page", () => {
       "00000000-0000-4000-8000-000000000002",
       equipmentProfile.id,
       expect.objectContaining({
+        name: "Garage BIAB",
         targetBatchVolumeL: 20,
         brewhouseEfficiencyPct: 75
       })

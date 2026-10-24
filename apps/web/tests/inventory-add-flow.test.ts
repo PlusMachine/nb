@@ -221,7 +221,7 @@ describe("inventory add-flow", () => {
     }));
 
     expect(html).toContain("Параметры ингредиента");
-    expect(html).toContain("Количество и единица учёта");
+    expect(html).toContain("Количество и единица измерения");
     expect(html).toContain('data-testid="custom-required-fields"');
     expect(html).toContain('data-testid="custom-optional-disclosure"');
     expect(html).toContain("Цена, даты и заметки");
@@ -316,7 +316,7 @@ describe("inventory add-flow", () => {
       onSubmit: async () => undefined
     }));
 
-    expect(html).toContain("Тип хмеля");
+    expect(html).toContain("Форма хмеля");
     expect(html).toContain("Альфа, %");
     expect(html).toContain("Урожай");
     expect(html).toContain("Не указан");
@@ -337,7 +337,7 @@ describe("inventory add-flow", () => {
 
     expect(html).toContain('data-testid="custom-ingredient-create-panel"');
     expect(html).toContain("Параметры ингредиента");
-    expect(html).toContain("Количество и единица учёта");
+    expect(html).toContain("Количество и единица измерения");
   });
 
   // П3: панель прокидывает предзаполненное имя из deeplink-а в форму создания.
@@ -371,7 +371,7 @@ describe("inventory add-flow", () => {
     expect(html).toContain("Экстрактивность, %");
     expect(html).toContain("Страна");
     expect(html).toContain("Создать свой ингредиент");
-    expect(html).not.toContain("Количество и единица учёта");
+    expect(html).not.toContain("Количество и единица измерения");
     expect(html).not.toContain('data-testid="custom-required-fields"');
     expect(html).not.toContain('data-testid="custom-optional-disclosure"');
     expect(html).not.toContain("Создать и добавить в запасы");
@@ -694,7 +694,7 @@ describe("inventory add-flow", () => {
         brands: [],
         groups: [{
           type: "consumable_group",
-          label: "Санитайзеры",
+          label: "Дезинфицирующие средства",
           normalizedLabel: "sanitizer",
           value: "sanitizer",
           count: 8,
@@ -764,7 +764,7 @@ describe("inventory add-flow", () => {
     expect(html).toContain("Только избранные");
     expect(html).toContain("Только свои");
     expect(html).toContain("По группе");
-    expect(html).toContain("Санитайзеры");
+    expect(html).toContain("Дезинфицирующие средства");
     expect(html).toContain("Мойка");
     expect(html).toContain("Техдобавки");
     expect(html).toContain("Фильтрация затора");
@@ -788,7 +788,7 @@ describe("inventory add-flow", () => {
     }));
 
     expect(html).toContain('data-testid="catalog-consumable-group-switch"');
-    expect(html).toContain("Санитайзеры");
+    expect(html).toContain("Дезинфицирующие средства");
     expect(html).toContain("Мойка");
     expect(html).toContain("Тара и укупорка");
     expect(html).toContain("Газы");
@@ -1105,7 +1105,7 @@ describe("inventory add-flow", () => {
       hasTechnicalOverrides: true
     })).toEqual({
       currentEntries: [
-        { label: "Альфа-кислота", value: "6.1% AA (пользовательская)" }
+        { label: "Альфа-кислота", value: "6.1% AA (ваше значение)" }
       ],
       catalogEntries: [
         { label: "Альфа-кислота", value: "5.5% AA" }

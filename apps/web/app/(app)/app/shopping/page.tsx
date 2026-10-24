@@ -4,7 +4,7 @@ import { ShoppingListContent } from "./content";
 import { ShoppingListSkeleton } from "./loading";
 
 export const metadata = {
-  title: "Чего не хватает"
+  title: "Список покупок"
 };
 
 export default function ShoppingListPage() {

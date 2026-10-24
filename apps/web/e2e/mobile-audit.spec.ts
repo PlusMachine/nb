@@ -36,7 +36,7 @@ test("M01: label preview leaves data fields clickable in every format", async ({
   await page.getByRole("button", { name: "Крафт", exact: true }).click();
   for (const format of ["43×25 мм", "58×40 мм", "75×120 мм", "120×75 мм", "Лист A4"]) {
     await page.getByRole("button", { name: format, exact: true }).first().click();
-    const preview = page.getByRole("img", { name: /Превью наклейки/ });
+    const preview = page.getByRole("img", { name: /Предпросмотр этикетки/ });
     await expect(preview).toBeVisible({ timeout: 20_000 });
     await expect.poll(() => preview.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
     for (const field of ["Название", "Стиль", "Автор"]) {
@@ -48,6 +48,14 @@ test("M01: label preview leaves data fields clickable in every format", async ({
     }
     await expectDocumentFits(page);
   }
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.evaluate(() => { document.documentElement.style.fontSize = "200%"; });
+  for (const text of ["Крепость, % об.", "Горечь, IBU", "Цвет, EBC", "Начальная плотность", "Конечная плотность"]) {
+    const label = page.getByText(text, { exact: true });
+    await expect(label).toBeVisible();
+    expect(await label.evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
+  }
+  await expectDocumentFits(page);
 });
 
 test("M02: public navigation and sign-in fit, including tablet breakpoint", async ({ page, context, baseURL }) => {
@@ -55,6 +63,7 @@ test("M02: public navigation and sign-in fit, including tablet breakpoint", asyn
   await open(page, "/calculators/abv-attenuation");
   await expectDocumentFits(page);
   await expectControlFits(page, page.getByRole("banner").getByRole("link", { name: "Войти", exact: true }));
+  if (page.viewportSize()!.width >= 1280) await page.setViewportSize({ width: 834, height: 1112 });
   await expectControlFits(page, page.getByRole("button", { name: "Открыть меню", exact: true }));
   await page.getByRole("button", { name: "Открыть меню", exact: true }).click();
   await expect(page.getByRole("navigation", { name: "Разделы сайта" }).last()).toBeVisible();
@@ -64,9 +73,10 @@ test("M02: public navigation and sign-in fit, including tablet breakpoint", asyn
   await expectControlFits(page, page.getByRole("banner").getByRole("link", { name: "Войти", exact: true }));
   await page.setViewportSize({ width: 844, height: 390 });
   await page.getByRole("button", { name: "Открыть меню", exact: true }).click();
+  await page.getByRole("button", { name: "Тема оформления", exact: true }).last().click();
   const theme = page.getByRole("radio", { name: "Тёмная тема", exact: true }).last();
   await theme.click();
-  await expect(theme).toHaveAttribute("aria-checked", "true");
+  await expect(page.locator("html")).toHaveClass(/dark/);
 });
 
 test("M03/M06: admin navigation and table do not widen document", async ({ page, context, baseURL }) => {
@@ -79,9 +89,10 @@ test("M03/M06: admin navigation and table do not widen document", async ({ page,
     await menu.click();
     await expect(page.getByRole("dialog")).toBeVisible();
     if (page.viewportSize()!.width < 640) {
-      const theme = page.getByRole("dialog").getByRole("radio", { name: "Тёмная тема", exact: true });
+      await page.getByRole("dialog").getByRole("button", { name: "Тема оформления", exact: true }).click();
+      const theme = page.getByRole("radio", { name: "Тёмная тема", exact: true });
       await theme.click();
-      await expect(theme).toHaveAttribute("aria-checked", "true");
+      await expect(page.locator("html")).toHaveClass(/dark/);
     }
     await page.getByRole("dialog").getByRole("button", { name: "Закрыть", exact: true }).click();
     await expect(page.getByRole("dialog")).toBeHidden();
@@ -115,7 +126,7 @@ test("M04: filled recipe has compact metrics and working actions", async ({ page
     expect((await toolbar.locator("dl").boundingBox())!.height).toBeLessThanOrEqual(24);
   }
   for (let cycle = 0; cycle < 2; cycle++) {
-    if (page.viewportSize()!.width < 640) {
+    if (page.viewportSize()!.width < 768) {
       await toolbar.getByRole("button", { name: "Действия с рецептом", exact: true }).click();
       await page.getByRole("menuitem", { name: "Импорт / экспорт", exact: true }).click();
     } else {

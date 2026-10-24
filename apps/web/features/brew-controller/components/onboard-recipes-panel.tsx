@@ -90,7 +90,7 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
         code?: string;
       };
       if (res.status === 501 && body.code === "CLOUD_UNSUPPORTED") {
-        setUnsupported(body.error ?? "Список рецептов пивоварни недоступен по облаку");
+        setUnsupported(body.error ?? "Список рецептов пивоварни недоступен через облако");
         setSlots(null);
         return;
       }
@@ -163,7 +163,7 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
           code?: string;
         };
         if (res.status === 501 && body.code === "CLOUD_UNSUPPORTED") {
-          setPushError(body.error ?? "Недоступно по облаку");
+          setPushError(body.error ?? "Недоступно через облако");
           return;
         }
         if (!res.ok || typeof body.slot !== "number") {
@@ -244,7 +244,7 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
 
             {isFull ? (
               <label className="block text-xs font-medium text-muted-foreground">
-                Пивоварня заполнена — что заменить
+                Память рецептов заполнена. Выберите рецепт для замены.
                 <select
                   value={replaceSlot ?? ""}
                   onChange={(e) => {

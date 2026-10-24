@@ -1,0 +1,2563 @@
+{
+  "changes": [
+    {
+      "index": 342,
+      "file": "apps/web/components/equipment/equipment-profile-form-basic.tsx",
+      "line": 235,
+      "start": 7907,
+      "end": 7923,
+      "kind": "StringLiteral",
+      "text": "Испарение, л/ч",
+      "parent": "label=\"Испарение, л/ч\"",
+      "after": "Скорость выкипания, л/ч",
+      "group": "Скорость выкипания",
+      "reason": "Один параметр в л/ч: evaporationRateLPerHr в оборудовании и boilOffRateLPerHour в калькуляторах. Название согласовано с полем калькулятора разбавления.",
+      "displayBefore": "Испарение, л/ч",
+      "displayAfter": "Скорость выкипания, л/ч"
+    },
+    {
+      "index": 892,
+      "file": "apps/web/components/home/home-experience.tsx",
+      "line": 171,
+      "start": 17252,
+      "end": 17277,
+      "kind": "StringLiteral",
+      "text": "Испарение при кипячении",
+      "parent": "[\"Испарение при кипячении\", `${homeNumber(equipment.evaporationRateLPerHr)} л/ч`]",
+      "after": "Скорость выкипания",
+      "group": "Скорость выкипания",
+      "reason": "Один параметр в л/ч: evaporationRateLPerHr в оборудовании и boilOffRateLPerHour в калькуляторах. Название согласовано с полем калькулятора разбавления.",
+      "displayBefore": "Испарение при кипячении",
+      "displayAfter": "Скорость выкипания"
+    },
+    {
+      "index": 1334,
+      "file": "apps/web/app/(app)/app/equipment/page.tsx",
+      "line": 128,
+      "start": 5236,
+      "end": 5247,
+      "kind": "StringLiteral",
+      "text": "Испарение",
+      "parent": "label=\"Испарение\"",
+      "after": "Скорость выкипания",
+      "group": "Скорость выкипания",
+      "reason": "Один параметр в л/ч: evaporationRateLPerHr в оборудовании и boilOffRateLPerHour в калькуляторах. Название согласовано с полем калькулятора разбавления.",
+      "displayBefore": "Испарение",
+      "displayAfter": "Скорость выкипания"
+    },
+    {
+      "index": 6247,
+      "file": "apps/web/features/calculators/definitions.ts",
+      "line": 1367,
+      "start": 63487,
+      "end": 63498,
+      "kind": "StringLiteral",
+      "text": "Выкипание",
+      "parent": "numberField(\"boilOffRateLPerHour\", \"Выкипание\", \"л/ч\", {\n        min: 0,\n        visibleWhen: (state) => DILUTION_BOILOFF_RATE_MODES.has(s(state.mode, \"dilute_to_gravity\"))\n      })",
+      "after": "Скорость выкипания",
+      "group": "Скорость выкипания",
+      "reason": "Один параметр в л/ч: evaporationRateLPerHr в оборудовании и boilOffRateLPerHour в калькуляторах. Название согласовано с полем калькулятора разбавления.",
+      "displayBefore": "Выкипание",
+      "displayAfter": "Скорость выкипания"
+    },
+    {
+      "index": 6491,
+      "file": "apps/web/features/calculators/definitions.ts",
+      "line": 2457,
+      "start": 117469,
+      "end": 117480,
+      "kind": "StringLiteral",
+      "text": "Выкипание",
+      "parent": "numberField(\"boilOffRateLPerHour\", \"Выкипание\", \"л/ч\", {\n        min: 0,\n        step: 0.1,\n        helper: \"Обычно 3–5 л/ч — уточните по своим варкам\"\n      })",
+      "after": "Скорость выкипания",
+      "group": "Скорость выкипания",
+      "reason": "Один параметр в л/ч: evaporationRateLPerHr в оборудовании и boilOffRateLPerHour в калькуляторах. Название согласовано с полем калькулятора разбавления.",
+      "displayBefore": "Выкипание",
+      "displayAfter": "Скорость выкипания"
+    },
+    {
+      "index": 896,
+      "file": "apps/web/components/home/home-experience.tsx",
+      "line": 171,
+      "start": 17402,
+      "end": 17427,
+      "kind": "StringLiteral",
+      "text": "Поглощение воды солодом",
+      "parent": "[\"Поглощение воды солодом\", `${homeNumber(equipment.grainAbsorptionLPerKg)} л/кг`]",
+      "after": "Поглощение воды зерном",
+      "group": "Поглощение воды зерном",
+      "reason": "Во всех трёх местах используется grainAbsorptionLPerKg. Параметр относится ко всему зерну в заторе, включая несоложёное.",
+      "displayBefore": "Поглощение воды солодом",
+      "displayAfter": "Поглощение воды зерном"
+    },
+    {
+      "index": 2164,
+      "file": "apps/web/components/recipes/water-setup-wizard.tsx",
+      "line": 2688,
+      "start": 92510,
+      "end": 92556,
+      "kind": "JsxText",
+      "text": "Водопоглощение дробиной, л/кг",
+      "parent": "<label className=\"block text-xs font-medium text-muted-foreground\">\n                Водопоглощение дробиной, л/кг\n                <NumericInput\n                  min={0}\n                  max={5}\n                  step={0.05}\n                  value={\n                    effectiveWaterPlanMeta.grainAbsorptionLPerKg != null\n                      ? S",
+      "after": "Поглощение воды зерном, л/кг",
+      "group": "Поглощение воды зерном",
+      "reason": "Во всех трёх местах используется grainAbsorptionLPerKg. Параметр относится ко всему зерну в заторе, включая несоложёное.",
+      "displayBefore": "Водопоглощение дробиной, л/кг",
+      "displayAfter": "Поглощение воды зерном, л/кг"
+    },
+    {
+      "index": 2355,
+      "file": "apps/web/features/recipes/contracts.ts",
+      "line": 231,
+      "start": 12288,
+      "end": 12342,
+      "kind": "StringLiteral",
+      "text": "Водопоглощение дробиной не может быть меньше 0 л/кг.",
+      "parent": "numberField().min(0, \"Водопоглощение дробиной не может быть меньше 0 л/кг.\")",
+      "after": "Поглощение воды зерном не может быть меньше 0 л/кг.",
+      "group": "Поглощение воды зерном",
+      "reason": "Во всех трёх местах используется grainAbsorptionLPerKg. Параметр относится ко всему зерну в заторе, включая несоложёное.",
+      "displayBefore": "Водопоглощение дробиной не может быть меньше 0 л/кг.",
+      "displayAfter": "Поглощение воды зерном не может быть меньше 0 л/кг."
+    },
+    {
+      "index": 2356,
+      "file": "apps/web/features/recipes/contracts.ts",
+      "line": 231,
+      "start": 12351,
+      "end": 12405,
+      "kind": "StringLiteral",
+      "text": "Водопоглощение дробиной не может быть больше 5 л/кг.",
+      "parent": "numberField().min(0, \"Водопоглощение дробиной не может быть меньше 0 л/кг.\").max(5, \"Водопоглощение дробиной не может быть больше 5 л/кг.\")",
+      "after": "Поглощение воды зерном не может быть больше 5 л/кг.",
+      "group": "Поглощение воды зерном",
+      "reason": "Во всех трёх местах используется grainAbsorptionLPerKg. Параметр относится ко всему зерну в заторе, включая несоложёное.",
+      "displayBefore": "Водопоглощение дробиной не может быть больше 5 л/кг.",
+      "displayAfter": "Поглощение воды зерном не может быть больше 5 л/кг."
+    },
+    {
+      "index": 343,
+      "file": "apps/web/components/equipment/equipment-profile-form-basic.tsx",
+      "line": 236,
+      "start": 8085,
+      "end": 8117,
+      "kind": "StringLiteral",
+      "text": "Потери в котле / на чиллере, л",
+      "parent": "label=\"Потери в котле / на чиллере, л\"",
+      "after": "Потери на осадке и в чиллере, л",
+      "group": "Потери на осадке и в чиллере",
+      "reason": "Во всех местах показан trubChillerLossL. В калькуляторе отдельно есть kettleLossL — неснимаемый остаток в котле, поэтому одинаковое название двух разных потерь было неточным.",
+      "displayBefore": "Потери в котле / на чиллере, л",
+      "displayAfter": "Потери на осадке и в чиллере, л"
+    },
+    {
+      "index": 6499,
+      "file": "apps/web/features/calculators/definitions.ts",
+      "line": 2475,
+      "start": 118185,
+      "end": 118200,
+      "kind": "StringLiteral",
+      "text": "Осадок/чиллер",
+      "parent": "numberField(\"trubChillerLossL\", \"Осадок/чиллер\", \"л\", { min: 0, advanced: true, helper: \"Остаётся с хмелевым осадком и в чиллере после кипячения\" })",
+      "after": "Потери на осадке и в чиллере",
+      "group": "Потери на осадке и в чиллере",
+      "reason": "Во всех местах показан trubChillerLossL. В калькуляторе отдельно есть kettleLossL — неснимаемый остаток в котле, поэтому одинаковое название двух разных потерь было неточным.",
+      "displayBefore": "Осадок/чиллер",
+      "displayAfter": "Потери на осадке и в чиллере"
+    },
+    {
+      "index": 894,
+      "file": "apps/web/components/home/home-experience.tsx",
+      "line": 171,
+      "start": 17335,
+      "end": 17351,
+      "kind": "StringLiteral",
+      "text": "Потери в котле",
+      "parent": "[\"Потери в котле\", `${homeNumber(equipment.trubChillerLossL)} л`]",
+      "after": "Потери на осадке и в чиллере",
+      "group": "Потери на осадке и в чиллере",
+      "reason": "Во всех местах показан trubChillerLossL. В калькуляторе отдельно есть kettleLossL — неснимаемый остаток в котле, поэтому одинаковое название двух разных потерь было неточным.",
+      "displayBefore": "Потери в котле",
+      "displayAfter": "Потери на осадке и в чиллере"
+    },
+    {
+      "index": 5320,
+      "file": "apps/web/features/brew-controller/components/manual-control-card.tsx",
+      "line": 141,
+      "start": 5639,
+      "end": 5658,
+      "kind": "JsxText",
+      "text": "Целевая температура",
+      "parent": "<span className=\"text-muted-foreground\">Целевая температура</span>",
+      "after": "Заданная температура",
+      "group": "Заданная температура",
+      "reason": "Ползунок меняет setpointC. Использовано то же название, что в графике, профиле брожения и сообщении об изменении.",
+      "displayBefore": "Целевая температура",
+      "displayAfter": "Заданная температура"
+    },
+    {
+      "index": 5321,
+      "file": "apps/web/features/brew-controller/components/manual-control-card.tsx",
+      "line": 150,
+      "start": 5986,
+      "end": 6007,
+      "kind": "StringLiteral",
+      "text": "Целевая температура",
+      "parent": "ariaLabel=\"Целевая температура\"",
+      "after": "Заданная температура",
+      "group": "Заданная температура",
+      "reason": "Ползунок меняет setpointC. Использовано то же название, что в графике, профиле брожения и сообщении об изменении.",
+      "displayBefore": "Целевая температура",
+      "displayAfter": "Заданная температура"
+    },
+    {
+      "index": 3752,
+      "file": "apps/web/components/recipes/recipe-designer/ingredient-editor.tsx",
+      "line": 714,
+      "start": 33010,
+      "end": 33046,
+      "kind": "JsxText",
+      "text": "Этап добавления",
+      "parent": "<label className=\"space-y-1 text-xs font-medium text-foreground\">\n                    Этап добавления\n                    <input\n                      value={draft.stepMeta.stageLabel ?? \"\"}\n                      onChange={(event) => onChange({\n                        ...draft,\n                        stepMeta: {\n                          ...draft.",
+      "after": "Этап внесения",
+      "group": "Этап внесения",
+      "reason": "Один смысл — этап внесения ингредиента. Единая подпись для дрожжей, добавок и средств водоподготовки.",
+      "displayBefore": "Этап добавления",
+      "displayAfter": "Этап внесения"
+    },
+    {
+      "index": 3757,
+      "file": "apps/web/components/recipes/recipe-designer/ingredient-editor.tsx",
+      "line": 784,
+      "start": 36113,
+      "end": 36138,
+      "kind": "JsxText",
+      "text": "Стадия",
+      "parent": "<label className=\"space-y-1 text-xs font-medium text-foreground\">\n                  Стадия\n                  <select\n                    value={draft.stage}\n                    onChange={(event) => onChange({ ...draft, stage: event.target.value as DesignerIngredient[\"stage\"] })}\n                    className=\"h-10 w-full rounded-md border border-bo",
+      "after": "Этап внесения",
+      "group": "Этап внесения",
+      "reason": "Один смысл — этап внесения ингредиента. Единая подпись для дрожжей, добавок и средств водоподготовки.",
+      "displayBefore": "Стадия",
+      "displayAfter": "Этап внесения"
+    },
+    {
+      "index": 3760,
+      "file": "apps/web/components/recipes/recipe-designer/ingredient-editor.tsx",
+      "line": 819,
+      "start": 37740,
+      "end": 37757,
+      "kind": "JsxText",
+      "text": "Стадия добавления",
+      "parent": "<legend className=\"text-xs font-medium text-foreground\">Стадия добавления</legend>",
+      "after": "Этап внесения",
+      "group": "Этап внесения",
+      "reason": "Один смысл — этап внесения ингредиента. Единая подпись для дрожжей, добавок и средств водоподготовки.",
+      "displayBefore": "Стадия добавления",
+      "displayAfter": "Этап внесения"
+    },
+    {
+      "index": 1224,
+      "file": "apps/web/app/(admin)/admin/devices/[id]/page.tsx",
+      "line": 67,
+      "start": 2571,
+      "end": 2592,
+      "kind": "JsxText",
+      "text": "Стадия",
+      "parent": "<th scope=\"col\" className=\"pb-2 pr-3 font-medium\">\n                Стадия\n              </th>",
+      "after": "Этап",
+      "group": "Этап работы прибора",
+      "reason": "Один параметр stage: подпись на пульте, график этапов, подтверждение пропуска и сообщение об аварии. Термин согласован с уже существующим «Превышено время этапа».",
+      "displayBefore": "Стадия",
+      "displayAfter": "Этап"
+    },
+    {
+      "index": 5207,
+      "file": "apps/web/features/brew-controller/components/monitor-hero.tsx",
+      "line": 77,
+      "start": 3302,
+      "end": 3308,
+      "kind": "JsxText",
+      "text": "Стадия",
+      "parent": "<p className={kiosk ? \"text-base text-muted-foreground\" : \"text-sm text-muted-foreground\"}>Стадия</p>",
+      "after": "Этап",
+      "group": "Этап работы прибора",
+      "reason": "Один параметр stage: подпись на пульте, график этапов, подтверждение пропуска и сообщение об аварии. Термин согласован с уже существующим «Превышено время этапа».",
+      "displayBefore": "Стадия",
+      "displayAfter": "Этап"
+    },
+    {
+      "index": 5067,
+      "file": "apps/web/features/brew-controller/components/stage-timeline.tsx",
+      "line": 83,
+      "start": 3093,
+      "end": 3107,
+      "kind": "StringLiteral",
+      "text": "Стадии варки",
+      "parent": "brew: \"Стадии варки\"",
+      "after": "Этапы варки",
+      "group": "Этап работы прибора",
+      "reason": "Один параметр stage: подпись на пульте, график этапов, подтверждение пропуска и сообщение об аварии. Термин согласован с уже существующим «Превышено время этапа».",
+      "displayBefore": "Стадии варки",
+      "displayAfter": "Этапы варки"
+    },
+    {
+      "index": 5068,
+      "file": "apps/web/features/brew-controller/components/stage-timeline.tsx",
+      "line": 84,
+      "start": 3120,
+      "end": 3137,
+      "kind": "StringLiteral",
+      "text": "Стадии перегона",
+      "parent": "distill: \"Стадии перегона\"",
+      "after": "Этапы перегона",
+      "group": "Этап работы прибора",
+      "reason": "Один параметр stage: подпись на пульте, график этапов, подтверждение пропуска и сообщение об аварии. Термин согласован с уже существующим «Превышено время этапа».",
+      "displayBefore": "Стадии перегона",
+      "displayAfter": "Этапы перегона"
+    },
+    {
+      "index": 4961,
+      "file": "apps/web/features/brew-controller/faults.ts",
+      "line": 69,
+      "start": 2651,
+      "end": 2695,
+      "kind": "StringLiteral",
+      "text": "Стадия не завершилась за отведённое время.",
+      "parent": "cause: \"Стадия не завершилась за отведённое время.\"",
+      "after": "Этап не завершился за отведённое время.",
+      "group": "Этап работы прибора",
+      "reason": "Один параметр stage: подпись на пульте, график этапов, подтверждение пропуска и сообщение об аварии. Термин согласован с уже существующим «Превышено время этапа».",
+      "displayBefore": "Стадия не завершилась за отведённое время.",
+      "displayAfter": "Этап не завершился за отведённое время."
+    },
+    {
+      "index": 5270,
+      "file": "apps/web/features/brew-controller/components/live-dashboard-view.tsx",
+      "line": 212,
+      "start": 9014,
+      "end": 9038,
+      "kind": "StringLiteral",
+      "text": "Стадия будет пропущена",
+      "parent": "label: \"Стадия будет пропущена\"",
+      "after": "Этап будет пропущен",
+      "group": "Этап работы прибора",
+      "reason": "Один параметр stage: подпись на пульте, график этапов, подтверждение пропуска и сообщение об аварии. Термин согласован с уже существующим «Превышено время этапа».",
+      "displayBefore": "Стадия будет пропущена",
+      "displayAfter": "Этап будет пропущен"
+    },
+    {
+      "index": 5271,
+      "file": "apps/web/features/brew-controller/components/live-dashboard-view.tsx",
+      "line": 213,
+      "start": 9083,
+      "end": 9101,
+      "kind": "StringLiteral",
+      "text": "Стадия пропущена",
+      "parent": "r.ok ? \"Стадия пропущена\" : r.error ?? \"Не удалось пропустить стадию\"",
+      "after": "Этап пропущен",
+      "group": "Этап работы прибора",
+      "reason": "Один параметр stage: подпись на пульте, график этапов, подтверждение пропуска и сообщение об аварии. Термин согласован с уже существующим «Превышено время этапа».",
+      "displayBefore": "Стадия пропущена",
+      "displayAfter": "Этап пропущен"
+    },
+    {
+      "index": 5272,
+      "file": "apps/web/features/brew-controller/components/live-dashboard-view.tsx",
+      "line": 213,
+      "start": 9115,
+      "end": 9145,
+      "kind": "StringLiteral",
+      "text": "Не удалось пропустить стадию",
+      "parent": "r.error ?? \"Не удалось пропустить стадию\"",
+      "after": "Не удалось пропустить этап",
+      "group": "Этап работы прибора",
+      "reason": "Один параметр stage: подпись на пульте, график этапов, подтверждение пропуска и сообщение об аварии. Термин согласован с уже существующим «Превышено время этапа».",
+      "displayBefore": "Не удалось пропустить стадию",
+      "displayAfter": "Не удалось пропустить этап"
+    },
+    {
+      "index": 4986,
+      "file": "apps/web/features/brew-controller/telemetry-annotations.ts",
+      "line": 32,
+      "start": 1425,
+      "end": 1433,
+      "kind": "StringLiteral",
+      "text": "Мэшаут",
+      "parent": "[STAGE_NUM.MASH_OUT]: \"Мэшаут\"",
+      "after": "Мэш-аут",
+      "group": "Мэш-аут",
+      "reason": "Единое написание названия паузы на пульте, графике и в пояснении к этапу, как в калькуляторе затирания.",
+      "displayBefore": "Мэшаут",
+      "displayAfter": "Мэш-аут"
+    },
+    {
+      "index": 5027,
+      "file": "apps/web/features/brew-controller/stage-labels.ts",
+      "line": 19,
+      "start": 959,
+      "end": 967,
+      "kind": "StringLiteral",
+      "text": "Мэшаут",
+      "parent": "MASH_OUT: \"Мэшаут\"",
+      "after": "Мэш-аут",
+      "group": "Мэш-аут",
+      "reason": "Единое написание названия паузы на пульте, графике и в пояснении к этапу, как в калькуляторе затирания.",
+      "displayBefore": "Мэшаут",
+      "displayAfter": "Мэш-аут"
+    },
+    {
+      "index": 4918,
+      "file": "apps/web/features/brew-controller/stage-timeline.ts",
+      "line": 71,
+      "start": 2784,
+      "end": 2824,
+      "kind": "StringLiteral",
+      "text": "Засыпь, паузы затора, мэшаут, промывка",
+      "parent": "mash: \"Засыпь, паузы затора, мэшаут, промывка\"",
+      "after": "Засыпь, паузы затора, мэш-аут, промывка",
+      "group": "Мэш-аут",
+      "reason": "Единое написание названия паузы на пульте, графике и в пояснении к этапу, как в калькуляторе затирания.",
+      "displayBefore": "Засыпь, паузы затора, мэшаут, промывка",
+      "displayAfter": "Засыпь, паузы затора, мэш-аут, промывка"
+    },
+    {
+      "index": 8015,
+      "file": "apps/web/features/device-streams/components/batch-ferment-controls.tsx",
+      "line": 99,
+      "start": 4099,
+      "end": 4125,
+      "kind": "JsxText",
+      "text": "Подключить ареометр",
+      "parent": "<Button type=\"button\" variant=\"outline\" size=\"sm\" onClick={() => setOpen(true)}>\n        Подключить ареометр\n      </Button>",
+      "after": "Привязать ареометр к партии",
+      "group": "Привязать к партии",
+      "reason": "Оба диалога вызывают createFermentSessionAction: связывают уже подключённый прибор с партией. Уточнён объект действия в заголовках и кнопках.",
+      "displayBefore": "Подключить ареометр",
+      "displayAfter": "Привязать ареометр к партии"
+    },
+    {
+      "index": 8016,
+      "file": "apps/web/features/device-streams/components/batch-ferment-controls.tsx",
+      "line": 103,
+      "start": 4196,
+      "end": 4217,
+      "kind": "StringLiteral",
+      "text": "Подключить ареометр",
+      "parent": "title=\"Подключить ареометр\"",
+      "after": "Привязать ареометр к партии",
+      "group": "Привязать к партии",
+      "reason": "Оба диалога вызывают createFermentSessionAction: связывают уже подключённый прибор с партией. Уточнён объект действия в заголовках и кнопках.",
+      "displayBefore": "Подключить ареометр",
+      "displayAfter": "Привязать ареометр к партии"
+    },
+    {
+      "index": 1532,
+      "file": "apps/web/features/brew-batches/components/fermenter-binding-controls.tsx",
+      "line": 64,
+      "start": 2405,
+      "end": 2421,
+      "kind": "JsxText",
+      "text": "Привязать",
+      "parent": "<Button type=\"button\" variant=\"outline\" size=\"sm\" disabled={busy || !deviceId} onClick={() => void onBind()}>\n        {busy ? <Loader2 className=\"h-4 w-4 animate-spin\" aria-hidden /> : null}\n        Привязать\n      </Button>",
+      "after": "Привязать к партии",
+      "group": "Привязать к партии",
+      "reason": "Оба диалога вызывают createFermentSessionAction: связывают уже подключённый прибор с партией. Уточнён объект действия в заголовках и кнопках.",
+      "displayBefore": "Привязать",
+      "displayAfter": "Привязать к партии"
+    },
+    {
+      "index": 8097,
+      "file": "apps/web/features/device-streams/components/connect-device-dialog.tsx",
+      "line": 110,
+      "start": 4002,
+      "end": 4013,
+      "kind": "StringLiteral",
+      "text": "Привязать",
+      "parent": "pending ? \"Привязываем…\" : \"Привязать\"",
+      "after": "Привязать к партии",
+      "group": "Привязать к партии",
+      "reason": "Оба диалога вызывают createFermentSessionAction: связывают уже подключённый прибор с партией. Уточнён объект действия в заголовках и кнопках.",
+      "displayBefore": "Привязать",
+      "displayAfter": "Привязать к партии"
+    },
+    {
+      "index": 8243,
+      "file": "apps/web/features/device-streams/components/connect-batch-dialog.tsx",
+      "line": 121,
+      "start": 4224,
+      "end": 4235,
+      "kind": "StringLiteral",
+      "text": "Привязать",
+      "parent": "pending ? \"Привязываем…\" : \"Привязать\"",
+      "after": "Привязать к партии",
+      "group": "Привязать к партии",
+      "reason": "Оба диалога вызывают createFermentSessionAction: связывают уже подключённый прибор с партией. Уточнён объект действия в заголовках и кнопках.",
+      "displayBefore": "Привязать",
+      "displayAfter": "Привязать к партии"
+    },
+    {
+      "index": 8094,
+      "file": "apps/web/features/device-streams/components/connect-device-dialog.tsx",
+      "line": 67,
+      "start": 2593,
+      "end": 2615,
+      "kind": "LastTemplateToken",
+      "text": "» подключён к партии",
+      "parent": "result.session.deviceName}» подключён к партии`",
+      "after": "» привязано к партии",
+      "group": "Привязать к партии",
+      "reason": "Оба диалога вызывают createFermentSessionAction: связывают уже подключённый прибор с партией. Уточнён объект действия в заголовках и кнопках.",
+      "displayBefore": "«Пивной поплавок» подключён к партии",
+      "displayAfter": "Устройство «Пивной поплавок» привязано к партии"
+    },
+    {
+      "index": 8011,
+      "file": "apps/web/features/device-streams/components/batch-ferment-controls.tsx",
+      "line": 69,
+      "start": 3074,
+      "end": 3081,
+      "kind": "StringLiteral",
+      "text": "точка",
+      "parent": "[\"точка\", \"точки\", \"точек\"]",
+      "after": "показание",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+      "displayBefore": "1 точка · 2 точки · 5 точек",
+      "displayAfter": "1 показание · 2 показания · 5 показаний"
+    },
+    {
+      "index": 8038,
+      "file": "apps/web/features/device-streams/components/retro-attach-field.tsx",
+      "line": 52,
+      "start": 2170,
+      "end": 2177,
+      "kind": "StringLiteral",
+      "text": "точка",
+      "parent": "[\"точка\", \"точки\", \"точек\"]",
+      "after": "показание",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+      "displayBefore": "1 точка · 2 точки · 5 точек",
+      "displayAfter": "1 показание · 2 показания · 5 показаний"
+    },
+    {
+      "index": 8137,
+      "file": "apps/web/features/device-streams/components/stream-device-console.tsx",
+      "line": 496,
+      "start": 19078,
+      "end": 19085,
+      "kind": "StringLiteral",
+      "text": "точка",
+      "parent": "[\"точка\", \"точки\", \"точек\"]",
+      "after": "показание",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+      "displayBefore": "1 точка · 2 точки · 5 точек",
+      "displayAfter": "1 показание · 2 показания · 5 показаний"
+    },
+    {
+      "index": 8146,
+      "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+      "line": 84,
+      "start": 3883,
+      "end": 3890,
+      "kind": "StringLiteral",
+      "text": "точка",
+      "parent": "[\"точка\", \"точки\", \"точек\"]",
+      "after": "показание",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+      "displayBefore": "1 точка · 2 точки · 5 точек",
+      "displayAfter": "1 показание · 2 показания · 5 показаний"
+    },
+    {
+      "index": 8170,
+      "file": "apps/web/features/device-streams/components/device-ferment-panel.tsx",
+      "line": 118,
+      "start": 4916,
+      "end": 4923,
+      "kind": "StringLiteral",
+      "text": "точка",
+      "parent": "[\"точка\", \"точки\", \"точек\"]",
+      "after": "показание",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+      "displayBefore": "1 точка · 2 точки · 5 точек",
+      "displayAfter": "1 показание · 2 показания · 5 показаний"
+    },
+    {
+      "index": 8012,
+      "file": "apps/web/features/device-streams/components/batch-ferment-controls.tsx",
+      "line": 69,
+      "start": 3083,
+      "end": 3090,
+      "kind": "StringLiteral",
+      "text": "точки",
+      "parent": "[\"точка\", \"точки\", \"точек\"]",
+      "after": "показания",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях."
+    },
+    {
+      "index": 8039,
+      "file": "apps/web/features/device-streams/components/retro-attach-field.tsx",
+      "line": 52,
+      "start": 2179,
+      "end": 2186,
+      "kind": "StringLiteral",
+      "text": "точки",
+      "parent": "[\"точка\", \"точки\", \"точек\"]",
+      "after": "показания",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях."
+    },
+    {
+      "index": 8138,
+      "file": "apps/web/features/device-streams/components/stream-device-console.tsx",
+      "line": 496,
+      "start": 19087,
+      "end": 19094,
+      "kind": "StringLiteral",
+      "text": "точки",
+      "parent": "[\"точка\", \"точки\", \"точек\"]",
+      "after": "показания",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях."
+    },
+    {
+      "index": 8147,
+      "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+      "line": 84,
+      "start": 3892,
+      "end": 3899,
+      "kind": "StringLiteral",
+      "text": "точки",
+      "parent": "[\"точка\", \"точки\", \"точек\"]",
+      "after": "показания",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях."
+    },
+    {
+      "index": 8171,
+      "file": "apps/web/features/device-streams/components/device-ferment-panel.tsx",
+      "line": 118,
+      "start": 4925,
+      "end": 4932,
+      "kind": "StringLiteral",
+      "text": "точки",
+      "parent": "[\"точка\", \"точки\", \"точек\"]",
+      "after": "показания",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях."
+    },
+    {
+      "index": 8013,
+      "file": "apps/web/features/device-streams/components/batch-ferment-controls.tsx",
+      "line": 69,
+      "start": 3092,
+      "end": 3099,
+      "kind": "StringLiteral",
+      "text": "точек",
+      "parent": "[\"точка\", \"точки\", \"точек\"]",
+      "after": "показаний",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях."
+    },
+    {
+      "index": 8040,
+      "file": "apps/web/features/device-streams/components/retro-attach-field.tsx",
+      "line": 52,
+      "start": 2188,
+      "end": 2195,
+      "kind": "StringLiteral",
+      "text": "точек",
+      "parent": "[\"точка\", \"точки\", \"точек\"]",
+      "after": "показаний",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях."
+    },
+    {
+      "index": 8139,
+      "file": "apps/web/features/device-streams/components/stream-device-console.tsx",
+      "line": 496,
+      "start": 19096,
+      "end": 19103,
+      "kind": "StringLiteral",
+      "text": "точек",
+      "parent": "[\"точка\", \"точки\", \"точек\"]",
+      "after": "показаний",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях."
+    },
+    {
+      "index": 8148,
+      "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+      "line": 84,
+      "start": 3901,
+      "end": 3908,
+      "kind": "StringLiteral",
+      "text": "точек",
+      "parent": "[\"точка\", \"точки\", \"точек\"]",
+      "after": "показаний",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях."
+    },
+    {
+      "index": 8172,
+      "file": "apps/web/features/device-streams/components/device-ferment-panel.tsx",
+      "line": 118,
+      "start": 4934,
+      "end": 4941,
+      "kind": "StringLiteral",
+      "text": "точек",
+      "parent": "[\"точка\", \"точки\", \"точек\"]",
+      "after": "показаний",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях."
+    },
+    {
+      "index": 8079,
+      "file": "apps/web/features/device-streams/components/session-bounds-control.tsx",
+      "line": 70,
+      "start": 2738,
+      "end": 2749,
+      "kind": "StringLiteral",
+      "text": "измерение",
+      "parent": "[\"измерение\", \"измерения\", \"измерений\"]",
+      "after": "показание",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+      "displayBefore": "Из сеанса исключено 3 измерения",
+      "displayAfter": "Из сеанса исключено 3 показания"
+    },
+    {
+      "index": 8080,
+      "file": "apps/web/features/device-streams/components/session-bounds-control.tsx",
+      "line": 70,
+      "start": 2751,
+      "end": 2762,
+      "kind": "StringLiteral",
+      "text": "измерения",
+      "parent": "[\"измерение\", \"измерения\", \"измерений\"]",
+      "after": "показания",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях."
+    },
+    {
+      "index": 8081,
+      "file": "apps/web/features/device-streams/components/session-bounds-control.tsx",
+      "line": 70,
+      "start": 2764,
+      "end": 2775,
+      "kind": "StringLiteral",
+      "text": "измерений",
+      "parent": "[\"измерение\", \"измерения\", \"измерений\"]",
+      "after": "показаний",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях."
+    },
+    {
+      "index": 8149,
+      "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+      "line": 122,
+      "start": 5668,
+      "end": 5703,
+      "kind": "StringLiteral",
+      "text": "Не удалось исключить часть точек.",
+      "parent": "outcome.firstErrorMessage ?? \"Не удалось исключить часть точек.\"",
+      "after": "Не удалось исключить часть показаний.",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+      "displayBefore": "Не удалось исключить часть точек.",
+      "displayAfter": "Не удалось исключить часть показаний."
+    },
+    {
+      "index": 8151,
+      "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+      "line": 147,
+      "start": 6624,
+      "end": 6657,
+      "kind": "StringLiteral",
+      "text": "Не удалось вернуть часть точек.",
+      "parent": "outcome.firstErrorMessage ?? \"Не удалось вернуть часть точек.\"",
+      "after": "Не удалось вернуть часть показаний.",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+      "displayBefore": "Не удалось вернуть часть точек.",
+      "displayAfter": "Не удалось вернуть часть показаний."
+    },
+    {
+      "index": 8153,
+      "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+      "line": 173,
+      "start": 7595,
+      "end": 7642,
+      "kind": "StringLiteral",
+      "text": "Не удалось удалить точки. Попробуйте ещё раз.",
+      "parent": "outcome.firstErrorMessage ?? \"Не удалось удалить точки. Попробуйте ещё раз.\"",
+      "after": "Не удалось удалить показания. Попробуйте ещё раз.",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+      "displayBefore": "Не удалось удалить точки. Попробуйте ещё раз.",
+      "displayAfter": "Не удалось удалить показания. Попробуйте ещё раз."
+    },
+    {
+      "index": 8154,
+      "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+      "line": 176,
+      "start": 7742,
+      "end": 7775,
+      "kind": "StringLiteral",
+      "text": "Часть точек не удалось удалить.",
+      "parent": "outcome.firstErrorMessage ?? \"Часть точек не удалось удалить.\"",
+      "after": "Часть показаний не удалось удалить.",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+      "displayBefore": "Часть точек не удалось удалить.",
+      "displayAfter": "Часть показаний не удалось удалить."
+    },
+    {
+      "index": 8157,
+      "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+      "line": 204,
+      "start": 8879,
+      "end": 8896,
+      "kind": "JsxText",
+      "text": "Исключить точки (",
+      "parent": "<Button type=\"button\" variant=\"outline\" size=\"sm\" onClick={() => void excludeRange()} disabled={pending}>\n              {pending ? <Loader2 className=\"h-4 w-4 animate-spin\" aria-hidden /> : null}\n              Исключить точки ({stats.excludable})\n            </Button>",
+      "after": "Исключить показания (",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+      "displayBefore": "Исключить точки (3)",
+      "displayAfter": "Исключить показания (3)"
+    },
+    {
+      "index": 8158,
+      "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+      "line": 210,
+      "start": 9214,
+      "end": 9229,
+      "kind": "JsxText",
+      "text": "Вернуть точки (",
+      "parent": "<Button type=\"button\" variant=\"outline\" size=\"sm\" onClick={() => void restoreRange()} disabled={pending}>\n              {pending ? <Loader2 className=\"h-4 w-4 animate-spin\" aria-hidden /> : null}\n              Вернуть точки ({stats.excluded})\n            </Button>",
+      "after": "Вернуть показания (",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+      "displayBefore": "Вернуть точки (3)",
+      "displayAfter": "Вернуть показания (3)"
+    },
+    {
+      "index": 8159,
+      "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+      "line": 214,
+      "start": 9423,
+      "end": 9438,
+      "kind": "JsxText",
+      "text": "Удалить точки (",
+      "parent": "<Button type=\"button\" variant=\"dangerOutline\" size=\"sm\" onClick={() => setDeleteOpen(true)} disabled={pending}>\n            Удалить точки ({stats.total})\n          </Button>",
+      "after": "Удалить показания (",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+      "displayBefore": "Удалить точки (3)",
+      "displayAfter": "Удалить показания (3)"
+    },
+    {
+      "index": 8161,
+      "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+      "line": 222,
+      "start": 9659,
+      "end": 9756,
+      "kind": "StringLiteral",
+      "text": "Точки будут удалены безвозвратно. График и оценка состояния брожения будут пересчитаны без них.",
+      "parent": "description=\"Точки будут удалены безвозвратно. График и оценка состояния брожения будут пересчитаны без них.\"",
+      "after": "Показания будут удалены безвозвратно. График и оценка состояния брожения будут пересчитаны без них.",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+      "displayBefore": "Точки будут удалены безвозвратно. График и оценка состояния брожения будут пересчитаны без них.",
+      "displayAfter": "Показания будут удалены безвозвратно. График и оценка состояния брожения будут пересчитаны без них."
+    },
+    {
+      "index": 8279,
+      "file": "apps/web/features/device-streams/actions.ts",
+      "line": 401,
+      "start": 15389,
+      "end": 15460,
+      "kind": "StringLiteral",
+      "text": "Недостаточно показаний устройства для оценки (нужно минимум 3 точки).",
+      "parent": "CURVE_INSUFFICIENT_POINTS: \"Недостаточно показаний устройства для оценки (нужно минимум 3 точки).\"",
+      "after": "Недостаточно показаний устройства для оценки (нужно минимум 3 показания).",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+      "displayBefore": "Недостаточно показаний устройства для оценки (нужно минимум 3 точки).",
+      "displayAfter": "Недостаточно показаний устройства для оценки (нужно минимум 3 показания)."
+    },
+    {
+      "index": 8034,
+      "file": "apps/web/features/device-streams/components/rapt-integration-card.tsx",
+      "line": 124,
+      "start": 4993,
+      "end": 5077,
+      "kind": "LastTemplateToken",
+      "text": "— они просто перестанут получать новые точки, пока вы не настроите вебхук заново.",
+      "parent": "deviceCount > 0 ? ` (${deviceCount} ${pluralize(deviceCount, [\"устройство\", \"устройства\", \"устройств\"])})` : \"\"\n        } — они просто перестанут получать новые точки, пока вы не настроите вебхук заново.`",
+      "after": "— новые показания не будут поступать, пока вы не настроите вебхук заново.",
+      "group": "Показания прибора",
+      "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+      "displayBefore": "Устройства и накопленные данные останутся (2 устройства) — они просто перестанут получать новые точки, пока вы не настроите вебхук заново.",
+      "displayAfter": "Устройства и накопленные данные останутся (2 устройства) — новые показания не будут поступать, пока вы не настроите вебхук заново."
+    },
+    {
+      "index": 1119,
+      "file": "apps/web/features/devices/components/devices-manager.tsx",
+      "line": 483,
+      "start": 21596,
+      "end": 21608,
+      "kind": "StringLiteral",
+      "text": "Копировать",
+      "parent": "copied ? \"Скопировано\" : \"Копировать\"",
+      "after": "Скопировать токен",
+      "group": "Скопировать",
+      "reason": "Приведены к одной форме глагола кнопки, которые записывают данные в буфер обмена; объект копирования указан явно.",
+      "displayBefore": "Копировать",
+      "displayAfter": "Скопировать токен"
+    },
+    {
+      "index": 3397,
+      "file": "apps/web/components/recipes/import-export-modal.tsx",
+      "line": 569,
+      "start": 24369,
+      "end": 24396,
+      "kind": "JsxText",
+      "text": "Копировать",
+      "parent": "<button\n                  type=\"button\"\n                  disabled={!beerXmlExport}\n                  onClick={() => void navigator.clipboard?.writeText(beerXmlExport)}\n                  className=\"rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground disabled:opacity-50\"\n                >\n                  Копировать\n          ",
+      "after": "Скопировать BeerXML",
+      "group": "Скопировать",
+      "reason": "Приведены к одной форме глагола кнопки, которые записывают данные в буфер обмена; объект копирования указан явно.",
+      "displayBefore": "Копировать",
+      "displayAfter": "Скопировать BeerXML"
+    },
+    {
+      "index": 3398,
+      "file": "apps/web/components/recipes/import-export-modal.tsx",
+      "line": 576,
+      "start": 24788,
+      "end": 24812,
+      "kind": "JsxText",
+      "text": "Скачать",
+      "parent": "<a\n                  href={beerXmlExport ? `data:text/xml;charset=utf-8,${encodeURIComponent(beerXmlExport)}` : undefined}\n                  download=\"recipe.beerxml\"\n                  className={`rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground ${beerXmlExport ? \"\" : \"pointer-events-none opacity-50\"}`}\n                >\n  ",
+      "after": "Скачать BeerXML",
+      "group": "Скопировать",
+      "reason": "Кнопка рядом с «Скопировать BeerXML» скачивает тот же экспорт в файл.",
+      "displayBefore": "Скачать",
+      "displayAfter": "Скачать BeerXML"
+    },
+    {
+      "index": 1118,
+      "file": "apps/web/features/devices/components/devices-manager.tsx",
+      "line": 483,
+      "start": 21580,
+      "end": 21593,
+      "kind": "StringLiteral",
+      "text": "Скопировано",
+      "parent": "copied ? \"Скопировано\" : \"Копировать\"",
+      "after": "Токен скопирован",
+      "group": "Скопировать",
+      "reason": "Приведены к одной форме глагола кнопки, которые записывают данные в буфер обмена; объект копирования указан явно.",
+      "displayBefore": "Скопировано",
+      "displayAfter": "Токен скопирован"
+    },
+    {
+      "index": 8022,
+      "file": "apps/web/features/device-streams/components/rapt-integration-card.tsx",
+      "line": 94,
+      "start": 3832,
+      "end": 3849,
+      "kind": "StringLiteral",
+      "text": "Скопировать URL",
+      "parent": "copied ? \"Скопировано\" : \"Скопировать URL\"",
+      "after": "Скопировать адрес",
+      "group": "Адрес подключения",
+      "reason": "Один и тот же веб-адрес для отправки показаний. Его название согласовано в карточке подключения, инструкции и кнопках.",
+      "displayBefore": "Скопировать URL",
+      "displayAfter": "Скопировать адрес"
+    },
+    {
+      "index": 8117,
+      "file": "apps/web/features/device-streams/components/stream-device-console.tsx",
+      "line": 368,
+      "start": 14207,
+      "end": 14220,
+      "kind": "StringLiteral",
+      "text": "Скопировать",
+      "parent": "copied ? \"Скопировано\" : \"Скопировать\"",
+      "after": "Скопировать адрес",
+      "group": "Адрес подключения",
+      "reason": "Один и тот же веб-адрес для отправки показаний. Его название согласовано в карточке подключения, инструкции и кнопках.",
+      "displayBefore": "Скопировать",
+      "displayAfter": "Скопировать адрес"
+    },
+    {
+      "index": 8196,
+      "file": "apps/web/features/device-streams/components/rapt-connect-screen.tsx",
+      "line": 193,
+      "start": 8563,
+      "end": 8576,
+      "kind": "StringLiteral",
+      "text": "Скопировать",
+      "parent": "copiedUrl ? \"Скопировано\" : \"Скопировать\"",
+      "after": "Скопировать адрес",
+      "group": "Адрес подключения",
+      "reason": "Один и тот же веб-адрес для отправки показаний. Его название согласовано в карточке подключения, инструкции и кнопках.",
+      "displayBefore": "Скопировать",
+      "displayAfter": "Скопировать адрес"
+    },
+    {
+      "index": 8115,
+      "file": "apps/web/features/device-streams/components/stream-device-console.tsx",
+      "line": 357,
+      "start": 13701,
+      "end": 13730,
+      "kind": "JsxText",
+      "text": "Показать URL",
+      "parent": "<Button variant=\"outline\" size=\"sm\" onClick={() => setUrlExpanded(true)}>\n                  Показать URL\n                </Button>",
+      "after": "Показать адрес",
+      "group": "Адрес подключения",
+      "reason": "Один и тот же веб-адрес для отправки показаний. Его название согласовано в карточке подключения, инструкции и кнопках.",
+      "displayBefore": "Показать URL",
+      "displayAfter": "Показать адрес"
+    },
+    {
+      "index": 8194,
+      "file": "apps/web/features/device-streams/components/rapt-connect-screen.tsx",
+      "line": 187,
+      "start": 8194,
+      "end": 8205,
+      "kind": "JsxText",
+      "text": "URL вебхука",
+      "parent": "<p className=\"text-xs font-medium text-muted-foreground\">URL вебхука</p>",
+      "after": "Адрес подключения",
+      "group": "Адрес подключения",
+      "reason": "Один и тот же веб-адрес для отправки показаний. Его название согласовано в карточке подключения, инструкции и кнопках.",
+      "displayBefore": "URL вебхука",
+      "displayAfter": "Адрес подключения"
+    },
+    {
+      "index": 8021,
+      "file": "apps/web/features/device-streams/components/rapt-integration-card.tsx",
+      "line": 94,
+      "start": 3816,
+      "end": 3829,
+      "kind": "StringLiteral",
+      "text": "Скопировано",
+      "parent": "copied ? \"Скопировано\" : \"Скопировать URL\"",
+      "after": "Адрес скопирован",
+      "group": "Адрес подключения",
+      "reason": "Один и тот же веб-адрес для отправки показаний. Его название согласовано в карточке подключения, инструкции и кнопках.",
+      "displayBefore": "Скопировано",
+      "displayAfter": "Адрес скопирован"
+    },
+    {
+      "index": 8116,
+      "file": "apps/web/features/device-streams/components/stream-device-console.tsx",
+      "line": 368,
+      "start": 14191,
+      "end": 14204,
+      "kind": "StringLiteral",
+      "text": "Скопировано",
+      "parent": "copied ? \"Скопировано\" : \"Скопировать\"",
+      "after": "Адрес скопирован",
+      "group": "Адрес подключения",
+      "reason": "Один и тот же веб-адрес для отправки показаний. Его название согласовано в карточке подключения, инструкции и кнопках.",
+      "displayBefore": "Скопировано",
+      "displayAfter": "Адрес скопирован"
+    },
+    {
+      "index": 8195,
+      "file": "apps/web/features/device-streams/components/rapt-connect-screen.tsx",
+      "line": 193,
+      "start": 8547,
+      "end": 8560,
+      "kind": "StringLiteral",
+      "text": "Скопировано",
+      "parent": "copiedUrl ? \"Скопировано\" : \"Скопировать\"",
+      "after": "Адрес скопирован",
+      "group": "Адрес подключения",
+      "reason": "Один и тот же веб-адрес для отправки показаний. Его название согласовано в карточке подключения, инструкции и кнопках.",
+      "displayBefore": "Скопировано",
+      "displayAfter": "Адрес скопирован"
+    },
+    {
+      "index": 8200,
+      "file": "apps/web/features/device-streams/components/rapt-connect-screen.tsx",
+      "line": 217,
+      "start": 9639,
+      "end": 9652,
+      "kind": "StringLiteral",
+      "text": "Скопировано",
+      "parent": "copiedTemplate ? \"Скопировано\" : \"Скопировать шаблон\"",
+      "after": "Шаблон скопирован",
+      "group": "Скопировать шаблон",
+      "reason": "Сообщение об успехе называет тот же объект, что кнопка «Скопировать шаблон».",
+      "displayBefore": "Скопировано",
+      "displayAfter": "Шаблон скопирован"
+    },
+    {
+      "index": 1060,
+      "file": "apps/web/features/devices/components/device-config-form.tsx",
+      "line": 418,
+      "start": 15157,
+      "end": 15170,
+      "kind": "StringLiteral",
+      "text": "Сохранение…",
+      "parent": "saving ? \"Сохранение…\" : \"Сохранить на устройстве\"",
+      "after": "Сохраняем…",
+      "group": "Состояние сохранения",
+      "reason": "Единая подпись на время сохранения формы: «Сохраняем…», как в оборудовании, модерации и настройках сеансов.",
+      "displayBefore": "Сохранение…",
+      "displayAfter": "Сохраняем…"
+    },
+    {
+      "index": 1070,
+      "file": "apps/web/features/devices/components/device-config-form.tsx",
+      "line": 468,
+      "start": 17132,
+      "end": 17145,
+      "kind": "StringLiteral",
+      "text": "Сохранение…",
+      "parent": "profileBusy ? \"Сохранение…\" : \"Сохранить профиль\"",
+      "after": "Сохраняем…",
+      "group": "Состояние сохранения",
+      "reason": "Единая подпись на время сохранения формы: «Сохраняем…», как в оборудовании, модерации и настройках сеансов.",
+      "displayBefore": "Сохранение…",
+      "displayAfter": "Сохраняем…"
+    },
+    {
+      "index": 3638,
+      "file": "apps/web/components/recipes/recipe-designer/recipe-designer.tsx",
+      "line": 1403,
+      "start": 58077,
+      "end": 58090,
+      "kind": "StringLiteral",
+      "text": "Сохранение…",
+      "parent": "label: \"Сохранение…\"",
+      "after": "Сохраняем…",
+      "group": "Состояние сохранения",
+      "reason": "Единая подпись на время сохранения формы: «Сохраняем…», как в оборудовании, модерации и настройках сеансов.",
+      "displayBefore": "Сохранение…",
+      "displayAfter": "Сохраняем…"
+    },
+    {
+      "index": 5238,
+      "file": "apps/web/features/brew-controller/components/ferment-profile-editor.tsx",
+      "line": 160,
+      "start": 6720,
+      "end": 6733,
+      "kind": "StringLiteral",
+      "text": "Сохранение…",
+      "parent": "saving ? \"Сохранение…\" : \"Сохранить профиль\"",
+      "after": "Сохраняем…",
+      "group": "Состояние сохранения",
+      "reason": "Единая подпись на время сохранения формы: «Сохраняем…», как в оборудовании, модерации и настройках сеансов.",
+      "displayBefore": "Сохранение…",
+      "displayAfter": "Сохраняем…"
+    },
+    {
+      "index": 5246,
+      "file": "apps/web/features/brew-controller/components/ferment-profile-card.tsx",
+      "line": 117,
+      "start": 4764,
+      "end": 4777,
+      "kind": "StringLiteral",
+      "text": "Сохранение…",
+      "parent": "savingSetpoint ? \"Сохранение…\" : \"Сохранить\"",
+      "after": "Сохраняем…",
+      "group": "Состояние сохранения",
+      "reason": "Единая подпись на время сохранения формы: «Сохраняем…», как в оборудовании, модерации и настройках сеансов.",
+      "displayBefore": "Сохранение…",
+      "displayAfter": "Сохраняем…"
+    },
+    {
+      "index": 603,
+      "file": "apps/web/components/inventory/custom-ingredient-form.tsx",
+      "line": 958,
+      "start": 36364,
+      "end": 36379,
+      "kind": "StringLiteral",
+      "text": "Сохранение...",
+      "parent": "pending ? \"Сохранение...\" : resolvedSubmitLabel",
+      "after": "Сохраняем…",
+      "group": "Состояние сохранения",
+      "reason": "Единая подпись на время сохранения формы: «Сохраняем…», как в оборудовании, модерации и настройках сеансов.",
+      "displayBefore": "Сохранение...",
+      "displayAfter": "Сохраняем…"
+    },
+    {
+      "index": 690,
+      "file": "apps/web/components/inventory/catalog-ingredient-form.tsx",
+      "line": 1545,
+      "start": 56866,
+      "end": 56881,
+      "kind": "StringLiteral",
+      "text": "Сохранение...",
+      "parent": "pending ? \"Сохранение...\" : derivedVariantPresentation.submitLabel",
+      "after": "Сохраняем…",
+      "group": "Состояние сохранения",
+      "reason": "Единая подпись на время сохранения формы: «Сохраняем…», как в оборудовании, модерации и настройках сеансов.",
+      "displayBefore": "Сохранение...",
+      "displayAfter": "Сохраняем…"
+    },
+    {
+      "index": 449,
+      "file": "apps/web/components/inventory/inventory-item-details-editor.tsx",
+      "line": 1066,
+      "start": 49265,
+      "end": 49279,
+      "kind": "StringLiteral",
+      "text": "Сохраняем...",
+      "parent": "isPending ? \"Сохраняем...\" : \"Сохранить\"",
+      "after": "Сохраняем…",
+      "group": "Состояние сохранения",
+      "reason": "Единая подпись на время сохранения формы: «Сохраняем…», как в оборудовании, модерации и настройках сеансов.",
+      "displayBefore": "Сохраняем...",
+      "displayAfter": "Сохраняем…"
+    },
+    {
+      "index": 509,
+      "file": "apps/web/components/inventory/inventory-consume-control.tsx",
+      "line": 271,
+      "start": 9624,
+      "end": 9638,
+      "kind": "StringLiteral",
+      "text": "Сохраняем...",
+      "parent": "isPending ? \"Сохраняем...\" : isConsume ? \"Списать\" : \"Пополнить\"",
+      "after": "Сохраняем…",
+      "group": "Состояние сохранения",
+      "reason": "Единая подпись на время сохранения формы: «Сохраняем…», как в оборудовании, модерации и настройках сеансов.",
+      "displayBefore": "Сохраняем...",
+      "displayAfter": "Сохраняем…"
+    },
+    {
+      "index": 4005,
+      "file": "apps/web/components/ingredients/admin-ingredient-form.tsx",
+      "line": 661,
+      "start": 25182,
+      "end": 25196,
+      "kind": "StringLiteral",
+      "text": "Сохраняем...",
+      "parent": "isSubmitting ? \"Сохраняем...\" : initial?.id ? \"Сохранить\" : \"Создать\"",
+      "after": "Сохраняем…",
+      "group": "Состояние сохранения",
+      "reason": "Единая подпись на время сохранения формы: «Сохраняем…», как в оборудовании, модерации и настройках сеансов.",
+      "displayBefore": "Сохраняем...",
+      "displayAfter": "Сохраняем…"
+    },
+    {
+      "index": 4181,
+      "file": "apps/web/components/ingredients/custom-catalog-ingredient-form.tsx",
+      "line": 909,
+      "start": 39220,
+      "end": 39234,
+      "kind": "StringLiteral",
+      "text": "Сохраняем...",
+      "parent": "isPending ? \"Сохраняем...\" : submitLabel",
+      "after": "Сохраняем…",
+      "group": "Состояние сохранения",
+      "reason": "Единая подпись на время сохранения формы: «Сохраняем…», как в оборудовании, модерации и настройках сеансов.",
+      "displayBefore": "Сохраняем...",
+      "displayAfter": "Сохраняем…"
+    },
+    {
+      "index": 4196,
+      "file": "apps/web/components/ingredients/ingredient-purchase-links-manager.tsx",
+      "line": 375,
+      "start": 11791,
+      "end": 11805,
+      "kind": "StringLiteral",
+      "text": "Сохраняем...",
+      "parent": "isPending ? \"Сохраняем...\" : \"Сохранить\"",
+      "after": "Сохраняем…",
+      "group": "Состояние сохранения",
+      "reason": "Единая подпись на время сохранения формы: «Сохраняем…», как в оборудовании, модерации и настройках сеансов.",
+      "displayBefore": "Сохраняем...",
+      "displayAfter": "Сохраняем…"
+    },
+    {
+      "index": 4203,
+      "file": "apps/web/components/ingredients/ingredient-purchase-links-manager.tsx",
+      "line": 448,
+      "start": 15225,
+      "end": 15239,
+      "kind": "StringLiteral",
+      "text": "Сохраняем...",
+      "parent": "isPending ? \"Сохраняем...\" : \"Добавить\"",
+      "after": "Сохраняем…",
+      "group": "Состояние сохранения",
+      "reason": "Единая подпись на время сохранения формы: «Сохраняем…», как в оборудовании, модерации и настройках сеансов.",
+      "displayBefore": "Сохраняем...",
+      "displayAfter": "Сохраняем…"
+    },
+    {
+      "index": 7513,
+      "file": "apps/web/components/calculators/calculator-favorite-toggle.tsx",
+      "line": 73,
+      "start": 2199,
+      "end": 2212,
+      "kind": "StringLiteral",
+      "text": "В избранное",
+      "parent": "isFavorite ? \"Убрать из избранного\" : \"В избранное\"",
+      "after": "Добавить в избранное",
+      "group": "Избранное",
+      "reason": "Название действия согласовано со звёздочками в каталоге ингредиентов.",
+      "displayBefore": "В избранное",
+      "displayAfter": "Добавить в избранное"
+    },
+    {
+      "file": "apps/web/features/device-streams/components/connect-device-dialog.tsx",
+      "line": 67,
+      "text": "«",
+      "after": "Устройство «",
+      "group": "Привязать к партии",
+      "reason": "Слово «Устройство» обеспечивает согласование «привязано» независимо от названия прибора.",
+      "kind": "TemplateHead"
+    }
+  ],
+  "groups": {
+    "Скорость выкипания": [
+      {
+        "index": 342,
+        "file": "apps/web/components/equipment/equipment-profile-form-basic.tsx",
+        "line": 235,
+        "start": 7907,
+        "end": 7923,
+        "kind": "StringLiteral",
+        "text": "Испарение, л/ч",
+        "parent": "label=\"Испарение, л/ч\"",
+        "after": "Скорость выкипания, л/ч",
+        "group": "Скорость выкипания",
+        "reason": "Один параметр в л/ч: evaporationRateLPerHr в оборудовании и boilOffRateLPerHour в калькуляторах. Название согласовано с полем калькулятора разбавления.",
+        "displayBefore": "Испарение, л/ч",
+        "displayAfter": "Скорость выкипания, л/ч",
+        "locations": [
+          {
+            "file": "apps/web/components/equipment/equipment-profile-form-basic.tsx",
+            "line": 235
+          }
+        ]
+      },
+      {
+        "index": 892,
+        "file": "apps/web/components/home/home-experience.tsx",
+        "line": 171,
+        "start": 17252,
+        "end": 17277,
+        "kind": "StringLiteral",
+        "text": "Испарение при кипячении",
+        "parent": "[\"Испарение при кипячении\", `${homeNumber(equipment.evaporationRateLPerHr)} л/ч`]",
+        "after": "Скорость выкипания",
+        "group": "Скорость выкипания",
+        "reason": "Один параметр в л/ч: evaporationRateLPerHr в оборудовании и boilOffRateLPerHour в калькуляторах. Название согласовано с полем калькулятора разбавления.",
+        "displayBefore": "Испарение при кипячении",
+        "displayAfter": "Скорость выкипания",
+        "locations": [
+          {
+            "file": "apps/web/components/home/home-experience.tsx",
+            "line": 171
+          }
+        ]
+      },
+      {
+        "index": 1334,
+        "file": "apps/web/app/(app)/app/equipment/page.tsx",
+        "line": 128,
+        "start": 5236,
+        "end": 5247,
+        "kind": "StringLiteral",
+        "text": "Испарение",
+        "parent": "label=\"Испарение\"",
+        "after": "Скорость выкипания",
+        "group": "Скорость выкипания",
+        "reason": "Один параметр в л/ч: evaporationRateLPerHr в оборудовании и boilOffRateLPerHour в калькуляторах. Название согласовано с полем калькулятора разбавления.",
+        "displayBefore": "Испарение",
+        "displayAfter": "Скорость выкипания",
+        "locations": [
+          {
+            "file": "apps/web/app/(app)/app/equipment/page.tsx",
+            "line": 128
+          }
+        ]
+      },
+      {
+        "index": 6247,
+        "file": "apps/web/features/calculators/definitions.ts",
+        "line": 1367,
+        "start": 63487,
+        "end": 63498,
+        "kind": "StringLiteral",
+        "text": "Выкипание",
+        "parent": "numberField(\"boilOffRateLPerHour\", \"Выкипание\", \"л/ч\", {\n        min: 0,\n        visibleWhen: (state) => DILUTION_BOILOFF_RATE_MODES.has(s(state.mode, \"dilute_to_gravity\"))\n      })",
+        "after": "Скорость выкипания",
+        "group": "Скорость выкипания",
+        "reason": "Один параметр в л/ч: evaporationRateLPerHr в оборудовании и boilOffRateLPerHour в калькуляторах. Название согласовано с полем калькулятора разбавления.",
+        "displayBefore": "Выкипание",
+        "displayAfter": "Скорость выкипания",
+        "locations": [
+          {
+            "file": "apps/web/features/calculators/definitions.ts",
+            "line": 1367
+          },
+          {
+            "file": "apps/web/features/calculators/definitions.ts",
+            "line": 2457
+          }
+        ]
+      }
+    ],
+    "Поглощение воды зерном": [
+      {
+        "index": 896,
+        "file": "apps/web/components/home/home-experience.tsx",
+        "line": 171,
+        "start": 17402,
+        "end": 17427,
+        "kind": "StringLiteral",
+        "text": "Поглощение воды солодом",
+        "parent": "[\"Поглощение воды солодом\", `${homeNumber(equipment.grainAbsorptionLPerKg)} л/кг`]",
+        "after": "Поглощение воды зерном",
+        "group": "Поглощение воды зерном",
+        "reason": "Во всех трёх местах используется grainAbsorptionLPerKg. Параметр относится ко всему зерну в заторе, включая несоложёное.",
+        "displayBefore": "Поглощение воды солодом",
+        "displayAfter": "Поглощение воды зерном",
+        "locations": [
+          {
+            "file": "apps/web/components/home/home-experience.tsx",
+            "line": 171
+          }
+        ]
+      },
+      {
+        "index": 2164,
+        "file": "apps/web/components/recipes/water-setup-wizard.tsx",
+        "line": 2688,
+        "start": 92510,
+        "end": 92556,
+        "kind": "JsxText",
+        "text": "Водопоглощение дробиной, л/кг",
+        "parent": "<label className=\"block text-xs font-medium text-muted-foreground\">\n                Водопоглощение дробиной, л/кг\n                <NumericInput\n                  min={0}\n                  max={5}\n                  step={0.05}\n                  value={\n                    effectiveWaterPlanMeta.grainAbsorptionLPerKg != null\n                      ? S",
+        "after": "Поглощение воды зерном, л/кг",
+        "group": "Поглощение воды зерном",
+        "reason": "Во всех трёх местах используется grainAbsorptionLPerKg. Параметр относится ко всему зерну в заторе, включая несоложёное.",
+        "displayBefore": "Водопоглощение дробиной, л/кг",
+        "displayAfter": "Поглощение воды зерном, л/кг",
+        "locations": [
+          {
+            "file": "apps/web/components/recipes/water-setup-wizard.tsx",
+            "line": 2688
+          }
+        ]
+      },
+      {
+        "index": 2355,
+        "file": "apps/web/features/recipes/contracts.ts",
+        "line": 231,
+        "start": 12288,
+        "end": 12342,
+        "kind": "StringLiteral",
+        "text": "Водопоглощение дробиной не может быть меньше 0 л/кг.",
+        "parent": "numberField().min(0, \"Водопоглощение дробиной не может быть меньше 0 л/кг.\")",
+        "after": "Поглощение воды зерном не может быть меньше 0 л/кг.",
+        "group": "Поглощение воды зерном",
+        "reason": "Во всех трёх местах используется grainAbsorptionLPerKg. Параметр относится ко всему зерну в заторе, включая несоложёное.",
+        "displayBefore": "Водопоглощение дробиной не может быть меньше 0 л/кг.",
+        "displayAfter": "Поглощение воды зерном не может быть меньше 0 л/кг.",
+        "locations": [
+          {
+            "file": "apps/web/features/recipes/contracts.ts",
+            "line": 231
+          }
+        ]
+      },
+      {
+        "index": 2356,
+        "file": "apps/web/features/recipes/contracts.ts",
+        "line": 231,
+        "start": 12351,
+        "end": 12405,
+        "kind": "StringLiteral",
+        "text": "Водопоглощение дробиной не может быть больше 5 л/кг.",
+        "parent": "numberField().min(0, \"Водопоглощение дробиной не может быть меньше 0 л/кг.\").max(5, \"Водопоглощение дробиной не может быть больше 5 л/кг.\")",
+        "after": "Поглощение воды зерном не может быть больше 5 л/кг.",
+        "group": "Поглощение воды зерном",
+        "reason": "Во всех трёх местах используется grainAbsorptionLPerKg. Параметр относится ко всему зерну в заторе, включая несоложёное.",
+        "displayBefore": "Водопоглощение дробиной не может быть больше 5 л/кг.",
+        "displayAfter": "Поглощение воды зерном не может быть больше 5 л/кг.",
+        "locations": [
+          {
+            "file": "apps/web/features/recipes/contracts.ts",
+            "line": 231
+          }
+        ]
+      }
+    ],
+    "Потери на осадке и в чиллере": [
+      {
+        "index": 343,
+        "file": "apps/web/components/equipment/equipment-profile-form-basic.tsx",
+        "line": 236,
+        "start": 8085,
+        "end": 8117,
+        "kind": "StringLiteral",
+        "text": "Потери в котле / на чиллере, л",
+        "parent": "label=\"Потери в котле / на чиллере, л\"",
+        "after": "Потери на осадке и в чиллере, л",
+        "group": "Потери на осадке и в чиллере",
+        "reason": "Во всех местах показан trubChillerLossL. В калькуляторе отдельно есть kettleLossL — неснимаемый остаток в котле, поэтому одинаковое название двух разных потерь было неточным.",
+        "displayBefore": "Потери в котле / на чиллере, л",
+        "displayAfter": "Потери на осадке и в чиллере, л",
+        "locations": [
+          {
+            "file": "apps/web/components/equipment/equipment-profile-form-basic.tsx",
+            "line": 236
+          }
+        ]
+      },
+      {
+        "index": 6499,
+        "file": "apps/web/features/calculators/definitions.ts",
+        "line": 2475,
+        "start": 118185,
+        "end": 118200,
+        "kind": "StringLiteral",
+        "text": "Осадок/чиллер",
+        "parent": "numberField(\"trubChillerLossL\", \"Осадок/чиллер\", \"л\", { min: 0, advanced: true, helper: \"Остаётся с хмелевым осадком и в чиллере после кипячения\" })",
+        "after": "Потери на осадке и в чиллере",
+        "group": "Потери на осадке и в чиллере",
+        "reason": "Во всех местах показан trubChillerLossL. В калькуляторе отдельно есть kettleLossL — неснимаемый остаток в котле, поэтому одинаковое название двух разных потерь было неточным.",
+        "displayBefore": "Осадок/чиллер",
+        "displayAfter": "Потери на осадке и в чиллере",
+        "locations": [
+          {
+            "file": "apps/web/features/calculators/definitions.ts",
+            "line": 2475
+          }
+        ]
+      },
+      {
+        "index": 894,
+        "file": "apps/web/components/home/home-experience.tsx",
+        "line": 171,
+        "start": 17335,
+        "end": 17351,
+        "kind": "StringLiteral",
+        "text": "Потери в котле",
+        "parent": "[\"Потери в котле\", `${homeNumber(equipment.trubChillerLossL)} л`]",
+        "after": "Потери на осадке и в чиллере",
+        "group": "Потери на осадке и в чиллере",
+        "reason": "Во всех местах показан trubChillerLossL. В калькуляторе отдельно есть kettleLossL — неснимаемый остаток в котле, поэтому одинаковое название двух разных потерь было неточным.",
+        "displayBefore": "Потери в котле",
+        "displayAfter": "Потери на осадке и в чиллере",
+        "locations": [
+          {
+            "file": "apps/web/components/home/home-experience.tsx",
+            "line": 171
+          }
+        ]
+      }
+    ],
+    "Заданная температура": [
+      {
+        "index": 5320,
+        "file": "apps/web/features/brew-controller/components/manual-control-card.tsx",
+        "line": 141,
+        "start": 5639,
+        "end": 5658,
+        "kind": "JsxText",
+        "text": "Целевая температура",
+        "parent": "<span className=\"text-muted-foreground\">Целевая температура</span>",
+        "after": "Заданная температура",
+        "group": "Заданная температура",
+        "reason": "Ползунок меняет setpointC. Использовано то же название, что в графике, профиле брожения и сообщении об изменении.",
+        "displayBefore": "Целевая температура",
+        "displayAfter": "Заданная температура",
+        "locations": [
+          {
+            "file": "apps/web/features/brew-controller/components/manual-control-card.tsx",
+            "line": 141
+          },
+          {
+            "file": "apps/web/features/brew-controller/components/manual-control-card.tsx",
+            "line": 150
+          }
+        ]
+      }
+    ],
+    "Этап внесения": [
+      {
+        "index": 3752,
+        "file": "apps/web/components/recipes/recipe-designer/ingredient-editor.tsx",
+        "line": 714,
+        "start": 33010,
+        "end": 33046,
+        "kind": "JsxText",
+        "text": "Этап добавления",
+        "parent": "<label className=\"space-y-1 text-xs font-medium text-foreground\">\n                    Этап добавления\n                    <input\n                      value={draft.stepMeta.stageLabel ?? \"\"}\n                      onChange={(event) => onChange({\n                        ...draft,\n                        stepMeta: {\n                          ...draft.",
+        "after": "Этап внесения",
+        "group": "Этап внесения",
+        "reason": "Один смысл — этап внесения ингредиента. Единая подпись для дрожжей, добавок и средств водоподготовки.",
+        "displayBefore": "Этап добавления",
+        "displayAfter": "Этап внесения",
+        "locations": [
+          {
+            "file": "apps/web/components/recipes/recipe-designer/ingredient-editor.tsx",
+            "line": 714
+          }
+        ]
+      },
+      {
+        "index": 3757,
+        "file": "apps/web/components/recipes/recipe-designer/ingredient-editor.tsx",
+        "line": 784,
+        "start": 36113,
+        "end": 36138,
+        "kind": "JsxText",
+        "text": "Стадия",
+        "parent": "<label className=\"space-y-1 text-xs font-medium text-foreground\">\n                  Стадия\n                  <select\n                    value={draft.stage}\n                    onChange={(event) => onChange({ ...draft, stage: event.target.value as DesignerIngredient[\"stage\"] })}\n                    className=\"h-10 w-full rounded-md border border-bo",
+        "after": "Этап внесения",
+        "group": "Этап внесения",
+        "reason": "Один смысл — этап внесения ингредиента. Единая подпись для дрожжей, добавок и средств водоподготовки.",
+        "displayBefore": "Стадия",
+        "displayAfter": "Этап внесения",
+        "locations": [
+          {
+            "file": "apps/web/components/recipes/recipe-designer/ingredient-editor.tsx",
+            "line": 784
+          }
+        ]
+      },
+      {
+        "index": 3760,
+        "file": "apps/web/components/recipes/recipe-designer/ingredient-editor.tsx",
+        "line": 819,
+        "start": 37740,
+        "end": 37757,
+        "kind": "JsxText",
+        "text": "Стадия добавления",
+        "parent": "<legend className=\"text-xs font-medium text-foreground\">Стадия добавления</legend>",
+        "after": "Этап внесения",
+        "group": "Этап внесения",
+        "reason": "Один смысл — этап внесения ингредиента. Единая подпись для дрожжей, добавок и средств водоподготовки.",
+        "displayBefore": "Стадия добавления",
+        "displayAfter": "Этап внесения",
+        "locations": [
+          {
+            "file": "apps/web/components/recipes/recipe-designer/ingredient-editor.tsx",
+            "line": 819
+          }
+        ]
+      }
+    ],
+    "Этап работы прибора": [
+      {
+        "index": 1224,
+        "file": "apps/web/app/(admin)/admin/devices/[id]/page.tsx",
+        "line": 67,
+        "start": 2571,
+        "end": 2592,
+        "kind": "JsxText",
+        "text": "Стадия",
+        "parent": "<th scope=\"col\" className=\"pb-2 pr-3 font-medium\">\n                Стадия\n              </th>",
+        "after": "Этап",
+        "group": "Этап работы прибора",
+        "reason": "Один параметр stage: подпись на пульте, график этапов, подтверждение пропуска и сообщение об аварии. Термин согласован с уже существующим «Превышено время этапа».",
+        "displayBefore": "Стадия",
+        "displayAfter": "Этап",
+        "locations": [
+          {
+            "file": "apps/web/app/(admin)/admin/devices/[id]/page.tsx",
+            "line": 67
+          },
+          {
+            "file": "apps/web/features/brew-controller/components/monitor-hero.tsx",
+            "line": 77
+          }
+        ]
+      },
+      {
+        "index": 5067,
+        "file": "apps/web/features/brew-controller/components/stage-timeline.tsx",
+        "line": 83,
+        "start": 3093,
+        "end": 3107,
+        "kind": "StringLiteral",
+        "text": "Стадии варки",
+        "parent": "brew: \"Стадии варки\"",
+        "after": "Этапы варки",
+        "group": "Этап работы прибора",
+        "reason": "Один параметр stage: подпись на пульте, график этапов, подтверждение пропуска и сообщение об аварии. Термин согласован с уже существующим «Превышено время этапа».",
+        "displayBefore": "Стадии варки",
+        "displayAfter": "Этапы варки",
+        "locations": [
+          {
+            "file": "apps/web/features/brew-controller/components/stage-timeline.tsx",
+            "line": 83
+          }
+        ]
+      },
+      {
+        "index": 5068,
+        "file": "apps/web/features/brew-controller/components/stage-timeline.tsx",
+        "line": 84,
+        "start": 3120,
+        "end": 3137,
+        "kind": "StringLiteral",
+        "text": "Стадии перегона",
+        "parent": "distill: \"Стадии перегона\"",
+        "after": "Этапы перегона",
+        "group": "Этап работы прибора",
+        "reason": "Один параметр stage: подпись на пульте, график этапов, подтверждение пропуска и сообщение об аварии. Термин согласован с уже существующим «Превышено время этапа».",
+        "displayBefore": "Стадии перегона",
+        "displayAfter": "Этапы перегона",
+        "locations": [
+          {
+            "file": "apps/web/features/brew-controller/components/stage-timeline.tsx",
+            "line": 84
+          }
+        ]
+      },
+      {
+        "index": 4961,
+        "file": "apps/web/features/brew-controller/faults.ts",
+        "line": 69,
+        "start": 2651,
+        "end": 2695,
+        "kind": "StringLiteral",
+        "text": "Стадия не завершилась за отведённое время.",
+        "parent": "cause: \"Стадия не завершилась за отведённое время.\"",
+        "after": "Этап не завершился за отведённое время.",
+        "group": "Этап работы прибора",
+        "reason": "Один параметр stage: подпись на пульте, график этапов, подтверждение пропуска и сообщение об аварии. Термин согласован с уже существующим «Превышено время этапа».",
+        "displayBefore": "Стадия не завершилась за отведённое время.",
+        "displayAfter": "Этап не завершился за отведённое время.",
+        "locations": [
+          {
+            "file": "apps/web/features/brew-controller/faults.ts",
+            "line": 69
+          }
+        ]
+      },
+      {
+        "index": 5270,
+        "file": "apps/web/features/brew-controller/components/live-dashboard-view.tsx",
+        "line": 212,
+        "start": 9014,
+        "end": 9038,
+        "kind": "StringLiteral",
+        "text": "Стадия будет пропущена",
+        "parent": "label: \"Стадия будет пропущена\"",
+        "after": "Этап будет пропущен",
+        "group": "Этап работы прибора",
+        "reason": "Один параметр stage: подпись на пульте, график этапов, подтверждение пропуска и сообщение об аварии. Термин согласован с уже существующим «Превышено время этапа».",
+        "displayBefore": "Стадия будет пропущена",
+        "displayAfter": "Этап будет пропущен",
+        "locations": [
+          {
+            "file": "apps/web/features/brew-controller/components/live-dashboard-view.tsx",
+            "line": 212
+          }
+        ]
+      },
+      {
+        "index": 5271,
+        "file": "apps/web/features/brew-controller/components/live-dashboard-view.tsx",
+        "line": 213,
+        "start": 9083,
+        "end": 9101,
+        "kind": "StringLiteral",
+        "text": "Стадия пропущена",
+        "parent": "r.ok ? \"Стадия пропущена\" : r.error ?? \"Не удалось пропустить стадию\"",
+        "after": "Этап пропущен",
+        "group": "Этап работы прибора",
+        "reason": "Один параметр stage: подпись на пульте, график этапов, подтверждение пропуска и сообщение об аварии. Термин согласован с уже существующим «Превышено время этапа».",
+        "displayBefore": "Стадия пропущена",
+        "displayAfter": "Этап пропущен",
+        "locations": [
+          {
+            "file": "apps/web/features/brew-controller/components/live-dashboard-view.tsx",
+            "line": 213
+          }
+        ]
+      },
+      {
+        "index": 5272,
+        "file": "apps/web/features/brew-controller/components/live-dashboard-view.tsx",
+        "line": 213,
+        "start": 9115,
+        "end": 9145,
+        "kind": "StringLiteral",
+        "text": "Не удалось пропустить стадию",
+        "parent": "r.error ?? \"Не удалось пропустить стадию\"",
+        "after": "Не удалось пропустить этап",
+        "group": "Этап работы прибора",
+        "reason": "Один параметр stage: подпись на пульте, график этапов, подтверждение пропуска и сообщение об аварии. Термин согласован с уже существующим «Превышено время этапа».",
+        "displayBefore": "Не удалось пропустить стадию",
+        "displayAfter": "Не удалось пропустить этап",
+        "locations": [
+          {
+            "file": "apps/web/features/brew-controller/components/live-dashboard-view.tsx",
+            "line": 213
+          }
+        ]
+      }
+    ],
+    "Мэш-аут": [
+      {
+        "index": 4986,
+        "file": "apps/web/features/brew-controller/telemetry-annotations.ts",
+        "line": 32,
+        "start": 1425,
+        "end": 1433,
+        "kind": "StringLiteral",
+        "text": "Мэшаут",
+        "parent": "[STAGE_NUM.MASH_OUT]: \"Мэшаут\"",
+        "after": "Мэш-аут",
+        "group": "Мэш-аут",
+        "reason": "Единое написание названия паузы на пульте, графике и в пояснении к этапу, как в калькуляторе затирания.",
+        "displayBefore": "Мэшаут",
+        "displayAfter": "Мэш-аут",
+        "locations": [
+          {
+            "file": "apps/web/features/brew-controller/telemetry-annotations.ts",
+            "line": 32
+          },
+          {
+            "file": "apps/web/features/brew-controller/stage-labels.ts",
+            "line": 19
+          }
+        ]
+      },
+      {
+        "index": 4918,
+        "file": "apps/web/features/brew-controller/stage-timeline.ts",
+        "line": 71,
+        "start": 2784,
+        "end": 2824,
+        "kind": "StringLiteral",
+        "text": "Засыпь, паузы затора, мэшаут, промывка",
+        "parent": "mash: \"Засыпь, паузы затора, мэшаут, промывка\"",
+        "after": "Засыпь, паузы затора, мэш-аут, промывка",
+        "group": "Мэш-аут",
+        "reason": "Единое написание названия паузы на пульте, графике и в пояснении к этапу, как в калькуляторе затирания.",
+        "displayBefore": "Засыпь, паузы затора, мэшаут, промывка",
+        "displayAfter": "Засыпь, паузы затора, мэш-аут, промывка",
+        "locations": [
+          {
+            "file": "apps/web/features/brew-controller/stage-timeline.ts",
+            "line": 71
+          }
+        ]
+      }
+    ],
+    "Привязать к партии": [
+      {
+        "index": 8015,
+        "file": "apps/web/features/device-streams/components/batch-ferment-controls.tsx",
+        "line": 99,
+        "start": 4099,
+        "end": 4125,
+        "kind": "JsxText",
+        "text": "Подключить ареометр",
+        "parent": "<Button type=\"button\" variant=\"outline\" size=\"sm\" onClick={() => setOpen(true)}>\n        Подключить ареометр\n      </Button>",
+        "after": "Привязать ареометр к партии",
+        "group": "Привязать к партии",
+        "reason": "Оба диалога вызывают createFermentSessionAction: связывают уже подключённый прибор с партией. Уточнён объект действия в заголовках и кнопках.",
+        "displayBefore": "Подключить ареометр",
+        "displayAfter": "Привязать ареометр к партии",
+        "locations": [
+          {
+            "file": "apps/web/features/device-streams/components/batch-ferment-controls.tsx",
+            "line": 99
+          },
+          {
+            "file": "apps/web/features/device-streams/components/batch-ferment-controls.tsx",
+            "line": 103
+          }
+        ]
+      },
+      {
+        "index": 1532,
+        "file": "apps/web/features/brew-batches/components/fermenter-binding-controls.tsx",
+        "line": 64,
+        "start": 2405,
+        "end": 2421,
+        "kind": "JsxText",
+        "text": "Привязать",
+        "parent": "<Button type=\"button\" variant=\"outline\" size=\"sm\" disabled={busy || !deviceId} onClick={() => void onBind()}>\n        {busy ? <Loader2 className=\"h-4 w-4 animate-spin\" aria-hidden /> : null}\n        Привязать\n      </Button>",
+        "after": "Привязать к партии",
+        "group": "Привязать к партии",
+        "reason": "Оба диалога вызывают createFermentSessionAction: связывают уже подключённый прибор с партией. Уточнён объект действия в заголовках и кнопках.",
+        "displayBefore": "Привязать",
+        "displayAfter": "Привязать к партии",
+        "locations": [
+          {
+            "file": "apps/web/features/brew-batches/components/fermenter-binding-controls.tsx",
+            "line": 64
+          },
+          {
+            "file": "apps/web/features/device-streams/components/connect-device-dialog.tsx",
+            "line": 110
+          },
+          {
+            "file": "apps/web/features/device-streams/components/connect-batch-dialog.tsx",
+            "line": 121
+          }
+        ]
+      },
+      {
+        "index": 8094,
+        "file": "apps/web/features/device-streams/components/connect-device-dialog.tsx",
+        "line": 67,
+        "start": 2593,
+        "end": 2615,
+        "kind": "LastTemplateToken",
+        "text": "» подключён к партии",
+        "parent": "result.session.deviceName}» подключён к партии`",
+        "after": "» привязано к партии",
+        "group": "Привязать к партии",
+        "reason": "Оба диалога вызывают createFermentSessionAction: связывают уже подключённый прибор с партией. Уточнён объект действия в заголовках и кнопках.",
+        "displayBefore": "«Пивной поплавок» подключён к партии",
+        "displayAfter": "Устройство «Пивной поплавок» привязано к партии",
+        "locations": [
+          {
+            "file": "apps/web/features/device-streams/components/connect-device-dialog.tsx",
+            "line": 67
+          }
+        ]
+      }
+    ],
+    "Показания прибора": [
+      {
+        "index": 8011,
+        "file": "apps/web/features/device-streams/components/batch-ferment-controls.tsx",
+        "line": 69,
+        "start": 3074,
+        "end": 3081,
+        "kind": "StringLiteral",
+        "text": "точка",
+        "parent": "[\"точка\", \"точки\", \"точек\"]",
+        "after": "показание",
+        "group": "Показания прибора",
+        "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+        "displayBefore": "1 точка · 2 точки · 5 точек",
+        "displayAfter": "1 показание · 2 показания · 5 показаний",
+        "locations": [
+          {
+            "file": "apps/web/features/device-streams/components/batch-ferment-controls.tsx",
+            "line": 69
+          },
+          {
+            "file": "apps/web/features/device-streams/components/retro-attach-field.tsx",
+            "line": 52
+          },
+          {
+            "file": "apps/web/features/device-streams/components/stream-device-console.tsx",
+            "line": 496
+          },
+          {
+            "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+            "line": 84
+          },
+          {
+            "file": "apps/web/features/device-streams/components/device-ferment-panel.tsx",
+            "line": 118
+          }
+        ]
+      },
+      {
+        "index": 8079,
+        "file": "apps/web/features/device-streams/components/session-bounds-control.tsx",
+        "line": 70,
+        "start": 2738,
+        "end": 2749,
+        "kind": "StringLiteral",
+        "text": "измерение",
+        "parent": "[\"измерение\", \"измерения\", \"измерений\"]",
+        "after": "показание",
+        "group": "Показания прибора",
+        "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+        "displayBefore": "Из сеанса исключено 3 измерения",
+        "displayAfter": "Из сеанса исключено 3 показания",
+        "locations": [
+          {
+            "file": "apps/web/features/device-streams/components/session-bounds-control.tsx",
+            "line": 70
+          }
+        ]
+      },
+      {
+        "index": 8149,
+        "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+        "line": 122,
+        "start": 5668,
+        "end": 5703,
+        "kind": "StringLiteral",
+        "text": "Не удалось исключить часть точек.",
+        "parent": "outcome.firstErrorMessage ?? \"Не удалось исключить часть точек.\"",
+        "after": "Не удалось исключить часть показаний.",
+        "group": "Показания прибора",
+        "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+        "displayBefore": "Не удалось исключить часть точек.",
+        "displayAfter": "Не удалось исключить часть показаний.",
+        "locations": [
+          {
+            "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+            "line": 122
+          }
+        ]
+      },
+      {
+        "index": 8151,
+        "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+        "line": 147,
+        "start": 6624,
+        "end": 6657,
+        "kind": "StringLiteral",
+        "text": "Не удалось вернуть часть точек.",
+        "parent": "outcome.firstErrorMessage ?? \"Не удалось вернуть часть точек.\"",
+        "after": "Не удалось вернуть часть показаний.",
+        "group": "Показания прибора",
+        "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+        "displayBefore": "Не удалось вернуть часть точек.",
+        "displayAfter": "Не удалось вернуть часть показаний.",
+        "locations": [
+          {
+            "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+            "line": 147
+          }
+        ]
+      },
+      {
+        "index": 8153,
+        "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+        "line": 173,
+        "start": 7595,
+        "end": 7642,
+        "kind": "StringLiteral",
+        "text": "Не удалось удалить точки. Попробуйте ещё раз.",
+        "parent": "outcome.firstErrorMessage ?? \"Не удалось удалить точки. Попробуйте ещё раз.\"",
+        "after": "Не удалось удалить показания. Попробуйте ещё раз.",
+        "group": "Показания прибора",
+        "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+        "displayBefore": "Не удалось удалить точки. Попробуйте ещё раз.",
+        "displayAfter": "Не удалось удалить показания. Попробуйте ещё раз.",
+        "locations": [
+          {
+            "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+            "line": 173
+          }
+        ]
+      },
+      {
+        "index": 8154,
+        "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+        "line": 176,
+        "start": 7742,
+        "end": 7775,
+        "kind": "StringLiteral",
+        "text": "Часть точек не удалось удалить.",
+        "parent": "outcome.firstErrorMessage ?? \"Часть точек не удалось удалить.\"",
+        "after": "Часть показаний не удалось удалить.",
+        "group": "Показания прибора",
+        "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+        "displayBefore": "Часть точек не удалось удалить.",
+        "displayAfter": "Часть показаний не удалось удалить.",
+        "locations": [
+          {
+            "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+            "line": 176
+          }
+        ]
+      },
+      {
+        "index": 8157,
+        "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+        "line": 204,
+        "start": 8879,
+        "end": 8896,
+        "kind": "JsxText",
+        "text": "Исключить точки (",
+        "parent": "<Button type=\"button\" variant=\"outline\" size=\"sm\" onClick={() => void excludeRange()} disabled={pending}>\n              {pending ? <Loader2 className=\"h-4 w-4 animate-spin\" aria-hidden /> : null}\n              Исключить точки ({stats.excludable})\n            </Button>",
+        "after": "Исключить показания (",
+        "group": "Показания прибора",
+        "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+        "displayBefore": "Исключить точки (3)",
+        "displayAfter": "Исключить показания (3)",
+        "locations": [
+          {
+            "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+            "line": 204
+          }
+        ]
+      },
+      {
+        "index": 8158,
+        "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+        "line": 210,
+        "start": 9214,
+        "end": 9229,
+        "kind": "JsxText",
+        "text": "Вернуть точки (",
+        "parent": "<Button type=\"button\" variant=\"outline\" size=\"sm\" onClick={() => void restoreRange()} disabled={pending}>\n              {pending ? <Loader2 className=\"h-4 w-4 animate-spin\" aria-hidden /> : null}\n              Вернуть точки ({stats.excluded})\n            </Button>",
+        "after": "Вернуть показания (",
+        "group": "Показания прибора",
+        "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+        "displayBefore": "Вернуть точки (3)",
+        "displayAfter": "Вернуть показания (3)",
+        "locations": [
+          {
+            "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+            "line": 210
+          }
+        ]
+      },
+      {
+        "index": 8159,
+        "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+        "line": 214,
+        "start": 9423,
+        "end": 9438,
+        "kind": "JsxText",
+        "text": "Удалить точки (",
+        "parent": "<Button type=\"button\" variant=\"dangerOutline\" size=\"sm\" onClick={() => setDeleteOpen(true)} disabled={pending}>\n            Удалить точки ({stats.total})\n          </Button>",
+        "after": "Удалить показания (",
+        "group": "Показания прибора",
+        "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+        "displayBefore": "Удалить точки (3)",
+        "displayAfter": "Удалить показания (3)",
+        "locations": [
+          {
+            "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+            "line": 214
+          }
+        ]
+      },
+      {
+        "index": 8161,
+        "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+        "line": 222,
+        "start": 9659,
+        "end": 9756,
+        "kind": "StringLiteral",
+        "text": "Точки будут удалены безвозвратно. График и оценка состояния брожения будут пересчитаны без них.",
+        "parent": "description=\"Точки будут удалены безвозвратно. График и оценка состояния брожения будут пересчитаны без них.\"",
+        "after": "Показания будут удалены безвозвратно. График и оценка состояния брожения будут пересчитаны без них.",
+        "group": "Показания прибора",
+        "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+        "displayBefore": "Точки будут удалены безвозвратно. График и оценка состояния брожения будут пересчитаны без них.",
+        "displayAfter": "Показания будут удалены безвозвратно. График и оценка состояния брожения будут пересчитаны без них.",
+        "locations": [
+          {
+            "file": "apps/web/features/device-streams/components/ferment-range-panel.tsx",
+            "line": 222
+          }
+        ]
+      },
+      {
+        "index": 8279,
+        "file": "apps/web/features/device-streams/actions.ts",
+        "line": 401,
+        "start": 15389,
+        "end": 15460,
+        "kind": "StringLiteral",
+        "text": "Недостаточно показаний устройства для оценки (нужно минимум 3 точки).",
+        "parent": "CURVE_INSUFFICIENT_POINTS: \"Недостаточно показаний устройства для оценки (нужно минимум 3 точки).\"",
+        "after": "Недостаточно показаний устройства для оценки (нужно минимум 3 показания).",
+        "group": "Показания прибора",
+        "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+        "displayBefore": "Недостаточно показаний устройства для оценки (нужно минимум 3 точки).",
+        "displayAfter": "Недостаточно показаний устройства для оценки (нужно минимум 3 показания).",
+        "locations": [
+          {
+            "file": "apps/web/features/device-streams/actions.ts",
+            "line": 401
+          }
+        ]
+      },
+      {
+        "index": 8034,
+        "file": "apps/web/features/device-streams/components/rapt-integration-card.tsx",
+        "line": 124,
+        "start": 4993,
+        "end": 5077,
+        "kind": "LastTemplateToken",
+        "text": "— они просто перестанут получать новые точки, пока вы не настроите вебхук заново.",
+        "parent": "deviceCount > 0 ? ` (${deviceCount} ${pluralize(deviceCount, [\"устройство\", \"устройства\", \"устройств\"])})` : \"\"\n        } — они просто перестанут получать новые точки, пока вы не настроите вебхук заново.`",
+        "after": "— новые показания не будут поступать, пока вы не настроите вебхук заново.",
+        "group": "Показания прибора",
+        "reason": "Счётчики и операции относятся к одним записям deviceReadings. «Показания» уже используется в подсказках, поэтому оно же применяется в списках, на графике и в уведомлениях.",
+        "displayBefore": "Устройства и накопленные данные останутся (2 устройства) — они просто перестанут получать новые точки, пока вы не настроите вебхук заново.",
+        "displayAfter": "Устройства и накопленные данные останутся (2 устройства) — новые показания не будут поступать, пока вы не настроите вебхук заново.",
+        "locations": [
+          {
+            "file": "apps/web/features/device-streams/components/rapt-integration-card.tsx",
+            "line": 124
+          }
+        ]
+      }
+    ],
+    "Скопировать": [
+      {
+        "index": 1119,
+        "file": "apps/web/features/devices/components/devices-manager.tsx",
+        "line": 483,
+        "start": 21596,
+        "end": 21608,
+        "kind": "StringLiteral",
+        "text": "Копировать",
+        "parent": "copied ? \"Скопировано\" : \"Копировать\"",
+        "after": "Скопировать токен",
+        "group": "Скопировать",
+        "reason": "Приведены к одной форме глагола кнопки, которые записывают данные в буфер обмена; объект копирования указан явно.",
+        "displayBefore": "Копировать",
+        "displayAfter": "Скопировать токен",
+        "locations": [
+          {
+            "file": "apps/web/features/devices/components/devices-manager.tsx",
+            "line": 483
+          }
+        ]
+      },
+      {
+        "index": 3397,
+        "file": "apps/web/components/recipes/import-export-modal.tsx",
+        "line": 569,
+        "start": 24369,
+        "end": 24396,
+        "kind": "JsxText",
+        "text": "Копировать",
+        "parent": "<button\n                  type=\"button\"\n                  disabled={!beerXmlExport}\n                  onClick={() => void navigator.clipboard?.writeText(beerXmlExport)}\n                  className=\"rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground disabled:opacity-50\"\n                >\n                  Копировать\n          ",
+        "after": "Скопировать BeerXML",
+        "group": "Скопировать",
+        "reason": "Приведены к одной форме глагола кнопки, которые записывают данные в буфер обмена; объект копирования указан явно.",
+        "displayBefore": "Копировать",
+        "displayAfter": "Скопировать BeerXML",
+        "locations": [
+          {
+            "file": "apps/web/components/recipes/import-export-modal.tsx",
+            "line": 569
+          }
+        ]
+      },
+      {
+        "index": 3398,
+        "file": "apps/web/components/recipes/import-export-modal.tsx",
+        "line": 576,
+        "start": 24788,
+        "end": 24812,
+        "kind": "JsxText",
+        "text": "Скачать",
+        "parent": "<a\n                  href={beerXmlExport ? `data:text/xml;charset=utf-8,${encodeURIComponent(beerXmlExport)}` : undefined}\n                  download=\"recipe.beerxml\"\n                  className={`rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground ${beerXmlExport ? \"\" : \"pointer-events-none opacity-50\"}`}\n                >\n  ",
+        "after": "Скачать BeerXML",
+        "group": "Скопировать",
+        "reason": "Кнопка рядом с «Скопировать BeerXML» скачивает тот же экспорт в файл.",
+        "displayBefore": "Скачать",
+        "displayAfter": "Скачать BeerXML",
+        "locations": [
+          {
+            "file": "apps/web/components/recipes/import-export-modal.tsx",
+            "line": 576
+          }
+        ]
+      },
+      {
+        "index": 1118,
+        "file": "apps/web/features/devices/components/devices-manager.tsx",
+        "line": 483,
+        "start": 21580,
+        "end": 21593,
+        "kind": "StringLiteral",
+        "text": "Скопировано",
+        "parent": "copied ? \"Скопировано\" : \"Копировать\"",
+        "after": "Токен скопирован",
+        "group": "Скопировать",
+        "reason": "Приведены к одной форме глагола кнопки, которые записывают данные в буфер обмена; объект копирования указан явно.",
+        "displayBefore": "Скопировано",
+        "displayAfter": "Токен скопирован",
+        "locations": [
+          {
+            "file": "apps/web/features/devices/components/devices-manager.tsx",
+            "line": 483
+          }
+        ]
+      }
+    ],
+    "Адрес подключения": [
+      {
+        "index": 8022,
+        "file": "apps/web/features/device-streams/components/rapt-integration-card.tsx",
+        "line": 94,
+        "start": 3832,
+        "end": 3849,
+        "kind": "StringLiteral",
+        "text": "Скопировать URL",
+        "parent": "copied ? \"Скопировано\" : \"Скопировать URL\"",
+        "after": "Скопировать адрес",
+        "group": "Адрес подключения",
+        "reason": "Один и тот же веб-адрес для отправки показаний. Его название согласовано в карточке подключения, инструкции и кнопках.",
+        "displayBefore": "Скопировать URL",
+        "displayAfter": "Скопировать адрес",
+        "locations": [
+          {
+            "file": "apps/web/features/device-streams/components/rapt-integration-card.tsx",
+            "line": 94
+          }
+        ]
+      },
+      {
+        "index": 8117,
+        "file": "apps/web/features/device-streams/components/stream-device-console.tsx",
+        "line": 368,
+        "start": 14207,
+        "end": 14220,
+        "kind": "StringLiteral",
+        "text": "Скопировать",
+        "parent": "copied ? \"Скопировано\" : \"Скопировать\"",
+        "after": "Скопировать адрес",
+        "group": "Адрес подключения",
+        "reason": "Один и тот же веб-адрес для отправки показаний. Его название согласовано в карточке подключения, инструкции и кнопках.",
+        "displayBefore": "Скопировать",
+        "displayAfter": "Скопировать адрес",
+        "locations": [
+          {
+            "file": "apps/web/features/device-streams/components/stream-device-console.tsx",
+            "line": 368
+          },
+          {
+            "file": "apps/web/features/device-streams/components/rapt-connect-screen.tsx",
+            "line": 193
+          }
+        ]
+      },
+      {
+        "index": 8115,
+        "file": "apps/web/features/device-streams/components/stream-device-console.tsx",
+        "line": 357,
+        "start": 13701,
+        "end": 13730,
+        "kind": "JsxText",
+        "text": "Показать URL",
+        "parent": "<Button variant=\"outline\" size=\"sm\" onClick={() => setUrlExpanded(true)}>\n                  Показать URL\n                </Button>",
+        "after": "Показать адрес",
+        "group": "Адрес подключения",
+        "reason": "Один и тот же веб-адрес для отправки показаний. Его название согласовано в карточке подключения, инструкции и кнопках.",
+        "displayBefore": "Показать URL",
+        "displayAfter": "Показать адрес",
+        "locations": [
+          {
+            "file": "apps/web/features/device-streams/components/stream-device-console.tsx",
+            "line": 357
+          }
+        ]
+      },
+      {
+        "index": 8194,
+        "file": "apps/web/features/device-streams/components/rapt-connect-screen.tsx",
+        "line": 187,
+        "start": 8194,
+        "end": 8205,
+        "kind": "JsxText",
+        "text": "URL вебхука",
+        "parent": "<p className=\"text-xs font-medium text-muted-foreground\">URL вебхука</p>",
+        "after": "Адрес подключения",
+        "group": "Адрес подключения",
+        "reason": "Один и тот же веб-адрес для отправки показаний. Его название согласовано в карточке подключения, инструкции и кнопках.",
+        "displayBefore": "URL вебхука",
+        "displayAfter": "Адрес подключения",
+        "locations": [
+          {
+            "file": "apps/web/features/device-streams/components/rapt-connect-screen.tsx",
+            "line": 187
+          }
+        ]
+      },
+      {
+        "index": 8021,
+        "file": "apps/web/features/device-streams/components/rapt-integration-card.tsx",
+        "line": 94,
+        "start": 3816,
+        "end": 3829,
+        "kind": "StringLiteral",
+        "text": "Скопировано",
+        "parent": "copied ? \"Скопировано\" : \"Скопировать URL\"",
+        "after": "Адрес скопирован",
+        "group": "Адрес подключения",
+        "reason": "Один и тот же веб-адрес для отправки показаний. Его название согласовано в карточке подключения, инструкции и кнопках.",
+        "displayBefore": "Скопировано",
+        "displayAfter": "Адрес скопирован",
+        "locations": [
+          {
+            "file": "apps/web/features/device-streams/components/rapt-integration-card.tsx",
+            "line": 94
+          },
+          {
+            "file": "apps/web/features/device-streams/components/stream-device-console.tsx",
+            "line": 368
+          },
+          {
+            "file": "apps/web/features/device-streams/components/rapt-connect-screen.tsx",
+            "line": 193
+          }
+        ]
+      }
+    ],
+    "Скопировать шаблон": [
+      {
+        "index": 8200,
+        "file": "apps/web/features/device-streams/components/rapt-connect-screen.tsx",
+        "line": 217,
+        "start": 9639,
+        "end": 9652,
+        "kind": "StringLiteral",
+        "text": "Скопировано",
+        "parent": "copiedTemplate ? \"Скопировано\" : \"Скопировать шаблон\"",
+        "after": "Шаблон скопирован",
+        "group": "Скопировать шаблон",
+        "reason": "Сообщение об успехе называет тот же объект, что кнопка «Скопировать шаблон».",
+        "displayBefore": "Скопировано",
+        "displayAfter": "Шаблон скопирован",
+        "locations": [
+          {
+            "file": "apps/web/features/device-streams/components/rapt-connect-screen.tsx",
+            "line": 217
+          }
+        ]
+      }
+    ],
+    "Состояние сохранения": [
+      {
+        "index": 1060,
+        "file": "apps/web/features/devices/components/device-config-form.tsx",
+        "line": 418,
+        "start": 15157,
+        "end": 15170,
+        "kind": "StringLiteral",
+        "text": "Сохранение…",
+        "parent": "saving ? \"Сохранение…\" : \"Сохранить на устройстве\"",
+        "after": "Сохраняем…",
+        "group": "Состояние сохранения",
+        "reason": "Единая подпись на время сохранения формы: «Сохраняем…», как в оборудовании, модерации и настройках сеансов.",
+        "displayBefore": "Сохранение…",
+        "displayAfter": "Сохраняем…",
+        "locations": [
+          {
+            "file": "apps/web/features/devices/components/device-config-form.tsx",
+            "line": 418
+          },
+          {
+            "file": "apps/web/features/devices/components/device-config-form.tsx",
+            "line": 468
+          },
+          {
+            "file": "apps/web/components/recipes/recipe-designer/recipe-designer.tsx",
+            "line": 1403
+          },
+          {
+            "file": "apps/web/features/brew-controller/components/ferment-profile-editor.tsx",
+            "line": 160
+          },
+          {
+            "file": "apps/web/features/brew-controller/components/ferment-profile-card.tsx",
+            "line": 117
+          }
+        ]
+      },
+      {
+        "index": 603,
+        "file": "apps/web/components/inventory/custom-ingredient-form.tsx",
+        "line": 958,
+        "start": 36364,
+        "end": 36379,
+        "kind": "StringLiteral",
+        "text": "Сохранение...",
+        "parent": "pending ? \"Сохранение...\" : resolvedSubmitLabel",
+        "after": "Сохраняем…",
+        "group": "Состояние сохранения",
+        "reason": "Единая подпись на время сохранения формы: «Сохраняем…», как в оборудовании, модерации и настройках сеансов.",
+        "displayBefore": "Сохранение...",
+        "displayAfter": "Сохраняем…",
+        "locations": [
+          {
+            "file": "apps/web/components/inventory/custom-ingredient-form.tsx",
+            "line": 958
+          },
+          {
+            "file": "apps/web/components/inventory/catalog-ingredient-form.tsx",
+            "line": 1545
+          }
+        ]
+      },
+      {
+        "index": 449,
+        "file": "apps/web/components/inventory/inventory-item-details-editor.tsx",
+        "line": 1066,
+        "start": 49265,
+        "end": 49279,
+        "kind": "StringLiteral",
+        "text": "Сохраняем...",
+        "parent": "isPending ? \"Сохраняем...\" : \"Сохранить\"",
+        "after": "Сохраняем…",
+        "group": "Состояние сохранения",
+        "reason": "Единая подпись на время сохранения формы: «Сохраняем…», как в оборудовании, модерации и настройках сеансов.",
+        "displayBefore": "Сохраняем...",
+        "displayAfter": "Сохраняем…",
+        "locations": [
+          {
+            "file": "apps/web/components/inventory/inventory-item-details-editor.tsx",
+            "line": 1066
+          },
+          {
+            "file": "apps/web/components/inventory/inventory-consume-control.tsx",
+            "line": 271
+          },
+          {
+            "file": "apps/web/components/ingredients/admin-ingredient-form.tsx",
+            "line": 661
+          },
+          {
+            "file": "apps/web/components/ingredients/custom-catalog-ingredient-form.tsx",
+            "line": 909
+          },
+          {
+            "file": "apps/web/components/ingredients/ingredient-purchase-links-manager.tsx",
+            "line": 375
+          },
+          {
+            "file": "apps/web/components/ingredients/ingredient-purchase-links-manager.tsx",
+            "line": 448
+          }
+        ]
+      }
+    ],
+    "Избранное": [
+      {
+        "index": 7513,
+        "file": "apps/web/components/calculators/calculator-favorite-toggle.tsx",
+        "line": 73,
+        "start": 2199,
+        "end": 2212,
+        "kind": "StringLiteral",
+        "text": "В избранное",
+        "parent": "isFavorite ? \"Убрать из избранного\" : \"В избранное\"",
+        "after": "Добавить в избранное",
+        "group": "Избранное",
+        "reason": "Название действия согласовано со звёздочками в каталоге ингредиентов.",
+        "displayBefore": "В избранное",
+        "displayAfter": "Добавить в избранное",
+        "locations": [
+          {
+            "file": "apps/web/components/calculators/calculator-favorite-toggle.tsx",
+            "line": 73
+          }
+        ]
+      }
+    ]
+  }
+}

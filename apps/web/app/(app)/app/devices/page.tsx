@@ -20,7 +20,7 @@ export default async function DevicesPage({
     return (
       <div className="space-y-3">
         <h1 className="text-2xl font-semibold text-foreground sm:text-3xl" style={{ fontFamily: "var(--font-display)" }}>
-          Устройства
+          Приборы
         </h1>
         <p className="text-sm text-muted-foreground">
           Раздел в разработке. Подключение BrewForge и цифровых ареометров пока недоступно.

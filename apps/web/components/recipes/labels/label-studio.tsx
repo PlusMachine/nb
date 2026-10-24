@@ -750,13 +750,13 @@ export function LabelStudio(props: LabelStudioProps) {
 
         <section className="space-y-3 lg:sticky lg:col-start-2 lg:row-span-2 lg:top-[calc(var(--chrome-top,0px)+1rem)] lg:z-10 lg:self-start">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-medium text-muted-foreground">Превью</h2>
+            <h2 className="text-sm font-medium text-muted-foreground">Предпросмотр</h2>
             <button
               type="button"
               onClick={() => setPrintView((prev) => !prev)}
               className="text-xs text-muted-foreground hover:text-foreground"
             >
-              {printView ? "Показать чётко" : "Как напечатается"}
+              {printView ? "Показать со сглаживанием" : "Показать как при печати"}
             </button>
           </div>
           <div className="flex justify-center overflow-auto rounded-lg border border-border bg-muted/30 p-4">
@@ -767,12 +767,12 @@ export function LabelStudio(props: LabelStudioProps) {
                 type="button"
                 onClick={() => setZoomed(true)}
                 className="group relative cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                aria-label="Открыть превью во весь экран"
+                aria-label="Открыть предпросмотр во весь экран"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element -- превью — blob-URL с сервера, не статический актив */}
                 <img
                   src={shownSrc}
-                  alt={`Превью наклейки «${fields.title}»`}
+                  alt={`Предпросмотр этикетки «${fields.title}»`}
                   className={`max-h-[560px] w-auto max-w-full border border-border bg-white shadow-sm transition-opacity ${
                     previewLoading ? "opacity-60" : "opacity-100"
                   }`}
@@ -796,7 +796,7 @@ export function LabelStudio(props: LabelStudioProps) {
           </div>
           {previewFailed ? (
             <p className="rounded-md border border-destructive/30 bg-destructive-subtle px-2 py-1.5 text-xs text-destructive-subtle-foreground">
-              Не удалось обновить превью.
+              Не удалось обновить предпросмотр.
             </p>
           ) : null}
           {isSheet ? (
@@ -856,13 +856,13 @@ export function LabelStudio(props: LabelStudioProps) {
           />
         </section>
 
-        <Dialog open={zoomed && shownSrc !== null} onOpenChange={setZoomed} title="Превью наклейки" size="lg">
+        <Dialog open={zoomed && shownSrc !== null} onOpenChange={setZoomed} title="Предпросмотр этикетки" size="lg">
           <div className="flex max-h-[86vh] justify-center overflow-auto bg-muted/30 p-4">
             {shownSrc ? (
               // eslint-disable-next-line @next/next/no-img-element -- тот же blob-URL, что и в колонке превью
               <img
                 src={shownSrc}
-                alt={`Превью наклейки «${fields.title}»`}
+                alt={`Предпросмотр этикетки «${fields.title}»`}
                 className="h-auto w-auto max-w-full border border-border bg-white shadow-sm"
                 style={printView ? { imageRendering: "pixelated" } : undefined}
               />
@@ -939,10 +939,10 @@ export function LabelStudio(props: LabelStudioProps) {
             <Field id="lb-title" label="Название" value={fields.title} maxLength={LABEL_FIELD_LIMITS.title} onChange={setField("title")} onBlur={flushSync} placeholder={defaults.title} className="sm:col-span-2" />
             <Field id="lb-style" label="Стиль" value={fields.style} maxLength={LABEL_FIELD_LIMITS.style} onChange={setField("style")} onBlur={flushSync} className="sm:col-span-2" />
             {/* На 360px три узкие колонки в один ряд не влезают читаемо — стек до sm. */}
-            <div className="grid grid-cols-1 gap-3 sm:col-span-2 sm:grid-cols-3">
-              <Field id="lb-abv" label="ABV" value={fields.abv} maxLength={LABEL_FIELD_LIMITS.abv} onChange={setField("abv")} onBlur={flushSync} placeholder="~5.2%" inputMode="decimal" />
-              <Field id="lb-ibu" label="IBU" value={fields.ibu} maxLength={LABEL_FIELD_LIMITS.ibu} onChange={setField("ibu")} onBlur={flushSync} placeholder="38" inputMode="decimal" />
-              <Field id="lb-ebc" label="EBC" value={fields.ebc} maxLength={LABEL_FIELD_LIMITS.ebc} onChange={setField("ebc")} onBlur={flushSync} placeholder="12" inputMode="decimal" />
+            <div className="grid grid-cols-1 gap-3 sm:col-span-2 sm:grid-cols-[repeat(auto-fit,minmax(min(100%,7rem),1fr))]">
+              <Field id="lb-abv" label="Крепость, % об." value={fields.abv} maxLength={LABEL_FIELD_LIMITS.abv} onChange={setField("abv")} onBlur={flushSync} placeholder="~5.2%" inputMode="decimal" />
+              <Field id="lb-ibu" label="Горечь, IBU" value={fields.ibu} maxLength={LABEL_FIELD_LIMITS.ibu} onChange={setField("ibu")} onBlur={flushSync} placeholder="38" inputMode="decimal" />
+              <Field id="lb-ebc" label="Цвет, EBC" value={fields.ebc} maxLength={LABEL_FIELD_LIMITS.ebc} onChange={setField("ebc")} onBlur={flushSync} placeholder="12" inputMode="decimal" />
             </div>
             {/* Шкала — не настройка сайта, а свойство наклейки: печатают её для
                 тех, кто будет пить пиво, а не для владельца профиля. Переключение
@@ -969,8 +969,8 @@ export function LabelStudio(props: LabelStudioProps) {
                 ))}
               </div>
             </div>
-            <Field id="lb-og" label="OG" value={fields.og} maxLength={LABEL_FIELD_LIMITS.og} onChange={setField("og")} onBlur={flushSync} placeholder={GRAVITY_PLACEHOLDERS[gravityUnit].og} inputMode="decimal" />
-            <Field id="lb-fg" label="FG" value={fields.fg} maxLength={LABEL_FIELD_LIMITS.fg} onChange={setField("fg")} onBlur={flushSync} placeholder={GRAVITY_PLACEHOLDERS[gravityUnit].fg} inputMode="decimal" />
+            <Field id="lb-og" label="Начальная плотность" value={fields.og} maxLength={LABEL_FIELD_LIMITS.og} onChange={setField("og")} onBlur={flushSync} placeholder={GRAVITY_PLACEHOLDERS[gravityUnit].og} inputMode="decimal" />
+            <Field id="lb-fg" label="Конечная плотность" value={fields.fg} maxLength={LABEL_FIELD_LIMITS.fg} onChange={setField("fg")} onBlur={flushSync} placeholder={GRAVITY_PLACEHOLDERS[gravityUnit].fg} inputMode="decimal" />
             <Field id="lb-malts" label="Солод (через запятую)" value={fields.malts} maxLength={LABEL_FIELD_LIMITS.malts} onChange={setField("malts")} onBlur={flushSync} className="sm:col-span-2" />
             <Field id="lb-hops" label="Хмель (через запятую)" value={fields.hops} maxLength={LABEL_FIELD_LIMITS.hops} onChange={setField("hops")} onBlur={flushSync} className="sm:col-span-2" />
             <Field id="lb-yeast" label="Дрожжи" value={fields.yeast} maxLength={LABEL_FIELD_LIMITS.yeast} onChange={setField("yeast")} onBlur={flushSync} className="sm:col-span-2" />
@@ -1007,7 +1007,7 @@ export function LabelStudio(props: LabelStudioProps) {
             <Field id="lb-volume" label="Объём тары" value={fields.volume} maxLength={LABEL_FIELD_LIMITS.volume} onChange={setField("volume")} onBlur={flushSync} placeholder="0,5 л" />
             <Field id="lb-batch" label="Партия №" value={fields.batch} maxLength={LABEL_FIELD_LIMITS.batch} onChange={setField("batch")} onBlur={flushSync} placeholder="3" />
             <Field id="lb-author" label="Автор" value={fields.author} maxLength={LABEL_FIELD_LIMITS.author} onChange={setField("author")} onBlur={flushSync} />
-            <Field id="lb-brand" label="Марка внизу" value={fields.brand} maxLength={LABEL_FIELD_LIMITS.brand} onChange={setField("brand")} onBlur={flushSync} />
+            <Field id="lb-brand" label="Подпись внизу этикетки" value={fields.brand} maxLength={LABEL_FIELD_LIMITS.brand} onChange={setField("brand")} onBlur={flushSync} />
             <div>
               <label htmlFor="lb-date" className="mb-1 block text-xs font-medium text-muted-foreground">
                 Дата розлива

@@ -122,7 +122,7 @@ function StatTile({
   );
 }
 
-export function BeerPresentation({ beer, bottle }: { beer: BeerPresentationDto; bottle?: BottleParams }) {
+export function BeerPresentation({ beer, bottle, embedded = false }: { beer: BeerPresentationDto; bottle?: BottleParams; embedded?: boolean }) {
   const srm = beer.colorSrm;
   const color = srm != null ? beerColorFromSrm(srm) : null;
   const accent = srm != null ? srmToGlassStops(srm).from : "rgba(245, 240, 232, 0.9)";
@@ -149,7 +149,7 @@ export function BeerPresentation({ beer, bottle }: { beer: BeerPresentationDto; 
   );
 
   return (
-    <article className={`${styles.presentation} relative flex min-h-svh flex-col overflow-hidden bg-[#0e0c0a] text-white`}>
+    <article className={`${styles.presentation} ${embedded ? styles.embedded : "min-h-svh"} relative flex flex-col overflow-hidden bg-[#0e0c0a] text-white`}>
       {coverImage ? (
         <Image
           src={coverImage}

@@ -120,7 +120,7 @@ function FermentSummaryRow({ summary, gravityUnit }: { summary: BatchFermentSumm
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
       <SummaryTile label="Плотность сейчас" value={gravityText} />
       <SummaryTile label="Сбраживание" value={attText} />
-      <SummaryTile label="ABV, оценка" value={abvText} />
+      <SummaryTile label="Расчётная крепость" value={abvText} />
       <SummaryTile label="Температура" value={tempText} />
     </div>
   );

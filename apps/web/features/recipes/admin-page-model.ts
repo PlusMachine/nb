@@ -27,7 +27,7 @@ export type AdminRecipeStatusFilter = (typeof adminRecipeStatusFilters)[number];
 
 export const adminRecipeStatusLabels: Record<AdminRecipeStatus, string> = {
   published: "Опубликован",
-  private: "Приватный",
+  private: "Только автору",
   draft: "Черновик",
   hidden: "Скрыт"
 };
@@ -35,7 +35,7 @@ export const adminRecipeStatusLabels: Record<AdminRecipeStatus, string> = {
 export const adminRecipeStatusFilterLabels: Record<AdminRecipeStatusFilter, string> = {
   all: "Все",
   published: "Опубликованные",
-  private: "Приватные",
+  private: "Доступные только автору",
   draft: "Черновики",
   hidden: "Скрытые"
 };
@@ -51,7 +51,7 @@ export const adminRecipeSorts = ["updated", "created", "rating", "title"] as con
 export type AdminRecipeSort = (typeof adminRecipeSorts)[number];
 
 export const adminRecipeSortLabels: Record<AdminRecipeSort, string> = {
-  updated: "По обновлению",
+  updated: "По дате изменения",
   created: "По дате создания",
   rating: "По рейтингу",
   title: "По названию"

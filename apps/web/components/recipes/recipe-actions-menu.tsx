@@ -11,6 +11,7 @@ export function RecipeActionsMenu({
   pending,
   labelsHref,
   brewDisabled,
+  mobilePublicationItems = [],
   onOpenImportExport,
   onOpenBrew,
   onDelete
@@ -20,6 +21,7 @@ export function RecipeActionsMenu({
   labelsHref?: string | null;
   /** Пустой несохранённый черновик: варить нечего. */
   brewDisabled?: boolean;
+  mobilePublicationItems?: DropdownMenuItem[];
   onOpenImportExport: () => void;
   onOpenBrew: () => void;
   /** Удаление рецепта; undefined — рецепта в БД ещё нет, удалять нечего. */
@@ -35,7 +37,7 @@ export function RecipeActionsMenu({
       onSelect: onDelete
     }]
     : [];
-  const mobileItems: DropdownMenuItem[] = [
+  const secondaryMobileItems: DropdownMenuItem[] = [
     ...(labelsHref ? [{
       key: "labels",
       label: "Наклейки",
@@ -51,6 +53,13 @@ export function RecipeActionsMenu({
     },
     ...items
   ];
+  const mobileItems: DropdownMenuItem[] = [
+    ...mobilePublicationItems,
+    ...secondaryMobileItems.map((item, index) => ({
+      ...item,
+      separatorBefore: index === 0 && mobilePublicationItems.length > 0
+    }))
+  ];
   const trigger = (
     <button
       type="button"
@@ -63,42 +72,50 @@ export function RecipeActionsMenu({
   );
 
   return (
-    <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+    <div className="flex min-w-0 max-w-full flex-wrap items-center justify-end gap-1.5 md:gap-2">
       {labelsHref ? (
-        <Link href={labelsHref} className={`${buttonVariants({ variant: "outline", size: "md" })} hidden sm:inline-flex`} aria-label="Наклейки" title="Наклейки">
+        <Link href={labelsHref} className={`${buttonVariants({ variant: "outline", size: "md" })} hidden md:inline-flex`} aria-label="Наклейки" title="Наклейки">
           <Sticker className="h-4 w-4 text-muted-foreground" />
-          <span className="hidden sm:inline">Наклейки</span>
+          <span className="hidden md:inline">Наклейки</span>
         </Link>
       ) : null}
       <Button
         type="button"
         variant="outline"
         size="md"
-        className="hidden sm:inline-flex"
+        className="hidden md:inline-flex"
         onClick={onOpenImportExport}
         disabled={pending}
         aria-label="Импорт / экспорт"
         title="Импорт / экспорт"
       >
         <FileText className="h-4 w-4 text-muted-foreground" />
-        <span className="hidden sm:inline">Импорт / экспорт</span>
+        <span className="hidden md:inline">Импорт / экспорт</span>
       </Button>
       <Button
         type="button"
         size="md"
+        className="gap-1.5 px-3 text-[13px] sm:gap-2 sm:px-4 sm:text-sm"
         onClick={onOpenBrew}
         disabled={pending || brewDisabled}
         aria-label="Сварить"
         title={brewDisabled ? "Сначала добавьте хотя бы один ингредиент или назовите рецепт" : "Сварить"}
       >
         <Timer className="h-4 w-4" />
-        <span className="hidden sm:inline">Сварить</span>
+        <span>Сварить</span>
       </Button>
-      <div className="sm:hidden">
-        <DropdownMenu align="end" aria-label="Действия с рецептом" trigger={trigger} items={mobileItems} />
+      <div className="md:hidden">
+        <DropdownMenu
+          align="end"
+          aria-label="Действия с рецептом"
+          trigger={trigger}
+          items={mobileItems}
+          contentClassName="w-[234px] max-w-[calc(100vw-16px)]"
+          itemClassName="min-h-11 text-[13px]"
+        />
       </div>
       {items.length ? (
-        <div className="hidden sm:block">
+        <div className="hidden md:block">
           <DropdownMenu align="end" aria-label="Действия с рецептом" trigger={trigger} items={items} />
         </div>
       ) : null}

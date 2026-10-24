@@ -77,9 +77,7 @@ export const QR_SIZE_MM_M = 13;
 export const QR_SIZE_MM_L = 13;
 export const QR_SIZE_MM_BY_TIER: Record<LabelTier, number | null> = { S: null, M: QR_SIZE_MM_M, L: QR_SIZE_MM_L };
 
-// Марка внизу наклейки. Строка-плейсхолдер: финальную формулировку (NB/hmelo)
-// утверждает владелец продукта.
-export const LABEL_BRAND_TEXT = "BEWED WITH NB";
+export const LABEL_BRAND_TEXT = "СВАРЕНО С NB";
 
 // A4-лист: сетка наклеек выбранного пресета с полями реза и метками.
 export const A4_SHEET = {

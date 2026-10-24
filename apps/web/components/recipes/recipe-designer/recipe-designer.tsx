@@ -1,7 +1,7 @@
 "use client";
 
 import { getBeerStyleById, getBjcpStyleDisplayName } from "@nb/brewing-core";
-import { Button, useToast } from "@nb/ui";
+import { Button, useToast, type DropdownMenuItem } from "@nb/ui";
 import {
   CircleCheck,
   CircleAlert,
@@ -867,7 +867,7 @@ export function RecipeDesigner({
         category: "yeast",
         title: "Дрожжи",
         items: yeasts,
-        empty: "Добавьте дрожжи для публикации рецепта."
+        empty: "Укажите дрожжи, которые используются в рецепте. Это нужно для публикации."
       },
       {
         category: "water_treatment",
@@ -941,7 +941,7 @@ export function RecipeDesigner({
       onSave={saveEditor}
       onCancel={() => requestCloseEditor()}
       onDelete={openEditor.localId ? () => deleteIngredient(openEditor.localId!) : undefined}
-      saveLabel={openEditor.localId ? "Сохранить позицию" : openEditor.category === "water_treatment" ? "Добавить соль" : "Добавить позицию"}
+      saveLabel={openEditor.localId ? "Сохранить ингредиент" : openEditor.category === "water_treatment" ? "Добавить соль" : "Добавить ингредиент"}
       fieldError={editorFieldError}
     />
   ) : null;
@@ -955,6 +955,38 @@ export function RecipeDesigner({
 
     setPublishConfirmOpen(true);
   };
+
+  const mobilePublicationItems: DropdownMenuItem[] = [];
+  if (canManagePublication && savedVisibility === "private") {
+    mobilePublicationItems.push({
+      key: "publish",
+      label: "Опубликовать",
+      icon: <Globe className="h-4 w-4" aria-hidden />,
+      disabled: pendingSave,
+      onSelect: handlePublishClick
+    });
+  }
+  if (canManagePublication && savedVisibility === "published") {
+    if (activeRecipeSlug) {
+      mobilePublicationItems.push({
+        key: "view-publication",
+        label: "Посмотреть публикацию",
+        icon: <ExternalLink className="h-4 w-4" aria-hidden />,
+        href: `/recipes/${activeRecipeSlug}`,
+        target: "_blank"
+      });
+    }
+    mobilePublicationItems.push({
+      key: "hide-publication",
+      label: "Скрыть публикацию",
+      icon: <Lock className="h-4 w-4" aria-hidden />,
+      disabled: pendingSave,
+      onSelect: () => {
+        setMakePrivateError(null);
+        setMakePrivateConfirmOpen(true);
+      }
+    });
+  }
 
   const handlePublishConfirm = async () => {
     setPublishError(null);
@@ -1368,7 +1400,7 @@ export function RecipeDesigner({
   const canSaveDraftNow = hasUnsavedDraftWork && (saveStatus === "draft" || saveStatus === "saved");
   const headerSaveStatusMeta: { label: string; icon: React.ReactNode; className: string } = saveStatus === "saving"
     ? {
-      label: "Сохранение…",
+      label: "Сохраняем…",
       icon: <Loader2 className="h-3.5 w-3.5 animate-spin" />,
       className: "bg-blue-50 text-blue-700 ring-blue-200 dark:bg-blue-500/15 dark:text-blue-300 dark:ring-blue-500/30"
     }
@@ -1396,7 +1428,7 @@ export function RecipeDesigner({
 
   const visibilityChipMeta = savedVisibility === "published"
     ? { label: "Опубликован", icon: <Globe className="h-3.5 w-3.5" />, className: "bg-violet-50 text-violet-700 ring-violet-200 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30" }
-    : { label: "Приватный", icon: <Lock className="h-3.5 w-3.5" />, className: "bg-muted text-foreground ring-border" };
+    : { label: "Только мне", icon: <Lock className="h-3.5 w-3.5" />, className: "bg-muted text-foreground ring-border" };
 
   // Компактные ключевые метрики для закреплённой полосы — петля «изменил → увидел»
   // не должна теряться при прокрутке длинной формы (#18/#20).
@@ -1452,10 +1484,10 @@ export function RecipeDesigner({
         onClose={() => setWaterResetConfirmOpen(false)}
       />
 
-      <div data-testid="recipe-toolbar" className="sticky top-[var(--chrome-top)] z-30 -mx-4 flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border/70 bg-card/85 px-4 py-2 backdrop-blur supports-[backdrop-filter]:bg-card/70 sm:px-5">
+      <div data-testid="recipe-toolbar" className="sticky top-[var(--chrome-top)] z-30 -mx-4 flex flex-wrap items-center gap-x-1.5 gap-y-2 border-b border-border/70 bg-card/85 px-4 py-2 backdrop-blur supports-[backdrop-filter]:bg-card/70 sm:gap-x-3 sm:px-5">
         <span aria-label={headerSaveStatusMeta.label} title={headerSaveStatusMeta.label} className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ring-inset ${headerSaveStatusMeta.className}`}>
           {headerSaveStatusMeta.icon}
-          <span className="hidden sm:inline">{headerSaveStatusMeta.label}</span>
+          <span>{headerSaveStatusMeta.label}</span>
         </span>
 
         {canSaveDraftNow ? (
@@ -1493,17 +1525,18 @@ export function RecipeDesigner({
           ) : null}
         </dl>
 
-        <div className="ml-auto flex shrink-0 items-center gap-1.5">
+        <div className="ml-auto flex min-w-0 max-w-full flex-wrap items-center justify-end gap-1.5">
           {canManagePublication && savedVisibility === "published" && activeRecipeSlug ? (
             <a
               href={`/recipes/${activeRecipeSlug}`}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted sm:text-sm"
-              title="Открыть публичную страницу"
+              className="hidden h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted md:inline-flex md:text-sm"
+              title="Посмотреть публикацию"
+              aria-label="Посмотреть публикацию"
             >
               <ExternalLink className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Публичная</span>
+              <span className="hidden md:inline">Посмотреть публикацию</span>
             </a>
           ) : null}
           {canManagePublication && savedVisibility === "private" ? (
@@ -1513,10 +1546,10 @@ export function RecipeDesigner({
               disabled={pendingSave}
               aria-label="Опубликовать"
               title="Опубликовать"
-              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-foreground bg-foreground px-3 text-xs font-medium text-background transition-colors hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-60 sm:px-4 sm:text-sm skin-hop:border-primary skin-hop:bg-primary skin-hop:text-primary-foreground skin-hop:hover:bg-primary/90"
+              className="hidden h-9 items-center gap-1.5 rounded-lg border border-foreground bg-foreground px-3 text-xs font-medium text-background transition-colors hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-60 md:inline-flex md:px-4 md:text-sm skin-hop:border-primary skin-hop:bg-primary skin-hop:text-primary-foreground skin-hop:hover:bg-primary/90"
             >
               <Globe className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Опубликовать</span>
+              <span className="hidden md:inline">Опубликовать</span>
             </button>
           ) : null}
           {canManagePublication && savedVisibility === "published" ? (
@@ -1527,15 +1560,16 @@ export function RecipeDesigner({
                 setMakePrivateConfirmOpen(true);
               }}
               disabled={pendingSave}
-              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm"
+              aria-label="Скрыть публикацию"
+              className="hidden h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60 md:inline-flex md:text-sm"
             >
               <Lock className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">В&nbsp;приватные</span>
-              <span className="sm:hidden">Приватный</span>
+              <span className="hidden md:inline">Скрыть публикацию</span>
             </button>
           ) : null}
           <RecipeActionsMenu
             pending={pendingSave}
+            mobilePublicationItems={mobilePublicationItems}
             labelsHref={activeRecipeId ? `/app/recipes/${activeRecipeId}/labels` : null}
             // Пустой черновик (B2/#13): варить нечего — форсить создание записи в
             // БД ради пустой болванки незачем. Импорт/экспорт не гейтим тем же
@@ -1753,7 +1787,7 @@ export function RecipeDesigner({
                           disabled={!waterPlanMeta.setupEnabled}
                           className="inline-flex h-8 items-center rounded-lg border border-border bg-card px-2.5 text-xs font-medium text-muted-foreground shadow-sm transition-colors hover:border-border hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50 sm:h-9 sm:px-3 sm:text-sm"
                         >
-                          <span className="hidden sm:inline">Сбросить воду</span>
+                          <span className="hidden sm:inline">Сбросить настройки воды</span>
                           <span className="sm:hidden">Сброс</span>
                         </button>
                       </>
@@ -1841,7 +1875,7 @@ export function RecipeDesigner({
                 <FileText className="h-4 w-4" />
               </div>
               <span className="text-[15px]">Описание рецепта</span>
-              <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">публично</span>
+              <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">видно после публикации</span>
               <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90" />
             </summary>
             <div className="p-4">
@@ -1849,7 +1883,7 @@ export function RecipeDesigner({
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
                 className="min-h-28 w-full rounded-xl border border-border bg-muted/50 px-3 py-2.5 text-base text-foreground placeholder:text-muted-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm [@media(pointer:coarse)]:text-base"
-                placeholder="Публичное описание рецепта — что это за пиво, вдохновение, особенности…"
+                placeholder="Расскажите, какое пиво получится и что учесть при варке."
               />
               {sectionErrors.description ? <p className="mt-2 text-xs text-destructive">{sectionErrors.description}</p> : null}
             </div>
@@ -1862,7 +1896,7 @@ export function RecipeDesigner({
               <span className="text-[15px]">Личные заметки</span>
               <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
                 <Lock className="h-3 w-3" />
-                приватно
+                только вам
               </span>
               <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90" />
             </summary>
@@ -1881,7 +1915,7 @@ export function RecipeDesigner({
       <ConfirmActionDialog
         open={publishConfirmOpen}
         title="Опубликовать рецепт?"
-        description="После публикации он станет доступен по публичной ссылке."
+        description="Рецепт станет доступен всем по ссылке."
         confirmLabel="Опубликовать"
         pendingLabel="Публикуем..."
         tone="primary"
@@ -1896,9 +1930,9 @@ export function RecipeDesigner({
 
       <ConfirmActionDialog
         open={makePrivateConfirmOpen}
-        title="Сделать рецепт приватным?"
-        description="После этого публичная страница перестанет быть доступна."
-        confirmLabel="Сделать приватным"
+        title="Скрыть публикацию рецепта?"
+        description="Рецепт больше не будет доступен другим пользователям по ссылке."
+        confirmLabel="Скрыть публикацию"
         pendingLabel="Меняем доступ..."
         pending={pendingSave}
         error={makePrivateError}

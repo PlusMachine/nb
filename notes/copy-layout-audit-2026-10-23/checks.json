@@ -1,0 +1,515 @@
+[
+  {
+    "key": "/labels",
+    "pass": true
+  },
+  {
+    "key": "/articles",
+    "pass": true
+  },
+  {
+    "key": "/login",
+    "pass": true
+  },
+  {
+    "key": "/offline",
+    "pass": true
+  },
+  {
+    "key": "/catalog/system/iodophor-sanitizer",
+    "pass": true
+  },
+  {
+    "key": "/catalog/consumables",
+    "pass": true
+  },
+  {
+    "key": "/catalog/water",
+    "pass": true
+  },
+  {
+    "key": "/beer/pilsner-urquell",
+    "pass": true
+  },
+  {
+    "key": "/beer/sample-american-stout",
+    "pass": true
+  },
+  {
+    "key": "/beer/bell-s-two-hearted-ale",
+    "pass": true
+  },
+  {
+    "key": "/admin/ingredients/apricot-frukty-ovoschi",
+    "pass": true
+  },
+  {
+    "key": "/admin/ingredients/de-amarillo-standard",
+    "pass": true
+  },
+  {
+    "key": "/app/devices/722d0409-72d1-4dee-8da3-bb7f3795d369",
+    "pass": true
+  },
+  {
+    "key": "/app/devices/722d0409-72d1-4dee-8da3-bb7f3795d369/settings",
+    "pass": true
+  },
+  {
+    "key": "inventory_price_fixed",
+    "pass": true
+  },
+  {
+    "key": "recipe_import_dialogs",
+    "error": "locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('h1').first() to be visible\u001b[22m\n"
+  },
+  {
+    "key": "device_connect_modes",
+    "pass": true
+  },
+  {
+    "key": "batch_journal",
+    "pass": true
+  },
+  {
+    "key": "shopping_controls",
+    "pass": true
+  },
+  {
+    "key": "recipe_dialogs_complete",
+    "pass": true
+  },
+  {
+    "key": "controller_rare_states",
+    "pass": true
+  },
+  {
+    "key": "shopping_manual_form",
+    "pass": true
+  },
+  {
+    "key": "calculator_mode_controls",
+    "pass": true
+  },
+  {
+    "key": "mash_modes",
+    "pass": true
+  },
+  {
+    "key": "refractometer_modes",
+    "error": "locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Настроить поправочный коэффициент', exact: true })\u001b[22m\n"
+  },
+  {
+    "key": "theme_popover_320",
+    "client": 320,
+    "scroll": 320,
+    "overflow": 0,
+    "outside": [],
+    "clipped": [],
+    "overlaps": [],
+    "found": [
+      "Оформление «Хмель» включено"
+    ]
+  },
+  {
+    "key": "theme_popover",
+    "pass": true
+  },
+  {
+    "key": "landscape/app/ingredients",
+    "width": 844,
+    "height": 390,
+    "client": 844,
+    "scroll": 844,
+    "overflow": 0,
+    "outside": [],
+    "clipped": [],
+    "overlaps": [],
+    "found": [
+      "Добавить ингредиент",
+      "Рецепты под ваши запасы"
+    ]
+  },
+  {
+    "key": "landscape/app/ingredients",
+    "width": 1024,
+    "height": 600,
+    "client": 1024,
+    "scroll": 1024,
+    "overflow": 0,
+    "outside": [],
+    "clipped": [],
+    "overlaps": [],
+    "found": [
+      "Добавить ингредиент",
+      "Рецепты под ваши запасы"
+    ]
+  },
+  {
+    "key": "text200/app/ingredients",
+    "width": 1280,
+    "client": 1280,
+    "scroll": 1280,
+    "overflow": 0,
+    "outside": [],
+    "clipped": [],
+    "overlaps": [],
+    "found": [
+      "Добавить ингредиент",
+      "Рецепты под ваши запасы"
+    ]
+  },
+  {
+    "key": "landscape/app/recipes/7440adc5-2cbf-41b2-9263-54c7450f25a6/edit",
+    "width": 844,
+    "height": 390,
+    "client": 844,
+    "scroll": 844,
+    "overflow": 0,
+    "outside": [],
+    "clipped": [],
+    "overlaps": [],
+    "found": [
+      "Сравнение со стилем",
+      "Ввести состав вручную",
+      "Брожение",
+      "Температура основного брожения, °C",
+      "Длительность основного брожения, дни"
+    ]
+  },
+  {
+    "key": "landscape/app/recipes/7440adc5-2cbf-41b2-9263-54c7450f25a6/edit",
+    "width": 1024,
+    "height": 600,
+    "client": 1024,
+    "scroll": 1024,
+    "overflow": 0,
+    "outside": [],
+    "clipped": [],
+    "overlaps": [],
+    "found": [
+      "Сравнение со стилем",
+      "Ввести состав вручную",
+      "Брожение",
+      "Температура основного брожения, °C",
+      "Длительность основного брожения, дни"
+    ]
+  },
+  {
+    "key": "text200/app/recipes/7440adc5-2cbf-41b2-9263-54c7450f25a6/edit",
+    "width": 1280,
+    "client": 1280,
+    "scroll": 1280,
+    "overflow": 0,
+    "outside": [
+      {
+        "tag": "BUTTON",
+        "text": "Сбросить настройки водыСброс",
+        "changed": false,
+        "cls": "inline-flex h-8 items-center rounded-lg border border-border bg-card px-2.5 text-xs font-medium text-muted-foreground shadow-sm transition-colors hover:border-b",
+        "box": {
+          "x": 917,
+          "y": 4402,
+          "w": 419,
+          "h": 72
+        }
+      }
+    ],
+    "clipped": [],
+    "overlaps": [],
+    "found": [
+      "Ввести состав вручную",
+      "Брожение",
+      "Температура основного брожения, °C",
+      "Длительность основного брожения, дни"
+    ]
+  },
+  {
+    "key": "landscape_and_text_zoom",
+    "error": "page.goto: net::ERR_SOCKET_NOT_CONNECTED at http://127.0.0.1:3010/labels\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3010/labels\", waiting until \"domcontentloaded\"\u001b[22m\n"
+  },
+  {
+    "key": "refractometer_modes_retest",
+    "pass": true
+  },
+  {
+    "key": "landscape/app/ingredients",
+    "width": 844,
+    "height": 390,
+    "client": 844,
+    "scroll": 844,
+    "overflow": 0,
+    "outside": [],
+    "clipped": [],
+    "overlaps": [],
+    "found": []
+  },
+  {
+    "key": "landscape/app/ingredients",
+    "width": 1024,
+    "height": 600,
+    "client": 1024,
+    "scroll": 1024,
+    "overflow": 0,
+    "outside": [],
+    "clipped": [],
+    "overlaps": [],
+    "found": [
+      "Добавить ингредиент",
+      "Рецепты под ваши запасы"
+    ]
+  },
+  {
+    "key": "text200/app/ingredients",
+    "width": 1280,
+    "client": 1280,
+    "scroll": 1280,
+    "overflow": 0,
+    "outside": [],
+    "clipped": [],
+    "overlaps": [],
+    "found": [
+      "Добавить ингредиент",
+      "Рецепты под ваши запасы"
+    ]
+  },
+  {
+    "key": "landscape/app/recipes/7440adc5-2cbf-41b2-9263-54c7450f25a6/edit",
+    "width": 844,
+    "height": 390,
+    "client": 844,
+    "scroll": 844,
+    "overflow": 0,
+    "outside": [],
+    "clipped": [],
+    "overlaps": [],
+    "found": [
+      "Сравнение со стилем",
+      "Ввести состав вручную",
+      "Брожение",
+      "Температура основного брожения, °C",
+      "Длительность основного брожения, дни"
+    ]
+  },
+  {
+    "key": "landscape/app/recipes/7440adc5-2cbf-41b2-9263-54c7450f25a6/edit",
+    "width": 1024,
+    "height": 600,
+    "client": 1024,
+    "scroll": 1024,
+    "overflow": 0,
+    "outside": [],
+    "clipped": [],
+    "overlaps": [],
+    "found": []
+  },
+  {
+    "key": "text200/app/recipes/7440adc5-2cbf-41b2-9263-54c7450f25a6/edit",
+    "width": 1280,
+    "client": 1280,
+    "scroll": 1280,
+    "overflow": 0,
+    "outside": [],
+    "clipped": [],
+    "overlaps": [],
+    "found": []
+  },
+  {
+    "key": "landscape/labels",
+    "width": 844,
+    "height": 390,
+    "client": 844,
+    "scroll": 844,
+    "overflow": 0,
+    "outside": [],
+    "clipped": [],
+    "overlaps": [],
+    "found": [
+      "Предпросмотр",
+      "Показать как при печати",
+      "Крепость, % об.",
+      "Горечь, IBU",
+      "Цвет, EBC",
+      "Начальная плотность",
+      "Конечная плотность",
+      "Подпись внизу этикетки"
+    ]
+  },
+  {
+    "key": "landscape/labels",
+    "width": 1024,
+    "height": 600,
+    "client": 1024,
+    "scroll": 1024,
+    "overflow": 0,
+    "outside": [],
+    "clipped": [],
+    "overlaps": [],
+    "found": [
+      "Предпросмотр",
+      "Показать как при печати",
+      "Крепость, % об.",
+      "Горечь, IBU",
+      "Цвет, EBC",
+      "Начальная плотность",
+      "Конечная плотность",
+      "Подпись внизу этикетки"
+    ]
+  },
+  {
+    "key": "text200/labels",
+    "width": 1280,
+    "client": 1280,
+    "scroll": 1280,
+    "overflow": 0,
+    "outside": [],
+    "clipped": [
+      {
+        "tag": "LABEL",
+        "text": "Крепость, % об.",
+        "changed": true,
+        "cls": "mb-1 block text-xs font-medium text-muted-foreground",
+        "box": {
+          "x": 528,
+          "y": 1810,
+          "w": 83,
+          "h": 64
+        },
+        "scrollWidth": 122,
+        "clientWidth": 83
+      },
+      {
+        "tag": "LABEL",
+        "text": "Горечь, IBU",
+        "changed": true,
+        "cls": "mb-1 block text-xs font-medium text-muted-foreground",
+        "box": {
+          "x": 635,
+          "y": 1810,
+          "w": 83,
+          "h": 64
+        },
+        "scrollWidth": 88,
+        "clientWidth": 83
+      }
+    ],
+    "overlaps": [],
+    "found": [
+      "Предпросмотр",
+      "Показать как при печати",
+      "Крепость, % об.",
+      "Горечь, IBU",
+      "Цвет, EBC",
+      "Начальная плотность",
+      "Конечная плотность",
+      "Подпись внизу этикетки"
+    ]
+  },
+  {
+    "key": "landscape_and_text_zoom_retest",
+    "pass": true
+  },
+  {
+    "key": "kiosk_demo",
+    "error": "page.setViewportSize: Protocol error (Browser.setWindowBounds): To resize minimized/maximized/fullscreen window, restore it to normal state first."
+  },
+  {
+    "key": "long_toast_320",
+    "client": 320,
+    "scroll": 320,
+    "overflow": 0,
+    "outside": [],
+    "clipped": [],
+    "overlaps": [],
+    "found": [
+      "Адрес подключения показывается только один раз. Если вы его не сохранили, создайте новый.",
+      "Создать новый адрес"
+    ]
+  },
+  {
+    "key": "long_toast",
+    "pass": true
+  },
+  {
+    "key": "label_300_render",
+    "pass": true
+  },
+  {
+    "key": "kiosk_native",
+    "pass": true,
+    "client": 320,
+    "scroll": 320,
+    "overflow": 0,
+    "outside": [],
+    "clipped": [],
+    "overlaps": [],
+    "found": []
+  },
+  {
+    "key": "text200_labels_fixed",
+    "client": 1280,
+    "scroll": 1280,
+    "overflow": 0,
+    "outside": [],
+    "clipped": [
+      {
+        "tag": "LABEL",
+        "text": "Крепость, % об.",
+        "changed": true,
+        "cls": "mb-1 block text-xs font-medium text-muted-foreground",
+        "box": {
+          "x": 528,
+          "y": 418,
+          "w": 83,
+          "h": 64
+        },
+        "scrollWidth": 122,
+        "clientWidth": 83
+      },
+      {
+        "tag": "LABEL",
+        "text": "Горечь, IBU",
+        "changed": true,
+        "cls": "mb-1 block text-xs font-medium text-muted-foreground",
+        "box": {
+          "x": 635,
+          "y": 418,
+          "w": 83,
+          "h": 64
+        },
+        "scrollWidth": 88,
+        "clientWidth": 83
+      }
+    ],
+    "overlaps": [],
+    "found": [
+      "Предпросмотр",
+      "Показать как при печати",
+      "Крепость, % об.",
+      "Горечь, IBU",
+      "Цвет, EBC",
+      "Начальная плотность",
+      "Конечная плотность",
+      "Подпись внизу этикетки"
+    ]
+  },
+  {
+    "key": "text200_labels_fixed_final",
+    "client": 1280,
+    "scroll": 1280,
+    "overflow": 0,
+    "outside": [],
+    "clipped": [],
+    "overlaps": [],
+    "found": [
+      "Предпросмотр",
+      "Показать как при печати",
+      "Крепость, % об.",
+      "Горечь, IBU",
+      "Цвет, EBC",
+      "Начальная плотность",
+      "Конечная плотность",
+      "Подпись внизу этикетки"
+    ]
+  }
+]

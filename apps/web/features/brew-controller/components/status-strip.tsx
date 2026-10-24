@@ -17,7 +17,10 @@ export function StatusStrip({ telemetry }: Props) {
     <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
       <p className="text-sm font-semibold text-foreground">Контур</p>
       <dl className="mt-3 space-y-2 text-sm">
-        <Row label="Скважность нагрева" value={telemetry ? `${telemetry.heatDutyPct}%` : "—"} />
+        <Row label="Доля времени нагрева" value={telemetry ? `${telemetry.heatDutyPct}%` : "—"} />
+        {telemetry?.outputs ? telemetry.outputs.map((output) => (
+          <Row key={output.role} label={output.label} value={<Pill on={output.on} />} />
+        )) : <>
         <Row label="Нагрев (SSR)" value={<Pill on={telemetry?.heatOn ?? false} />} />
         <Row label="Кипение" value={telemetry ? `${telemetry.boilPct}%` : "—"} />
         <Row label="Насос" value={<Pill on={telemetry?.pumpOn ?? false} />} />
@@ -34,6 +37,7 @@ export function StatusStrip({ telemetry }: Props) {
         {telemetry?.coolOn !== undefined ? (
           <Row label="Охлаждение" value={<Pill on={telemetry.coolOn} />} />
         ) : null}
+        </>}
         {telemetry?.indirectActive !== undefined ? (
           <Row
             label="Косвенный нагрев (HERMS/RIMS)"

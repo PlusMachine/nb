@@ -115,7 +115,7 @@ export function DeviceFermentPanel({ deviceId, gravityUnit, chartSessions, histo
                 {formatSessionPeriod(new Date(session.startedAt), session.endedAt !== null ? new Date(session.endedAt) : null)}
               </span>
               <span className="shrink-0 text-xs text-muted-foreground">
-                {session.readingsCount} {pluralize(session.readingsCount, ["точка", "точки", "точек"])}
+                {session.readingsCount} {pluralize(session.readingsCount, ["показание", "показания", "показаний"])}
               </span>
               <SessionBoundsControl sessionId={session.id} startedAt={session.startedAt} endedAt={session.endedAt} />
             </li>

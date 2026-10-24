@@ -24,7 +24,7 @@ const PROMPT_TEXT: Record<Prompt, string> = {
   CONTINUE_DOUGH: "Продолжить засыпку солода?",
   ADD_MALT: "Засыпьте солод",
   IODINE: "Йодная проба",
-  REMOVE_MALT: "Удалите солод",
+  REMOVE_MALT: "Извлеките дробину",
   RESUME_BREW: "Возобновить варку после перезагрузки?",
 };
 
@@ -37,7 +37,7 @@ const FAULT_TEXT: Record<Fault, string> = {
   FLOAT_DRY: "сухой ход",
   ESTOP: "аварийный останов",
   WATCHDOG: "сторожевой таймер",
-  STAGE_TO: "таймаут стадии",
+  STAGE_TO: "превышено время этапа",
   NO_FLOW: "нет рециркуляции",
 };
 
@@ -97,7 +97,7 @@ export function notificationFor(edge: TelemetryEdge, ctx: NotificationContext): 
   if (edge.kind === "ferment-deviation") {
     return {
       title: ctx.deviceName,
-      body: `Отклонение от уставки: ${fmtC(edge.primaryC)} при уставке ${fmtC(edge.setpointC)}`,
+      body: `Температура отклонилась от заданной: сейчас ${fmtC(edge.primaryC)} (задано ${fmtC(edge.setpointC)}).`,
       tag: `${ctx.deviceId}:ferment-deviation`,
       url,
     };
@@ -138,7 +138,7 @@ export function notificationFor(edge: TelemetryEdge, ctx: NotificationContext): 
 export function fermentWatchdogNotification(ctx: NotificationContext, minutes: number): PushPayload {
   return {
     title: `⚠ ${ctx.deviceName}`,
-    body: `Прибор молчит ${minutes} мин`,
+    body: `Нет связи с прибором ${minutes} мин`,
     tag: `${ctx.deviceId}:ferment-watchdog`,
     url: `/app/devices/${ctx.deviceId}`,
   };
@@ -188,7 +188,7 @@ export function streamSilenceNotification(
   brewBatchId: string,
 ): PushPayload {
   return {
-    title: `Ареометр молчит: ${ctx.deviceName}`,
+    title: `Нет данных от ареометра: ${ctx.deviceName}`,
     body: `Нет данных ${silentHours} ч. Партия «${batchName}»`,
     tag: `${ctx.deviceId}:stream-silence`,
     url: `/app/brew-batches/${brewBatchId}`,

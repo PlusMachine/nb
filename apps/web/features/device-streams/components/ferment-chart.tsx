@@ -416,7 +416,7 @@ export function FermentChart({
   if (geom.empty) {
     return (
       <p className="text-sm text-muted-foreground">
-        {geom.hasAnyDataEver ? "Нет точек в выбранном периоде." : "Замеров пока нет."}
+        {geom.hasAnyDataEver ? "За выбранный период нет показаний." : "Замеров пока нет."}
       </p>
     );
   }

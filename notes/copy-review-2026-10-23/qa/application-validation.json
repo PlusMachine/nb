@@ -1,0 +1,11 @@
+{
+  "appliedProposals": 318,
+  "rejectedPreserved": [
+    "R001",
+    "R064"
+  ],
+  "sourceFiles": 106,
+  "testFiles": 27,
+  "logicalChanges": [],
+  "failures": []
+}

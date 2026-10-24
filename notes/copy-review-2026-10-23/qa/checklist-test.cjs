@@ -1,0 +1,43 @@
+const { chromium } = require('playwright');
+const fs = require('fs');
+const path = require('path');
+(async () => {
+  const browser = await chromium.launch({headless:true});
+  const page = await browser.newPage({viewport:{width:1000,height:900}});
+  const errors=[]; page.on('pageerror',e=>errors.push(String(e)));
+  await page.goto('file://'+path.resolve('notes/copy-review-2026-10-23/qa/checklist-preview.html'));
+  const frame = page.frames().find(f=>f!==page.mainFrame());
+  await frame.locator('.review-item').first().waitFor();
+  const count=await frame.locator('.review-item').count();
+  if(count!==320)throw Error('Wrong item count '+count);
+  await frame.locator('[data-id="R001"] button[data-choice="approve"]').click();
+  await frame.locator('[data-id="R002"] button[data-choice="reject"]').click();
+  await frame.locator('[data-id="R003"] button[data-choice="custom"]').click();
+  await frame.locator('#nb-review-send').click();
+  if(!(await frame.locator('#nb-review-status').innerText()).includes('R003'))throw Error('Empty custom not blocked');
+  await frame.locator('#custom-R003').fill('Мой текст — русский вариант <пример>');
+  await frame.evaluate(()=>{window.openai.sendFollowUpMessage=async p=>{window.testSent=p;};});
+  await frame.locator('#nb-review-send').click();
+  const sent=await frame.evaluate(()=>window.testSent);
+  if(!sent.prompt.includes('Мой текст — русский вариант <пример>')||!sent.prompt.includes('reject'))throw Error('Transfer lost decisions');
+  await frame.locator('[data-id="R001"] button[data-choice="approve"]').click();
+  if(await frame.locator('[data-id="R001"] button[data-choice="approve"]').getAttribute('aria-pressed')!=='false')throw Error('Undo failed');
+  await frame.evaluate(()=>{
+    const widgetState={modelContent:{audit:'nb-copy-2026-10-23-v1',decisions:[['R001','approve'],['R003','custom','Восстановленный вариант']]},privateContent:{open:['Главная и навигация']}};
+    window.dispatchEvent(new CustomEvent('openai:set_globals',{detail:{globals:{widgetState}}}));
+  });
+  if(await frame.locator('#custom-R003').inputValue()!=='Восстановленный вариант')throw Error('Restore failed');
+  await page.screenshot({path:'notes/copy-review-2026-10-23/qa/checklist-desktop.png',fullPage:true});
+  await page.setViewportSize({width:390,height:844});
+  const fit=await frame.evaluate(()=>({width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth}));
+  if(fit.scroll>fit.width+1)throw Error('Mobile horizontal overflow '+JSON.stringify(fit));
+  await page.screenshot({path:'notes/copy-review-2026-10-23/qa/checklist-mobile.png',fullPage:true});
+  // Test the fallback without messaging support.
+  await frame.evaluate(()=>{window.openai.sendFollowUpMessage=undefined;});
+  await frame.locator('#nb-review-send').click();
+  if(!(await frame.locator('#nb-review-transfer').inputValue()).includes('Восстановленный вариант'))throw Error('Fallback lost text');
+  if(errors.length)throw Error(errors.join('\n'));
+  fs.writeFileSync('notes/copy-review-2026-10-23/qa/checklist-test-result.json',JSON.stringify({items:count,passed:['approve','reject','custom','empty custom validation','transfer payload','undo','restore state','fallback transfer','mobile width'],fit,errors},null,2));
+  console.log('PASS',count,'items',JSON.stringify(fit));
+  await browser.close();
+})().catch(e=>{console.error(e);process.exit(1)});

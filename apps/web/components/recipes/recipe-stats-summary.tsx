@@ -62,19 +62,22 @@ const formatPlainRange = (range: MetricRange, unit = ""): string => (
   `${formatPlainNumber(range.min)}–${formatPlainNumber(range.max)}${unit}`
 );
 
-function MetricValue({ children }: { children: React.ReactNode }) {
-  return <div className="text-2xl font-bold tabular-nums tracking-tight text-foreground">{children}</div>;
+function MetricValue({ children, compact }: { children: React.ReactNode; compact?: boolean }) {
+  return <div className={`${compact ? "text-xl" : "text-2xl"} font-bold tabular-nums tracking-tight text-foreground`}>{children}</div>;
 }
 
 export function RecipeStatsSummary({
   recipe,
   gravityLabels = { og: "OG", fg: "FG" },
-  preferredGravityUnit
+  preferredGravityUnit,
+  variant = "card"
 }: {
   recipe: RecipeStatsSource;
   gravityLabels?: { og: string; fg: string };
   preferredGravityUnit: PreferredGravityUnit;
+  variant?: "card" | "plain";
 }) {
+  const compact = variant === "plain";
   const styleRange = getStyleRangeById(recipe.styleId);
   // Диапазоны на треках — целевые для стиля BJCP; сам стиль (с кодом) называем
   // прямо в шапке блока, иначе непонятно, к чему относятся «полосы».
@@ -105,7 +108,7 @@ export function RecipeStatsSummary({
     {
       key: "og",
       label: gravityLabels.og,
-      value: <MetricValue>{formatGravity(recipe.og, preferredGravityUnit)}</MetricValue>,
+      value: <MetricValue compact={compact}>{formatGravity(recipe.og, preferredGravityUnit)}</MetricValue>,
       secondary: formatGravitySecondary(recipe.og, preferredGravityUnit),
       rawValue: recipe.og ?? null,
       range: styleRange?.og ?? null,
@@ -114,7 +117,7 @@ export function RecipeStatsSummary({
     {
       key: "fg",
       label: gravityLabels.fg,
-      value: <MetricValue>{formatGravity(recipe.fg, preferredGravityUnit)}</MetricValue>,
+      value: <MetricValue compact={compact}>{formatGravity(recipe.fg, preferredGravityUnit)}</MetricValue>,
       secondary: fgSecondary,
       rawValue: recipe.fg ?? null,
       range: styleRange?.fg ?? null,
@@ -123,7 +126,7 @@ export function RecipeStatsSummary({
     {
       key: "abv",
       label: "ABV",
-      value: <MetricValue>{recipe.abv == null ? "—" : `${recipe.abv.toFixed(1)}%`}</MetricValue>,
+      value: <MetricValue compact={compact}>{recipe.abv == null ? "—" : `${recipe.abv.toFixed(1)}%`}</MetricValue>,
       secondary: null,
       rawValue: recipe.abv ?? null,
       range: styleRange?.abv ?? null,
@@ -132,7 +135,7 @@ export function RecipeStatsSummary({
     {
       key: "ibu",
       label: "IBU",
-      value: <MetricValue>{recipe.ibu == null ? "—" : recipe.ibu.toFixed(0)}</MetricValue>,
+      value: <MetricValue compact={compact}>{recipe.ibu == null ? "—" : recipe.ibu.toFixed(0)}</MetricValue>,
       secondary: null,
       rawValue: recipe.ibu ?? null,
       range: styleRange?.ibu ?? null,
@@ -143,11 +146,11 @@ export function RecipeStatsSummary({
       label: "Цвет",
       value: colorInfo && srmText ? (
         <div className="flex items-center gap-1.5">
-          <BeerGlassIcon color={colorInfo.hex} size={24} className="shrink-0" />
-          <span className="text-2xl font-bold tabular-nums tracking-tight text-foreground">{srmText}</span>
+          <BeerGlassIcon color={colorInfo.hex} size={compact ? 20 : 24} className="shrink-0" />
+          <span className={`${compact ? "text-xl" : "text-2xl"} font-bold tabular-nums tracking-tight text-foreground`}>{srmText}</span>
           <span className="text-xs font-medium text-muted-foreground">SRM</span>
         </div>
-      ) : <MetricValue>—</MetricValue>,
+      ) : <MetricValue compact={compact}>—</MetricValue>,
       secondary: colorInfo && recipe.color != null
         ? `${(recipe.color * 1.97).toFixed(0)} EBC · ${colorInfo.label}`
         : null,
@@ -162,27 +165,27 @@ export function RecipeStatsSummary({
   const overallFit = evaluated.length > 0 && evaluated.every((status) => status === "in_range");
 
   return (
-    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-base font-semibold text-foreground">Ключевые показатели</h2>
-        <div className="flex flex-wrap items-center gap-3">
+    <section className={compact ? "border-b border-border py-4" : "rounded-2xl border border-border bg-card p-5 shadow-sm"}>
+      <div className={compact ? "mb-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2" : "mb-4 flex flex-wrap items-center justify-between gap-2"}>
+        <h2 className="text-base font-semibold text-foreground">Параметры рецепта</h2>
+        <div className={compact ? "contents" : "flex flex-wrap items-center gap-3"}>
           {styleChipText ? (
             styleHref ? (
               <Link
                 href={styleHref}
-                className="inline-flex items-center gap-1 text-xs font-medium text-violet-700 underline-offset-2 transition-colors hover:text-violet-900 hover:underline dark:text-violet-300 dark:hover:text-violet-200"
+                className={`inline-flex min-w-0 items-center gap-1 text-xs font-medium text-violet-700 underline-offset-2 transition-colors hover:text-violet-900 hover:underline dark:text-violet-300 dark:hover:text-violet-200 ${compact ? "col-span-2 row-start-2 justify-self-start" : ""}`}
               >
                 {styleChipText}
                 <ExternalLink className="h-3 w-3 shrink-0" aria-hidden />
               </Link>
             ) : (
-              <span className="text-xs font-medium text-violet-700 dark:text-violet-300">
+              <span className={`text-xs font-medium text-violet-700 dark:text-violet-300 ${compact ? "col-span-2 row-start-2" : ""}`}>
                 {styleChipText}
               </span>
             )
           ) : null}
           {evaluated.length > 0 ? (
-            <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${overallFit ? "bg-success-subtle text-success-subtle-foreground ring-1 ring-success/30" : "bg-warning-subtle text-warning-subtle-foreground ring-1 ring-warning/30"}`}>
+            <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${compact ? "col-start-2 row-start-1 justify-self-end" : ""} ${overallFit ? "bg-success-subtle text-success-subtle-foreground ring-1 ring-success/30" : "bg-warning-subtle text-warning-subtle-foreground ring-1 ring-warning/30"}`}>
               {overallFit ? <CircleCheck className="h-3.5 w-3.5" /> : <CircleAlert className="h-3.5 w-3.5" />}
               {overallFit ? "В стиле" : "Есть отклонения"}
             </span>
@@ -190,22 +193,22 @@ export function RecipeStatsSummary({
         </div>
       </div>
 
-      <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+      <dl className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 ${compact ? "gap-x-4 gap-y-5" : "gap-3"}`}>
         {items.map((item, index) => {
           const status = statuses[index] ?? null;
 
           return (
-            <div key={item.key} className="flex min-w-0 flex-col rounded-xl border border-border p-3.5">
+            <div key={item.key} className={compact ? "flex min-w-0 flex-col" : "flex min-w-0 flex-col rounded-xl border border-border p-3.5"}>
               <dt className="truncate text-[11px] font-medium uppercase tracking-wider text-muted-foreground">{item.label}</dt>
-              <dd className="mt-1.5 min-w-0">
+              <dd className={`${compact ? "mt-1" : "mt-1.5"} min-w-0`}>
                 {item.value}
                 {item.secondary ? (
-                  <div title={item.secondary} className="mt-0.5 truncate text-xs tabular-nums text-muted-foreground">{item.secondary}</div>
+                  <div title={item.secondary} className={`mt-0.5 text-xs tabular-nums text-muted-foreground ${compact ? "break-words" : "truncate"}`}>{item.secondary}</div>
                 ) : null}
               </dd>
               {item.range && item.rangeText ? (
-                <div className="mt-auto pt-3">
-                  <div className="relative h-1.5 w-full rounded-full bg-muted">
+                <div className={`mt-auto ${compact ? "pt-2" : "pt-3"}`}>
+                  <div className={`relative h-1.5 w-full rounded-full ${compact ? "bg-white dark:bg-muted" : "bg-muted"}`}>
                     <div
                       className="absolute inset-y-0 rounded-full bg-success/20"
                       style={{ left: `${BAND_LEFT_PCT}%`, width: `${BAND_WIDTH_PCT}%` }}
@@ -219,8 +222,8 @@ export function RecipeStatsSummary({
                       </span>
                     ) : null}
                   </div>
-                  <div className="mt-1 flex items-baseline justify-between gap-1 text-[10px] tabular-nums text-muted-foreground">
-                    <span className="truncate">стиль {item.rangeText}</span>
+                  <div className={`mt-1 flex items-baseline justify-between gap-1 tabular-nums text-muted-foreground ${compact ? "flex-wrap text-[11px]" : "text-[10px]"}`}>
+                    <span className={compact ? undefined : "truncate"}>стиль {item.rangeText}</span>
                     {status && status !== "in_range" ? (
                       <span className="shrink-0 font-medium text-warning-subtle-foreground">{deviationLabels[status]}</span>
                     ) : null}

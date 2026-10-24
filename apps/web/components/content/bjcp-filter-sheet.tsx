@@ -33,7 +33,7 @@ export function BjcpFilterSheet({
       onOpenChange={(next) => {
         if (!next) onClose();
       }}
-      title="Уточнить каталог"
+      title="Фильтры стилей"
       side="right"
     >
       <div className="space-y-6">

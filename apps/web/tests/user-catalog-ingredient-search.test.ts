@@ -777,7 +777,7 @@ describe("user catalog ingredient search", () => {
         subtype: "process_aid",
         itemKind: "process_aid",
         sourceCategory: "process_aid",
-        subcategory: "Санитайзеры",
+        subcategory: "Дезинфицирующие средства",
         primaryLabelRu: "Star San",
         displayName: "Star San",
         nameRu: "Star San",
@@ -1343,7 +1343,7 @@ describe("user catalog ingredient search", () => {
     });
 
     expect(result.refinements.slice(0, 2)).toMatchObject([
-      { type: "consumable_group", label: "Санитайзеры", value: "sanitizer", count: 1 },
+      { type: "consumable_group", label: "Дезинфицирующие средства", value: "sanitizer", count: 1 },
       { type: "consumable_group", label: "Мойка", value: "cleaner", count: 2 }
     ]);
     expect(result.appliedManufacturer).toBeNull();

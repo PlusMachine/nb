@@ -199,6 +199,6 @@ describe("PublicRecipeBoilSection", () => {
     const html = renderBoil(60, []);
     expect(html).toContain("Кипячение");
     expect(html).toContain("60 мин");
-    expect(html).toContain("Внесений на кипячении нет.");
+    expect(html).toContain("Во время кипячения ингредиенты не добавляются.");
   });
 });

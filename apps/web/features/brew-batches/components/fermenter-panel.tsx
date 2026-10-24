@@ -70,12 +70,12 @@ export function FermenterPanel({ brewBatchId, status, deviceName, candidates, fr
         <FermenterPicker brewBatchId={brewBatchId} candidates={candidates} />
       ) : null}
 
-      {status.kind === "no-data" ? <p className="text-sm text-muted-foreground">Телеметрии с прибора пока нет.</p> : null}
+      {status.kind === "no-data" ? <p className="text-sm text-muted-foreground">Показаний с прибора пока нет.</p> : null}
 
       {status.kind === "fermenting" || status.kind === "mode-mismatch" ? (
         <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 tabular-nums">
           <span className="text-2xl font-semibold text-foreground">{fmtC(status.point.primaryC)}</span>
-          <span className="text-sm text-muted-foreground">уставка {fmtC(status.point.setpointC)}</span>
+          <span className="text-sm text-muted-foreground">задано {fmtC(status.point.setpointC)}</span>
           {freshnessLabel ? <span className="text-xs text-muted-foreground">· {freshnessLabel}</span> : null}
         </div>
       ) : null}

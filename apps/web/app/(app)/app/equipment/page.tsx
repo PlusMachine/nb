@@ -125,7 +125,7 @@ function EquipmentProfileCard({
       <div className="mt-4 grid gap-2 sm:grid-cols-3">
         <ProfileMetric label="Типичный объём партии" value={formatLiters(profile.targetBatchVolumeL)} />
         <ProfileMetric label="Эффективность" value={formatPct(profile.brewhouseEfficiencyPct)} />
-        <ProfileMetric label="Испарение" value={formatRate(profile.evaporationRateLPerHr)} />
+        <ProfileMetric label="Скорость выкипания" value={formatRate(profile.evaporationRateLPerHr)} />
       </div>
 
       {isEditing ? (
@@ -155,10 +155,10 @@ export default async function EquipmentProfilesPage({
 
   return (
     <main className="space-y-5">
-      <section className="rounded-lg border border-border bg-card p-4 shadow-sm">
+      <section className="border-b border-border pb-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h1 className="text-xl font-semibold text-foreground">Профили оборудования</h1>
+            <h1 className="text-xl font-semibold text-foreground">Настройки пивоварни</h1>
             <p className="mt-1 text-xs text-muted-foreground">
               {formatProfilesCount(profiles.length)}
               {defaultProfileId ? ` · основной: ${profiles.find((profile) => profile.id === defaultProfileId)?.name ?? "выбран"}` : ""}
@@ -174,7 +174,7 @@ export default async function EquipmentProfilesPage({
       </section>
 
       {isCreating ? (
-        <section className="rounded-lg border border-border bg-card p-4 shadow-sm">
+        <section>
           <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
             <div>
               <h2 className="text-base font-semibold text-foreground">Новый профиль</h2>

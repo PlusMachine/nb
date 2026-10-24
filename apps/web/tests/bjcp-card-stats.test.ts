@@ -20,8 +20,8 @@ describe("BJCP catalog card stats", () => {
     const style = catalog.styles.find((item) => item.bjcpId === "27-Kellerbier");
 
     expect(style).toBeDefined();
-    expect(getBjcpCardStatDisplay(style!, "abv").value).toBe("как база");
-    expect(getBjcpCardStatDisplay(style!, "ibu").value).toBe("как база");
+    expect(getBjcpCardStatDisplay(style!, "abv").value).toBe("как у базового стиля");
+    expect(getBjcpCardStatDisplay(style!, "ibu").value).toBe("как у базового стиля");
   });
 
   it("shows concise subtype fallback labels for specialty IPA parent entries", async () => {
@@ -43,7 +43,7 @@ describe("BJCP catalog card stats", () => {
     const style = catalog.styles.find((item) => item.bjcpId === "33A");
 
     expect(style).toBeDefined();
-    expect(getBjcpCardColorInfo(style!).value).toBe("темнее базы");
+    expect(getBjcpCardColorInfo(style!).value).toBe("темнее базового стиля");
     expect(getBjcpCardColorInfo(style!)).toMatchObject({
       startHex: "#EAB308",
       averageHex: "#A16207",
@@ -65,7 +65,7 @@ describe("BJCP catalog card stats", () => {
 
     expect(style).toBeDefined();
     expect(getBjcpCardColorInfo(style!)).toMatchObject({
-      value: "по базе",
+      value: "по базовому стилю",
       startHex: "#FDE047",
       averageHex: "#FB923C",
       endHex: "#F43F5E"

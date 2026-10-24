@@ -17,7 +17,7 @@ export function SiteFooter() {
             NB
           </p>
           <p className="max-w-xs text-sm leading-6 text-muted-foreground">
-            Платформа для домашних пивоваров: каталог ингредиентов, склад, рецепты и BJCP в одном месте.
+            Рецепты, склад ингредиентов и расчёты для домашнего пивоварения.
           </p>
           <p className="max-w-xs text-xs leading-5 text-muted-foreground">
             18+ · Материалы носят информационный характер. Чрезмерное употребление алкоголя вредит вашему здоровью.
@@ -60,7 +60,7 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-border">
         <p className="mx-auto max-w-7xl px-6 py-4 text-xs text-muted-foreground">
-          © {year} NB — платформа для домашних пивоваров
+          © {year} NB — помощник домашнего пивовара
         </p>
       </div>
     </footer>

@@ -1041,7 +1041,7 @@ describe("recipe editor components", () => {
       preferredGravityUnit: "plato"
     });
 
-    expect(html).toContain(">Попадание в стиль</h2>");
+    expect(html).toContain(">Сравнение со стилем</h2>");
     expect(html).toContain('href="/bjcp/bjcp-1a-american-light-lager"');
     expect(html).toContain(">BJCP Американский лёгкий лагер</span>");
     expect(html).not.toContain("Ваш рецепт и");
@@ -1058,7 +1058,7 @@ describe("recipe editor components", () => {
       preferredGravityUnit: "plato"
     });
 
-    expect(html).toContain(">Попадание в стиль</h2>");
+    expect(html).toContain(">Сравнение со стилем</h2>");
     // Длинное имя стиля не должно приводить к переносу/обрезке заголовка — оно вынесено отдельной строкой.
     expect(html).toContain(">BJCP Американский лёгкий лагер</span>");
     expect(html).not.toContain("Ваш рецепт и");

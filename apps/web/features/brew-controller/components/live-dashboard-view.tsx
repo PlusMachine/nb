@@ -24,6 +24,7 @@ import { Beer, Power } from "lucide-react";
 import {
   promptName,
   cmdAck,
+  cmdAckHop,
   cmdEnterManual,
   cmdPause,
   cmdResume,
@@ -52,6 +53,7 @@ import { StageTimeline } from "@/features/brew-controller/components/stage-timel
 import { StatusPill } from "@/features/brew-controller/components/status-pill";
 import { MonitorHero } from "@/features/brew-controller/components/monitor-hero";
 import { StatusStrip } from "@/features/brew-controller/components/status-strip";
+import { PendingHopCard } from "@/features/brew-controller/components/pending-hop-card";
 import { ControlDock } from "@/features/brew-controller/components/control-dock";
 import { deriveAppMode, deriveDeviceMode } from "@/features/brew-controller/device-mode";
 import { BrewRecipeOnDevicePicker } from "@/features/devices/components/brew-recipe-on-device-picker";
@@ -148,7 +150,7 @@ export function LiveDashboardView({
   pushableRecipes = [],
   variant = "page"
 }: Props) {
-  const { telemetry, conn, isStale, isLive, lastError, remaining } = stream;
+  const { telemetry, conn, isStale, isLive, lastError, remaining, lastFrameAt } = stream;
   const { lease, controlsHeld, pending, send, requestTakeover, release, scheduleUndoable, undo } = command;
 
   const [confirm, setConfirm] = useState<ConfirmState>(null);
@@ -207,8 +209,8 @@ export function LiveDashboardView({
   const skipStage = useCallback(() => {
     setActionMsg(null);
     scheduleUndoable(cmdSkipStage(), {
-      label: "Стадия будет пропущена",
-      onResult: (r) => setActionMsg(r.ok ? "Стадия пропущена" : r.error ?? "Не удалось пропустить стадию")
+      label: "Этап будет пропущен",
+      onResult: (r) => setActionMsg(r.ok ? "Этап пропущен" : r.error ?? "Не удалось пропустить этап")
     });
   }, [scheduleUndoable]);
 
@@ -258,10 +260,19 @@ export function LiveDashboardView({
         </div>
       ) : null}
 
+      {hasDevice && !isLive ? (
+        <div role="status" className="rounded-2xl border-2 border-warning/40 bg-warning-subtle p-4 text-warning-subtle-foreground">
+          <p className="font-semibold">Нет свежих данных от устройства</p>
+          <p className="mt-1 text-sm">
+            {lastFrameAt ? `Последние показания получены в ${new Date(lastFrameAt).toLocaleTimeString("ru-RU")}. ` : "Показания пока не получены. "}
+            Текущее состояние неизвестно. Аварийный останов остаётся доступен.
+          </p>
+        </div>
+      ) : null}
+
       {otherSessionControls ? (
         <div className="rounded-2xl border border-warning/30 bg-warning-subtle p-4 text-sm text-warning-subtle-foreground" role="status">
-          Управляет другой сеанс — здесь только просмотр. Показатели могут быть неполными или обновляться с задержкой;
-          чтобы взять управление, нажмите «Запросить управление» на панели ниже.
+          Управление открыто в другом окне или на другом устройстве — здесь доступен только просмотр. Показания могут быть неполными или обновляться с задержкой. Чтобы взять управление, нажмите «Запросить управление».
         </div>
       ) : null}
 
@@ -289,7 +300,7 @@ export function LiveDashboardView({
             {idleDeviceId && appMode === "brew" ? (
               <Button variant="primary" size="md" onClick={() => setRecipePickerOpen(true)}>
                 <Beer className="h-4 w-4" aria-hidden />
-                Сварить рецепт…
+                Выбрать рецепт…
               </Button>
             ) : null}
             <Button
@@ -319,11 +330,13 @@ export function LiveDashboardView({
           </div>
           {!controlsHeld ? (
             <p className="mt-2 text-xs text-warning-subtle-foreground">
-              Ответить на запрос может только сеанс, который управляет устройством.
+              Ответить на запрос можно только в окне, из которого сейчас управляют устройством.
             </p>
           ) : null}
         </div>
       ) : null}
+
+      <PendingHopCard telemetry={telemetry} disabled={controlsDisabled} onAck={(index) => void run(cmdAckHop(index))} />
 
       {(() => {
         const isKiosk = variant === "kiosk";

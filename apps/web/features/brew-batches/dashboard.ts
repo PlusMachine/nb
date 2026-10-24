@@ -74,7 +74,7 @@ export const resolveBrewNudge = (item: BrewNudgeInput, now: Date): BrewNudge => 
       const since = item.lastMeasurementAt ?? item.startedAt ?? item.createdAt;
       const days = Math.max(daysBetween(since, now), 0);
       if (days >= STALE_MEASUREMENT_DAYS) {
-        return { tone: "warn", text: `${days} ${russianDays(days)} без замера — проверьте FG` };
+        return { tone: "warn", text: `${days} ${russianDays(days)} без замера — проверьте конечную плотность` };
       }
       return { tone: "info", text: "Брожение идёт" };
     }

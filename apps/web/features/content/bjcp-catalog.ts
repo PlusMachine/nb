@@ -201,7 +201,7 @@ export const advancedFilterDefinitions: Array<{
     label: "Крепость",
     options: [
       { id: "session", label: "Лёгкое" },
-      { id: "standard", label: "Стандартное" },
+      { id: "standard", label: "Средней крепости" },
       { id: "strong", label: "Крепкое" },
       { id: "very_strong", label: "Очень крепкое" }
     ]

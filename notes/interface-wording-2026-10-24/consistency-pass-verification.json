@@ -1,0 +1,98 @@
+{
+  "groups": 14,
+  "editedFragments": 90,
+  "sourceFiles": 42,
+  "tests": {
+    "files": 300,
+    "passed": 4098,
+    "failed": 0
+  },
+  "typecheck": "pass",
+  "structure": {
+    "editedFiles": 42,
+    "editedTextFragments": 90,
+    "syntax": "pass",
+    "nonTextStructure": "unchanged"
+  },
+  "consistencyScan": {
+    "files": 887,
+    "strings": 8289,
+    "outdatedVisibleLabels": []
+  },
+  "browser": [
+    {
+      "route": "/calculators/brewing-water-volume",
+      "status": 200,
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "route": "/calculators/brewing-water-volume",
+      "status": 200,
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "route": "/calculators/dilution-boiloff",
+      "status": 200,
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "route": "/calculators/dilution-boiloff",
+      "status": 200,
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "route": "/calculators",
+      "status": 200,
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "route": "/calculators",
+      "status": 200,
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "route": "/demo",
+      "status": 200,
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "route": "/demo",
+      "status": 200,
+      "width": 1440,
+      "scroll": 1440
+    }
+  ],
+  "interactive": [
+    {
+      "scenario": "Вода на варку: единые подписи, ввод и пересчёт",
+      "result": "pass"
+    },
+    {
+      "scenario": "Разбавление и уваривание: та же подпись скорости выкипания",
+      "result": "pass"
+    },
+    {
+      "scenario": "Избранное: единое доступное название и вход для гостя",
+      "result": "pass"
+    },
+    {
+      "scenario": "Демо: сообщение о пропуске этапа",
+      "result": "pass"
+    },
+    {
+      "scenario": "Демо: подпись и доступное название заданной температуры в ручном режиме",
+      "result": "pass"
+    }
+  ],
+  "limits": [
+    "Private pages and admin checked via source and existing tests; local DB unavailable.",
+    "Browser device actions only on isolated client simulator."
+  ]
+}

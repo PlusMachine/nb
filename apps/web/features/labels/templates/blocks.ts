@@ -519,41 +519,46 @@ export const descriptionBlock = (
   const maxLines = params.maxLines ?? 3;
 
   for (let lines = maxLines; lines >= 1; lines -= 1) {
-    const fitted = fitTextLines(source, {
-      fontId: "body",
-      maxWidthPx: params.width,
-      maxLines: lines,
-      maxSizePx: mm(2.5),
-      minSizePx: mm(2)
-    });
-    if (fitted.lines.length === 0) {
-      continue;
-    }
-    const lineHeight = Math.round(fitted.fontSizePx * 1.32);
-    const height = fitted.lines.length * lineHeight;
-    if (params.maxHeightPx !== undefined && height > params.maxHeightPx) {
-      continue;
-    }
-    const trimmed = fitted.lines.join(" ") !== source;
-    if (trimmed && fitted.lines.length < DESCRIPTION_MIN_TRIMMED_LINES) {
-      break;
-    }
-    const parts = fitted.lines.map((line, index) =>
-      textEl({
-        x: params.cx,
-        y: params.y + fitted.fontSizePx + index * lineHeight,
+    // Округление миллиметров в пиксели зависит от dpi. Если строкам не хватает
+    // пары пикселей по высоте, сначала уменьшаем кегль в допустимых пределах.
+    for (let maxSizePx = mm(2.5); maxSizePx >= mm(2);) {
+      const fitted = fitTextLines(source, {
         fontId: "body",
-        sizePx: fitted.fontSizePx,
-        text: line,
-        anchor: "middle"
-      })
-    );
-    return {
-      svg: `<g ${DESCRIPTION_SVG_ATTR}="${trimmed ? "trimmed" : "full"}">${parts.join("")}</g>`,
-      height,
-      trimmed,
-      printedChars: fitted.lines.join(" ").length
-    };
+        maxWidthPx: params.width,
+        maxLines: lines,
+        maxSizePx,
+        minSizePx: mm(2)
+      });
+      if (fitted.lines.length === 0) {
+        break;
+      }
+      const lineHeight = Math.round(fitted.fontSizePx * 1.32);
+      const height = fitted.lines.length * lineHeight;
+      if (params.maxHeightPx !== undefined && height > params.maxHeightPx) {
+        maxSizePx = fitted.fontSizePx - 1;
+        continue;
+      }
+      const trimmed = fitted.lines.join(" ") !== source;
+      if (trimmed && fitted.lines.length < DESCRIPTION_MIN_TRIMMED_LINES) {
+        break;
+      }
+      const parts = fitted.lines.map((line, index) =>
+        textEl({
+          x: params.cx,
+          y: params.y + fitted.fontSizePx + index * lineHeight,
+          fontId: "body",
+          sizePx: fitted.fontSizePx,
+          text: line,
+          anchor: "middle"
+        })
+      );
+      return {
+        svg: `<g ${DESCRIPTION_SVG_ATTR}="${trimmed ? "trimmed" : "full"}">${parts.join("")}</g>`,
+        height,
+        trimmed,
+        printedChars: fitted.lines.join(" ").length
+      };
+    }
   }
 
   // Не влезло ни одной полноценной строки — описание не печатаем (но и не молчим).

@@ -188,7 +188,7 @@ export function MasterModerationPanel({ profile }: { profile: MasterProfileDto }
       <ConfirmActionDialog
         open={unlistOpen}
         title="Снять с витрины?"
-        description="Публичная страница мастера станет недоступна. Контент сохранится — вернуть видимость можно в любой момент."
+        description="Страница мастера станет недоступна посетителям. Все материалы сохранятся — страницу можно будет вернуть на витрину."
         confirmLabel="Снять с витрины"
         pendingLabel="Снимаем…"
         pending={isPending}

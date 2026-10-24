@@ -96,7 +96,7 @@ export function ControlDock({
       ) : null}
       {otherSessionHolds ? (
         <p className="mt-1 text-sm text-warning-subtle-foreground">
-          Устройством управляют из другого сеанса. Запросите передачу управления.
+          Управление уже открыто в другом окне или на другом устройстве. Запросите передачу управления.
         </p>
       ) : null}
     </div>

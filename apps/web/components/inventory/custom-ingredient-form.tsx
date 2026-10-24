@@ -753,7 +753,7 @@ export function CustomIngredientForm({
 
           {category === "hop" ? (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <label className="text-sm">Тип хмеля
+              <label className="text-sm">Форма хмеля
                 <select
                   className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
                   value={hopForm}
@@ -801,7 +801,7 @@ export function CustomIngredientForm({
 
           {category === "yeast" ? (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <label className="text-sm">Тип дрожжей
+              <label className="text-sm">Форма дрожжей
                 <select className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base" value={yeastForm} onChange={(e) => setYeastForm(e.target.value as CustomYeastForm)}>
                   {customYeastForms.map((option) => (
                     <option key={option} value={option}>{customYeastFormLabels[option]}</option>
@@ -853,7 +853,7 @@ export function CustomIngredientForm({
         <>
           <div className="rounded-xl border border-border p-4">
             <div className="mb-3">
-              <h3 className="text-sm font-medium text-foreground">Количество и единица учёта</h3>
+              <h3 className="text-sm font-medium text-foreground">Количество и единица измерения</h3>
             </div>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2" data-testid="custom-required-fields">
@@ -955,7 +955,7 @@ export function CustomIngredientForm({
       ) : null}
 
       <button type="submit" disabled={pending} className="w-full rounded-md bg-foreground px-4 py-2 text-sm text-background disabled:opacity-60">
-        {pending ? "Сохранение..." : resolvedSubmitLabel}
+        {pending ? "Сохраняем…" : resolvedSubmitLabel}
       </button>
     </form>
   );

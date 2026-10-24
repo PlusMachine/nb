@@ -217,7 +217,7 @@ export function MasterContentModeration({
         </div>
 
         {galleryImages.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Фото вне товаров нет.</p>
+          <p className="text-sm text-muted-foreground">В общей галерее пока нет фото.</p>
         ) : (
           <ul className="flex flex-wrap gap-3">
             {galleryImages.map((image) => (

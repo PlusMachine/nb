@@ -242,7 +242,7 @@ export async function startBrewOnDeviceAction(input: {
     if (outcome.ok && outcome.reason === "REMOTE_DISABLED") {
       return {
         ok: true,
-        message: `Рецепт загружен в слот ${outcome.slot ?? 0} и выбран. Включите удалённое управление на устройстве или запустите варку вручную.`,
+        message: `Рецепт загружен в ячейку памяти № ${outcome.slot ?? 0} и выбран. Включите удалённое управление на устройстве или запустите варку вручную.`,
         heatingStarted: false,
         externalId: outcome.externalId,
         slot: outcome.slot,

@@ -157,18 +157,18 @@ export function InventoryPriceInput({
                 preferredCurrency,
                 inventoryUnitShortLabels[effectivePriceUnit]
               )}`
-            : "Цена относится ко всему количеству в карточке."
+            : "Стоимость всего указанного количества."
         );
 
   return (
     <div className="rounded-md border p-3">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-sm font-medium">
             Цена {priceInputMode === "per_display_unit" ? `за ${inventoryUnitShortLabels[effectivePriceUnit]}` : "за всё количество"}
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-1 rounded-md bg-muted p-1 text-xs" role="group" aria-label="Режим цены">
+        <div className="grid w-full grid-cols-2 gap-1 rounded-md bg-muted p-1 text-xs sm:w-auto" role="group" aria-label="Как указана цена">
           {inventoryPriceInputModes.map((mode) => {
             const active = priceInputMode === mode;
             return (
@@ -178,7 +178,7 @@ export function InventoryPriceInput({
                 onClick={() => onPriceInputModeChange(mode)}
                 className={`rounded px-2 py-1.5 ${active ? "bg-card shadow" : "text-muted-foreground"}`}
               >
-                {mode === "total" ? "За всё" : "За единицу"}
+                {mode === "total" ? "За всё количество" : "За единицу"}
               </button>
             );
           })}

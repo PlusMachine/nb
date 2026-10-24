@@ -422,7 +422,7 @@ export const updateInventoryItemAction = async (payload: {
     }
     revalidatePath("/app/ingredients");
 
-    return { ok: true, message: "Карточка ингредиента обновлёна." };
+    return { ok: true, message: "Карточка ингредиента обновлена." };
   } catch (error) {
     if (error instanceof Error && error.message === "NOT_FOUND") {
       return { ok: false, message: "Позиция не найдена или недоступна." };

@@ -203,7 +203,7 @@ export function BrewVolumeChoice({
           Количество ингредиентов пересчитано на {formatBrewVolumeL(targetVolumeL)}.
           {efficiencyDiffers ? (
             <>
-              {" "}Засыпь — под вашу эффективность {formatPercent(profile.brewhouseEfficiencyPct)}
+              {" "}Засыпь пересчитана с учётом вашей эффективности {formatPercent(profile.brewhouseEfficiencyPct)}
               {" "}(у автора {formatPercent(recipeEfficiencyPct as number)}), чтобы сохранить расчётную начальную плотность.
             </>
           ) : null}

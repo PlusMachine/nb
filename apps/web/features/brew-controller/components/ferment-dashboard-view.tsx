@@ -276,7 +276,7 @@ export function FermentDashboardView({
     if (!progress.current || !progress.next) return;
     requestConfirm({
       title: `Завершить «${progress.current.label}» и перейти к «${progress.next.label}»?`,
-      description: "Устройство сразу переключит уставку на следующую ступень профиля.",
+      description: "Заданная температура сразу изменится на значение следующей ступени профиля.",
       confirmLabel: "Перейти",
       tone: "primary",
       run: async () => {

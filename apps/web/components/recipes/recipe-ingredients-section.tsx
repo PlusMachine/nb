@@ -1,11 +1,11 @@
 import React from "react";
 import { Droplets, FlaskConical, Hop, Package, Wheat } from "lucide-react";
 import { resolveIngredientCategory } from "@/features/ingredients/taxonomy";
-import type { IngredientTechnicalData } from "@/features/ingredients/contracts";
 import { inventoryUnitLabels, type InventoryUnit } from "@/features/inventory/units";
 import type { RecipeDetailDto } from "@/features/recipes/contracts";
 import { fermentableUseLabels, hopUseTypeLabels } from "@/features/recipes/ingredient-labels";
 import {
+  buildRecipeIngredientCardSource,
   formatRecipeIngredientAmount,
   recipeIngredientCategoryOf,
   recipeIngredientDurationDays,
@@ -18,8 +18,7 @@ import {
   buildRecipeIngredientTechnicalBadges,
   RecipeIngredientTechnicalBadges,
   RecipeIngredientTitleBlock,
-  type RecipeIngredientTechnicalBadge,
-  type RecipeIngredientCardSource
+  type RecipeIngredientTechnicalBadge
 } from "./recipe-ingredient-card-display";
 
 type RecipeIngredient = RecipeDetailDto["ingredients"][number];
@@ -180,38 +179,6 @@ const grainSharePct = (ingredient: RecipeIngredient, totalGrams: number): string
   return share < 1 ? "<1%" : `${Math.round(share)}%`;
 };
 
-const buildIngredientCardSource = (ingredient: RecipeIngredient): RecipeIngredientCardSource => {
-  const category = ingredient.ingredientCategory ?? resolveIngredientCategory({ type: ingredient.type });
-
-  // Override альфы позиции (recipe_ingredients.stepMeta.alphaAcidPct) должен совпадать
-  // с тем, что показывает редактор рецепта — подмешиваем его в копию technicalData,
-  // не трогая исходный объект (та же логика в recipe-designer/helpers.ts).
-  const hopTechnicalData = category === "hop" && ingredient.ingredientTechnicalData?.type === "hop"
-    ? ingredient.ingredientTechnicalData as Extract<IngredientTechnicalData, { type: "hop" }>
-    : null;
-  const stepMeta = (ingredient.stepMeta ?? null) as Record<string, unknown> | null;
-  const alphaAcidPctOverride = hopTechnicalData && stepMeta && typeof stepMeta.alphaAcidPct === "number" && Number.isFinite(stepMeta.alphaAcidPct)
-    ? stepMeta.alphaAcidPct
-    : null;
-  const technicalData = alphaAcidPctOverride != null && hopTechnicalData
-    ? { ...hopTechnicalData, alphaAcidPctTypical: alphaAcidPctOverride }
-    : ingredient.ingredientTechnicalData ?? null;
-
-  return {
-    type: ingredient.type,
-    category,
-    subtype: ingredient.ingredientSubtype ?? null,
-    brand: ingredient.ingredientBrand ?? null,
-    producer: ingredient.ingredientProducer ?? null,
-    brandName: ingredient.ingredientBrandName ?? null,
-    manufacturer: ingredient.ingredientManufacturer ?? null,
-    countryCode: ingredient.ingredientCountryCode ?? null,
-    countryName: ingredient.ingredientCountryName ?? null,
-    country: ingredient.ingredientCountry ?? null,
-    technicalData
-  };
-};
-
 type RecipeIngredientsBatchContext = {
   batchSizeEnteredQuantity: number;
   batchSizeEnteredUnit: InventoryUnit;
@@ -250,7 +217,7 @@ export function RecipeIngredientsSection({
     : null;
 
   return (
-    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+    <section className="space-y-4">
       <div className="mb-4 space-y-1">
         <h2 className="text-base font-semibold text-foreground">Ингредиенты</h2>
         {batchContext || batchAction ? (
@@ -288,7 +255,7 @@ export function RecipeIngredientsSection({
               <ul className="space-y-1.5">
                 {group.items.map((ingredient) => {
                   const { primaryName, secondaryName } = resolveRecipeIngredientNames(ingredient);
-                  const cardSource = buildIngredientCardSource(ingredient);
+                  const cardSource = buildRecipeIngredientCardSource(ingredient);
                   const titleHref = ingredient.ingredientCatalogItemId
                     ? `/catalog/system/${ingredient.ingredientCatalogItemId}`
                     : null;
@@ -312,14 +279,14 @@ export function RecipeIngredientsSection({
                       : null;
 
                   return (
-                    <li key={ingredient.id} className={`rounded-lg border-l-[3px] bg-card px-3 py-2.5 ring-1 ring-border ${accent}`}>
+                    <li key={ingredient.id} className={`border-l-[3px] bg-card px-3 py-2.5 ${accent}`}>
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           <RecipeIngredientTitleBlock
                             source={cardSource}
                             primaryName={primaryName}
                             secondaryName={secondaryName}
-                            titleClassName="truncate text-sm font-medium text-foreground"
+                            titleClassName="break-words text-sm font-medium text-foreground"
                             titleHref={titleHref}
                           />
                           {summaryFallback ? <div className="mt-1 text-xs text-muted-foreground">{summaryFallback}</div> : null}

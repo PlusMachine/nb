@@ -17,6 +17,9 @@ MVP bootstrap for a modular-monolith homebrewing platform.
 - `packages/{brewing-core,auth,content,search}` — scaffold packages
 
 ## Setup
+Use Node.js 22.12+ (the CI uses Node.js 22) or Node.js 20.19+, and pnpm 9.15.9.
+Node.js 18 is no longer supported by the image-processing dependency.
+
 1. `cp .env.example .env`
 2. `npm install`
 3. `docker compose up -d`

@@ -3,7 +3,7 @@ import { Button } from "@nb/ui";
 import { NotificationOptIn } from "@/features/notifications/components/notification-opt-in";
 import { ProfileLogoutButton } from "@/components/app/profile-logout-button";
 import { requireUser } from "@/lib/auth";
-import { systemCurrencies } from "@/features/system/currency";
+import { systemCurrencies, systemCurrencyLabels } from "@/features/system/currency";
 import { gravityUnitLabels, preferredGravityUnits } from "@/features/system/gravity-units";
 
 import { updateSettingsAction } from "../settings/actions";
@@ -25,7 +25,6 @@ export default async function ProfilePage() {
         <div className="space-y-1 text-sm text-muted-foreground">
           {user.email ? <p>{user.email}</p> : null}
           {user.phone ? <p>{user.phone}</p> : null}
-          <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">Роль: {user.role}</p>
         </div>
       </section>
 
@@ -40,7 +39,7 @@ export default async function ProfilePage() {
           <label className="block text-sm">
             <span className="font-medium text-foreground">Валюта</span>
             <select name="preferredCurrency" defaultValue={user.preferredCurrency} className={inputClassName}>
-              {systemCurrencies.map((currency) => <option key={currency} value={currency}>{currency}</option>)}
+              {systemCurrencies.map((currency) => <option key={currency} value={currency}>{systemCurrencyLabels[currency]}</option>)}
             </select>
           </label>
 

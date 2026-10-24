@@ -1,0 +1,380 @@
+{
+  "syntaxAndStructure": {
+    "editedFiles": 42,
+    "editedTextFragments": 88,
+    "syntax": "pass",
+    "nonTextStructure": "unchanged"
+  },
+  "webTests": {
+    "files": 300,
+    "passed": 4098,
+    "failed": 0,
+    "log": "/tmp/nb-ui-editorial-20261024/web-tests-final.log"
+  },
+  "typecheck": {
+    "result": "passed"
+  },
+  "browser": {
+    "checks": [
+      {
+        "route": "/calculators",
+        "width": 1440,
+        "status": 200,
+        "scroll": 1440,
+        "heading": "Калькуляторы для пивоварения"
+      },
+      {
+        "route": "/calculators",
+        "width": 360,
+        "status": 200,
+        "scroll": 360,
+        "heading": "Калькуляторы для пивоварения"
+      },
+      {
+        "route": "/calculators/abv-attenuation",
+        "width": 1440,
+        "status": 200,
+        "scroll": 1440,
+        "heading": "Крепость, сбраживание и калории"
+      },
+      {
+        "route": "/calculators/abv-attenuation",
+        "width": 360,
+        "status": 200,
+        "scroll": 360,
+        "heading": "Крепость, сбраживание и калории"
+      },
+      {
+        "route": "/calculators/refractometer-correction",
+        "width": 1440,
+        "status": 200,
+        "scroll": 1440,
+        "heading": "Поправка рефрактометра на спирт"
+      },
+      {
+        "route": "/calculators/refractometer-correction",
+        "width": 360,
+        "status": 200,
+        "scroll": 360,
+        "heading": "Поправка рефрактометра на спирт"
+      },
+      {
+        "route": "/calculators/hydrometer-correction",
+        "width": 1440,
+        "status": 200,
+        "scroll": 1440,
+        "heading": "Поправка ареометра по температуре"
+      },
+      {
+        "route": "/calculators/hydrometer-correction",
+        "width": 360,
+        "status": 200,
+        "scroll": 360,
+        "heading": "Поправка ареометра по температуре"
+      },
+      {
+        "route": "/calculators/brewhouse-efficiency",
+        "width": 1440,
+        "status": 200,
+        "scroll": 1440,
+        "heading": "Эффективность варки"
+      },
+      {
+        "route": "/calculators/brewhouse-efficiency",
+        "width": 360,
+        "status": 200,
+        "scroll": 360,
+        "heading": "Эффективность варки"
+      },
+      {
+        "route": "/calculators/unit-converter",
+        "width": 1440,
+        "status": 200,
+        "scroll": 1440,
+        "heading": "Конвертер единиц пивовара"
+      },
+      {
+        "route": "/calculators/unit-converter",
+        "width": 360,
+        "status": 200,
+        "scroll": 360,
+        "heading": "Конвертер единиц пивовара"
+      },
+      {
+        "route": "/calculators/dilution-boiloff",
+        "width": 1440,
+        "status": 200,
+        "scroll": 1440,
+        "heading": "Разбавить или уварить сусло"
+      },
+      {
+        "route": "/calculators/dilution-boiloff",
+        "width": 360,
+        "status": 200,
+        "scroll": 360,
+        "heading": "Разбавить или уварить сусло"
+      },
+      {
+        "route": "/calculators/ibu",
+        "width": 1440,
+        "status": 200,
+        "scroll": 1440,
+        "heading": "Горечь пива (IBU)"
+      },
+      {
+        "route": "/calculators/ibu",
+        "width": 360,
+        "status": 200,
+        "scroll": 360,
+        "heading": "Горечь пива (IBU)"
+      },
+      {
+        "route": "/calculators/brewing-water-volume",
+        "width": 1440,
+        "status": 200,
+        "scroll": 1440,
+        "heading": "Сколько воды нужно на варку"
+      },
+      {
+        "route": "/calculators/brewing-water-volume",
+        "width": 360,
+        "status": 200,
+        "scroll": 360,
+        "heading": "Сколько воды нужно на варку"
+      },
+      {
+        "route": "/calculators/mash-infusion",
+        "width": 1440,
+        "status": 200,
+        "scroll": 1440,
+        "heading": "Инфузионное затирание"
+      },
+      {
+        "route": "/calculators/mash-infusion",
+        "width": 360,
+        "status": 200,
+        "scroll": 360,
+        "heading": "Инфузионное затирание"
+      },
+      {
+        "route": "/calculators/water-ph",
+        "width": 1440,
+        "status": 200,
+        "scroll": 1440,
+        "heading": "Вода и pH затора"
+      },
+      {
+        "route": "/calculators/water-ph",
+        "width": 360,
+        "status": 200,
+        "scroll": 360,
+        "heading": "Вода и pH затора"
+      },
+      {
+        "route": "/calculators/beer-color",
+        "width": 1440,
+        "status": 200,
+        "scroll": 1440,
+        "heading": "Цвет пива: SRM / EBC / Lovibond"
+      },
+      {
+        "route": "/calculators/beer-color",
+        "width": 360,
+        "status": 200,
+        "scroll": 360,
+        "heading": "Цвет пива: SRM / EBC / Lovibond"
+      },
+      {
+        "route": "/calculators/yeast-starter",
+        "width": 1440,
+        "status": 200,
+        "scroll": 1440,
+        "heading": "Засев дрожжей и стартер"
+      },
+      {
+        "route": "/calculators/yeast-starter",
+        "width": 360,
+        "status": 200,
+        "scroll": 360,
+        "heading": "Засев дрожжей и стартер"
+      },
+      {
+        "route": "/calculators/hop-freshness",
+        "width": 1440,
+        "status": 200,
+        "scroll": 1440,
+        "heading": "Свежесть хмеля и потеря альфа-кислот"
+      },
+      {
+        "route": "/calculators/hop-freshness",
+        "width": 360,
+        "status": 200,
+        "scroll": 360,
+        "heading": "Свежесть хмеля и потеря альфа-кислот"
+      },
+      {
+        "route": "/calculators/priming-sugar",
+        "width": 1440,
+        "status": 200,
+        "scroll": 1440,
+        "heading": "Карбонизация сахаром"
+      },
+      {
+        "route": "/calculators/priming-sugar",
+        "width": 360,
+        "status": 200,
+        "scroll": 360,
+        "heading": "Карбонизация сахаром"
+      },
+      {
+        "route": "/calculators/keg-carbonation",
+        "width": 1440,
+        "status": 200,
+        "scroll": 1440,
+        "heading": "Карбонизация в кеге"
+      },
+      {
+        "route": "/calculators/keg-carbonation",
+        "width": 360,
+        "status": 200,
+        "scroll": 360,
+        "heading": "Карбонизация в кеге"
+      },
+      {
+        "route": "/calculators/bottling",
+        "width": 1440,
+        "status": 200,
+        "scroll": 1440,
+        "heading": "Бутылки и объём розлива"
+      },
+      {
+        "route": "/calculators/bottling",
+        "width": 360,
+        "status": 200,
+        "scroll": 360,
+        "heading": "Бутылки и объём розлива"
+      },
+      {
+        "route": "/calculators/speise-krausen",
+        "width": 1440,
+        "status": 200,
+        "scroll": 1440,
+        "heading": "Карбонизация суслом (шпайзе, краузен)"
+      },
+      {
+        "route": "/calculators/speise-krausen",
+        "width": 360,
+        "status": 200,
+        "scroll": 360,
+        "heading": "Карбонизация суслом (шпайзе, краузен)"
+      },
+      {
+        "route": "/bjcp",
+        "width": 1440,
+        "status": 200,
+        "scroll": 1440,
+        "heading": "Стили пива по BJCP"
+      },
+      {
+        "route": "/bjcp",
+        "width": 360,
+        "status": 200,
+        "scroll": 360,
+        "heading": "Стили пива по BJCP"
+      },
+      {
+        "route": "/demo",
+        "width": 1440,
+        "status": 200,
+        "scroll": 1440,
+        "heading": "Попробуйте NB без регистрации"
+      },
+      {
+        "route": "/demo",
+        "width": 360,
+        "status": 200,
+        "scroll": 360,
+        "heading": "Попробуйте NB без регистрации"
+      },
+      {
+        "route": "/brewforge",
+        "width": 1440,
+        "status": 200,
+        "scroll": 1440,
+        "heading": "Автоматика для пивоварни"
+      },
+      {
+        "route": "/brewforge",
+        "width": 360,
+        "status": 200,
+        "scroll": 360,
+        "heading": "Автоматика для пивоварни"
+      },
+      {
+        "route": "/login",
+        "status": 200,
+        "width": 1440,
+        "scroll": 1440,
+        "heading": "Вход и регистрация",
+        "selectorRetry": true
+      },
+      {
+        "route": "/login",
+        "status": 200,
+        "width": 360,
+        "scroll": 360,
+        "heading": "Вход и регистрация",
+        "selectorRetry": true
+      },
+      {
+        "route": "/labels",
+        "status": 200,
+        "width": 1440,
+        "scroll": 1440,
+        "heading": "Наклейки на бутылки",
+        "selectorRetry": true
+      },
+      {
+        "route": "/labels",
+        "status": 200,
+        "width": 360,
+        "scroll": 360,
+        "heading": "Наклейки на бутылки",
+        "selectorRetry": true
+      }
+    ],
+    "errors": []
+  },
+  "interactive": [
+    {
+      "name": "BJCP: фильтр и пустой поиск",
+      "result": "pass",
+      "url": "http://127.0.0.1:3012/bjcp?q=zzzzzznonexistentstyle&filters=strength%3Astandard"
+    },
+    {
+      "name": "ABV: конечная плотность выше начальной",
+      "result": "pass"
+    },
+    {
+      "name": "Затирание: переход в переименованный режим",
+      "result": "pass",
+      "layout": {
+        "width": 360,
+        "scroll": 360
+      }
+    },
+    {
+      "name": "Вода: новое название дополнительного параметра",
+      "result": "pass"
+    },
+    {
+      "name": "Демо: подписи температуры и нагрева",
+      "result": "pass"
+    }
+  ],
+  "limits": [
+    "Авторизованные страницы, админка и реальные приборы: проверка исходников и существующих тестов. Локальная база PostgreSQL не отвечает.",
+    "Браузер: Chromium, гостевой режим, ширины 360 и 1440 px; демо BrewForge — симулятор.",
+    "Тексты статей, пользовательские данные из БД, юридические документы и описания BJCP не входят в эту правку интерфейса."
+  ]
+}

@@ -9,7 +9,7 @@ import { getServerEnv } from "@/lib/env";
 
 export const metadata: Metadata = {
   title: "Калькуляторы для пивоварения",
-  description: "Автономные пивоваренные расчёты для варки, брожения и розлива.",
+  description: "Расчёты для варки, брожения и розлива.",
   alternates: {
     canonical: "/calculators"
   },
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     siteName: getServerEnv().SITE_NAME,
     url: "/calculators",
     title: "Калькуляторы для пивоварения",
-    description: "Автономные пивоваренные расчёты для варки, брожения и розлива.",
+    description: "Расчёты для варки, брожения и розлива.",
     images: [getSectionOgImage("calculators")]
   }
 };

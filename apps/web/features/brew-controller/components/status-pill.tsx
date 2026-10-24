@@ -33,7 +33,7 @@ export function deriveConnStatus({
   if (!hasDevice) return { key: "no-device", label: "Нет устройства", cls: "bg-muted text-muted-foreground" };
   if (isStale) return { key: "stale", label: "Данные устарели", cls: "bg-warning-subtle text-warning-subtle-foreground" };
   if (conn === "online") return { key: "online", label: "На связи", cls: "bg-success-subtle text-success-subtle-foreground" };
-  if (conn === "offline") return { key: "offline", label: "Офлайн", cls: "bg-warning-subtle text-warning-subtle-foreground" };
+  if (conn === "offline") return { key: "offline", label: "Не в сети", cls: "bg-warning-subtle text-warning-subtle-foreground" };
   if (conn === "error") return { key: "error", label: "Ошибка связи", cls: "bg-destructive-subtle text-destructive-subtle-foreground" };
   return { key: "connecting", label: "Подключение…", cls: "bg-muted text-muted-foreground" };
 }

@@ -41,10 +41,10 @@ export function kioskOfflineBanner(input: {
   nowMs: number;
 }): KioskOfflineBanner | null {
   const { conn, isStale, lastFrameAtMs, nowMs } = input;
-  const detail = lastFrameAtMs === null ? "" : `последний кадр ${fmtAgo(nowMs - lastFrameAtMs)}`;
+  const detail = lastFrameAtMs === null ? "" : `последние данные получены ${fmtAgo(nowMs - lastFrameAtMs)}`;
 
   if (conn === "offline") {
-    return { tone: "red", title: "Прибор офлайн", detail };
+    return { tone: "red", title: "Прибор не в сети", detail };
   }
   if (isStale) {
     return { tone: "amber", title: "Данные устарели", detail };
@@ -55,6 +55,6 @@ export function kioskOfflineBanner(input: {
 /** Одноразовая подсказка про Wake Lock при первом входе в киоск (§9, §12.4). */
 export function wakeLockHintMessage(engaged: boolean): string {
   return engaged
-    ? "Экран не будет гаснуть, пока открыт киоск"
+    ? "Экран не будет гаснуть, пока открыт полноэкранный пульт"
     : "Включите «не гасить экран» в настройках устройства";
 }

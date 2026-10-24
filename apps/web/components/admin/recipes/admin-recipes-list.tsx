@@ -70,7 +70,7 @@ export function AdminRecipesList({ items }: { items: AdminRecipeListItem[] }) {
       show(failedCount > 0
         ? {
           title: `Скрыто рецептов: ${result.processed}`,
-          description: `Не прошло: ${failedCount} (${describeRecipeBulkFailures(result.failed)}).`,
+          description: `Не удалось обработать: ${failedCount} (${describeRecipeBulkFailures(result.failed)}).`,
           tone: "warning"
         }
         : {

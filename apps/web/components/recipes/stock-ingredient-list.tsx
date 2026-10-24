@@ -80,7 +80,7 @@ export function StockIngredientList({
         if (!controller.signal.aborted) {
           setItems([]);
           onOverflowChange?.(false);
-          console.error("Не удалось загрузить складские позиции для рецепта.", error);
+          console.error("Не удалось загрузить ингредиенты со склада.", error);
         }
       } finally {
         if (!controller.signal.aborted) {

@@ -73,7 +73,7 @@ export function PublicRecipePage({
 
         <PublicRecipeHeader recipe={recipe} />
 
-        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
           {/* Цифры — сразу под шапкой (быстрый ответ «что за пиво»), дальше суть
               рецепта в порядке варки: обложка → описание → ингредиенты → вода →
               затирание → кипячение → брожение. Затор/брожение — read-only, только

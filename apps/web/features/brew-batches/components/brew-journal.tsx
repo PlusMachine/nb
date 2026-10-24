@@ -239,7 +239,7 @@ export function BrewJournal({
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-[11px] text-muted-foreground">Когда (по умолч. — сейчас)</span>
+            <span className="text-[11px] text-muted-foreground">Дата и время замера</span>
             <input
               type="datetime-local"
               value={takenAt}
@@ -276,7 +276,7 @@ export function BrewJournal({
             disabled={busy}
             className="h-3.5 w-3.5 rounded border-border text-foreground focus:ring-ring"
           />
-          Это финальный замер (FG)
+          Это замер конечной плотности (КП)
         </label>
         {error ? <p role="alert" className="text-xs text-destructive">{error}</p> : null}
       </form>
@@ -284,7 +284,7 @@ export function BrewJournal({
       {/* История замеров */}
       {measurements.length === 0 ? (
         <p className="rounded-xl border border-dashed border-border bg-muted p-4 text-center text-sm text-muted-foreground">
-          Пока нет замеров. Внесите начальную плотность (OG), затем финальную (FG) — посчитаем ABV и сбраживание.
+          Замеров пока нет. Запишите начальную и конечную плотность, чтобы рассчитать крепость и степень сбраживания.
         </p>
       ) : (
         <ul className="divide-y divide-border">
@@ -306,8 +306,8 @@ export function BrewJournal({
                   type="button"
                   onClick={() => toggleFinal(measurement.id, !measurement.isFinal)}
                   disabled={busy}
-                  aria-label={measurement.isFinal ? "Снять отметку FG" : "Отметить финальным (FG)"}
-                  title={measurement.isFinal ? "Снять отметку FG" : "Отметить финальным (FG)"}
+                  aria-label={measurement.isFinal ? "Снять отметку конечной плотности" : "Отметить как конечную плотность"}
+                  title={measurement.isFinal ? "Снять отметку конечной плотности" : "Отметить как конечную плотность"}
                   className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition disabled:opacity-60 ${measurement.isFinal ? "text-warning-subtle-foreground hover:bg-warning-subtle" : "text-muted-foreground hover:bg-muted hover:text-muted-foreground"}`}
                 >
                   {togglingId === measurement.id ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Flag className={`h-4 w-4 ${measurement.isFinal ? "fill-warning" : ""}`} aria-hidden />}

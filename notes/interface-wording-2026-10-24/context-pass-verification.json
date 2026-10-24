@@ -1,0 +1,127 @@
+{
+  "previousFragmentsReviewed": 88,
+  "newTextEdits": 30,
+  "sourceFiles": 14,
+  "tests": {
+    "files": 300,
+    "passed": 4098,
+    "failed": 0
+  },
+  "typecheck": "pass",
+  "structure": {
+    "editedFiles": 14,
+    "editedTextFragments": 30,
+    "syntax": "pass",
+    "nonTextStructure": "unchanged"
+  },
+  "browser": [
+    {
+      "route": "/calculators/mash-infusion",
+      "status": 200,
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "route": "/calculators/mash-infusion",
+      "status": 200,
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "route": "/calculators/dilution-boiloff",
+      "status": 200,
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "route": "/calculators/dilution-boiloff",
+      "status": 200,
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "route": "/calculators/priming-sugar",
+      "status": 200,
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "route": "/calculators/priming-sugar",
+      "status": 200,
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "route": "/calculators/brewing-water-volume",
+      "status": 200,
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "route": "/calculators/brewing-water-volume",
+      "status": 200,
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "route": "/calculators/yeast-starter",
+      "status": 200,
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "route": "/calculators/yeast-starter",
+      "status": 200,
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "route": "/demo",
+      "status": 200,
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "route": "/demo",
+      "status": 200,
+      "width": 1440,
+      "scroll": 1440
+    }
+  ],
+  "interactive": [
+    {
+      "scenario": "Горячий объём: флажок и полный текст подсказки",
+      "result": "pass"
+    },
+    {
+      "scenario": "Сироп: подсказка в дополнительных параметрах",
+      "result": "pass"
+    },
+    {
+      "scenario": "Вода: предупреждение при уменьшении объёма на 25%",
+      "result": "pass"
+    },
+    {
+      "scenario": "Ступенчатое затирание: 66 → 60 °C, без долива",
+      "result": "pass"
+    },
+    {
+      "scenario": "Затирание: полное пояснение на ширине 360 px",
+      "result": "pass"
+    }
+  ],
+  "limitations": [
+    "Private screens and admin checked in source and existing tests; local PostgreSQL times out.",
+    "No real device connected."
+  ],
+  "calculatorRetest": {
+    "files": 21,
+    "passed": 190,
+    "failed": 0
+  },
+  "reportCheck": {
+    "cards": 28,
+    "search": "pass",
+    "mobileOverflow": false
+  }
+}

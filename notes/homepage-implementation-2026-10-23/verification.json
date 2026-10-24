@@ -1,0 +1,172 @@
+{
+  "checks": [
+    "stock search, recovery, category, invalid quantity, edit, delete and undo",
+    "four master panels, real recipe selection and volume scaling",
+    "both real label templates and expansion; embedded beer component without nested chrome",
+    "all distinct homepage destinations and auth return links",
+    "desktop, tablet, touch-sized controls and mobile menu 1440/1024/768/390/320",
+    "dark theme"
+  ],
+  "errors": [],
+  "statuses": [
+    {
+      "href": "/login?next=%2Fapp%2Fingredients",
+      "status": 200
+    },
+    {
+      "href": "/recipes",
+      "status": 200
+    },
+    {
+      "href": "/recipes/moya-apa-amarillo-cascade-2",
+      "status": 200
+    },
+    {
+      "href": "/login?next=%2Frecipes%2Fmoya-apa-amarillo-cascade-2",
+      "status": 200
+    },
+    {
+      "href": "/recipes/sample-saison",
+      "status": 200
+    },
+    {
+      "href": "/login?next=%2Frecipes%2Fsample-saison",
+      "status": 200
+    },
+    {
+      "href": "/recipes/sample-american-stout",
+      "status": 200
+    },
+    {
+      "href": "/login?next=%2Frecipes%2Fsample-american-stout",
+      "status": 200
+    },
+    {
+      "href": "/login?next=%2Fapp%2Frecipes%2Fnew",
+      "status": 200
+    },
+    {
+      "href": "/bjcp/bjcp-20b-american-stout",
+      "status": 200
+    },
+    {
+      "href": "/login?next=%2Fapp%2Fequipment",
+      "status": 200
+    },
+    {
+      "href": "/labels",
+      "status": 200
+    },
+    {
+      "href": "/beer/moya-apa-amarillo-cascade-2",
+      "status": 200
+    },
+    {
+      "href": "/",
+      "status": 200
+    },
+    {
+      "href": "/bjcp/bjcp-18b-american-pale-ale",
+      "status": 200
+    },
+    {
+      "href": "/catalog",
+      "status": 200
+    },
+    {
+      "href": "/catalog/system/kurskiy-solod-pilsner-premium",
+      "status": 200
+    },
+    {
+      "href": "/login?next=%2Fapp%2Fingredients%3FaddSource%3Dcatalog%26addId%3Dkurskiy-solod-pilsner-premium",
+      "status": 200
+    },
+    {
+      "href": "/catalog/system/soufflet--pilsen-2rp-bio",
+      "status": 200
+    },
+    {
+      "href": "/login?next=%2Fapp%2Fingredients%3FaddSource%3Dcatalog%26addId%3Dsoufflet--pilsen-2rp-bio",
+      "status": 200
+    },
+    {
+      "href": "/catalog/system/us-cascade-beervingem-standard",
+      "status": 200
+    },
+    {
+      "href": "/login?next=%2Fapp%2Fingredients%3FaddSource%3Dcatalog%26addId%3Dus-cascade-beervingem-standard",
+      "status": 200
+    },
+    {
+      "href": "/catalog/system/fermentis-us-05",
+      "status": 200
+    },
+    {
+      "href": "/login?next=%2Fapp%2Fingredients%3FaddSource%3Dcatalog%26addId%3Dfermentis-us-05",
+      "status": 200
+    },
+    {
+      "href": "/bjcp",
+      "status": 200
+    },
+    {
+      "href": "/bjcp/bjcp-4a-munich-helles",
+      "status": 200
+    },
+    {
+      "href": "/bjcp/bjcp-21a-american-ipa",
+      "status": 200
+    },
+    {
+      "href": "/bjcp/bjcp-15b-irish-stout",
+      "status": 200
+    },
+    {
+      "href": "/calculators/abv-attenuation",
+      "status": 200
+    },
+    {
+      "href": "/calculators/keg-carbonation",
+      "status": 200
+    },
+    {
+      "href": "/calculators/refractometer-correction",
+      "status": 200
+    },
+    {
+      "href": "/calculators/hydrometer-correction",
+      "status": 200
+    },
+    {
+      "href": "/calculators/unit-converter",
+      "status": 200
+    },
+    {
+      "href": "/articles",
+      "status": 200
+    },
+    {
+      "href": "/articles/kontrol-temperatury-brozheniya",
+      "status": 200
+    },
+    {
+      "href": "/articles/pervaya-varka-doma-poshagovyy-chek-list",
+      "status": 200
+    },
+    {
+      "href": "/articles/kak-svarit-pervoe-pivo",
+      "status": 200
+    }
+  ],
+  "widths": [
+    1440,
+    1024,
+    768,
+    390,
+    320
+  ],
+  "limitations": [
+    "Browser-local stock is marked Demo; no personal inventory modified",
+    "No deployment; auth mutations not performed in guest QA"
+  ]
+}

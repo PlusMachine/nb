@@ -350,7 +350,7 @@ function ArrayFieldEditor({
   };
 
   return (
-    <section className="space-y-3 rounded-xl border border-border bg-muted/60 p-3">
+    <section className="space-y-3">
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="text-sm font-semibold text-foreground">{field.label}</h3>
@@ -696,7 +696,7 @@ function ResultPanel({
   const primaryToneClassName = toneClassName(result.primary.tone, "hero");
 
   return (
-    <aside id="calculator-result" className="space-y-3 rounded-2xl border border-border bg-card p-4 shadow-sm lg:sticky lg:top-[calc(var(--chrome-top)+1rem)]">
+    <aside id="calculator-result" className="space-y-3 lg:sticky lg:top-[calc(var(--chrome-top)+1rem)]">
       <div className={`rounded-xl border p-4 ${primaryToneClassName}`}>
         <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">{result.primary.label}</p>
         <div className="mt-1 flex items-center gap-2.5">
@@ -965,7 +965,7 @@ function WcfCalibrator({ onApply }: { onApply: (wcf: number) => void }) {
         {wcf != null && trueBrix != null ? (
           <span>{refracto} ÷ {trueBrix.toFixed(1)} Brix = <strong className="text-foreground">{wcf}</strong></span>
         ) : (
-          <span className="text-xs text-muted-foreground">Коэффициент = показание рефрактометра ÷ Brix по ареометру</span>
+          <span className="text-xs text-muted-foreground">Коэффициент = показание рефрактометра ÷ показание ареометра в °Bx</span>
         )}
       </div>
 
@@ -1082,10 +1082,10 @@ function RefractometerFieldsBlock({
                 </select>
               </label>
               <div className="min-w-0">
-                <span className="block text-xs font-medium text-muted-foreground">Шкала OG</span>
+                <span className="block text-xs font-medium text-muted-foreground">Шкала начальной плотности</span>
                 <div className="mt-1">
                   <SegmentedControl
-                    ariaLabel="Шкала OG"
+                    ariaLabel="Шкала начальной плотности"
                     size="sm"
                     fill={false}
                     options={refractometerOgUnitOptions}
@@ -1108,7 +1108,7 @@ function RefractometerFieldsBlock({
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-card shadow-sm">
               <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90" />
             </div>
-            Калибровка коэффициента
+            Настроить поправочный коэффициент
           </summary>
           <div className="mt-4 space-y-4">
             <p className="text-[11px] leading-4 text-muted-foreground">
@@ -1135,7 +1135,7 @@ function RefractometerResultPanel({ state }: { state: CalculatorState }) {
       <aside id="calculator-result" className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Скорректированная плотность</p>
-          <p className="mt-2 text-sm leading-5 text-muted-foreground">Проверьте входные значения.</p>
+          <p className="mt-2 text-sm leading-5 text-muted-foreground">Проверьте введённые значения.</p>
         </div>
       </aside>
     );
@@ -1157,7 +1157,7 @@ function RefractometerResultPanel({ state }: { state: CalculatorState }) {
   const attenuationText = view.attenuationBand === "low"
     ? "Ниже 65% — брожение, возможно, не завершено."
     : view.attenuationBand === "high"
-      ? "Выше 80% — сухой профиль (лагеры, сэзоны, дикие дрожжи)."
+      ? "Выше 80% — пиво обычно получается сухим; такое сбраживание встречается у лагеров, сэзонов и пива на диких дрожжах."
       : "65–80% — нормально для большинства элей.";
 
   return (
@@ -1180,7 +1180,7 @@ function RefractometerResultPanel({ state }: { state: CalculatorState }) {
           <div className="space-y-3 p-5">
             <dl className="grid grid-cols-2 gap-3">
               <div className="min-w-0 rounded-xl border border-border bg-muted/70 px-3 py-2.5">
-                <dt className="truncate text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Оценка ABV</dt>
+                <dt className="truncate text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Расчётная крепость</dt>
                 <dd className="mt-1 text-lg font-semibold tabular-nums text-foreground">{view.estimatedABV.toFixed(1)}%</dd>
               </div>
               <div className={`min-w-0 rounded-xl border px-3 py-2.5 ${
@@ -1349,7 +1349,7 @@ function AbvResultPanel({ state }: { state: CalculatorState }) {
       <aside id="calculator-result" className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Крепость</p>
-          <p className="mt-2 text-sm leading-5 text-muted-foreground">Проверьте входные значения.</p>
+          <p className="mt-2 text-sm leading-5 text-muted-foreground">Проверьте введённые значения.</p>
         </div>
       </aside>
     );
@@ -1358,7 +1358,7 @@ function AbvResultPanel({ state }: { state: CalculatorState }) {
   const attenuationText = view.attenuationBand === "low"
     ? "Ниже 65% — брожение, возможно, не завершено."
     : view.attenuationBand === "high"
-      ? "Выше 80% — сухой профиль (лагеры, сэзоны, дикие дрожжи)."
+      ? "Выше 80% — пиво обычно получается сухим; такое сбраживание встречается у лагеров, сэзонов и пива на диких дрожжах."
       : "65–80% — нормально для большинства элей.";
 
   // OG/FG в чипах — в единице ввода (как у AbvFieldsBlock), плюс второй слой мельче рядом.
@@ -1413,7 +1413,7 @@ function AbvResultPanel({ state }: { state: CalculatorState }) {
               </div>
             </dl>
             <p className="rounded-xl border border-border bg-muted/70 px-3 py-2.5 text-xs leading-5 text-muted-foreground">
-              Видимое сбраживание: {attenuationText}
+              Видимая степень сбраживания: {attenuationText}
             </p>
           </div>
         )}
@@ -1534,7 +1534,7 @@ function HydrometerResultPanel({ state }: { state: CalculatorState }) {
       <aside id="calculator-result" className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Скорректированная плотность</p>
-          <p className="mt-2 text-sm leading-5 text-muted-foreground">Проверьте входные значения.</p>
+          <p className="mt-2 text-sm leading-5 text-muted-foreground">Проверьте введённые значения.</p>
         </div>
       </aside>
     );
@@ -1734,7 +1734,7 @@ function DilutionFieldsBlock({
             Объём измерен на горячем сусле
             <span className="mt-0.5 block text-xs font-normal leading-4 text-muted-foreground">
               {currentVolumeMeasuredHot
-                ? `Сразу после кипячения, пока сусло горячее — учитываем усадку при остывании: станет ≈ ${coldVolumePreview}`
+                ? `После охлаждения объём сусла составит примерно ${coldVolumePreview}. Этот объём используется в расчёте.`
                 : "Отметьте, если «Текущий объём» замерен сразу после кипячения — при остывании объём сусла уменьшается примерно на 4%"}
             </span>
           </span>
@@ -1805,7 +1805,7 @@ function DilutionResultPanel({ state }: { state: CalculatorState }) {
       <aside id="calculator-result" className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Результат</p>
-          <p className="mt-2 text-sm leading-5 text-muted-foreground">Проверьте входные значения.</p>
+          <p className="mt-2 text-sm leading-5 text-muted-foreground">Проверьте введённые значения.</p>
         </div>
       </aside>
     );
@@ -2098,7 +2098,7 @@ export function CalculatorPageClient({
       // error.message из core — техническое сообщение на английском (имя JS-переменной);
       // пользователю показываем только понятный русский текст.
       return {
-        primary: { label: "Расчёт недоступен", value: "—", helper: "Проверьте входные значения." },
+        primary: { label: "Расчёт недоступен", value: "—", helper: "Проверьте введённые значения." },
         stats: [],
         warnings: [],
         links: []
@@ -2200,7 +2200,7 @@ export function CalculatorPageClient({
             ) : isDilution ? (
               <DilutionFieldsBlock state={state} onChange={handleFieldChange} onReset={resetState} />
             ) : (
-              <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+              <div>
                 <div className="mb-3 flex justify-end">
                   <button
                     type="button"

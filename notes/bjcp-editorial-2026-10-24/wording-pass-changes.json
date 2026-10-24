@@ -1,0 +1,1343 @@
+[
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_01.json",
+    "id": "1C",
+    "path": [
+      "styles",
+      2,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Американский шестирядный солод либо смесь шестирядного и североамериканского двухрядного. До 20 % кукурузы в заторе и до 20 % сахара, вносимого при кипячении. Хмель может быть любым, часто используются традиционные американские или континентальные сорта с грубоватым характером. Элевые дрожжи с чистым профилем брожения; возможен купаж эля и лагера.",
+    "after": "Американский шестирядный солод либо смесь шестирядного и североамериканского двухрядного. До 20 % кукурузы в заторе и до 20 % сахара, вносимого при кипячении. Хмель может быть любым, часто используются традиционные американские или континентальные сорта с грубоватым характером. Используют элевые дрожжи с чистым профилем брожения. Возможны также версии крим-эля, полученные смешиванием эля и лагера.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён",
+      "Уточнён контекст смешивания пива в Cream Ale; убрано слово «готовый», поскольку стадия смешивания в оригинале не указана"
+    ],
+    "source_en": "American six-row malt, or a combination of six-row and North American two-row. Up to 20% maize in the mash, and up to 20% sugar in the boil. Any variety of hops, often rustic American or Continental. Clean ale yeast, or a mix of ale and lager beer."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_02.json",
+    "id": "5D",
+    "path": [
+      "styles",
+      6,
+      "sections_ru",
+      "aroma"
+    ],
+    "field": "aroma",
+    "before": "Хмель от умеренного до умеренно высокого уровня, цветочный, пряный или травянистый. Солодовый характер от слабого до умеренного, зерновой, сладковатый или тестяной, нередко с лёгкими нотами мёда и поджаренного крекера. Профиль брожения чистый. Хмель должен быть ведущим, но не должен полностью подавлять солод в общем балансе.",
+    "after": "Хмель от умеренного до умеренно высокого уровня, цветочный, пряный или травянистый. Солодовый характер от слабого до умеренного, зерновой, сладковатый или тестяной, нередко с лёгкими нотами мёда и поджаренного крекера. Профиль брожения чистый. Хмелевой аромат должен преобладать, но не должен полностью перебивать солодовый.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Moderate to moderately-high flowery, spicy, or herbal hops. Low to medium grainy, sweet, or doughy malt character, often with a light honey and toasted cracker quality. Clean fermentation profile. The hops should be forward, but not totally dominate the malt in the balance."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_03.json",
+    "id": "7B",
+    "path": [
+      "styles",
+      4,
+      "sections_ru",
+      "aroma"
+    ],
+    "field": "aroma",
+    "before": "Аромат солодовый и насыщенный, с зерновыми ассоциациями свежеиспечённого хлеба, орехов или поджаристой хлебной корочки. Более тёмные обжаренные или шоколадные ноты должны отсутствовать. Интенсивность солода от умеренной до умеренно высокой. Хмель от умеренного до слабого дополняет, но не подавляет солод; характер часто пряный, перечный или цветочный. Брожение очень чистое. Допустимы слабые или умеренно слабые эфиры.",
+    "after": "Аромат солодовый и насыщенный, с зерновыми ассоциациями свежеиспечённого хлеба, орехов или поджаристой хлебной корочки. Более тёмные обжаренные или шоколадные ноты должны отсутствовать. Интенсивность солода от умеренной до умеренно высокой. Хмелевой аромат — от умеренного до слабого, часто пряный, перечный или цветочный; он дополняет солодовый, но не перебивает его. Брожение очень чистое. Допустимы слабые или умеренно слабые эфиры.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Malty and rich with grainy characteristics like baked bread or nutty, toasted bread crusts. Should not have darker roasted or chocolate notes. Malt intensity is moderate to moderately-high. Moderate to low hops complement but do not dominate the malt, and often have a spicy, peppery, or floral character. Fermentation character is very clean. Low to medium-low esters optional."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_05.json",
+    "id": "11A",
+    "path": [
+      "styles",
+      3,
+      "sections_ru",
+      "flavor"
+    ],
+    "field": "flavor",
+    "before": "Горечь от средней до умеренно высокой. Фруктовые эфиры от умеренно слабых до умеренно высоких. Хмелевой вкус от умеренного до слабого, обычно землистый, смолистый, фруктовый или цветочный. Солодовость от слабой до умеренной, финиш сухой. Солодовый профиль чаще всего хлебный, бисквитный или слегка тостовый. Лёгкие или умеренные карамельные либо ирисочные ноты допустимы, но не обязательны. Баланс обычно явно склоняется в горечь, хотя она не должна полностью подавлять солод, эфиры и вкус хмеля. Обычно диацетиля нет, но следовые количества допустимы.",
+    "after": "Горечь от средней до умеренно высокой. Фруктовые эфиры от умеренно слабых до умеренно высоких. Хмелевой вкус от умеренного до слабого, обычно землистый, смолистый, фруктовый или цветочный. Солодовость от слабой до умеренной, финиш сухой. Солодовый профиль чаще всего хлебный, бисквитный или слегка тостовый. Лёгкие или умеренные карамельные либо ирисочные ноты допустимы, но не обязательны. Во вкусе обычно преобладает горечь, но она не должна полностью перебивать солод, фруктовые эфиры и вкус хмеля. Обычно диацетиля нет, но следовые количества допустимы.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Medium to moderately high bitterness. Moderately low to moderately high fruity esters. Moderate to low hop flavor, typically with an earthy, resiny, fruity, or floral character. Low to medium maltiness with a dry finish. The malt profile is typically bready, biscuity, or lightly toasty. Low to moderate caramel or toffee flavors are optional. Balance is often decidedly bitter, although the bitterness should not completely overpower the malt flavor, esters, and hop flavor. Generally no diacetyl, although very low levels are allowed."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_06.json",
+    "id": "13A",
+    "path": [
+      "styles",
+      3,
+      "sections_ru",
+      "aroma"
+    ],
+    "field": "aroma",
+    "before": "Солодовый аромат от слабого до умеренного, иногда с фруктовостью. Солодовый профиль может уходить в карамель, ириску, зерновые, тост, орехи, шоколад или лёгкую обжаренность. Лёгкий землистый или цветочный хмелевой аромат допустим. Очень низкий диацетил допустим.",
+    "after": "Солодовый аромат от слабого до умеренного, иногда с фруктовостью. Солод может давать ноты карамели, ириски, зерна, поджаренного хлеба, орехов, шоколада или лёгкие тона обжаренного солода. Лёгкий землистый или цветочный хмелевой аромат допустим. Очень низкий диацетил допустим.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Low to moderate malt aroma, and may have some fruitiness. The malt expression can take on a wide range of character, which can include caramel, toffee, grainy, toasted, nutty, chocolate, or lightly roasted. Low earthy or floral hop aroma optional. Very low diacetyl optional."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_06.json",
+    "id": "13A",
+    "path": [
+      "styles",
+      3,
+      "sections_ru",
+      "flavor"
+    ],
+    "field": "flavor",
+    "before": "В целом это солодовое пиво, но с очень широким спектром солодовых и дрожжевых оттенков: солод, сладость, карамель, ириска, тост, орехи, шоколад, кофе, обжаренность, фрукты, лакрица, слива, изюм — всё это может звучать на хлебной, бисквитной или тостовой основе. Финиш бывает как сладковатым, так и сухим. В версиях с более тёмным солодом возможен сухой финиш с обжаренными нотами. Горечь от слабой до умеренной: её достаточно для баланса, но не настолько, чтобы перекрыть солод. Умеренная фруктовость допустима. Вкус хмеля может присутствовать на низком уровне. Слабый диацетил допустим.",
+    "after": "В целом это солодовое пиво, но с очень широким спектром солодовых и дрожжевых оттенков: солод, сладость, карамель, ириска, тост, орехи, шоколад, кофе, обжаренный солод, фрукты, лакрица, слива, изюм — всё это может звучать на хлебной, бисквитной или тостовой основе. Финиш бывает как сладковатым, так и сухим. В версиях с более тёмным солодом возможен сухой финиш с обжаренными нотами. Горечь от слабой до умеренной: её достаточно для баланса, но не настолько, чтобы перекрыть солод. Умеренная фруктовость допустима. Вкус хмеля может присутствовать на низком уровне. Слабый диацетил допустим.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Generally a malty beer, although may have a very wide range of malt- and yeast-based flavors (e.g., malty, sweet, caramel, toffee, toast, nutty, chocolate, coffee, roast, fruit, licorice, plum, raisin) over a bready, biscuity, or toasty base. Can finish sweet to dry. Versions with darker malts may have a dry, roasted finish. Low to moderate bitterness, enough to provide some balance but not enough to overpower the malt in the balance. Moderate fruity esters optional. Low hop flavor optional. Low diacetyl optional."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_06.json",
+    "id": "13B",
+    "path": [
+      "styles",
+      4,
+      "description_short_ru"
+    ],
+    "field": "description_short_ru",
+    "before": "Солодовый, карамельный коричневый британский эль без обжаренности портера — сбалансированный, выразительный и обычно немного крепче среднего современного британского пива.",
+    "after": "Солодовый, карамельный коричневый британский эль без характерного для портера вкуса обжаренного солода — сбалансированный, выразительный и обычно немного крепче среднего современного британского пива.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_06.json",
+    "id": "13C",
+    "path": [
+      "styles",
+      5,
+      "sections_ru",
+      "aroma"
+    ],
+    "field": "aroma",
+    "before": "Солодовый аромат от умеренного до умеренно слабого, с хлебными, бисквитными и тостовыми оттенками, а также с мягкой обжаренностью, нередко напоминающей шоколад. Дополнительная солодовая сложность может проявляться как карамель, орехи или ирисочная сладость. Хмель может присутствовать до умеренного уровня, чаще цветочный или землистый. Умеренные фруктовые эфиры допустимы и даже желательны. Низкий диацетил допустим.",
+    "after": "Солодовый аромат от умеренного до умеренно слабого, с хлебными, бисквитными и тостовыми оттенками, а также с мягкими нотами обжаренного солода, нередко напоминающими шоколад. Дополнительная солодовая сложность может проявляться как карамель, орехи или ирисочная сладость. Хмель может присутствовать до умеренного уровня, чаще цветочный или землистый. Умеренные фруктовые эфиры допустимы и даже желательны. Низкий диацетил допустим.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Moderate to moderately low bready, biscuity, and toasty malt aroma with mild roastiness, often like chocolate. Additional malt complexity may be present as caramel, nuts, toffee sweetness. May have up to a moderate level of floral or earthy hops. Moderate fruity esters optional, but desirable. Low diacetyl optional."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_06.json",
+    "id": "13C",
+    "path": [
+      "styles",
+      5,
+      "sections_ru",
+      "flavor"
+    ],
+    "field": "flavor",
+    "before": "Солодовый вкус умеренный: хлебный, бисквитный и тостовый, с мягкой или умеренной шоколадной обжаренностью. Часто заметны карамельные, ореховые или ирисочные оттенки, а иногда и более тёмные штрихи — кофе или лакрица — но на более низком уровне. Выраженная жжёность и грубая обжаренность неуместны, хотя в небольшом количестве такие оттенки могут придавать вкусу сложность, напоминающую горький шоколад. До умеренного уровня допустим цветочный или землистый вкус хмеля. Эфиры — от слабых до умеренных. Горечь от умеренно слабой до средней; баланс может колебаться от слегка солодового до слегка горького. Финиш от довольно сухого до слегка сладковатого. Умеренно слабый диацетил допустим.",
+    "after": "Солодовый вкус умеренный: хлебный, бисквитный и тостовый, с мягкими или умеренно выраженными шоколадными нотами обжаренного солода. Часто заметны карамельные, ореховые или ирисочные оттенки, а иногда и более тёмные штрихи — кофе или лакрица — но на более низком уровне. Выраженные жжёные ноты и резкий вкус обжаренного солода неуместны, хотя в небольшом количестве такие оттенки могут придавать вкусу сложность, напоминающую горький шоколад. До умеренного уровня допустим цветочный или землистый вкус хмеля. Эфиры — от слабых до умеренных. Горечь от умеренно слабой до средней; баланс может колебаться от слегка солодового до слегка горького. Финиш от довольно сухого до слегка сладковатого. Умеренно слабый диацетил допустим.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Moderate bready, biscuity, and toasty malt flavor with a mild to moderate chocolate roastiness, and often a significant caramel, nutty, or toffee character, possibly with lower levels of darker flavors like coffee or licorice. Should not be burnt or harshly roasted, although small amounts may contribute a bitter chocolate complexity. Up to moderate earthy or floral hop flavor optional. Low to moderate fruity esters. Medium-low to medium bitterness varies the balance from slightly malty to slightly bitter, with a fairly dry to slightly sweet finish. Moderately-low diacetyl optional."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_08.json",
+    "id": "16C",
+    "path": [
+      "styles",
+      2,
+      "description_short_ru"
+    ],
+    "field": "description_short_ru",
+    "before": "Очень тёмный, сладковатый, фруктовый стаут умеренно высокой крепости с мягкой обжаренностью без жжёной грубости.",
+    "after": "Очень тёмный, сладковатый, фруктовый стаут умеренно высокой крепости с мягким вкусом обжаренного зерна, без грубых жжёных нот.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_08.json",
+    "id": "16C",
+    "path": [
+      "styles",
+      2,
+      "sections_ru",
+      "overall_impression"
+    ],
+    "field": "overall_impression",
+    "before": "Очень тёмный, сладковатый, фруктовый стаут умеренно высокой крепости с мягкой обжаренностью без жжёной грубости.",
+    "after": "Очень тёмный, сладковатый, фруктовый стаут умеренно высокой крепости с мягким вкусом обжаренного зерна, без грубых жжёных нот.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "A very dark, sweet, fruity, moderately strong stout with smooth, roasty flavors, yet no burnt harshness."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_08.json",
+    "id": "16C",
+    "path": [
+      "styles",
+      2,
+      "sections_ru",
+      "style_comparison"
+    ],
+    "field": "style_comparison",
+    "before": "По впечатлению это как более крепкая версия Sweet Stout с более выраженной фруктовостью. Отчасти напоминает некоторые Imperial Stout, но без высокой горечи, мощной или жжёной обжаренности и без заметного позднего охмеления, к тому же с меньшей крепостью. Намного слаще и менее хмелевой, чем American Stout. Также заметно слаще и менее горький, чем сопоставимый по плотности Foreign Extra Stout.",
+    "after": "По впечатлению это как более крепкая версия Sweet Stout с более выраженной фруктовостью. Отчасти напоминает некоторые Imperial Stout, но без высокой горечи, сильного вкуса обжаренного зерна или жжёных нот и без заметного позднего охмеления, к тому же с меньшей крепостью. Намного слаще и менее хмелевой, чем American Stout. Также заметно слаще и менее горький, чем сопоставимый по плотности Foreign Extra Stout.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Tastes like a scaled-up Sweet Stout with higher fruitiness. Similar to some Imperial Stouts without the high bitterness, strong or burnt roastiness, and late hops, and with lower alcohol. Much sweeter and less hoppy than American Stouts. Much sweeter and less bitter than the similar-gravity Foreign Extra Stouts."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_08.json",
+    "id": "17B",
+    "path": [
+      "styles",
+      5,
+      "sections_ru",
+      "flavor"
+    ],
+    "field": "flavor",
+    "before": "Солодовый характер от среднего до высокого, со сложным, насыщенным вкусом, часто с ореховыми, карамельными или паточными оттенками. Лёгкие шоколадные или жареные солодовые тона допустимы, но не должны выходить на первый план. Баланс обычно солодово-сладкий, хотя охмеление тоже может быть вполне заметным; восприятие горечи нередко зависит от степени выдержки. Эфиры от умеренных до высоких обычны и могут уходить в сухофрукты или винные ноты. Финал — от сухого до слегка сладковатого. Длительная выдержка может вносить окислительные оттенки, напоминающие зрелый херес, портвейн или мадеру. Алкогольная крепость должна ощущаться, но не подавлять. Низкий диацетил допустим.",
+    "after": "Солодовый характер от среднего до высокого, со сложным, насыщенным вкусом, часто с ореховыми, карамельными или паточными оттенками. Лёгкие шоколадные или жареные солодовые тона допустимы, но не должны выходить на первый план. Баланс обычно солодово-сладкий, хотя охмеление тоже может быть вполне заметным; восприятие горечи нередко зависит от степени выдержки. Эфиры от умеренных до высоких обычны и могут уходить в сухофрукты или винные ноты. Финал — от сухого до слегка сладковатого. Длительная выдержка может вносить окислительные оттенки, напоминающие зрелый херес, портвейн или мадеру. Алкоголь должен ощущаться, но не перебивать остальные вкусы. Низкий диацетил допустим.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Medium to high malt character with a luscious malt complexity, often with nut, caramel, or molasses-like flavors. Light chocolate or roasted malt flavors are optional, but should never be prominent. Balance is often malty-sweet, but may be well hopped; the impression of bitterness often depends on amount of aging. Moderate to high fruity esters are common, and may take on a dried-fruit or vinous character. The finish may vary from dry to somewhat sweet. Extended aging may contribute oxidative flavors similar to a fine old Sherry, Port, or Madeira. Alcoholic strength should be evident, though not overwhelming. Low diacetyl optional."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_09.json",
+    "id": "17C",
+    "path": [
+      "styles",
+      0,
+      "sections_ru",
+      "aroma"
+    ],
+    "field": "aroma",
+    "before": "Сильный солодовый аромат с хлебно-поджаренными оттенками, ярко выраженными карамельными и ирисочными нотами. Возможен широкий спектр поддерживающих тонов карамелизованного сахара и поджаренного хлеба: поджаренные сухари, савоярди, английское печенье, крекеры грэм, нуга, сливочная тянучка и т.п. Иногда заметен очень лёгкий намёк на обжаренность. Эфиры тёмных или сушёных фруктов и алкоголь — от слабых до умеренных. Очень слабый землистый, цветочный, апельсиново-цитрусовый или пряный хмель допустим.",
+    "after": "Сильный солодовый аромат с хлебно-поджаренными оттенками, ярко выраженными карамельными и ирисочными нотами. Возможен широкий спектр поддерживающих тонов карамелизованного сахара и поджаренного хлеба: поджаренные сухари, савоярди, английское печенье, крекеры грэм, нуга, сливочная тянучка и т.п. Иногда едва ощущаются ноты обжаренного зерна. Эфиры тёмных или сушёных фруктов и алкоголь — от слабых до умеренных. Очень слабый землистый, цветочный, апельсиново-цитрусовый или пряный хмель допустим.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Strong bready-toasty malt, with a high caramel and toffee aspect. A wide range of supportive caramelized sugar and toasty bread type aromas are possible (toasted breadcrumbs, ladyfingers, English biscuits, graham crackers, nougat, butterscotch, etc.). Faint hint of roast is sometimes noted. Low to moderate dark or dried fruit esters and alcohol. Very low earthy, floral, orange-citrus, or spicy hops optional."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_10.json",
+    "id": "20A",
+    "path": [
+      "styles",
+      0,
+      "description_short_ru"
+    ],
+    "field": "description_short_ru",
+    "before": "Тёмное американское пиво с заметной обжаренностью, часто шоколадным профилем, уверенной горечью и нередко выраженным хмелевым характером.",
+    "after": "Тёмное американское пиво с заметным вкусом обжаренного солода, часто с шоколадными нотами, уверенной горечью и нередко выраженным хмелевым характером.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_10.json",
+    "id": "20A",
+    "path": [
+      "styles",
+      0,
+      "sections_ru",
+      "flavor"
+    ],
+    "field": "flavor",
+    "before": "Во вкусе умеренно сильная обжаренность, часто с шоколадным и слегка подпалённым оттенком; иногда её поддерживают сладковатая карамель или богатая солодовая основа. Горечь — от умеренной до высокой, финиш — от сухого до умеренно сладковатого. Тёмные солода могут делать вкус чуть более острым, но не должны давать едкую, жжёную или грубую резкость. Хмелевой вкус — от слабого до высокого, обычно смолистый, землистый или цветочный; он не должен конфликтовать с тёмным солодом. В версиях с сухим охмелением возможны свежие хмелевые или смолистые ноты. Умеренные эфиры допустимы. Резкая кислотность недопустима.",
+    "after": "Вкус обжаренного солода умеренно сильный, часто с шоколадными и слегка подпалёнными нотами. Иногда его дополняют сладковатая карамель или насыщенные солодовые тона. Горечь — от умеренной до высокой, финиш — от сухого до умеренно сладковатого. Тёмные солода могут делать вкус чуть более острым, но не должны давать едкую, жжёную или грубую резкость. Хмелевой вкус — от слабого до высокого, обычно смолистый, землистый или цветочный; он не должен конфликтовать с тёмным солодом. В версиях с сухим охмелением возможны свежие хмелевые или смолистые ноты. Умеренные эфиры допустимы. Резкая кислотность недопустима.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Moderately strong roasted flavor, often with a chocolate and lightly burnt character, sometimes with a sweet caramel or malty richness in support. Medium to high bitterness, and a dry to medium-sweet finish. Dark malts may sharpen this impression, but should not add an acrid, burnt, or harsh flavor. Low to high resiny, earthy, or floral hop flavor, which should not clash with the dark malt. Dry-hopped versions may have a fresh hop or resiny flavor. Moderate fruity esters optional. Should not have an acidic bite."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_10.json",
+    "id": "20B",
+    "path": [
+      "styles",
+      1,
+      "description_short_ru"
+    ],
+    "field": "description_short_ru",
+    "before": "Довольно крепкий тёмный стаут с яркой обжаренностью, уверенной горечью и заметным американским хмелевым характером.",
+    "after": "Довольно крепкий тёмный стаут с ярким вкусом обжаренного зерна, уверенной горечью и заметным американским хмелевым характером.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_10.json",
+    "id": "20B",
+    "path": [
+      "styles",
+      1,
+      "sections_ru",
+      "comments"
+    ],
+    "field": "comments",
+    "before": "Пивоварни подчёркивают индивидуальность, варьируя профиль обжаренных солодов, степень солодовой сладости и количество позднего хмеля. В целом стиль отличается более смелой обжаренностью и более заметным хмелем, чем традиционные стауты, за исключением Imperial Stout. Сейчас встречается всё реже.",
+    "after": "Пивоварни подчёркивают индивидуальность, варьируя профиль обжаренных солодов, степень солодовой сладости и количество позднего хмеля. В целом стиль отличается более выраженным вкусом обжаренного солода и более заметным хмелем, чем традиционные стауты, за исключением Imperial Stout. Сейчас встречается всё реже.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Breweries express individuality through varying the roasted malt profile, malt sweetness and flavor, and the amount of finishing hops used. Generally has bolder roasted malt flavors and hopping than other traditional stouts (except Imperial Stouts). Becoming increasingly hard to find."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_10.json",
+    "id": "20C",
+    "path": [
+      "styles",
+      2,
+      "description_short_ru"
+    ],
+    "field": "description_short_ru",
+    "before": "Очень крепкий и очень тёмный стаут с интенсивной обжаренностью, тонами тёмных или сушёных фруктов и согревающим горько-сладким финишем.",
+    "after": "Очень крепкий и очень тёмный стаут с интенсивным вкусом обжаренного и жжёного солода, тонами тёмных или сушёных фруктов и согревающим горько-сладким финишем.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_10.json",
+    "id": "20C",
+    "path": [
+      "styles",
+      2,
+      "sections_ru",
+      "aroma"
+    ],
+    "field": "aroma",
+    "before": "Аромат богатый, глубокий, сложный и часто весьма интенсивный, с приятным сочетанием обжаренности, фруктов, хмеля и алкоголя. Обжаренность — от слабой до умеренно сильной — может напоминать кофе, горько-сладкий или тёмный шоколад, какао, чёрную лакрицу, дёготь либо слегка подпалённое зерно; иногда её сопровождают лёгкая карамельная сладость или поджаренно-солодовые ноты. Эфиры — от слабых до умеренно сильных — часто воспринимаются как слива, чернослив, инжир, чёрная смородина, изюм и другие тёмные либо сушёные фрукты. Хмель — от едва заметного до довольно агрессивного, обычно английского или американского склада. Алкоголь допустим, но не должен быть резким, жгучим или напоминать растворитель. Баланс между этими четырьмя опорами может сильно варьироваться: не все они должны быть различимы, но ощутимые компоненты должны мягко и гармонично сочетаться. Выдержка может добавить винные или портвейноподобные оттенки, но не кислинку; при этом интенсивность аромата с возрастом может снижаться.",
+    "after": "Аромат богатый, глубокий, сложный и часто весьма интенсивный, с приятным сочетанием нот обжаренного зерна, фруктов, хмеля и алкоголя. Аромат обжаренного зерна — от слабого до умеренно сильного — может напоминать кофе, горько-сладкий или тёмный шоколад, какао, чёрную лакрицу, дёготь либо слегка подпалённое зерно; иногда его сопровождают лёгкая карамельная сладость или поджаренно-солодовые ноты. Эфиры — от слабых до умеренно сильных — часто воспринимаются как слива, чернослив, инжир, чёрная смородина, изюм и другие тёмные либо сушёные фрукты. Хмель — от едва заметного до довольно агрессивного, обычно английского или американского склада. Алкоголь допустим, но не должен быть резким, жгучим или напоминать растворитель. Баланс между этими четырьмя составляющими может сильно варьироваться: не все они должны быть различимы, но ощутимые компоненты должны мягко и гармонично сочетаться. Выдержка может добавить винные или портвейноподобные оттенки, но не кислинку; при этом интенсивность аромата с возрастом может снижаться.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Rich, deep, complex, and often quite intense, with a pleasant blend of roast, fruit, hops, and alcohol. Light to moderately strong roast can have a coffee, bittersweet or dark chocolate, cocoa, black licorice, tar, or slightly burnt grain quality, sometimes with a light caramel sweetness or toasty maltiness. Low to moderately strong esters often perceived as dark or dried fruits like plums, prunes, figs, black currants, or raisins. Very low to fairly aggressive hops, often English or American in character. Alcohol flavor optional, but should not be sharp, hot, or solventy. The balance between these main four components can vary greatly; not all need to be noticeable, but those present should have a smooth interplay. Age can add another dimension, including a vinous or port-like impression, but not sourness. Age can decrease aroma intensity."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_10.json",
+    "id": "20C",
+    "path": [
+      "styles",
+      2,
+      "sections_ru",
+      "flavor"
+    ],
+    "field": "flavor",
+    "before": "Как и в аромате, вкус строится на сложной комбинации обжаренности, фруктов, хмеля и алкоголя; действуют те же дескрипторы. Вкусовая интенсивность часто даже выше, чем ароматическая, но и здесь важно помнить о широком диапазоне допустимого баланса. Горечь — от средней до агрессивно высокой. Солодовость поддерживает и связывает остальные элементы, иногда давая хлебные, тостовые или карамельные оттенки. Во рту и в финише пиво может казаться от довольно сухого до умеренно сладковатого; это впечатление часто меняется с выдержкой. Пиво не должно быть ни сиропным, ни приторным. В послевкусии остаются обжаренные ноты, горечь и алкогольное тепло. Эффекты выдержки здесь те же, что и в аромате.",
+    "after": "Как и в аромате, вкус строится на сложном сочетании нот обжаренного зерна, фруктов, хмеля и алкоголя; действуют те же дескрипторы. Вкусовая интенсивность часто даже выше, чем ароматическая, но и здесь важно помнить о широком диапазоне допустимого баланса. Горечь — от средней до агрессивно высокой. Солодовость поддерживает и связывает остальные элементы, иногда давая хлебные, тостовые или карамельные оттенки. Во рту и в финише пиво может казаться от довольно сухого до умеренно сладковатого; это впечатление часто меняется с выдержкой. Пиво не должно быть ни сиропным, ни приторным. В послевкусии остаются обжаренные ноты, горечь и алкогольное тепло. Эффекты выдержки здесь те же, что и в аромате.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Like the aroma, a complex mix of roast, fruit, hops, and alcohol (same descriptors apply). The flavors can be quite intense, often greater than in the aroma, but the same warning about the balance varying greatly still applies. Medium to aggressively high bitterness. The maltiness balances and supports the other flavors, and may have qualities of bread, toast, or caramel. The palate and finish can be fairly dry to moderately sweet, an impression that often changes with age. Should not by syrupy or cloying. Aftertaste of roast, bitterness, and warmth. Same age effects as in the aroma apply."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_10.json",
+    "id": "21B-Black IPA",
+    "path": [
+      "styles",
+      4,
+      "defined_subtypes",
+      1,
+      "description_short_ru"
+    ],
+    "field": "description_short_ru",
+    "before": "IPA с сухим, хмелевым балансом американского IPA, но тёмного цвета и с мягкой поддерживающей обжаренностью.",
+    "after": "IPA с сухим, хмелевым балансом американского IPA, но тёмного цвета и с мягкими фоновыми нотами обжаренного солода.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_10.json",
+    "id": "21B-Black IPA",
+    "path": [
+      "styles",
+      4,
+      "defined_subtypes",
+      1,
+      "sections_ru",
+      "style_comparison"
+    ],
+    "field": "style_comparison",
+    "before": "По балансу это American IPA или Double IPA с очень сдержанной обжаренностью, близкой по функции к тому, что встречается в Schwarzbier. Не такой насыщенный и обжаренный, как American Stout и American Porter; тело легче, а питкость и гладкость выше.",
+    "after": "По балансу напоминает American IPA или Double IPA, а по сдержанным нотам обжаренного солода — Schwarzbier. Вкус менее насыщенный, обжаренный солод заметен слабее, чем в American Stout и American Porter; тело легче, пиво мягче и легче пьётся.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Balance and overall impression of an American or Double IPA with restrained roast similar to the type found in Schwarzbier. Not as rich and roasty as American Stout and Porter, and with less body and increased smoothness and drinkability."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_10.json",
+    "id": "21B-Brown IPA",
+    "path": [
+      "styles",
+      4,
+      "defined_subtypes",
+      2,
+      "sections_ru",
+      "flavor"
+    ],
+    "field": "flavor",
+    "before": "Хмелевой вкус — от среднего до высокого, с теми же дескрипторами, что и в аромате. Солодовая база — от умеренно слабой до средней, чистая и поддерживающая, с теми же оттенками, что и в аромате. Выбор солода и хмеля не должен порождать вкусовых конфликтов. Горечь от средне-высокой до высокой, без грубости. Финиш от сухого до умеренного, послевкусие горькое, хмелевое и солодовое одновременно. Низкие эфиры допустимы. Очень слабый алкоголь допустим. Сильно обжаренные и жжёные солода недопустимы. Солод должен почти уравновешивать хмелевую горечь и вкус.",
+    "after": "Хмелевой вкус — от среднего до высокого, с теми же дескрипторами, что и в аромате. Солодовая база — от умеренно слабой до средней, чистая и поддерживающая, с теми же оттенками, что и в аромате. Выбор солода и хмеля не должен порождать вкусовых конфликтов. Горечь от средне-высокой до высокой, без грубости. Финиш от сухого до умеренного, послевкусие горькое, хмелевое и солодовое одновременно. Низкие эфиры допустимы. Очень слабый алкоголь допустим. Вкус сильно обжаренного или жжёного солода недопустим. Солод должен почти уравновешивать хмелевую горечь и вкус.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Medium to high hop flavor, same descriptors as aroma. Medium-low to medium clean, supportive malty flavor with same descriptors as aroma. The malt and hop choices should not produce flavor clashes. Medium-high to high bitterness, no harshness. Dry to medium finish, with a bitter, hoppy, and malty aftertaste. Low esters optional. Very low alcohol flavor optional. No highly roasted or burnt malt flavors. The malt should nearly balance the hop bitterness and flavor."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_11.json",
+    "id": "Категория 22",
+    "path": [
+      "categories",
+      0,
+      "overview_ru"
+    ],
+    "field": "overview_ru",
+    "before": "В эту категорию входят современные американские крепкие эли с разным соотношением солода и хмеля. Их объединяют повышенная крепость и отсутствие выраженной обжаренности.",
+    "after": "В эту категорию входят современные американские крепкие эли с разным соотношением солода и хмеля. Их объединяют повышенная крепость и отсутствие выраженного вкуса обжаренного солода.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_11.json",
+    "id": "22C",
+    "path": [
+      "styles",
+      2,
+      "sections_ru",
+      "aroma"
+    ],
+    "field": "aroma",
+    "before": "Доминируют мощные ароматы солода и хмеля. Хмель — от умеренного до напористого, с американскими, новосветскими или английскими чертами. Классические варианты часто дают цитрус, фруктовость или смолу, но возможны и другие оттенки, включая современные хмелевые профили. Солодовая насыщенность сильная: зерновая, хлебная, тостовая, слегка карамельная или просто богатая по ощущению, но обычно без тёмной карамели, выраженной обжаренности и глубоких тёмно-фруктовых тонов. Эфиры и алкоголь — от слабых до умеренно сильных, но в балансе уступают солоду и хмелю. С возрастом интенсивность аромата смягчается.",
+    "after": "Доминируют мощные ароматы солода и хмеля. Хмель — от умеренного до напористого, с американскими, новосветскими или английскими чертами. Классические варианты часто дают цитрус, фруктовость или смолу, но возможны и другие оттенки, включая современные хмелевые профили. Солодовая насыщенность сильная: зерновая, хлебная, тостовая, слегка карамельная или просто богатая по ощущению, но обычно без тёмной карамели, выраженных нот обжаренного солода и глубоких тёмно-фруктовых тонов. Эфиры и алкоголь — от слабых до умеренно сильных, но в балансе уступают солоду и хмелю. С возрастом интенсивность аромата смягчается.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Strong malt and hop aroma dominates. Hops are moderate to assertive, showing a range of American, New World, or English characteristics. Citrusy, fruity, or resiny are classic attributes, but others are possible, including those from modern hops. Strong grainy, bready, toasty, light caramel, or neutral malt richness, but typically not with darker caramel, roast, or deep fruit aspects. Low to moderately strong esters and alcohol, lower in the balance than the malt and hops. Intensities fade with age."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_11.json",
+    "id": "23A",
+    "path": [
+      "styles",
+      4,
+      "sections_ru",
+      "comments"
+    ],
+    "field": "comments",
+    "before": "Любой характер Brett здесь должен быть очень сдержанным и обычно выражается фруктовыми и цветочными оттенками, а не «фанковостью». В выдержанных версиях могут появляться ноты сидра, мёда, сена или лёгких полевых цветов, а иногда усиливается и кислотность.\n\nВ Германии стиль относится к классу Schankbier, то есть к пиву невысокой плотности с начальной плотностью в районе 7-8 °P. Фруктовые и пряные версии следует заявлять как 29A Fruit Beer, 30A Spice, Herb, or Vegetable Beer или 29B Fruit and Spice Beer.",
+    "after": "Любой характер Brett здесь должен быть очень сдержанным и обычно выражается фруктовыми и цветочными оттенками, а не оттенками скотного двора, кожи или земли. В выдержанных версиях могут появляться ноты сидра, мёда, сена или лёгких полевых цветов, а иногда усиливается и кислотность.\n\nВ Германии стиль относится к классу Schankbier, то есть к пиву невысокой плотности с начальной плотностью в районе 7-8 °P. Фруктовые и пряные версии следует заявлять как 29A Fruit Beer, 30A Spice, Herb, or Vegetable Beer или 29B Fruit and Spice Beer.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Any Brett character is restrained, and is typically expressed as fruity and floral notes, not funky. Aged examples can show a cider, honey, hay, or gentle wildflower character, and sometimes increased acidity.\n\nIn Germany, it is classified as a Schankbier denoting a small beer of starting gravity in the range 7-8 °P. Fruited or Spiced versions should be entered as 29A Fruit Beer, as 30A Spice, Herb, or Vegetable Beer, or as 29B Fruit and Spice Beer."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_12.json",
+    "id": "23D",
+    "path": [
+      "styles",
+      1,
+      "description_short_ru"
+    ],
+    "field": "description_short_ru",
+    "before": "Довольно кислое бельгийское пшеничное пиво дикого брожения, нередко с умеренной «фанковой» сложностью, где кислотность заменяет хмелевую горечь в балансе.",
+    "after": "Довольно кислое бельгийское пшеничное пиво дикого брожения, нередко с умеренно выраженными нотами сена, земли или скотного двора. Кислотность заменяет хмелевую горечь в балансе.",
+    "reasons": [
+      "Абзац переписан понятным русским языком с сохранением смысла английского оригинала"
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_12.json",
+    "id": "23D",
+    "path": [
+      "styles",
+      1,
+      "sections_ru",
+      "flavor"
+    ],
+    "field": "flavor",
+    "before": "В молодых версиях часто ярко выражены молочнокислая кислотность и фруктовость с теми же дескрипторами, что и в аромате. Выдержанные версии становятся более сбалансированными и сложными. Фанковые ноты развиваются со временем; их описание совпадает с ароматом. Солодовость низкая, хлебно-зерновая. Горечь обычно ниже порога восприятия; баланс обеспечивает именно кислотность. Хмелевой вкус отсутствует. Финиш сухой и с возрастом становится ещё суше. Недопустимы фекальные, дымные, сигарные или сырные дефекты.",
+    "after": "В молодых версиях часто ярко выражены молочнокислая кислотность и фруктовость с теми же дескрипторами, что и в аромате. Выдержанные версии становятся более сбалансированными и сложными. Со временем могут развиваться те же оттенки сена, земли и скотного двора, что и в аромате. Солодовость низкая, хлебно-зерновая. Горечь обычно ниже порога восприятия; баланс обеспечивает именно кислотность. Хмелевой вкус отсутствует. Финиш сухой и с возрастом становится ещё суше. Недопустимы фекальные, дымные, сигарные или сырные дефекты.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Young versions often have a strong lactic sourness with fruity flavors (same descriptors as aroma), while aged versions are more balanced and complex. Funky notes can develop over time, same descriptors as aroma. Low bready, grainy malt. Bitterness generally below sensory threshold; sourness provides the balance. No hop flavor. Dry finish, increasing with age. Should not have enteric, smoky, cigar-like, or cheesy faults."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_12.json",
+    "id": "23D",
+    "path": [
+      "styles",
+      1,
+      "sections_ru",
+      "overall_impression"
+    ],
+    "field": "overall_impression",
+    "before": "Довольно кислое бельгийское пшеничное пиво дикого брожения, часто с умеренной фанковой сложностью. Баланс строится не на хмелевой горечи, а на кислотности. Традиционно подаётся негазированным в кафе.",
+    "after": "Довольно кислое бельгийское пшеничное пиво дикого брожения, часто с умеренно выраженными нотами сена, земли или скотного двора. Баланс строится не на хмелевой горечи, а на кислотности. Традиционно подаётся негазированным в кафе.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "A fairly sour, often moderately funky, wild Belgian wheat beer with sourness taking the place of hop bitterness in the balance. Traditionally served uncarbonated as a café drink."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_12.json",
+    "id": "23E",
+    "path": [
+      "styles",
+      2,
+      "description_short_ru"
+    ],
+    "field": "description_short_ru",
+    "before": "Очень освежающее, сильно газированное бельгийское пшеничное пиво дикого брожения с приятной кислотностью, фанковой сложностью и фруктовыми нотами.",
+    "after": "Очень освежающее, сильно газированное бельгийское пшеничное пиво дикого брожения. Приятная кислотность сочетается с фруктовыми нотами и оттенками кожи, сена или земли.",
+    "reasons": [
+      "Абзац переписан понятным русским языком с сохранением смысла английского оригинала"
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_12.json",
+    "id": "23E",
+    "path": [
+      "styles",
+      2,
+      "sections_ru",
+      "aroma"
+    ],
+    "field": "aroma",
+    "before": "Кислотность в аромате умеренная; её дополняют сложная, но сбалансированная фанковость и фруктовые ноты. Фанковый профиль — от умеренного до сильного, с оттенками скотного двора, кожи, земли, козьей шерсти, сена, запаха лошади и конской попоны. Фруктовость — от лёгкой до умеренной: цитрус, цедра, семечковые фрукты, ревень. Солод играет поддерживающую роль и, если заметен, даёт лёгкие хлебные, зерновые, медовые или пшеничные штрихи. Недопустимы фекальные, дымные, сигарные и сырные дефекты. Хмель отсутствует. Допустим лёгкий дубовый тон. Для аромата важнее сложность, чем просто мощность; желателен именно гармоничный кислый профиль.",
+    "after": "Умеренная кислотность сочетается со сложным, сбалансированным ароматом дикого брожения, который подчёркивают фруктовые ноты. Интенсивность характерных оттенков скотного двора, кожи, земли, козьей шерсти, сена, запаха лошади или конской попоны — от умеренной до сильной. Фруктовость — от лёгкой до умеренной: цитрус, цедра, семечковые фрукты, ревень. Солод играет поддерживающую роль и, если заметен, даёт лёгкие хлебные, зерновые, медовые или пшеничные штрихи. Недопустимы фекальные, дымные, сигарные и сырные дефекты. Хмель отсутствует. Допустим лёгкий дубовый тон. Для аромата важнее сложность, чем просто мощность; желателен именно гармоничный кислый профиль.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Moderately sour with complex but balanced funkiness accented by fruity notes. The funkiness can be moderate to strong, and can be described as barnyard, leather, earthy, goaty, hay, horsey, or horse blanket. Fruitiness is light to moderate, with a citrus fruit, citrus rind, pome fruit, or rhubarb quality. Malt is supportive, and can be lightly bready, grainy, honey, or wheat-like, if noticeable. Should not have enteric, smoky, cigar-like, or cheesy faults. No hops. Light oak acceptable. Complexity of aroma is valued more than intensity, but a balanced sour presentation is desirable."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_12.json",
+    "id": "23E",
+    "path": [
+      "styles",
+      2,
+      "sections_ru",
+      "flavor"
+    ],
+    "field": "flavor",
+    "before": "Во вкусе — кислотность и фанковость с теми же дескрипторами и интенсивностью, что и в аромате. Солодовость низкая, хлебно-зерновая. Горечь низкая либо отсутствует; баланс в основном задаёт кислотность. Хмелевой вкус отсутствует. Финиш чёткий, сухой, с кислым и фанковым послевкусием. Допустимы лёгкие дубовые, ванильные и медовые оттенки. Недопустимы фекальные, дымные, сигарные и сырные дефекты. Пиво не должно быть однопланово кислым: классика — это умеренная, сбалансированная кислотность, а сложность формируют именно фанковые и фруктовые ноты. Допускается выдержка.",
+    "after": "Во вкусе — кислотность, фруктовые ноты и характерные для дикого брожения оттенки, например кожи, сена или земли. Их характер и интенсивность соответствуют аромату. Солодовость низкая, хлебно-зерновая. Горечь низкая либо отсутствует; баланс в основном задаёт кислотность. Хмелевой вкус отсутствует. Финиш сухой и освежающий. В послевкусии остаются кислинка и характерные ноты дикого брожения — например, сена, земли или кожи. Допустимы лёгкие дубовые, ванильные и медовые оттенки. Недопустимы фекальные, дымные, сигарные и сырные дефекты. Пиво не должно быть однопланово кислым: классика — это умеренная, сбалансированная кислотность, а сложность вкусу придают фруктовые ноты и оттенки дикого брожения. Допускается выдержка.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Sour and funky on the palate, with a similar character as the aroma (same descriptors and intensities apply for funk and fruit). Low bready, grainy malt. Bitterness low to none; sourness provides most of the balance. No hop flavor. Crisp, dry finish, with a tart and funky aftertaste. Light oak, vanilla, and honey are acceptable. Should not have enteric, smoky, cigar-like, or cheesy faults. The beer should not be one dimensionally sour; a balanced, moderately sour presentation is classic, with the funky and fruity notes providing complexity. May be aged."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_12.json",
+    "id": "23E",
+    "path": [
+      "styles",
+      2,
+      "sections_ru",
+      "overall_impression"
+    ],
+    "field": "overall_impression",
+    "before": "Очень освежающее, сильно газированное бельгийское пшеничное пиво дикого брожения: приятно кислое, но сбалансированное. Дикий характер здесь может быть сложным и многослойным, объединяя кислотность, фанковые и фруктовые оттенки.",
+    "after": "Очень освежающее, сильно газированное бельгийское пшеничное пиво дикого брожения: приятно кислое, но сбалансированное. Вкус может быть сложным и разнообразным: кислотность и фруктовые ноты сочетаются с характерными для дикого брожения оттенками, например кожи, сена или земли.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "A very refreshing, highly carbonated, pleasantly sour but balanced wild Belgian wheat beer. The wild beer character can be complex and varied, combining sour, funky, and fruity flavors."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_12.json",
+    "id": "23F",
+    "path": [
+      "styles",
+      3,
+      "description_short_ru"
+    ],
+    "field": "description_short_ru",
+    "before": "Сложное, освежающее и приятно кислое бельгийское пшеничное пиво, в котором характер сброженных фруктов дополняет кислый и фанковый профиль гёза.",
+    "after": "Сложное, освежающее и приятно кислое бельгийское пшеничное пиво. Вкус сброженных фруктов сочетается с кислотностью гёза и характерными для него оттенками дикого брожения — например, сена, земли или кожи.",
+    "reasons": [
+      "Абзац переписан понятным русским языком с сохранением смысла английского оригинала"
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_12.json",
+    "id": "23F",
+    "path": [
+      "styles",
+      3,
+      "sections_ru",
+      "overall_impression"
+    ],
+    "field": "overall_impression",
+    "before": "Сложное, освежающее и приятно кислое бельгийское пшеничное пиво, где характер сброженных фруктов органично соединяется с кислым и фанковым профилем гёза.",
+    "after": "Сложное, освежающее и приятно кислое бельгийское пшеничное пиво. Вкус сброженных фруктов сочетается с кислотностью гёза и характерными для него оттенками дикого брожения — например, сена, земли или кожи.",
+    "reasons": [
+      "Абзац переписан понятным русским языком с сохранением смысла английского оригинала"
+    ],
+    "source_en": "A complex, refreshing, pleasantly sour Belgian wheat beer blending a complementary fermented fruit character with a sour, funky Gueuze."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_12.json",
+    "id": "24A",
+    "path": [
+      "styles",
+      5,
+      "sections_ru",
+      "flavor"
+    ],
+    "field": "flavor",
+    "before": "Вкус приятный, хлебно-зерновой, часто с мёдово-ванильным оттенком. Фруктовость умеренная, яркая, с апельсиново-цитрусовым характером. Травянисто-пряные ноты, включая лимонный кориандр и другие специи, обычны, но должны быть тонкими и сбалансированными, не подавляющими. Хмелевой вкус может отсутствовать либо быть слабым, пряно-землистым, но он никогда не должен перекрывать специи. Горечь низкая или умеренно низкая и лишь поддерживает освежающее сочетание фруктовых и пряных нот. Финиш сухой и освежающий, без горького или резкого послевкусия.",
+    "after": "Вкус приятный, хлебно-зерновой, часто с мёдово-ванильным оттенком. Фруктовость умеренная, яркая, с апельсиново-цитрусовым характером. Травянисто-пряные ноты, включая лимонный кориандр и другие специи, обычны, но должны оставаться тонкими и сбалансированными, не перебивая остальные вкусы. Хмелевой вкус может отсутствовать либо быть слабым, пряно-землистым, но он никогда не должен перекрывать специи. Горечь низкая или умеренно низкая и лишь поддерживает освежающее сочетание фруктовых и пряных нот. Финиш сухой и освежающий, без горького или резкого послевкусия.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Pleasant bready, grainy malt flavor, often with a honey or vanilla character. Moderate zesty, orange-citrusy fruitiness. Herbal-spicy flavors, which may include lemony coriander and other spices, are common should be subtle and balanced, not overpowering. A spicy-earthy hop flavor can be low to none, and never overshadows the spices. Hop bitterness is low to medium-low, and supports the refreshing flavors of fruit and spice. Refreshingly crisp with a dry finish, and no bitter or harsh aftertaste."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_14.json",
+    "id": "27-Lichtenhainer",
+    "path": [
+      "styles",
+      2,
+      "sections_ru",
+      "flavor"
+    ],
+    "field": "flavor",
+    "before": "Во вкусе заметна умеренно сильная фруктовость, чаще всего лимонная или яблочная. Кислотность умеренная, чисто молочнокислая, без фанка и без «грязных» диких тонов. Дым древесный, сухой, как и в аромате, средней силы. Финиш сухой; в послевкусии остаются и кислотность, и дым. Горечь низкая: баланс здесь создаёт именно кислинка, а не хмель. Во рту пиво свежее и чистое, послевкусие слегка стягивающее. Пшеничный характер выражен сдержанно; в балансе заметнее дым и кислотность. К финалу сильнее всего проявляются кисловато-лимонные или зелёно-яблочные ноты, а дым идёт сразу вслед за ними. Хмеля нет.",
+    "after": "Во вкусе заметна умеренно сильная фруктовость, чаще всего лимонная или яблочная. Кислотность умеренная, чисто молочнокислая, без характерных для дикого брожения оттенков сена, земли или скотного двора. Дым древесный, сухой, как и в аромате, средней силы. Финиш сухой; в послевкусии остаются и кислотность, и дым. Горечь низкая: баланс здесь создаёт именно кислинка, а не хмель. Во рту пиво свежее и чистое, послевкусие слегка стягивающее. Пшеничный характер выражен сдержанно; в балансе заметнее дым и кислотность. К финалу сильнее всего проявляются кисловато-лимонные или зелёно-яблочные ноты, а дым идёт сразу вслед за ними. Хмеля нет.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Moderately strong fruity flavor, possibly lemons or apples. Moderate intensity, clean lactic tartness without any funkiness. Similar dry wood smoke character as aroma, medium strength. Dry finish, with acidity and smoke in the aftertaste. Low bitterness; acidity is providing the balance, not hops. Fresh, clean palate, and slightly puckery aftertaste. The wheat character is on the low side; the smoke and acidity are more prominent in the balance. The tart, lemony, or green apple flavor is strongest in the finish, with smoke a close second. No hops."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "28A",
+    "path": [
+      "styles",
+      0,
+      "description_short_ru"
+    ],
+    "field": "description_short_ru",
+    "before": "Обычно суше и фруктовее, чем можно ожидать от базового стиля; характер Brett может варьироваться от лёгких фруктовых нот до насыщенного фанкового профиля, иногда с лёгкой кислотностью, не связанной с молочной кислотой.",
+    "after": "Обычно суше и фруктовее, чем можно ожидать от базового стиля. Brett могут давать как фруктовые ноты, так и оттенки сена, земли или скотного двора, от слабых до сильных. Возможна лёгкая кислотность, не связанная с молочной кислотой.",
+    "reasons": [
+      "Абзац переписан понятным русским языком с сохранением смысла английского оригинала"
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "28A",
+    "path": [
+      "styles",
+      0,
+      "sections_ru",
+      "aroma"
+    ],
+    "field": "aroma",
+    "before": "Зависит от базового стиля. Молодые Brett-версии обычно дают более выраженную фруктовость — тропические и косточковые фрукты, цитрус, — но конкретный профиль определяется штаммом Brett. С возрастом может появляться лёгкий фанковый оттенок — скотный двор, влажное сено, слегка землистые или дымные ноты, — однако он не должен доминировать.",
+    "after": "Зависит от базового стиля. Молодые Brett-версии обычно дают более выраженную фруктовость — тропические и косточковые фрукты, цитрус, — но конкретный профиль определяется штаммом Brett. С возрастом могут появляться лёгкие оттенки скотного двора, влажного сена, земли или дыма, но они не должны преобладать.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Variable by base style. Young Brett beers will possess more fruity notes (e.g., tropical fruit, stone fruit, or citrus), but this is variable by the strains of Brett used. Older Brett beers may start to develop a little funk (e.g., barnyard, wet hay, or slightly earthy or smoky notes), but this character should not dominate."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "28A",
+    "path": [
+      "styles",
+      0,
+      "sections_ru",
+      "comments"
+    ],
+    "field": "comments",
+    "before": "Базовый стиль задаёт основную рамку, но Brett почти всегда делает пиво суше, легче по телу и, как правило, более фруктовым и фанковым. Молодые версии ярче и свежее по фруктам, выдержанные — глубже и сложнее по фанку, при этом часть исходного стилевого характера со временем может уйти. Brett должен вписываться в пиво органично; такие образцы не должны превращаться в «Brett-бомбу». Хотя Brett способен вырабатывать небольшие количества органических кислот, это не основной способ закисления пива.",
+    "after": "Базовый стиль определяет основные свойства пива, но Brett делают его суше, легче по телу и часто усиливают фруктовые ноты и характерные оттенки дикого брожения — например, сена, земли или скотного двора. Молодые версии ярче и фруктовее; с выдержкой оттенки дикого брожения становятся сложнее, а признаки базового стиля могут слабеть. Характер Brett должен гармонично сочетаться с базовым стилем, не перебивая его. Хотя Brett способны вырабатывать небольшое количество органических кислот, их не используют как основной способ подкисления пива.",
+    "reasons": [
+      "Абзац переписан понятным русским языком с сохранением смысла английского оригинала"
+    ],
+    "source_en": "The base style describes most of the character of these beers, but the addition of Brett ensures a drier, thinner, and often fruitier and funkier product. Younger versions are brighter and fruitier, while older ones possess more depth of funk and may lose more of the base style character. The Brett character should always meld with the style; these beers should never be a ‘Brett bomb’. While Brett can produce low levels of organic acids, it is not a primary beer souring method."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "28A",
+    "path": [
+      "styles",
+      0,
+      "sections_ru",
+      "entry_instructions"
+    ],
+    "field": "entry_instructions",
+    "before": "Участник должен либо указать базовый стиль, либо дать описание состава, параметров или целевого характера пива. При желании можно указать использованные штаммы Brett.",
+    "after": "Участник должен указать базовый стиль или описать состав, параметры либо то, каким пиво должно быть по замыслу пивовара. При желании можно указать использованные штаммы Brett.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "The entrant must specify either a Base Style, or provide a description of the ingredients, specs, or desired character. The entrant may specify the strains of Brett used."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "28A",
+    "path": [
+      "styles",
+      0,
+      "sections_ru",
+      "flavor"
+    ],
+    "field": "flavor",
+    "before": "Зависит от базового стиля. Характер Brett может быть от минимального до весьма напористого. Профиль нередко бывает ярко фруктовым — тропические фрукты, ягоды, косточковые, цитрус — либо с дымными, землистыми и фермерскими оттенками. Неприятная, грубая фанковость вроде пластыря, гнили, жидкости для снятия лака, сырных тонов и т.п. недопустима. В молодом возрасте фруктовость всегда заметнее; с выдержкой нарастает фанковая глубина. Молочнокислая кислотность недопустима. Солодовый характер обычно слабее, чем у исходного стиля, поэтому пиво чаще всего получается сухим с резким, освежающим финишем благодаря высокой степени сбраживания Brett.",
+    "after": "Зависит от базового стиля. Характер Brett может быть от минимального до весьма напористого. Профиль нередко бывает ярко фруктовым — тропические фрукты, ягоды, косточковые, цитрус — либо с оттенками дыма, земли или скотного двора. Неприятные оттенки пластыря, гнили, жидкости для снятия лака, сыра и тому подобные дефекты недопустимы. В молодом возрасте фруктовость всегда заметнее; с выдержкой усиливаются оттенки земли, дыма и скотного двора. Молочнокислая кислотность недопустима. Солодовый характер обычно слабее, чем у исходного стиля, поэтому пиво чаще всего получается сухим с резким, освежающим финишем благодаря высокой степени сбраживания Brett.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Variable by base style. Brett character may range from minimal to aggressive. Can be quite fruity (e.g., tropical fruit, berry, stone fruit, citrus), or have some smoky, earthy, or barnyard character. Should not be unpleasantly funky, such as Band-Aid, fetid, nail polish remover, cheese, etc. Always fruitier when young, gaining more funk with age. May not be lactic. Malt flavors are often less pronounced than in the base style, leaving a beer most often dry and crisp due to high attenuation by the Brett."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "28A",
+    "path": [
+      "styles",
+      0,
+      "sections_ru",
+      "overall_impression"
+    ],
+    "field": "overall_impression",
+    "before": "Чаще всего суше и фруктовее, чем можно было бы ожидать от базового стиля. Фруктовые и/или фанковые ноты могут варьироваться от слабых до весьма заметных в зависимости от возраста пива и использованных штаммов Brett. Возможна лёгкая кислотность, не связанная с молочной кислотой.",
+    "after": "Чаще всего суше и фруктовее, чем можно было бы ожидать от базового стиля. В зависимости от возраста пива и штаммов Brett могут ощущаться фруктовые ноты, оттенки сена, земли или скотного двора либо их сочетание. Интенсивность этих нот — от слабой до высокой. Возможна лёгкая кислотность, не связанная с молочной кислотой.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Most often drier and fruitier than the base style suggests. Fruity or funky notes range from low to high, depending on the age of the beer and strains of Brett used. May possess a light non-lactic acidity."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "28A",
+    "path": [
+      "styles",
+      0,
+      "sections_ru",
+      "style_comparison"
+    ],
+    "field": "style_comparison",
+    "before": "По сравнению с тем же стилем без Brett такое пиво будет суше, сильнее выброженным, более фруктовым, легче по телу и с возрастом — чуть более фанковым. Кислотности и глубины дикого характера здесь меньше, чем у бельгийских диких элей.",
+    "after": "По сравнению с тем же стилем без Brett это пиво суше, сильнее выброжено, фруктовее и легче по телу. С возрастом у него немного усиливаются характерные оттенки дикого брожения, например сена, земли или скотного двора. Кислотности и глубины дикого характера здесь меньше, чем у бельгийских диких элей.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Compared to the same beer style without Brett, a Brett Beer will be drier, more highly attenuated, fruitier, lighter in body, and slightly funkier as it ages. Less sourness and depth than Belgian ‘wild’ ales."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "28B",
+    "path": [
+      "styles",
+      1,
+      "description_short_ru"
+    ],
+    "field": "description_short_ru",
+    "before": "Кислая и фанковая версия базового стиля, где характер смешанного брожения заметен отчётливо, но в удачных образцах не подавляет пиво, а гармонично сочетается с его вкусом.",
+    "after": "Кислая версия базового стиля с характерными оттенками дикого брожения — например, сена, земли или скотного двора. В лучших образцах они гармонично дополняют вкус пива.",
+    "reasons": [
+      "Абзац переписан понятным русским языком с сохранением смысла английского оригинала"
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "28B",
+    "path": [
+      "styles",
+      1,
+      "sections_ru",
+      "aroma"
+    ],
+    "field": "aroma",
+    "before": "Зависит от базового стиля. Вклад микроорганизмов помимо Sacch должен ощущаться — от заметного до сильного — и часто даёт кислые, дикие, фанковые ноты. Лучшие примеры раскрываются не одной доминирующей нотой, а целым спектром ароматов. Аромат должен притягивать, а не быть жёстким или неприятным.",
+    "after": "Зависит от базового стиля. Микроорганизмы, используемые помимо Sacch, должны заметно или сильно влиять на аромат. Часто они придают ему кислотность и характерные для дикого брожения оттенки — например, сена, земли или скотного двора. Лучшие примеры раскрываются не одной доминирующей нотой, а целым спектром ароматов. Аромат должен притягивать, а не быть жёстким или неприятным.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Variable by base style. The contribution of non-Sacch microbes should be noticeable to strong, and often contribute a sour and funky, wild note. The best examples will display a range of aromatics, rather than a single dominant character. The aroma should be inviting, not harsh or unpleasant."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "28B",
+    "path": [
+      "styles",
+      1,
+      "sections_ru",
+      "entry_instructions"
+    ],
+    "field": "entry_instructions",
+    "before": "Участник должен дать описание пива, указав использованные дрожжи или бактерии, а также либо базовый стиль, либо состав, параметры или целевой характер напитка.",
+    "after": "Участник должен назвать использованные дрожжи или бактерии. Также нужно указать базовый стиль или описать состав, параметры либо то, каким пиво должно быть по замыслу пивовара.",
+    "reasons": [
+      "Абзац переписан понятным русским языком с сохранением смысла английского оригинала"
+    ],
+    "source_en": "The entrant must specify a description of the beer, identifying yeast or bacteria used and either a Base Style, or the ingredients, specs, or target character of the beer."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "28B",
+    "path": [
+      "styles",
+      1,
+      "sections_ru",
+      "flavor"
+    ],
+    "field": "flavor",
+    "before": "Зависит от базового стиля. Важно искать гармоничный баланс между основой пива и характером ферментации. Диапазон очень широк: от довольно высокой кислотности и фанка до тонкого, приятного и цельного пива. Лучшие образцы приятно пить: эфиры и фенолы поддерживают солод и хмель, а не спорят с ними. Дикий характер может быть выраженным, но в стилях с яркой солодовой или хмелевой основой он не обязан всё перекрывать. Кислотность должна быть уверенной, но приятной — от чистой до сложной по характеру; она не должна быть жгучей или уксусной. Выраженный или неприятный уксусный характер считается дефектом. Горечь обычно невысокая, особенно по мере роста кислотности.",
+    "after": "Зависит от базового стиля. Важно искать гармоничный баланс между основой пива и характером ферментации. Кислотность и характерные для дикого брожения оттенки — например, сена, земли или скотного двора — могут быть довольно сильными либо тонкими и деликатными. В любом случае пиво должно оставаться приятным и гармоничным. Лучшие образцы приятно пить: эфиры и фенолы поддерживают солод и хмель, а не спорят с ними. Дикий характер может быть выраженным, но в стилях с яркой солодовой или хмелевой основой он не обязан всё перекрывать. Кислотность должна быть уверенной, но приятной — от чистой до сложной по характеру; она не должна быть жгучей или уксусной. Выраженный или неприятный уксусный характер считается дефектом. Горечь обычно невысокая, особенно по мере роста кислотности.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Variable by base style. Look for an agreeable balance between the base beer and the fermentation character. A range of results is possible from fairly high acidity and funk to a subtle, pleasant, harmonious beer. The best examples are pleasurable to drink with the esters and phenols complementing the malt or hops. The wild character can be prominent, but does not need to be dominating in a style with an otherwise strong malt or hop profile. Acidity should be firm yet enjoyable, and ranging from clean to complex, but should not be biting or vinegary; prominent, objectionable, or offensive acetic acid is a fault. Bitterness tends to be low, especially as sourness increases."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "28B",
+    "path": [
+      "styles",
+      1,
+      "sections_ru",
+      "overall_impression"
+    ],
+    "field": "overall_impression",
+    "before": "Кислая и фанковая версия некого базового стиля пива.",
+    "after": "Кислая версия базового стиля с характерными оттенками дикого брожения — например, сена, земли или скотного двора.",
+    "reasons": [
+      "Абзац переписан понятным русским языком с сохранением смысла английского оригинала"
+    ],
+    "source_en": "A sour and funky version of a base style of beer."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "28B",
+    "path": [
+      "styles",
+      1,
+      "sections_ru",
+      "style_comparison"
+    ],
+    "field": "style_comparison",
+    "before": "По сути, это кислая и фанковая версия базового стиля, но она не обязана быть столь же кислой или столь же дикой, как некоторые традиционные европейские кислые сорта.",
+    "after": "Кислая версия базового стиля с оттенками дикого брожения, например сена, земли или скотного двора. Кислотность и эти оттенки могут быть слабее, чем в некоторых традиционных европейских кислых сортах.",
+    "reasons": [
+      "Абзац переписан понятным русским языком с сохранением смысла английского оригинала"
+    ],
+    "source_en": "A sour and funky version of a base style, but do not necessarily have to be as sour or as funky as some traditional European sour examples."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "28C",
+    "path": [
+      "styles",
+      2,
+      "sections_ru",
+      "entry_instructions"
+    ],
+    "field": "entry_instructions",
+    "before": "Участник должен указать использованные специальные ингредиенты — например, фрукт, пряность, траву или дерево. Также нужно описать пиво: указать использованные дрожжи или бактерии и либо базовый стиль, либо состав, параметры или целевой характер напитка. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "after": "Участник должен указать использованные специальные ингредиенты — например, фрукт, пряность, траву или дерево. Также нужно назвать использованные дрожжи или бактерии. Кроме того, следует указать базовый стиль или описать состав, параметры либо то, каким пиво должно быть по замыслу пивовара. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Entrant must specify any Specialty- Type Ingredient (e.g., fruit, spice, herb, or wood) used. Entrant must specify either a description of the beer, identifying yeast or bacteria used and either a Base Style, or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "28C",
+    "path": [
+      "styles",
+      2,
+      "sections_ru",
+      "style_comparison"
+    ],
+    "field": "style_comparison",
+    "before": "Похоже на фруктовое, пряное, травяное или древесное пиво, но с кислым или фанковым диким характером.",
+    "after": "Похоже на пиво с фруктами, травами, пряностями или выдержкой на древесине, но с кислотностью либо характерными для дикого брожения оттенками — например, сена, земли или скотного двора.",
+    "reasons": [
+      "Абзац переписан понятным русским языком с сохранением смысла английского оригинала"
+    ],
+    "source_en": "Like a fruit, herb, spice, or wood beer, but sour or funky."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "28D",
+    "path": [
+      "styles",
+      3,
+      "description_short_ru"
+    ],
+    "field": "description_short_ru",
+    "before": "Светлое, освежающее кислое пиво с чистой молочнокислой кислотностью, мягкой зерновой основой и умеренными фруктовыми эфирами, без Brett-фанка.",
+    "after": "Светлое, освежающее кислое пиво с чистой молочнокислой кислотностью, мягкой зерновой основой и умеренными фруктовыми эфирами.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ]
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "28D",
+    "path": [
+      "styles",
+      3,
+      "sections_ru",
+      "style_comparison"
+    ],
+    "field": "style_comparison",
+    "before": "Версии с меньшей плотностью могут быть очень близки к Berliner Weisse без Brett. По сравнению с Lambic это пиво обычно менее кислое, с чистой молочнокислой кислотностью; фанковый характер сдержан или вовсе не ощущается. По алкоголю оно обычно крепче обоих.",
+    "after": "Версии с меньшей плотностью могут быть очень близки к Berliner Weisse без Brett. По сравнению с Lambic это пиво обычно менее кислое, с чистой молочнокислой кислотностью; характерные для дикого брожения оттенки сена, земли или скотного двора слабы или вовсе не ощущаются. По алкоголю оно обычно крепче обоих.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Lower gravity examples can be very much like a Brett-free Berliner Weisse. Compared to a Lambic, is generally not as acidic and has a clean lactic sourness with restrained to below sensory threshold funk. Higher in alcohol content than both."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "29A",
+    "path": [
+      "styles",
+      4,
+      "sections_ru",
+      "comments"
+    ],
+    "field": "comments",
+    "before": "Описание пива здесь критически важно: судье важнее понять заявленную идею, чем пытаться вычислить каждый отдельный ингредиент. Ключевые критерии — баланс, питкость и качество реализации замысла. Фрукт должен дополнять исходный стиль, а не подавлять его. После добавления фруктов характеристики базового стиля неизбежно меняются, поэтому не стоит ожидать, что пиво будет на вкус точь-в-точь как исходная «чистая» база. Фруктовые версии классических стилей следует заявлять именно сюда, за исключением Lambic: для него есть отдельный стиль 23F Fruit Lambic. Кислые или смешанно-ферментированные фруктовые сорта без базы в виде Classic Style должны идти в 28C Wild Specialty Beer. Фруктовые версии кислых классических стилей — например, Flanders Red, Oud Bruin, Gose или Berliner Weisse — следует заявлять в 29A Fruit Beer. Если у классического стиля специи уже изначально являются частью определения — как у Witbier или Gose, — фруктовая версия такого пива не считается Spice Beer для целей заявки.",
+    "after": "Описание пива здесь критически важно: судье важнее понять заявленную идею, чем пытаться вычислить каждый отдельный ингредиент. Ключевые критерии — баланс, питкость и качество реализации замысла. Фруктовый вкус должен дополнять вкус базового пива, не перебивая его. После добавления фруктов характеристики базового стиля неизбежно меняются, поэтому не стоит ожидать, что пиво будет на вкус точь-в-точь как исходная «чистая» база. Фруктовые версии классических стилей следует заявлять именно сюда, за исключением Lambic: для него есть отдельный стиль 23F Fruit Lambic. Кислые или смешанно-ферментированные фруктовые сорта без базы в виде Classic Style должны идти в 28C Wild Specialty Beer. Фруктовые версии кислых классических стилей — например, Flanders Red, Oud Bruin, Gose или Berliner Weisse — следует заявлять в 29A Fruit Beer. Если у классического стиля специи уже изначально являются частью определения — как у Witbier или Gose, — фруктовая версия такого пива не считается Spice Beer для целей заявки.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "The description of the beer is critical for evaluation; judges should think more about the declared concept than trying to detect each individual ingredient. Balance, drinkability, and execution of the theme are the most important deciding factors. The fruit should complement the original style and not overwhelm it. Base style attributes will be different after the addition of fruit; do not expect the beer to taste identical to the unadulterated base style. Fruit Beers based on a Classic Style should be entered in this style, except Lambic – there is a special style for Fruit Lambic (23F). Fruited sour or mixed fermentation beers without a Classic Style base should be entered in the 28C Wild Specialty Beer. Fruited versions of sour Classic Style beers (e.g., Flanders Red, Oud Bruin, Gose, Berliner Weisse) should be entered in 29A Fruit Beer. Fruit-based versions of Classic Styles where spices are an inherent part of the Classic Style’s definition (e.g., Witbier, Gose) do not count as a Spice Beer for entering purposes."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "29A",
+    "path": [
+      "styles",
+      4,
+      "sections_ru",
+      "entry_instructions"
+    ],
+    "field": "entry_instructions",
+    "before": "Участник должен указать использованный фрукт или фрукты. Также необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "after": "Участник должен указать использованный фрукт или фрукты. Также нужно указать базовый стиль или описать состав, параметры либо то, каким пиво должно быть по замыслу пивовара. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "The entrant must specify the type(s) of fruit used. Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "29A",
+    "path": [
+      "styles",
+      4,
+      "sections_ru",
+      "flavor"
+    ],
+    "field": "flavor",
+    "before": "Зависит от базового стиля. Как и в аромате, фруктовый вкус должен быть заметным; по интенсивности он может идти от деликатного до весьма выразительного. Однако фрукт не должен казаться искусственным или настолько подавляющим, чтобы пиво напоминало фруктовый напиток. Горечь, хмелевой и солодовый профиль, крепость и побочные продукты брожения — например эфиры — должны оставаться уместными для базового стиля и при этом гармонировать с фруктовым характером. Обычно фрукты добавляют прежде всего вкус, а не сладость: их сахара, как правило, полностью сбраживаются, делая финиш суше и профиль легче. Остаточная сладость сама по себе не является минусом, если только она не напоминает вкус несброженного сахара. Некоторые фрукты могут добавлять кислотность, горечь и танины; всё это должно быть сбалансировано.",
+    "after": "Зависит от базового стиля. Как и в аромате, фруктовый вкус должен быть заметным; по интенсивности он может идти от деликатного до весьма выразительного. Однако фруктовый вкус не должен казаться искусственным или настолько перебивать остальные вкусы, чтобы пиво напоминало фруктовый напиток. Горечь, хмелевой и солодовый профиль, крепость и побочные продукты брожения — например эфиры — должны оставаться уместными для базового стиля и при этом гармонировать с фруктовым характером. Обычно фрукты добавляют прежде всего вкус, а не сладость: их сахара, как правило, полностью сбраживаются, делая финиш суше и профиль легче. Остаточная сладость сама по себе не является минусом, если только она не напоминает вкус несброженного сахара. Некоторые фрукты могут добавлять кислотность, горечь и танины; всё это должно быть сбалансировано.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Varies by base style. As with aroma, distinctive fruit flavors should be noticeable, and may range in intensity from subtle to aggressive, but the fruit character should not be so artificial or inappropriately overpowering as to suggest a ‘fruit juice drink.’ Bitterness, hop and malt flavors, alcohol content, and fermentation byproducts, such as esters, should be appropriate for the base style, but be harmonious and balanced with the distinctive fruit flavors present. Fruit generally adds flavor not sweetness, since fruit sugars usually fully ferment, thus lightening the flavor and drying out the finish. However, residual sweetness is not necessarily a negative characteristic unless it has a raw, unfermented quality. Some fruit may add sourness, bitterness, and tannins, which must be balanced in the resulting flavor profile."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "29B",
+    "path": [
+      "styles",
+      5,
+      "sections_ru",
+      "entry_instructions"
+    ],
+    "field": "entry_instructions",
+    "before": "Участник должен указать вид фрукта и тип использованной пряной, травяной или овощной добавки; отдельные ингредиенты можно не расписывать, если использована общеизвестная смесь специй, например смесь специй для яблочного пирога. Также необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "after": "Участник должен указать вид фрукта и тип использованной пряной, травяной или овощной добавки; отдельные ингредиенты можно не расписывать, если использована общеизвестная смесь специй, например смесь специй для яблочного пирога. Также нужно указать базовый стиль или описать состав, параметры либо то, каким пиво должно быть по замыслу пивовара. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "The entrant must specify the type of fruit, and the type of SHV used; individual SHV ingredients do not need to be specified if a well-known blend of spices is used (e.g., apple pie spice). Entrant must specify a description of the beer, either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "29C",
+    "path": [
+      "styles",
+      6,
+      "sections_ru",
+      "entry_instructions"
+    ],
+    "field": "entry_instructions",
+    "before": "Участник должен указать использованный фрукт. Также необходимо указать тип дополнительного ингредиента — согласно пояснению во вступлении к категории — или применённого специального процесса. Кроме того, нужно описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "after": "Участник должен указать использованный фрукт. Также необходимо указать тип дополнительного ингредиента — согласно пояснению во вступлении к категории — или применённого специального процесса. Кроме того, нужно указать базовый стиль или описать состав, параметры либо то, каким пиво должно быть по замыслу пивовара. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "The entrant must specify the type of fruit used. The entrant must specify the type of additional ingredient (per the introduction) or special process employed. Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "29D",
+    "path": [
+      "styles",
+      7,
+      "sections_ru",
+      "flavor"
+    ],
+    "field": "flavor",
+    "before": "Как и в аромате, виноградный характер может варьироваться от тонкого до умеренно высокого и при этом оставаться наиболее заметным элементом. Возможны фруктовые оттенки, соответствующие сорту винограда: косточковые фрукты, тропики, ягоды и т.п. Более тёмные красные сорта могут давать грубоватые оттенки земли, табака и кожи. Солод создаёт фон и не должен доминировать; обычно используются светлые солода щадящей сушки. Совсем небольшие количества светлого карамельного солода допустимы, а вот жареные и выраженно шоколадные тона недопустимы. Горечь обычно низкая, а хмелевой вкус может быть от слабого до отсутствующего. Обычна лёгкая кислинка, зависящая от сорта и количества винограда. Она может повышать питкость и освежать, но не должна приближаться по выраженности к кислотности кислого пива. Уместная дубовая нота допустима, однако Brett-фанк недопустим. Брожение чистое.",
+    "after": "Как и в аромате, виноградный характер может варьироваться от тонкого до умеренно высокого и при этом оставаться наиболее заметным элементом. Возможны фруктовые оттенки, соответствующие сорту винограда: косточковые фрукты, тропики, ягоды и т.п. Более тёмные красные сорта могут давать грубоватые оттенки земли, табака и кожи. Солод создаёт фон и не должен доминировать; обычно используются светлые солода щадящей сушки. Совсем небольшие количества светлого карамельного солода допустимы, а вот жареные и выраженно шоколадные тона недопустимы. Горечь обычно низкая, а хмелевой вкус может быть от слабого до отсутствующего. Обычна лёгкая кислинка, зависящая от сорта и количества винограда. Она может повышать питкость и освежать, но не должна приближаться по выраженности к кислотности кислого пива. Уместная дубовая нота допустима, однако характерные для Brett оттенки дикого брожения, например скотного двора или влажного сена, недопустимы. Брожение чистое.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "As with the aroma, grape character may range from subtle to medium-high intensity, and be most prominent. Fruit flavors (stone, tropical, berries, etc.) as appropriate for the variety of grape. Darker red grapes can contribute more rustic flavors (e.g., earthy, tobacco, leather). The malt character is supportive, not robust and usually of the pale, lightly kilned varieties. Very low levels of pale crystal malts are allowed but roasted or strong chocolate character is always inappropriate. Bitterness is generally low and hop flavors can be low to non-existent. Mild tart notes, due to variety and amount of grape used, is common and may help to improve the digestibility but should not near the ‘sour’ threshold. Complementary oak is optional but a funky Brett character should not be present. Clean fermentation."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_16.json",
+    "id": "29D",
+    "path": [
+      "styles",
+      7,
+      "sections_ru",
+      "style_comparison"
+    ],
+    "field": "style_comparison",
+    "before": "По базе стиль может напоминать некоторые бельгийские сорта — Belgian Blonde, Saison или Belgian Single, — но с заметным виноградным компонентом. Более крепкие версии сближаются с Belgian Tripel или Belgian Golden Strong Ale, опять же с виноградом. В отличие от Fruit Lambic, здесь не должно быть фанкового дикого характера.",
+    "after": "По базе стиль может напоминать некоторые бельгийские сорта — Belgian Blonde, Saison или Belgian Single, — но с заметным виноградным компонентом. Более крепкие версии сближаются с Belgian Tripel или Belgian Golden Strong Ale, опять же с виноградом. В отличие от Fruit Lambic, здесь не должно быть характерных для дикого брожения оттенков, например скотного двора или влажного сена.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Similar base as several Belgian styles, like Belgian Blonde, Saison, and Belgian Single, but with grapes. Higher strength examples are similar to Belgian Tripel or Belgian Golden Strong Ale, but with grapes. Not funky like Fruit Lambic."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_17.json",
+    "id": "30A",
+    "path": [
+      "styles",
+      0,
+      "sections_ru",
+      "comments"
+    ],
+    "field": "comments",
+    "before": "Описание пива здесь критически важно: судье важнее понять заявленную идею, чем пытаться вычислить каждый отдельный ингредиент. Главные критерии — баланс, питкость и качество реализации замысла. Специи, травы и овощи должны дополнять исходный стиль, а не подавлять его. После их добавления базовый стиль неизбежно меняется, поэтому не стоит ожидать вкуса, полностью идентичного «чистой» базе.",
+    "after": "Описание пива здесь критически важно: судье важнее понять заявленную идею, чем пытаться вычислить каждый отдельный ингредиент. Главные критерии — баланс, питкость и качество реализации замысла. Специи, травы и овощи должны дополнять вкус базового пива, не перебивая его. После их добавления базовый стиль неизбежно меняется, поэтому не стоит ожидать вкуса, полностью идентичного «чистой» базе.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "The description of the beer is critical for evaluation; judges should think more about the declared concept than trying to detect each individual ingredient. Balance, drinkability, and execution of the theme are the most important deciding factors. The SHVs should complement the original style and not overwhelm it. Base style attributes will be different after the addition of SHVs; do not expect the beer to taste identical to the unadulterated base style."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_17.json",
+    "id": "30A",
+    "path": [
+      "styles",
+      0,
+      "sections_ru",
+      "entry_instructions"
+    ],
+    "field": "entry_instructions",
+    "before": "Участник должен указать, какие именно специи, травы или овощи использовались, но если применялась общеизвестная смесь специй, перечислять каждый компонент отдельно не требуется — например, смесь специй для яблочного пирога, карри или смесь с перцем чили. Также необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "after": "Участник должен указать, какие именно специи, травы или овощи использовались, но если применялась общеизвестная смесь специй, перечислять каждый компонент отдельно не требуется — например, смесь специй для яблочного пирога, карри или смесь с перцем чили. Также нужно указать базовый стиль или описать состав, параметры либо то, каким пиво должно быть по замыслу пивовара. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "The entrant must specify the type of spices, herbs, or vegetables used, but individual ingredients do not need to be specified if a well-known spice blend is used (e.g., apple pie spice, curry powder, chili powder). Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_17.json",
+    "id": "30B",
+    "path": [
+      "styles",
+      1,
+      "sections_ru",
+      "entry_instructions"
+    ],
+    "field": "entry_instructions",
+    "before": "Участник должен указать, какие специи, травы или овощи использовались; перечислять каждый компонент не требуется, если применялась общеизвестная смесь, например специи для тыквенного пирога. Также необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "after": "Участник должен указать, какие специи, травы или овощи использовались; перечислять каждый компонент не требуется, если применялась общеизвестная смесь, например специи для тыквенного пирога. Также нужно указать базовый стиль или описать состав, параметры либо то, каким пиво должно быть по замыслу пивовара. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "The entrant must specify the type of spices, herbs, or vegetables used; individual ingredients do not need to be specified if a well-known blend of spices is used (e.g., pumpkin pie spice). Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_17.json",
+    "id": "30C",
+    "path": [
+      "styles",
+      2,
+      "sections_ru",
+      "entry_instructions"
+    ],
+    "field": "entry_instructions",
+    "before": "Участник должен указать, какие специи, сахара, фрукты или другие ферментируемые добавки использовались; перечислять каждый компонент отдельно не требуется, если применялась общеизвестная смесь специй, например смесь для глинтвейна. Также необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "after": "Участник должен указать, какие специи, сахара, фрукты или другие ферментируемые добавки использовались; перечислять каждый компонент отдельно не требуется, если применялась общеизвестная смесь специй, например смесь для глинтвейна. Также нужно указать базовый стиль или описать состав, параметры либо то, каким пиво должно быть по замыслу пивовара. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "The entrant must specify the type of spices, sugars, fruits, or additional fermentables used; individual ingredients do not need to be specified if a well-known blend of spices is used (e.g., mulling spice). Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_17.json",
+    "id": "30D",
+    "path": [
+      "styles",
+      3,
+      "sections_ru",
+      "entry_instructions"
+    ],
+    "field": "entry_instructions",
+    "before": "Участник должен указать, какие специи, травы и овощи использовались; если применялась общеизвестная смесь специй, перечислять каждый ингредиент отдельно не требуется — например, смесь специй для яблочного пирога, карри или смесь с перцем чили. Также нужно указать тип дополнительного ингредиента, разрешённого вводной частью категории, либо использованный специальный процесс. Кроме того, необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "after": "Участник должен указать, какие специи, травы и овощи использовались; если применялась общеизвестная смесь специй, перечислять каждый ингредиент отдельно не требуется — например, смесь специй для яблочного пирога, карри или смесь с перцем чили. Также нужно указать тип дополнительного ингредиента, разрешённого вводной частью категории, либо использованный специальный процесс. Кроме того, нужно указать базовый стиль или описать состав, параметры либо то, каким пиво должно быть по замыслу пивовара. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "The entrant must specify the type of SHVs used, but individual ingredients do not need to be specified if a well-known spice blend is used (e.g., apple pie spice, curry powder, chili powder). The entrant must specify the type of additional ingredient (per the introduction) or special process employed. Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_17.json",
+    "id": "31A",
+    "path": [
+      "styles",
+      4,
+      "sections_ru",
+      "entry_instructions"
+    ],
+    "field": "entry_instructions",
+    "before": "Участник должен указать, какое именно альтернативное зерновое сырьё использовалось. Также необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "after": "Участник должен указать, какое именно альтернативное зерновое сырьё использовалось. Также нужно указать базовый стиль или описать состав, параметры либо то, каким пиво должно быть по замыслу пивовара. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "The entrant must specify the type of alternative grain used. Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_17.json",
+    "id": "31B",
+    "path": [
+      "styles",
+      5,
+      "sections_ru",
+      "entry_instructions"
+    ],
+    "field": "entry_instructions",
+    "before": "Участник должен указать, какой именно сахар использовался. Также необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "after": "Участник должен указать, какой именно сахар использовался. Также нужно указать базовый стиль или описать состав, параметры либо то, каким пиво должно быть по замыслу пивовара. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "The entrant must specify the type of sugar used. Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_18.json",
+    "id": "32B",
+    "path": [
+      "styles",
+      1,
+      "sections_ru",
+      "entry_instructions"
+    ],
+    "field": "entry_instructions",
+    "before": "Если в дымном профиле заметно читается конкретная порода древесины или тип дыма, это нужно указать. Также участник должен назвать дополнительные ингредиенты или процессы, которые отличают это пиво от копчёной версии классического стиля. Необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "after": "Если в дымном профиле заметно читается конкретная порода древесины или тип дыма, это нужно указать. Также участник должен назвать дополнительные ингредиенты или процессы, которые отличают это пиво от копчёной версии классического стиля. Кроме того, нужно указать базовый стиль или описать состав, параметры либо то, каким пиво должно быть по замыслу пивовара. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "The entrant must specify the type of wood or smoke if a varietal smoke character is noticeable. The entrant must specify the additional ingredients or processes that make this a specialty smoked beer. Entrant must specify a description of the beer, identifying either a base style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_18.json",
+    "id": "33A",
+    "path": [
+      "styles",
+      2,
+      "sections_ru",
+      "entry_instructions"
+    ],
+    "field": "entry_instructions",
+    "before": "Участник должен указать породу древесины, а также степень тоста или обжига, если древесина подвергалась такой обработке. Если используется необычная порода, нужно кратко описать, какие именно сенсорные оттенки она привносит в пиво. Также необходимо описать сам напиток, указав либо базовый стиль, либо состав, параметры или целевой характер. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "after": "Участник должен указать породу древесины, а также степень тоста или обжига, если древесина подвергалась такой обработке. Если используется необычная порода, нужно кратко описать, какие именно сенсорные оттенки она привносит в пиво. Также нужно указать базовый стиль или описать состав, параметры либо то, каким пиво должно быть по замыслу пивовара. Все эти сведения можно объединить в одном описании особенностей пива.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "The entrant must specify the type of wood used and the toast or char level (if used). If an unusual varietal wood is used, the entrant must supply a brief description of the sensory aspects the wood adds to beer. Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_18.json",
+    "id": "33A",
+    "path": [
+      "styles",
+      2,
+      "sections_ru",
+      "flavor"
+    ],
+    "field": "flavor",
+    "before": "Вкус зависит от базового стиля. Дерево обычно даёт древесные оттенки и иногда узнаваемый характер конкретной породы. Новая древесина может вносить сыроватое ощущение свежего спила. Тостированное или обожжённое дерево способно добавить ваниль, карамель, сливочную ириску, поджаренный хлеб, жареные орехи, кофе, шоколад или какао — в зависимости от породы и степени тоста либо обжига. Древесные оттенки должны быть заметными и гармонично дополнять базовый стиль, не подавляя его.",
+    "after": "Вкус зависит от базового стиля. Дерево обычно даёт древесные оттенки и иногда узнаваемый характер конкретной породы. Новая древесина может вносить сыроватое ощущение свежего спила. Тостированное или обожжённое дерево способно добавить ваниль, карамель, сливочную ириску, поджаренный хлеб, жареные орехи, кофе, шоколад или какао — в зависимости от породы и степени тоста либо обжига. Древесные оттенки должны быть заметными и гармонично дополнять вкус базового пива, не перебивая его.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Varies with base style. Wood usually contributes a woody flavor, and possibly a distinctive varietal character. New wood may add a raw, fresh-cut wood impression. Toasted or charred wood can add vanilla, caramel, butterscotch, toasted bread, toasted nuts, coffee, chocolate, or cocoa, depending on the wood varietal and level of toast or char. Wood-derived flavors should be balanced, supportive, and noticeable, while not overpowering the base beer style."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_18.json",
+    "id": "33B",
+    "path": [
+      "styles",
+      3,
+      "sections_ru",
+      "entry_instructions"
+    ],
+    "field": "entry_instructions",
+    "before": "Участник должен указать, какой именно дополнительный алкогольный характер ожидается, а при необходимости — и детали по бочке. Если использовалась необычная древесина или какой-либо особый ингредиент, нужно кратко описать, какие сенсорные оттенки они привносят. Также необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер. Все эти сведения можно объединить в одном описании особенностей напитка.",
+    "after": "Участник должен указать, какой именно дополнительный алкогольный характер ожидается, а при необходимости — и детали по бочке. Если использовалась необычная древесина или какой-либо особый ингредиент, нужно кратко описать, какие сенсорные оттенки они привносят. Также нужно указать базовый стиль или описать состав, параметры либо то, каким пиво должно быть по замыслу пивовара. Все эти сведения можно объединить в одном описании особенностей напитка.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "The entrant must specify the additional alcohol character, with information about the barrel if relevant to the finished flavor profile. If an unusual wood or ingredient has been used, the entrant must supply a brief description of the sensory aspects the ingredients add to the beer. Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_18.json",
+    "id": "33B",
+    "path": [
+      "styles",
+      3,
+      "sections_ru",
+      "flavor"
+    ],
+    "field": "flavor",
+    "before": "Вкус зависит от базового стиля. Дерево обычно даёт древесные оттенки и иногда узнаваемый характер конкретной породы. Тостированное или обожжённое дерево может привносить ваниль, карамель, сливочную ириску, поджаренный хлеб, жареные орехи, кофе, шоколад или какао — в зависимости от породы и степени тоста либо обжига. Древесные и алкогольные оттенки должны быть заметными и гармонично дополнять друг друга, не подавляя ни базовый стиль, ни друг друга.",
+    "after": "Вкус зависит от базового стиля. Дерево обычно даёт древесные оттенки и иногда узнаваемый характер конкретной породы. Тостированное или обожжённое дерево может привносить ваниль, карамель, сливочную ириску, поджаренный хлеб, жареные орехи, кофе, шоколад или какао — в зависимости от породы и степени тоста либо обжига. Древесные ноты и оттенки алкогольного напитка должны быть заметными и гармонично сочетаться между собой и со вкусом базового пива. Ни один из этих компонентов не должен перебивать остальные.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Varies with base style. Wood usually contributes a woody flavor, and possibly a distinctive varietal character. Toasted or charred wood can add vanilla, caramel, butterscotch, toasted bread, toasted nuts, coffee, chocolate, or cocoa, depending on the wood varietal and level of toast or char. Wood-derived flavors and added alcohol flavors should be balanced, mutually supportive, and noticeable, while not overpowering the base beer style or each other."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_19.json",
+    "id": "X3",
+    "path": [
+      "styles",
+      2,
+      "sections_ru",
+      "aroma"
+    ],
+    "field": "aroma",
+    "before": "Ароматика конкретного сорта винограда должна быть заметной, но не подавлять остальные компоненты. Виноградный характер должен быть приятным, без дефектов вроде окисленности. Солодовая часть обычно сдержанная и не должна уходить в жареный, «стаутовый» профиль. Хмелевой аромат — цветочный или землистый — от умеренно слабого до отсутствующего. У некоторых образцов возможен слабый дикий тон — скотный двор, землистость, козлиные, животные ноты, — но не такой интенсивный, как у ламбика или фруктового ламбика. Диацетил недопустим.",
+    "after": "Ароматика конкретного сорта винограда должна быть заметной, но не перебивать остальные ароматы. Виноградный характер должен быть приятным, без дефектов вроде окисленности. Солодовая часть обычно сдержанная и не должна уходить в жареный, «стаутовый» профиль. Хмелевой аромат — цветочный или землистый — от умеренно слабого до отсутствующего. У некоторых образцов возможен слабый дикий тон — скотный двор, землистость, козлиные, животные ноты, — но не такой интенсивный, как у ламбика или фруктового ламбика. Диацетил недопустим.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Aromatic characteristics of a particular grape have to be noticeable but do should not overpower the other aromas. The grape character should be pleasant and should not have defects such as oxidation. Malt character is usually restrained and should not exhibit a roasty, stout-like profile. Hop aroma (floral, earthy) can range from medium-low to absent. Some examples can have a low wild character described as barnyard, earthy, goaty but should not be as intense as in a lambic/fruit lambic. No diacetyl."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_19.json",
+    "id": "X4",
+    "path": [
+      "styles",
+      3,
+      "sections_ru",
+      "aroma"
+    ],
+    "field": "aroma",
+    "before": "Фруктовый характер от среднего до высокого, сразу заметный и узнаваемый. Чистая молочнокислая кислотность — от слабой до средней — поддерживает фрукт, а не спорит с ним. Солодовая база обычно нейтральная, хотя допустимы слабые зерновые или хлебные ноты в поддержке. Брожение чистое, без дикого дрожжевого характера или фанка. Хмелевой аромат отсутствует. Резкий алкоголь недопустим. Если используются специи, травы или овощные добавки, они должны только поддерживать фруктовый профиль.",
+    "after": "Фруктовый характер от среднего до высокого, сразу заметный и узнаваемый. Чистая молочнокислая кислотность — от слабой до средней — поддерживает фрукт, а не спорит с ним. Солодовая база обычно нейтральная, хотя допустимы слабые зерновые или хлебные ноты в поддержке. Брожение чистое, без характерных для диких дрожжей оттенков, например кожи, сена или скотного двора. Хмелевой аромат отсутствует. Резкий алкоголь недопустим. Если используются специи, травы или овощные добавки, они должны только поддерживать фруктовый профиль.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Medium to high fruit character, immediately noticeable and recognizable. A clean lactic sourness, low to medium, supports the fruit. Neutral malt typically, but can have low grainy or bready notes in support. Clean fermentation profile with no wild or funky yeast character. No hop aroma. No sharp alcohol. Optional Spices, Herbs, and Vegetables should support the fruit if present."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_19.json",
+    "id": "X4",
+    "path": [
+      "styles",
+      3,
+      "sections_ru",
+      "characteristic_ingredients"
+    ],
+    "field": "characteristic_ingredients",
+    "before": "Основа — пилснерский солод в сочетании с пшеничным солодом или несоложёной пшеницей. Чаще всего используют подкисление сусла в варочном котле с помощью Lactobacillus, после чего сбраживают пиво нейтральными элевыми дрожжами. Фрукты обычно добавляют на поздних стадиях брожения. Как правило, это свежие сезонные фрукты, нередко тропические. Специи, травы и овощные добавки возможны, но они всегда должны подчёркивать фруктовый характер, а не подавлять его.",
+    "after": "Основа — пилснерский солод в сочетании с пшеничным солодом или несоложёной пшеницей. Чаще всего используют подкисление сусла в варочном котле с помощью Lactobacillus, после чего сбраживают пиво нейтральными элевыми дрожжами. Фрукты обычно добавляют на поздних стадиях брожения. Как правило, это свежие сезонные фрукты, нередко тропические. Специи, травы и овощные добавки возможны, но они всегда должны подчёркивать фруктовый характер, не перебивая его.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Pilsner malt with wheat malt or unmalted wheat. Kettle sour technique with Lacto is most common, followed by fermentation with a neutral ale yeast. Fruit typically added late in fermentation. Fresh seasonal fruit, often tropical. Spices, Herbs, and Vegetables are optional, but always should support and enhance the fruit presentation."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_19.json",
+    "id": "X4",
+    "path": [
+      "styles",
+      3,
+      "sections_ru",
+      "flavor"
+    ],
+    "field": "flavor",
+    "before": "Свежий фруктовый вкус от среднего до высокого доминирует, а чистая молочнокислая кислотность от слабой до умеренно высокой заметно его поддерживает. Фрукт должен ощущаться свежим, а не варёным, джемовым или искусственным. Солодовая часть часто почти не читается, но если присутствует, то ограничивается слабым зерновым или хлебным фоном, который не должен конкурировать ни с фруктом, ни с кислотностью. Хмелевая горечь — ниже порога уверенного восприятия. Финиш сухой, с чистым, кислым и фруктовым послевкусием. Недопустимы хмелевой вкус, уксусные ноты, диацетил и Brett-фанк. Специи, травы и овощные ингредиенты возможны только как поддержка фрукта.",
+    "after": "Свежий фруктовый вкус от среднего до высокого доминирует, а чистая молочнокислая кислотность от слабой до умеренно высокой заметно его поддерживает. Фрукт должен ощущаться свежим, а не варёным, джемовым или искусственным. Солодовая часть часто почти не читается, но если присутствует, то ограничивается слабым зерновым или хлебным фоном, который не должен конкурировать ни с фруктом, ни с кислотностью. Хмелевая горечь — ниже порога уверенного восприятия. Финиш сухой, с чистым, кислым и фруктовым послевкусием. Недопустимы хмелевой вкус, уксусные ноты, диацетил и характерные для Brett оттенки дикого брожения, например кожи, сена или скотного двора. Специи, травы и овощные ингредиенты возможны только как поддержка фрукта.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Medium to high fresh fruit flavor dominates, with a supportive but noticeable, low to medium-high clean lactic sourness. The fruit should have a fresh character, not seeming cooked, jam-like, or artificial. The malt is often absent, but if present can have a low grainy or bready quality that never competes with the fruit or sourness. Hop bitterness below sensory threshold. Dry finish with a clean, tart, and fruity aftertaste. No hop flavor, acetic notes, diacetyl, or funky Brett flavors. Spices, Herbs, and Vegetables are optional in support of the fruit."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_20.json",
+    "id": "21B-Black IPA",
+    "path": [
+      "styles",
+      1,
+      "sections_ru",
+      "style_comparison"
+    ],
+    "field": "style_comparison",
+    "before": "По балансу это American IPA или Double IPA с очень сдержанной обжаренностью, близкой по функции к тому, что встречается в Schwarzbier. Не такой насыщенный и обжаренный, как American Stout и American Porter; тело легче, а питкость и гладкость выше.",
+    "after": "По балансу напоминает American IPA или Double IPA, а по сдержанным нотам обжаренного солода — Schwarzbier. Вкус менее насыщенный, обжаренный солод заметен слабее, чем в American Stout и American Porter; тело легче, пиво мягче и легче пьётся.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Balance and overall impression of an American or Double IPA with restrained roast similar to the type found in Schwarzbier. Not as rich and roasty as American Stout and Porter, and with less body and increased smoothness and drinkability."
+  },
+  {
+    "file": "ingredients/bjcp/bjcp_styles_ru_detailed_part_20.json",
+    "id": "21B-Brown IPA",
+    "path": [
+      "styles",
+      2,
+      "sections_ru",
+      "flavor"
+    ],
+    "field": "flavor",
+    "before": "Хмелевой вкус — от среднего до высокого, с теми же дескрипторами, что и в аромате. Солодовая база — от умеренно слабой до средней, чистая и поддерживающая, с теми же оттенками, что и в аромате. Выбор солода и хмеля не должен порождать вкусовых конфликтов. Горечь от умеренно высокой до высокой, без грубости. Финиш от сухого до умеренно сухого, послевкусие горькое, хмелевое и солодовое одновременно. Слабые эфирные ноты допустимы. Очень слабый алкоголь допустим. Выраженная обжаренность недопустима; жжёных солодовых тонов быть не должно. Солод должен почти уравновешивать хмелевую горечь и вкус.",
+    "after": "Хмелевой вкус — от среднего до высокого, с теми же дескрипторами, что и в аромате. Солодовая база — от умеренно слабой до средней, чистая и поддерживающая, с теми же оттенками, что и в аромате. Выбор солода и хмеля не должен порождать вкусовых конфликтов. Горечь от умеренно высокой до высокой, без грубости. Финиш от сухого до умеренно сухого, послевкусие горькое, хмелевое и солодовое одновременно. Слабые эфирные ноты допустимы. Очень слабый алкоголь допустим. Вкус сильно обжаренного или жжёного солода недопустим. Солод должен почти уравновешивать хмелевую горечь и вкус.",
+    "reasons": [
+      "Формулировка уточнена по замечаниям пользователя; смысл английского текста сохранён"
+    ],
+    "source_en": "Medium to high hop flavor, same descriptors as aroma. Medium-low to medium clean, supportive malty flavor with same descriptors as aroma. The malt and hop choices should not produce flavor clashes. Medium-high to high bitterness, no harshness. Dry to medium finish, with a bitter, hoppy, and malty aftertaste. Low esters optional. Very low alcohol flavor optional. No highly roasted or burnt malt flavors. The malt should nearly balance the hop bitterness and flavor."
+  }
+]

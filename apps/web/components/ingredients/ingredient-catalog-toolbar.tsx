@@ -60,7 +60,7 @@ type Props = {
 
 const sortLabels: Record<IngredientCatalogSortOption, string> = {
   name: "По названию",
-  updated: "По обновлению",
+  updated: "По дате изменения",
   category: "По категории",
   brand: "По бренду",
   alpha: "По альфа-кислоте",

@@ -85,7 +85,7 @@ function CurrentStepHero({
       <div className="rounded-2xl border border-success/30 bg-success-subtle/60 p-5">
         <div className="flex items-center gap-2 text-success">
           <CheckCircle2 className="h-5 w-5" aria-hidden />
-          <p className="text-sm font-semibold">Варочный день пройден</p>
+          <p className="text-sm font-semibold">Варка завершена</p>
         </div>
         <p className="mt-1 text-sm text-success">Перелейте сусло в ферментер, внесите дрожжи и поставьте на брожение.</p>
         <div className="mt-3 flex flex-wrap items-center gap-3">
@@ -107,7 +107,7 @@ function CurrentStepHero({
               disabled={lastDoneBusy}
             >
               <Undo2 className="h-4 w-4" aria-hidden />
-              Вернуть шаг
+              Отметить невыполненным
             </Button>
           ) : null}
         </div>
@@ -185,10 +185,10 @@ function CurrentStepHero({
               size="sm"
               onClick={() => patchStep(lastDone.id, { done: false })}
               disabled={lastDoneBusy}
-              aria-label="Вернуть шаг"
+              aria-label="Отметить невыполненным"
             >
               <Undo2 className="h-4 w-4" aria-hidden />
-              Вернуть шаг
+              Отметить невыполненным
             </Button>
           ) : null}
           <Button

@@ -56,7 +56,7 @@ export function RaptIntegrationCard({ integration, deviceCount, onIntegrationCha
       onIntegrationChange(result.integration);
       setCopied(false);
       setRotateOpen(false);
-      show({ title: "URL перевыпущен. Старый больше не работает", tone: "success" });
+      show({ title: "Создан новый адрес подключения. Старый больше не работает.", tone: "success" });
     } finally {
       setRotatePending(false);
     }
@@ -85,17 +85,17 @@ export function RaptIntegrationCard({ integration, deviceCount, onIntegrationCha
         {integration.webhookUrl ? (
           <p className="truncate font-mono text-xs text-muted-foreground">{integration.webhookUrl}</p>
         ) : (
-          <p className="text-xs text-muted-foreground">URL показывается один раз. Перевыпустите, чтобы получить новый.</p>
+          <p className="text-xs text-muted-foreground">Адрес подключения показывается только один раз. Если вы его не сохранили, создайте новый.</p>
         )}
       </div>
       <div className="flex flex-wrap items-center gap-2">
         {integration.webhookUrl ? (
           <Button variant="outline" size="sm" onClick={() => void copyUrl()}>
-            {copied ? "Скопировано" : "Скопировать URL"}
+            {copied ? "Адрес скопирован" : "Скопировать адрес"}
           </Button>
         ) : null}
         <Button variant="outline" size="sm" onClick={() => setRotateOpen(true)}>
-          Перевыпустить URL
+          Создать новый адрес
         </Button>
         <Button variant="dangerOutline" size="sm" onClick={() => setDeleteOpen(true)}>
           Удалить подключение
@@ -104,10 +104,10 @@ export function RaptIntegrationCard({ integration, deviceCount, onIntegrationCha
 
       <ConfirmActionDialog
         open={rotateOpen}
-        title="Перевыпустить URL?"
+        title="Создать новый адрес подключения?"
         description="Старый URL перестанет работать сразу — вебхук на RAPT-портале, использующий его, перестанет присылать данные, пока вы не пропишете новый."
-        confirmLabel="Перевыпустить"
-        pendingLabel="Перевыпускаем…"
+        confirmLabel="Создать адрес"
+        pendingLabel="Создаём адрес…"
         tone="danger"
         pending={rotatePending}
         onConfirm={() => void submitRotate()}
@@ -121,7 +121,7 @@ export function RaptIntegrationCard({ integration, deviceCount, onIntegrationCha
         title="Удалить подключение RAPT?"
         description={`Устройства и накопленные данные останутся${
           deviceCount > 0 ? ` (${deviceCount} ${pluralize(deviceCount, ["устройство", "устройства", "устройств"])})` : ""
-        } — они просто перестанут получать новые точки, пока вы не настроите вебхук заново.`}
+        } — новые показания не будут поступать, пока вы не настроите вебхук заново.`}
         confirmLabel="Удалить"
         pendingLabel="Удаляем…"
         tone="danger"

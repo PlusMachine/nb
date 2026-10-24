@@ -259,7 +259,7 @@ export function StreamDeviceConsole({
       setUrlExpanded(true);
       setCopied(false);
       setRotateOpen(false);
-      show({ title: "URL перевыпущен. Старый больше не работает", tone: "success" });
+      show({ title: "Создан новый адрес подключения. Старый больше не работает.", tone: "success" });
     });
   };
 
@@ -319,7 +319,7 @@ export function StreamDeviceConsole({
         {status.readingsCount === 0 ? (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-            Ждём первый пакет…
+            Ждём первые показания…
           </div>
         ) : celebrated && latest ? (
           <div className="rounded-xl border border-success/30 bg-success-subtle p-4">
@@ -354,7 +354,7 @@ export function StreamDeviceConsole({
               <h2 className="text-sm font-semibold text-foreground">Подключение</h2>
               {!urlExpanded ? (
                 <Button variant="outline" size="sm" onClick={() => setUrlExpanded(true)}>
-                  Показать URL
+                  Показать адрес
                 </Button>
               ) : null}
             </div>
@@ -365,7 +365,7 @@ export function StreamDeviceConsole({
                   <div className="flex flex-wrap items-center gap-2">
                     <code className="break-all rounded-md bg-muted px-3 py-2 text-sm text-foreground">{ingestUrl}</code>
                     <Button variant="outline" onClick={() => void copyUrl()}>
-                      {copied ? "Скопировано" : "Скопировать"}
+                      {copied ? "Адрес скопирован" : "Скопировать адрес"}
                     </Button>
                   </div>
                   <div>
@@ -383,13 +383,13 @@ export function StreamDeviceConsole({
                 </div>
               ) : (
                 <p className="mt-3 text-sm text-muted-foreground">
-                  URL показывается один раз. Перевыпустите, чтобы получить новый.{" "}
+                  Адрес подключения показывается только один раз. Если вы его не сохранили, создайте новый.{" "}
                   <button
                     type="button"
                     className="font-medium text-foreground underline underline-offset-2"
                     onClick={() => setRotateOpen(true)}
                   >
-                    Перевыпустить URL
+                    Создать новый адрес
                   </button>
                 </p>
               )
@@ -405,7 +405,7 @@ export function StreamDeviceConsole({
         </Button>
         {!isRaptDevice ? (
           <Button variant="outline" onClick={() => setRotateOpen(true)}>
-            Перевыпустить URL
+            Создать новый адрес
           </Button>
         ) : null}
         <Button variant="dangerOutline" onClick={() => setDeleteOpen(true)}>
@@ -475,10 +475,10 @@ export function StreamDeviceConsole({
       {/* Перевыпустить URL. */}
       <ConfirmActionDialog
         open={rotateOpen}
-        title="Перевыпустить URL?"
+        title="Создать новый адрес подключения?"
         description="Старый URL перестанет работать сразу — устройство с этим адресом в настройках не сможет присылать данные, пока вы не укажете новый адрес."
-        confirmLabel="Перевыпустить"
-        pendingLabel="Перевыпускаем…"
+        confirmLabel="Создать адрес"
+        pendingLabel="Создаём адрес…"
         tone="danger"
         pending={rotatePending}
         onConfirm={submitRotate}
@@ -493,7 +493,7 @@ export function StreamDeviceConsole({
         title="Удалить устройство?"
         description={`«${name}» и все его данные будут удалены безвозвратно: ${dataCounts.readingsCount} ${pluralize(
           dataCounts.readingsCount,
-          ["точка", "точки", "точек"]
+          ["показание", "показания", "показаний"]
         )}${
           dataCounts.sessionsCount > 0
             ? ` и ${dataCounts.sessionsCount} ${pluralize(dataCounts.sessionsCount, ["сеанс", "сеанса", "сеансов"])}`

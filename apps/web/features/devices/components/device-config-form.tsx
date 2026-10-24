@@ -41,7 +41,7 @@ const ERROR_TEXT: Record<string, string> = {
   PROVIDER_UNAVAILABLE: "Синхронизация настроек недоступна для этого устройства",
   DEVICE_UNREACHABLE: "Устройство не отвечает — проверьте, что оно в сети",
   NOT_FOUND: "Устройство не найдено",
-  PROFILE_NAME_REQUIRED: "Укажите имя профиля",
+  PROFILE_NAME_REQUIRED: "Укажите название профиля",
   INVALID_CONFIG: "Настройки в профиле повреждены",
   PROFILE_SAVE_FAILED: "Не удалось сохранить профиль",
   FORBIDDEN: "Нет доступа к этому устройству",
@@ -415,7 +415,7 @@ export function DeviceConfigForm({ deviceId, deviceName, initialProfiles }: Prop
           {/* Панель сохранения. */}
           <Card className="flex flex-wrap items-center gap-3 p-5">
             <Button onClick={() => void onSave()} disabled={saving || !dirty}>
-              {saving ? "Сохранение…" : "Сохранить на устройство"}
+              {saving ? "Сохраняем…" : "Сохранить на устройстве"}
             </Button>
             {dirty ? (
               <Button
@@ -452,7 +452,7 @@ export function DeviceConfigForm({ deviceId, deviceName, initialProfiles }: Prop
 
         <div className="mt-4 flex flex-wrap items-end gap-2">
           <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
-            Имя профиля
+            Название профиля
             <Input
               value={profileName}
               onChange={(e) => setProfileName(e.target.value)}
@@ -465,7 +465,7 @@ export function DeviceConfigForm({ deviceId, deviceName, initialProfiles }: Prop
             disabled={profileBusy || !draft}
             onClick={() => void onSaveProfile()}
           >
-            {profileBusy ? "Сохранение…" : "Сохранить профиль"}
+            {profileBusy ? "Сохраняем…" : "Сохранить профиль"}
           </Button>
         </div>
         {!draft ? (

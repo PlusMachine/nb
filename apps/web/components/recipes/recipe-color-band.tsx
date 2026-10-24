@@ -18,9 +18,7 @@ function srmStripGradient(srm: number): string {
 }
 
 /**
- * Обёртка шапки публичного рецепта. Когда у рецепта известен цвет (SRM), верхнюю
- * кромку карточки занимает тонкая полоса-градиент {@link srmStripGradient} в цвете
- * пива; иначе — обычная карточка без полосы.
+ * Шапка публичного рецепта с верхней полосой в цвете пива по SRM.
  */
 export function RecipeHeaderShell({
   colorSrm,
@@ -30,11 +28,11 @@ export function RecipeHeaderShell({
   children: React.ReactNode;
 }) {
   return (
-    <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+    <section className="border-b border-border pb-5">
       {colorSrm != null ? (
-        <div aria-hidden className="h-1.5 w-full" style={{ background: srmStripGradient(colorSrm) }} />
+        <div aria-hidden className="h-1.5 w-full rounded-full" style={{ background: srmStripGradient(colorSrm) }} />
       ) : null}
-      <div className="p-5">{children}</div>
+      <div className={colorSrm != null ? "pt-4" : undefined}>{children}</div>
     </section>
   );
 }

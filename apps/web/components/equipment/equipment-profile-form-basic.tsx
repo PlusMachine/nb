@@ -172,6 +172,7 @@ export function EquipmentProfileFormFields({
 }) {
   const [values, setValues] = useState(() => profileToFormValues(profile));
   const [presetId, setPresetId] = useState("");
+  const [nameEdited, setNameEdited] = useState(false);
 
   const setNumberField = (name: NumberFieldName, value: string) => {
     setValues((current) => ({ ...current, [name]: value }));
@@ -182,9 +183,14 @@ export function EquipmentProfileFormFields({
 
     const selected = equipmentPresets.find((item) => item.id === nextPresetId);
 
-    setValues(profileToFormValues(selected
+    const nextProfile = selected
       ? { ...selected.profile, name: buildUnusedName(selected.profile.name, existingNames) }
-      : profile));
+      : profile;
+
+    setValues(profileToFormValues({
+      ...nextProfile,
+      name: nameEdited && values.name.trim() ? values.name : nextProfile.name
+    }));
   };
 
   return (
@@ -211,20 +217,23 @@ export function EquipmentProfileFormFields({
       <section className="space-y-3">
         <div className="grid gap-3 md:grid-cols-3">
           <label className="text-xs font-medium text-muted-foreground md:col-span-3">
-            Название
+            Название пивоварни
             <input
               name="name"
               required
               maxLength={180}
               value={values.name}
-              onChange={(event) => setValues((current) => ({ ...current, name: event.target.value }))}
+              onChange={(event) => {
+                setNameEdited(true);
+                setValues((current) => ({ ...current, name: event.target.value }));
+              }}
               className={equipmentFormInputClassName}
             />
           </label>
           <NumberField name="targetBatchVolumeL" label="Типичный объём партии, л" min={0.1} value={values.targetBatchVolumeL} onChange={setNumberField} error={fieldErrors.targetBatchVolumeL} />
           <NumberField name="brewhouseEfficiencyPct" label="Эффективность, %" value={values.brewhouseEfficiencyPct} onChange={setNumberField} step={0.1} min={1} max={100} error={fieldErrors.brewhouseEfficiencyPct} />
-          <NumberField name="evaporationRateLPerHr" label="Испарение, л/ч" value={values.evaporationRateLPerHr} onChange={setNumberField} error={fieldErrors.evaporationRateLPerHr} />
-          <NumberField name="trubChillerLossL" label="Потери в котле / на чиллере, л" value={values.trubChillerLossL} onChange={setNumberField} error={fieldErrors.trubChillerLossL} />
+          <NumberField name="evaporationRateLPerHr" label="Скорость выкипания, л/ч" value={values.evaporationRateLPerHr} onChange={setNumberField} error={fieldErrors.evaporationRateLPerHr} />
+          <NumberField name="trubChillerLossL" label="Потери на осадке и в чиллере, л" value={values.trubChillerLossL} onChange={setNumberField} error={fieldErrors.trubChillerLossL} />
           <NumberField name="mashThicknessLPerKg" label="Гидромодуль, л/кг" value={values.mashThicknessLPerKg} onChange={setNumberField} step={0.1} min={0.1} error={fieldErrors.mashThicknessLPerKg} />
           <NumberField name="grainAbsorptionLPerKg" label="Поглощение воды зерном, л/кг" value={values.grainAbsorptionLPerKg} onChange={setNumberField} step={0.01} error={fieldErrors.grainAbsorptionLPerKg} />
         </div>

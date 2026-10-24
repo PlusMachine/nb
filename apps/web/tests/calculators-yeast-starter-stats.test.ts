@@ -34,7 +34,7 @@ describe("К21: статы стартера дрожжей (плотность, 
     expect(Number.parseFloat(gravityStat!.value)).toBeLessThan(10);
   });
 
-  it("статус — одно слово из нового набора (Недосев/Норма/Перебор), не старые разговорные фразы", () => {
+  it("статус — одно слово из нового набора (Недосев/Норма/Избыток), не старые разговорные фразы", () => {
     const underpitch = definition.calculate({ ...definition.defaults, gravityUnit: "SG", gravity: 1.05 });
     expect(underpitch.primary.value).toBe("Недосев");
     expect(underpitch.primary.value).not.toBe("Мало дрожжей");
@@ -46,7 +46,7 @@ describe("К21: статы стартера дрожжей (плотность, 
       packsCount: 4,
       cellsPerPackBillion: 200
     });
-    expect(overpitch.primary.value).toBe("Перебор");
+    expect(overpitch.primary.value).toBe("Избыток");
     expect(overpitch.primary.value).not.toBe("С запасом");
 
     const ok = definition.calculate({

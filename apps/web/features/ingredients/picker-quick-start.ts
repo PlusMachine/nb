@@ -272,7 +272,7 @@ const waterTreatmentQuickStartGroupLabels: Record<string, string> = {
   acid: "Кислоты",
   base: "Щёлочи",
   dechlorination: "Дехлорирование",
-  water_source: "База воды"
+  water_source: "Исходная вода"
 };
 
 export const ingredientPickerWaterTreatmentQuickStartGroupOrder = [

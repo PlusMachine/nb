@@ -16,7 +16,7 @@ export const STAGE_LABELS: Record<Stage, string> = {
   DOUGH_IN: "Нагрев до засыпи",
   PROMPT_ADD_MALT: "Засыпь солода",
   MASH_STEP: "Пауза затирания",
-  MASH_OUT: "Мэшаут",
+  MASH_OUT: "Мэш-аут",
   PROMPT_IODINE: "Йодная проба",
   PROMPT_REMOVE_MALT: "Извлечение дробины",
   BOIL_RAMP: "Выход на кипение",
@@ -31,7 +31,7 @@ export const STAGE_LABELS: Record<Stage, string> = {
   DISTILL_HEADS: "Отбор голов",
   DISTILL_HEARTS: "Отбор тела",
   DISTILL_TAILS: "Отбор хвостов",
-  FERMENT: "Ферментация",
+  FERMENT: "Брожение",
 };
 
 /** Человекочитаемая подпись стадии для UI (вместо сырого машинного имени). */

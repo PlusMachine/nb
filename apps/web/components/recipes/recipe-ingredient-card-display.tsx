@@ -229,20 +229,22 @@ export function RecipeIngredientTitleBlock({
   primaryName,
   secondaryName,
   titleClassName = "truncate text-sm font-semibold text-foreground",
-  titleHref
+  titleHref,
+  brandPlacement = "inline"
 }: {
   source: RecipeIngredientCardSource;
   primaryName: string;
   secondaryName?: string | null;
   titleClassName?: string;
   titleHref?: string | null;
+  brandPlacement?: "inline" | "below";
 }) {
   const brandLabel = resolveIngredientBrandLabel(source);
   const country = resolveIngredientCountry(source);
   const fermentableKindLabel = resolveIngredientFermentableKindLabel(source);
   const isGenericFermentable = source.category === "fermentable" && source.subtype === "fermentable";
   const showInlineBrand = Boolean(
-    brandLabel && (source.subtype === "malt" || source.category === "yeast")
+    brandPlacement === "inline" && brandLabel && (source.subtype === "malt" || source.category === "yeast")
   );
   const showFermentableKindOnBrandLine = Boolean(fermentableKindLabel && isGenericFermentable && !showInlineBrand);
   const showFermentableKindInlineWithTitle = Boolean(fermentableKindLabel && !showFermentableKindOnBrandLine);

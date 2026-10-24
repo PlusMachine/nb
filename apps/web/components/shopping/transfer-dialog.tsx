@@ -220,7 +220,7 @@ export function TransferDialog({
         title: result.message,
         tone: "success",
         description: result.skippedCount > 0
-          ? `Не перенесено: ${result.skippedCount} — отметки устарели.`
+          ? `Не перенесено: ${result.skippedCount} — список покупок изменился. Обновите его и проверьте выбранные позиции.`
           : undefined,
         action: { label: "Запасы", onClick: () => router.push("/app/ingredients") }
       });

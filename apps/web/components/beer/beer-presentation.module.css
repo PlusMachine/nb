@@ -73,3 +73,22 @@
     grid-column: 1 / -1;
   }
 }
+
+/* The homepage uses the actual presentation without another document/chrome. */
+.embedded.presentation{min-height:510px;container-type:inline-size}
+.embedded.presentation .brand{padding:16px 16px 0}
+.embedded.presentation .content{padding:24px 16px 16px;gap:14px;display:flex}
+.embedded.presentation .title{font-size:clamp(20px,8.5cqw,25px);line-height:1.1;overflow-wrap:anywhere}
+.embedded.presentation .styleName{font-size:9px;letter-spacing:.14em}
+.embedded.presentation .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.embedded.presentation .colorTile{grid-column:1/-1}
+.embedded.presentation .statTile{padding:10px;border-radius:10px}
+.embedded.presentation .statValue{font-size:15px}
+.embedded.presentation .statScale{padding-top:9px}
+.embedded.presentation .description{display:none}
+.embedded.presentation .compactDescription{display:block}
+.embedded.presentation .compactDescription p{font-size:12px}
+.embedded.presentation .footer{gap:14px;padding-top:14px}
+.embedded.presentation .footer>div{margin-left:0}
+.embedded.presentation .footer a{font-size:11px;padding:8px}
+.embedded.presentation .footer p{font-size:11px;line-height:1.5}

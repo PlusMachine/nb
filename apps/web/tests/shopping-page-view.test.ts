@@ -230,13 +230,13 @@ const render = (list: ShoppingListDto) =>
 // --- тесты ---------------------------------------------------------------
 
 describe("ShoppingListView", () => {
-  it("не тащит магазинную лексику и не рендерит собственный H1 (шапка — у страницы)", () => {
+  it("показывает согласованное название списка и не дублирует H1 страницы", () => {
     const html = render(baseDto({ groups: oneGroup(), totalItems: 1, plannedBrews: [plannedBrew()], emptyReason: null }));
 
     expect(html).not.toContain("<h1");
     expect(html).not.toContain("Докупить");
     expect(html).not.toContain("К покупке");
-    expect(html).not.toContain("Список покупок");
+    expect(html).toContain("Список покупок");
   });
 
   it("блок «Добавить на склад»: партии-источники строками сверху, ингредиенты ниже", () => {
@@ -249,7 +249,7 @@ describe("ShoppingListView", () => {
       })
     );
 
-    expect(html).toContain("Добавить на склад");
+    expect(html).toContain("Список покупок");
     expect(html).toContain("Для запланированных партий:");
     expect(html).toContain("Кухонная варка");
     expect(html).toContain("12 июля");
@@ -362,10 +362,10 @@ describe("ShoppingListView", () => {
       })
     );
 
-    expect(html).toContain("Запланируйте варку — соберём точный список");
+    expect(html).toContain("Запланируйте варку, чтобы составить список покупок");
     expect(html).toContain('href="/app/recipes"');
     // Без блока «Добавить на склад» в этом сценарии.
-    expect(html).not.toContain("Добавить на склад");
+    expect(html).not.toMatch(/<h2[^>]*>Список покупок<\/h2>/);
     expect(html).not.toContain("Для запланированных партий:");
   });
 
@@ -380,7 +380,7 @@ describe("ShoppingListView", () => {
       })
     );
 
-    expect(html).not.toContain("Запланируйте варку — соберём точный список");
+    expect(html).not.toContain("Запланируйте варку, чтобы составить список покупок");
   });
 
   it("рендерит полный EmptyState при nothing_to_do", () => {
@@ -421,7 +421,7 @@ describe("ShoppingListView — П1: ручные позиции («Своё»)",
     );
 
     const hopIndex = html.indexOf("Хмель");
-    const ownIndex = html.indexOf("Своё");
+    const ownIndex = html.indexOf("Добавлено вручную");
     expect(hopIndex).toBeGreaterThan(-1);
     expect(ownIndex).toBeGreaterThan(hopIndex);
     expect(html).toContain("Дезинфектант Star San");
@@ -435,9 +435,9 @@ describe("ShoppingListView — П1: ручные позиции («Своё»)",
       })
     );
 
-    expect(html).toContain("Добавить на склад");
+    expect(html).toContain("Список покупок");
     expect(html).not.toContain("Для запланированных партий:");
-    expect(html).toContain("Своё");
+    expect(html).toContain("Добавлено вручную");
     expect(html).toContain("Дезинфектант Star San");
   });
 
@@ -451,7 +451,7 @@ describe("ShoppingListView — П1: ручные позиции («Своё»)",
     );
 
     expect(html).toContain("Всё нужное уже на складе");
-    expect(html).toContain("Своё");
+    expect(html).toContain("Добавлено вручную");
     expect(html).toContain("Каскад про запас");
   });
 
@@ -459,7 +459,7 @@ describe("ShoppingListView — П1: ручные позиции («Своё»)",
     const html = render(baseDto({ emptyReason: "nothing_to_do" }));
 
     expect(html).toContain("Список покупок пока пуст");
-    expect(html).toContain("Добавить позицию");
+    expect(html).toContain("Добавить в покупки");
   });
 
   it("отмеченная («куплено») ручная позиция — имя зачёркнуто", () => {
@@ -684,18 +684,18 @@ describe("InventoryTabs", () => {
     const html = renderTabs("missing", 3);
 
     expect(html).toContain("Запасы");
-    expect(html).toContain("Чего не хватает");
+    expect(html).toContain("Купить");
     expect(html).toContain('href="/app/ingredients"');
     expect(html).toContain('href="/app/shopping"');
     // aria-current — на активном табе (missing), у «Запасов» его нет.
     const current = html.match(/aria-current="page"/g) ?? [];
     expect(current.length).toBe(1);
-    expect(html).toMatch(/aria-current="page"[^>]*>Чего не хватает/);
+    expect(html).toMatch(/aria-current="page"[^>]*>Купить/);
   });
 
   it("показывает счётчик нехваток и прячет его при нуле", () => {
     expect(renderTabs("stock", 5)).toContain(">5<");
     expect(renderTabs("stock", 0)).not.toContain(">0<");
-    expect(renderTabs("stock")).toContain("Чего не хватает");
+    expect(renderTabs("stock")).toContain("Купить");
   });
 });

@@ -1,6 +1,12 @@
 export const systemCurrencies = ["RUB", "USD", "EUR"] as const;
 export type SystemCurrency = (typeof systemCurrencies)[number];
 
+export const systemCurrencyLabels: Record<SystemCurrency, string> = {
+  RUB: "Российский рубль (₽)",
+  USD: "Доллар США ($)",
+  EUR: "Евро (€)"
+};
+
 export type SystemCurrencyRateMap = Record<SystemCurrency, number>;
 
 export const defaultSystemCurrencyRates: SystemCurrencyRateMap = {

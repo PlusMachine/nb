@@ -19,7 +19,7 @@ function describeCommandError(message: string): string {
     case "CLOUD_NO_ACK":
       return "Устройство не подтвердило команду — похоже, оно не в сети. Проверьте связь контроллера.";
     case "CLOUD_BROKER_UNREACHABLE":
-      return "Нет связи с облачным брокером. Повторите чуть позже.";
+      return "Нет связи с облачным сервисом управления. Повторите чуть позже.";
     case "CLOUD_UNSUPPORTED":
       return "Эта операция по облаку пока недоступна — выполните её, находясь в одной сети с устройством.";
     case "DEVICE_NO_LOCAL_URL":
@@ -70,7 +70,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         return NextResponse.json(
           {
             error:
-              "Устройством управляют из другого сеанса. Запросите передачу управления.",
+              "Сейчас вы не управляете устройством. Обновите страницу и при необходимости запросите управление.",
             code: "NO_CONTROL_LEASE",
           },
           { status: 409 },

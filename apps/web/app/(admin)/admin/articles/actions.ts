@@ -93,7 +93,7 @@ export const setContentArticleFeaturedAction = async (articleId: string, feature
     const user = await requireContentRole("editor");
     const article = await setContentArticleFeatured(actorFrom(user), articleId, featured);
     revalidateAll(article.id, article.slug);
-    return { ok: true, message: featured ? "Добавлено на главную." : "Убрано с главной.", articleId: article.id };
+    return { ok: true, message: featured ? "Статья выбрана для главной. На главной показываются только опубликованные статьи." : "Статья убрана из подборки для главной.", articleId: article.id };
   } catch (error) {
     return mapError(error);
   }

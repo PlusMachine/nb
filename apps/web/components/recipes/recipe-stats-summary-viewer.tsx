@@ -18,5 +18,5 @@ type RecipeStatsSource = Pick<RecipeListItemDto | RecipeDetailDto, "og" | "fg" |
 export function RecipeStatsSummaryViewer({ recipe }: { recipe: RecipeStatsSource }) {
   const { unit: preferredGravityUnit } = useViewerGravityUnit();
 
-  return <RecipeStatsSummary recipe={recipe} preferredGravityUnit={preferredGravityUnit} />;
+  return <RecipeStatsSummary recipe={recipe} preferredGravityUnit={preferredGravityUnit} variant="plain" />;
 }

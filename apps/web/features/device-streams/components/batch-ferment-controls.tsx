@@ -66,7 +66,7 @@ export function ActiveSessionRow({ session }: { session: ActiveFermentSessionVie
         {kindLabel ? <span className="shrink-0 text-muted-foreground">· {kindLabel}</span> : null}
         <span className="shrink-0 text-muted-foreground">
           · {formatSessionSince(new Date(session.startedAt))} · {session.readingsCount}{" "}
-          {pluralize(session.readingsCount, ["точка", "точки", "точек"])}
+          {pluralize(session.readingsCount, ["показание", "показания", "показаний"])}
         </span>
       </span>
       <span className="flex flex-wrap items-center gap-1">
@@ -96,11 +96,11 @@ export function AttachDeviceControl({ brewBatchId, devices }: { brewBatchId: str
   return (
     <>
       <Button type="button" variant="outline" size="sm" onClick={() => setOpen(true)}>
-        Подключить ареометр
+        Привязать ареометр к партии
       </Button>
       <ConnectDeviceDialog
         open={open}
-        title="Подключить ареометр"
+        title="Привязать ареометр к партии"
         brewBatchId={brewBatchId}
         devices={devices}
         onClose={() => setOpen(false)}

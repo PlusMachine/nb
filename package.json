@@ -2,6 +2,9 @@
   "name": "nb",
   "private": true,
   "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
   "scripts": {
     "dev": "trap 'exit 0' INT TERM HUP; pnpm run dev:prepare && pnpm -F @nb/web run dev",
     "dev:prepare": "pnpm run content:sync-images && pnpm run db:migrate && pnpm run db:seed",

@@ -201,7 +201,7 @@ export const transferCheckedToStockAction = async (input: unknown): Promise<Tran
     const result = await transferCheckedToStock(user.id, parsed.lines);
 
     if (result.transferredCount === 0) {
-      return { ok: false, message: "Нечего переносить — отметки устарели, обновите список." };
+      return { ok: false, message: "Список покупок изменился. Обновите его и снова выберите, что перенести на склад." };
     }
 
     revalidatePath("/app/shopping");

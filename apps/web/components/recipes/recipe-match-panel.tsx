@@ -507,12 +507,12 @@ function MatchGapNameRow({ line }: { line: RecipeMatchLineDto }) {
 
   return (
     <li className="rounded-lg bg-muted px-3 py-2">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
           <span className="block truncate text-sm text-foreground">{name}</span>
           <MatchIngredientMeta line={line} />
         </div>
-        <span className="flex shrink-0 items-center gap-1.5">
+        <span className="flex min-w-0 flex-wrap items-center gap-1.5">
           <Link
             href={catalogHref}
             className="inline-flex items-center rounded-full bg-card px-2.5 py-1 text-xs font-medium text-foreground ring-1 ring-border transition hover:bg-accent"

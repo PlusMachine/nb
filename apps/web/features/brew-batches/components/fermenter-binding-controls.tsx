@@ -61,7 +61,7 @@ export function FermenterPicker({
       </label>
       <Button type="button" variant="outline" size="sm" disabled={busy || !deviceId} onClick={() => void onBind()}>
         {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
-        Привязать
+        Привязать к партии
       </Button>
       {error ? <p role="alert" className="text-xs text-destructive">{error}</p> : null}
     </div>

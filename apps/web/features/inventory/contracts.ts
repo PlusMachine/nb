@@ -292,7 +292,7 @@ const buildCreateUserCustomIngredientSchema = ({
     if (!value.yeastForm) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Укажите тип дрожжей.",
+        message: "Укажите форму дрожжей.",
         path: ["yeastForm"]
       });
     }

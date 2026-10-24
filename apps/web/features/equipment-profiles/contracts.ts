@@ -22,6 +22,8 @@ export const EQUIPMENT_PROFILE_MAX_COUNT_PER_USER = 50;
 export const EQUIPMENT_PROFILE_CREATE_RATE_LIMIT = 20;
 export const EQUIPMENT_PROFILE_CREATE_RATE_WINDOW_SECONDS = 60 * 60;
 
+export const DEFAULT_EQUIPMENT_PROFILE_NAME = "Моя пивоварня";
+
 export const equipmentProfilePayloadSchema = z.object({
   name: z.string().trim().min(1, "Введите название профиля.").max(180),
   targetBatchVolumeL: z.coerce.number().positive("Объём партии должен быть больше 0 л."),
@@ -62,7 +64,7 @@ export type EquipmentProfileDto = EquipmentProfilePayload & {
 };
 
 export const starterEquipmentProfileDefaults: EquipmentProfilePayload = {
-  name: "Профиль оборудования (1)",
+  name: DEFAULT_EQUIPMENT_PROFILE_NAME,
   targetBatchVolumeL: 20,
   brewhouseEfficiencyPct: DEFAULT_BREWHOUSE_EFFICIENCY_PCT,
   evaporationRateLPerHr: DEFAULT_EVAPORATION_RATE_L_PER_HR,

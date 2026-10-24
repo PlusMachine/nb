@@ -279,16 +279,16 @@ export const coreWarningCopy: Record<string, { text: string; tone: "info" | "war
   residual_exceeds_target: { text: "В пиве уже достаточно CO₂ для выбранного уровня карбонизации — сахар не нужен.", tone: "info" },
   speise_target_already_reached: { text: "Пиво уже карбонизировано до цели — добавка не нужна.", tone: "info" },
   bottling_loss_exceeds_volume: { text: "Потери при розливе не меньше объёма пива — бутылок не получится. Проверьте «Потери при розливе».", tone: "warning" },
-  shrinkage_suspiciously_high: { text: "Усадка больше 20% — похоже на опечатку (обычно ~4%).", tone: "warning" },
+  shrinkage_suspiciously_high: { text: "Объём при охлаждении уменьшается более чем на 20% — проверьте значение (обычно около 4%).", tone: "warning" },
   mash_water_capped: { text: "Вся вода уходит в затор — на промывку не остаётся.", tone: "info" },
   no_viable_cells: { text: "По расчёту живых клеток не осталось — для стартера нужны свежие дрожжи.", tone: "warning" },
-  hops_too_old: { text: "Хмель на пределе модели — расчёту не стоит доверять.", tone: "warning" },
+  hops_too_old: { text: "Условия хранения выходят за пределы этой модели. Результат расчёта ненадёжен.", tone: "warning" },
   strike_temp_above_boiling: { text: "Расчётная температура воды выше кипения — с таким объёмом и гидромодулем цель недостижима. Добавьте воды или снизьте целевую температуру.", tone: "warning" },
   strike_temp_near_boiling: { text: "Расчётная температура воды у самого кипения — проверьте объём воды и зерна.", tone: "warning" },
   mash_thickness_unusual: { text: "Гидромодуль вне обычного диапазона 2–5 л/кг — проверьте объём воды и вес зерна.", tone: "warning" },
   infusion_temp_not_above_target: { text: "Вода для долива не горячее целевой температуры — так затор не нагреть. Возьмите воду горячее.", tone: "warning" },
   infusion_volume_excessive: { text: "Долив больше 60% текущего объёма затора — проверьте температуры и объём воды.", tone: "warning" },
-  infusion_step_downward: { text: "Следующая пауза не выше текущей — доливом температуру не снизить, долив не нужен.", tone: "info" },
+  infusion_step_downward: { text: "Температура следующей паузы не выше текущей. Долив горячей воды не нужен; для более низкой температуры дайте затору остыть.", tone: "info" },
   cooling_step_not_downward: { text: "Следующая пауза не ниже текущей — охлаждением температуру не поднять, долив не нужен.", tone: "info" },
   cooling_water_not_below_target: { text: "Вода для охлаждения не холоднее целевой температуры — так затор не остудить. Возьмите воду холоднее.", tone: "warning" },
   cooling_volume_excessive: { text: "Охлаждающий долив больше 60% текущего объёма затора — проверьте температуры и объём воды.", tone: "warning" },
@@ -467,7 +467,7 @@ const hopUseLabels: Record<string, string> = {
 const pitchStatusLabels = {
   underpitch: "Недосев",
   ok: "Норма",
-  overpitch: "Перебор"
+  overpitch: "Избыток"
 } as const;
 
 const formatHopUse = (use: HopAdditionInput["use"]) => hopUseLabels[String(use ?? "")] ?? "Другое";
@@ -695,7 +695,7 @@ const SOURCE_WATER_CALC_PRESETS: SourceWaterCalcPreset[] = [
   // формулы, не каталог вод), ни в features/recipes/water-profile-presets.ts (там либо
   // осмос/дистиллят, либо исторические жёсткие примеры Pilsen/Dublin/Munich — не "средняя").
   // Взят разумный среднежёсткий ориентир (по духу Bru'n Water default profile).
-  { id: "tap", label: "Средняя водопроводная", profile: { ca: 50, mg: 10, na: 25, cl: 40, so4: 60, hco3: 150 } }
+  { id: "tap", label: "Водопроводная (пример)", profile: { ca: 50, mg: 10, na: 25, cl: 40, so4: 60, hco3: 150 } }
 ];
 
 const SOURCE_WATER_CALC_PRESET_OPTIONS: CalculatorFieldOption[] = [
@@ -1364,7 +1364,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         min: 0.1,
         visibleWhen: (state) => DILUTION_VOLUME_TARGET_MODES.has(s(state.mode, "dilute_to_gravity"))
       }),
-      numberField("boilOffRateLPerHour", "Выкипание", "л/ч", {
+      numberField("boilOffRateLPerHour", "Скорость выкипания", "л/ч", {
         min: 0,
         visibleWhen: (state) => DILUTION_BOILOFF_RATE_MODES.has(s(state.mode, "dilute_to_gravity"))
       }),
@@ -1489,7 +1489,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       return {
         primary: { label: "Крепость (ABV)", value: formatPercent(view.abv, 2), helper: `ABW ${formatPercent(view.abw, 2)}` },
         stats: [
-          { label: "Видимое сбраживание", value: formatPercent(view.attenuation), tone: attenuationTone },
+          { label: "Видимая степень сбраживания", value: formatPercent(view.attenuation), tone: attenuationTone },
           { label: "Калории", value: `${view.calories} ккал`, helper: `${compactNumber(view.servingSizeMl, 0)} мл` },
           { label: "OG / FG", value: `${formatSg(view.ogSg)} / ${formatSg(view.fgSg)}` }
         ],
@@ -1553,7 +1553,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       const links: CalculatorResultLink[] = [];
 
       if (mode === "post_fermentation") {
-        stats.push({ label: "Оценка ABV", value: formatPercent(view.estimatedABV, 1) });
+        stats.push({ label: "Расчётная крепость", value: formatPercent(view.estimatedABV, 1) });
         stats.push({
           label: "Сбраживание",
           value: formatPercent(view.attenuation),
@@ -1863,7 +1863,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
     applyQuery: (state, params) => ({ ...state, beerVolumeL: params.volume ?? state.beerVolumeL }),
     altMethod: {
       title: "Карбонизируете суслом, а не сахаром?",
-      description: "Шпайзе или краузен — расчёт натуральной карбонизации несброженным суслом.",
+      description: "Шпайзе или краузен — расчёт карбонизации несброженным суслом или активно бродящим пивом.",
       href: (state) => buildCalculatorHref("speise-krausen", { volume: n(state.beerVolumeL, 20), targetCo2: n(state.targetCo2Volumes, 2.4) })
     },
     // К11: co2StylePreset — новое поле состояния, но само по себе ни на что не влияет
@@ -1908,7 +1908,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         min: 0,
         step: 10,
         advanced: true,
-        helper: "Если вносите праймер сиропом: растворяете весь сахар в этой воде и кипятите. Покажем объём и крепость сиропа."
+        helper: "Укажите, сколько воды используете для сиропа. Растворите в ней весь рассчитанный сахар и прокипятите. Покажем объём и концентрацию сиропа."
       })
     ],
     calculate: (state) => {
@@ -1934,7 +1934,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         const gramsPerMl = result.totalSugarGrams / syrupVolumeMl;
         stats.push(
           { label: "Объём сиропа", value: `≈ ${Math.round(syrupVolumeMl)} мл`, helper: `${formatGrams(result.totalSugarGrams)} сахара + ${Math.round(syrupWaterMl)} мл воды` },
-          { label: "Крепость сиропа", value: `≈ ${(gramsPerMl * 10).toFixed(1)} г/10 мл` }
+          { label: "Концентрация сиропа", value: `≈ ${(gramsPerMl * 10).toFixed(1)} г/10 мл` }
         );
       }
 
@@ -2143,7 +2143,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       );
       if (result.postAcidPh != null) {
         stats.push({
-          label: "pH после кислоты",
+          label: "pH после подкисления",
           value: result.postAcidPh.toFixed(2),
           helper: "цель 5.35",
           tone: acidTargetReached ? "good" : "warning"
@@ -2174,7 +2174,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       }
       // К9: калькулятор нарочно лёгкий (6 ионов + пресеты) — для точного анализа воды по
       // стилю/засыпи указываем на полноценный мастер водоподготовки в редакторе рецепта.
-      links.push({ label: "Мастер водоподготовки в редакторе рецепта", href: "/app/recipes/new" });
+      links.push({ label: "Настройка воды в редакторе рецепта", href: "/app/recipes/new" });
       links.push(...relatedLinks(["brewing-water-volume", "unit-converter", "beer-color"]));
 
       return {
@@ -2235,7 +2235,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         { value: "lager", label: "Лагер" },
         { value: "hybrid", label: "Гибрид" }
       ], { variant: "segmented" }),
-      selectField("yeastType", "Тип дрожжей", [
+      selectField("yeastType", "Форма дрожжей", [
         { value: "dry", label: "Сухие" },
         { value: "liquid", label: "Жидкие" }
       ], {
@@ -2258,8 +2258,8 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
             : [];
         }
       }),
-      numberField("packsCount", "Пакеты", "шт", { min: 0, step: 1, integer: true }),
-      numberField("cellsPerPackBillion", "Клеток в пакете", "млрд", {
+      numberField("packsCount", "Количество упаковок", "шт", { min: 0, step: 1, integer: true }),
+      numberField("cellsPerPackBillion", "Клеток в упаковке", "млрд", {
         min: 0,
         step: 10,
         helper: "В упаковке жидких дрожжей около 100 млрд клеток, в 11 г сухих — около 200 млрд",
@@ -2302,7 +2302,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         ? `${formatLiters(result.starterVolumeL)} стартера`
         : starterMode === "none" && result.pitchStatus === "underpitch"
           ? "Дрожжей не хватает — добавьте пакет или сделайте стартер"
-          : "Без стартера по расчёту";
+          : "Стартер не нужен по расчёту";
 
       const stats: CalculatorResultStat[] = [
         { label: "Нужно клеток", value: `${compactNumber(result.requiredCellsBillion, 0)} млрд` },
@@ -2320,7 +2320,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
 
       return {
         primary: {
-          label: "Статус внесения",
+          label: "Количество дрожжей",
           value: formatPitchStatus(result.pitchStatus),
           helper: primaryHelper,
           tone: result.pitchStatus === "ok" ? "good" : "warning"
@@ -2421,7 +2421,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
     fields: [
       selectField("methodPreset", "Метод", [
         { value: "BIAB", label: "BIAB" },
-        { value: "allInOne", label: "Система All-in-one" },
+        { value: "allInOne", label: "Автоматическая пивоварня (all-in-one)" },
         { value: "mashTunWithSparge", label: "Заторник + промывка" },
         { value: "extract", label: "Экстракт" }
       ], {
@@ -2454,7 +2454,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         visibleWhen: (state) => !BREWING_WATER_NO_SPARGE_METHODS.has(s(state.methodPreset, "mashTunWithSparge"))
       }),
       numberField("boilTimeMinutes", "Время кипячения", "мин", { min: 0, step: 5 }),
-      numberField("boilOffRateLPerHour", "Выкипание", "л/ч", {
+      numberField("boilOffRateLPerHour", "Скорость выкипания", "л/ч", {
         min: 0,
         step: 0.1,
         helper: "Обычно 3–5 л/ч — уточните по своим варкам"
@@ -2472,8 +2472,8 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         helper: "Мёртвый объём котла/фильтра — что не сливается",
         transformOnChange: () => [["kettleLossLTouched", true]]
       }),
-      numberField("trubChillerLossL", "Осадок/чиллер", "л", { min: 0, advanced: true, helper: "Остаётся с хмелевым осадком и в чиллере после кипячения" }),
-      numberField("coolingShrinkagePercent", "Усадка при охлаждении", "%", { min: 0, advanced: true })
+      numberField("trubChillerLossL", "Потери на осадке и в чиллере", "л", { min: 0, advanced: true, helper: "Остаётся с хмелевым осадком и в чиллере после кипячения" }),
+      numberField("coolingShrinkagePercent", "Уменьшение объёма при охлаждении", "%", { min: 0, advanced: true })
     ],
     calculate: (state) => {
       const methodPreset = s(state.methodPreset, "mashTunWithSparge") as "BIAB" | "allInOne" | "mashTunWithSparge" | "extract";
@@ -2633,7 +2633,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       selectField("mode", "Режим", [
         { value: "strike", label: "Начало затирания" },
         { value: "infusion", label: "Долив на ступень" },
-        { value: "stepMash", label: "Ступенчатый затор" }
+        { value: "stepMash", label: "Ступенчатое затирание" }
       ], { variant: "segmented", transformOnChange: retargetInfusionWaterOnModeChange }),
       numberField("grainKg", "Зерно", "кг", { min: 0, step: 0.1 }),
       numberField("mashWaterL", "Объём воды", "л", { min: 0.1 }),
@@ -2687,7 +2687,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
     // объёма/температуры — не заставляем переписывать их вручную заново.
     modeHint: (state) => (
       s(state.mode, "strike") === "strike"
-        ? "Затёрли — переключитесь на «Ступенчатый затор», объём воды и температура затора перенесутся."
+        ? "Для расчёта следующих пауз выберите «Ступенчатое затирание»: введённые объём воды и температура затора сохранятся."
         : null
     ),
     calculate: (state) => {
@@ -2695,7 +2695,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
 
       if (view.mode === "infusion") {
         return {
-          primary: { label: view.cooling ? "Долить холодной" : "Долить кипятка", value: formatLiters(view.infusionVolumeL) },
+          primary: { label: view.cooling ? "Долить холодной воды" : "Долить кипятка", value: formatLiters(view.infusionVolumeL) },
           stats: [
             { label: "Всего воды", value: formatLiters(view.newTotalWaterL) },
             { label: "Новый гидромодуль", value: `${view.newThicknessLPerKg.toFixed(2)} л/кг` }
@@ -3236,9 +3236,9 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       const residualCo2IsManual = nOrUndefined(state.residualCo2) != null;
 
       return {
-        primary: { label: "Добавить сусло", value: formatLiters(result.speiseVolumeToAddL), helper: `Финальный объём ${formatLiters(result.finalVolumeL)}` },
+        primary: { label: "Добавить сусло", value: formatLiters(result.speiseVolumeToAddL), helper: `Итоговый объём ${formatLiters(result.finalVolumeL)}` },
         stats: [
-          { label: "Изменение ABV", value: formatPercent(result.approximateAbvChange, 2), helper: "дображивание в бутылке" },
+          { label: "Изменение крепости", value: formatPercent(result.approximateAbvChange, 2), helper: "дображивание в бутылке" },
           { label: "Остаточный CO₂", value: `${result.residualCo2.toFixed(2)} об.`, helper: residualCo2IsManual ? undefined : "по температуре пива" }
         ],
         warnings: translateCoreWarnings(result.warnings),
@@ -3258,7 +3258,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       targetAmountG: 50
     },
     fields: [
-      numberField("originalAlphaAcidPercent", "Исходный AA", "%", { min: 0, step: 0.1 }),
+      numberField("originalAlphaAcidPercent", "Исходное содержание альфа-кислот, %", "%", { min: 0, step: 0.1 }),
       dateField("packageDate", "Дата упаковки", { helper: "Пусто — считаем хмель свежим" }),
       dateField("openedDate", "Дата вскрытия", { advanced: true }),
       numberField("storageTemperatureC", "Температура хранения", "°C", { step: 1 }),
@@ -3300,7 +3300,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
 
       return {
         primary: {
-          label: "Текущий AA",
+          label: "Остаточное содержание альфа-кислот, %",
           value: formatPercent(result.estimatedCurrentAA, 2),
           helper: `Потеряно ~${lostBitternessPercent}% горечи`,
           tone: result.freshnessFactor >= 0.85 ? "good" : "warning"
@@ -3308,7 +3308,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         stats,
         warnings: translateCoreWarnings(result.warnings),
         links: [
-          { label: "Использовать новый AA% в IBU", href: buildCalculatorHref("ibu", { aa: result.estimatedCurrentAA }) },
+          { label: "Использовать в расчёте горечи", href: buildCalculatorHref("ibu", { aa: result.estimatedCurrentAA }) },
           ...relatedLinks(["unit-converter"])
         ]
       };

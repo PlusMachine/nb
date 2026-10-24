@@ -64,7 +64,7 @@ export const inventorySortLabels: Record<InventorySortOption, string> = {
   default: "По умолчанию",
   name: "По названию",
   quantity: "По количеству",
-  updated: "По обновлению",
+  updated: "По дате изменения",
   best_before: "По сроку годности",
   price: "По цене"
 };

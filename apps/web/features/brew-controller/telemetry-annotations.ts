@@ -29,7 +29,7 @@ const STAGE_SHORT_LABEL: Record<number, string> = {
   [STAGE_NUM.DOUGH_IN]: "Засыпь",
   [STAGE_NUM.PROMPT_ADD_MALT]: "Досыпать солод",
   [STAGE_NUM.MASH_STEP]: "Затор",
-  [STAGE_NUM.MASH_OUT]: "Мэшаут",
+  [STAGE_NUM.MASH_OUT]: "Мэш-аут",
   [STAGE_NUM.PROMPT_IODINE]: "Йодная проба",
   [STAGE_NUM.PROMPT_REMOVE_MALT]: "Извлечь дробину",
   [STAGE_NUM.BOIL_RAMP]: "Разогрев",
@@ -48,7 +48,7 @@ const STAGE_SHORT_LABEL: Record<number, string> = {
   [STAGE_NUM.DISTILL_HEADS]: "Головы",
   [STAGE_NUM.DISTILL_HEARTS]: "Тело",
   [STAGE_NUM.DISTILL_TAILS]: "Хвосты",
-  [STAGE_NUM.FERMENT]: "Ферментация",
+  [STAGE_NUM.FERMENT]: "Брожение",
 };
 
 /** Компактная подпись стадии по числовому значению bf_stage_t. */

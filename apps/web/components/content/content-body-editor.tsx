@@ -35,7 +35,7 @@ function FigureNodeView({ node, selected }: NodeViewProps) {
       )}
       <span className="min-w-0 space-y-0.5">
         <span className="block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-          {src ? "Фото" : "Фото — слот"}
+          {src ? "Фото" : "Место для фото"}
         </span>
         <span className="block truncate text-sm text-foreground">{caption ?? hint ?? "Без подписи"}</span>
       </span>
@@ -82,7 +82,7 @@ export function ContentBodyEditor({
         figure: () => ReactNodeViewRenderer(FigureNodeView),
         widget: () => ReactNodeViewRenderer(WidgetNodeView)
       }),
-      Placeholder.configure({ placeholder: "Напишите гайд или обзор…" })
+      Placeholder.configure({ placeholder: "Напишите статью или обзор…" })
     ],
     []
   );

@@ -11,11 +11,11 @@ import { CalculatorVerificationBadge } from "./calculator-verification-badge";
 
 export function CalculatorHeading({ item }: { item: CalculatorCatalogItem }) {
   return (
-    <section className="relative rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
+    <section className="relative border-b border-border pb-5">
       <CalculatorFavoriteToggle
         slug={item.slug}
         size="md"
-        className="absolute right-4 top-4"
+        className="absolute right-0 top-0"
       />
       <div className="max-w-3xl space-y-2 pr-10">
         <CalculatorVerificationBadge slug={item.slug} />

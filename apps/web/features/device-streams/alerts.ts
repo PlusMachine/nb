@@ -206,8 +206,8 @@ const buildAlertPayload = (type: AlertType, ctx: AlertContext): PushPayload => {
       };
     case "temp_out":
       return {
-        title: `Температура вне коридора: ${ctx.batchName}`,
-        body: `Температура ${fmtTemp(ctx.tempC!)}°C вне коридора ${fmtTemp(ctx.tempMinC!)}–${fmtTemp(ctx.tempMaxC!)} °C.`,
+        title: `Температура вне заданного диапазона: ${ctx.batchName}`,
+        body: `Температура ${fmtTemp(ctx.tempC!)}°C вне заданного диапазона ${fmtTemp(ctx.tempMinC!)}–${fmtTemp(ctx.tempMaxC!)} °C.`,
         tag,
         url
       };

@@ -8,7 +8,7 @@ import type { ShoppingListGroupDto, ShoppingManualItemDto } from "./contracts";
 // выводится. Секция «Своё» — всегда последней, только если есть неотмеченные
 // ручные позиции.
 const COPY_TEXT_HEADER = "Список покупок — nb";
-const MANUAL_ITEMS_GROUP_LABEL = "Своё";
+const MANUAL_ITEMS_GROUP_LABEL = "Добавлено вручную";
 
 export function buildShoppingListCopyText(input: {
   groups: Pick<ShoppingListGroupDto, "label" | "items">[];

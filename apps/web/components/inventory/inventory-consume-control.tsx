@@ -268,7 +268,7 @@ export function InventoryConsumeControl({ item, onAction, defaultMode = "consume
 
         <div className="flex gap-2 pt-1">
           <Button type="submit" size="md" className="flex-1" disabled={!canSubmit}>
-            {isPending ? "Сохраняем..." : isConsume ? "Списать" : "Пополнить"}
+            {isPending ? "Сохраняем…" : isConsume ? "Списать" : "Пополнить"}
           </Button>
           <Button type="button" variant="outline" size="md" onClick={closeSheet}>
             Отмена

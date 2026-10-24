@@ -1063,7 +1063,7 @@ export function InventoryItemDetailsEditor({
                     className="flex-1 sm:flex-initial"
                     disabled={isPending || !canSubmitInventoryForm(form) || hasCurrentNumberErrors}
                   >
-                    {isPending ? "Сохраняем..." : "Сохранить"}
+                    {isPending ? "Сохраняем…" : "Сохранить"}
                   </Button>
                   <Button type="button" variant="outline" size="md" onClick={resetForm}>
                     Отмена

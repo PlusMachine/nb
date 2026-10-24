@@ -59,7 +59,7 @@ export function DeviceHeader({
           className="inline-flex items-center gap-1 text-sm text-muted-foreground transition hover:text-foreground"
         >
           <ChevronLeft className="h-4 w-4" aria-hidden />
-          <span className="hidden sm:inline">Устройства</span>
+          <span className="hidden sm:inline">Приборы</span>
         </Link>
         <h1
           className="text-lg font-semibold text-foreground sm:text-xl"
@@ -91,7 +91,7 @@ export function DeviceHeader({
             <button
               type="button"
               onClick={onKioskEnter}
-              aria-label="Киоск"
+              aria-label="Полноэкранный пульт"
               className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-muted-foreground transition hover:bg-accent hover:text-foreground"
             >
               <Maximize2 className="h-4 w-4" aria-hidden />

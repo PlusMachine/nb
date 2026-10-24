@@ -138,7 +138,7 @@ export function ManualControlCard({ telemetry, hasDevice, controlsHeld, isLive, 
       {/* Target (уставка). */}
       <div className="mt-4">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Целевая температура</span>
+          <span className="text-muted-foreground">Заданная температура</span>
           <span className="font-medium tabular-nums text-foreground">{Math.round(setpointLocal)} °C</span>
         </div>
         <div className="mt-2">
@@ -147,7 +147,7 @@ export function ManualControlCard({ telemetry, hasDevice, controlsHeld, isLive, 
             min={SETPOINT_MIN}
             max={SETPOINT_MAX}
             step={1}
-            ariaLabel="Целевая температура"
+            ariaLabel="Заданная температура"
             disabled={controlsDisabled}
             onValueChange={(v) => {
               draggingSetpoint.current = true;
@@ -155,7 +155,7 @@ export function ManualControlCard({ telemetry, hasDevice, controlsHeld, isLive, 
             }}
             onValueCommit={(v) => {
               draggingSetpoint.current = false;
-              void runFeedback(cmdManualSetpoint(v[0]), `Уставка ${Math.round(v[0])} °C`);
+              void runFeedback(cmdManualSetpoint(v[0]), `Заданная температура ${Math.round(v[0])} °C`);
             }}
           />
         </div>
@@ -205,7 +205,7 @@ export function ManualControlCard({ telemetry, hasDevice, controlsHeld, isLive, 
         ) : (
           <HoldToConfirmButton
             label="Включить нагрев"
-            holdingLabel="Держите для включения…"
+            holdingLabel="Удерживайте для включения…"
             disabled={controlsDisabled}
             icon={<Flame className="h-4 w-4" aria-hidden />}
             onConfirm={() => {

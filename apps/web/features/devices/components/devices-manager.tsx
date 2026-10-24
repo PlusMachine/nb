@@ -294,7 +294,7 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
             className="text-2xl font-semibold text-foreground sm:text-3xl"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            Устройства
+            Приборы
           </h1>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -394,7 +394,7 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
               className="rounded-xl border border-border p-4 text-left transition hover:border-foreground/40 hover:bg-accent"
             >
               <p className="text-sm font-semibold text-foreground">RAPT Cloud</p>
-              <p className="mt-1 text-xs text-muted-foreground">Pill, камера ферментации, BrewZilla</p>
+              <p className="mt-1 text-xs text-muted-foreground">Pill, камера брожения, BrewZilla</p>
             </button>
           </div>
         </Card>
@@ -480,7 +480,7 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
                   {issuedToken}
                 </code>
                 <Button variant="outline" onClick={() => void copyToken()}>
-                  {copied ? "Скопировано" : "Копировать"}
+                  {copied ? "Токен скопирован" : "Скопировать токен"}
                 </Button>
                 <Button variant="outline" onClick={() => setIssuedToken(null)}>
                   Скрыть

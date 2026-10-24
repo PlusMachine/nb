@@ -1,0 +1,19 @@
+{
+  "items": 320,
+  "passed": [
+    "approve",
+    "reject",
+    "custom",
+    "empty custom validation",
+    "transfer payload",
+    "undo",
+    "restore state",
+    "fallback transfer",
+    "mobile width"
+  ],
+  "fit": {
+    "width": 358,
+    "scroll": 358
+  },
+  "errors": []
+}

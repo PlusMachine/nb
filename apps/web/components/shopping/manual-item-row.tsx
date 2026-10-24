@@ -105,7 +105,7 @@ export function ManualItemRow({ item }: Props) {
     const hasQuantity = editQuantity.trim() !== "";
     const hasUnit = editUnit !== "";
     if (hasQuantity !== hasUnit) {
-      setEditError("Количество и единица указываются вместе.");
+      setEditError("Укажите и количество, и единицу измерения.");
       return;
     }
 

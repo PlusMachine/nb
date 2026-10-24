@@ -28,8 +28,8 @@ export const recipeSortOptions: { value: PublicRecipeSort; label: string }[] = [
   { value: "rating", label: "По рейтингу" },
   { value: "abv_desc", label: "Крепче" },
   { value: "abv_asc", label: "Слабее" },
-  { value: "ibu_desc", label: "Горше" },
-  { value: "ibu_asc", label: "Мягче" },
+  { value: "ibu_desc", label: "Горьче" },
+  { value: "ibu_asc", label: "Менее горькие" },
   { value: "color_asc", label: "Светлее" },
   { value: "color_desc", label: "Темнее" },
   { value: "name", label: "По алфавиту" }

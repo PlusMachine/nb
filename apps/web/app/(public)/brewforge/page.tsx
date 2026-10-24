@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Radio, Thermometer, Timer } from "lucide-react";
 
+import { buildMashHistory } from "@/components/demo/demo-data";
 import { getSectionOgImage } from "@/features/og/section";
 import { getServerEnv } from "@/lib/env";
 
-// Промо-страница BrewForge — пока заглушка: контроллер в разработке, продаж нет.
-// Сюда ведёт CTA из секции BrewForge на главной; позже здесь появится полноценный
-// материал про железо, прошивку и сборку.
+// Тот же пульт и локальная симуляция, что в /demo. Динамический импорт оставляет
+// симулятор отдельным клиентским чанком; подписи страницы рендерятся на сервере.
+const DemoPult = dynamic(() => import("@/components/demo/demo-pult").then((mod) => mod.DemoPult));
 
 const title = "BrewForge — автоматика варки";
 const description =
@@ -34,68 +36,64 @@ export const metadata: Metadata = {
 const features = [
   {
     icon: Thermometer,
-    title: "Затирание по профилю",
-    text: "Подъёмы и паузы берутся из рецепта — контроллер управляет нагревом и держит целевую температуру"
+    title: "Затирание по рецепту"
   },
   {
     icon: Timer,
-    title: "Таймеры кипячения",
-    text: "Внесения хмеля по расписанию рецепта — с отсчётом и напоминаниями"
+    title: "Таймеры кипячения"
   },
   {
     icon: Radio,
-    title: "Связь с сайтом",
-    text: "Рецепт загружается в контроллер, а ход варки виден на экране телефона"
+    title: "Связь с сайтом"
   }
 ];
 
 export default function BrewforgePage() {
   return (
-    <main className="space-y-8 pb-24 pt-8">
-      <section className="rounded-[2rem] bg-[#141417] p-8 text-zinc-100 sm:p-12">
+    <main className="space-y-6 pb-24 pt-6 sm:space-y-8 sm:pt-8">
+      <section>
         <div className="flex flex-wrap items-center gap-3">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">BrewForge</p>
-          <span className="inline-flex items-center rounded-full border border-amber-400/30 bg-amber-400/10 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-amber-300">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">BrewForge</p>
+          <span className="inline-flex items-center rounded-full border border-warning/30 bg-warning-subtle px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-warning-subtle-foreground">
             в разработке
           </span>
         </div>
-        <h1 className="mt-4 max-w-2xl text-balance text-4xl font-semibold leading-[1.02] sm:text-5xl" style={{ fontFamily: "var(--font-display)" }}>
-          Автоматика варочного дня
+        <h1 className="mt-3 max-w-2xl text-balance text-3xl font-semibold leading-tight text-foreground sm:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
+          Автоматика для пивоварни
         </h1>
-        <p className="mt-5 max-w-2xl text-pretty text-lg leading-8 text-zinc-400">
+        <p className="mt-3 max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
           Контроллер, который ведёт варку по рецепту с сайта: держит паузы затирания,
           управляет нагревом и отсчитывает время до внесения хмеля.
         </p>
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-3">
+      <section className="dark rounded-2xl border border-border bg-card p-4 text-foreground [&_.text-6xl]:text-5xl sm:p-6 sm:[&_.text-6xl]:text-6xl">
+        <DemoPult initialHistory={buildMashHistory(new Date())} />
+        <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
+          Здесь можно попробовать управление на симуляторе. Время ускорено, настоящее оборудование не подключено.
+        </p>
+      </section>
+
+      <section className="divide-y divide-border border-y border-border">
         {features.map((feature) => {
           const Icon = feature.icon;
           return (
-            <div key={feature.title} className="rounded-[1.25rem] border border-border bg-card p-5 shadow-sm">
-              <span className="grid h-9 w-9 place-items-center rounded-[10px] bg-foreground text-background">
-                <Icon className="h-4 w-4" aria-hidden />
-              </span>
-              <div className="mt-3 text-[15px] font-semibold text-foreground">{feature.title}</div>
-              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{feature.text}</p>
+            <div key={feature.title} className="flex items-center gap-3 py-4">
+              <Icon className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+              <h2 className="text-sm font-semibold text-foreground">{feature.title}</h2>
             </div>
           );
         })}
       </section>
 
-      <section className="rounded-[1.25rem] border border-border bg-card p-6 shadow-sm sm:p-8">
-        <p className="max-w-2xl text-[15px] leading-relaxed text-muted-foreground">
-          Подробный материал про железо, прошивку и сборку появится на этой странице.
-          А пошаговый помощник варки работает уже сейчас — план дня собирается из рецепта,
-          таймеры и отметки шагов на экране.
-        </p>
+      <div>
         <Link
           href="/login?next=/app/brew-batches"
-          className="mt-6 inline-flex items-center rounded-full bg-foreground px-5 py-3 text-sm font-semibold text-background transition-colors hover:bg-foreground/90"
+          className="inline-flex min-h-11 items-center rounded-full bg-foreground px-5 py-3 text-center text-sm font-semibold text-background transition-colors hover:bg-foreground/90"
         >
           Попробовать помощник варки
         </Link>
-      </section>
+      </div>
     </main>
   );
 }

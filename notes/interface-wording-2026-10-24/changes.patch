@@ -1,0 +1,874 @@
+--- a/apps/web/app/(admin)/admin/articles/page.tsx
++++ b/apps/web/app/(admin)/admin/articles/page.tsx
+@@ -152,7 +152,7 @@
+             status,
+             pageSize: pageSize === defaultAdminArticlesPageSize ? undefined : String(pageSize)
+           }}
+-          placeholder="Заголовок, слаг, автор"
++          placeholder="Заголовок, адрес страницы, автор"
+         />
+         <AdminFilterTabs label="Статусы" tabs={tabs} activeKey={status ?? "all"} />
+       </div>
+--- a/apps/web/app/(admin)/admin/devices/[id]/page.tsx
++++ b/apps/web/app/(admin)/admin/devices/[id]/page.tsx
+@@ -70,7 +70,7 @@
+                 Температура
+               </th>
+               <th scope="col" className="pb-2 pr-3 font-medium">
+-                Уставка
++                Заданная температура
+               </th>
+               <th scope="col" className="pb-2 font-medium">
+                 Нагрев
+--- a/apps/web/app/(app)/app/master/master-cabinet.tsx
++++ b/apps/web/app/(app)/app/master/master-cabinet.tsx
+@@ -104,7 +104,7 @@
+           {isPending ? (
+             <Button type="button" variant="outline" size="sm" disabled={busy} onClick={onWithdraw}>
+               {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
+-              Отозвать
++              Отозвать заявку
+             </Button>
+           ) : (
+             <Button type="button" size="sm" disabled={busy || hasUnsavedProfile} onClick={onSubmit}>
+--- a/apps/web/app/api/brew-batches/[id]/command/route.ts
++++ b/apps/web/app/api/brew-batches/[id]/command/route.ts
+@@ -19,7 +19,7 @@
+     case "CLOUD_NO_ACK":
+       return "Устройство не подтвердило команду — похоже, оно не в сети. Проверьте связь контроллера.";
+     case "CLOUD_BROKER_UNREACHABLE":
+-      return "Нет связи с облачным брокером. Повторите чуть позже.";
++      return "Нет связи с облачным сервисом управления. Повторите чуть позже.";
+     case "CLOUD_UNSUPPORTED":
+       return "Эта операция по облаку пока недоступна — выполните её, находясь в одной сети с устройством.";
+     case "DEVICE_NO_LOCAL_URL":
+@@ -69,7 +69,7 @@
+         return NextResponse.json(
+           {
+             error:
+-              "Устройством управляют из другого сеанса. Запросите передачу управления.",
++              "Управление открыто в другом окне или на другом устройстве. Запросите передачу управления.",
+             code: "NO_CONTROL_LEASE",
+           },
+           { status: 409 },
+--- a/apps/web/app/api/devices/[id]/command/route.ts
++++ b/apps/web/app/api/devices/[id]/command/route.ts
+@@ -19,7 +19,7 @@
+     case "CLOUD_NO_ACK":
+       return "Устройство не подтвердило команду — похоже, оно не в сети. Проверьте связь контроллера.";
+     case "CLOUD_BROKER_UNREACHABLE":
+-      return "Нет связи с облачным брокером. Повторите чуть позже.";
++      return "Нет связи с облачным сервисом управления. Повторите чуть позже.";
+     case "CLOUD_UNSUPPORTED":
+       return "Эта операция по облаку пока недоступна — выполните её, находясь в одной сети с устройством.";
+     case "DEVICE_NO_LOCAL_URL":
+@@ -70,7 +70,7 @@
+         return NextResponse.json(
+           {
+             error:
+-              "Устройством управляют из другого сеанса. Запросите передачу управления.",
++              "Управление открыто в другом окне или на другом устройстве. Запросите передачу управления.",
+             code: "NO_CONTROL_LEASE",
+           },
+           { status: 409 },
+--- a/apps/web/app/api/devices/[id]/ota/route.ts
++++ b/apps/web/app/api/devices/[id]/ota/route.ts
+@@ -26,7 +26,7 @@
+     case "OTA_UNSUPPORTED":
+       return "Для этого устройства обновление по сети недоступно.";
+     case "CLOUD_BROKER_UNREACHABLE":
+-      return "Нет связи с облачным брокером. Повторите чуть позже.";
++      return "Нет связи с облачным сервисом управления. Повторите чуть позже.";
+     case "DEVICE_NO_LOCAL_URL":
+       return "У устройства не задан локальный адрес и облако недоступно.";
+     default:
+--- a/apps/web/components/calculators/calculator-page-client.tsx
++++ b/apps/web/components/calculators/calculator-page-client.tsx
+@@ -1413,7 +1413,7 @@
+               </div>
+             </dl>
+             <p className="rounded-xl border border-border bg-muted/70 px-3 py-2.5 text-xs leading-5 text-muted-foreground">
+-              Видимое сбраживание: {attenuationText}
++              Видимая степень сбраживания: {attenuationText}
+             </p>
+           </div>
+         )}
+@@ -1734,7 +1734,7 @@
+             Объём измерен на горячем сусле
+             <span className="mt-0.5 block text-xs font-normal leading-4 text-muted-foreground">
+               {currentVolumeMeasuredHot
+-                ? `Сразу после кипячения, пока сусло горячее — учитываем усадку при остывании: станет ≈ ${coldVolumePreview}`
++                ? `Сразу после кипячения, пока сусло горячее — учитываем уменьшение объёма при остывании: станет ≈ ${coldVolumePreview}`
+                 : "Отметьте, если «Текущий объём» замерен сразу после кипячения — при остывании объём сусла уменьшается примерно на 4%"}
+             </span>
+           </span>
+--- a/apps/web/components/content/article-editor-form.tsx
++++ b/apps/web/components/content/article-editor-form.tsx
+@@ -198,7 +198,7 @@
+             {capabilities.canFeatureOnHome ? (
+               <Button type="button" variant="outline" size="sm" disabled={busy} onClick={() => run(() => setContentArticleFeaturedAction(article.id, !article.isFeatured), () => router.refresh())}>
+                 <Star className={`h-4 w-4 ${article.isFeatured ? "fill-warning text-warning" : ""}`} aria-hidden />
+-                {article.isFeatured ? "Убрать с главной" : "На главную"}
++                {article.isFeatured ? "Убрать с главной" : "Показать на главной"}
+               </Button>
+             ) : null}
+             {capabilities.canDelete ? (
+--- a/apps/web/components/home/home-experience.tsx
++++ b/apps/web/components/home/home-experience.tsx
+@@ -168,7 +168,7 @@
+   recipe: PublicRecipeDetailDto;
+ }) {
+   const equipment = recipe.equipmentProfileSnapshot;
+-  return equipment ? <div><h3>{equipment.name}</h3><dl className="home-facts home-equipment-facts">{[["Испарение при кипячении", `${homeNumber(equipment.evaporationRateLPerHr)} л/ч`], ["Потери в котле", `${homeNumber(equipment.trubChillerLossL)} л`], ["Поглощение воды солодом", `${homeNumber(equipment.grainAbsorptionLPerKg)} л/кг`], ["Усадка при охлаждении", `${homeNumber(equipment.coolingShrinkagePct)}%`]].map(([name, value]) => <div key={name}><dt>{name}</dt><dd>{value}</dd></div>)}</dl></div> : <div className="home-panel-empty"><h3>Профиль оборудования</h3><p>В этом рецепте оборудование не указано.</p><Link href={homeLoginHref("/app/equipment")}>Добавить своё оборудование ↗</Link></div>;
++  return equipment ? <div><h3>{equipment.name}</h3><dl className="home-facts home-equipment-facts">{[["Испарение при кипячении", `${homeNumber(equipment.evaporationRateLPerHr)} л/ч`], ["Потери в котле", `${homeNumber(equipment.trubChillerLossL)} л`], ["Поглощение воды солодом", `${homeNumber(equipment.grainAbsorptionLPerKg)} л/кг`], ["Уменьшение объёма при охлаждении", `${homeNumber(equipment.coolingShrinkagePct)}%`]].map(([name, value]) => <div key={name}><dt>{name}</dt><dd>{value}</dd></div>)}</dl></div> : <div className="home-panel-empty"><h3>Профиль оборудования</h3><p>В этом рецепте оборудование не указано.</p><Link href={homeLoginHref("/app/equipment")}>Добавить своё оборудование ↗</Link></div>;
+ }
+ export function HomeLabels({
+   images,
+--- a/apps/web/components/ingredients/ingredient-favorite-toggle.tsx
++++ b/apps/web/components/ingredients/ingredient-favorite-toggle.tsx
+@@ -19,7 +19,7 @@
+   reference,
+   initialFavorite = false,
+   className = "",
+-  label = "Переключить избранное",
++  label = "Избранный ингредиент",
+   size = "sm",
+   suppressParentInteraction = false,
+   onFavoriteChange
+--- a/apps/web/components/inventory/custom-ingredient-form.tsx
++++ b/apps/web/components/inventory/custom-ingredient-form.tsx
+@@ -753,7 +753,7 @@
+ 
+           {category === "hop" ? (
+             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+-              <label className="text-sm">Тип хмеля
++              <label className="text-sm">Форма хмеля
+                 <select
+                   className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
+                   value={hopForm}
+@@ -801,7 +801,7 @@
+ 
+           {category === "yeast" ? (
+             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+-              <label className="text-sm">Тип дрожжей
++              <label className="text-sm">Форма дрожжей
+                 <select className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base" value={yeastForm} onChange={(e) => setYeastForm(e.target.value as CustomYeastForm)}>
+                   {customYeastForms.map((option) => (
+                     <option key={option} value={option}>{customYeastFormLabels[option]}</option>
+--- a/apps/web/components/recipes/brew-picker-dialog.tsx
++++ b/apps/web/components/recipes/brew-picker-dialog.tsx
+@@ -373,7 +373,7 @@
+     <Dialog
+       open={open}
+       onOpenChange={onOpenChange}
+-      title="Сварить рецепт"
++      title="Сварить по рецепту"
+       hideTitle
+       size="md"
+       guard={{ isDirty: () => submitting, onGuardedClose: () => {} }}
+@@ -542,7 +542,7 @@
+                   <div>
+                     <p className="font-semibold">Запуск включит нагрев</p>
+                     <p className="mt-1 text-xs leading-5 text-warning-subtle-foreground">
+-                      Устройство «{selectedDevice?.name ?? "—"}» начнёт нагрев ТЭНов по рецепту. Убедитесь, что в
++                      Устройство «{selectedDevice?.name ?? "—"}» включит нагрев по рецепту. Убедитесь, что в
+                       ёмкости есть вода, а оборудование под присмотром.
+                     </p>
+                   </div>
+--- a/apps/web/components/recipes/recipe-designer/recipe-designer.tsx
++++ b/apps/web/components/recipes/recipe-designer/recipe-designer.tsx
+@@ -1875,7 +1875,7 @@
+                 <FileText className="h-4 w-4" />
+               </div>
+               <span className="text-[15px]">Описание рецепта</span>
+-              <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">видно всем</span>
++              <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">видно после публикации</span>
+               <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90" />
+             </summary>
+             <div className="p-4">
+--- a/apps/web/features/brew-batches/components/fermenter-panel.tsx
++++ b/apps/web/features/brew-batches/components/fermenter-panel.tsx
+@@ -75,7 +75,7 @@
+       {status.kind === "fermenting" || status.kind === "mode-mismatch" ? (
+         <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 tabular-nums">
+           <span className="text-2xl font-semibold text-foreground">{fmtC(status.point.primaryC)}</span>
+-          <span className="text-sm text-muted-foreground">уставка {fmtC(status.point.setpointC)}</span>
++          <span className="text-sm text-muted-foreground">задано {fmtC(status.point.setpointC)}</span>
+           {freshnessLabel ? <span className="text-xs text-muted-foreground">· {freshnessLabel}</span> : null}
+         </div>
+       ) : null}
+--- a/apps/web/features/brew-batches/components/telemetry-chart.tsx
++++ b/apps/web/features/brew-batches/components/telemetry-chart.tsx
+@@ -207,7 +207,7 @@
+         <h2 className="text-sm font-semibold text-foreground">История температуры</h2>
+         <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+           <Legend color="hsl(var(--chart-temp))" label="Температура" />
+-          <Legend color="hsl(var(--chart-setpoint))" label="Уставка" dashed />
++          <Legend color="hsl(var(--chart-setpoint))" label="Заданная температура" dashed />
+           <Legend color="hsl(var(--chart-heater))" label="Нагрев, %" />
+           <EventLegend />
+         </div>
+@@ -225,7 +225,7 @@
+               viewBox={`0 0 ${VB_W} ${VB_H}`}
+               className="h-auto w-full"
+               role="img"
+-              aria-label="График температуры, уставки и скважности нагрева во времени с отметками стадий"
++              aria-label="График фактической и заданной температуры и доли времени нагрева с отметками этапов"
+               preserveAspectRatio="none"
+             >
+               {/* Полосы стадий (фон, нейтральные; авария — светло-красная). */}
+--- a/apps/web/features/brew-controller/actions.ts
++++ b/apps/web/features/brew-controller/actions.ts
+@@ -242,7 +242,7 @@
+     if (outcome.ok && outcome.reason === "REMOTE_DISABLED") {
+       return {
+         ok: true,
+-        message: `Рецепт загружен в слот ${outcome.slot ?? 0} и выбран. Включите удалённое управление на устройстве или запустите варку вручную.`,
++        message: `Рецепт загружен в ячейку памяти № ${outcome.slot ?? 0} и выбран. Включите удалённое управление на устройстве или запустите варку вручную.`,
+         heatingStarted: false,
+         externalId: outcome.externalId,
+         slot: outcome.slot,
+--- a/apps/web/features/brew-controller/brew-recipe-flow.ts
++++ b/apps/web/features/brew-controller/brew-recipe-flow.ts
+@@ -82,7 +82,7 @@
+       // сообщаем — переход к партии только по клику пользователя, не молча.
+       return {
+         ok: true,
+-        message: `Рецепт загружен в слот ${outcome.slot ?? 0} и выбран. Включите удалённое управление на устройстве или запустите варку вручную.`,
++        message: `Рецепт загружен в ячейку памяти № ${outcome.slot ?? 0} и выбран. Включите удалённое управление на устройстве или запустите варку вручную.`,
+         heatingStarted: false,
+         brewBatchId,
+         reason: outcome.reason
+--- a/apps/web/features/brew-controller/components/distill-hero.tsx
++++ b/apps/web/features/brew-controller/components/distill-hero.tsx
+@@ -79,7 +79,7 @@
+             </p>
+           )}
+           <p className={kiosk ? "mt-2 text-base text-muted-foreground" : "mt-1 text-sm text-muted-foreground"}>
+-            Уставка:{" "}
++            Задано:{" "}
+             <span
+               className={
+                 kiosk ? "text-xl font-medium text-foreground tabular-nums" : "font-medium text-foreground tabular-nums"
+--- a/apps/web/features/brew-controller/components/distill-loop-strip.tsx
++++ b/apps/web/features/brew-controller/components/distill-loop-strip.tsx
+@@ -21,7 +21,7 @@
+     <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+       <p className="text-sm font-semibold text-foreground">Контур</p>
+       <dl className="mt-3 space-y-2 text-sm">
+-        <Row label="Скважность нагрева" value={telemetry ? `${telemetry.heatDutyPct}%` : "—"} />
++        <Row label="Доля времени нагрева" value={telemetry ? `${telemetry.heatDutyPct}%` : "—"} />
+         <Row label="Нагрев (ТЭН)" value={<Pill on={telemetry?.heatOn ?? false} />} />
+         {valveOn !== undefined ? <Row label="Клапан отбора" value={<Pill on={valveOn} />} /> : null}
+         <Row
+--- a/apps/web/features/brew-controller/components/ferment-dashboard-view.tsx
++++ b/apps/web/features/brew-controller/components/ferment-dashboard-view.tsx
+@@ -276,7 +276,7 @@
+     if (!progress.current || !progress.next) return;
+     requestConfirm({
+       title: `Завершить «${progress.current.label}» и перейти к «${progress.next.label}»?`,
+-      description: "Устройство сразу переключит уставку на следующую ступень профиля.",
++      description: "Заданная температура сразу изменится на значение следующей ступени профиля.",
+       confirmLabel: "Перейти",
+       tone: "primary",
+       run: async () => {
+--- a/apps/web/features/brew-controller/components/ferment-hero.tsx
++++ b/apps/web/features/brew-controller/components/ferment-hero.tsx
+@@ -66,7 +66,7 @@
+             </p>
+           )}
+           <p className={kiosk ? "mt-2 text-base text-muted-foreground" : "mt-1 text-sm text-muted-foreground"}>
+-            Уставка:{" "}
++            Задано:{" "}
+             <span
+               className={
+                 kiosk ? "text-xl font-medium text-foreground tabular-nums" : "font-medium text-foreground tabular-nums"
+--- a/apps/web/features/brew-controller/components/ferment-profile-card.tsx
++++ b/apps/web/features/brew-controller/components/ferment-profile-card.tsx
+@@ -101,14 +101,14 @@
+           {editing ? (
+             <>
+               <label className="flex items-center gap-2 text-sm text-muted-foreground">
+-                Уставка
++                Заданная температура
+                 <NumericInput
+                   value={draft}
+                   onChange={(e) => setDraft(e.target.value)}
+                   min={-2}
+                   max={40}
+                   autoFocus
+-                  aria-label="Уставка текущей ступени, °C"
++                  aria-label="Заданная температура текущей ступени, °C"
+                   className="h-9 w-20 rounded-md border border-border px-2 text-sm tabular-nums focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
+                 />
+                 <span className="text-muted-foreground">°C</span>
+@@ -123,11 +123,11 @@
+           ) : (
+             <>
+               <span className="text-sm text-muted-foreground">
+-                Уставка сейчас:{" "}
++                Задано сейчас:{" "}
+                 <span className="font-medium tabular-nums text-foreground">{current.tempC.toFixed(1)} °C</span>
+               </span>
+               <Button size="sm" variant="outline" onClick={startEdit}>
+-                Изменить уставку
++                Изменить температуру
+               </Button>
+             </>
+           )}
+--- a/apps/web/features/brew-controller/components/live-dashboard-view.tsx
++++ b/apps/web/features/brew-controller/components/live-dashboard-view.tsx
+@@ -272,8 +272,7 @@
+ 
+       {otherSessionControls ? (
+         <div className="rounded-2xl border border-warning/30 bg-warning-subtle p-4 text-sm text-warning-subtle-foreground" role="status">
+-          Управляет другой сеанс — здесь только просмотр. Показатели могут быть неполными или обновляться с задержкой;
+-          чтобы взять управление, нажмите «Запросить управление» на панели ниже.
++          Управление открыто в другом окне или на другом устройстве — здесь доступен только просмотр. Показания могут быть неполными или обновляться с задержкой. Чтобы взять управление, нажмите «Запросить управление» на панели ниже.
+         </div>
+       ) : null}
+ 
+@@ -301,7 +300,7 @@
+             {idleDeviceId && appMode === "brew" ? (
+               <Button variant="primary" size="md" onClick={() => setRecipePickerOpen(true)}>
+                 <Beer className="h-4 w-4" aria-hidden />
+-                Сварить рецепт…
++                Выбрать рецепт…
+               </Button>
+             ) : null}
+             <Button
+@@ -331,7 +330,7 @@
+           </div>
+           {!controlsHeld ? (
+             <p className="mt-2 text-xs text-warning-subtle-foreground">
+-              Ответить на запрос может только сеанс, который управляет устройством.
++              Ответить на запрос можно только в окне, из которого сейчас управляют устройством.
+             </p>
+           ) : null}
+         </div>
+--- a/apps/web/features/brew-controller/components/manual-control-card.tsx
++++ b/apps/web/features/brew-controller/components/manual-control-card.tsx
+@@ -155,7 +155,7 @@
+             }}
+             onValueCommit={(v) => {
+               draggingSetpoint.current = false;
+-              void runFeedback(cmdManualSetpoint(v[0]), `Уставка ${Math.round(v[0])} °C`);
++              void runFeedback(cmdManualSetpoint(v[0]), `Заданная температура ${Math.round(v[0])} °C`);
+             }}
+           />
+         </div>
+--- a/apps/web/features/brew-controller/components/monitor-hero.tsx
++++ b/apps/web/features/brew-controller/components/monitor-hero.tsx
+@@ -63,7 +63,7 @@
+             </p>
+           )}
+           <p className={kiosk ? "mt-2 text-base text-muted-foreground" : "mt-1 text-sm text-muted-foreground"}>
+-            Уставка:{" "}
++            Задано:{" "}
+             <span
+               className={
+                 kiosk ? "text-xl font-medium text-foreground tabular-nums" : "font-medium text-foreground tabular-nums"
+--- a/apps/web/features/brew-controller/components/status-strip.tsx
++++ b/apps/web/features/brew-controller/components/status-strip.tsx
+@@ -17,7 +17,7 @@
+     <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+       <p className="text-sm font-semibold text-foreground">Контур</p>
+       <dl className="mt-3 space-y-2 text-sm">
+-        <Row label="Скважность нагрева" value={telemetry ? `${telemetry.heatDutyPct}%` : "—"} />
++        <Row label="Доля времени нагрева" value={telemetry ? `${telemetry.heatDutyPct}%` : "—"} />
+         {telemetry?.outputs ? telemetry.outputs.map((output) => (
+           <Row key={output.role} label={output.label} value={<Pill on={output.on} />} />
+         )) : <>
+--- a/apps/web/features/brew-controller/faults.ts
++++ b/apps/web/features/brew-controller/faults.ts
+@@ -42,7 +42,7 @@
+   OVERHEAT_REL: {
+     priority: "high",
+     title: "Перегрев: относительный",
+-    cause: "Температура превысила уставку больше, чем допускается.",
++    cause: "Температура превысила заданное значение больше, чем допускается.",
+     action: "Снизьте мощность, дайте температуре стабилизироваться.",
+   },
+   DT_DT: {
+@@ -65,7 +65,7 @@
+   },
+   STAGE_TO: {
+     priority: "medium",
+-    title: "Таймаут стадии",
++    title: "Превышено время этапа",
+     cause: "Стадия не завершилась за отведённое время.",
+     action: "Проверьте нагрев и датчик; продолжите вручную или сбросьте.",
+   },
+--- a/apps/web/features/brew-controller/kiosk-status.ts
++++ b/apps/web/features/brew-controller/kiosk-status.ts
+@@ -41,7 +41,7 @@
+   nowMs: number;
+ }): KioskOfflineBanner | null {
+   const { conn, isStale, lastFrameAtMs, nowMs } = input;
+-  const detail = lastFrameAtMs === null ? "" : `последний кадр ${fmtAgo(nowMs - lastFrameAtMs)}`;
++  const detail = lastFrameAtMs === null ? "" : `последние данные ${fmtAgo(nowMs - lastFrameAtMs)}`;
+ 
+   if (conn === "offline") {
+     return { tone: "red", title: "Прибор не в сети", detail };
+--- a/apps/web/features/calculators/catalog.ts
++++ b/apps/web/features/calculators/catalog.ts
+@@ -118,7 +118,7 @@
+     assumptions: sharedAssumptions,
+     commonMistakes: ["FG снята рефрактометром без поправки на спирт — ABV получится заниженным. Сначала пересчитайте показание в калькуляторе поправки рефрактометра."],
+     nextSteps: ["Перейдите к карбонизации сахаром или давлению в кеге.", "Сохраните ссылку с OG/FG для повторной проверки партии."],
+-    meaning: ["ABV показывает объёмную долю спирта.", "Видимое сбраживание помогает понять, насколько глубоко дрожжи переработали сусло."]
++    meaning: ["ABV показывает объёмную долю спирта.", "Видимая степень сбраживания помогает понять, насколько глубоко дрожжи переработали сусло."]
+   },
+   {
+     slug: "refractometer-correction",
+@@ -185,7 +185,7 @@
+     related: [{ href: "/recipes", label: "Рецепты сообщества" }],
+     formula: "Считаем в пунктах плотности (SG − 1) × 1000 — они пропорциональны количеству экстракта и сохраняются при разбавлении и уваривании: V₁ × П₁ = V₂ × П₂. Пример: 20 л при 1.060 (14,7 °P) → чтобы получить 1.050 (12,4 °P), доливаем 4 л воды (24 л).",
+     assumptions: [...sharedAssumptions, "Добавление сухого экстракта или сахара считается по типовой экстрактивности: DME и сахар дают разный прирост плотности на килограмм."],
+-    commonMistakes: ["Сравнивают горячий объём с холодным без поправки на усадку при охлаждении.", "Используют показание ареометра без поправки на температуру."],
++    commonMistakes: ["Сравнивают горячий объём с холодным без поправки на уменьшение объёма при охлаждении.", "Используют показание ареометра без поправки на температуру."],
+     nextSteps: ["Передайте новый объём в IBU.", "Проверьте расчёт воды на следующую варку."],
+     meaning: ["Если объём растёт, плотность падает; если объём уходит на выкипание, плотность растёт."]
+   },
+@@ -229,8 +229,8 @@
+     href: "/calculators/brewing-water-volume",
+     relatedSlugs: ["water-ph", "dilution-boiloff", "ibu", "unit-converter", "mash-infusion"],
+     related: [{ href: "/recipes", label: "Рецепты сообщества" }],
+-    formula: "Всего воды = объём до кипячения + впитывание зерном + потери в котле. Объём до кипячения = горячий объём после кипячения + выкипание, а горячий объём после кипячения считается от объёма в ферментер и потерь на осадок/чиллер с поправкой на усадку при охлаждении.",
+-    assumptions: [...sharedAssumptions, "Усадка при охлаждении по умолчанию 4%."],
++    formula: "Всего воды = объём до кипячения + впитывание зерном + потери в котле. Объём до кипячения = горячий объём после кипячения + выкипание, а горячий объём после кипячения считается от объёма в ферментер и потерь на осадок/чиллер с поправкой на уменьшение объёма при охлаждении.",
++    assumptions: [...sharedAssumptions, "Уменьшение объёма при охлаждении по умолчанию 4%."],
+     commonMistakes: ["Оставляют нулевые потери на осадок и в котле — расчёт сойдётся, но пива в ферментере окажется меньше.", "Путают объём в ферментер и объём после кипячения."],
+     nextSteps: ["Перенесите объёмы затора и промывки в калькулятор воды и pH.", "Уточните своё выкипание по реальным варкам."],
+     meaning: ["Расчёт показывает, где теряется объём и сколько воды нужно подготовить заранее."]
+@@ -243,7 +243,7 @@
+     description: "Температура воды в начале затирания и объёмы долива для перехода между паузами.",
+     seoDescription: "Рассчитывает температуру воды в начале затирания и объём долива для следующей паузы. Можно рассчитать одну паузу или всю последовательность с учётом теплового баланса зерна и воды.",
+     intro: "Перед засыпью рассчитайте температуру воды. Затем определите, сколько горячей или холодной воды долить для следующей паузы.",
+-    whenToUse: "Перед засыпью зерна в воду, при переходе на следующую температурную ступень доливом — включая обратную задачу «перегрел затор — сколько долить холодной» — и при планировании ступенчатого затора целиком.",
++    whenToUse: "Перед засыпью зерна в воду, при переходе на следующую температурную ступень доливом — включая обратную задачу «перегрел затор — сколько долить холодной» — и при планировании всей последовательности пауз затирания.",
+     section: "Варка и рецепт",
+     groups: ["Варка", "Вода"],
+     aliases: ["заторная вода", "затирание", "strike", "инфузия", "паузы", "мэш-аут", "температура затора", "гидромодуль", "mash", "инфузионное затирание", "настойное затирание", "долив кипятка", "ступенчатое затирание", "ступенчатый затор", "step mash", "перегрел затор", "остудить затор"],
+@@ -252,11 +252,11 @@
+     href: "/calculators/mash-infusion",
+     relatedSlugs: ["brewing-water-volume", "water-ph", "brewhouse-efficiency", "unit-converter"],
+     related: [{ href: "/recipes", label: "Рецепты сообщества" }],
+-    formula: "Температура заторной воды считается из теплового баланса: вода отдаёт тепло зерну (и, если задано, холодному заторнику), пока всё не выровняется на целевой температуре затора. Теплоёмкость зерна — 0,41 л·°C/кг воды. Долив на следующую ступень считается тем же балансом в обратную сторону: сколько воды нужно подмешать в уже тёплый затор, чтобы сдвинуть его к новой температуре. В режиме «Долив на ступень» направление определяет само уравнение: пауза выше текущей — долив кипятка поднимает температуру, пауза ниже — долив холодной воды её опускает. «Ступенчатый затор» повторяет расчёт по всей лестнице пауз подряд, всегда доливом кипятка: каждый следующий долив считается уже от выросшего объёма воды в заторе, а не от стартового, а пауза ниже предыдущей считается остыванием затора без долива.",
++    formula: "Температура заторной воды считается из теплового баланса: вода отдаёт тепло зерну (и, если задано, холодному заторнику), пока всё не выровняется на целевой температуре затора. Теплоёмкость зерна — 0,41 л·°C/кг воды. Долив на следующую ступень считается тем же балансом в обратную сторону: сколько воды нужно подмешать в уже тёплый затор, чтобы сдвинуть его к новой температуре. В режиме «Долив на ступень» направление определяет само уравнение: пауза выше текущей — долив кипятка поднимает температуру, пауза ниже — долив холодной воды её опускает. «Ступенчатое затирание» повторяет расчёт для всех пауз последовательно, всегда доливом кипятка: каждый следующий долив считается уже от выросшего объёма воды в заторе, а не от стартового, а пауза ниже предыдущей считается остыванием затора без долива.",
+     assumptions: [...sharedAssumptions, "Расчёт не учитывает теплопотери в воздух во время самого затирания — только тепловой баланс воды, зерна и (опционально) заторника в момент смешивания."],
+-    commonMistakes: ["Холодный заторник забирает несколько градусов у заторной воды — прогрейте его заранее или укажите теплоёмкость.", "Температуру затора мерят до того, как засыпь размешана и прогрелась равномерно — показание получается неточным.", "На лестнице из нескольких пауз забывают, что каждый долив увеличивает объём воды в заторе — следующая ступень считается уже от него, а не от стартового объёма.", "Пробуют поднять температуру доливом холодной воды или опустить доливом кипятка — по факту это разные расчёты (кипяток поднимает, холодная вода опускает). В режиме «Долив на ступень» калькулятор сам определяет нужный по направлению паузы; в лестнице «Ступенчатого затора» доливы всегда кипятком, а нисходящая пауза — остывание без долива."],
++    commonMistakes: ["Холодный заторник забирает несколько градусов у заторной воды — прогрейте его заранее или укажите теплоёмкость.", "Температуру затора мерят до того, как засыпь размешана и прогрелась равномерно — показание получается неточным.", "При затирании с несколькими паузами забывают, что каждый долив увеличивает объём воды в заторе — следующая ступень считается уже от него, а не от стартового объёма.", "Пробуют поднять температуру доливом холодной воды или опустить доливом кипятка — по факту это разные расчёты (кипяток поднимает, холодная вода опускает). В режиме «Долив на ступень» калькулятор сам определяет нужный по направлению паузы; в режиме «Ступенчатое затирание» доливы всегда кипятком, а пауза с более низкой температурой — остывание без долива."],
+     nextSteps: ["Перенесите объём воды в калькулятор воды на варку.", "Проверьте профиль воды и pH после того, как определитесь с объёмами."],
+-    meaning: ["Чем гуще затор (меньше воды на кг зерна), тем горячее нужна заторная вода на ту же целевую температуру.", "Долив на следующую ступень — тот же расчёт в обратную сторону: сколько воды подмешать, чтобы сдвинуть уже тёплый затор к нужной температуре, будь то нагрев кипятком или охлаждение холодной водой.", "На ступенчатом заторе объём воды нарастает от паузы к паузе — к мэш-ауту затор обычно заметно жиже, чем на старте затирания."]
++    meaning: ["Чем гуще затор (меньше воды на кг зерна), тем горячее нужна заторная вода на ту же целевую температуру.", "Долив на следующую ступень — тот же расчёт в обратную сторону: сколько воды подмешать, чтобы сдвинуть уже тёплый затор к нужной температуре, будь то нагрев кипятком или охлаждение холодной водой.", "При ступенчатом затирании объём воды нарастает от паузы к паузе — к мэш-ауту затор обычно заметно жиже, чем на старте затирания."]
+   },
+   {
+     slug: "water-ph",
+--- a/apps/web/features/calculators/definitions.ts
++++ b/apps/web/features/calculators/definitions.ts
+@@ -279,7 +279,7 @@
+   residual_exceeds_target: { text: "В пиве уже достаточно CO₂ для выбранного уровня карбонизации — сахар не нужен.", tone: "info" },
+   speise_target_already_reached: { text: "Пиво уже карбонизировано до цели — добавка не нужна.", tone: "info" },
+   bottling_loss_exceeds_volume: { text: "Потери при розливе не меньше объёма пива — бутылок не получится. Проверьте «Потери при розливе».", tone: "warning" },
+-  shrinkage_suspiciously_high: { text: "Усадка больше 20% — похоже на опечатку (обычно ~4%).", tone: "warning" },
++  shrinkage_suspiciously_high: { text: "Уменьшение объёма при охлаждении больше 20% — похоже на опечатку (обычно ~4%).", tone: "warning" },
+   mash_water_capped: { text: "Вся вода уходит в затор — на промывку не остаётся.", tone: "info" },
+   no_viable_cells: { text: "По расчёту живых клеток не осталось — для стартера нужны свежие дрожжи.", tone: "warning" },
+   hops_too_old: { text: "Условия хранения выходят за пределы этой модели. Результат расчёта ненадёжен.", tone: "warning" },
+@@ -695,7 +695,7 @@
+   // формулы, не каталог вод), ни в features/recipes/water-profile-presets.ts (там либо
+   // осмос/дистиллят, либо исторические жёсткие примеры Pilsen/Dublin/Munich — не "средняя").
+   // Взят разумный среднежёсткий ориентир (по духу Bru'n Water default profile).
+-  { id: "tap", label: "Средняя водопроводная", profile: { ca: 50, mg: 10, na: 25, cl: 40, so4: 60, hco3: 150 } }
++  { id: "tap", label: "Водопроводная (пример)", profile: { ca: 50, mg: 10, na: 25, cl: 40, so4: 60, hco3: 150 } }
+ ];
+ 
+ const SOURCE_WATER_CALC_PRESET_OPTIONS: CalculatorFieldOption[] = [
+@@ -1489,7 +1489,7 @@
+       return {
+         primary: { label: "Крепость (ABV)", value: formatPercent(view.abv, 2), helper: `ABW ${formatPercent(view.abw, 2)}` },
+         stats: [
+-          { label: "Видимое сбраживание", value: formatPercent(view.attenuation), tone: attenuationTone },
++          { label: "Видимая степень сбраживания", value: formatPercent(view.attenuation), tone: attenuationTone },
+           { label: "Калории", value: `${view.calories} ккал`, helper: `${compactNumber(view.servingSizeMl, 0)} мл` },
+           { label: "OG / FG", value: `${formatSg(view.ogSg)} / ${formatSg(view.fgSg)}` }
+         ],
+@@ -1863,7 +1863,7 @@
+     applyQuery: (state, params) => ({ ...state, beerVolumeL: params.volume ?? state.beerVolumeL }),
+     altMethod: {
+       title: "Карбонизируете суслом, а не сахаром?",
+-      description: "Шпайзе или краузен — расчёт натуральной карбонизации несброженным суслом.",
++      description: "Шпайзе или краузен — расчёт карбонизации несброженным суслом или активно бродящим пивом.",
+       href: (state) => buildCalculatorHref("speise-krausen", { volume: n(state.beerVolumeL, 20), targetCo2: n(state.targetCo2Volumes, 2.4) })
+     },
+     // К11: co2StylePreset — новое поле состояния, но само по себе ни на что не влияет
+@@ -1908,7 +1908,7 @@
+         min: 0,
+         step: 10,
+         advanced: true,
+-        helper: "Если вносите праймер сиропом: растворяете весь сахар в этой воде и кипятите. Покажем объём и крепость сиропа."
++        helper: "Если вносите праймер сиропом: растворяете весь сахар в этой воде и кипятите. Покажем объём и концентрацию сиропа."
+       })
+     ],
+     calculate: (state) => {
+@@ -2143,7 +2143,7 @@
+       );
+       if (result.postAcidPh != null) {
+         stats.push({
+-          label: "pH после кислоты",
++          label: "pH после подкисления",
+           value: result.postAcidPh.toFixed(2),
+           helper: "цель 5.35",
+           tone: acidTargetReached ? "good" : "warning"
+@@ -2174,7 +2174,7 @@
+       }
+       // К9: калькулятор нарочно лёгкий (6 ионов + пресеты) — для точного анализа воды по
+       // стилю/засыпи указываем на полноценный мастер водоподготовки в редакторе рецепта.
+-      links.push({ label: "Мастер водоподготовки в редакторе рецепта", href: "/app/recipes/new" });
++      links.push({ label: "Настройка воды в редакторе рецепта", href: "/app/recipes/new" });
+       links.push(...relatedLinks(["brewing-water-volume", "unit-converter", "beer-color"]));
+ 
+       return {
+@@ -2235,7 +2235,7 @@
+         { value: "lager", label: "Лагер" },
+         { value: "hybrid", label: "Гибрид" }
+       ], { variant: "segmented" }),
+-      selectField("yeastType", "Тип дрожжей", [
++      selectField("yeastType", "Форма дрожжей", [
+         { value: "dry", label: "Сухие" },
+         { value: "liquid", label: "Жидкие" }
+       ], {
+@@ -2258,8 +2258,8 @@
+             : [];
+         }
+       }),
+-      numberField("packsCount", "Пакеты", "шт", { min: 0, step: 1, integer: true }),
+-      numberField("cellsPerPackBillion", "Клеток в пакете", "млрд", {
++      numberField("packsCount", "Количество упаковок", "шт", { min: 0, step: 1, integer: true }),
++      numberField("cellsPerPackBillion", "Клеток в упаковке", "млрд", {
+         min: 0,
+         step: 10,
+         helper: "В упаковке жидких дрожжей около 100 млрд клеток, в 11 г сухих — около 200 млрд",
+@@ -2473,7 +2473,7 @@
+         transformOnChange: () => [["kettleLossLTouched", true]]
+       }),
+       numberField("trubChillerLossL", "Осадок/чиллер", "л", { min: 0, advanced: true, helper: "Остаётся с хмелевым осадком и в чиллере после кипячения" }),
+-      numberField("coolingShrinkagePercent", "Усадка при охлаждении", "%", { min: 0, advanced: true })
++      numberField("coolingShrinkagePercent", "Уменьшение объёма при охлаждении", "%", { min: 0, advanced: true })
+     ],
+     calculate: (state) => {
+       const methodPreset = s(state.methodPreset, "mashTunWithSparge") as "BIAB" | "allInOne" | "mashTunWithSparge" | "extract";
+@@ -2633,7 +2633,7 @@
+       selectField("mode", "Режим", [
+         { value: "strike", label: "Начало затирания" },
+         { value: "infusion", label: "Долив на ступень" },
+-        { value: "stepMash", label: "Ступенчатый затор" }
++        { value: "stepMash", label: "Ступенчатое затирание" }
+       ], { variant: "segmented", transformOnChange: retargetInfusionWaterOnModeChange }),
+       numberField("grainKg", "Зерно", "кг", { min: 0, step: 0.1 }),
+       numberField("mashWaterL", "Объём воды", "л", { min: 0.1 }),
+@@ -2687,7 +2687,7 @@
+     // объёма/температуры — не заставляем переписывать их вручную заново.
+     modeHint: (state) => (
+       s(state.mode, "strike") === "strike"
+-        ? "Начали затирание? Переключитесь на «Ступенчатый затор»: объём воды и температура сохранятся."
++        ? "Начали затирание? Переключитесь на «Ступенчатое затирание»: объём воды и температура сохранятся."
+         : null
+     ),
+     calculate: (state) => {
+--- a/apps/web/features/content/bjcp-catalog.ts
++++ b/apps/web/features/content/bjcp-catalog.ts
+@@ -201,7 +201,7 @@
+     label: "Крепость",
+     options: [
+       { id: "session", label: "Лёгкое" },
+-      { id: "standard", label: "Стандартное" },
++      { id: "standard", label: "Средней крепости" },
+       { id: "strong", label: "Крепкое" },
+       { id: "very_strong", label: "Очень крепкое" }
+     ]
+--- a/apps/web/features/device-streams/components/retro-attach-field.tsx
++++ b/apps/web/features/device-streams/components/retro-attach-field.tsx
+@@ -49,7 +49,7 @@
+   return (
+     <label className="flex items-start gap-2 text-sm text-foreground">
+       <Checkbox checked={checked} onCheckedChange={onCheckedChange} className="mt-0.5" />
+-      Забрать данные с {dateFmt.format(new Date(preview.oldestTs))} ({preview.count} {pluralize(preview.count, ["точка", "точки", "точек"])})
++      Включить показания с {dateFmt.format(new Date(preview.oldestTs))} ({preview.count} {pluralize(preview.count, ["точка", "точки", "точек"])})
+     </label>
+   );
+ }
+--- a/apps/web/features/device-streams/components/session-bounds-control.tsx
++++ b/apps/web/features/device-streams/components/session-bounds-control.tsx
+@@ -67,7 +67,7 @@
+       }
+       const detached = result.result.detachedReadingsCount;
+       show({
+-        title: detached > 0 ? `Отвязано ${detached} ${pluralize(detached, ["точка", "точки", "точек"])}` : "Границы сеанса обновлены",
++        title: detached > 0 ? `Отвязано ${detached} ${pluralize(detached, ["точка", "точки", "точек"])}` : "Период сеанса изменён",
+         tone: "success"
+       });
+       router.refresh();
+@@ -80,14 +80,14 @@
+   return (
+     <>
+       <Button type="button" variant="ghost" size="sm" onClick={openDialog}>
+-        Изменить границы
++        Изменить период
+       </Button>
+       <Dialog
+         open={open}
+         onOpenChange={(next) => {
+           if (!next && !pending) setOpen(false);
+         }}
+-        title="Границы сеанса"
++        title="Начало и окончание сеанса"
+         size="sm"
+       >
+         <div className="space-y-3 p-5">
+@@ -112,7 +112,7 @@
+             />
+           </label>
+           <p className="text-xs leading-5 text-muted-foreground">
+-            Точки за пределами новых границ будут отвязаны от сеанса (не удалены).
++            Показания за пределами выбранного периода будут исключены из сеанса, но сохранятся в истории устройства.
+           </p>
+           {error ? (
+             <p role="alert" className="text-xs text-destructive">
+--- a/apps/web/features/device-streams/components/session-temp-corridor-control.tsx
++++ b/apps/web/features/device-streams/components/session-temp-corridor-control.tsx
+@@ -66,7 +66,7 @@
+         setError(result.message);
+         return;
+       }
+-      show({ title: min !== null ? "Диапазон обновлён" : "Ограничение температуры снято", tone: "success" });
++      show({ title: min !== null ? "Диапазон обновлён" : "Уведомления об отклонении температуры отключены", tone: "success" });
+       router.refresh();
+       setOpen(false);
+     } finally {
+@@ -138,7 +138,7 @@
+         onOpenChange={(next) => {
+           if (!next && !pending) setOpen(false);
+         }}
+-        title="Допустимый диапазон температуры"
++        title="Диапазон температуры для уведомлений"
+         size="sm"
+       >
+         <div className="space-y-3 p-5">
+@@ -173,7 +173,7 @@
+             </label>
+           </div>
+           <p className="text-xs leading-5 text-muted-foreground">
+-            Уведомим, если температура будет вне заданного диапазона дольше получаса. Чтобы убрать ограничение, очистите оба поля.
++            Уведомим, если температура будет вне заданного диапазона дольше получаса. Чтобы отключить эти уведомления, очистите оба поля.
+           </p>
+           {error ? (
+             <p role="alert" className="text-xs text-destructive">
+--- a/apps/web/features/devices/components/brew-recipe-on-device-picker.tsx
++++ b/apps/web/features/devices/components/brew-recipe-on-device-picker.tsx
+@@ -137,14 +137,14 @@
+     <Dialog
+       open={open}
+       onOpenChange={onOpenChange}
+-      title="Сварить рецепт на пивоварне"
++      title="Сварить на пивоварне по рецепту"
+       hideTitle
+       size="md"
+       guard={{ isDirty: () => submitting, onGuardedClose: () => {} }}
+     >
+       <DialogHeader>
+         <div>
+-          <h2 className="text-base font-semibold text-foreground">Сварить рецепт</h2>
++          <h2 className="text-base font-semibold text-foreground">Сварить по рецепту</h2>
+           <p className="mt-1 text-sm leading-6 text-muted-foreground">
+             {screen === "pick" ? "Выберите рецепт для этой пивоварни." : "Подтвердите запуск нагрева."}
+           </p>
+@@ -173,7 +173,7 @@
+             {tab === "mine" ? (
+               pushableRecipes.length === 0 ? (
+                 <p className="py-4 text-sm text-muted-foreground">
+-                  У вас пока нет рецептов. Создайте рецепт, чтобы сварить его на этой пивоварне.
++                  У вас пока нет рецептов. Создайте рецепт, чтобы варить по нему на этой пивоварне.
+                 </p>
+               ) : (
+                 <ul className="max-h-72 space-y-2 overflow-y-auto">
+@@ -259,7 +259,7 @@
+                 <div>
+                   <p className="font-semibold">Запуск включит нагрев</p>
+                   <p className="mt-1 text-xs leading-5 text-warning-subtle-foreground">
+-                    Пивоварня «{deviceName ?? "—"}» начнёт нагрев ТЭНов по рецепту «{selected?.title ?? "—"}».
++                    Пивоварня «{deviceName ?? "—"}» включит нагрев по рецепту «{selected?.title ?? "—"}».
+                     Убедитесь, что в ёмкости есть вода, а оборудование под присмотром.
+                   </p>
+                 </div>
+--- a/apps/web/features/devices/components/device-config-form.tsx
++++ b/apps/web/features/devices/components/device-config-form.tsx
+@@ -41,7 +41,7 @@
+   PROVIDER_UNAVAILABLE: "Синхронизация настроек недоступна для этого устройства",
+   DEVICE_UNREACHABLE: "Устройство не отвечает — проверьте, что оно в сети",
+   NOT_FOUND: "Устройство не найдено",
+-  PROFILE_NAME_REQUIRED: "Укажите имя профиля",
++  PROFILE_NAME_REQUIRED: "Укажите название профиля",
+   INVALID_CONFIG: "Настройки в профиле повреждены",
+   PROFILE_SAVE_FAILED: "Не удалось сохранить профиль",
+   FORBIDDEN: "Нет доступа к этому устройству",
+@@ -452,7 +452,7 @@
+ 
+         <div className="mt-4 flex flex-wrap items-end gap-2">
+           <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
+-            Имя профиля
++            Название профиля
+             <Input
+               value={profileName}
+               onChange={(e) => setProfileName(e.target.value)}
+--- a/apps/web/features/devices/components/device-tile.tsx
++++ b/apps/web/features/devices/components/device-tile.tsx
+@@ -258,7 +258,7 @@
+               {snap!.primaryC !== null ? `${snap!.primaryC.toFixed(1)}°` : "—"}
+             </p>
+             <p className="mt-0.5 text-xs text-muted-foreground tabular-nums">
+-              уставка {snap!.setpointC !== null ? `${snap!.setpointC.toFixed(1)}°` : "—"}
++              задано {snap!.setpointC !== null ? `${snap!.setpointC.toFixed(1)}°` : "—"}
+             </p>
+           </div>
+           <div className="text-right">
+@@ -341,7 +341,7 @@
+       className="mt-3 h-7 w-full"
+       preserveAspectRatio="none"
+       role="img"
+-      aria-label="Тренд температуры"
++      aria-label="График температуры"
+     >
+       <path
+         d={d}
+--- a/apps/web/features/equipment/presets.ts
++++ b/apps/web/features/equipment/presets.ts
+@@ -161,7 +161,7 @@
+       minMashVolumeL: null,
+       maxMashVolumeL: 27,
+       maxKettleVolumeL: 28,
+-      notes: "Заявленный выход 23 л не учитывает усадку при остывании: холодного сусла в ферментере будет ~22 л.\nС верхним ситом засыпь можно поднять с 8 до 9 кг."
++      notes: "Заявленный выход 23 л не учитывает уменьшение объёма при остывании: холодного сусла в ферментере будет ~22 л.\nС верхним ситом засыпь можно поднять с 8 до 9 кг."
+     }
+   }),
+   preset({
+--- a/apps/web/features/ingredients/presentation.ts
++++ b/apps/web/features/ingredients/presentation.ts
+@@ -80,7 +80,7 @@
+   enzyme: "техдобавка",
+   antioxidant: "техдобавка",
+   fining: "техдобавка",
+-  sanitizer: "санитайзер",
++  sanitizer: "дезинфицирующее средство",
+   cleaner: "моющее средство",
+   packaging: "тара и укупорка",
+   gas: "газ",
+@@ -107,7 +107,7 @@
+   juice_concentrate: "Концентрированный сок",
+   dried_fruit: "Сухофрукты",
+   kvass_concentrate: "Концентрат квасного сусла",
+-  body_builder: "Телообразователь",
++  body_builder: "Добавка для полноты вкуса",
+   sour_wort: "Кислое сусло",
+   process_adjunct: "Техническая добавка",
+   coloring_extract: "Красящий экстракт",
+--- a/apps/web/features/inventory/contracts.ts
++++ b/apps/web/features/inventory/contracts.ts
+@@ -292,7 +292,7 @@
+     if (!value.yeastForm) {
+       ctx.addIssue({
+         code: z.ZodIssueCode.custom,
+-        message: "Укажите тип дрожжей.",
++        message: "Укажите форму дрожжей.",
+         path: ["yeastForm"]
+       });
+     }
+--- a/apps/web/features/recipes/recipes-url.ts
++++ b/apps/web/features/recipes/recipes-url.ts
+@@ -28,8 +28,8 @@
+   { value: "rating", label: "По рейтингу" },
+   { value: "abv_desc", label: "Крепче" },
+   { value: "abv_asc", label: "Слабее" },
+-  { value: "ibu_desc", label: "Горше" },
+-  { value: "ibu_asc", label: "Мягче" },
++  { value: "ibu_desc", label: "Горьче" },
++  { value: "ibu_asc", label: "Менее горькие" },
+   { value: "color_asc", label: "Светлее" },
+   { value: "color_desc", label: "Темнее" },
+   { value: "name", label: "По алфавиту" }
+--- a/packages/push/src/notification.ts
++++ b/packages/push/src/notification.ts
+@@ -37,7 +37,7 @@
+   FLOAT_DRY: "сухой ход",
+   ESTOP: "аварийный останов",
+   WATCHDOG: "сторожевой таймер",
+-  STAGE_TO: "таймаут стадии",
++  STAGE_TO: "превышено время этапа",
+   NO_FLOW: "нет рециркуляции",
+ };
+ 
+@@ -97,7 +97,7 @@
+   if (edge.kind === "ferment-deviation") {
+     return {
+       title: ctx.deviceName,
+-      body: `Отклонение от уставки: ${fmtC(edge.primaryC)} при уставке ${fmtC(edge.setpointC)}`,
++      body: `Отклонение от заданной температуры: ${fmtC(edge.primaryC)} при заданной ${fmtC(edge.setpointC)}`,
+       tag: `${ctx.deviceId}:ferment-deviation`,
+       url,
+     };
+--- a/apps/web/features/brew-controller/brew-recipe-flow.test.ts
++++ b/apps/web/features/brew-controller/brew-recipe-flow.test.ts
+@@ -84,7 +84,7 @@
+     expect(result.heatingStarted).toBe(false);
+     expect(result.brewBatchId).toBe("batch-2");
+     expect(result.reason).toBe("REMOTE_DISABLED");
+-    expect(result.message).toContain("слот 2");
++    expect(result.message).toContain("ячейку памяти № 2");
+     expect(result.message).toContain("Включите удалённое управление");
+   });
+ 
+--- a/apps/web/features/brew-controller/kiosk-status.test.ts
++++ b/apps/web/features/brew-controller/kiosk-status.test.ts
+@@ -37,7 +37,7 @@
+     const now = 10 * 60_000; // t=10 мин
+     const lastFrame = now - 5 * 60_000; // кадр 5 мин назад
+     const banner = kioskOfflineBanner({ conn: "offline", isStale: false, lastFrameAtMs: lastFrame, nowMs: now });
+-    expect(banner?.detail).toBe("последний кадр 5 мин назад");
++    expect(banner?.detail).toBe("последние данные 5 мин назад");
+   });
+ 
+   it("lastFrameAtMs=null (кадра не было ни разу) → detail пустой, без вранья о времени", () => {
+--- a/apps/web/features/notifications/push-events.test.ts
++++ b/apps/web/features/notifications/push-events.test.ts
+@@ -378,7 +378,7 @@
+     const edge: TelemetryEdge = { kind: "ferment-deviation", primaryC: 20.3, setpointC: 18 };
+     expect(notificationFor(edge, ctx)).toEqual({
+       title: "Ферментер",
+-      body: "Отклонение от уставки: 20.3° при уставке 18.0°",
++      body: "Отклонение от заданной температуры: 20.3° при заданной 18.0°",
+       tag: "dev-1:ferment-deviation",
+       url: "/app/devices/dev-1",
+     });
+--- a/apps/web/tests/ingredient-catalog-metadata-ui.test.ts
++++ b/apps/web/tests/ingredient-catalog-metadata-ui.test.ts
+@@ -502,7 +502,7 @@
+       searchParams: Promise.resolve({})
+     }));
+ 
+-    expect(html).toContain("санитайзер");
++    expect(html).toContain("дезинфицирующее средство");
+   });
+ 
+   it("hides catalog hub sections with zero total", async () => {
+--- a/apps/web/tests/inventory-add-flow.test.ts
++++ b/apps/web/tests/inventory-add-flow.test.ts
+@@ -316,7 +316,7 @@
+       onSubmit: async () => undefined
+     }));
+ 
+-    expect(html).toContain("Тип хмеля");
++    expect(html).toContain("Форма хмеля");
+     expect(html).toContain("Альфа, %");
+     expect(html).toContain("Урожай");
+     expect(html).toContain("Не указан");

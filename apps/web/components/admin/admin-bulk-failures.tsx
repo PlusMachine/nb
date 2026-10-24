@@ -30,7 +30,7 @@ export function AdminBulkFailures<Reason extends string>({
     >
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-2">
-          <p className="font-medium">Не прошло: {countAdminBulkFailures(failed)}</p>
+          <p className="font-medium">Не удалось обработать: {countAdminBulkFailures(failed)}</p>
           <ul className="space-y-1">
             {failed.map((group) => (
               <li key={group.reason}>

@@ -140,12 +140,12 @@ export function RecipeBatchParametersBlock({
   ];
 
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-border/70 bg-card shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)]">
-      <div className="border-b border-border bg-muted/40 px-4 py-3">
+    <div className="flex h-full flex-col">
+      <div className="pb-3">
         <h3 className="text-sm font-semibold text-foreground">Параметры партии</h3>
       </div>
 
-      <div className="flex flex-1 flex-col p-4">
+      <div className="flex flex-1 flex-col">
         <dl
           aria-busy={recalculating}
           className={`mb-4 grid grid-cols-2 gap-2 transition-opacity xl:grid-cols-3 ${metricsStale ? "opacity-50" : ""}`}

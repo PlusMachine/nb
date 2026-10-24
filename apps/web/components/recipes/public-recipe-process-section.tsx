@@ -76,7 +76,7 @@ function SectionHeader({
 
 function ProcessRow({ label, value }: { label: string; value: string }) {
   return (
-    <li className="flex items-baseline justify-between gap-3 py-2 text-sm">
+    <li className="flex items-baseline justify-between gap-3 rounded-lg border border-border bg-card px-3 py-2.5 text-sm">
       <span className="min-w-0 truncate text-foreground">{label}</span>
       <span className="shrink-0 font-semibold tabular-nums text-foreground">{value || "—"}</span>
     </li>
@@ -105,14 +105,14 @@ export function PublicRecipeMashSection({
   const showBoil = boilTimeMinutes != null && Number.isFinite(boilTimeMinutes) && boilTimeMinutes > 0;
 
   return (
-    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+    <section className="border-t border-border pt-5">
       <SectionHeader
         icon={<Thermometer className="h-3.5 w-3.5 text-orange-600 dark:text-orange-400" />}
         iconClassName="bg-orange-50 dark:bg-orange-500/15"
         title="Затирание"
         meta={`${steps.length} ${steps.length === 1 ? "шаг" : steps.length < 5 ? "шага" : "шагов"}${totalMinutes > 0 ? ` · ${totalMinutes} мин` : ""}`}
       />
-      <ul className="divide-y divide-border/60">
+      <ul className="space-y-2">
         {steps.map((step, index) => (
           <ProcessRow
             key={step.id}
@@ -192,7 +192,7 @@ export function PublicRecipeBoilSection({
   const additions = buildBoilAdditions(ingredients);
 
   return (
-    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+    <section className="border-t border-border pt-5">
       <SectionHeader
         icon={<Flame className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />}
         iconClassName="bg-rose-50 dark:bg-rose-500/15"
@@ -200,14 +200,14 @@ export function PublicRecipeBoilSection({
         meta={`${boilTimeMinutes} мин`}
       />
       {additions.length > 0 ? (
-        <ul className="divide-y divide-border/60">
+        <ul className="space-y-2">
           {additions.map((addition) => {
             const { primaryName } = resolveRecipeIngredientNames(addition.ingredient);
             const whirlpoolMinutes = addition.kind === "whirlpool" && addition.timeMinutes != null && addition.timeMinutes > 0
               ? addition.timeMinutes
               : null;
             return (
-              <li key={addition.ingredient.id} className="flex items-baseline gap-3 py-2 text-sm">
+              <li key={addition.ingredient.id} className="flex items-baseline gap-3 rounded-lg border border-border bg-card px-3 py-2.5 text-sm">
                 <span className="w-16 shrink-0 text-right font-semibold tabular-nums text-foreground">
                   {boilMarker(addition)}
                 </span>
@@ -223,7 +223,7 @@ export function PublicRecipeBoilSection({
           })}
         </ul>
       ) : (
-        <p className="text-sm text-muted-foreground">Внесений на кипячении нет.</p>
+        <p className="text-sm text-muted-foreground">Во время кипячения ингредиенты не добавляются.</p>
       )}
     </section>
   );
@@ -262,13 +262,13 @@ export function PublicRecipeFermentationSection({
   }
 
   return (
-    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+    <section className="border-t border-border pt-5">
       <SectionHeader
         icon={<Timer className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />}
         iconClassName="bg-sky-50 dark:bg-sky-500/15"
         title="Брожение"
       />
-      <ul className="divide-y divide-border/60">
+      <ul className="space-y-2">
         {hasPrimary ? <ProcessRow label="Основное" value={primaryValue} /> : null}
         {ferment.extraSteps.map((step, index) => (
           <ProcessRow
@@ -293,12 +293,12 @@ export function PublicRecipeFermentationSection({
       {dryHops.length > 0 ? (
         <div className="mt-4">
           <h3 className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Сухое охмеление</h3>
-          <ul className="mt-1 divide-y divide-border/60">
+          <ul className="mt-2 space-y-2">
             {dryHops.map((hop) => {
               const { primaryName } = resolveRecipeIngredientNames(hop);
               const days = recipeIngredientDurationDays(hop);
               return (
-                <li key={hop.id} className="flex items-baseline gap-3 py-2 text-sm">
+                <li key={hop.id} className="flex items-baseline gap-3 rounded-lg border border-border bg-card px-3 py-2.5 text-sm">
                   <span className="min-w-0 flex-1 truncate text-foreground">
                     {primaryName}
                     {days != null ? <span className="text-muted-foreground"> · {pluralDays(days)}</span> : null}

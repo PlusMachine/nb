@@ -52,7 +52,7 @@ export default async function PublicRecipesPage({ searchParams }: { searchParams
     <main className="space-y-6 py-8">
       {viewer ? <RecipeTabs /> : null}
 
-      <section className="rounded-2xl border border-border bg-card p-6">
+      <section className="border-b border-border pb-5">
         <h1 className="text-2xl font-semibold text-foreground sm:text-3xl">Рецепты сообщества</h1>
       </section>
 
