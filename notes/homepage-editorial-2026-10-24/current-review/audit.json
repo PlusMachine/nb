@@ -1,6 +1,6 @@
 {
   "desktop": {
-    "height": 7315,
+    "height": 7375,
     "sections": [
       {
         "id": "home-top",
@@ -76,7 +76,7 @@
   },
   "errors": [],
   "mobile": {
-    "height": 12762,
+    "height": 12573,
     "sections": [
       {
         "id": "home-top",
@@ -129,5 +129,10 @@
         "height": 239
       }
     ]
+  },
+  "continuity": {
+    "editorRecipe": "Летний пилснер",
+    "editorVolume": "40 л",
+    "brew": "Моя APA Amarillo+Cascade\n27 л"
   }
 }
