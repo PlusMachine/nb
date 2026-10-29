@@ -16,6 +16,8 @@ import { cmdPause } from "@nb/brewforge-protocol";
 
 import { getProvider } from "../features/brew-controller";
 import { cloudTransport } from "../features/brew-controller/cloud-transport";
+import { acquireOrRenewLease, releaseLease } from "../features/brew-controller/control-lease";
+import { randomUUID } from "node:crypto";
 
 const HW = process.env.E2E_DEVICE ?? "bf-sim01";
 
@@ -32,7 +34,13 @@ async function main(): Promise<void> {
   const provider = getProvider("brewforge");
   if (!provider?.sendCommand) throw new Error("провайдер недоступен");
   const cmd = cmdPause();
-  const ack = await provider.sendCommand({ userId: device.userId, deviceId: device.id, command: cmd });
+  const sessionId = randomUUID();
+  const identity = { userId: device.userId, sessionId };
+  if (!(await acquireOrRenewLease(device.id, identity)).heldByMe) throw new Error("NO_CONTROL_LEASE");
+  let ack;
+  try {
+    ack = await provider.sendCommand({ userId: device.userId, deviceId: device.id, sessionId, command: cmd });
+  } finally { await releaseLease(device.id, identity); }
   console.log(`[db-e2e] provider.sendCommand(PAUSE id=${cmd.id}) → ack ok=${ack.ok} reason=${ack.reason}`);
 
   // 3) Аудит финализирован, id строки == cmd.id.

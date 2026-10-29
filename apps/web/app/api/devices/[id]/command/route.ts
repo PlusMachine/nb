@@ -5,12 +5,8 @@ import { CommandSchema } from "@nb/brewforge-protocol";
 import { requireUser } from "@/lib/auth";
 import { getDeviceById } from "@/features/devices/service";
 import { getProviderForDevice } from "@/features/brew-controller";
-import {
-  commandRequiresFreshTelemetry,
-  commandRequiresLease,
-} from "@/features/brew-controller/command-gate";
-import { readFreshTelemetry } from "@/features/brew-controller/device-telemetry-cache";
-import { holdsValidLease } from "@/features/brew-controller/control-lease";
+import { assertDeviceCommandAuthorized } from "@/features/brew-controller/command-authorization";
+import { describeStartBrewError } from "@/features/brew-controller/messages";
 
 // Коды ошибок транспорта/провайдера → человекочитаемый текст. НЕ эхоим внутренние
 // детали (EGRESS_*/HTTP-тела/SSRF) — только общий смысл. Зеркалит batch-роут.
@@ -60,52 +56,23 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: "PROVIDER_UNAVAILABLE" }, { status: 503 });
     }
 
-    // Hard lease-гейт (single-writer): управляющие команды — только у держателя
-    // аренды. Fail-safe (ESTOP/STOP/CLEAR_FAULT/PWM-вниз) проходят без аренды.
-    if (commandRequiresLease(command)) {
-      const holds = sessionId
-        ? await holdsValidLease(device.id, { userId: user.id, sessionId })
-        : false;
-      if (!holds) {
-        return NextResponse.json(
-          {
-            error:
-              "Сейчас вы не управляете устройством. Обновите страницу и при необходимости запросите управление.",
-            code: "NO_CONTROL_LEASE",
-          },
-          { status: 409 },
-        );
-      }
-    }
-
-    // Freshness-гейт: опасное — только при свежей телеметрии.
-    if (commandRequiresFreshTelemetry(command)) {
-      const fresh = await readFreshTelemetry({
-        userId: user.id,
-        deviceId: device.id,
-        providerId: device.providerId,
-      });
-      if (!fresh) {
-        return NextResponse.json(
-          {
-            error:
-              "Нет свежих показаний устройства — команда недоступна до восстановления связи.",
-            code: "DEVICE_STALE",
-          },
-          { status: 409 },
-        );
-      }
-    }
+    await assertDeviceCommandAuthorized({
+      userId: user.id, deviceId: device.id, providerId: device.providerId, sessionId, command
+    });
 
     const ack = await provider.sendCommand({
       userId: user.id,
       deviceId: device.id,
       command,
+      sessionId,
     });
 
     return NextResponse.json({ ack });
   } catch (error) {
     const raw = error instanceof Error ? error.message : "UNKNOWN";
+    if (raw === "NO_CONTROL_LEASE" || raw === "DEVICE_STALE") {
+      return NextResponse.json({ error: describeStartBrewError(error), code: raw }, { status: 409 });
+    }
     console.error("[device-command] сбой отправки команды:", raw);
     return NextResponse.json({ error: describeCommandError(raw) }, { status: 400 });
   }

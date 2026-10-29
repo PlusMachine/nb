@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+export { assertNewPassword, isPasswordInputAllowed, normalizeEmail, PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH } from "./auth-credentials";
+
 const emptyStringToUndefined = (value: unknown) => value === "" ? undefined : value;
 
 const serverEnvSchema = z.object({

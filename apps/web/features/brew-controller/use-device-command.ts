@@ -17,6 +17,7 @@ import { useToast } from "@nb/ui";
 
 import type { Ack, Command } from "@nb/brewforge-protocol";
 import type { LeaseStatus } from "./control-lease";
+import { getControlSessionId } from "./control-session";
 
 // Продлеваем аренду заметно чаще её TTL (45с на сервере), чтобы при живом операторе
 // она не истекала из-за джиттера сети.
@@ -50,27 +51,8 @@ type Options = {
   enabled: boolean;
 };
 
-/** Стабильный per-tab идентификатор управляющего сеанса (переживает reload вкладки). */
-function getSessionId(): string {
-  if (typeof window === "undefined") return "ssr";
-  const KEY = "nb_control_session_id";
-  try {
-    const existing = window.sessionStorage.getItem(KEY);
-    if (existing) return existing;
-    const id =
-      typeof crypto !== "undefined" && "randomUUID" in crypto
-        ? crypto.randomUUID()
-        : `s-${Math.random().toString(36).slice(2)}-${Date.now()}`;
-    window.sessionStorage.setItem(KEY, id);
-    return id;
-  } catch {
-    // приватный режим/недоступный storage — эфемерный id на время жизни модуля
-    return `s-${Math.random().toString(36).slice(2)}`;
-  }
-}
-
 export function useDeviceCommand({ commandUrl, leaseUrl, enabled }: Options) {
-  const [sessionId] = useState<string>(() => getSessionId());
+  const [sessionId] = useState<string>(() => getControlSessionId());
   const [lease, setLease] = useState<LeaseStatus | null>(null);
   const [pending, setPending] = useState(false);
   const [undo, setUndo] = useState<PendingUndo | null>(null);

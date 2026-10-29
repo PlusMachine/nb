@@ -40,6 +40,7 @@ import { lanTransport, type DeviceTransport } from "./transport";
 import { cloudTransport } from "./cloud-transport";
 import { simTransport } from "./sim-transport";
 import { isCloudTransportEnabled } from "./mqtt-client";
+import { assertDeviceCommandAuthorized } from "./command-authorization";
 import type { DeviceChannel } from "./telemetry-source";
 
 type DeviceRow = typeof brewDevices.$inferSelect;
@@ -200,7 +201,7 @@ const readTelemetry: ReadTelemetryFn = async ({ userId, deviceId }) => {
   return transportForDevice(device).getTelemetry();
 };
 
-const sendCommand: SendCommandFn = async ({ userId, deviceId, brewBatchId, command }) => {
+const sendCommand: SendCommandFn = async ({ userId, deviceId, brewBatchId, sessionId, command }) => {
   const device = await loadDevice(userId, deviceId);
 
   const parsed = CommandSchema.safeParse(command);
@@ -240,6 +241,9 @@ const sendCommand: SendCommandFn = async ({ userId, deviceId, brewBatchId, comma
         .where(eq(deviceCommands.id, auditId));
     }
 
+    // Последняя граница перед LAN/MQTT: прямой вызов провайдера из Server Action
+    // обязан проходить те же проверки, что и HTTP-команда.
+    await assertDeviceCommandAuthorized({ userId, deviceId, providerId: device.providerId, sessionId, command: cmd });
     const ack = await transportForDevice(device).sendCommand(cmd);
 
     if (auditId) {

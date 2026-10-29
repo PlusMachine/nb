@@ -49,7 +49,7 @@
 }
 
 .home-main h2 {
-  font-size: 32px;
+  font-size: 29px;
   font-weight: 680;
   line-height: 1.16;
   letter-spacing: -.035em;
@@ -63,6 +63,11 @@
 }
 
 .home-main a:focus-visible,.home-main button:focus-visible,.home-main input:focus-visible,.home-main select:focus-visible,.home-header a:focus-visible,.home-header button:focus-visible {
+  outline: 3px solid var(--home-green);
+  outline-offset: 4px;
+}
+
+.home-main textarea:focus-visible,.home-main summary:focus-visible {
   outline: 3px solid var(--home-green);
   outline-offset: 4px;
 }
@@ -123,8 +128,8 @@
   max-width: 1120px;
   margin: auto;
   display: grid;
-  gap: 76px;
-  padding: 54px 32px 70px;
+  gap: 54px;
+  padding: 34px 32px 70px;
 }
 
 .home-main>section {
@@ -164,7 +169,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  margin-bottom: 26px;
+  margin-bottom: 20px;
 }
 
 .home-section-heading>a,.home-section-heading>span {
@@ -218,7 +223,7 @@
 }
 
 .home-hero-copy h1 {
-  font-size: clamp(34px,4.4vw,50px);
+  font-size: 44px;
   line-height: 1.06;
   letter-spacing: -.045em;
   font-weight: 720;
@@ -232,7 +237,7 @@
   color: var(--home-green);
   font-weight: 650;
   font-size: 12px;
-  margin-bottom: 23px !important;
+  margin-bottom: 18px !important;
 }
 
 .home-lead {
@@ -247,7 +252,7 @@
   min-width: 0;
   background: var(--home-card);
   border: 1px solid var(--home-border);
-  padding: 24px;
+  padding: 22px;
   border-radius: 18px;
 }
 
@@ -343,7 +348,7 @@
 .home-stock-row.home-stock-example-row {
   grid-template-columns: minmax(0,1fr) auto;
   align-items: start;
-  padding: 13px;
+  padding: 11px 12px;
   border: 1px solid var(--home-border);
   border-radius: 12px;
   background: var(--home-card);
@@ -354,6 +359,12 @@
   display: grid;
   gap: 10px;
   margin-top: 16px;
+}
+
+.home-stock-hint {
+  font-size: 12px;
+  color: var(--home-green);
+  line-height: 1.55;
 }
 
 .home-hero-note {
@@ -426,10 +437,10 @@
   width: 4.5em;
   min-height: 44px;
   text-align: right;
-  border-radius: 5px;
-  border: 1px solid transparent;
+  border-radius: 7px;
+  border: 1px solid var(--home-border);
   padding: 4px;
-  background: transparent;
+  background: var(--home-soft);
   font: inherit;
 }
 
@@ -493,7 +504,7 @@
 }
 
 .home-recipe-photo {
-  aspect-ratio: 8/5;
+  aspect-ratio: 3/1;
   display: block;
   position: relative;
   overflow: hidden;
@@ -526,12 +537,13 @@
 .home-recipe-body {
   display: flex;
   flex-direction: column;
-  padding: 22px 20px 18px;
+  padding: 18px;
   flex: 1;
   min-width: 0;
 }
 
 .home-recipe-body h3 {
+  font-size: 18px;
   overflow-wrap: anywhere;
   margin-bottom: 14px;
   min-height: 2.6em;
@@ -562,7 +574,7 @@
 .home-recipe-stock {
   background: var(--home-soft);
   border-radius: 9px;
-  padding: 14px 13px 11px;
+  padding: 12px;
   margin-top: auto;
   margin-bottom: 17px;
 }
@@ -612,7 +624,7 @@
   align-items: center;
   gap: 7px;
   color: var(--home-green);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 650;
 }
 
@@ -629,6 +641,18 @@
 .home-recipe-availability {
   margin-top: 0;
   flex: 1;
+}
+
+.home-main .home-shopping-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  margin-top: 4px;
+  color: var(--home-green);
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .home-missing {
@@ -679,14 +703,14 @@
   align-items: center;
   justify-content: space-between;
   gap: 22px;
-  padding: 26px;
+  padding: 20px 22px;
 }
 
 .home-master-title>select {
   min-width: 0;
   flex: 1;
   max-width: 70%;
-  font-size: 23px;
+  font-size: 20px;
   font-weight: 650;
   letter-spacing: -.025em;
   background: transparent;
@@ -734,8 +758,7 @@
 }
 
 .home-master-panels {
-  padding: 26px;
-  min-height: 390px;
+  padding: 22px;
 }
 
 .home-master-panels h3 {
@@ -754,9 +777,9 @@
 }
 
 .home-composition-columns {
-  grid-template-columns: 1.2fr .8fr;
+  grid-template-columns: 1.15fr 1fr;
   align-items: start;
-  gap: 30px;
+  gap: 28px;
 }
 
 .home-ingredient-details {
@@ -798,8 +821,36 @@
 
 .home-recipe-ingredient-list {
   display: grid;
-  gap: 13px;
+  gap: 10px;
   margin-top: 14px;
+}
+
+.home-composition-list {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.home-editor-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 22px;
+  border-top: 1px solid var(--home-border);
+  background: var(--home-soft);
+  color: var(--home-muted);
+  font-size: 12px;
+}
+
+.home-editor-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--home-green);
 }
 
 .home-recipe-ingredient-list .home-recipe-composition-label {
@@ -847,8 +898,8 @@
   display: flex;
   align-items: start;
   justify-content: space-between;
-  gap: 14px;
-  padding: 12px;
+  gap: 8px;
+  padding: 10px 11px;
   border: 1px solid var(--home-border);
   border-left: 3px solid var(--home-border);
   border-radius: 9px;
@@ -1081,7 +1132,84 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 24px 26px;
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--home-border);
+}
+
+.home-brew-content {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) minmax(0,1.25fr);
+  gap: 30px;
+  padding: 22px;
+}
+
+.home-brew-content>div {
+  min-width: 0;
+}
+
+.home-brew-timer h3 {
+  font-size: 16px;
+}
+
+.home-brew-eyebrow,.home-brew-journal .home-brew-eyebrow {
+  color: var(--home-muted);
+  font-size: 12px;
+  font-weight: 400;
+  margin-bottom: 12px !important;
+}
+
+.home-brew-readings {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+  gap: 16px;
+  margin: 0;
+}
+
+.home-brew-readings dt {
+  color: var(--home-muted);
+  font-size: 12px;
+}
+
+.home-brew-readings dd {
+  margin: 4px 0 0;
+  font-size: 21px;
+  font-weight: 650;
+}
+
+.home-brew-note-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  color: var(--home-muted);
+  font-size: 11px;
+}
+
+.home-brew-note-footer button {
+  min-height: 44px;
+  color: var(--home-green);
+  font-size: 12px;
+}
+
+.home-brew-consumption {
+  border-top: 1px solid var(--home-border);
+  padding: 0 22px;
+}
+
+.home-brew-consumption summary {
+  padding: 15px 0;
+  color: var(--home-muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.home-brew-consumption[open] {
+  padding-bottom: 22px;
+}
+
+.home-brew-next-step {
+  margin-top: 8px;
 }
 
 .home-brew-title h3 {
@@ -1169,20 +1297,22 @@
 .home-brew-journal-note {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  font-size: 14px;
-  font-weight: 600;
+  gap: 7px;
+  margin-top: 16px;
+  color: var(--home-muted);
+  font-size: 12px;
+  font-weight: 400;
 }
 
 .home-brew-journal-note textarea {
   width: 100%;
-  padding: 14px;
+  padding: 10px 12px;
   border: 1px solid var(--home-border);
   border-radius: 8px;
-  background: var(--home-soft);
+  background: var(--home-bg);
   color: var(--home-text);
   font: inherit;
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 400;
   resize: vertical;
 }
@@ -1379,7 +1509,30 @@
 .home-catalog-grid {
   display: grid;
   grid-template-columns: repeat(4,minmax(0,1fr));
-  gap: 16px;
+  gap: 12px;
+}
+
+.home-catalog-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--home-card);
+  border: 1px solid var(--home-border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.home-catalog-card .home-ingredient-details {
+  flex: 1;
+}
+
+.home-main .home-catalog-add {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 12px;
+  color: var(--home-green);
 }
 
 .home-ingredient {
@@ -1491,12 +1644,12 @@
 
 .home-style-photo {
   display: block;
-  aspect-ratio: 2/1;
+  aspect-ratio: 3/1;
   background: var(--home-soft);
 }
 
 .home-style-body {
-  padding: 21px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -1550,79 +1703,42 @@
 
 .home-calculator-grid {
   display: grid;
-  grid-template-columns: repeat(3,minmax(0,1fr));
-  gap: 20px;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 10px;
 }
 
 .home-main a.home-calculator {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 24px;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  align-items: center;
+  gap: 12px;
   min-width: 0;
-  min-height: 255px;
-  padding: 26px 24px 20px;
+  min-height: 108px;
+  padding: 18px 20px;
   border: 1px solid var(--home-border);
   border-radius: 14px;
-  background-color: var(--home-card);
-  background-size: 300px 150px;
-  background-position: right 18px bottom 68px;
-  background-repeat: no-repeat;
-  overflow: hidden;
-}
-
-.home-calculator.featured {
-  grid-column: span 2;
-  min-height: 280px;
-  background-size: 400px 200px !important;
-}
-
-.home-calculator:before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg,var(--home-card) 12%,color-mix(in srgb,var(--home-card) 92%,transparent) 38%,transparent 78%);
-  pointer-events: none;
-}
-
-.home-calculator>div,.home-calculator-action {
-  position: relative;
-  z-index: 1;
+  background: var(--home-card);
 }
 
 .home-calculator h3 {
-  font-size: 19px;
+  font-size: 17px;
   line-height: 1.3;
-  max-width: 12em;
-}
-
-.home-calculator.featured h3 {
-  font-size: 24px;
-  max-width: 13em;
 }
 
 .home-calculator p {
   font-size: 12px;
   line-height: 1.6;
   color: var(--home-muted);
-  margin-top: 10px;
-  max-width: 14em;
+  margin-top: 5px;
 }
 
-.home-calculator-action {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  border-top: 1px solid var(--home-border);
-  padding-top: 16px;
+.home-calculator>svg {
   color: var(--home-muted);
-  font-size: 12px;
 }
 
 .home-article-grid {
   display: grid;
-  grid-template-columns: 1.5fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 24px 26px;
   align-items: start;
 }
@@ -1679,6 +1795,17 @@
 .home-article-topic h3 {
   font-size: 21px;
   line-height: 1.4;
+}
+
+.home-article-topic p {
+  margin-top: 10px;
+  color: var(--home-muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.home-beer-mobile-link {
+  display: none;
 }
 
 .home-articles-coming {
@@ -1837,6 +1964,80 @@
 }
 
 @media (max-width:750px) {
+  .home-main {
+    gap: 38px;
+    padding-top: 26px;
+  }
+  .home-composition-columns {
+    gap: 22px;
+  }
+  .home-recipe-card {
+    display: block;
+  }
+  .home-recipe-photo {
+    height: 100px;
+    aspect-ratio: auto;
+  }
+  .home-recipe-body h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  .home-recipe-ingredient-list {
+    grid-template-columns: 1fr;
+  }
+  .home-recipe-ingredient-list .home-recipe-composition-label {
+    margin-bottom: 0;
+  }
+  .home-style-comparison {
+    order: -1;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--home-border);
+    display: grid;
+    grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+    column-gap: 18px;
+  }
+  .home-style-comparison>h3,.home-style-comparison>a,.home-style-comparison>span {
+    grid-column: 1/-1;
+    margin-bottom: 4px;
+  }
+  .home-style-comparison .home-metric {
+    margin-top: 12px;
+  }
+  .home-style-comparison .home-range,.home-style-comparison .home-range-limits {
+    display: none;
+  }
+  .home-brew-content {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 18px;
+  }
+  .home-brew-timer {
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--home-border);
+  }
+  .home-brew-consumption {
+    padding-inline: 18px;
+  }
+  .home-brew-journal-note textarea {
+    font-size: 16px;
+  }
+  .home-catalog-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+  .home-catalog-card {
+    padding: 13px;
+  }
+  .home-calculator-grid {
+    grid-template-columns: 1fr;
+  }
+  .home-main a.home-calculator {
+    min-height: 86px;
+    padding: 16px;
+  }
+  .home-article-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
   .home-brew-title {
     padding: 22px 18px;
   }
@@ -1901,12 +2102,15 @@
     gap: 32px;
   }
   .home-share {
-    grid-template-columns: 1fr;
-    gap: 26px;
+    display: block;
+    padding: 18px;
   }
   .home-beer-preview {
-    border-top: 1px solid var(--home-border);
-    padding-top: 22px;
+    display: none;
+  }
+  .home-main .home-beer-mobile-link {
+    display: inline-flex;
+    margin-left: 16px;
   }
   .home-style-grid {
     grid-template-columns: 1fr;
@@ -1914,14 +2118,19 @@
   }
   .home-style {
     display: grid;
-    grid-template-columns: 120px minmax(0,1fr);
+    grid-template-columns: 80px minmax(0,1fr);
   }
   .home-style-photo {
     height: 100%;
+    width: 100%;
+    min-width: 0;
     aspect-ratio: auto;
   }
+  .home-style-body {
+    padding: 14px;
+  }
   .home-style h3 {
-    font-size: 21px;
+    font-size: 19px;
   }
   .home-style dl {
     gap: 20px;
@@ -1943,8 +2152,8 @@
     flex-wrap: wrap;
   }
   .home-main {
-    padding: 30px 18px 50px;
-    gap: 50px;
+    padding: 26px 18px 50px;
+    gap: 38px;
   }
   .home-header-inner {
     padding: 12px 18px;
@@ -2035,17 +2244,19 @@
     line-height: 1.65;
   }
   .home-recipe-card {
-    display: flex;
+    display: block;
   }
   .home-recipe-photo {
-    aspect-ratio: 8/5;
-    height: auto;
+    aspect-ratio: auto;
+    height: 100px;
   }
   .home-recipe-body {
-    padding: 20px;
+    padding: 18px;
   }
   .home-recipe-body h3 {
-    font-size: 22px;
+    font-size: 20px;
+    min-height: 0;
+    margin-bottom: 10px;
   }
   .home-text-action {
     min-height: 44px;
@@ -2118,7 +2329,7 @@
     font-size: 12px;
   }
   .home-style {
-    grid-template-columns: 88px minmax(0,1fr);
+    grid-template-columns: 80px minmax(0,1fr);
   }
   .home-style-body {
     padding: 17px 14px;
@@ -2134,23 +2345,11 @@
   }
   .home-calculator-grid {
     grid-template-columns: 1fr;
-    gap: 14px;
+    gap: 10px;
   }
   .home-main a.home-calculator {
-    min-height: 285px;
-    background-size: 220px 110px;
-    padding: 24px 20px 20px;
-  }
-  .home-calculator.featured {
-    grid-column: auto;
-    background-size: 330px 165px !important;
-  }
-  .home-calculator.featured h3 {
-    font-size: 22px;
-    max-width: 10em;
-  }
-  .home-calculator-action {
-    min-height: 44px;
+    min-height: 86px;
+    padding: 16px;
   }
   .home-article-grid {
     grid-template-columns: 1fr;
@@ -2183,6 +2382,12 @@
   }
   .home-final h2 {
     font-size: 26px;
+  }
+}
+
+@media (max-width:360px) {
+  .home-catalog-grid {
+    grid-template-columns: 1fr;
   }
 }
 

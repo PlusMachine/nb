@@ -1,7 +1,9 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("public homepage examples", () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, baseURL }) => {
+    // Exercise the anonymous landing page even when local dev autologin is enabled.
+    await page.context().addCookies([{ name: "nb_dev_guest", value: "1", url: baseURL ?? "http://127.0.0.1:3000" }]);
     await page.goto("/");
     await expect(page.getByRole("heading", { name: "Что сварить из ваших запасов", exact: true })).toBeVisible();
   });
@@ -19,6 +21,7 @@ test.describe("public homepage examples", () => {
     await input.press("Enter");
     await expect(input).not.toHaveAttribute("aria-invalid", "true");
     await expect(page.locator("#home-recipes").getByText(/Не хватает/).first()).toBeVisible();
+    await expect(firstRecipe.getByRole("link", { name: "В список покупок" })).toHaveAttribute("href", "/login?next=%2Fapp%2Fshopping");
     await input.fill(original);
     await input.press("Enter");
     await expect(firstRecipe.getByText(/Хватает на|Все ингредиенты есть/, { exact: false }).first()).toBeVisible();
@@ -56,12 +59,12 @@ test.describe("public homepage examples", () => {
     const identity = await first.locator(".home-ingredient-details>div").first().boundingBox();
     const stage = await first.locator(".home-ingredient-stage").boundingBox();
     expect(stage!.y).toBeGreaterThanOrEqual(identity!.y + identity!.height + 4);
-    const expand = editor.getByRole("button", { name: /Ещё \d+ внесен/ }).first();
+    const expand = editor.getByRole("button", { name: /Показать весь состав/ });
     if (await expand.count()) {
       const count = await editor.locator(".home-editor-ingredient").count();
       await expand.click();
       expect(await editor.locator(".home-editor-ingredient").count()).toBeGreaterThan(count);
-      await editor.getByRole("button", { name: "Свернуть", exact: true }).first().click();
+      await editor.getByRole("button", { name: "Свернуть состав", exact: true }).click();
       await expect(editor.locator(".home-editor-ingredient")).toHaveCount(count);
     }
     const flags = page.locator("#home-stock .home-ingredient-details svg");
@@ -73,16 +76,45 @@ test.describe("public homepage examples", () => {
     }
   });
 
-  test("keeps journal input and confirms a reversible example consumption without a server action", async ({ page }) => {
+  test("keeps the recipe, volume, timer and consumption in sync with the editor", async ({ page }) => {
+    const editor = page.locator("#home-master");
+    const brew = page.locator("#home-brew");
+    const volume = editor.getByLabel("Объём партии", { exact: true });
+    const selection = editor.getByLabel("Пример рецепта", { exact: true });
+    const title = await selection.locator("option:checked").textContent();
+    await volume.selectOption("2");
+    await expect(brew.locator(".home-brew-title h3")).toHaveText(title!);
+    await expect(brew.locator(".home-brew-title>span")).toHaveText((await volume.locator("option:checked").textContent())!);
+    await expect(brew.getByRole("heading", { name: "Журнал партии", exact: true })).toBeVisible();
+    const note = brew.getByRole("textbox", { name: "Что учесть в следующей варке" });
+    await note.fill("Сравнить с предыдущей партией");
+    const initial = await brew.getByRole("timer").textContent();
+    await brew.getByRole("button", { name: "Запустить таймер", exact: true }).click();
+    await expect(brew.getByRole("timer")).not.toHaveText(initial!);
+    await volume.selectOption("0.5");
+    await expect(brew.locator(".home-brew-title>span")).toHaveText((await volume.locator("option:checked").textContent())!);
+    await expect(brew.getByRole("button", { name: "Запустить таймер", exact: true })).toBeVisible();
+    await expect(note).toHaveValue("Сравнить с предыдущей партией");
+    await brew.locator("summary").click();
+    const ingredientAmount = await editor.locator(".home-editor-ingredient .home-ingredient-amount").first().innerText();
+    await expect(brew.locator("tbody tr").first().locator("td").nth(1)).toHaveText(ingredientAmount);
+    await selection.selectOption({ index: 1 });
+    await expect(brew.locator(".home-brew-title h3")).toHaveText((await selection.locator("option:checked").textContent())!);
+    await expect(volume).toHaveValue("1");
+    await expect(brew.locator(".home-brew-title>span")).toHaveText((await volume.locator("option:checked").textContent())!);
+  });
+
+  test("saves journal input and confirms a reversible example consumption without a server action", async ({ page }) => {
     const mutations: string[] = [];
     page.on("request", request => {
       if (request.method() === "POST" && (request.headers()["next-action"] || /\/api\/.*(?:inventory|brew-batches)/.test(request.url()))) mutations.push(request.url());
     });
     const brew = page.locator("#home-brew");
-    await brew.getByRole("tab", { name: "Журнал", exact: true }).click();
-    const note = brew.getByRole("textbox", { name: /Заметка к варке/ });
+    const note = brew.getByRole("textbox", { name: "Что учесть в следующей варке" });
     await note.fill("Заметка в примере");
-    await brew.getByRole("tab", { name: "Склад", exact: true }).click();
+    await brew.getByRole("button", { name: "Сохранить в примере", exact: true }).click();
+    await expect(brew.locator(".home-brew-note-footer").getByRole("status")).toHaveText("Сохранено в примере на этом устройстве");
+    await brew.locator("summary").click();
     await brew.getByRole("button", { name: "Списать ингредиенты", exact: true }).click();
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
@@ -90,10 +122,16 @@ test.describe("public homepage examples", () => {
     await expect(brew.getByRole("button", { name: "Списать ингредиенты", exact: true })).toBeVisible();
     await brew.getByRole("button", { name: "Списать ингредиенты", exact: true }).click();
     await page.getByRole("dialog").getByRole("button", { name: "Подтвердить списание", exact: true }).click();
-    await expect(brew.getByRole("status")).toHaveText("Ингредиенты списаны в примере партии.");
+    await expect(brew.locator(".home-brew-stock").getByRole("status")).toHaveText("Ингредиенты списаны в примере партии.");
     await brew.getByRole("button", { name: "Вернуть на склад", exact: true }).click();
-    await expect(brew.getByRole("status")).toHaveText("Ингредиенты возвращены в запасы примера.");
-    await brew.getByRole("tab", { name: "Журнал", exact: true }).click();
+    await expect(brew.locator(".home-brew-stock").getByRole("status")).toHaveText("Ингредиенты возвращены в запасы примера.");
+    await expect(note).toHaveValue("Заметка в примере");
+    await page.reload();
+    await expect(note).toHaveValue("Заметка в примере");
+    const selection = page.getByLabel("Пример рецепта", { exact: true });
+    await selection.selectOption({ index: 1 });
+    await expect(note).not.toHaveValue("Заметка в примере");
+    await selection.selectOption({ index: 0 });
     await expect(note).toHaveValue("Заметка в примере");
     expect(mutations).toEqual([]);
   });
@@ -101,8 +139,10 @@ test.describe("public homepage examples", () => {
   test("fits the stock example and new panels on narrow and desktop screens", async ({ page }) => {
     for (const width of [320, 390, 768, 1440]) {
       await page.setViewportSize({ width, height: 900 });
-      for (const tab of ["Варочный день", "Журнал", "Склад"]) {
-        await page.locator("#home-brew").getByRole("tab", { name: tab, exact: true }).click();
+      for (const open of [true, false]) {
+        await page.locator("#home-brew summary").click();
+        if (open) await expect(page.locator("#home-brew details")).toHaveAttribute("open");
+        else await expect(page.locator("#home-brew details")).not.toHaveAttribute("open");
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       }
       for (const tab of ["Состав и расчёты", "Вода", "Затирание и брожение", "Оборудование"]) {

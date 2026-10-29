@@ -15,6 +15,8 @@ import { DeviceRecipeSchema, PROTOCOL_SCHEMA_VERSION, cmdStartBrew, cmdStop } fr
 
 import { getProvider } from "../features/brew-controller";
 import { cloudTransport } from "../features/brew-controller/cloud-transport";
+import { acquireOrRenewLease, releaseLease } from "../features/brew-controller/control-lease";
+import { randomUUID } from "node:crypto";
 
 const HW = process.env.E2E_DEVICE ?? "bf-sim01";
 const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
@@ -26,47 +28,54 @@ async function main(): Promise<void> {
   const provider = getProvider("brewforge");
   if (!provider?.sendCommand) throw new Error("провайдер недоступен");
 
-  const transport = cloudTransport({ id: device.id, hardwareId: device.hardwareId });
+  const sessionId = randomUUID();
+  const identity = { userId: device.userId, sessionId };
+  if (!(await acquireOrRenewLease(device.id, identity)).heldByMe) throw new Error("NO_CONTROL_LEASE");
+  let passed = false;
+  try {
+    const transport = cloudTransport({ id: device.id, hardwareId: device.hardwareId });
 
-  const recipe = DeviceRecipeSchema.parse({
-    schema: PROTOCOL_SCHEMA_VERSION,
-    name: "Cloud E2E Ale",
-    units: "C",
-    mash: {
-      doughInTempC: null,
-      pidDuringDoughIn: true,
-      steps: [{ name: "Sacc", tempC: 66, timeMin: 60 }],
-      mashOut: { tempC: 76, timeMin: 10 },
-    },
-    boil: { boilTimeMin: 60, boilTempC: null, hops: [{ name: "Saaz", amountG: 30, atMinBeforeEnd: 60 }] },
-    hopStand: [],
-    whirlpool: "off",
-    cooling: { targetC: 20 },
-  });
+    const recipe = DeviceRecipeSchema.parse({
+      schema: PROTOCOL_SCHEMA_VERSION,
+      name: "Cloud E2E Ale",
+      units: "C",
+      mash: {
+        doughInTempC: null,
+        pidDuringDoughIn: true,
+        steps: [{ name: "Sacc", tempC: 66, timeMin: 60 }],
+        mashOut: { tempC: 76, timeMin: 10 },
+      },
+      boil: { boilTimeMin: 60, boilTempC: null, hops: [{ name: "Saaz", amountG: 30, atMinBeforeEnd: 60 }] },
+      hopStand: [],
+      whirlpool: "off",
+      cooling: { targetC: 20 },
+    });
 
-  // 1) Облачный push рецепта → слот.
-  const { slot } = await transport.putRecipe(recipe);
-  console.log(`[startbrew] putRecipe → slot=${slot}`);
+    // 1) Облачный push рецепта → слот.
+    const { slot } = await transport.putRecipe(recipe);
+    console.log(`[startbrew] putRecipe → slot=${slot}`);
 
-  // 2) START_BREW(slot) через провайдер (облачный транспорт).
-  const ack = await provider.sendCommand({ userId: device.userId, deviceId: device.id, command: cmdStartBrew(slot) });
-  console.log(`[startbrew] START_BREW(${slot}) → ack ok=${ack.ok} reason=${ack.reason}`);
+    // 2) START_BREW(slot) через провайдер (облачный транспорт).
+    const ack = await provider.sendCommand({ userId: device.userId, deviceId: device.id, sessionId, command: cmdStartBrew(slot) });
+    console.log(`[startbrew] START_BREW(${slot}) → ack ok=${ack.ok} reason=${ack.reason}`);
 
-  // 3) Телеметрия показывает запуск.
-  await sleep(3000);
-  const tele = await transport.getTelemetry();
-  console.log(`[startbrew] телеметрия: стадия=${tele?.stageName} activeRecipe=${tele?.activeRecipe} recipe="${tele?.recipeName}"`);
+    // 3) Телеметрия показывает запуск.
+    await sleep(3000);
+    const tele = await transport.getTelemetry();
+    console.log(`[startbrew] телеметрия: стадия=${tele?.stageName} activeRecipe=${tele?.activeRecipe} recipe="${tele?.recipeName}"`);
 
-  const ok = slot >= 0 && ack.ok && Boolean(tele) && tele?.activeRecipe === slot && tele?.stageName !== "IDLE";
-  console.log(
-    ok
-      ? "[startbrew] PASS ✅ — рецепт запушен в слот, START_BREW принят, варка идёт по облаку"
-      : "[startbrew] FAIL ❌",
-  );
+    const ok = slot >= 0 && ack.ok && Boolean(tele) && tele?.activeRecipe === slot && tele?.stageName !== "IDLE";
+    console.log(
+      ok
+        ? "[startbrew] PASS ✅ — рецепт запушен в слот, START_BREW принят, варка идёт по облаку"
+        : "[startbrew] FAIL ❌",
+    );
 
-  // Прибираемся: останавливаем варку, чтобы не оставлять устройство активным.
-  await provider.sendCommand({ userId: device.userId, deviceId: device.id, command: cmdStop() });
-  process.exit(ok ? 0 : 1);
+    // Прибираемся: останавливаем варку, чтобы не оставлять устройство активным.
+    await provider.sendCommand({ userId: device.userId, deviceId: device.id, command: cmdStop() });
+    passed = ok;
+  } finally { await releaseLease(device.id, identity); }
+  process.exit(passed ? 0 : 1);
 }
 
 main().catch((error) => {

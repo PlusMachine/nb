@@ -57,6 +57,8 @@ import {
   type BrewVolumeChoiceKind
 } from "@/components/recipes/brew-volume-choice";
 import { startBrewOnDeviceFromRecipeAction } from "@/features/brew-controller/brew-recipe-flow";
+import { acquireStartControlLease } from "@/features/brew-controller/control-session";
+import { describeStartBrewError } from "@/features/brew-controller/messages";
 import { RemoteDisabledNotice } from "@/features/brew-controller/components/remote-disabled-notice";
 import {
   DevicePickerList,
@@ -339,9 +341,11 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
     setError(null);
     setSubmitting(true);
     try {
+      const sessionId = await acquireStartControlLease(selectedDeviceId);
       const result = await startBrewOnDeviceFromRecipeAction({
         recipeId,
         deviceId: selectedDeviceId,
+        sessionId,
         idempotencyKey: ensureIdempotencyKey(),
         ...volumeSelection
       });
@@ -361,8 +365,8 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
         return;
       }
       setError(result.message);
-    } catch {
-      setError("Не удалось запустить варку на устройстве.");
+    } catch (error) {
+      setError(describeStartBrewError(error));
     } finally {
       inFlightRef.current = false;
       setSubmitting(false);

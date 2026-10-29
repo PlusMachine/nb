@@ -4,7 +4,7 @@
 //  features/brew-controller/actions.ts
 //  Серверные экшены жизненного цикла варки на устройстве. Все ownership-checked:
 //  requireUser() из сессии, плюс сверка с переданным userId. Реальная работа
-//  с устройством — через провайдер контроллера (getProvider('brewforge')).
+//  с устройством — через провайдер контроллера.
 // =============================================================================
 import {
   cmdSelectRecipe,
@@ -19,8 +19,9 @@ import { getBrewBatchById, updateBrewBatchStatus } from "@/features/brew-batches
 import type { BrewBatchStatus } from "@/features/brew-batches/contracts";
 import { getDeviceById } from "@/features/devices/service";
 
-import { deviceSupportsRecipePush, getProvider } from "./index";
+import { deviceSupportsRecipePush, getProvider, getProviderForDevice } from "./index";
 import { describeStartBrewError, describeStartBrewNack } from "./messages";
+import { assertDeviceCommandAuthorized } from "./command-authorization";
 
 /** Гейт владения: сессия должна совпадать с заявленным userId. */
 async function assertOwner(userId: string): Promise<void> {
@@ -49,7 +50,7 @@ export type StartBrewOutcome = {
 
 /**
  * Запустить варку на устройстве:
- *   1. проверяем владение партией и устройством;
+ *   1. проверяем владение партией и устройством, control lease и свежесть показаний;
  *   2. openSession — привязываем партию к устройству (brew_batches.deviceId);
  *   3. pushRecipe — пушим замороженный снимок плана в записываемый слот;
  *   4. START_BREW(slot) — ЯВНАЯ команда старта (пуш рецепта сам по себе нагрев НЕ
@@ -66,8 +67,9 @@ export async function startBrewOnDevice(input: {
   userId: string;
   brewBatchId: string;
   deviceId: string;
+  sessionId: string;
 }): Promise<StartBrewOutcome> {
-  const { userId, brewBatchId, deviceId } = input;
+  const { userId, brewBatchId, deviceId, sessionId } = input;
   await assertOwner(userId);
 
   const batch = await getBrewBatchById(userId, brewBatchId);
@@ -88,7 +90,13 @@ export async function startBrewOnDevice(input: {
     throw new Error("DEVICE_NOT_CAPABLE");
   }
 
-  const provider = getProvider("brewforge");
+  // До openSession/pushRecipe не меняем ни привязку партии, ни слот на плате,
+  // если сеанс не управляет устройством или свежих показаний нет.
+  await assertDeviceCommandAuthorized({
+    userId, deviceId, providerId: device.providerId, sessionId, command: cmdStartBrew(0)
+  });
+
+  const provider = getProviderForDevice(device);
   if (!provider?.openSession || !provider.pushRecipe || !provider.sendCommand) {
     throw new Error("PROVIDER_UNAVAILABLE");
   }
@@ -103,14 +111,15 @@ export async function startBrewOnDevice(input: {
     brewPlanSnapshot: batch.brewPlanSnapshot
   });
 
-  const parsedSlot = Number.parseInt(externalId ?? "", 10);
-  const slot = Number.isFinite(parsedSlot) && parsedSlot >= 0 ? parsedSlot : 0;
+  const slot = typeof externalId === "string" && /^\d+$/.test(externalId) ? Number(externalId) : NaN;
+  if (!Number.isSafeInteger(slot) || slot < 0) throw new Error("INVALID_RECIPE_SLOT");
 
   // Пуш рецепта в слот НЕ запускает нагрев — нужна ЯВНАЯ команда START_BREW.
   const ack = await provider.sendCommand({
     userId,
     deviceId,
     brewBatchId,
+    sessionId,
     command: cmdStartBrew(slot)
   });
 
@@ -135,6 +144,7 @@ export async function startBrewOnDevice(input: {
       userId,
       deviceId,
       brewBatchId,
+      sessionId,
       command: cmdSelectRecipe(slot)
     });
     await updateBrewBatchStatus(userId, brewBatchId, "brewing");
@@ -219,13 +229,15 @@ export type StartBrewActionResult = {
 export async function startBrewOnDeviceAction(input: {
   brewBatchId: string;
   deviceId: string;
+  sessionId: string;
 }): Promise<StartBrewActionResult> {
   try {
     const user = await requireUser();
     const outcome = await startBrewOnDevice({
       userId: user.id,
       brewBatchId: input.brewBatchId,
-      deviceId: input.deviceId
+      deviceId: input.deviceId,
+      sessionId: input.sessionId
     });
 
     if (outcome.ok && outcome.heatingStarted) {

@@ -13,6 +13,14 @@ import type { AckReason } from "@nb/brewforge-protocol";
 export function describeStartBrewError(error: unknown): string {
   const code = error instanceof Error ? error.message : "";
   switch (code) {
+    case "NO_CONTROL_LEASE":
+      return "Сейчас устройство управляется из другого окна или сеанса. Откройте пульт и запросите управление.";
+    case "DEVICE_STALE":
+      return "Нет свежих показаний устройства — команда недоступна до восстановления связи.";
+    case "CONTROL_UNAVAILABLE":
+      return "Не удалось получить управление устройством. Проверьте соединение и повторите попытку.";
+    case "INVALID_RECIPE_SLOT":
+      return "Устройство не подтвердило ячейку сохранённого рецепта. Варка не запущена.";
     case "FORBIDDEN":
       return "Недостаточно прав для запуска варки на этом устройстве.";
     case "NOT_FOUND":

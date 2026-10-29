@@ -1,0 +1,871 @@
+[
+  {
+    "slug": "index",
+    "title": "Калькуляторы для пивоварения · NB",
+    "bounds": {
+      "x": 24,
+      "y": 57,
+      "width": 1232,
+      "height": 1747
+    },
+    "fields": [
+      {
+        "name": null,
+        "value": "",
+        "type": "search"
+      }
+    ]
+  },
+  {
+    "slug": "abv-attenuation",
+    "title": "Калькулятор ABV — крепость, сбраживание и калории · NB",
+    "bounds": {
+      "x": 24,
+      "y": 101,
+      "width": 1232,
+      "height": 998
+    },
+    "fields": [
+      {
+        "name": null,
+        "label": "Начальная плотность (OG)\n°P",
+        "value": "12.4",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Конечная плотность (FG)\n°P",
+        "value": "3.1",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Формула крепости\nСтандартная\nАльтернативная (крепкое пиво)\nАльтернативная точнее для крепкого пива (выше ~1.070 (17 °P)).",
+        "value": "standard",
+        "type": "select-one"
+      },
+      {
+        "name": null,
+        "label": "Объём порции для расчёта калорий\nмл",
+        "value": "100",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "slug": "refractometer-correction",
+    "title": "Калькулятор поправки рефрактометра на спирт · NB",
+    "bounds": {
+      "x": 128,
+      "y": 101,
+      "width": 1024,
+      "height": 949
+    },
+    "fields": [
+      {
+        "name": null,
+        "label": "Текущая плотность\nBrix",
+        "value": "6.5",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Начальная плотность (OG)\n°P\nС ареометра или из рецепта — без поправки.",
+        "value": "11.9",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Поправочный коэффициент\nWCF",
+        "value": "1.04",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Формула пересчёта\nTerrill (кубическая)\nBonham (Brewer's Friend)",
+        "value": "novotny",
+        "type": "select-one"
+      },
+      {
+        "name": null,
+        "label": "",
+        "value": "",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "",
+        "value": "",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "slug": "hydrometer-correction",
+    "title": "Калькулятор поправки ареометра по температуре · NB",
+    "bounds": {
+      "x": 24,
+      "y": 101,
+      "width": 1232,
+      "height": 1010
+    },
+    "fields": [
+      {
+        "name": null,
+        "label": "Показание ареометра\n°P",
+        "value": "12.4",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Температура пробы\n°C",
+        "value": "30",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "",
+        "value": "20",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "",
+        "value": "0",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "slug": "dilution-boiloff",
+    "title": "Калькулятор разбавления и уваривания сусла · NB",
+    "bounds": {
+      "x": 24,
+      "y": 101,
+      "width": 1232,
+      "height": 1018
+    },
+    "fields": [
+      {
+        "name": null,
+        "label": "Текущий объём\nл",
+        "value": "20",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Текущая плотность\n°P",
+        "value": "14.7",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Объём измерен на горячем сусле\nОтметьте, если «Текущий объём» замерен сразу после кипячения — при остывании объём сусла уменьшается примерно на 4%",
+        "value": "on",
+        "type": "checkbox"
+      },
+      {
+        "name": null,
+        "label": "Целевая плотность\n°P",
+        "value": "12.4",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "slug": "ibu",
+    "title": "Калькулятор IBU — горечь пива · NB",
+    "bounds": {
+      "x": 24,
+      "y": 101,
+      "width": 1232,
+      "height": 1724
+    },
+    "fields": [
+      {
+        "name": null,
+        "label": "Объём после кипячения\nл",
+        "value": "20",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Плотность сусла\n°P",
+        "value": "12.4",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Время кипячения\nмин",
+        "value": "60",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Отстой после кипячения\nмин\nТакже используется как время по умолчанию для строк «Вирпул» без своего времени",
+        "value": "15",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Темп. вирпула\n°C",
+        "value": "85",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Хмель",
+        "value": "Горечь",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Масса\nг",
+        "value": "20",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "AA\n%",
+        "value": "10",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Время внесения\nмин",
+        "value": "60",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Тип\nКипячение\nПервое сусло\nВирпул\nСухое охмеление",
+        "value": "boil",
+        "type": "select-one"
+      },
+      {
+        "name": null,
+        "label": "Хмель",
+        "value": "Аромат",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Масса\nг",
+        "value": "30",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "AA\n%",
+        "value": "8",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Время внесения\nмин\nПусто — берём «Отстой после кипячения» из общих полей",
+        "value": "15",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Тип\nКипячение\nПервое сусло\nВирпул\nСухое охмеление",
+        "value": "whirlpool",
+        "type": "select-one"
+      }
+    ]
+  },
+  {
+    "slug": "brewing-water-volume",
+    "title": "Калькулятор воды на варку · NB",
+    "bounds": {
+      "x": 24,
+      "y": 101,
+      "width": 1232,
+      "height": 971.5
+    },
+    "fields": [
+      {
+        "name": null,
+        "label": "Метод\nBIAB\nАвтоматическая пивоварня (all-in-one)\nЗаторник + промывка\nЭкстракт",
+        "value": "mashTunWithSparge",
+        "type": "select-one"
+      },
+      {
+        "name": null,
+        "label": "В ферментер\nл",
+        "value": "20",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Зерно\nкг",
+        "value": "5",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Гидромодуль\nл/кг",
+        "value": "3",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Время кипячения\nмин",
+        "value": "60",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Скорость выкипания\nл/ч\nОбычно 3–5 л/ч — уточните по своим варкам",
+        "value": "4",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "",
+        "value": "1",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "",
+        "value": "1",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "",
+        "value": "1",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "",
+        "value": "4",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "slug": "mash-infusion",
+    "title": "Калькулятор температуры заторной воды · NB",
+    "bounds": {
+      "x": 24,
+      "y": 101,
+      "width": 1232,
+      "height": 948
+    },
+    "fields": [
+      {
+        "name": null,
+        "label": "Зерно\nкг",
+        "value": "5",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Объём воды\nл",
+        "value": "15",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Температура зерна\n°C",
+        "value": "20",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Температура затора\n°C",
+        "value": "66",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "",
+        "value": "0",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "slug": "water-ph",
+    "title": "Калькулятор воды и pH затора · NB",
+    "bounds": {
+      "x": 24,
+      "y": 101,
+      "width": 1232,
+      "height": 1457.5
+    },
+    "fields": [
+      {
+        "name": null,
+        "label": "Заторная вода\nл",
+        "value": "15",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Зерно\nкг",
+        "value": "5",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Ca\nppm",
+        "value": "35",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Mg\nppm",
+        "value": "8",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Na\nppm",
+        "value": "12",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Cl\nppm",
+        "value": "35",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "SO₄\nppm",
+        "value": "55",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "HCO₃\nppm",
+        "value": "90",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "CaCl₂\nг\nХлорид кальция",
+        "value": "0",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "CaSO₄\nг\nГипс (сульфат кальция)",
+        "value": "0",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "",
+        "value": "12",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "",
+        "value": "0",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "",
+        "value": "0",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "",
+        "value": "0",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "",
+        "value": "0",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "slug": "yeast-starter",
+    "title": "Калькулятор дрожжевого стартера · NB",
+    "bounds": {
+      "x": 24,
+      "y": 101,
+      "width": 1232,
+      "height": 1088
+    },
+    "fields": [
+      {
+        "name": null,
+        "label": "Объём сусла\nл",
+        "value": "20",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Плотность\n°P",
+        "value": "12.4",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Количество упаковок\nшт",
+        "value": "1",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Клеток в упаковке\nмлрд\nВ упаковке жидких дрожжей около 100 млрд клеток, в 11 г сухих — около 200 млрд",
+        "value": "100",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Дата производства",
+        "value": "",
+        "type": "date"
+      },
+      {
+        "name": null,
+        "label": "",
+        "value": "",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "slug": "priming-sugar",
+    "title": "Калькулятор карбонизации сахаром · NB",
+    "bounds": {
+      "x": 24,
+      "y": 101,
+      "width": 1232,
+      "height": 1132
+    },
+    "fields": [
+      {
+        "name": null,
+        "label": "Объём пива\nл",
+        "value": "20",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Температура пива\n°C\nВ конце брожения, даже если пиво уже охладили",
+        "value": "20",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Целевой CO₂\nоб.",
+        "value": "2.4",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Размер бутылки\nл",
+        "value": "0.5",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "",
+        "value": "",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "slug": "keg-carbonation",
+    "title": "Калькулятор карбонизации в кеге — таблица T×P · NB",
+    "bounds": {
+      "x": 24,
+      "y": 101,
+      "width": 1232,
+      "height": 1668.5
+    },
+    "fields": [
+      {
+        "name": null,
+        "label": "ОБЪЁМЫ CO₂",
+        "value": "2.4",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "ТЕМПЕРАТУРА °C",
+        "value": "4",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "slug": "bottling",
+    "title": "Калькулятор бутылок и объёма розлива · NB",
+    "bounds": {
+      "x": 24,
+      "y": 101,
+      "width": 1232,
+      "height": 812
+    },
+    "fields": [
+      {
+        "name": null,
+        "label": "Объём пива\nл",
+        "value": "20",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Потери при розливе\nл",
+        "value": "0.5",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Основная бутылка\n0.33 л\n0.45 л\n0.5 л\n0.75 л\n1.0 л",
+        "value": "0.5",
+        "type": "select-one"
+      },
+      {
+        "name": null,
+        "label": "",
+        "value": "",
+        "type": "select-one"
+      },
+      {
+        "name": null,
+        "label": "",
+        "value": "0",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "slug": "speise-krausen",
+    "title": "Калькулятор карбонизации шпайзе и краузеном · NB",
+    "bounds": {
+      "x": 24,
+      "y": 101,
+      "width": 1232,
+      "height": 944
+    },
+    "fields": [
+      {
+        "name": null,
+        "label": "Объём пива\nл",
+        "value": "20",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Целевой CO₂\nоб.",
+        "value": "2.4",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Плотность сусла\n°P",
+        "value": "12.4",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Температура пива\n°C\nВ конце брожения, даже если пиво уже охладили",
+        "value": "20",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "",
+        "value": "",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "slug": "beer-color",
+    "title": "Калькулятор цвета пива SRM и EBC · NB",
+    "bounds": {
+      "x": 24,
+      "y": 101,
+      "width": 1232,
+      "height": 1164
+    },
+    "fields": [
+      {
+        "name": null,
+        "label": "Объём партии\nл",
+        "value": "20",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Солод",
+        "value": "",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Вес\nкг",
+        "value": "4.5",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Цвет\nEBC",
+        "value": "3.8",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Солод",
+        "value": "",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Вес\nкг",
+        "value": "0.3",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Цвет\nEBC",
+        "value": "105.2",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "slug": "brewhouse-efficiency",
+    "title": "Калькулятор эффективности варки · NB",
+    "bounds": {
+      "x": 24,
+      "y": 101,
+      "width": 1232,
+      "height": 1134
+    },
+    "fields": [
+      {
+        "name": null,
+        "label": "Объём сусла\nл\nОбъём сусла, в котором измерена плотность, — обычно в ферментере",
+        "value": "20",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Замеренная НП\n°P",
+        "value": "12.4",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Ингредиент",
+        "value": "Светлый базовый солод",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Вес\nкг",
+        "value": "4.5",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Потенциал (PPG)\nБазовый солод ~34–38, сахар/DME ~44–46 — это не экстрактивность в процентах на упаковке",
+        "value": "37",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "slug": "hop-freshness",
+    "title": "Калькулятор свежести хмеля и потери альфа-кислот · NB",
+    "bounds": {
+      "x": 24,
+      "y": 101,
+      "width": 1232,
+      "height": 920
+    },
+    "fields": [
+      {
+        "name": null,
+        "label": "Исходное содержание альфа-кислот, %\n%",
+        "value": "10",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Дата упаковки\nПусто — считаем хмель свежим",
+        "value": "",
+        "type": "date"
+      },
+      {
+        "name": null,
+        "label": "Температура хранения\n°C",
+        "value": "4",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "Навеска по рецепту\nг",
+        "value": "50",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "",
+        "value": "",
+        "type": "date"
+      },
+      {
+        "name": null,
+        "label": "",
+        "value": "",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "slug": "unit-converter",
+    "title": "Калькулятор единиц пивовара — конвертер · NB",
+    "bounds": {
+      "x": 24,
+      "y": 101,
+      "width": 1232,
+      "height": 918
+    },
+    "fields": [
+      {
+        "name": null,
+        "label": "SG\nплотность",
+        "value": "1.050",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "°P\nПлато",
+        "value": "12.4",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "°Bx\nБрикс",
+        "value": "12.4",
+        "type": "text"
+      },
+      {
+        "name": null,
+        "label": "GP\nпункты плотности",
+        "value": "50.1",
+        "type": "text"
+      }
+    ]
+  }
+]

@@ -132,6 +132,10 @@ export function assertEgressUrlAllowed(rawUrl: string): void {
     throw new Error("EGRESS_INVALID_URL");
   }
 
+  if (url.username || url.password || url.hash) {
+    throw new Error("EGRESS_INVALID_URL");
+  }
+
   if (url.protocol !== "http:" && url.protocol !== "https:") {
     throw new Error("EGRESS_SCHEME");
   }
@@ -196,6 +200,17 @@ export interface DeviceTransport {
   startOta?(url: string): Promise<void>;
 }
 
+// Один путь для всех LAN-запросов, включая /pair: редирект не должен
+// переносить серверный запрос или токен на непроверенный адрес.
+function fetchLanDevice(url: string, init: RequestInit): Promise<Response> {
+  assertEgressUrlAllowed(url);
+  return fetch(url, {
+    ...init,
+    redirect: "error",
+    signal: init.signal ?? AbortSignal.timeout(5000),
+  });
+}
+
 const buildHeaders = (token?: string): Record<string, string> => {
   const headers: Record<string, string> = { accept: "application/json" };
   if (token && token.length > 0) headers.authorization = `Bearer ${token}`;
@@ -226,8 +241,7 @@ export function lanTransport(baseUrl: string, token?: string): DeviceTransport {
   return {
     async getTelemetry() {
       const url = `${base}/telemetry`;
-      assertEgressUrlAllowed(url);
-      const res = await fetch(url, { method: "GET", headers });
+      const res = await fetchLanDevice(url, { method: "GET", headers });
       if (!res.ok) return null;
       const json = await res.json().catch(() => null);
       const parsed = TelemetrySchema.safeParse(json);
@@ -236,8 +250,7 @@ export function lanTransport(baseUrl: string, token?: string): DeviceTransport {
 
     async sendCommand(cmd) {
       const url = `${base}/cmd`;
-      assertEgressUrlAllowed(url);
-      const res = await fetch(url, {
+      const res = await fetchLanDevice(url, {
         method: "POST",
         headers: { ...headers, "content-type": "application/json" },
         body: JSON.stringify(cmd),
@@ -258,8 +271,7 @@ export function lanTransport(baseUrl: string, token?: string): DeviceTransport {
         targetSlot === undefined
           ? `${base}/recipe`
           : `${base}/recipe?slot=${encodeURIComponent(String(targetSlot))}`;
-      assertEgressUrlAllowed(url);
-      const res = await fetch(url, {
+      const res = await fetchLanDevice(url, {
         method: "PUT",
         headers: { ...headers, "content-type": "application/json" },
         body: JSON.stringify(recipe),
@@ -295,8 +307,7 @@ export function lanTransport(baseUrl: string, token?: string): DeviceTransport {
       // валиден» от «недоступно» для конфига.
       try {
         const url = `${base}/config`;
-        assertEgressUrlAllowed(url);
-        const res = await fetch(url, { method: "GET", headers, signal: AbortSignal.timeout(4000) });
+        const res = await fetchLanDevice(url, { method: "GET", headers, signal: AbortSignal.timeout(4000) });
         if (!res.ok) return null;
         const json = await res.json().catch(() => null);
         // Прошивка кладёт настраиваемый конфиг под ключ "config" (рядом — несекретный
@@ -320,8 +331,7 @@ export function lanTransport(baseUrl: string, token?: string): DeviceTransport {
       const url = `${base}/config`;
       let res: Response;
       try {
-        assertEgressUrlAllowed(url);
-        res = await fetch(url, {
+        res = await fetchLanDevice(url, {
           method: "PUT",
           headers: { ...headers, "content-type": "application/json" },
           body: JSON.stringify(cfg),
@@ -348,8 +358,7 @@ export function lanTransport(baseUrl: string, token?: string): DeviceTransport {
 
     async listSlots() {
       const url = `${base}/recipes`;
-      assertEgressUrlAllowed(url);
-      const res = await fetch(url, { method: "GET", headers });
+      const res = await fetchLanDevice(url, { method: "GET", headers });
       if (!res.ok) return [];
       const json = await res.json().catch(() => null);
       const raw = isRecord(json) && Array.isArray(json.slots) ? json.slots : [];
@@ -361,8 +370,7 @@ export function lanTransport(baseUrl: string, token?: string): DeviceTransport {
 
     async readSlotSnapshot(slot) {
       const url = `${base}/recipe?slot=${encodeURIComponent(String(slot))}`;
-      assertEgressUrlAllowed(url);
-      const res = await fetch(url, { method: "GET", headers });
+      const res = await fetchLanDevice(url, { method: "GET", headers });
       if (!res.ok) return null; // 404 = слот пуст; прочие ошибки тоже трактуем как «нет снапшота»
       const json = await res.json().catch(() => null);
       const parsed = DeviceRecipeSchema.safeParse(json);
@@ -371,8 +379,7 @@ export function lanTransport(baseUrl: string, token?: string): DeviceTransport {
 
     async listLogs() {
       const url = `${base}/log`;
-      assertEgressUrlAllowed(url);
-      const res = await fetch(url, { method: "GET", headers });
+      const res = await fetchLanDevice(url, { method: "GET", headers });
       if (!res.ok) return [];
       const json = await res.json().catch(() => null);
       const parsed = DeviceLogFileListSchema.safeParse(json);
@@ -381,8 +388,7 @@ export function lanTransport(baseUrl: string, token?: string): DeviceTransport {
 
     async readLog(name) {
       const url = `${base}/log?name=${encodeURIComponent(name)}`;
-      assertEgressUrlAllowed(url);
-      const res = await fetch(url, { method: "GET", headers });
+      const res = await fetchLanDevice(url, { method: "GET", headers });
       if (!res.ok) return null; // 404 = файла нет (мог быть вытеснен ретеншном между list/read)
       return res.text();
     },
@@ -391,8 +397,7 @@ export function lanTransport(baseUrl: string, token?: string): DeviceTransport {
       // Существующий эндпоинт прошивки: POST /ota {"url": …} (LAN-only триггер,
       // спека §5.4). Тело ответа не эхоим (см. putRecipe) — только статус.
       const url = `${base}/ota`;
-      assertEgressUrlAllowed(url);
-      const res = await fetch(url, {
+      const res = await fetchLanDevice(url, {
         method: "POST",
         headers: { ...headers, "content-type": "application/json" },
         body: JSON.stringify({ url: otaUrl }),
@@ -427,8 +432,7 @@ export async function pairDeviceOverLan(baseUrl: string, rawToken: string): Prom
   const base = baseUrl.replace(/\/+$/, "");
   const url = `${base}/pair`;
   try {
-    assertEgressUrlAllowed(url);
-    const res = await fetch(url, {
+    const res = await fetchLanDevice(url, {
       method: "POST",
       headers: { "content-type": "application/json", accept: "application/json" },
       body: JSON.stringify({ token: rawToken }),

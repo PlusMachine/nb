@@ -8,6 +8,7 @@ import {
   cmdSkipStage,
   cmdClearFault,
   cmdStartBrew,
+  cmdStartDelayed,
   cmdStartAutotune,
   cmdManualHeat,
   cmdManualPwm,
@@ -45,6 +46,7 @@ describe("classifyCommand — freshness-гейт (граница безопас�
   it("энергоподнимающие/запускающие команды требуют свежести (fresh-required)", () => {
     const dangerous: Command[] = [
       cmdStartBrew(0),
+      cmdStartDelayed(30),
       cmdStartAutotune(),
       cmdManualHeat(true), // включение нагрева
       cmdManualPwm(60), // подъём мощности
@@ -80,6 +82,7 @@ describe("commandRequiresLease — single-writer гейт", () => {
     expect(commandRequiresLease(cmdSkipStage())).toBe(true);
     expect(commandRequiresLease(cmdSelectRecipe(1))).toBe(true);
     expect(commandRequiresLease(cmdStartBrew(0))).toBe(true);
+    expect(commandRequiresLease(cmdStartDelayed(30))).toBe(true);
     expect(commandRequiresLease(cmdManualHeat(true))).toBe(true);
     expect(commandRequiresLease(cmdManualPwm(60))).toBe(true); // ШИМ вверх
   });

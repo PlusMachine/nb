@@ -11,6 +11,8 @@
 import webpush from "web-push";
 import { db, eq, pushSubscriptions } from "@nb/db";
 
+import { pushAgent } from "./agent.js";
+import { parsePushEndpoint } from "./endpoint.js";
 import type { PushPayload } from "./notification.js";
 
 let vapidConfigured = false;
@@ -63,9 +65,13 @@ export async function sendPushToUser(userId: string, payload: PushPayload): Prom
   let sent = 0;
   for (const sub of subs) {
     try {
+      // Проверяем и старые строки БД. Передаем канонический URL: библиотека
+      // использует legacy url.parse, который иначе мог бы разобрать URL иначе.
+      const endpoint = parsePushEndpoint(sub.endpoint).href;
       await webpush.sendNotification(
-        { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+        { endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
         body,
+        { agent: pushAgent, timeout: 10_000 },
       );
       sent += 1;
     } catch (err) {
@@ -74,7 +80,8 @@ export async function sendPushToUser(userId: string, payload: PushPayload): Prom
         // Подписка мертва (endpoint отозван push-сервисом) — вычищаем.
         await db.delete(pushSubscriptions).where(eq(pushSubscriptions.id, sub.id)).catch(() => {});
       } else {
-        console.error("[push] ошибка отправки:", (err as Error).message);
+        // Endpoint содержит секрет подписки и может попасть в сообщение библиотеки.
+        console.error("[push] ошибка отправки", { statusCode: statusCode ?? null });
       }
     }
   }

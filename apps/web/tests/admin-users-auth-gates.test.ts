@@ -11,13 +11,16 @@ type ColumnRef = { table: string; name: string };
 type Clause =
   | { op: "eq"; column: ColumnRef; value: unknown }
   | { op: "gt"; column: ColumnRef; value: unknown }
+  | { op: "isNull"; column: ColumnRef }
   | { op: "and"; args: Clause[] }
   | { op: "or"; args: Clause[] };
 
 const { state } = vi.hoisted(() => ({
   state: {
     tables: {} as Record<string, Row[]>,
-    nextId: 0
+    nextId: 0,
+    locks: [] as string[],
+    failDelete: null as string | null
   }
 }));
 
@@ -63,6 +66,7 @@ vi.mock("@nb/db", () => {
       return false;
     }
     const left = row[clause.column.name];
+    if (clause.op === "isNull") return left === null || left === undefined;
     // В ON-условии innerJoin справа стоит КОЛОНКА, а не литерал (sessions.user_id = users.id).
     const right = isColumn(clause.value) ? work[clause.value.table]?.[clause.value.name] : clause.value;
     if (clause.op === "gt") {
@@ -96,6 +100,7 @@ vi.mock("@nb/db", () => {
         where = clause;
         return builder;
       },
+        for: () => { state.locks.push(baseTable); return builder; },
       then: (onFulfilled: (rows: unknown) => unknown, onRejected?: (reason: unknown) => unknown) => {
         const filtered = work.filter((item) => matches(item, where));
         const rows = filtered.map((item) => {
@@ -119,16 +124,32 @@ vi.mock("@nb/db", () => {
     return builder;
   };
 
+  let transactionTail: Promise<unknown> = Promise.resolve();
   const db = {
+    // Тесты конкурентных операций одного users.id: FOR UPDATE сериализует их
+    // в Postgres. Модель также откатывает записи при ошибке внутри транзакции.
+    transaction: <T>(callback: (executor: unknown) => Promise<T>): Promise<T> => {
+      const result = transactionTail.then(async () => {
+        const snapshot = structuredClone(state.tables);
+        try { return await callback(db); }
+        catch (error) { state.tables = snapshot; throw error; }
+      });
+      transactionTail = result.catch(() => {});
+      return result;
+    },
     select: (projection?: Record<string, unknown>) => selectBuilder(projection),
     insert: (table: { __table: string }) => ({
       values: (values: Row) => {
         state.nextId += 1;
-        const row: Row = { id: `${table.__table}-${state.nextId}`, createdAt: new Date(), updatedAt: new Date(), ...values };
+        const row: Row = {
+          id: `${table.__table}-${state.nextId}`, createdAt: new Date(), updatedAt: new Date(),
+          blockedAt: null, anonymizedAt: null, passwordHash: null, usedAt: null, attempts: 0,
+          ...values
+        };
         rowsOf(table.__table).push(row);
         const result = {
           returning: () => Promise.resolve([{ ...row }]),
-          onConflictDoUpdate: () => Promise.resolve(),
+          onConflictDoUpdate: () => ({ returning: () => Promise.resolve([{ ...row }]) }),
           then: (onFulfilled: (value: unknown) => unknown) => Promise.resolve(undefined).then(onFulfilled)
         };
         return result;
@@ -154,6 +175,7 @@ vi.mock("@nb/db", () => {
     }),
     delete: (table: { __table: string }) => ({
       where: (clause: Clause) => {
+        if (state.failDelete === table.__table) throw new Error("TEST_DB_FAILURE");
         state.tables[table.__table] = rowsOf(table.__table).filter(
           (row) => !matches({ [table.__table]: row }, clause)
         );
@@ -174,6 +196,7 @@ vi.mock("@nb/db", () => {
     or: (...args: Clause[]) => ({ op: "or", args }),
     eq: (column: unknown, value: unknown) => ({ op: "eq", column, value }),
     gt: (column: unknown, value: unknown) => ({ op: "gt", column, value }),
+    isNull: (column: unknown) => ({ op: "isNull", column }),
     sql: () => ({ op: "sql" })
   };
 });
@@ -185,11 +208,17 @@ import {
   blockUser,
   completeEmailSignIn,
   completePhoneSignIn,
+  consumePhoneVerification,
+  consumeVerification,
+  createPasswordSession,
   getUserBySessionToken,
   hashPassword,
   hashToken,
+  issuePhoneVerification,
+  issueVerification,
   linkOAuthAccount,
   setPassword,
+  resetPasswordWithVerification,
   signInWithPassword,
   unblockUser
 } from "@nb/auth";
@@ -205,6 +234,8 @@ const user = () => rows("users")[0] as Row;
 beforeEach(async () => {
   state.tables = {};
   state.nextId = 0;
+  state.locks = [];
+  state.failDelete = null;
 
   rows("users").push({
     id: "user-1",
@@ -311,7 +342,7 @@ describe("блокировка", () => {
   it("не даёт перерегистрироваться через установку пароля", async () => {
     await blockUser({ userId: "user-1", reason: "спам", byUserId: "admin-1" });
 
-    await expect(setPassword({ email: EMAIL, password: "новый пароль" })).rejects.toThrow(ACCOUNT_BLOCKED_ERROR);
+    await expect(setPassword({ email: EMAIL, password: "новый длинный пароль" })).rejects.toThrow(ACCOUNT_BLOCKED_ERROR);
     expect(rows("users")).toHaveLength(1);
   });
 
@@ -391,5 +422,112 @@ describe("обезличивание", () => {
     expect(relinked.id).not.toBe("user-1");
     expect(user().anonymizedAt).toBeInstanceOf(Date);
     expect(user().email).toBeNull();
+  });
+});
+
+describe("защита подтверждения почты и смены пароля", () => {
+  it.each(["oauth-new", "oauth-linked", "email"])("%s: первый подтвержденный вход отзывает неподтвержденные пароль, сессии и push", async (method) => {
+    user().emailVerified = false;
+    const confirmed = method === "email"
+      ? await completeEmailSignIn({ email: EMAIL })
+      : await linkOAuthAccount({ provider: method === "oauth-linked" ? "vk" : "yandex", providerAccountId: method === "oauth-linked" ? "vk-42" : "ya-new", email: EMAIL });
+
+    expect(confirmed).toMatchObject({ id: "user-1", emailVerified: true });
+    expect(user().passwordHash).toBeNull();
+    await expect(signInWithPassword({ email: EMAIL, password: PASSWORD })).rejects.toThrow("INVALID_CREDENTIALS");
+    await expect(getUserBySessionToken(SESSION_TOKEN)).resolves.toBeNull();
+    expect(rows("pushSubscriptions").map(row => row.id)).toEqual(["push-2"]);
+    expect(rows("verifications").filter(row => row.email === EMAIL)).toHaveLength(0);
+    expect(state.locks).toContain("users");
+  });
+
+  it("повторный подтвержденный вход сохраняет установленный владельцем пароль и другие сессии", async () => {
+    const before = user().passwordHash;
+    await completeEmailSignIn({ email: EMAIL });
+    await linkOAuthAccount({ provider: "yandex", providerAccountId: "ya-new", email: EMAIL });
+    expect(user().passwordHash).toBe(before);
+    await expect(getUserBySessionToken(SESSION_TOKEN)).resolves.toMatchObject({ id: "user-1" });
+  });
+
+  it("сброс меняет пароль, подтверждает email и отзывает старые сессии, push и все email-токены", async () => {
+    user().emailVerified = false;
+    const verification = await issueVerification({ email: EMAIL, type: "password_reset" });
+    await issueVerification({ email: EMAIL, type: "magic_link" });
+    const password = "new password chosen by owner";
+    const { session } = await resetPasswordWithVerification({ email: EMAIL, token: verification.rawToken, password });
+    await expect(signInWithPassword({ email: EMAIL, password })).resolves.toMatchObject({ emailVerified: true });
+    await expect(signInWithPassword({ email: EMAIL, password: PASSWORD })).rejects.toThrow("INVALID_CREDENTIALS");
+    await expect(getUserBySessionToken(SESSION_TOKEN)).resolves.toBeNull();
+    await expect(getUserBySessionToken(session.rawToken)).resolves.toMatchObject({ id: "user-1" });
+    expect(rows("sessions")).toHaveLength(1);
+    expect(rows("verifications").filter(row => row.email === EMAIL)).toHaveLength(0);
+    expect(rows("pushSubscriptions").map(row => row.id)).toEqual(["push-2"]);
+    expect(state.locks).toContain("users");
+  });
+
+  it("неверный reset-токен не меняет пароль или сессии", async () => {
+    const before = user().passwordHash;
+    await expect(resetPasswordWithVerification({ email: EMAIL, token: "wrong", password: "new password chosen by owner" })).rejects.toThrow("INVALID_TOKEN");
+    expect(user().passwordHash).toBe(before);
+    await expect(getUserBySessionToken(SESSION_TOKEN)).resolves.toMatchObject({ id: "user-1" });
+  });
+
+  it("короткий новый пароль не расходует действующий reset-токен", async () => {
+    const verification = await issueVerification({ email: EMAIL, type: "password_reset" });
+    await expect(resetPasswordWithVerification({ email: EMAIL, token: verification.rawToken, password: "short" })).rejects.toThrow("INVALID_PASSWORD");
+    await expect(resetPasswordWithVerification({ email: EMAIL, token: verification.rawToken, password: "new password chosen by owner" })).resolves.toMatchObject({ user: { id: "user-1" } });
+  });
+
+  it("ошибка отзыва сессий откатывает пароль и потребление reset-токена вместе", async () => {
+    const before = user().passwordHash;
+    const verification = await issueVerification({ email: EMAIL, type: "password_reset" });
+    state.failDelete = "sessions";
+    await expect(resetPasswordWithVerification({ email: EMAIL, token: verification.rawToken, password: "new password chosen by owner" })).rejects.toThrow("TEST_DB_FAILURE");
+    expect(user().passwordHash).toBe(before);
+    expect(rows("verifications").find(row => row.codeHash === hashToken(verification.rawToken))?.usedAt).toBeNull();
+    expect(rows("sessions")).toHaveLength(1);
+  });
+
+  it("параллельный вход старым паролем не переживает первое подтверждение email", async () => {
+    user().emailVerified = false;
+    const [login] = await Promise.allSettled([
+      createPasswordSession({ email: EMAIL, password: PASSWORD }),
+      completeEmailSignIn({ email: EMAIL })
+    ]);
+    if (login.status === "fulfilled") {
+      await expect(getUserBySessionToken(login.value.rawToken)).resolves.toBeNull();
+    }
+    expect(rows("sessions")).toHaveLength(0);
+    expect(state.locks.filter(table => table === "users")).toHaveLength(2);
+  });
+});
+
+describe("одноразовое потребление токенов", () => {
+  it.each(["otp", "magic_link", "password_reset"] as const)("%s: только один из параллельных запросов принимает токен", async (type) => {
+    const verification = await issueVerification({ email: EMAIL, type });
+    const results = await Promise.allSettled([
+      consumeVerification({ email: EMAIL, type, token: verification.rawToken }),
+      consumeVerification({ email: EMAIL, type, token: verification.rawToken })
+    ]);
+    expect(results.filter(result => result.status === "fulfilled")).toHaveLength(1);
+    expect(results.filter(result => result.status === "rejected")).toHaveLength(1);
+  });
+
+  it("просроченный токен не принимается и не расходуется", async () => {
+    const verification = await issueVerification({ email: EMAIL, type: "otp" });
+    const row = rows("verifications").find(row => row.codeHash === hashToken(verification.rawToken))!;
+    row.expiresAt = new Date(Date.now() - 1000);
+    await expect(consumeVerification({ email: EMAIL, type: "otp", token: verification.rawToken })).rejects.toThrow("INVALID_TOKEN");
+    expect(row.usedAt).toBeNull();
+  });
+
+  it("SMS: только один из параллельных запросов принимает код", async () => {
+    const verification = await issuePhoneVerification({ phone: PHONE });
+    const results = await Promise.allSettled([
+      consumePhoneVerification({ phone: PHONE, code: verification.rawToken }),
+      consumePhoneVerification({ phone: PHONE, code: verification.rawToken })
+    ]);
+    expect(results.filter(result => result.status === "fulfilled")).toHaveLength(1);
+    expect(results.filter(result => result.status === "rejected")).toHaveLength(1);
   });
 });

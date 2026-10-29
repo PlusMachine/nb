@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-25",
+  "url": "http://127.0.0.1:3033/",
+  "typecheck": "passed",
+  "unit_tests": {
+    "passed": 110,
+    "files": 7
+  },
+  "browser_tests": {
+    "engine": "Chromium",
+    "passed": 6
+  },
+  "scenarios": [
+    "stock validation and availability recovery",
+    "timer start, pause and reset",
+    "ingredient identity and stage spacing after scaling",
+    "recipe, volume and consumption synchronization",
+    "saved notes survive reload and remain separate for each recipe",
+    "expanded and collapsed layouts at narrow and desktop widths"
+  ],
+  "visual_checks": {
+    "widths": [
+      320,
+      390,
+      650,
+      768,
+      1120,
+      1440
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "page_errors": [],
+    "overflow": []
+  },
+  "limitation": "WebKit could not launch because its system libraries are not installed."
+}

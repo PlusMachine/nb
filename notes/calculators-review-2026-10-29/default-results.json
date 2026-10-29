@@ -1,0 +1,993 @@
+[
+  {
+    "slug": "dilution-boiloff",
+    "title": "Разбавить или уварить сусло",
+    "initialState": {
+      "mode": "dilute_to_gravity",
+      "gravityUnit": "Plato",
+      "currentVolumeL": 20,
+      "currentGravity": 14.7,
+      "targetGravity": 12.4,
+      "targetVolumeL": 24,
+      "boilOffRateLPerHour": 4,
+      "additionType": "dme",
+      "currentVolumeMeasuredHot": "0"
+    },
+    "result": {
+      "primary": {
+        "label": "Долить воды",
+        "value": "3.91 л",
+        "helper": "Плотность станет 12.4 °P"
+      },
+      "stats": [
+        {
+          "label": "Итоговый объём",
+          "value": "23.91 л"
+        },
+        {
+          "label": "Итоговая плотность",
+          "value": "12.4 °P"
+        }
+      ],
+      "warnings": [],
+      "links": [
+        {
+          "label": "Использовать объём и плотность в расчёте IBU",
+          "href": "/calculators/ibu?postBoilVolumeL=23.91&wortGravity=1.0501"
+        },
+        {
+          "label": "Крепость и сбраживание",
+          "href": "/calculators/abv-attenuation"
+        },
+        {
+          "label": "Вода на варку",
+          "href": "/calculators/brewing-water-volume"
+        },
+        {
+          "label": "Конвертер единиц",
+          "href": "/calculators/unit-converter"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "abv-attenuation",
+    "title": "Крепость, сбраживание и калории",
+    "initialState": {
+      "og": 12.4,
+      "fg": 3.1,
+      "gravityUnit": "Plato",
+      "abvFormula": "standard",
+      "servingSizeMl": 100
+    },
+    "result": {
+      "primary": {
+        "label": "Крепость (ABV)",
+        "value": "4.98%",
+        "helper": "ABW 3.9%"
+      },
+      "stats": [
+        {
+          "label": "Видимая степень сбраживания",
+          "value": "75.8%",
+          "tone": "good"
+        },
+        {
+          "label": "Калории",
+          "value": "46 ккал",
+          "helper": "100 мл"
+        },
+        {
+          "label": "OG / FG",
+          "value": "1.050 / 1.012"
+        }
+      ],
+      "links": [
+        {
+          "label": "Карбонизация сахаром",
+          "href": "/calculators/priming-sugar"
+        },
+        {
+          "label": "Карбонизация в кеге",
+          "href": "/calculators/keg-carbonation"
+        },
+        {
+          "label": "Поправка рефрактометра",
+          "href": "/calculators/refractometer-correction"
+        },
+        {
+          "label": "Поправка ареометра",
+          "href": "/calculators/hydrometer-correction"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "refractometer-correction",
+    "title": "Поправка рефрактометра на спирт",
+    "initialState": {
+      "mode": "post_fermentation",
+      "currentBrix": 6.5,
+      "originalValue": 12.4,
+      "originalUnit": "Brix",
+      "wortCorrectionFactor": 1.04,
+      "formula": "novotny"
+    },
+    "result": {
+      "primary": {
+        "label": "Скорр. плотность",
+        "value": "1.013 SG",
+        "helper": "3.2 °P · 3.2 Brix"
+      },
+      "stats": [
+        {
+          "label": "°P",
+          "value": "3.2 °P"
+        },
+        {
+          "label": "Brix",
+          "value": "3.2 Brix"
+        },
+        {
+          "label": "Расчётная крепость",
+          "value": "4.7%"
+        },
+        {
+          "label": "Сбраживание",
+          "value": "73.8%",
+          "tone": "good"
+        }
+      ],
+      "links": [
+        {
+          "label": "Использовать как FG в расчёте крепости",
+          "href": "/calculators/abv-attenuation?og=1.048&fg=1.013"
+        },
+        {
+          "label": "Поправка ареометра",
+          "href": "/calculators/hydrometer-correction"
+        },
+        {
+          "label": "Конвертер единиц",
+          "href": "/calculators/unit-converter"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "hydrometer-correction",
+    "title": "Поправка ареометра по температуре",
+    "initialState": {
+      "reading": 12.4,
+      "readingUnit": "Plato",
+      "sampleTemperatureC": 30,
+      "calibrationTemperatureC": 20,
+      "offset": 0
+    },
+    "result": {
+      "primary": {
+        "label": "Скорректированная плотность",
+        "value": "13.0 °P",
+        "helper": "Поправка +0.62 °P"
+      },
+      "stats": [
+        {
+          "label": "SG",
+          "value": "1.053"
+        },
+        {
+          "label": "°P",
+          "value": "13.0 °P"
+        },
+        {
+          "label": "До поправки",
+          "value": "12.4 °P"
+        }
+      ],
+      "links": [
+        {
+          "label": "Использовать как OG в расчёте крепости",
+          "href": "/calculators/abv-attenuation?og=1.053"
+        },
+        {
+          "label": "Поправка рефрактометра",
+          "href": "/calculators/refractometer-correction"
+        },
+        {
+          "label": "Конвертер единиц",
+          "href": "/calculators/unit-converter"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "ibu",
+    "title": "Горечь пива (IBU)",
+    "initialState": {
+      "postBoilVolumeL": 20,
+      "wortGravity": 12.4,
+      "gravityUnit": "Plato",
+      "formula": "tinseth_whirlpool_v2",
+      "boilTimeMinutes": 60,
+      "whirlpoolTimeMinutes": 15,
+      "whirlpoolTemperatureC": 85,
+      "additions": [
+        {
+          "name": "Горечь",
+          "amountG": 20,
+          "alphaAcidPercent": 10,
+          "timeMinutes": 60,
+          "use": "boil",
+          "form": "pellet"
+        },
+        {
+          "name": "Аромат",
+          "amountG": 30,
+          "alphaAcidPercent": 8,
+          "timeMinutes": 15,
+          "use": "whirlpool",
+          "form": "pellet"
+        }
+      ]
+    },
+    "result": {
+      "primary": {
+        "label": "IBU всего",
+        "value": "27.7",
+        "helper": "BU:GU 0.55 — сбалансированное"
+      },
+      "stats": [
+        {
+          "label": "BU:GU",
+          "value": "0.55",
+          "tone": "good",
+          "helper": "сбалансированное"
+        },
+        {
+          "label": "Кипячение",
+          "value": "23.1 IBU",
+          "helper": "20 г · 60 мин"
+        },
+        {
+          "label": "Вирпул",
+          "value": "4.6 IBU",
+          "helper": "30 г · 15 мин"
+        }
+      ],
+      "warnings": [],
+      "links": [
+        {
+          "label": "Свежесть хмеля",
+          "href": "/calculators/hop-freshness"
+        },
+        {
+          "label": "Разбавление сусла",
+          "href": "/calculators/dilution-boiloff"
+        },
+        {
+          "label": "Цвет пива (SRM / EBC)",
+          "href": "/calculators/beer-color"
+        },
+        {
+          "label": "Конвертер единиц",
+          "href": "/calculators/unit-converter"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "priming-sugar",
+    "title": "Карбонизация сахаром",
+    "initialState": {
+      "beerVolumeL": 20,
+      "beerTemperatureC": 20,
+      "targetCo2Volumes": 2.4,
+      "sugarType": "dextrose",
+      "bottleSizeL": 0.5,
+      "syrupWaterMl": ""
+    },
+    "result": {
+      "primary": {
+        "label": "Всего праймера",
+        "value": "123.2 г",
+        "helper": "6.16 г/л"
+      },
+      "stats": [
+        {
+          "label": "На бутылку",
+          "value": "3.1 г"
+        },
+        {
+          "label": "Остаточный CO₂",
+          "value": "0.86 об.",
+          "helper": "уже растворено в пиве"
+        }
+      ],
+      "warnings": [],
+      "links": [
+        {
+          "label": "Посчитать бутылки",
+          "href": "/calculators/bottling?netVolume=20&sugarPerLiter=6.16"
+        },
+        {
+          "label": "Шпайзе и краузен",
+          "href": "/calculators/speise-krausen?volume=20&targetCo2=2.4"
+        },
+        {
+          "label": "Карбонизация в кеге",
+          "href": "/calculators/keg-carbonation"
+        },
+        {
+          "label": "Крепость и сбраживание",
+          "href": "/calculators/abv-attenuation"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "water-ph",
+    "title": "Вода и pH затора",
+    "initialState": {
+      "mode": "manual",
+      "sourceWaterPreset": "soft",
+      "sourceCa": 35,
+      "sourceMg": 8,
+      "sourceNa": 12,
+      "sourceCl": 35,
+      "sourceSo4": 55,
+      "sourceHco3": 90,
+      "targetCa": 80,
+      "targetMg": 10,
+      "targetNa": 20,
+      "targetCl": 90,
+      "targetSo4": 140,
+      "targetHco3": 60,
+      "targetProfilePreset": "hoppy_pale",
+      "mashWaterVolumeL": 15,
+      "spargeWaterVolumeL": 12,
+      "cacl2G": 0,
+      "caso4G": 0,
+      "mgso4G": 0,
+      "naclG": 0,
+      "nahco3G": 0,
+      "acid": "lactic_acid",
+      "totalGrainKg": 5,
+      "colorCategory": "pale",
+      "acidulatedMaltPercent": 0
+    },
+    "result": {
+      "primary": {
+        "label": "pH затора",
+        "value": "5.79"
+      },
+      "stats": [
+        {
+          "label": "Дозировка солей рассчитана на",
+          "value": "27 л",
+          "helper": "Затор 15 л + промывка 12 л"
+        },
+        {
+          "label": "Ca",
+          "value": "35 ppm"
+        },
+        {
+          "label": "Mg",
+          "value": "8 ppm"
+        },
+        {
+          "label": "Na",
+          "value": "12 ppm"
+        },
+        {
+          "label": "Cl",
+          "value": "35 ppm"
+        },
+        {
+          "label": "SO₄",
+          "value": "55 ppm"
+        },
+        {
+          "label": "HCO₃",
+          "value": "90 ppm"
+        },
+        {
+          "label": "SO₄:Cl",
+          "value": "1.57",
+          "helper": "<0.8 — солодовое · 0.8–1.5 — баланс · >1.5 — хмелевое"
+        },
+        {
+          "label": "Кислота",
+          "value": "7.75 мл",
+          "helper": "молочная 88%"
+        },
+        {
+          "label": "pH после подкисления",
+          "value": "5.35",
+          "helper": "цель 5.35",
+          "tone": "good"
+        }
+      ],
+      "warnings": [
+        {
+          "text": "Оценка pH ориентировочная — не замена pH-метру.",
+          "tone": "info"
+        },
+        {
+          "text": "Расчёт кислоты — практическое приближение, не точная лабораторная модель.",
+          "tone": "info"
+        }
+      ],
+      "links": [
+        {
+          "label": "Настройка воды в редакторе рецепта",
+          "href": "/app/recipes/new"
+        },
+        {
+          "label": "Вода на варку",
+          "href": "/calculators/brewing-water-volume"
+        },
+        {
+          "label": "Конвертер единиц",
+          "href": "/calculators/unit-converter"
+        },
+        {
+          "label": "Цвет пива (SRM / EBC)",
+          "href": "/calculators/beer-color"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "yeast-starter",
+    "title": "Засев дрожжей и стартер",
+    "initialState": {
+      "wortVolumeL": 20,
+      "gravity": 12.4,
+      "gravityUnit": "Plato",
+      "fermentationType": "ale",
+      "yeastType": "liquid",
+      "packsCount": 1,
+      "cellsPerPackBillion": 100,
+      "manufactureDate": "",
+      "viabilityPercent": "",
+      "starterMode": "stirPlate"
+    },
+    "result": {
+      "primary": {
+        "label": "Количество дрожжей",
+        "value": "Недосев",
+        "helper": "0.69 л стартера",
+        "tone": "warning"
+      },
+      "stats": [
+        {
+          "label": "Нужно клеток",
+          "value": "186 млрд"
+        },
+        {
+          "label": "Доступно",
+          "value": "75 млрд"
+        },
+        {
+          "label": "Жизнеспособность",
+          "value": "75%"
+        },
+        {
+          "label": "Экстракт на стартер",
+          "value": "69 г"
+        },
+        {
+          "label": "Плотность стартера",
+          "value": "9.3 °P"
+        },
+        {
+          "label": "Пропорция",
+          "value": "100 г DME на 1 л воды"
+        }
+      ],
+      "warnings": [],
+      "links": [
+        {
+          "label": "Крепость и сбраживание",
+          "href": "/calculators/abv-attenuation"
+        },
+        {
+          "label": "Конвертер единиц",
+          "href": "/calculators/unit-converter"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "keg-carbonation",
+    "title": "Карбонизация в кеге",
+    "initialState": {
+      "beerTemperatureC": 4,
+      "targetCo2Volumes": 2.4,
+      "pressureUnit": "PSI"
+    },
+    "result": {
+      "primary": {
+        "label": "Давление",
+        "value": "10.8 PSI",
+        "helper": "Равновесное давление при температуре пива"
+      },
+      "stats": [
+        {
+          "label": "bar",
+          "value": "0.74"
+        },
+        {
+          "label": "kPa",
+          "value": "74"
+        }
+      ],
+      "warnings": [],
+      "links": [
+        {
+          "label": "Конвертер давления",
+          "href": "/calculators/unit-converter?group=pressure&value=10.8&from=PSI"
+        },
+        {
+          "label": "Карбонизация сахаром",
+          "href": "/calculators/priming-sugar"
+        },
+        {
+          "label": "Шпайзе и краузен",
+          "href": "/calculators/speise-krausen"
+        },
+        {
+          "label": "Крепость и сбраживание",
+          "href": "/calculators/abv-attenuation"
+        }
+      ]
+    },
+    "customUiResult": {
+      "beerTemperatureC": 4,
+      "targetCo2Volumes": 2.4,
+      "pressurePsi": 10.791756860800001,
+      "pressureBar": 0.7440654418369378
+    }
+  },
+  {
+    "slug": "brewing-water-volume",
+    "title": "Сколько воды нужно на варку",
+    "initialState": {
+      "targetFermenterVolumeL": 20,
+      "grainWeightKg": 5,
+      "mashThicknessLPerKg": 3,
+      "boilTimeMinutes": 60,
+      "boilOffRateLPerHour": 4,
+      "grainAbsorptionLPerKg": 1,
+      "kettleLossL": 1,
+      "trubChillerLossL": 1,
+      "coolingShrinkagePercent": 4,
+      "methodPreset": "mashTunWithSparge"
+    },
+    "result": {
+      "primary": {
+        "label": "Всего воды",
+        "value": "31.88 л",
+        "helper": "Затор 15 л · промывка 16.88 л"
+      },
+      "stats": [
+        {
+          "label": "Затор",
+          "value": "15 л"
+        },
+        {
+          "label": "Промывка",
+          "value": "16.88 л"
+        },
+        {
+          "label": "До кипячения",
+          "value": "25.88 л"
+        },
+        {
+          "label": "После кипячения",
+          "value": "21.88 л"
+        },
+        {
+          "label": "Холодный объём",
+          "value": "21 л"
+        }
+      ],
+      "warnings": [],
+      "links": [
+        {
+          "label": "Перенести объёмы в расчёт воды и pH",
+          "href": "/calculators/water-ph?mashWater=15&spargeWater=16.88"
+        },
+        {
+          "label": "Разбавление сусла",
+          "href": "/calculators/dilution-boiloff"
+        },
+        {
+          "label": "Горечь (IBU)",
+          "href": "/calculators/ibu"
+        },
+        {
+          "label": "Конвертер единиц",
+          "href": "/calculators/unit-converter"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "mash-infusion",
+    "title": "Инфузионное затирание",
+    "initialState": {
+      "mode": "strike",
+      "grainKg": 5,
+      "mashWaterL": 15,
+      "grainTempC": 20,
+      "mashTempC": 66,
+      "tunThermalMassL": 0,
+      "nextPauseTempC": 72,
+      "infusionWaterTempC": 98,
+      "pauses": [
+        {
+          "targetTempC": 72
+        },
+        {
+          "targetTempC": 76
+        }
+      ]
+    },
+    "result": {
+      "primary": {
+        "label": "Температура воды",
+        "value": "72.3 °C"
+      },
+      "stats": [
+        {
+          "label": "Гидромодуль",
+          "value": "3.00 л/кг"
+        }
+      ],
+      "warnings": [],
+      "links": [
+        {
+          "label": "Учесть объём в расчёте воды на варку",
+          "href": "/calculators/brewing-water-volume?grainWeightKg=5&mashThicknessLPerKg=3"
+        },
+        {
+          "label": "Вода и pH",
+          "href": "/calculators/water-ph"
+        },
+        {
+          "label": "Эффективность",
+          "href": "/calculators/brewhouse-efficiency"
+        },
+        {
+          "label": "Конвертер единиц",
+          "href": "/calculators/unit-converter"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "beer-color",
+    "title": "Цвет пива: SRM / EBC / Lovibond",
+    "initialState": {
+      "batchVolumeL": 20,
+      "colorUnit": "EBC",
+      "fermentables": [
+        {
+          "weightKg": 4.5,
+          "colorLovibond": 3.8
+        },
+        {
+          "weightKg": 0.3,
+          "colorLovibond": 105.2
+        }
+      ]
+    },
+    "result": {
+      "primary": {
+        "label": "Цвет пива",
+        "value": "6.6 SRM / 13 EBC",
+        "helper": "Насыщенно-золотистый · MCU 8.8",
+        "swatchColor": "#F8A600"
+      },
+      "stats": [
+        {
+          "label": "Солод 1",
+          "value": "43% цвета",
+          "helper": "MCU 3.76"
+        },
+        {
+          "label": "Солод 2",
+          "value": "57% цвета",
+          "helper": "MCU 5.01"
+        }
+      ],
+      "links": [
+        {
+          "label": "Горечь (IBU)",
+          "href": "/calculators/ibu"
+        },
+        {
+          "label": "Вода и pH",
+          "href": "/calculators/water-ph"
+        },
+        {
+          "label": "Конвертер единиц",
+          "href": "/calculators/unit-converter"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "brewhouse-efficiency",
+    "title": "Эффективность варки",
+    "initialState": {
+      "mode": "measure",
+      "batchVolumeL": 20,
+      "fermentables": [
+        {
+          "name": "Светлый базовый солод",
+          "weightKg": 4.5,
+          "ppg": 37,
+          "mashed": "1"
+        }
+      ],
+      "measuredOg": 12.4,
+      "gravityUnit": "Plato",
+      "brewhouseEfficiencyPercent": 75
+    },
+    "result": {
+      "primary": {
+        "label": "Эффективность варки",
+        "value": "72.1%",
+        "tone": "good"
+      },
+      "stats": [
+        {
+          "label": "Потенциал засыпи",
+          "value": "367.1 пунктов"
+        },
+        {
+          "label": "НП при 100%",
+          "value": "16.8 °P"
+        }
+      ],
+      "warnings": [],
+      "links": [
+        {
+          "label": "Посчитать крепость по этой НП",
+          "href": "/calculators/abv-attenuation?og=1.050"
+        },
+        {
+          "label": "Разбавление сусла",
+          "href": "/calculators/dilution-boiloff"
+        },
+        {
+          "label": "Инфузионное затирание",
+          "href": "/calculators/mash-infusion"
+        },
+        {
+          "label": "Цвет пива (SRM / EBC)",
+          "href": "/calculators/beer-color"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "bottling",
+    "title": "Бутылки и объём розлива",
+    "initialState": {
+      "beerVolumeL": 20,
+      "packagingLossL": 0.5,
+      "bottleSizeL": 0.5,
+      "secondBottleSizeL": "",
+      "sugarPerLiter": 0
+    },
+    "result": {
+      "primary": {
+        "label": "Бутылок нужно",
+        "value": "39 шт",
+        "helper": "Остаток 0 л"
+      },
+      "stats": [
+        {
+          "label": "Объём розлива",
+          "value": "19.5 л"
+        }
+      ],
+      "warnings": [],
+      "links": [
+        {
+          "label": "Посчитать сахар",
+          "href": "/calculators/priming-sugar?volume=19.5"
+        },
+        {
+          "label": "Шпайзе и краузен",
+          "href": "/calculators/speise-krausen?volume=19.5"
+        },
+        {
+          "label": "Конвертер единиц",
+          "href": "/calculators/unit-converter"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "speise-krausen",
+    "title": "Карбонизация суслом (шпайзе, краузен)",
+    "initialState": {
+      "mode": "speise",
+      "beerVolumeL": 20,
+      "targetCo2": 2.4,
+      "residualCo2": "",
+      "speiseGravity": 12.4,
+      "gravityUnit": "Plato",
+      "temperatureC": 20
+    },
+    "result": {
+      "primary": {
+        "label": "Добавить сусло",
+        "value": "1.59 л",
+        "helper": "Итоговый объём 21.59 л"
+      },
+      "stats": [
+        {
+          "label": "Изменение крепости",
+          "value": "0.37%",
+          "helper": "дображивание в бутылке"
+        },
+        {
+          "label": "Остаточный CO₂",
+          "value": "0.86 об.",
+          "helper": "по температуре пива"
+        }
+      ],
+      "warnings": [],
+      "links": [
+        {
+          "label": "Карбонизация сахаром",
+          "href": "/calculators/priming-sugar"
+        },
+        {
+          "label": "Бутылки и розлив",
+          "href": "/calculators/bottling"
+        },
+        {
+          "label": "Карбонизация в кеге",
+          "href": "/calculators/keg-carbonation"
+        },
+        {
+          "label": "Конвертер единиц",
+          "href": "/calculators/unit-converter"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "hop-freshness",
+    "title": "Свежесть хмеля и потеря альфа-кислот",
+    "initialState": {
+      "originalAlphaAcidPercent": 10,
+      "packageDate": "",
+      "openedDate": "",
+      "storageTemperatureC": 4,
+      "packaging": "vacuum",
+      "form": "pellet",
+      "hsi": "",
+      "targetAmountG": 50
+    },
+    "result": {
+      "primary": {
+        "label": "Остаточное содержание альфа-кислот, %",
+        "value": "10%",
+        "helper": "Потеряно ~0% горечи",
+        "tone": "good"
+      },
+      "stats": [
+        {
+          "label": "Навеска для той же горечи (IBU)",
+          "value": "50 г",
+          "helper": "вместо навески по рецепту"
+        }
+      ],
+      "warnings": [],
+      "links": [
+        {
+          "label": "Использовать в расчёте горечи",
+          "href": "/calculators/ibu?aa=10"
+        },
+        {
+          "label": "Конвертер единиц",
+          "href": "/calculators/unit-converter"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "unit-converter",
+    "title": "Конвертер единиц пивовара",
+    "initialState": {
+      "activeGroup": "gravity",
+      "gravityFrom": "Plato",
+      "gravityValue": "12.4",
+      "colorFrom": "SRM",
+      "colorValue": "6",
+      "volumeFrom": "L",
+      "volumeValue": "20",
+      "weightFrom": "kg",
+      "weightValue": "1",
+      "temperatureFrom": "C",
+      "temperatureValue": "20",
+      "pressureFrom": "PSI",
+      "pressureValue": "14.5",
+      "concentrationFrom": "ppm",
+      "concentrationValue": "100"
+    },
+    "result": {
+      "primary": {
+        "label": "Конвертер",
+        "value": "—"
+      },
+      "stats": [],
+      "links": [
+        {
+          "label": "Крепость и сбраживание",
+          "href": "/calculators/abv-attenuation"
+        },
+        {
+          "label": "Горечь (IBU)",
+          "href": "/calculators/ibu"
+        },
+        {
+          "label": "Вода и pH",
+          "href": "/calculators/water-ph"
+        },
+        {
+          "label": "Карбонизация в кеге",
+          "href": "/calculators/keg-carbonation"
+        }
+      ]
+    },
+    "customUiResult": {
+      "gravity": {
+        "SG": 1.0501,
+        "points": 50.1,
+        "Plato": 12.41,
+        "Brix": 12.41
+      },
+      "color": {
+        "SRM": 6,
+        "EBC": 11.8,
+        "Lovibond": 5
+      },
+      "volume": {
+        "ml": 20000,
+        "L": 20,
+        "oz": 676.28,
+        "qt": 21.13,
+        "gal": 5.283
+      },
+      "weight": {
+        "g": 1000,
+        "kg": 1,
+        "oz": 35.27,
+        "lb": 2.205
+      },
+      "temperature": {
+        "C": 20,
+        "F": 68,
+        "K": 293.15
+      },
+      "pressure": {
+        "PSI": 14.5,
+        "bar": 1,
+        "kPa": 100
+      },
+      "concentration": {
+        "ppm": 100,
+        "mg/L": 100,
+        "g/L": 0.1
+      }
+    }
+  }
+]

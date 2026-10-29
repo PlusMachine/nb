@@ -1,0 +1,200 @@
+{
+  "screens": [
+    {
+      "id": "index",
+      "width": 1100,
+      "passed": true
+    },
+    {
+      "id": "abv-attenuation",
+      "width": 1100,
+      "passed": true
+    },
+    {
+      "id": "refractometer-correction",
+      "width": 1100,
+      "passed": true
+    },
+    {
+      "id": "hydrometer-correction",
+      "width": 1100,
+      "passed": true
+    },
+    {
+      "id": "brewhouse-efficiency",
+      "width": 1100,
+      "passed": true
+    },
+    {
+      "id": "unit-converter",
+      "width": 1100,
+      "passed": true
+    },
+    {
+      "id": "dilution-boiloff",
+      "width": 1100,
+      "passed": true
+    },
+    {
+      "id": "ibu",
+      "width": 1100,
+      "passed": true
+    },
+    {
+      "id": "mash-infusion",
+      "width": 1100,
+      "passed": true
+    },
+    {
+      "id": "beer-color",
+      "width": 1100,
+      "passed": true
+    },
+    {
+      "id": "brewing-water-volume",
+      "width": 1100,
+      "passed": true
+    },
+    {
+      "id": "water-ph",
+      "width": 1100,
+      "passed": true
+    },
+    {
+      "id": "yeast-starter",
+      "width": 1100,
+      "passed": true
+    },
+    {
+      "id": "hop-freshness",
+      "width": 1100,
+      "passed": true
+    },
+    {
+      "id": "priming-sugar",
+      "width": 1100,
+      "passed": true
+    },
+    {
+      "id": "keg-carbonation",
+      "width": 1100,
+      "passed": true
+    },
+    {
+      "id": "bottling",
+      "width": 1100,
+      "passed": true
+    },
+    {
+      "id": "speise-krausen",
+      "width": 1100,
+      "passed": true
+    },
+    {
+      "id": "index",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "id": "abv-attenuation",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "id": "refractometer-correction",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "id": "hydrometer-correction",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "id": "brewhouse-efficiency",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "id": "unit-converter",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "id": "dilution-boiloff",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "id": "ibu",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "id": "mash-infusion",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "id": "beer-color",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "id": "brewing-water-volume",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "id": "water-ph",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "id": "yeast-starter",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "id": "hop-freshness",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "id": "priming-sugar",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "id": "keg-carbonation",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "id": "bottling",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "id": "speise-krausen",
+      "width": 390,
+      "passed": true
+    }
+  ],
+  "checks": [
+    "decimal comma",
+    "negative FG",
+    "empty required input",
+    "partial bottle",
+    "zero live yeast and source",
+    "explicit fresh hops assumption",
+    "priming mode",
+    "zero volume beer color",
+    "all 17 catalog cards",
+    "acid volume label",
+    "before/after carousel",
+    "before image loaded",
+    "dark theme screenshot"
+  ],
+  "pageErrors": []
+}

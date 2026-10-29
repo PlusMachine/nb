@@ -20,6 +20,8 @@ import { AlertTriangle, Loader2, Search, ShieldAlert } from "lucide-react";
 import { Button, Dialog, DialogCloseButton, DialogFooter, DialogHeader } from "@nb/ui";
 
 import { startBrewOnDeviceFromRecipeAction } from "@/features/brew-controller/brew-recipe-flow";
+import { acquireStartControlLease } from "@/features/brew-controller/control-session";
+import { describeStartBrewError } from "@/features/brew-controller/messages";
 import { newIdempotencyKey } from "@/lib/idempotency-key";
 import { RemoteDisabledNotice } from "@/features/brew-controller/components/remote-disabled-notice";
 import type { PushableRecipeDto } from "@/features/devices/onboard-recipes-contracts";
@@ -106,9 +108,11 @@ export function BrewRecipeOnDevicePicker({ open, onOpenChange, deviceId, deviceN
     setError(null);
     setSubmitting(true);
     try {
+      const sessionId = await acquireStartControlLease(deviceId);
       const result = await startBrewOnDeviceFromRecipeAction({
         recipeId: selected.id,
         deviceId,
+        sessionId,
         idempotencyKey: (idempotencyKeyRef.current ??= newIdempotencyKey())
       });
       if (result.ok && result.heatingStarted && result.brewBatchId) {
@@ -120,8 +124,8 @@ export function BrewRecipeOnDevicePicker({ open, onOpenChange, deviceId, deviceN
         return;
       }
       setError(result.message);
-    } catch {
-      setError("Не удалось запустить варку на устройстве.");
+    } catch (error) {
+      setError(describeStartBrewError(error));
     } finally {
       inFlightRef.current = false;
       setSubmitting(false);

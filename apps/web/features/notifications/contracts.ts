@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isPushEndpointAllowed } from "@nb/push/endpoint";
 
 // =============================================================================
 //  features/notifications — контракты web-push подписок (Phase 6).
@@ -7,7 +8,7 @@ import { z } from "zod";
 // =============================================================================
 
 export const pushSubscriptionInputSchema = z.object({
-  endpoint: z.string().url().max(1000),
+  endpoint: z.string().max(1000).refine(isPushEndpointAllowed, "INVALID_PUSH_ENDPOINT"),
   keys: z.object({
     p256dh: z.string().min(1).max(500),
     auth: z.string().min(1).max(500)

@@ -19,6 +19,7 @@ import { startBrewOnDeviceFromRecipeAction } from "./brew-recipe-flow";
 
 const USER_ID = "u-1";
 const RECIPE_ID = "00000000-0000-4000-8000-000000000001";
+const SESSION_ID = "control-tab-1";
 const DEVICE_ID = "00000000-0000-4000-8000-000000000002";
 
 beforeEach(() => {
@@ -44,7 +45,7 @@ describe("startBrewOnDeviceFromRecipeAction", () => {
     const IDEMPOTENCY_KEY = "00000000-0000-4000-8000-0000000000ff";
     const result = await startBrewOnDeviceFromRecipeAction({
       recipeId: RECIPE_ID,
-      deviceId: DEVICE_ID,
+      deviceId: DEVICE_ID, sessionId: SESSION_ID,
       idempotencyKey: IDEMPOTENCY_KEY
     });
 
@@ -62,7 +63,7 @@ describe("startBrewOnDeviceFromRecipeAction", () => {
     expect(mocks.startBrewOnDevice).toHaveBeenCalledWith({
       userId: USER_ID,
       brewBatchId: "batch-1",
-      deviceId: DEVICE_ID
+      deviceId: DEVICE_ID, sessionId: SESSION_ID
     });
   });
 
@@ -78,7 +79,7 @@ describe("startBrewOnDeviceFromRecipeAction", () => {
       reason: "REMOTE_DISABLED"
     });
 
-    const result = await startBrewOnDeviceFromRecipeAction({ recipeId: RECIPE_ID, deviceId: DEVICE_ID });
+    const result = await startBrewOnDeviceFromRecipeAction({ recipeId: RECIPE_ID, deviceId: DEVICE_ID, sessionId: SESSION_ID });
 
     expect(result.ok).toBe(true);
     expect(result.heatingStarted).toBe(false);
@@ -100,7 +101,7 @@ describe("startBrewOnDeviceFromRecipeAction", () => {
       reason: "REJECTED_INTERLOCK"
     });
 
-    const result = await startBrewOnDeviceFromRecipeAction({ recipeId: RECIPE_ID, deviceId: DEVICE_ID });
+    const result = await startBrewOnDeviceFromRecipeAction({ recipeId: RECIPE_ID, deviceId: DEVICE_ID, sessionId: SESSION_ID });
 
     expect(result.ok).toBe(false);
     expect(result.heatingStarted).toBe(false);
@@ -112,7 +113,7 @@ describe("startBrewOnDeviceFromRecipeAction", () => {
   it("рецепт недоступен: партия не создаётся, устройство не трогаем, id партии — null", async () => {
     mocks.createBrewBatchFromRecipe.mockRejectedValue(new Error("NOT_FOUND"));
 
-    const result = await startBrewOnDeviceFromRecipeAction({ recipeId: RECIPE_ID, deviceId: DEVICE_ID });
+    const result = await startBrewOnDeviceFromRecipeAction({ recipeId: RECIPE_ID, deviceId: DEVICE_ID, sessionId: SESSION_ID });
 
     expect(result).toEqual({
       ok: false,
@@ -128,7 +129,7 @@ describe("startBrewOnDeviceFromRecipeAction", () => {
     mocks.createBrewBatchFromRecipe.mockResolvedValue({ id: "batch-4" });
     mocks.startBrewOnDevice.mockRejectedValue(new Error("DEVICE_NOT_FOUND"));
 
-    const result = await startBrewOnDeviceFromRecipeAction({ recipeId: RECIPE_ID, deviceId: DEVICE_ID });
+    const result = await startBrewOnDeviceFromRecipeAction({ recipeId: RECIPE_ID, deviceId: DEVICE_ID, sessionId: SESSION_ID });
 
     expect(result.ok).toBe(false);
     expect(result.heatingStarted).toBe(false);

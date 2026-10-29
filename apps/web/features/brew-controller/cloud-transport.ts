@@ -58,7 +58,9 @@ export function cloudTransport(device: CloudDeviceRef): DeviceTransport {
       if (!row) return null;
 
       const ageMs = Date.now() - new Date(row.ts).getTime();
-      if (ageMs > TELEMETRY_FRESH_MS) return null; // устарело → «offline»
+      // Небольшой сдвиг часов терпим; дата далеко в будущем не должна оставлять
+      // последнюю строку «свежей» после отключения устройства.
+      if (!Number.isFinite(ageMs) || ageMs < -1000 || ageMs > TELEMETRY_FRESH_MS) return null;
 
       const parsed = TelemetrySchema.safeParse(row.payload);
       return parsed.success ? parsed.data : null;

@@ -2,6 +2,7 @@ import { getServerEnv } from "./env";
 import { assertRussianEmailDomain } from "./email-policy";
 import { LEGAL_DOC_VERSION } from "./legal-meta";
 import { sendSms } from "./sms";
+import { normalizeEmail } from "@nb/shared";
 
 import {
   ACCOUNT_BLOCKED_ERROR,
@@ -10,6 +11,7 @@ import {
   completePhoneSignIn,
   consumePhoneVerification,
   consumeVerification,
+  createPasswordSession,
   createSession,
   getUserBySessionToken,
   issuePhoneVerification,
@@ -18,8 +20,7 @@ import {
   normalizePhone,
   registerWithPassword,
   revokeSession,
-  setPassword,
-  signInWithPassword,
+  resetPasswordWithVerification,
   updateProfile,
   type OAuthProviderId,
   type PreferredGravityUnit,
@@ -213,7 +214,7 @@ export const requireRole = async (role: UserRole) => {
 
 export const startEmailOtp = async (email: string) => {
   assertRussianEmailDomain(email);
-  await assertRateLimit(email.toLowerCase(), "otp", 5, 10 * 60);
+  await assertRateLimit(normalizeEmail(email), "otp", 5, 10 * 60);
   const verification = await issueVerification({ email, type: "otp" });
   logAuthSecret("[auth] OTP token", verification);
 };
@@ -235,7 +236,7 @@ export const verifyPhoneOtp = async (phone: string, code: string, consent?: bool
 
 export const verifyEmailOtp = async (email: string, code: string, consent?: boolean) => {
   // Лимит на ВВОД кода — та же защита от перебора, что и для SMS.
-  await assertRateLimit(email.toLowerCase(), "otp_verify", 10, 10 * 60);
+  await assertRateLimit(normalizeEmail(email), "otp_verify", 10, 10 * 60);
   await consumeVerification({ email, token: code, type: "otp" });
   const user = await completeEmailSignIn({ email, consent: consentInput(consent) });
   await establishSession(user.id);
@@ -243,10 +244,10 @@ export const verifyEmailOtp = async (email: string, code: string, consent?: bool
 
 export const startMagicLink = async (email: string) => {
   assertRussianEmailDomain(email);
-  await assertRateLimit(email.toLowerCase(), "magic_link", 5, 10 * 60);
+  await assertRateLimit(normalizeEmail(email), "magic_link", 5, 10 * 60);
   const env = getServerEnv();
   const verification = await issueVerification({ email, type: "magic_link" });
-  const link = `${env.APP_URL}/api/auth/magic/consume?email=${encodeURIComponent(verification.email)}&token=${verification.rawToken}`;
+  const link = `${env.APP_URL}/api/auth/magic?email=${encodeURIComponent(verification.email)}&token=${verification.rawToken}`;
   logAuthSecret("[auth] Magic link", { ...verification, link });
 };
 
@@ -259,14 +260,18 @@ export const consumeMagicLink = async (email: string, token: string) => {
 };
 
 export const establishSession = async (userId: string) => {
-  const cookieStore = await cookies();
   const headerStore = await headers();
-  const { rawToken, expiresAt } = await createSession({
+  const session = await createSession({
     userId,
     ipAddress: headerStore.get("x-forwarded-for") ?? "local",
     userAgent: headerStore.get("user-agent")
   });
 
+  await setSessionCookie(session);
+};
+
+const setSessionCookie = async ({ rawToken, expiresAt }: { rawToken: string; expiresAt: Date }) => {
+  const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE, rawToken, {
     httpOnly: true,
     sameSite: "lax",
@@ -302,9 +307,14 @@ export const logout = async () => {
 export const passwordLogin = async (email: string, password: string) => {
   // Анти-brute-force: лимит попыток входа на конкретный e-mail (капча ограничивает
   // ботов, этот слой — ещё и целенаправленный подбор пароля к одному аккаунту).
-  await assertRateLimit(email.toLowerCase(), "password_login", 10, 10 * 60);
-  const user = await signInWithPassword({ email, password });
-  await establishSession(user.id);
+  await assertRateLimit(normalizeEmail(email), "password_login", 10, 10 * 60);
+  const headerStore = await headers();
+  const session = await createPasswordSession({
+    email, password,
+    ipAddress: headerStore.get("x-forwarded-for") ?? "local",
+    userAgent: headerStore.get("user-agent")
+  });
+  await setSessionCookie(session);
 };
 
 export const passwordSignup = async (email: string, password: string, consent?: boolean) => {
@@ -316,7 +326,7 @@ export const passwordSignup = async (email: string, password: string, consent?: 
 };
 
 export const requestPasswordReset = async (email: string) => {
-  await assertRateLimit(email.toLowerCase(), "password_reset", 3, 10 * 60);
+  await assertRateLimit(normalizeEmail(email), "password_reset", 3, 10 * 60);
   const env = getServerEnv();
   const verification = await issueVerification({ email, type: "password_reset" });
   const link = `${env.APP_URL}/login?email=${encodeURIComponent(verification.email)}&flow=reset&token=${verification.rawToken}`;
@@ -324,9 +334,13 @@ export const requestPasswordReset = async (email: string) => {
 };
 
 export const resetPassword = async (email: string, token: string, password: string) => {
-  await consumeVerification({ email, token, type: "password_reset" });
-  await setPassword({ email, password });
-  await passwordLogin(email, password);
+  const headerStore = await headers();
+  const { session } = await resetPasswordWithVerification({
+    email, token, password,
+    ipAddress: headerStore.get("x-forwarded-for") ?? "local",
+    userAgent: headerStore.get("user-agent")
+  });
+  await setSessionCookie(session);
 };
 
 export const updateCurrentProfile = async ({

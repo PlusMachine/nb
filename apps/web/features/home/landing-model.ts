@@ -1,13 +1,11 @@
 import type { PublicRecipeListItem, RecipeDetailDto, RecipeIngredientDto } from "@/features/recipes/contracts";
 import type { InventoryUnit } from "@/features/inventory/units";
 import type { ContentArticleListItem } from "@/features/content-articles/contracts";
-export type HomeIngredient = {
+import type { RecipeIngredientCardSource } from "@/components/recipes/recipe-ingredient-card-display";
+export type HomeIngredient = RecipeIngredientCardSource & {
   id: string;
   name: string;
-  producer: string | null;
-  category: string;
-  metric: string | null;
-  value: string | null;
+  secondaryName: string | null;
 };
 export type HomeRequirement = {
   key: string;

@@ -1,30 +1,35 @@
 import "server-only";
 import { loadIngredients } from "@/features/ingredients/service";
-import { resolveIngredientTechnicalDataColorRangeEbc, resolveIngredientTechnicalDataHopAlphaAcidPct } from "@/features/ingredients/technical-fields";
 import { buildLabelSlots } from "@/features/labels/slots";
 import { renderLabelPreviewPng } from "@/features/labels/render";
 import type { PublicRecipeDetailDto } from "@/features/recipes/contracts";
 import { getServerEnv } from "@/lib/env";
-import { homeAuthorName, homeNumber, type HomeIngredient } from "./landing-model";
-export async function getHomeIngredients(): Promise<HomeIngredient[]> {
+import { homeAuthorName, type HomeIngredient } from "./landing-model";
+export async function getHomeIngredients(preferredIds: string[] = []): Promise<HomeIngredient[]> {
   const items = (await loadIngredients()).filter(item => item.isActive && item.visibility === "public" && item.inventoryEnabled);
   const selected: typeof items = [];
-  for (const [category, pattern] of [["fermentable", /курск.*пил|пил.*курск/i], ["fermentable", /soufflet|суфле/i], ["hop", /^cascade$|^каскад$/i], ["yeast", /us.?05/i]] as const) {
+  for (const [category, pattern] of [["fermentable", /пэйл.*эль|pale ale/i], ["fermentable", /кара\s*кл[эе]р|cara clair/i], ["hop", /^amarillo$|^амарилло$/i], ["yeast", /us.?05/i]] as const) {
     const candidates = items.filter(item => item.category === category && !selected.some(chosen => chosen.id === item.id));
     const matches = candidates.filter(item => pattern.test(`${item.primaryLabelRu} ${item.brandName ?? item.brand ?? item.producer ?? ""}`) || pattern.test(item.primaryLabelRu));
-    const match = (category === "fermentable" ? matches.find(item => /пилснер|пильз|pilsner/i.test(item.primaryLabelRu) && !/карам|caram/i.test(item.primaryLabelRu)) : matches[0]) || matches[0] || candidates[0];
+    const match = matches.find(item => preferredIds.includes(item.id)) || matches[0] || candidates[0];
     if (match) selected.push(match);
   }
   return selected.map(item => {
-    const color = resolveIngredientTechnicalDataColorRangeEbc(item.technicalData);
-    const alpha = resolveIngredientTechnicalDataHopAlphaAcidPct(item.technicalData);
     return {
       id: item.id,
       name: item.primaryLabelRu,
-      producer: item.brandName || item.brand || item.producer,
+      secondaryName: item.displayNameEn,
+      type: item.type,
       category: item.category,
-      metric: item.category === "fermentable" && color ? "Цветность" : item.category === "hop" && alpha != null ? "Альфа-кислоты" : null,
-      value: item.category === "fermentable" && color ? `${homeNumber(color.min)}${color.max !== color.min ? `–${homeNumber(color.max)}` : ""} EBC` : item.category === "hop" && alpha != null ? `${homeNumber(alpha)}%` : null
+      subtype: item.subtype,
+      brand: item.brand,
+      producer: item.producer,
+      brandName: item.brandName,
+      manufacturer: item.manufacturer,
+      countryCode: item.countryCode,
+      countryName: item.countryName,
+      country: item.country,
+      technicalData: item.technicalData
     };
   });
 }

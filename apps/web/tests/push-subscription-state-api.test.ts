@@ -107,6 +107,11 @@ beforeEach(() => {
 });
 
 describe("GET /api/notifications/subscription", () => {
+  it("не сохраняет внутренний адрес даже при прямом вызове сервиса", async () => {
+    await expect(saveSubscription(USER_ID, subscriptionInput("https://127.0.0.1/internal"))).rejects.toThrow();
+    expect(store.rows).toHaveLength(0);
+  });
+
   it("после сноса подписок (блокировка) отвечает «подписки нет», а повторное включение возвращает строку в БД", async () => {
     await saveSubscription(USER_ID, subscriptionInput(ENDPOINT));
     expect(await askServer(ENDPOINT)).toBe(true);

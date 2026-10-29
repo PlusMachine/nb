@@ -10,6 +10,8 @@ import { brewDevices, db, eq, pool, users } from "@nb/db";
 import { cmdSelectRecipe } from "@nb/brewforge-protocol";
 
 import { brewforgeProvider } from "../features/brew-controller/brewforge-provider";
+import { acquireOrRenewLease, releaseLease } from "../features/brew-controller/control-lease";
+import { randomUUID } from "node:crypto";
 
 const EMAIL = process.env.DEV_AUTH_EMAIL || "qa.admin@localhost";
 const HW = "bf-e9f8";
@@ -32,36 +34,44 @@ async function main() {
   if (!user || !device) throw new Error(`нет user(${EMAIL}) или device(${HW})`);
   const userId = user.id;
   const deviceId = device.id;
-  console.log(`device ${HW} id=${deviceId} → ${device.localUrl} (owner ${EMAIL})\n`);
+  const sessionId = randomUUID();
+  const identity = { userId, sessionId };
+  if (!(await acquireOrRenewLease(deviceId, identity)).heldByMe) throw new Error("NO_CONTROL_LEASE");
+  try {
+    console.log(`device ${HW} id=${deviceId} → ${device.localUrl} (owner ${EMAIL})\n`);
 
-  console.log("1) readTelemetry ДО (через провайдер портала):");
-  const before = await brewforgeProvider.readTelemetry({ userId, deviceId });
-  console.log("   ", JSON.stringify(pick(before)));
+    console.log("1) readTelemetry ДО (через провайдер портала):");
+    const before = await brewforgeProvider.readTelemetry({ userId, deviceId });
+    console.log("   ", JSON.stringify(pick(before)));
 
-  const curSlot = (before as any)?.activeRecipe ?? -1;
-  const targetSlot = curSlot === 2 ? 4 : 2;   // выбрать слот, отличный от текущего → наблюдаемо
-  console.log(`\n2) sendCommand SELECT_RECIPE(slot ${targetSlot}) — негреющая, через провайдер:`);
-  const ack = await brewforgeProvider.sendCommand({
-    userId,
-    deviceId,
-    brewBatchId: undefined as any,
-    command: cmdSelectRecipe(targetSlot),
-  });
-  console.log("    ack:", JSON.stringify(ack));
+    const curSlot = (before as any)?.activeRecipe ?? -1;
+    const targetSlot = curSlot === 2 ? 4 : 2;   // выбрать слот, отличный от текущего → наблюдаемо
+    console.log(`\n2) sendCommand SELECT_RECIPE(slot ${targetSlot}) — негреющая, через провайдер:`);
+    const ack = await brewforgeProvider.sendCommand({
+      userId,
+      deviceId,
+      sessionId,
+      brewBatchId: undefined as any,
+      command: cmdSelectRecipe(targetSlot),
+    });
+    console.log("    ack:", JSON.stringify(ack));
 
-  await new Promise((r) => setTimeout(r, 1500));
+    await new Promise((r) => setTimeout(r, 1500));
 
-  console.log("\n3) readTelemetry ПОСЛЕ:");
-  const after = await brewforgeProvider.readTelemetry({ userId, deviceId });
-  console.log("   ", JSON.stringify(pick(after)));
+    console.log("\n3) readTelemetry ПОСЛЕ:");
+    const after = await brewforgeProvider.readTelemetry({ userId, deviceId });
+    console.log("   ", JSON.stringify(pick(after)));
 
-  const changed = (before as any)?.activeRecipe !== (after as any)?.activeRecipe ||
-    (before as any)?.recipeName !== (after as any)?.recipeName;
-  console.log(
-    `\n==> Канал портал→плата: команда ${ (ack as any)?.ok ? "ПРИНЯТА (ok)" : "ack=" + JSON.stringify(ack) }; ` +
-      `состояние устройства ${changed ? "ИЗМЕНИЛОСЬ ✅" : "не изменилось"}.`,
-  );
-  await pool.end();
+    const changed = (before as any)?.activeRecipe !== (after as any)?.activeRecipe ||
+      (before as any)?.recipeName !== (after as any)?.recipeName;
+    console.log(
+      `\n==> Канал портал→плата: команда ${ (ack as any)?.ok ? "ПРИНЯТА (ok)" : "ack=" + JSON.stringify(ack) }; ` +
+        `состояние устройства ${changed ? "ИЗМЕНИЛОСЬ ✅" : "не изменилось"}.`,
+    );
+  } finally {
+    await releaseLease(deviceId, identity);
+    await pool.end();
+  }
 }
 
 main().catch((e) => {

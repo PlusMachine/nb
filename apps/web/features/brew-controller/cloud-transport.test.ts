@@ -99,6 +99,16 @@ describe("cloudTransport.getTelemetry", () => {
     expect(await cloudTransport(DEVICE).getTelemetry()).toBeNull();
   });
 
+  it("дата из будущего не превращает старую телеметрию в постоянно свежую", async () => {
+    h.rowsRef.rows = [{ payload: telemetry(), ts: new Date(Date.now() + 60_000) }];
+    expect(await cloudTransport(DEVICE).getTelemetry()).toBeNull();
+  });
+
+  it("невалидная дата не подтверждает свежесть", async () => {
+    h.rowsRef.rows = [{ payload: telemetry(), ts: "invalid-date" }];
+    expect(await cloudTransport(DEVICE).getTelemetry()).toBeNull();
+  });
+
   it("возвращает null при отсутствии строк", async () => {
     h.rowsRef.rows = [];
     expect(await cloudTransport(DEVICE).getTelemetry()).toBeNull();

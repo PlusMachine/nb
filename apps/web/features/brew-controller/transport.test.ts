@@ -336,3 +336,43 @@ describe("pairDeviceOverLan (P4)", () => {
     expect(result).toEqual({ ok: false, reason: "REJECTED" });
   });
 });
+
+describe("LAN egress for every operation", () => {
+  beforeEach(() => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("BREWFORGE_ALLOW_LOOPBACK_DEVICE", "");
+    vi.stubEnv("BREWFORGE_LAN_TRANSPORT_DISABLED", "");
+  });
+  afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); });
+
+  const device = () => lanTransport("http://192.168.1.50", "device-secret");
+  it.each([
+    { name: "telemetry", run: () => device().getTelemetry() },
+    { name: "command", run: () => device().sendCommand({} as never) },
+    { name: "recipe upload", run: () => device().putRecipe({} as never) },
+    { name: "read config", run: () => device().getConfig() },
+    { name: "write config", run: () => device().putConfig({}) },
+    { name: "recipe slots", run: () => device().listSlots() },
+    { name: "read slot", run: () => device().readSlotSnapshot(6) },
+    { name: "list logs", run: () => device().listLogs!() },
+    { name: "read log", run: () => device().readLog!("brew.jsonl") },
+    { name: "OTA", run: () => device().startOta!("https://example.test/firmware.bin") },
+    { name: "pairing", run: () => pairDeviceOverLan("http://192.168.1.50", "device-secret") }
+  ])("$name disables redirects and has an abort signal", async ({ run }) => {
+    const fetchMock = vi.fn(async () => { throw new Error("redirect rejected"); });
+    vi.stubGlobal("fetch", fetchMock);
+    await run().catch(() => undefined);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining("http://192.168.1.50/"), expect.objectContaining({
+      redirect: "error", signal: expect.any(AbortSignal)
+    }));
+  });
+
+  it("rejects credentials and fragments in device URLs before fetch", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(lanTransport("http://user:password@192.168.1.50").getTelemetry()).rejects.toThrow("EGRESS_INVALID_URL");
+    await expect(lanTransport("http://192.168.1.50/#fragment").getTelemetry()).rejects.toThrow("EGRESS_INVALID_URL");
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+});

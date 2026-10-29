@@ -56,6 +56,8 @@ export type SendCommandInput = {
   userId: string;
   deviceId: string;
   brewBatchId?: string;
+  /** Идентификатор вкладки, которая держит control lease; для fail-safe не нужен. */
+  sessionId?: string;
   command: Command;
 };
 

@@ -2,11 +2,12 @@
 
 import { useMemo, useRef, useState, useId, type ReactNode } from "react";
 import Link from "next/link";
-import { ArrowRight, Check, FlaskConical, FileInput, History, Users, Expand, NotebookPen } from "lucide-react";
+import { ArrowRight, Check, FlaskConical, Expand, NotebookPen } from "lucide-react";
 import type { PublicRecipeDetailDto, PublicRecipeListItem } from "@/features/recipes/contracts";
-import { scaleRecipeToVolume, scaleRecipeWaterPlan, type ScaledRecipeView } from "@/features/recipes/scale";
+import { scaleRecipeDetailForBrew, scaleRecipeToVolume, scaleRecipeWaterPlan, type ScaledRecipeView } from "@/features/recipes/scale";
 import { createHomeDemoStock, homeCoverage, homeLoginHref, homeNumber, homeQuantity, homeRequirements, homeStockPreview, type HomeStock } from "@/features/home/landing-model";
 import { HomeIngredientDetails } from "./home-ingredient-details";
+import { HomeBrewPreview } from "./home-brew-preview";
 import { recipeIngredientCategoryOf, recipeIngredientTimeMinutes, recipeIngredientDurationDays, recipeIngredientUseType } from "@/features/recipes/ingredient-presentation";
 import { hopUseTypeLabels } from "@/features/recipes/ingredient-labels";
 import { pluralize } from "@/lib/pluralize";
@@ -32,14 +33,16 @@ export function HomeExperience({
   const preview = previews.find(item => item.recipe.id === selected) ?? first;
   const recipe = preview?.recipe;
   const scaled = useMemo(() => recipe ? scaleRecipeToVolume(recipe, Number(recipe.batchSizeNormalizedQuantity) * (recipe.batchSizeNormalizedUnit === "ml" ? .001 : 1) * volumeFactor) : null, [recipe, volumeFactor]);
+  const brewRecipe = useMemo(() => recipe && scaled ? scaleRecipeDetailForBrew(recipe, { targetLitres: scaled.targetBatchLitres }) : null, [recipe, scaled]);
   const stockPreview = homeStockPreview(stock);
   const visibleStock = stockExpanded ? stock : stockPreview;
   const stockHref = homeLoginHref("/app/ingredients?add=1");
   return <>
     <section className="home-hero" id="home-top">
-      <div className="home-hero-copy"><p className="home-free"><Check aria-hidden />Все функции бесплатны</p><h1>Что сварить из ваших запасов</h1><p className="home-lead">Выберите рецепт, пересчитайте его под свой объём и узнайте, что нужно докупить.</p><div className="home-actions"><Link className="home-button home-primary" href={stockHref}>Добавить свои запасы <ArrowRight /></Link><Link className="home-button" href="/recipes">Выбрать рецепт</Link></div><p className="home-hero-note">Рецепты, расчёты и журнал ваших варок.</p></div>
-      <div className="home-stock" id="home-stock"><div className="home-stock-title"><h2>Ваши запасы</h2><span>Пример</span></div>
-        <div className="home-stock-list" id="home-stock-example">{visibleStock.map(item => <div className="home-stock-row home-stock-example-row" key={item.key}><HomeIngredientDetails ingredient={item.ingredient} name={item.name} /><StockQuantity item={item} onCommit={quantity => setStock(values => values.map(row => row.key === item.key ? {
+      <div className="home-hero-copy"><p className="home-free">Бесплатный сервис для домашних пивоваров</p><h1>Что сварить из ваших запасов</h1><p className="home-lead">Выберите рецепт, пересчитайте его под свой объём и узнайте, что нужно докупить.</p><div className="home-actions"><Link className="home-button home-primary" href={stockHref}>Добавить свои запасы <ArrowRight /></Link><Link className="home-button" href="/recipes">Выбрать рецепт</Link></div><p className="home-hero-note">Рецепты, расчёты и журнал ваших варок.</p></div>
+      <div className="home-stock" id="home-stock"><div className="home-stock-title"><h2>Ваши запасы</h2><span>Пример склада</span></div>
+        {stock.length > 0 && <p className="home-stock-hint">Измените количество — рецепты ниже пересчитаются.</p>}
+        <div className="home-stock-list" id="home-stock-example">{visibleStock.map(item => <div className="home-stock-row home-stock-example-row" key={item.key}><HomeIngredientDetails ingredient={item.ingredient} name={item.name} badgeLimit={1} /><StockQuantity item={item} onCommit={quantity => setStock(values => values.map(row => row.key === item.key ? {
               ...row,
               quantity
             } : row))} /></div>)}</div>
@@ -47,7 +50,7 @@ export function HomeExperience({
         {stock.length > stockPreview.length && <button type="button" className="home-stock-more" aria-expanded={stockExpanded} aria-controls="home-stock-example" onClick={() => setStockExpanded(value => !value)}>{stockExpanded ? "Свернуть список" : `Ещё ${stock.length - stockPreview.length} ${pluralize(stock.length - stockPreview.length, ["ингредиент", "ингредиента", "ингредиентов"])}`}</button>}
       </div>
     </section>
-    <section id="home-recipes"><div className="home-section-heading"><div><h2>Что можно сварить</h2>{previews.length > 0 && <p className="home-section-lead home-example-caption">По запасам из примера · объём указан в рецепте</p>}</div><Link href="/recipes">Все рецепты ↗</Link></div>
+    <section id="home-recipes"><div className="home-section-heading"><div><h2>Что можно сварить</h2>{previews.length > 0 && <p className="home-section-lead home-example-caption">Рецепты по запасам из примера</p>}</div><Link href="/recipes">Все рецепты ↗</Link></div>
       {previews.length ? <div className="home-recipe-grid">{previews.map(({
           recipe: item,
           card
@@ -62,49 +65,50 @@ export function HomeExperience({
               const line = requirements.find(line => line.category === category || category === "fermentable" && line.category === "malt");
               return line ? [line] : [];
             }).slice(0, 2)).map(line => <div className="home-recipe-ingredient" key={line.key}>
-              <HomeIngredientDetails ingredient={line.ingredient} name={line.name} badgeLimit={1} compact />
+              <HomeIngredientDetails ingredient={line.ingredient} name={line.name} badgeLimit={0} compact />
               <strong className="home-ingredient-amount">{homeQuantity(line.quantity, line.unit)}</strong>
             </div>)}
             {match.missing.length > 2 && <span>Ещё {match.missing.length - 2} поз.</span>}
-          </div></div>
+          </div>{match.missing.length > 0 && <Link className="home-shopping-link" href={homeLoginHref("/app/shopping")}>В список покупок <ArrowRight aria-hidden /></Link>}</div>
           <Link className="home-text-action" href={`/recipes/${item.slug}`}>Открыть рецепт <ArrowRight /></Link></div></article>;
         })}</div> : <div className="home-empty"><p>Рецепты сообщества пока не опубликованы.</p><Link href={homeLoginHref("/app/recipes/new")}>Создать свой рецепт <ArrowRight /></Link></div>}
     </section>
-    <section id="home-master"><div className="home-section-heading"><div><h2>Редактор рецептов</h2><p className="home-section-lead">Рассчитайте рецепт под своё оборудование и объём варки.</p></div><Link href={homeLoginHref("/app/recipes/new")}>Создать рецепт ↗</Link></div>
+    <section id="home-master"><div className="home-section-heading"><div><h2>Редактор рецептов</h2><p className="home-section-lead">Измените объём — состав пересчитается, а пример варки ниже обновится.</p></div><Link href={homeLoginHref("/app/recipes/new")}>Создать рецепт ↗</Link></div>
       {recipe && scaled && preview ? <div className="home-master"><div className="home-master-title"><select aria-label="Пример рецепта" value={selected} onChange={event => {
             setSelected(event.target.value);
             setVolumeFactor(1);
           }}>{previews.map(item => <option key={item.recipe.id} value={item.recipe.id}>{item.recipe.title}</option>)}</select><label>Объём партии<select aria-label="Объём партии" value={volumeFactor} onChange={event => setVolumeFactor(Number(event.target.value))}>{[1, .5, 2].map(factor => <option key={factor} value={factor}>{homeNumber(scaled.baseBatchLitres * factor)} л</option>)}</select></label></div>
         <div className="home-master-tabs" role="tablist" aria-label="Разделы редактора">{tabs.map(([key, label]) => <button type="button" id={`home-tab-${key}`} key={key} role="tab" aria-controls={`home-panel-${key}`} aria-selected={tab === key} onClick={() => setTab(key!)}>{label}</button>)}</div>
         <div className="home-master-panels">
-          <div role="tabpanel" id="home-panel-composition" aria-labelledby="home-tab-composition" hidden={tab !== "composition"}><div className="home-two-columns home-composition-columns"><div><h3>Ингредиенты</h3><HomeRecipeComposition key={recipe.id} recipe={recipe} scaled={scaled} /><div className="home-parameters"><div><span>Эффективность</span><strong>{metricValue(recipe.efficiency, "%", 0)}</strong></div><div><span>Кипячение</span><strong>{homeNumber(recipe.boilTimeMinutes)} мин</strong></div></div></div><div className="home-style-comparison"><h3>Сравнение со стилем</h3>{preview.card.style ? <Link href={preview.card.styleHref || "/bjcp"}>{preview.card.style.name} · BJCP {preview.card.style.code}</Link> : <span>Стиль не указан</span>}
+          <div role="tabpanel" id="home-panel-composition" aria-labelledby="home-tab-composition" hidden={tab !== "composition"}><div className="home-two-columns home-composition-columns"><div><h3>Ингредиенты</h3><HomeRecipeComposition key={recipe.id} recipe={recipe} scaled={scaled} /></div><div className="home-style-comparison"><h3>Сравнение со стилем</h3>{preview.card.style ? <Link href={preview.card.styleHref || "/bjcp"}>{preview.card.style.name} · BJCP {preview.card.style.code}</Link> : <span>Стиль не указан</span>}
             {([["og", "Начальная плотность", recipe.og, formatGravity(recipe.og, "plato").replace(".", ",")], ["abv", "Крепость", recipe.abv, metricValue(recipe.abv, "%")], ["ibu", "Горечь", recipe.ibu, metricValue(recipe.ibu, " IBU", 0)], ["ebc", "Цвет", preview.card.colorEbc, metricValue(preview.card.colorEbc, " EBC", 0)]] as const).map(([key, title, value, text]) => <StyleMetric key={key} title={title} value={value} text={text} range={preview.ranges[key]} />)}
           </div></div></div>
           <div role="tabpanel" id="home-panel-water" aria-labelledby="home-tab-water" hidden={tab !== "water"}><WaterPanel recipe={recipe} factor={scaled.factor} /></div>
           <div role="tabpanel" id="home-panel-process" aria-labelledby="home-tab-process" hidden={tab !== "process"}><div className="home-two-columns"><div><h3>Затирание</h3>{recipe.processMeta.mashProfile.steps.length ? <ol className="home-process-steps">{recipe.processMeta.mashProfile.steps.map(step => <li key={step.id}><span>{step.name}</span><strong>{homeNumber(step.temperatureC)} °C<small>{homeNumber(step.durationMinutes)} мин</small></strong></li>)}</ol> : <p className="home-panel-empty">Паузы затирания в этом рецепте не заданы.</p>}<dl className="home-facts"><div><dt>Кипячение</dt><dd>{homeNumber(recipe.boilTimeMinutes)} мин</dd></div></dl></div><div><h3>Брожение</h3><dl className="home-facts"><div><dt>Температура брожения</dt><dd>{metricValue(recipe.processMeta.fermentationProfile.primaryTemperatureC, " °C")}</dd></div><div><dt>Длительность</dt><dd>{metricValue(recipe.processMeta.fermentationProfile.primaryDurationDays, " дн.")}</dd></div>{recipe.processMeta.fermentationProfile.coldCrash.enabled && <div><dt>Колд-краш</dt><dd>{metricValue(recipe.processMeta.fermentationProfile.coldCrash.temperatureC, " °C")} · {metricValue(recipe.processMeta.fermentationProfile.coldCrash.durationDays, " дн.")}</dd></div>}</dl></div></div></div>
           <div role="tabpanel" id="home-panel-equipment" aria-labelledby="home-tab-equipment" hidden={tab !== "equipment"}><EquipmentPanel recipe={recipe} /></div>
-        </div><ul className="home-master-capabilities"><li><FileInput />Импорт из Brewfather и файлов BeerXML</li><li><History />Сохраняйте варианты рецепта</li><li><Users />Публикация рецепта</li></ul>
+        </div><div className="home-editor-footer"><span>Импорт из Brewfather и BeerXML</span><a href="#home-brew">Перейти к примеру варки ↓</a></div>
       </div> : <div className="home-empty"><p>Создайте рецепт, задайте объём и подберите ингредиенты.</p><Link className="home-button" href={homeLoginHref("/app/recipes/new")}>Открыть редактор <ArrowRight /></Link></div>}
     </section>
+    {brewRecipe && <HomeBrewPreview key={brewRecipe.id} recipe={brewRecipe} />}
   </>;
 }
 function HomeRecipeComposition({ recipe, scaled }: { recipe: PublicRecipeDetailDto; scaled: ScaledRecipeView }) {
-  const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
+  const [expanded, setExpanded] = useState(false);
   const id = useId();
-  const groups = [
-    ["fermentable", "Солод и добавки"], ["hop", "Хмель"], ["yeast", "Дрожжи"],
-    ["water_treatment", "Водоподготовка"], ["consumable", "Специи и добавки"]
-  ] as const;
-  return <div className="home-composition-groups">{groups.map(([category, title]) => {
-    const ingredients = recipe.ingredients.filter(line => recipeIngredientCategoryOf(line) === category);
-    if (!ingredients.length) return null;
-    const expanded = expandedGroups.includes(category);
-    const visible = expanded ? ingredients : ingredients.slice(0, 2);
-    const remaining = ingredients.length - visible.length;
-    const totalGrams = ingredients.reduce((total, line) => total + (line.amountNormalizedUnit === "g" ? line.amountNormalizedQuantity : 0), 0);
-    return <div className="home-composition-group" key={category}>
-      <h4>{title}</h4>
-      <ul id={`${id}-${category}`}>{visible.map(ingredient => {
+  const previewIds = new Set<string>();
+  for (const category of ["fermentable", "fermentable", "hop", "yeast"]) {
+    const ingredient = recipe.ingredients.find(line => recipeIngredientCategoryOf(line) === category && !previewIds.has(line.id));
+    if (ingredient) previewIds.add(ingredient.id);
+  }
+  for (const ingredient of recipe.ingredients) {
+    if (previewIds.size >= 4) break;
+    previewIds.add(ingredient.id);
+  }
+  const totalGrams = recipe.ingredients.reduce((total, line) => total + (recipeIngredientCategoryOf(line) === "fermentable" && line.amountNormalizedUnit === "g" ? line.amountNormalizedQuantity : 0), 0);
+  const visible = recipe.ingredients.filter(line => expanded || previewIds.has(line.id));
+  return <div className="home-composition">
+      <ul id={id} className="home-composition-list">{visible.map(ingredient => {
+        const category = recipeIngredientCategoryOf(ingredient);
         const line = scaled.ingredients.find(line => line.id === ingredient.id)!;
         const minutes = recipeIngredientTimeMinutes(ingredient);
         const days = recipeIngredientDurationDays(ingredient);
@@ -116,15 +120,14 @@ function HomeRecipeComposition({ recipe, scaled }: { recipe: PublicRecipeDetailD
         const share = category === "fermentable" && ingredient.amountNormalizedUnit === "g" && totalGrams > 0
           ? ingredient.amountNormalizedQuantity / totalGrams * 100 : null;
         return <li className="home-editor-ingredient" data-category={category} key={line.id}>
-          <HomeIngredientDetails ingredient={ingredient} name={line.displayNameRu || line.displayName || "Ингредиент"} badgeLimit={3}>
+          <HomeIngredientDetails ingredient={ingredient} name={line.displayNameRu || line.displayName || "Ингредиент"} badgeLimit={1} showSecondaryName={false}>
             <p className="home-ingredient-stage">{stage}{minutes != null && ` · ${homeNumber(minutes)} мин`}{days != null && ` · ${homeNumber(days)} дн.`}{typeof temperature === "number" && ` · ${homeNumber(temperature)} °C`}</p>
           </HomeIngredientDetails>
           <div className="home-editor-amount"><strong className="home-ingredient-amount">{homeQuantity(line.amountEnteredQuantity, line.amountEnteredUnit)}</strong>{share != null && <span>{homeNumber(share, 1)}% засыпи</span>}</div>
         </li>;
       })}</ul>
-      {ingredients.length > 2 && <button type="button" className="home-stock-more" aria-expanded={expanded} aria-controls={`${id}-${category}`} onClick={() => setExpandedGroups(groups => expanded ? groups.filter(value => value !== category) : [...groups, category])}>{expanded ? "Свернуть" : `Ещё ${remaining} ${pluralize(remaining, category === "hop" ? ["внесение", "внесения", "внесений"] : ["ингредиент", "ингредиента", "ингредиентов"])}`}</button>}
+      {recipe.ingredients.length > previewIds.size && <button type="button" className="home-stock-more" aria-expanded={expanded} aria-controls={id} onClick={() => setExpanded(value => !value)}>{expanded ? "Свернуть состав" : `Показать весь состав · ${recipe.ingredients.length} ${pluralize(recipe.ingredients.length, ["позиция", "позиции", "позиций"])}`}</button>}
     </div>;
-  })}</div>;
 }
 
 function StockQuantity({
@@ -217,5 +220,5 @@ export function HomeLabels({
           region.current?.scrollTo({
             left: 0
           });
-        }}><Expand />{expanded ? "Свернуть этикетку" : "Рассмотреть этикетку"}</button><div className="home-label-image" ref={region} role="region" aria-label="Этикетка, при увеличении доступна горизонтальная прокрутка"><img src={images[template]} alt={`Этикетка «${template ? "Крафт" : "Типографика"}»: ${title}`} /></div><Link href="/labels" className="home-inline-link">Создать свою этикетку ↗</Link></div><div className="home-beer-preview"><h3><Link href={`/beer/${slug}`}>Страница пива ↗</Link></h3><div className="home-beer-frame">{beerPreview}</div></div></div></section>;
+        }}><Expand />{expanded ? "Свернуть этикетку" : "Рассмотреть этикетку"}</button><div className="home-label-image" ref={region} role="region" aria-label="Этикетка, при увеличении доступна горизонтальная прокрутка"><img src={images[template]} alt={`Этикетка «${template ? "Крафт" : "Типографика"}»: ${title}`} /></div><Link href="/labels" className="home-inline-link">Создать свою этикетку ↗</Link><Link href={`/beer/${slug}`} className="home-inline-link home-beer-mobile-link">Страница пива ↗</Link></div><div className="home-beer-preview"><h3><Link href={`/beer/${slug}`}>Страница пива ↗</Link></h3><div className="home-beer-frame">{beerPreview}</div></div></div></section>;
 }

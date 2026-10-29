@@ -48,6 +48,7 @@ vi.mock("@nb/db", () => {
           where = clause;
           return builder;
         },
+        for: () => builder,
         then: (onFulfilled: (rows: unknown) => unknown, onRejected?: (reason: unknown) => unknown) =>
           Promise.resolve(state.users.filter((row) => matches(row, where)).map((row) => ({ ...row }))).then(
             onFulfilled,
@@ -117,8 +118,8 @@ vi.mock("@nb/db", () => {
 import { EMAIL_TAKEN_ERROR, hashPassword, registerWithPassword, signInWithPassword } from "@nb/auth";
 
 const EMAIL = "brewer@mail.ru";
-const PASSWORD = "correct horse";
-const ATTACKER_PASSWORD = "hacked";
+const PASSWORD = "correct horse battery";
+const ATTACKER_PASSWORD = "attacker password choice";
 
 const victim = () => state.users[0] as Row;
 
@@ -152,6 +153,11 @@ beforeEach(() => {
 });
 
 describe("регистрация по паролю", () => {
+  it.each(["", "short", " ".repeat(20), "a".repeat(129)])("отклоняет недопустимый новый пароль", async (password) => {
+    await expect(registerWithPassword({ email: EMAIL, password })).rejects.toThrow("INVALID_PASSWORD");
+    expect(state.users).toHaveLength(0);
+  });
+
   it("не перезаписывает пароль существующего аккаунта", async () => {
     await seedVictim();
     const before = victim().passwordHash;

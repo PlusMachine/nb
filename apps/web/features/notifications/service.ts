@@ -7,13 +7,14 @@
 // =============================================================================
 import { and, db, eq, pushSubscriptions } from "@nb/db";
 
-import type { PushSubscriptionInput } from "./contracts";
+import { pushSubscriptionInputSchema, type PushSubscriptionInput } from "./contracts";
 
 /** Сохранить/обновить подписку браузера пользователя (upsert по endpoint). */
 export async function saveSubscription(
   userId: string,
   input: PushSubscriptionInput
 ): Promise<void> {
+  input = pushSubscriptionInputSchema.parse(input);
   const now = new Date();
   await db
     .insert(pushSubscriptions)

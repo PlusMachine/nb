@@ -1,5 +1,6 @@
 import { accounts, authRateLimits, db, pushSubscriptions, sessions, users, verifications } from "@nb/db";
-import { and, eq, gt, or, sql } from "@nb/db";
+import { and, eq, gt, isNull, or, sql } from "@nb/db";
+import { assertNewPassword, isPasswordInputAllowed, normalizeEmail } from "@nb/shared";
 
 import { createOtpCode, createRandomToken, hashPassword, hashToken, verifyPassword } from "./crypto";
 import type { AuthUser, OAuthProviderId, PreferredGravityUnit, SupportedCurrency, UserRole } from "./types";
@@ -12,7 +13,7 @@ const MAGIC_TTL_MINUTES = 20;
 const RESET_TTL_MINUTES = 20;
 const SMS_OTP_TTL_MINUTES = 5;
 
-const normalizeEmail = (email: string): string => email.trim().toLowerCase();
+type AuthExecutor = Pick<typeof db, "select" | "insert" | "update" | "delete">;
 
 const defaultDisplayName = (email: string): string => email.split("@")[0] ?? "Brewer";
 
@@ -123,15 +124,16 @@ export const assertRateLimit = async (
 
 export const getOrCreateUserByEmail = async (
   email: string,
-  consent?: ConsentInput
+  consent?: ConsentInput,
+  executor: AuthExecutor = db
 ): Promise<typeof users.$inferSelect> => {
   const normalized = normalizeEmail(email);
-  const [found] = await db.select().from(users).where(eq(users.email, normalized));
+  const [found] = await executor.select().from(users).where(eq(users.email, normalized)).for("update");
   if (found) {
     return assertNotBlocked(found);
   }
 
-  const [created] = await db.insert(users).values({
+  const [created] = await executor.insert(users).values({
     email: normalized,
     displayName: defaultDisplayName(normalized),
     emailVerified: false,
@@ -158,37 +160,37 @@ export const issueVerification = async ({ email, type }: { email: string; type: 
   return { rawToken: raw, email: normalized, expiresInMinutes: ttlMinutes };
 };
 
-export const consumeVerification = async ({ email, token, type }: { email: string; token: string; type: VerificationType }) => {
+export const consumeVerification = async (
+  { email, token, type }: { email: string; token: string; type: VerificationType },
+  executor: AuthExecutor = db
+) => {
   const normalized = normalizeEmail(email);
   const tokenHash = hashToken(token);
 
-  const [found] = await db.select().from(verifications).where(and(
+  const [consumed] = await executor.update(verifications).set({
+    usedAt: new Date(),
+    attempts: sql`${verifications.attempts} + 1`
+  }).where(and(
     eq(verifications.email, normalized),
     eq(verifications.type, type),
-    eq(verifications.codeHash, tokenHash)
-  ));
+    eq(verifications.codeHash, tokenHash),
+    isNull(verifications.usedAt),
+    gt(verifications.expiresAt, new Date())
+  )).returning({ id: verifications.id });
 
-  if (!found) {
+  if (!consumed) {
     throw new Error("INVALID_TOKEN");
   }
-
-  if (found.usedAt) {
-    throw new Error("TOKEN_USED");
-  }
-
-  if (found.expiresAt <= new Date()) {
-    throw new Error("TOKEN_EXPIRED");
-  }
-
-  await db.update(verifications).set({ usedAt: new Date(), attempts: found.attempts + 1 }).where(eq(verifications.id, found.id));
 };
 
-export const createSession = async ({ userId, userAgent, ipAddress }: { userId: string; userAgent?: string | null; ipAddress?: string | null }) => {
+type SessionInput = { userId: string; userAgent?: string | null; ipAddress?: string | null };
+
+export const createSession = async ({ userId, userAgent, ipAddress }: SessionInput, executor: AuthExecutor = db) => {
   const rawToken = createRandomToken(32);
   const tokenHash = hashToken(rawToken);
   const expiresAt = new Date(Date.now() + SESSION_TTL_DAYS * 24 * 60 * 60 * 1000);
 
-  await db.insert(sessions).values({ userId, tokenHash, expiresAt, userAgent: userAgent ?? null, ipAddress: ipAddress ?? null });
+  await executor.insert(sessions).values({ userId, tokenHash, expiresAt, userAgent: userAgent ?? null, ipAddress: ipAddress ?? null });
 
   return { rawToken, expiresAt };
 };
@@ -236,6 +238,7 @@ export const registerWithPassword = async ({
   password: string;
   consent?: ConsentInput;
 }): Promise<AuthUser> => {
+  assertNewPassword(password);
   const normalized = normalizeEmail(email);
   const [existing] = await db.select().from(users).where(eq(users.email, normalized));
   if (existing) {
@@ -279,15 +282,16 @@ export const setPassword = async ({
   password: string;
   consent?: ConsentInput;
 }) => {
-  const user = await getOrCreateUserByEmail(email, consent);
-  await db.update(users).set({ passwordHash: await hashPassword(password), updatedAt: new Date() }).where(eq(users.id, user.id));
-  return mapUser(user);
+  assertNewPassword(password);
+  const passwordHash = await hashPassword(password);
+  return db.transaction(async (tx) => {
+    const user = await getOrCreateUserByEmail(email, consent, tx);
+    return mapUser(await replacePassword(tx, user, passwordHash));
+  });
 };
 
-export const signInWithPassword = async ({ email, password }: { email: string; password: string }): Promise<AuthUser> => {
-  const normalized = normalizeEmail(email);
-  const [user] = await db.select().from(users).where(eq(users.email, normalized));
-  if (!user?.passwordHash) {
+const verifyUserPassword = async (user: typeof users.$inferSelect | undefined, password: string) => {
+  if (!user?.passwordHash || !isPasswordInputAllowed(password)) {
     throw new Error("INVALID_CREDENTIALS");
   }
 
@@ -298,7 +302,62 @@ export const signInWithPassword = async ({ email, password }: { email: string; p
 
   // Проверка ПОСЛЕ сверки пароля: иначе факт блокировки конкретного аккаунта
   // раскрывался бы любому, кто просто перебирает адреса.
-  return mapUser(assertNotBlocked(user));
+  return assertNotBlocked(user);
+};
+
+export const signInWithPassword = async ({ email, password }: { email: string; password: string }): Promise<AuthUser> => {
+  const [user] = await db.select().from(users).where(eq(users.email, normalizeEmail(email)));
+  return mapUser(await verifyUserPassword(user, password));
+};
+
+// Вход и выдача сессии держат ту же блокировку users, что и смена пароля /
+// первое подтверждение почты. Старый пароль не выдаст сессию после их commit.
+export const createPasswordSession = async (
+  input: { email: string; password: string } & Omit<SessionInput, "userId">
+) => db.transaction(async (tx) => {
+  const [row] = await tx.select().from(users).where(eq(users.email, normalizeEmail(input.email))).for("update");
+  const user = await verifyUserPassword(row, input.password);
+  return createSession({ userId: user.id, userAgent: input.userAgent, ipAddress: input.ipAddress }, tx);
+});
+
+const replacePassword = async (executor: AuthExecutor, user: typeof users.$inferSelect, passwordHash: string) => {
+  const [updated] = await executor.update(users).set({
+    passwordHash, emailVerified: true, updatedAt: new Date()
+  }).where(eq(users.id, user.id)).returning();
+  await revokeAllUserSessions(user.id, executor);
+  await executor.delete(pushSubscriptions).where(eq(pushSubscriptions.userId, user.id));
+  await executor.delete(verifications).where(eq(verifications.email, user.email!));
+  return updated;
+};
+
+export const resetPasswordWithVerification = async (
+  { email, token, password, userAgent, ipAddress }:
+    { email: string; token: string; password: string } & Omit<SessionInput, "userId">
+) => {
+  assertNewPassword(password);
+  const passwordHash = await hashPassword(password);
+  return db.transaction(async (tx) => {
+    const user = await getOrCreateUserByEmail(email, undefined, tx);
+    await consumeVerification({ email, token, type: "password_reset" }, tx);
+    const updated = await replacePassword(tx, user, passwordHash);
+    const session = await createSession({ userId: updated.id, userAgent, ipAddress }, tx);
+    return { user: mapUser(updated), session };
+  });
+};
+
+const confirmUserEmail = async (executor: AuthExecutor, user: typeof users.$inferSelect) => {
+  assertNotBlocked(user);
+  if (user.emailVerified) return user;
+
+  // До подтверждения адреса пароль/сессии мог создать посторонний. Первое
+  // доказательство владения email не должно легализовать эти учетные данные.
+  const [confirmed] = await executor.update(users).set({
+    emailVerified: true, passwordHash: null, updatedAt: new Date()
+  }).where(eq(users.id, user.id)).returning();
+  await revokeAllUserSessions(user.id, executor);
+  await executor.delete(pushSubscriptions).where(eq(pushSubscriptions.userId, user.id));
+  await executor.delete(verifications).where(eq(verifications.email, user.email!));
+  return confirmed;
 };
 
 export const completeEmailSignIn = async ({
@@ -308,9 +367,10 @@ export const completeEmailSignIn = async ({
   email: string;
   consent?: ConsentInput;
 }): Promise<AuthUser> => {
-  const user = await getOrCreateUserByEmail(email, consent);
-  const [updated] = await db.update(users).set({ emailVerified: true, updatedAt: new Date() }).where(eq(users.id, user.id)).returning();
-  return mapUser(updated ?? user);
+  return db.transaction(async (tx) => {
+    const user = await getOrCreateUserByEmail(email, consent, tx);
+    return mapUser(await confirmUserEmail(tx, user));
+  });
 };
 
 export const getOrCreateUserByPhone = async (
@@ -353,25 +413,20 @@ export const consumePhoneVerification = async ({ phone, code }: { phone: string;
   const normalized = normalizePhone(phone);
   const codeHash = hashToken(code);
 
-  const [found] = await db.select().from(verifications).where(and(
+  const [consumed] = await db.update(verifications).set({
+    usedAt: new Date(),
+    attempts: sql`${verifications.attempts} + 1`
+  }).where(and(
     eq(verifications.phone, normalized),
     eq(verifications.type, "sms_otp"),
-    eq(verifications.codeHash, codeHash)
-  ));
+    eq(verifications.codeHash, codeHash),
+    isNull(verifications.usedAt),
+    gt(verifications.expiresAt, new Date())
+  )).returning({ id: verifications.id });
 
-  if (!found) {
+  if (!consumed) {
     throw new Error("INVALID_TOKEN");
   }
-
-  if (found.usedAt) {
-    throw new Error("TOKEN_USED");
-  }
-
-  if (found.expiresAt <= new Date()) {
-    throw new Error("TOKEN_EXPIRED");
-  }
-
-  await db.update(verifications).set({ usedAt: new Date(), attempts: found.attempts + 1 }).where(eq(verifications.id, found.id));
 };
 
 export const completePhoneSignIn = async ({
@@ -565,42 +620,47 @@ export const linkOAuthAccount = async ({ provider, providerAccountId, email, dis
 }) => {
   const normalized = normalizeEmail(email);
 
-  const [existingAccount] = await db.select().from(accounts).where(and(eq(accounts.provider, provider), eq(accounts.providerAccountId, providerAccountId)));
+  return db.transaction(async (tx) => {
+    const [existingAccount] = await tx.select().from(accounts).where(and(eq(accounts.provider, provider), eq(accounts.providerAccountId, providerAccountId)));
 
-  if (existingAccount) {
-    const [existingUser] = await db.select().from(users).where(eq(users.id, existingAccount.userId));
-    if (!existingUser) {
-      throw new Error("USER_NOT_FOUND");
+    if (existingAccount) {
+      const [existingUser] = await tx.select().from(users).where(eq(users.id, existingAccount.userId)).for("update");
+      if (!existingUser) {
+        throw new Error("USER_NOT_FOUND");
+      }
+      assertNotBlocked(existingUser);
+      return mapUser(existingUser.email === normalized ? await confirmUserEmail(tx, existingUser) : existingUser);
     }
-    return mapUser(assertNotBlocked(existingUser));
-  }
 
-  let [user] = await db.select().from(users).where(eq(users.email, normalized));
-  if (user) {
-    assertNotBlocked(user);
-  } else {
-    [user] = await db.insert(users).values({
-      email: normalized,
-      emailVerified: true,
-      displayName: displayName?.trim() || defaultDisplayName(normalized),
-      image: image ?? null,
-      role: "user",
-      ...consentColumns(consent)
-    }).returning();
-  }
+    let [user] = await tx.select().from(users).where(eq(users.email, normalized)).for("update");
+    if (user) {
+      user = await confirmUserEmail(tx, user);
+    } else {
+      [user] = await tx.insert(users).values({
+        email: normalized,
+        emailVerified: true,
+        displayName: displayName?.trim() || defaultDisplayName(normalized),
+        image: image ?? null,
+        role: "user",
+        ...consentColumns(consent)
+      }).returning();
+    }
 
-  await db.insert(accounts).values({
-    userId: user.id,
-    provider,
-    providerAccountId,
-    accessToken,
-    refreshToken
-  }).onConflictDoUpdate({
-    target: [accounts.provider, accounts.providerAccountId],
-    set: { accessToken, refreshToken, updatedAt: new Date() }
+    const [linked] = await tx.insert(accounts).values({
+      userId: user.id,
+      provider,
+      providerAccountId,
+      accessToken,
+      refreshToken
+    }).onConflictDoUpdate({
+      target: [accounts.provider, accounts.providerAccountId],
+      set: { accessToken, refreshToken, updatedAt: new Date() },
+      setWhere: eq(accounts.userId, user.id)
+    }).returning({ userId: accounts.userId });
+    if (!linked) throw new Error("OAUTH_ACCOUNT_CONFLICT");
+
+    return mapUser(user);
   });
-
-  return mapUser(user);
 };
 
 export const cleanupExpiredVerifications = async (): Promise<void> => {

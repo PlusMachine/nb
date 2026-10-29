@@ -4,13 +4,10 @@ import { CommandSchema } from "@nb/brewforge-protocol";
 
 import { requireUser } from "@/lib/auth";
 import { getBrewBatchById } from "@/features/brew-batches/service";
-import { getProvider } from "@/features/brew-controller";
-import {
-  commandRequiresFreshTelemetry,
-  commandRequiresLease,
-} from "@/features/brew-controller/command-gate";
-import { readFreshTelemetry } from "@/features/brew-controller/device-telemetry-cache";
-import { holdsValidLease } from "@/features/brew-controller/control-lease";
+import { getProviderForDevice } from "@/features/brew-controller";
+import { getDeviceById } from "@/features/devices/service";
+import { assertDeviceCommandAuthorized } from "@/features/brew-controller/command-authorization";
+import { describeStartBrewError } from "@/features/brew-controller/messages";
 
 // Коды ошибок транспорта/провайдера → человекочитаемый текст для дашборда.
 // НЕ эхоим внутренние детали (EGRESS_*/HTTP-тела/SSRF) — только общий смысл.
@@ -35,7 +32,7 @@ function describeCommandError(message: string): string {
 
 // POST /api/brew-batches/:id/command — отправить команду на устройство партии.
 // Тело: { command: Command } (валидируется CommandSchema). Резолвим партию
-// (ownership) → её устройство → getProvider('brewforge').sendCommand(...).
+// (ownership) → её устройство → getProviderForDevice(device).sendCommand(...).
 // Возвращаем Ack (в т.ч. nack ok:false — это валидный ответ, не ошибка HTTP).
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const user = await requireUser();
@@ -54,55 +51,31 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const command = CommandSchema.parse(body?.command);
     const sessionId = typeof body?.sessionId === "string" ? body.sessionId : "";
 
-    const provider = getProvider("brewforge");
+    const device = await getDeviceById(user.id, batch.deviceId);
+    if (!device) return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
+    const provider = getProviderForDevice(device);
     if (!provider?.sendCommand) {
       return NextResponse.json({ error: "PROVIDER_UNAVAILABLE" }, { status: 503 });
     }
 
-    // Hard lease-гейт (single-writer, та же граница, что и у device-роута):
-    // управляющие команды — только у держателя аренды устройства партии.
-    if (commandRequiresLease(command)) {
-      const holds = sessionId
-        ? await holdsValidLease(batch.deviceId, { userId: user.id, sessionId })
-        : false;
-      if (!holds) {
-        return NextResponse.json(
-          {
-            error:
-              "Сейчас вы не управляете устройством. Обновите страницу и при необходимости запросите управление.",
-            code: "NO_CONTROL_LEASE",
-          },
-          { status: 409 },
-        );
-      }
-    }
-
-    // Серверный freshness-гейт (та же граница, что и у device-роута): опасные
-    // команды — только при свежей телеметрии. Fail-safe (ESTOP/PAUSE/…) — всегда.
-    if (commandRequiresFreshTelemetry(command)) {
-      const fresh = await readFreshTelemetry({ userId: user.id, deviceId: batch.deviceId });
-      if (!fresh) {
-        return NextResponse.json(
-          {
-            error:
-              "Нет свежих показаний устройства — команда недоступна до восстановления связи.",
-            code: "DEVICE_STALE",
-          },
-          { status: 409 },
-        );
-      }
-    }
+    await assertDeviceCommandAuthorized({
+      userId: user.id, deviceId: device.id, providerId: device.providerId, sessionId, command
+    });
 
     const ack = await provider.sendCommand({
       userId: user.id,
       deviceId: batch.deviceId,
       brewBatchId: batch.id,
-      command
+      command,
+      sessionId
     });
 
     return NextResponse.json({ ack });
   } catch (error) {
     const raw = error instanceof Error ? error.message : "UNKNOWN";
+    if (raw === "NO_CONTROL_LEASE" || raw === "DEVICE_STALE") {
+      return NextResponse.json({ error: describeStartBrewError(error), code: raw }, { status: 409 });
+    }
     // Реальную причину — в серверный лог; наружу только безопасный текст.
     console.error("[brew-command] сбой отправки команды:", raw);
     return NextResponse.json({ error: describeCommandError(raw) }, { status: 400 });

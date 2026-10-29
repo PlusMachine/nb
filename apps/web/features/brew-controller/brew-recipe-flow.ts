@@ -44,6 +44,7 @@ export type StartBrewOnDeviceFromRecipeResult = {
 export async function startBrewOnDeviceFromRecipeAction(input: {
   recipeId: string;
   deviceId: string;
+  sessionId: string;
   /** Ключ идемпотентности создания партии (двойной клик/ретрай → одна партия). */
   idempotencyKey?: string;
   /** Объём варки и оборудование — тот же выбор, что и в ручной ветке (диалог «Сварить»). */
@@ -63,7 +64,8 @@ export async function startBrewOnDeviceFromRecipeAction(input: {
     const outcome = await startBrewOnDevice({
       userId: user.id,
       brewBatchId: batch.id,
-      deviceId: input.deviceId
+      deviceId: input.deviceId,
+      sessionId: input.sessionId
     });
 
     if (outcome.ok && outcome.heatingStarted) {

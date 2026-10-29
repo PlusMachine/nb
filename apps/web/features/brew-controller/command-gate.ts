@@ -3,7 +3,8 @@
 //  Серверная классификация команд по свежести телеметрии — граница безопасности
 //  «варки откуда угодно» (см. docs/brewery-command-center.md §«Серверный
 //  freshness-гейт»). Клиентский controlsDisabled — только UX-подсказка; настоящая
-//  граница здесь: роут команд САМ отклоняет опасные команды при stale-телеметрии.
+//  классификация применяется общей серверной проверкой и самим провайдером
+//  перед отправкой, независимо от входа через API или Server Action.
 //
 //  Политика (fail-safe):
 //   - "always"          — исполняем ВСЕГДА, даже при stale/offline. Это команды,
@@ -12,7 +13,7 @@
 //     SELECT_RECIPE, SAVE_SETTINGS, MANUAL_PUMP, MANUAL_SETPOINT, MANUAL_HEAT(off),
 //     MANUAL_PWM-вниз. Блокировать их при потере связи было бы ОПАСНО.
 //   - "fresh-required"  — команды, поднимающие энергию/запускающие процесс:
-//     START_BREW, START_AUTOTUNE, MANUAL_HEAT(on), MANUAL_PWM-вверх. Требуют свежей
+//     START_BREW, START_DELAYED, START_AUTOTUNE, MANUAL_HEAT(on), MANUAL_PWM-вверх. Требуют свежей
 //     телеметрии (иначе оператор рулит вслепую) → при stale роут отвечает 409.
 //
 //  (*) RESUME снимает паузу и может возобновить нагрев, но не поднимает мощность
@@ -31,6 +32,7 @@ export type CommandGateClass = "always" | "fresh-required";
 export function classifyCommand(command: Command): CommandGateClass {
   switch (command.type) {
     case "START_BREW":
+    case "START_DELAYED":
     case "START_AUTOTUNE":
       return "fresh-required";
     case "MANUAL_HEAT":
