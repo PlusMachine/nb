@@ -153,10 +153,10 @@ export function BrewInventory({
               </Link>
             </>
           ) : canConsume
-            ? "Спишем со склада ингредиенты рецепта — в объёме этой варки."
+            ? "Количество ингредиентов рассчитано на объём этой партии."
             : !recipeAvailable
               ? <>{BATCH_INVENTORY_SNAPSHOT_MESSAGE}{" "}<Link href="/app/inventory" className="text-primary underline">Открыть склад</Link></>
-              : "По этой варке ингредиенты со склада не списывались."}
+              : "Ингредиенты для этой партии не списывались."}
         </p>
       )}
 
@@ -179,7 +179,7 @@ export function BrewInventory({
           нет) — покупать нечего, замены покажет диалог списания, подписи не даём. */}
       {coverage && !coverageEmpty ? (
         coverage.fullyCovered ? (
-          <p className="text-sm font-medium text-success">Все ингредиенты есть на складе — списать?</p>
+          <p className="text-sm font-medium text-success">Всех ингредиентов хватает.</p>
         ) : coverage.coveredCount < coverage.totalLines ? (
           <p className="text-sm text-muted-foreground">
             На складе {coverage.coveredCount} из {coverage.totalLines}{" "}
@@ -228,7 +228,7 @@ export function BrewInventory({
         <details className="group rounded-xl border border-border bg-muted/40">
           <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-sm text-muted-foreground [&::-webkit-details-marker]:hidden">
             <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition group-open:rotate-90" aria-hidden />
-            <span className="font-medium">История запасов</span>
+            <span className="font-medium">История операций</span>
             <span className="text-xs text-muted-foreground tabular-nums">{view.log.length}</span>
           </summary>
           <ul className="divide-y divide-border px-3 pb-3">

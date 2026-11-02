@@ -116,10 +116,10 @@ export const deleteEquipmentProfileAction = async (profileId: string): Promise<{
     await deleteEquipmentProfile(user.id, profileId);
     refreshEquipmentPaths();
 
-    return { ok: true, message: "Профиль оборудования удален." };
+    return { ok: true, message: "Профиль оборудования удалён." };
   } catch (error) {
     if (error instanceof Error && error.message === "NOT_FOUND") {
-      return { ok: false, message: "Профиль не найден или уже удален." };
+      return { ok: false, message: "Профиль не найден или уже удалён." };
     }
 
     return { ok: false, message: "Не удалось удалить профиль оборудования. Попробуйте ещё раз." };

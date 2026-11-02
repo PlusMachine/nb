@@ -27,14 +27,26 @@ export default async function AdminUsersPage({
     status: single(params.status),
     sort: single(params.sort),
     page: single(params.page),
-    pageSize: single(params.pageSize)
+    pageSize: single(params.pageSize),
+    segment: single(params.segment)
   });
 
   const result = await listAdminUsers(filters);
+  const exportQuery = new URLSearchParams(
+    Object.entries({ q: filters.q, role: filters.role, status: filters.status, segment: filters.segment, sort: filters.sort })
+      .filter((entry): entry is [string, string] => typeof entry[1] === "string")
+  );
 
   return (
     <section className="space-y-5">
-      <AdminPageHeader title="Пользователи" />
+      <AdminPageHeader
+        title="Пользователи"
+        actions={
+          <a href={`/api/admin/users/export?${exportQuery}`} className="rounded-md border border-border px-3 py-2 text-sm hover:bg-accent">
+            Скачать CSV
+          </a>
+        }
+      />
 
       <UsersToolbar
         basePath="/admin/users"
@@ -43,7 +55,10 @@ export default async function AdminUsersPage({
         status={filters.status}
         sort={filters.sort ?? defaultAdminUserSortOption}
         pageSize={filters.pageSize ?? ADMIN_USERS_PAGE_SIZE_DEFAULT}
+        segment={filters.segment}
       />
+
+      <p className="text-xs text-muted-foreground">Последние визиты собираются с согласия на аналитику. «Нет данных» не означает отсутствие активности. Выгрузка учитывает фильтры и содержит до 10 000 пользователей.</p>
 
       <UsersTable items={result.items} />
 

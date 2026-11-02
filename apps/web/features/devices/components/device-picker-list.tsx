@@ -164,7 +164,7 @@ export function DevicePickerList({
           <p className="font-semibold">Устройство привязано.</p>
           {pairingStatus?.delivered ? (
             <p className="mt-1 text-xs leading-5 text-success-subtle-foreground">
-              Токен уже доставлен устройству по локальной сети — можно управлять сразу.
+              Токен передан устройству по локальной сети. Оно готово к управлению.
             </p>
           ) : (
             <p className="mt-1 text-xs leading-5 text-success-subtle-foreground">

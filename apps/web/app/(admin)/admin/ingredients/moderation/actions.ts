@@ -28,7 +28,7 @@ const mapProposalError = (error: unknown): { ok: false; error: string } => {
   }
 
   if (error instanceof ZodError) {
-    return { ok: false, error: error.issues[0]?.message ?? "Проверьте корректность данных." };
+    return { ok: false, error: error.issues[0]?.message ?? "Проверьте введённые данные." };
   }
 
   if (error instanceof Error && ERROR_MESSAGES[error.message]) {

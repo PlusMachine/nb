@@ -58,7 +58,7 @@ function MashChart() {
         <text key={t} x={xAt(t)} y={CHART.h - 6} textAnchor="middle" fontSize={10} fill="#8b8b94">{t}</text>
       ))}
       <line x1={CHART.padL} y1={yAt(TARGET_C)} x2={CHART.w - CHART.padR} y2={yAt(TARGET_C)} stroke="#71717a" strokeWidth={1.5} strokeDasharray="5 5" />
-      <text x={CHART.w - CHART.padR} y={yAt(TARGET_C) - 6} textAnchor="end" fontSize={10.5} fill="#a1a1aa">цель 67,0</text>
+      <text x={CHART.w - CHART.padR} y={yAt(TARGET_C) - 6} textAnchor="end" fontSize={10.5} fill="#a1a1aa">задано 67,0</text>
       <polyline points={linePoints} fill="none" stroke="#fbbf24" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
       <circle cx={xAt(last[0])} cy={yAt(last[1])} r={4} fill="#fbbf24" stroke="#1d1d22" strokeWidth={2} />
     </svg>
@@ -70,13 +70,13 @@ const modes = [
     icon: ListChecks,
     title: "Помощник",
     soon: false,
-    text: "Пошаговый план варки с таймерами на экране — отмечайте шаги по ходу дня"
+    text: "Шаги варки и таймеры"
   },
   {
     icon: Cpu,
     title: "Автомат",
     soon: true,
-    text: "Контроллер BrewForge ведёт варку по рецепту: нагрев, паузы затирания, таймеры хмеля"
+    text: "Контроллер BrewForge ведёт варку по рецепту: нагрев, паузы затирания, таймеры внесения хмеля"
   }
 ];
 
@@ -125,7 +125,7 @@ export function HomeBrewforge() {
         </div>
         <div className="mt-4 flex flex-wrap items-baseline gap-3">
           <span className="text-[44px] font-extrabold leading-none tabular-nums" style={{ fontFamily: "var(--font-display)" }}>66,8 °C</span>
-          <span className="text-sm tabular-nums text-zinc-400">цель 67,0 °C · осталось 18 мин</span>
+          <span className="text-sm tabular-nums text-zinc-400">задано 67,0 °C · осталось 18 мин</span>
         </div>
         <p className="mt-2 text-sm text-zinc-400">
           Дальше: <span className="font-semibold text-zinc-100">осахаривание 72 °C</span> → кипячение <span className="tabular-nums">60 мин</span>

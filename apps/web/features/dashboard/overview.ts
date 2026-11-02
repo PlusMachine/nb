@@ -122,7 +122,7 @@ export const buildDashboardOnboarding = ({
     {
       key: "stock",
       title: "Пополните склад",
-      hint: "Занесите остатки — рецепты покажут, чего хватает для варки.",
+      hint: "Добавьте ингредиенты, которые у вас есть, чтобы найти подходящие рецепты.",
       done: inventoryTotalItems > 0,
       links: [{ href: "/app/ingredients", label: "Добавить на склад" }]
     },

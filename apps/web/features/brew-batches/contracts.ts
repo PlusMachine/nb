@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import type { IngredientCategory } from "../ingredients/contracts";
+import type { VolumeMeasurements } from "./records";
 
 export const brewBatchStatuses = ["planned", "brewing", "fermenting", "completed", "cancelled"] as const;
 export type BrewBatchStatus = (typeof brewBatchStatuses)[number];
@@ -47,6 +48,7 @@ export const brewPlanSnapshotSchema = z.object({
     timedAdditions: z.array(z.record(z.string(), z.unknown()))
   }),
   whirlpoolPlan: z.array(z.record(z.string(), z.unknown())),
+  otherAdditions: z.array(z.record(z.string(), z.unknown())).optional(),
   // Внесения на стадии брожения (сухой хмель и прочие fermentation-добавки, кроме
   // дрожжей — те уже покрыты шагом «Поставить на брожение»). default([]) — старые
   // снапшоты без этого поля парсятся как пустой план, без поломки гида.
@@ -100,6 +102,7 @@ export type BrewBatchDto = {
   notes: string | null;
   /** Дегустация — пишется на завершённой партии. Отдельное поле, notes не затирает. */
   tastingNotes: string | null;
+  volumeMeasurements?: VolumeMeasurements;
   plannedFor: Date | null;
   startedAt: Date | null;
   completedAt: Date | null;
@@ -348,6 +351,12 @@ export type BrewDayStep = {
   /** Для засыпей кипячения: за сколько секунд до конца вносить (для живого
    *  обратного отсчёта от таймера кипячения). null — не привязано к кипячению. */
   boilSecondsBeforeEnd?: number | null;
+  ingredientCategory?: string | null;
+  ingredientName?: string;
+  amountLabel?: string | null;
+  useType?: string | null;
+  instructions?: string | null;
+  items?: Array<{ id: string; label: string; amount: string }>;
 };
 
 export type BrewDayStageGroup = {
@@ -360,6 +369,13 @@ export type BrewDayStepState = {
   done: boolean;
   /** ISO-момент старта таймера (для kind === "timer"); null — не запущен. */
   timerStartedAt: string | null;
+  timerDurationSeconds?: number | null;
+  completedAt?: string | null;
+  measurementValue?: number | null;
+  skipped?: boolean;
+  checkedItems?: string[];
+  measurementOperationId?: string;
+  gravitySg?: number;
 };
 
 export type BrewDayProgress = {
@@ -372,8 +388,13 @@ export const emptyBrewDayProgress: BrewDayProgress = { steps: {}, updatedAt: nul
 // Патч состояния одного шага (отметка done и/или старт/сброс таймера).
 export const brewDayStepStatePatchSchema = z.object({
   done: z.boolean().optional(),
-  timerStartedAt: z.string().datetime({ offset: true }).nullable().optional()
-}).refine((value) => value.done !== undefined || value.timerStartedAt !== undefined, {
+  timerStartedAt: z.string().datetime({ offset: true }).nullable().optional(),
+  timerDurationSeconds: z.number().int().min(0).max(86400).nullable().optional(),
+  completedAt: z.string().datetime({ offset: true }).nullable().optional(),
+  measurementValue: z.number().min(0).max(14).nullable().optional(),
+  skipped: z.boolean().optional(),
+  checkedItems: z.array(z.string().max(160)).max(100).optional()
+}).refine((value) => Object.values(value).some((field) => field !== undefined), {
   message: "Нет изменений для сохранения."
 });
 export type BrewDayStepStatePatch = z.infer<typeof brewDayStepStatePatchSchema>;

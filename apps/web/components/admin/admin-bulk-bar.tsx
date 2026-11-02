@@ -60,7 +60,7 @@ export function AdminBulkBar({ count, children, onClear, className = "" }: Admin
           onClick={onClear}
           className="min-h-9 rounded-md px-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
         >
-          Снять выбор
+          Сбросить выбор
         </button>
       ) : null}
       <div className="ml-auto flex flex-wrap items-center gap-2">{children}</div>

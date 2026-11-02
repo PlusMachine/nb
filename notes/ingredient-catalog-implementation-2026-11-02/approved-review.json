@@ -1,0 +1,1851 @@
+{
+  "schemaVersion": 1,
+  "currentItem": null,
+  "items": [
+    {
+      "item": "malt-01-heidelberg-colour",
+      "status": "approved_pending_implementation",
+      "scope": "Correct BEST Heidelberg upper colour limit and reject invalid colour ranges during import",
+      "constraints": [
+        "Сверить исходные и актуальные источники: диапазон мог возникнуть из разных спецификаций или пересчётов.",
+        "Разделить представление верхнего предела и явное значение для расчётов; не подменять одно другим неявно.",
+        "Проверить мастер рецептов, цвет, водный план и влияние на сохранённые рецепты перед применением."
+      ],
+      "before": "01-heidelberg-before.png",
+      "proposed": "01-heidelberg-proposed.png",
+      "title": "BEST Heidelberg: верхний предел цветности",
+      "source": "https://bestmalz.de/en/malts/best-heidelberg/"
+    },
+    {
+      "item": "malt-02-specific-search-ranking",
+      "title": "Поиск солода: точный бренд, название и номер продукта",
+      "status": "approved_pending_implementation",
+      "scope": "Prioritize brand + product name + numeric designation together, then same-brand variants, then broader alternatives; reuse shared search service.",
+      "query": "Viking Caramel 250",
+      "currentRank": 15,
+      "proposedRank": 1,
+      "currentTop": [
+        {
+          "id": "viking-malt-cara-crystal-150-fi-special",
+          "text": "Кара Кристалл 150\n\nCara Crystal 150\n·\nViking Malt\n·\nFI\n\n144.8 EBC\nЭкстрактивность 76%\nБелок 11.2%"
+        },
+        {
+          "id": "viking-malt-cara-crystal-300-fi-special",
+          "text": "Кара Кристалл 300\n\nCara Crystal 300\n·\nViking Malt\n·\nFI\n\n287 EBC\nЭкстрактивность 76%\nБелок 11.2%"
+        },
+        {
+          "id": "viking-malt-cara-crystal-50-fi-special",
+          "text": "Кара Кристалл 50\n\nCara Crystal 50\n·\nViking Malt\n·\nFI\n\n48.3 EBC\nЭкстрактивность 76%\nБелок 11.2%"
+        }
+      ],
+      "proposedTop": [
+        {
+          "id": "viking-malt-caramel-250-fi-special",
+          "text": "Карамель 250\n\nCaramel 250\n·\nViking Malt\n·\nFI\n\n220.2 EBC\nЭкстрактивность 82.1%\nБелок 75%"
+        },
+        {
+          "id": "viking-malt-cara-crystal-250-fi-special",
+          "text": "Кара Кристалл 250\n\nCara Crystal 250\n·\nViking Malt\n·\nFI\n\n238.8 EBC\nЭкстрактивность 76%\nБелок 11.2%"
+        },
+        {
+          "id": "viking-malt-cara-plus-250-fi-special",
+          "text": "Кара Плюс 250\n\nCara Plus 250\n·\nViking Malt\n·\nFI\n\n238.8 EBC\nЭкстрактивность 76%\nБелок 11.2%"
+        }
+      ],
+      "before": "02-search-before.png",
+      "proposed": "02-search-proposed.png",
+      "proposalOnly": true,
+      "ingredientDataPreservedInMock": true,
+      "userDecision": "Пункт 2 подтверждаю. Показывай следующий.",
+      "validationRequirements": [
+        "Проверить единый поиск в каталоге, складе и мастере рецептов на конкретных и общих запросах.",
+        "Проверить, что выбор результата сохраняет корректный ingredient ID и его технические характеристики."
+      ]
+    },
+    {
+      "item": "malt-03-unverified-protein",
+      "title": "Viking Caramel 250: неподтверждённый белок 75%",
+      "status": "approved_pending_implementation",
+      "scope": "Пометить сомнительное значение белка как неподтверждённое: показывать отсутствие подтверждённых данных в карточке, убрать числовой бейдж из списка до проверки; сохранить исходные 75% и ссылку в истории проверки, подтверждённое значение внести после получения спецификации.",
+      "before": "03-viking-protein-before.png",
+      "proposed": "03-viking-protein-proposed.png",
+      "currentText": "ПАРАМЕТРЫ\nЦвет\n220.2 EBC\nЭкстрактивность\n82.1%\nБренд\nViking Malt\nСтрана\nFI\nБелок\n75%",
+      "proposedText": "ПАРАМЕТРЫ\nЦвет\n220.2 EBC\nЭкстрактивность\n82.1%\nБренд\nViking Malt\nСтрана\nFI\nБелок\nНет подтверждённых данных",
+      "originalSource": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10-2",
+      "replacementValueConfirmed": false,
+      "proposalOnly": true,
+      "validationRequirements": [
+        "Проверить совпадение состояния поля в каталоге, складе и мастере рецептов.",
+        "Проверить, что неизвестный белок не подменяется нулём или вымышленным значением.",
+        "Проверить неизменность OG, FG, IBU и цвета при изменении только справочного поля белка."
+      ],
+      "userDecision": "Пункт 3 подтверждаю. Показывай следующий."
+    },
+    {
+      "item": "malt-04-weyermann-duplicates",
+      "title": "Две карточки тёмного пшеничного Weyermann",
+      "status": "approved_pending_implementation",
+      "scope": "После подтверждения идентичности продукта показывать одну каноническую карточку тёмного пшеничного Weyermann с обоими английскими названиями и ссылкой на спецификацию. Различия характеристик из старых источников сохранять как исторические данные; обеспечить сохранность параметров рецептов, партий склада и пользовательских вариантов.",
+      "legacyId": "weyermann-dark-wheat-de-base",
+      "canonicalId": "weyermann--wheat-malt-dark",
+      "before": "04-weyermann-duplicates-before.png",
+      "proposed": "04-weyermann-duplicates-proposed.png",
+      "currentText": [
+        "Пшеничный темный\n\nDark Wheat\n·\nWeyermann\n·\nDE\n\n18.3 EBC\nЭкстрактивность 84.4%\nБелок 12%",
+        "Пшеничный темный\n\nWheat Malt Dark\n·\nWeyermann\n·\nDE\n\n15-20 EBC\nЭкстрактивность 81%"
+      ],
+      "proposedText": "Пшеничный тёмный\n\nWheat Malt Dark\n·\nWeyermann\n·\nDE\n\n15-20 EBC\nЭкстрактивность от 81%\n\nДругие названия: Dark Wheat · Wheat Malt Dark\n\nСпецификация Weyermann ↗",
+      "primarySource": "https://www.weyermann.de/wp-content/uploads/2021/05/Weyermann%C2%AE-Dark-Wheat-Malt_Specification-1.pdf",
+      "specification": {
+        "crop": 2025,
+        "colorEbcMin": 15,
+        "colorEbcMax": 20,
+        "extractDryBasisMinPct": 81
+      },
+      "proposalOnly": true,
+      "validationRequirements": [
+        "Подтвердить один и тот же продукт, а не разные линейки, варианты обработки или спецификации партий.",
+        "Не заменять 84.4% на 81% и цвет 18.288 EBC на другое значение в существующих рецептах и складских партиях автоматически; обеспечить сохранение исходных параметров до изменения ссылок.",
+        "Проверить сохранение связей рецептов, склада, личных вариантов, избранного и ссылок покупки; старые ссылки должны открываться.",
+        "Проверить поиск по обоим английским названиям и русскому имени в каталоге и мастере рецептов.",
+        "Проверить, что повторная синхронизация каталога не воссоздаёт подтверждённый дубль."
+      ],
+      "userDecision": "Подтвердить"
+    },
+    {
+      "item": "malt-05-browse-filters",
+      "title": "Фильтры каталога солода: тип, производитель и диапазон EBC",
+      "status": "approved_pending_implementation",
+      "scope": "Полный доступ ко всем продуктам солода через общий поиск по названию, бренду и алиасам. Оставить быстрые чипы для частых производителей и видов; добавить «Все производители…» и «Все виды…» с полными списками и поиском внутри. Дополнить диапазоном EBC, сохранять совместные фильтры и URL; переиспользовать общий IngredientPicker, данные и сервис поиска, не создавать второй справочник или поиск.",
+      "before": "05-malt-filters-before.png",
+      "proposed": "05-malt-filters-proposed-v3.png",
+      "proposalOnly": true,
+      "filtersAppliedInMock": false,
+      "validationRequirements": [
+        "Фильтровать весь каталог, а не только первые 50 результатов текущей страницы.",
+        "Нормализовать типы солода для фильтров: caramel/special/specialty не должны случайно исключать карамельные продукты; проверить Viking Caramel 250.",
+        "Сопоставлять производителей по каноническому имени и алиасам.",
+        "Определить и проверить правила попадания диапазонов и односторонних границ EBC в числовой фильтр; отдельно обработать неизвестный цвет.",
+        "Проверить сочетания фильтров, поиска, сортировки, пагинации, очистку и восстановление по URL.",
+        "Сохранить идентификаторы и характеристики выбранных ингредиентов; фильтры не изменяют рецептурные данные.",
+        "При реализации использовать NumericInput для чисел и адаптировать раскладку для узких экранов.",
+        "Быстрые чипы не ограничивают доступ ко всем производителям, видам и конкретным наименованиям каталога.",
+        "Полные списки берут данные из общего каталога и классификатора; не создавать независимые справочники или вторую реализацию поиска.",
+        "Проверить редкие виды: копчёный, бисквитный, меланоидиновый, ржаной, овсяный, а также неизвестную или смешанную классификацию.",
+        "Проверить поиск по конкретному продукту с брендом, английскому/русскому названию и алиасам; результат сохраняет ингредиентный ID.",
+        "Для полных списков обеспечить ввод для поиска, управление клавиатурой, явное подтверждение выбора и очистку фильтра."
+      ],
+      "userComments": [
+        "а разве сейчас быстрых чипов нет с брендом?",
+        "ну или как ты считаешь? быть может лучше иметь выбор по всем наименованиям солода?"
+      ],
+      "clarification": "Чипы брендов и типов уже существуют в общем IngredientPicker, используемом складом и мастером; их пока нет в полноэкранном каталоге /catalog/malts. Уточнённый макет повторно использует знакомые чипы, без новых выпадающих списков бренда и типа.",
+      "supersededProposals": [
+        "05-malt-filters-proposed.png",
+        "05-malt-filters-proposed-v2.png"
+      ],
+      "revision": 3,
+      "fullAccessSemantics": {
+        "productNames": "Основной поиск и результаты каталога охватывают все карточки, с брендом и параметрами для различения.",
+        "manufacturers": "Полный доступ, включая производителей вне быстрых чипов; список с поиском.",
+        "maltKinds": "Полный нормализованный набор видов из каталога, включая отсутствующие в 8 текущих быстрых семействах; список с поиском."
+      },
+      "userDecision": "подтверждаю"
+    },
+    {
+      "item": "hop-06-aroma-profile",
+      "title": "Показывать известный аромат хмеля в карточке",
+      "status": "approved_pending_implementation",
+      "scope": "Вывести существующие дескрипторы аромата отдельным блоком карточки по-русски, сохранить оригинальные термины EN и прямую ссылку на проверенный источник. Не менять числовые параметры хмеля и рецептов. Пример: us-citra-standard.",
+      "before": "06-hop-aroma-before.png",
+      "proposed": "06-hop-aroma-proposed.png",
+      "evidence": "06-hop-aroma-evidence.json",
+      "proposalOnly": true,
+      "changesSavedToApp": false,
+      "verifiedSource": "https://www.yakimachief.com/variety/citra-brand",
+      "validationRequirements": [
+        "Показывать только имеющиеся подтверждённые дескрипторы; отсутствующий профиль не заполнять предположениями.",
+        "Перевод хранить в общем словаре терминов; сохранять английский оригинал, в частности Woody не подменять конкретной нотой Pine.",
+        "Источник должен соответствовать сорту и продукту; различать сортовой профиль и особенности конкретной формы, смеси или урожая.",
+        "Сохранить ingredient ID, фасовки, исходные данные рецептов и параметры расчёта IBU без изменений.",
+        "Проверить переносы на узком экране, управление раскрытием оригинальных терминов с клавиатуры и доступность ссылки на источник."
+      ],
+      "previewChecks": {
+        "existingParameterTextUnchanged": true,
+        "desktopHorizontalOverflow": false,
+        "englishTermsExpandable": true
+      },
+      "userDecision": "Пункт 6 подтверждаю. Показывай следующий."
+    },
+    {
+      "item": "hop-07-supplier-variants",
+      "title": "Группировать варианты одного сорта, страны и формы хмеля для сравнения поставщиков",
+      "status": "approved_pending_implementation",
+      "scope": "В списке каталога показывать один визуальный блок для подтверждённо одинакового сорта, страны и формы, внутри сохранять отдельные позиции поставщиков с их параметрами и ссылками. Пример: две позиции Citra US T-90. Это представление списка, без объединения записей ингредиентов.",
+      "before": "07-hop-variants-before.png",
+      "proposed": "07-hop-variants-proposed.png",
+      "mobilePreview": "07-hop-variants-proposed-mobile.png",
+      "evidence": "07-hop-variants-evidence.json",
+      "proposalOnly": true,
+      "changesSavedToApp": false,
+      "exampleIngredientIds": [
+        "us-citra-beervingem-standard",
+        "us-citra-standard"
+      ],
+      "validationRequirements": [
+        "Сохранять самостоятельные ingredient ID, фасовки, источники, избранное, складские и рецептурные ссылки каждого поставщика. Не выполнять merge записей.",
+        "В мастере рецептов и при добавлении на склад выбирать конкретный вариант поставщика; групповой заголовок не должен выбирать поставщика автоматически.",
+        "Не усреднять параметры поставщиков и не менять сохранённые альфа-кислоты, переопределения партии или рецептурные значения.",
+        "Группировать только при подтверждённой идентичности сорта, страны и формы; не обрезать Cryo или другие модификаторы эвристикой имени. Неизвестные случаи оставлять отдельными.",
+        "Сохранять Cryo, T90, шишковой хмель, концентраты и разные страны в разных группах.",
+        "Сама визуальная группировка не должна менять правила взаимозаменяемости в сопоставлении рецепта со складом.",
+        "Сохранить единый IngredientPicker и основу поиска. Группы строить до пагинации, явно учитывать количество групп и самостоятельных позиций.",
+        "Поиск по бренду или точному продукту должен сохранять найденный вариант; не подмешивать неподходящих поставщиков как совпадения.",
+        "Сохранить все существенные различия параметров. Отсутствие бета-кислот не подменять нулём или значением другого поставщика.",
+        "Проверить доступность действий с клавиатуры, отдельные подписи ссылок для вариантов и переносы на мобильных экранах."
+      ],
+      "previewChecks": {
+        "ingredientLinksPreserved": true,
+        "individualAlphaValuesPreserved": true,
+        "desktopHorizontalOverflow": false,
+        "mobile390HorizontalOverflow": false
+      },
+      "userDecision": "Пункт 7 подтверждаю. Показывай следующий."
+    },
+    {
+      "item": "hop-08-missing-alpha-fallback",
+      "title": "Явно показывать отсутствие альфы и убрать молчаливую подстановку 5% в расчёте горечи",
+      "status": "approved_pending_implementation",
+      "scope": "Показывать «Альфа-кислота — Не указана» для хмеля без всех трёх значений min/max/typical. При добавлении в рецепт предложить ввести альфу с упаковки партии. Если участвующему в расчёте IBU внесению не хватает альфы, помечать итог как неполный/недоступный с указанием причины, без неявной подстановки 5% или нуля. Черновик сохранять разрешено.",
+      "before": "08-missing-alpha-before.png",
+      "proposed": "08-missing-alpha-proposed.png",
+      "mobilePreview": "08-missing-alpha-proposed-mobile.png",
+      "evidence": "08-missing-alpha-evidence.json",
+      "calculationEvidence": "08-missing-alpha-calculation-evidence.json",
+      "proposalOnly": true,
+      "changesSavedToApp": false,
+      "exampleIngredientId": "us-willamette-beervingem-standard",
+      "confirmedProblem": {
+        "catalogAlpha": null,
+        "serverCalculationFallbackAlpha": 5,
+        "exampleCalculatedIbu": 11.5,
+        "exampleIsActualSavedRecipe": false
+      },
+      "codeReferences": [
+        "apps/web/features/ingredients/technical-fields.ts:getIngredientAlphaAcidPercent",
+        "apps/web/features/recipes/service.ts:1462",
+        "apps/web/features/calculators/definitions.ts:1762"
+      ],
+      "validationRequirements": [
+        "Не назначать Willamette или другим неизвестным позициям новую числовую альфу без подтверждённого источника. Сортовой диапазон не выдавать за измерение партии.",
+        "Сохранять приоритет явной альфы партии/пользователя и импортированной альфы, проверять перенос значения при смене ингредиента.",
+        "Убрать молчаливую подстановку отсутствующей альфы в рецептурном сервисе и автозаполнении калькулятора; не заменять неизвестное значение нулём.",
+        "Применить одинаковую семантику неизвестных данных в предварительном расчёте мастера, серверном сохранении, масштабировании, экспорте и калькуляторе.",
+        "Если остальные внесения известны, не выдавать их сумму за полный IBU рецепта: отдельный статус неполноты и указание проблемного внесения.",
+        "Не требовать альфу от dry hop или других внесений, для которых используемая модель не рассчитывает вклад в горечь; проверить способы внесения и все поддерживаемые формулы.",
+        "Сохранение черновика без альфы разрешено. Ошибка горечи не должна обнулять OG, FG, цвет или другие независимые расчёты.",
+        "Существующие рецепты, партии и сохранённые расчётные снимки не пересчитывать молча. Выявить зависимость исторического IBU от fallback 5% и предусмотреть понятный явный пересчёт без выдачи допущения за альфу партии.",
+        "При наличии min/max или typical сохранить текущую отдельно согласованную логику диапазона; не превращать все диапазоны в неизвестные значения.",
+        "Для ввода использовать существующий NumericInput, поддержку десятичной запятой и серверную валидацию диапазона.",
+        "Регрессионно проверить известную альфу, полностью неизвестную альфу, ручной override, импорт, смесь известных и неизвестных внесений, dry hop и старые рецепты."
+      ],
+      "previewChecks": {
+        "existingParameterValuesPreserved": true,
+        "newNumericAlphaAdded": false,
+        "desktopHorizontalOverflow": false,
+        "mobile390HorizontalOverflow": false
+      },
+      "sourceCheck": {
+        "catalogSourceUrl": "https://www.mirbeer.ru/catalog/pivovarenie/hmel/hmel_50_100_g/hmel_willamette_ssha_50_g/",
+        "sourceContentVerifiedThisTurn": false,
+        "reason": "Web fetch failed; no replacement alpha inferred."
+      },
+      "userDecision": "Пункт 8 подтверждаю. Показывай следующий."
+    },
+    {
+      "item": "hop-09-characteristic-ranges",
+      "title": "Показывать диапазоны характеристик хмеля и отдельно альфу, используемую для расчёта",
+      "status": "approved_pending_implementation",
+      "scope": "В карточке и согласованных представлениях каталога выводить исходные диапазоны альфа-/бета-кислот и проверенных масел, а не выдавать максимум диапазона за точное значение. Для альфы отдельно показать существующее эффективное значение для расчёта, сохранив правила выбора значения и приоритет партии/пользователя. Пример: Challenger Yakima Chief Hops.",
+      "before": "09-hop-ranges-before.png",
+      "proposed": "09-hop-ranges-proposed.png",
+      "mobilePreview": "09-hop-ranges-proposed-mobile.png",
+      "evidence": "09-hop-ranges-evidence.json",
+      "normalizationEvidence": "09-hop-ranges-normalization-evidence.json",
+      "proposalOnly": true,
+      "changesSavedToApp": false,
+      "exampleIngredientId": "gb-challenger-standard",
+      "verifiedSource": "https://www.yakimachief.com/variety/challenger",
+      "verifiedSourceRanges": {
+        "alphaPct": [
+          6.5,
+          8.5
+        ],
+        "betaPct": [
+          3.5,
+          5
+        ],
+        "oilMlPer100g": [
+          0.5,
+          1.5
+        ]
+      },
+      "calculationAlphaPreserved": 7.5,
+      "affectedRawRows": {
+        "betaRangeWithoutTypical": 53,
+        "oilRangeWithoutTypical": 52
+      },
+      "codeReferences": [
+        "apps/web/features/ingredients/technical-fields.ts:608",
+        "apps/web/features/ingredients/technical-fields.ts:609",
+        "apps/web/features/ingredients/technical-fields.ts:610",
+        "apps/web/app/(public)/catalog/[source]/[id]/page.tsx:renderTechnicalRows"
+      ],
+      "validationRequirements": [
+        "Сохранять min, max и typical с их смыслом и источником. Не назначать верхнюю границу или середину диапазона подтверждённым typical.",
+        "Отображать известный двусторонний диапазон, равные границы как одно значение, одностороннюю границу с «от/до», неизвестные данные как неизвестные. Не сортировать ошибочно инвертированные границы без проверки источника.",
+        "У альфы различать справочный диапазон сорта и фактически используемое значение. Ручная/партийная альфа и импортированный override сохраняют приоритет и понятную подпись.",
+        "Сохранить для примера Challenger текущую расчётную альфу 7.5%; не пересчитывать её автоматически при изменении отображения.",
+        "В этом пункте не менять формулы IBU, идентификаторы, рецептурные снимки и параметры старых рецептов/партий; проверить неизменность результатов для известных данных.",
+        "Масла отображать только в подтверждённых единицах мл/100 г; записи с сомнительными единицами или пометкой проверки не публиковать как проверенное число.",
+        "Единая семантика диапазонов в детальной карточке, списке, IngredientPicker и SEO-данных; не создавать второй каталог или отдельный механизм поиска.",
+        "При клонировании и редактировании ингредиента не превращать ранее вычисленное поле-верхнюю границу в подтверждённое измерение typical и не терять исходный диапазон.",
+        "Проверить мобильные переносы, проценты и единицы, отображение alpha override, полных и односторонних диапазонов, отсутствие диапазона и конфликт источников."
+      ],
+      "previewChecks": {
+        "individualSourceRangesPreserved": true,
+        "calculationAlphaUnchanged": true,
+        "desktopHorizontalOverflow": false,
+        "mobile390HorizontalOverflow": false
+      },
+      "userDecision": "Пункт 9 подтверждаю. Показывай следующий."
+    },
+    {
+      "item": "yeast-10-low-attenuation-calculation",
+      "title": "Не повышать низкую аттенюацию специальных дрожжей до 50% в расчёте FG",
+      "status": "approved_pending_implementation",
+      "scope": "Учитывать подтверждённые низкие значения аттенюации специальных дрожжей и явный пользовательский ввод в расчёте FG. Устранить принудительное повышение итоговой аттенюации до 50%, не менять значение 15% в каталоге LA-01. Проверить особенности модели для low/no alcohol штаммов. Результат остаётся расчётной оценкой.",
+      "before": "10-low-attenuation-before.png",
+      "fullCurrentCard": "10-low-attenuation-card-before.png",
+      "proposed": "10-low-attenuation-comparison.png",
+      "mobilePreview": "10-low-attenuation-comparison-mobile.png",
+      "proposedImageType": "Calculation illustration: reproduced current function output versus formula reference, not an implemented recipe screen.",
+      "evidence": "10-low-attenuation-preview-evidence.json",
+      "calculationEvidence": "10-low-attenuation-calculation-evidence.json",
+      "proposalOnly": true,
+      "changesSavedToApp": false,
+      "exampleIngredientId": "fermentis-la-01",
+      "primarySources": [
+        "https://fermentis.com/en/product/safbrew-la-01/",
+        "https://fermentis.com/en/apparent-attenuation/15/"
+      ],
+      "confirmedExample": {
+        "og": 1.04,
+        "grainBill": "100% base Pilsner",
+        "mashCorrection": false,
+        "catalogAttenuationPct": 15,
+        "currentEffectiveAttenuationPct": 50,
+        "currentFg": 1.02,
+        "formulaReferenceFgAt15Pct": 1.034,
+        "actualSavedRecipe": false
+      },
+      "codeReferences": [
+        "apps/web/features/recipes/fg-estimate.ts:MIN_EFFECTIVE_ATTENUATION_PCT",
+        "apps/web/features/recipes/fg-estimate.ts:effectiveAttenuationPct",
+        "packages/brewing-core/src/calculations/gravity.ts:calculateFg"
+      ],
+      "validationRequirements": [
+        "Сохранить 15% у LA-01: проблема подтверждена в ограничении модели, а не в этом каталожном значении. Не заменять низкие значения обычными 75–80%.",
+        "Проверить все места ограничения 50%: ручной override, основной расчёт и границы диапазона FG. Валидный низкий ввод не должен молча повышаться.",
+        "Для low/no alcohol штаммов проверить применимость поправок на засыпь и затирание с учётом доступных сахаров; не считать простое снятие ограничения гарантией точного результата для любого сусла.",
+        "Сохранить валидацию конечных чисел, отрицательных и недопустимых значений. Отсутствие данных по дрожжам не трактовать как нулевую аттенюацию.",
+        "Сохранить приоритет явно заданной или измеренной FG, пользовательской аттенюации и импортированных параметров.",
+        "Существующие рецепты, варки и сохранённые расчёты не пересчитывать автоматически. При явном пересчёте объяснить изменение FG и зависимого ABV.",
+        "Использовать общую функцию расчёта для предварительного результата мастера, сервера сохранения и масштабирования; не создавать параллельную формулу.",
+        "Проверить регрессии обычных штаммов US-05/S-04, LA-01, LoNa, ручного ввода ниже 50%, неизвестных дрожжей, диапазонов, сахаров, лактозы и поправок затирания.",
+        "Пример 1.034 — значение формулы при 15% и заданных условиях, а не обещание фактической FG или гарантированного безалкогольного результата."
+      ],
+      "previewChecks": {
+        "currentCatalog15PctVerified": true,
+        "currentFunctionClamp50PctReproduced": true,
+        "referenceFg1p034Verified": true,
+        "desktopHorizontalOverflow": false,
+        "mobile390HorizontalOverflow": false
+      },
+      "userDecision": "Пункт 10 подтверждаю. Показывай следующий."
+    },
+    {
+      "item": "yeast-11-product-specific-packages",
+      "title": "Проверять фасовки конкретного продукта и показывать их происхождение",
+      "status": "approved_pending_implementation",
+      "scope": "Для LA-01 добавить подтверждённые Fermentis заводские упаковки 500 г и 10 кг со ссылкой на источник. Сохранить существующую запись 11.5 г и её идентификатор, явно отметить отсутствие подтверждённого источника фасовки до проверки. Розничные/перефасованные варианты учитывать отдельно при наличии источника или указанного пользователем веса. Не назначать фасовку по одному лишь бренду.",
+      "before": "11-yeast-packages-before.png",
+      "proposed": "11-yeast-packages-proposed.png",
+      "mobilePreview": "11-yeast-packages-proposed-mobile.png",
+      "evidence": "11-yeast-packages-evidence.json",
+      "proposalOnly": true,
+      "changesSavedToApp": false,
+      "exampleIngredientId": "fermentis-la-01",
+      "retainedVariantId": "fermentis-la-01-pack-11p5g",
+      "verifiedSource": "https://fermentis.com/en/product/safbrew-la-01/",
+      "verifiedManufacturerPackages": [
+        {
+          "amount": 500,
+          "unit": "g"
+        },
+        {
+          "amount": 10,
+          "unit": "kg"
+        }
+      ],
+      "existing11p5gOriginConfirmed": false,
+      "validationRequirements": [
+        "Масса фасовки подтверждается для конкретного продукта LA-01 и региона/поставщика, а не переносится с других дрожжей Fermentis.",
+        "Не объявлять 11.5 г ошибкой или заводской фасовкой без проверки: это может быть отдельная фасовка продавца. Хранить источник и происхождение варианта явно.",
+        "Сохранить существующий variant ID 11.5 г, его массу, stock content, складские ссылки и количество. Не заменять размер старой упаковки на 500 г или 10 кг.",
+        "Новые варианты добавлять с новыми ID без удаления и повторного создания старых записей. Исторические остатки и движения не пересчитывать.",
+        "При новом поступлении использовать выбранную фактическую фасовку и её содержимое либо введённую пользователем массу. Не выбирать неподтверждённый размер или новую крупную упаковку автоматически как замену прежней.",
+        "Сохранить возможность учёта фасовки продавца/своего веса. Не требовать заводскую упаковку для корректного ввода фактической массы.",
+        "Проверить приоритет выбранной фасовки над общим техническим fallback размера сухих дрожжей и над брендовой эвристикой.",
+        "Проверить нормализацию: новая упаковка 500 г даёт 500 г; 10 кг даёт 10000 г; старая упаковка 11.5 г остаётся 11.5 г. Учитывать частичные остатки и ручную массу.",
+        "Параметры дрожжей, аттенюация, количество граммов в существующем рецепте и расчёты FG/ABV этим изменением не меняются.",
+        "Проверить отображение происхождения и источника фасовки, выбор на складе, ссылки и поведение повторного catalog sync."
+      ],
+      "previewChecks": {
+        "current11p5gOnlyPackageVerified": true,
+        "originalVariantIdRetainedInMock": true,
+        "stockDataWritten": false,
+        "desktopHorizontalOverflow": false,
+        "mobile390HorizontalOverflow": false
+      },
+      "userDecision": "Пункт 11 подтверждаю. Показывай следующий."
+    },
+    {
+      "item": "fermentable-12-rice-hulls-process-role",
+      "title": "Учитывать рисовую лузгу как техническую добавку без прямого вклада в экстракт и цвет",
+      "status": "approved_pending_implementation",
+      "scope": "Для рисовой лузги показывать назначение фильтрующей технической добавки. При расчётах OG, состава для FG и цвета исключить её прямой вклад, вместо использования фиктивных 0.1% экстракта и 0.1 Lovibond. Складскую массу и исторические ingredient ID сохранить. Физическое влияние на воду рассматривать отдельно от вклада в экстракт.",
+      "before": "12-rice-hulls-before.png",
+      "proposed": "12-rice-hulls-proposed.png",
+      "mobilePreview": "12-rice-hulls-proposed-mobile.png",
+      "evidence": "12-rice-hulls-preview-evidence.json",
+      "calculationEvidence": "12-rice-hulls-calculation-evidence.json",
+      "proposalOnly": true,
+      "changesSavedToApp": false,
+      "exampleIngredientId": "rice-hulls-nesolozhenka",
+      "relatedExistingIngredientId": "rice-hulls-lauter-aid",
+      "primaryGeneralIngredientSource": "https://www.brewingwithbriess.com/wp-content/uploads/documents/Briess-PISB-Rice-Hulls.pdf",
+      "sourceIsExactCatalogSupplier": false,
+      "currentBehavior": {
+        "extractPct": 0.1,
+        "colorLovibond": 0.1,
+        "colorEbcDisplay": 0.2,
+        "gravityCalcMode": "excluded",
+        "isUsableInBeerGravityCalculations": false,
+        "functionalRole": "process_only",
+        "potentialPpgDespiteExcludedFlag": 0.05,
+        "waterPlanIncludesAsMashGrain": true
+      },
+      "validationRequirements": [
+        "Использовать проверенную роль process_only для рисовой лузги в общей логике расчётов. Не выдавать условные 0.1% экстракта или 0.2 EBC за подтверждённый вклад в сусло.",
+        "Исключить прямой вклад рисовой лузги в OG, цвет и доли экстракта для оценки FG. Не назначать автоматически улучшение эффективности фильтрации или экстракции.",
+        "Не применять gravity_calc_mode=excluded и is_usable_in_beer_gravity_calculations=false без разбора ко всем ингредиентам: лактоза и другое растворимое несбраживаемое сырьё могут давать OG.",
+        "Количество рисовой лузги на складе, расход в граммах, позиции рецепта и их ingredient ID сохраняются. Исправление не удаляет материал из рецепта или складских движений.",
+        "Вторую имеющуюся карточку rice-hulls-lauter-aid не сливать и не удалять автоматически. При будущей унификации сохранять оба исторических ID/ссылки и учитывать происхождение продукта.",
+        "Функциональная классификация согласуется в каталоге, поиске и IngredientPicker, без создания второго справочника.",
+        "Водопоглощение не приравнивать к экстрактивности: ни нулевое, ни солодовое поглощение не назначать по одному флагу excluded. Проверить отдельный учёт физической массы и pH-профиль; изменение модели воды требует подтверждённых данных конкретного продукта и отдельной оценки.",
+        "Существующие планы воды, измеренные потери, сохранённые рецептурные снимки и исторические расчёты не переписывать автоматически из-за смены отображения или расчётной роли.",
+        "Информация Briess подтверждает общую роль рисовой лузги, но не производителя российской записи, её белок 2% или максимум 10%. Эти поля не заменять показателями другого поставщика в рамках данного пункта.",
+        "Проверить OG/FG/цвет без лузги и с ней, ввод в g/kg, совместное использование с настоящим рисом и хлопьями, лактозой, сахаром и обычным солодом, а также склад, масштабирование и план воды."
+      ],
+      "previewChecks": {
+        "currentExtract0p1PctAndColor0p2EbcVerified": true,
+        "excludedFlagIgnoredByCurrentPotentialReproduced": true,
+        "unrelatedParameterRowsPreserved": true,
+        "desktopHorizontalOverflow": false,
+        "mobile390HorizontalOverflow": false
+      },
+      "userDecision": "Пункт 12 подтверждаю. Показывай следующий."
+    },
+    {
+      "item": "fermentable-13-hopped-extract-bitterness",
+      "title": "Учитывать охмелённые экстракты в полноте расчёта IBU",
+      "status": "approved_pending_implementation",
+      "scope": "Для охмелённых экстрактов явно показывать наличие или отсутствие данных о горечи. При проверенных данных точного продукта рассчитывать его вклад с учётом массы, объёма и указанного производителем основания. Пока данных не хватает, показывать неполный/недоступный IBU с причиной, не выдавать сумму отдельного хмеля за полный IBU рецепта. Пример: Muntons Premium Pilsner.",
+      "before": "13-hopped-extract-before.png",
+      "proposed": "13-hopped-extract-proposed.png",
+      "mobilePreview": "13-hopped-extract-proposed-mobile.png",
+      "evidence": "13-hopped-extract-preview-evidence.json",
+      "calculationEvidence": "13-hopped-extract-calculation-evidence.json",
+      "proposalOnly": true,
+      "changesSavedToApp": false,
+      "exampleIngredientId": "muntons-premium-pilsner-ekstrakty-kontsentraty",
+      "primaryTypeSource": "https://www.muntons.com/brewkit_type/muntons-premium-range/",
+      "generalBitternessBasisSource": "https://www.diybeer.com/pages/faq",
+      "exactProductIbuAndBasisConfirmed": false,
+      "affectedRawProducts": 5,
+      "confirmedCurrentBehavior": {
+        "hoppedExtractOnlyIbu": null,
+        "withAdditionalHopIbu": 14.7,
+        "sameParametersUnhoppedExtractIbu": 14.7,
+        "scenarioIsActualSavedRecipe": false,
+        "currentProductTitleAlreadySaysHopped": true
+      },
+      "validationRequirements": [
+        "Сохранить имеющийся признак охмеления: название уже говорит «Охмеленный экстракт». Новый пункт касается недостающих данных о горечи и полноты IBU, а не создания второго признака охмелённости.",
+        "Не назначать конкретное число IBU Premium Pilsner без подтверждённой спецификации именно этого продукта. Не брать значения одноимённых Pilsner из других линеек Muntons или у других производителей.",
+        "Хранить вместе с числом единицы, основание: концентрат/стандартное разведение/готовое пиво, массу продукта и референсный объём, стадию до/после брожения и источник. Пустой флаг hopped не задаёт числового вклада.",
+        "Не применять формулу разведения Coopers ко всем производителям без проверки основания данных; источник Coopers подтверждает важность основания, а не IBU Muntons.",
+        "При неизвестном вкладе экстракта отмечать IBU как неполный или недоступный. При наличии отдельных внесений хмеля их сумму можно показывать только как известную часть, с указанием отсутствующего вклада.",
+        "Различать охмелённый, неохмелённый и неизвестный статус. Не отмечать неохмелённые экстракты неполными по этой причине.",
+        "Проверенный предварительно охмелённый экстракт не превращать в дополнительную порцию сырого хмеля с вымышленной альфой и повторной утилизацией при кипячении.",
+        "Использовать общую модель для мастера, серверного сохранения, масштабирования и экспорта; совместить статус неполноты с подтверждённым пунктом 8 об отсутствующей альфе.",
+        "Сохранить явный авторский/измеренный/импортированный IBU как отдельный источник. Старые рецепты и сохранённые расчётные снимки не пересчитывать автоматически.",
+        "Плотность, FG, цвет, масса экстракта, ingredient ID, складские остатки и фасовки в рамках этого пункта не меняются.",
+        "Проверить: только охмелённый экстракт, экстракт плюс хмель, неохмелённый экстракт, неизвестное охмеление, подтверждённое разведение, иной объём и масса, повторное кипячение, импорт и сохранённые рецепты.",
+        "Проверить мобильную компоновку: у исходной карточки Muntons уже есть горизонтальный выход за 390px; текущий макет его не устраняет и в финальном показе используется desktop-кроп."
+      ],
+      "previewChecks": {
+        "originalParameterTextPreserved": true,
+        "newNumericIbuAdded": false,
+        "currentServerFunctionIssueReproduced": true,
+        "desktopHorizontalOverflow": false,
+        "mobile390HorizontalOverflow": true,
+        "mobileOverflowAlreadyPresentOnOriginal": true
+      },
+      "userDecision": "Пункт 13 подтверждаю. Показывай следующий."
+    },
+    {
+      "item": "water-14-calcium-chloride-hydration",
+      "title": "Различать безводный хлорид кальция и дигидрат в карточке, расчёте и подборе замены",
+      "status": "approved_pending_implementation",
+      "scope": "Явно указывать форму соли в названии и формуле: для calcium-chloride-dihydrate — дигидрат CaCl2·2H2O. Устранить засчитывание безводной формы как замены 1:1 по граммам. При намеренной замене предлагать пересчёт на основе подтверждённой формы и чистоты; сохранять пользовательский выбор и исторические дозы.",
+      "before": "14-calcium-chloride-before.png",
+      "proposed": "14-calcium-chloride-proposed.png",
+      "mobilePreview": "14-calcium-chloride-proposed-mobile.png",
+      "evidence": "14-calcium-chloride-preview-evidence.json",
+      "calculationEvidence": "14-calcium-chloride-calculation-evidence.json",
+      "proposalOnly": true,
+      "changesSavedToApp": false,
+      "exampleIngredientId": "calcium-chloride-dihydrate",
+      "otherFormIngredientId": "calcium-chloride-anhydrous",
+      "primarySources": [
+        "https://www.sigmaaldrich.com/US/en/product/sigald/c4901",
+        "https://www.sigmaaldrich.com/US/en/product/mm/193233"
+      ],
+      "confirmedCurrentBehavior": {
+        "bothGroupKeys": "water:cacl2",
+        "requestDihydrateG": 10,
+        "availableAnhydrousG": 10,
+        "matchStatus": "substitute",
+        "coveragePercent": 100,
+        "currentSimulatedStockMassUsedG": 10,
+        "liveStockMutated": false
+      },
+      "referenceOnly": {
+        "pureSubstancesEqualPurity": true,
+        "anhydrousMolarMassGPerMol": 110.98,
+        "dihydrateMolarMassGPerMol": 147.01,
+        "anhydrousEquivalentOf10gDihydrateG": 7.549
+      },
+      "validationRequirements": [
+        "Сохранить два самостоятельных ingredient ID и их смысл; не объединять формы и не превращать старую запись дигидрата в безводную.",
+        "Отображать полную подтверждённую расчётную формулу и форму соли. Простой CaCl2 в displayFormula не должен скрывать CaCl2·2H2O из calculationFormula.",
+        "Ключ совместимости и подбор замен должны учитывать гидратную форму, а для растворов — подтверждённую концентрацию и единицы. Упрощённая формула общего семейства не разрешает замену грамм на грамм.",
+        "Форма, не подтверждённая данными продукта или партии, остаётся неизвестной; по одному общему имени CaCl2 нельзя автоматически назначать безводную форму.",
+        "Замена другой формой проводится только как явное изменение с пересчётом массы и ионного вклада. Не выдавать 10 г безводной формы за 10 г дигидрата в покрытии и списании.",
+        "Число 7.549 г — расчётный ориентир для чистых веществ при одинаковой чистоте, не готовая дозировка конкретного продукта. Учитывать фактическую чистоту/влагу и не считать их известными без основания.",
+        "Согласовать форму соли в каталоге, IngredientPicker, модели водоподготовки, подборе со склада и списании. Использовать общую существующую логику без второго справочника.",
+        "Существующий water engine использует calcium_chloride как дигидрат с молярной массой 147.014. Его коэффициенты и сохранённые дозы не менять глобально на безводные; название должно показывать допущение модели.",
+        "Существующие планы воды, варки, складские партии и движения не пересчитывать автоматически. Пересчёт при явной замене должен показывать новую массу и изменение ионов до сохранения.",
+        "Исходные справочные коэффициенты Ca/Cl при 1 г/л и 1 г/галлон в данном макете сохранены; смена формулы отображения не должна менять проверенные числовые значения.",
+        "Проверить точное совпадение одной формы, несовпадение форм, неизвестную форму, чистоту, g/kg, растворы, эквивалентный пересчёт и соответствие покрытия фактической массе списания; проверить регрессии других солей."
+      ],
+      "previewChecks": {
+        "currentSimplifiedFormulaVerified": true,
+        "oneToOneSubstitutionReproducedWithCurrentFunctions": true,
+        "originalIonReferenceValuesPreserved": true,
+        "baselineMobile390HorizontalOverflow": false,
+        "desktopHorizontalOverflow": false,
+        "mobile390HorizontalOverflow": false
+      },
+      "userDecision": "Пункт 14 подтверждаю. Показывай следующий."
+    },
+    {
+      "item": "water-15-methods-without-inventory",
+      "title": "Оставить методы водоподготовки в справочнике, исключив складской учёт в граммах",
+      "status": "approved_pending_implementation",
+      "scope": "Аэрацию/отстаивание, кипячение воды и фильтрацию через активированный уголь показывать как справочные методы водоподготовки. В карточке вместо «Добавить на склад» дать переход к существующему описанию применения. Исключить методы из выбора складских материалов и дозировок реагентов; запретить их добавление/списание как вещества на сервере.",
+      "before": "15-water-methods-before.png",
+      "proposed": "15-water-methods-proposed.png",
+      "mobilePreview": "15-water-methods-proposed-mobile.png",
+      "evidence": "15-water-methods-preview-evidence.json",
+      "dataEvidence": "15-water-methods-data-evidence.json",
+      "proposalOnly": true,
+      "changesSavedToApp": false,
+      "exampleIngredientId": "boiling-water-decarbonation",
+      "affectedIngredientIds": [
+        "aeration-dechlorination",
+        "boiling-water-decarbonation",
+        "activated-carbon-filtration"
+      ],
+      "confirmedCurrentBehavior": {
+        "itemKind": "method",
+        "calculationSupport": "not_an_additive",
+        "inventoryEnabled": true,
+        "defaultUnit": "g",
+        "allowedUnits": [
+          "g",
+          "kg",
+          "oz",
+          "lb"
+        ],
+        "guestCardStillOffersAddToStock": true
+      },
+      "codeReferences": [
+        "packages/db/scripts/catalog-seed.ts:prepareWaterTreatment",
+        "apps/web/features/inventory/units.ts:resolveHumanFacingInventoryUnitProfile",
+        "apps/web/features/inventory/service.ts:ensureCatalogIngredientExists",
+        "apps/web/app/(public)/catalog/[source]/[id]/page.tsx:Add to inventory action"
+      ],
+      "validationRequirements": [
+        "Для item_kind=method и calculation_support=not_an_additive отключить складской учёт в исходных данных/подготовке каталога. Не скрывать методы из общего справочника и не удалять их ID.",
+        "В карточках методов показывать явный тип «Метод водоподготовки» и ссылку к существующему описанию применения. Не предлагать добавить метод на склад или создать его копию как дозируемый реагент.",
+        "Проверку допустимости проводить на сервере добавления и изменения инвентаря, в том числе по прямой ссылке, импорту и переносу из покупок. Одного скрытия кнопки недостаточно: текущий ensureCatalogIngredientExists проверяет только isActive.",
+        "Использовать одну политику допустимости в каталожных действиях, контекстном IngredientPicker, складских формах, рецептурных реагентах и списании; не создавать отдельный каталог методов.",
+        "В общем поиске методы доступны как справочная информация. В поиске для склада фильтровать допустимость до пагинации, с согласованными подсказками и обработкой прямого addId.",
+        "Не назначать методу фиктивную массу, упаковку или ионный вклад. Изменения модели фактической обработки воды и числовых эффектов кипячения/фильтрации не входят в этот пункт.",
+        "Физический активированный уголь, картридж или другой расходный материал — самостоятельный товар; не запрещать его учёт по одному совпадению названия или алиаса с методом фильтрации.",
+        "Существующие складские записи методов, если они есть, автоматически не удалять и не переводить в другой материал. Сохранить историю и предусмотреть явный разбор таких записей.",
+        "Не менять дозировки настоящих солей/кислот, остатки материалов и сохранённые планы воды. После catalog sync методы не должны снова становиться складскими.",
+        "Проверить все три метода, прямое обращение к серверу, перенос из покупок, производные пользовательские записи, точный поиск и положительный контроль добавления настоящего реагента.",
+        "Кнопка макета ведёт к уже имеющемуся разделу «Применение»; новые инструкции по обработке воды и научные утверждения этим пунктом не добавлены."
+      ],
+      "previewChecks": {
+        "threeMethodRowsInventoryEnabledAndGramDefaultReproduced": true,
+        "currentAddToStockActionVerified": true,
+        "replacementUsageLinkVerified": true,
+        "desktop760HorizontalOverflow": false,
+        "mobile390HorizontalOverflow": false,
+        "liveInventoryWritten": false
+      },
+      "userDecision": "Пункт 15 подтверждаю. Показывай следующий."
+    },
+    {
+      "item": "additive-16-spice-substitution-identity",
+      "title": "Не считать разные специи аналогами по одному общему типу",
+      "status": "approved_pending_implementation",
+      "scope": "В подборе добавок со склада учитывать сам ингредиент и значимые различия его формы. Общий subtype spice не должен разрешать замену кориандра корицей. Автоматическое покрытие и списание допускаются для того же ингредиента или подтверждённого эквивалента. Выбор другой специи должен быть явным изменением рецепта.",
+      "comparison": "16-spice-match-comparison.png",
+      "before": "16-spice-match-comparison.png",
+      "proposed": "16-spice-match-comparison.png",
+      "imageType": "Two-column illustration: current function output and proposed rule; not a real user recipe screen.",
+      "mobilePreview": "16-spice-match-comparison-mobile.png",
+      "evidence": "16-spice-match-preview-evidence.json",
+      "calculationEvidence": "16-spice-match-calculation-evidence.json",
+      "proposalOnly": true,
+      "changesSavedToApp": false,
+      "exampleIngredientId": "coriander-seed",
+      "incorrectSubstituteIngredientId": "cinnamon-stick",
+      "confirmedCurrentBehavior": {
+        "requiredCorianderG": 10,
+        "availableCinnamonG": 100,
+        "bothGroupKeys": "consumable:spice",
+        "status": "substitute",
+        "coveragePercent": 100,
+        "simulatedCinnamonRemainingG": 90,
+        "realStockWritten": false,
+        "sameCorianderControlStatus": "covered"
+      },
+      "proposedExample": {
+        "status": "missing",
+        "missingCorianderG": 10,
+        "cinnamonRemainingG": 100
+      },
+      "codeReferences": [
+        "apps/web/features/ingredients/match-group.ts:resolveConsumableGroupKey",
+        "apps/web/features/recipes/match-service.ts:matchLineAgainstInventory",
+        "apps/web/features/recipes/match-service.ts:findSubstituteCandidatesForLine"
+      ],
+      "validationRequirements": [
+        "Общая группа «Специи» остаётся фильтром каталога, но не является достаточным основанием взаимозаменяемости ингредиентов.",
+        "Точное совпадение ingredient ID и подтверждённая идентичность продукта сохраняют приоритет. Эквивалентность между разными ID должна быть явно обоснована, а не выведена из одной категории, вкусового тега или похожего имени.",
+        "Учитывать значимые признаки материала: семена/листья/кора, целая/дроблёная/молотая форма, экстракт/натуральная специя и концентрация. Не назначать дозировку 1:1 между формами без правила.",
+        "Не показывать корицу кандидатом на складскую замену кориандра. При отсутствии кориандра отображать его нехватку; запас корицы не должен уменьшаться в бюджете сопоставления и списании.",
+        "Явное изменение специи пользователем должно менять ингредиент рецепта и показывать его реальное название; не выполнять его как скрытую подстановку другого складского материала.",
+        "Использовать общий критерий совместимости в матче наличия, кандидатах на замену и фактическом списании, чтобы доступность не расходилась с разрешённым расходом.",
+        "При наличии 5 г кориандра и 100 г корицы для потребности 10 г кориандра показывать нехватку 5 г, а не 100% покрытия за счёт корицы.",
+        "Проверить обе стороны ошибочной замены, точный кориандр, точную корицу, разные бренды одного подтверждённого продукта, формы/экстракты, g/kg, повторные строки рецепта и общий складской бюджет.",
+        "Существующие ingredient ID, рецепты, складские партии и движения не переписывать автоматически. Не переносить изменение политики на допустимые группы солода/хмеля без отдельного обоснования.",
+        "Диагностика использует два неизменённых исходных элемента additives_v2_1.json через текущий production mapper. Перехвачен только readFileSync в отдельном диагностическом процессе, чтобы не привлекать отсутствующий исторический legacy-файл. Репозиторий и база не менялись."
+      ],
+      "previewChecks": {
+        "currentMatcherFalseSubstituteReproduced": true,
+        "sameIngredientControlCovered": true,
+        "proposedLogicImplemented": false,
+        "desktopHorizontalOverflow": false,
+        "mobile390HorizontalOverflow": false,
+        "liveInventoryWritten": false
+      },
+      "userDecision": "Пункт 16 подтверждаю. Показывай следующий."
+    },
+    {
+      "item": "consumable-17-closure-compatibility",
+      "title": "Учитывать размер и стандарт укупорки при подборе расходников",
+      "status": "approved_pending_implementation",
+      "scope": "Для упаковочных расходников проверять назначение и подтверждённую физическую совместимость: размер и стандарт укупорки. Кроненпробки 29 мм не должны покрывать потребность в 26 мм или предлагаться к списанию как их аналог. При отсутствии совместимых пробок показывать нехватку нужного размера.",
+      "comparison": "17-crown-caps-comparison.png",
+      "before": "17-crown-caps-comparison.png",
+      "proposed": "17-crown-caps-comparison.png",
+      "imageType": "Two-column illustration of current matcher output and proposed behavior; not an actual recipe screenshot.",
+      "mobilePreview": "17-crown-caps-comparison-mobile.png",
+      "evidence": "17-crown-caps-preview-evidence.json",
+      "calculationEvidence": "17-crown-caps-calculation-evidence.json",
+      "proposalOnly": true,
+      "changesSavedToApp": false,
+      "exampleIngredientId": "crown-caps-26mm",
+      "incorrectSubstituteIngredientId": "crown-caps-29mm",
+      "primaryProductReference": "https://brouwland.com/en/crown-caps/20276-crown-corks-29-mm-black-100-pcs.html",
+      "confirmedCurrentBehavior": {
+        "required26mmCount": 10,
+        "available29mmCount": 100,
+        "requiredClosureStandard": "26mm crown",
+        "stockClosureStandard": "29mm crown",
+        "bothGroupKeys": "consumable:packaging",
+        "status": "substitute",
+        "coveragePercent": 100,
+        "simulated29mmRemaining": 90,
+        "same26mmControlStatus": "covered",
+        "liveInventoryWritten": false
+      },
+      "proposedExample": {
+        "status": "missing",
+        "missing26mmCount": 10,
+        "stock29mmRemaining": 100
+      },
+      "codeReferences": [
+        "apps/web/features/ingredients/match-group.ts:resolveConsumableGroupKey",
+        "apps/web/features/recipes/match-service.ts:matchLineAgainstInventory",
+        "apps/web/features/recipes/match-service.ts:findSubstituteCandidatesForLine",
+        "apps/web/features/ingredients/technical-fields.ts:closureStandard"
+      ],
+      "validationRequirements": [
+        "Размеры и closure_standard уже присутствуют в каталоге: исправить их использование в подборе, а не создавать второй набор размеров или дубли карточек.",
+        "Группа packaging и единица item/шт. не являются основанием взаимозаменяемости. Учитывать роль товара и подтверждённые стандарты совместимости.",
+        "Для кроненпробок 26 и 29 мм исключить взаимное автоматическое покрытие и замену; в проверочном примере запас 29 мм не должен уменьшаться в бюджете подбора и списании.",
+        "Не считать совпадение одного диаметра достаточным для всех расходников: учитывать тип укупорки, совместимость с тарой и обязательные свойства, например необходимость кислородопоглощающего вкладыша.",
+        "Не сопоставлять бутылку и крышку как замену друг другу даже при общем стандарте горлышка. Для тары проверять вместимость и назначение, если они влияют на требуемое количество.",
+        "Неизвестный стандарт не трактовать как универсальную совместимость. Точное совпадение подтверждённого продукта сохраняет приоритет; межбрендовые аналоги допускаются по проверенным свойствам.",
+        "Использовать одинаковые правила в показателе наличия, кандидатах на замену и фактическом списании. Сохранить корректное точное совпадение 26 мм с 26 мм.",
+        "Сохранить нормализацию упаковок в штуки, но не переносить количество между несовместимыми размерами: 100 пробок 29 мм не становятся 100 пробками 26 мм.",
+        "Существующие ingredient ID, фасовки, остатки, движения и рецепты не менять автоматически; выбор другой тары/укупорки должен быть явным изменением соответствующего материала.",
+        "Проверить обе стороны 26/29, точное совпадение, неизвестный стандарт, разные совместимые бренды, специальные вкладыши, шт./упаковки, частичный запас и повторные потребности в одном рецепте.",
+        "Диагностика вызвала текущий production loader consumables_v1.json с его настоящим git fallback и текущие функции матчинга; старый /tmp/nb-catalog-prepared.json не использовался."
+      ],
+      "previewChecks": {
+        "closureStandardsPreservedByCurrentMapper": true,
+        "false26to29SubstitutionReproduced": true,
+        "same26mmControlCovered": true,
+        "proposedLogicImplemented": false,
+        "desktopHorizontalOverflow": false,
+        "mobile390HorizontalOverflow": false,
+        "liveInventoryWritten": false
+      },
+      "userDecision": "Пункт 17 подтверждаю. Показывай следующий."
+    },
+    {
+      "item": "cross-18-preserve-packages-on-save",
+      "title": "Сохранять фасовки и складские привязки при редактировании карточки",
+      "status": "approved_pending_implementation",
+      "scope": "При сохранении карточки обновлять существующие фасовки по их ID без удаления всех записей и повторного создания. Изменение описания или других несвязанных полей не затрагивает фасовки. Сохранить поддержку фасовок хмеля и дрожжей, ссылки склада и исторические количества. Используемые фасовки нельзя удалять без безопасного отдельного решения.",
+      "implementationPriority": "Before bulk catalog editing or applying approved catalog corrections through updateIngredient.",
+      "comparison": "18-package-save-comparison.png",
+      "before": "18-package-save-comparison.png",
+      "proposed": "18-package-save-comparison.png",
+      "imageType": "Illustration of current save function run against an in-memory DB recorder versus proposed behavior, not a real admin save screenshot.",
+      "mobilePreview": "18-package-save-comparison-mobile.png",
+      "evidence": "18-package-save-preview-evidence.json",
+      "calculationEvidence": "18-package-save-calculation-evidence.json",
+      "proposalOnly": true,
+      "changesSavedToApp": false,
+      "exampleIngredientIds": [
+        "us-citra-standard",
+        "fermentis-us-05",
+        "crown-caps-26mm"
+      ],
+      "confirmedCurrentBehavior": {
+        "changedField": "descriptionRu",
+        "CitraPackageCount": [
+          2,
+          0
+        ],
+        "US05PackageCount": [
+          1,
+          0
+        ],
+        "crown26PackageCount": [
+          2,
+          2
+        ],
+        "packageRowsDeletedForAllTypes": true,
+        "packageRowsReinsertedOnlyForConsumable": true,
+        "simulatedInventoryPackageReferenceAfterSave": null,
+        "simulatedInventoryQuantityChanged": false,
+        "liveDatabaseWritten": false
+      },
+      "foreignKeyEvidence": "userIngredients.packageVariantId has ON DELETE SET NULL in the declared Drizzle schema. The diagnostic mirrored that action; it did not execute the foreign key against a live PostgreSQL database.",
+      "codeReferences": [
+        "apps/web/features/ingredients/service.ts:upsertIngredientRelations",
+        "apps/web/features/ingredients/service.ts:updateIngredient",
+        "packages/db/src/schema.ts:userIngredients.packageVariantId"
+      ],
+      "validationRequirements": [
+        "Не выполнять delete-all для ingredient_package_variants при обычном сохранении карточки. Обновлять существующие строки на месте, добавлять новые отдельно, обрабатывать удаление адресно.",
+        "Сохранять ID фасовок и ссылки userIngredients.packageVariantId. Удаление и повторная вставка с тем же ID недостаточны: ON DELETE SET NULL уже обнуляет ссылку.",
+        "Поддержать существующие фасовки хмеля и дрожжей согласованно с seed и контрактом каталога. Текущий guard payload.type===consumable приводит к их потере.",
+        "Не трактовать отсутствие редактора фасовок или автоматически пустой массив из формы как намеренное удаление всех вариантов. Различать не переданное поле, неизменённый список и явное удаление.",
+        "Для варианта, на который ссылается складская партия, предусмотреть сохранение/архивирование или явное безопасное разрешение ссылок; не удалять его молча.",
+        "Не менять нормализованные остатки, введённое количество упаковок, содержимое исторической упаковки, движения, рецептурные снимки или расчёты при изменении описания.",
+        "Изменение массы/единицы уже использованной фасовки не должно переопределять историю: использовать новый вариант либо проверенный механизм снимков старых коэффициентов.",
+        "Обновление по variant ID должно проверять его принадлежность текущему ingredient ID; сохранять серверные права администратора и владельца пользовательской карточки.",
+        "Согласовать дифференциальное обновление с существующим seed upsert, избегая параллельной реализации справочника или обхода связей.",
+        "Проверить Citra 2→2, US-05 1→1, расходник с сохранением количества и ссылок, явное добавление варианта, изменение допустимого поля и попытку удалить используемый вариант.",
+        "Проверить FK-поведение на изолированной PostgreSQL тестовой базе или откатываемой тестовой транзакции: текущая проверка — имитация БД с воспроизведением правил из схемы, а не проверка живой БД.",
+        "Проверка использовала текущий production updateIngredient и текущие данные подготовщика, с заменёнными/заблокированными обращениями к БД в отдельном процессе. Реальные записи не изменялись; после проверки публичная Citra по-прежнему имеет две фасовки."
+      ],
+      "previewChecks": {
+        "currentDescriptionOnlySaveLossReproduced": true,
+        "consumableReinsertReferenceRiskReproducedFromSchema": true,
+        "simulatedNormalizedQuantityUnchanged": true,
+        "actualCurrentCitraPackageCount": 2,
+        "actualPostgresForeignKeyExecuted": false,
+        "proposedLogicImplemented": false,
+        "desktopHorizontalOverflow": false,
+        "mobile390HorizontalOverflow": false,
+        "liveInventoryWritten": false
+      },
+      "userDecision": "Пункт 18 подтверждаю. Показывай следующий."
+    },
+    {
+      "item": "cross-19-sync-preserve-editorial-decisions",
+      "title": "Сохранять редакторские решения при синхронизации каталога из файлов",
+      "status": "approved_pending_implementation",
+      "scope": "Синхронизация не должна отменять архивирование, объединение дублей и ручные дополнения к алиасам/источникам. Различать управляемые исходным файлом данные и редакторские изменения в существующем каталоге; применять безопасные обновления, сохранять редакторские решения и выводить конфликты в отчёт.",
+      "implementationPriority": "Together with item 18, before applying reviewed catalog corrections or merging duplicate products.",
+      "comparison": "19-sync-preservation-comparison.png",
+      "before": "19-sync-preservation-comparison.png",
+      "proposed": "19-sync-preservation-comparison.png",
+      "imageType": "Illustration of current sync function on an in-memory DB versus proposed ownership rules; not an actual admin sync screenshot.",
+      "mobilePreview": "19-sync-preservation-comparison-mobile.png",
+      "evidence": "19-sync-preservation-preview-evidence.json",
+      "calculationEvidence": "19-sync-preservation-calculation-evidence.json",
+      "proposalOnly": true,
+      "changesSavedToApp": false,
+      "exampleIngredientIds": [
+        "weyermann-dark-wheat-de-base",
+        "weyermann--wheat-malt-dark",
+        "us-citra-standard"
+      ],
+      "confirmedCurrentBehavior": {
+        "archivedCardReactivated": true,
+        "mergedDuplicateReactivated": true,
+        "mergedIntoMarkerCleared": true,
+        "manualAliasRemoved": true,
+        "manualSourceRemoved": true,
+        "editorialAttributeMarkerRemoved": true,
+        "currentSyncFunctionExercised": true,
+        "catalogFilesProcessed": 7,
+        "catalogRecordsProcessedInMock": 1403,
+        "liveDatabaseWritten": false
+      },
+      "verifiedScopeLimit": "The seed overwrites only fields present in its SET payload, and all attributes when supplied. An omitted field such as descriptionRu is not proven overwritten by this diagnostic. Do not claim that every manual field is deleted.",
+      "codeReferences": [
+        "packages/db/scripts/catalog-seed.ts:seedCatalogFile",
+        "packages/db/scripts/catalog-seed.ts:prepareHop/prepareMalt",
+        "apps/web/features/ingredients/service.ts:archiveIngredient",
+        "apps/web/features/ingredients/service.ts:mergeDuplicateIngredients"
+      ],
+      "validationRequirements": [
+        "Сохранять редакторские статусы archived, merged, draft, целевой _merged_into_id и относящиеся к ним operational metadata. isActive=true в seed не должен повторно публиковать такую запись.",
+        "Объединённый исходный ID и ссылки на него сохраняются для истории/перехода к канонической записи; sync не должен возвращать активный дубль рядом с ней.",
+        "Обновлять только алиасы и источники, которыми управляет данный импорт. Ручные дополнения и явно отключённые алиасы не удалять и не включать заново без решения редактора.",
+        "Различать базовые данные источника и явно отредактированные значения на уровне полей и происхождения. Не замораживать весь каталог и не игнорировать новые проверенные спецификации.",
+        "При конфликте нового значения с редакторской правкой сохранить текущее решение и вывести конфликт с происхождением/версией в отчёт. Опциональный dry-run помогает увидеть изменения; не вводить лишнее обязательное подтверждение для каждого безопасного обновления.",
+        "Хранить политику владения/переопределений в существующей модели каталога и метаданных, без второго runtime-каталога или отдельного поиска.",
+        "Сохранить ручное отключение складского учёта и применить согласованные правила методов из пункта 15. При следующем sync метод не должен снова становиться складским материалом.",
+        "Применить правила сохранения фасовок и ссылок из пункта 18 также к sync: не удалять используемые варианты, исчезнувшие из файла, и не менять исторические коэффициенты упаковок молча.",
+        "Не менять сохранённые параметры рецептов, варок, партий, остатки и движения из-за повторной загрузки baseline. Пересчёт и принятие новых параметров остаются явными действиями.",
+        "Проверить повторный sync без новых данных, новые исходные карточки, безопасное обновление только seed-полей, архив, слияние, draft, ручной алиас/источник, отключённый алиас, конфликт технического значения и используемую фасовку.",
+        "Проверить все вызывающие seedCatalogFromSources пути и транзакционность. Текущая проверка вызвала именно production-функцию на имитации БД со всеми семью текущими файлами, блокируя реальные операции.",
+        "При дальнейшей UI-проверке отдельно исследовать горизонтальный выход страницы на 390px, замеченный при рендере иллюстрации на странице Weyermann. Данный пункт не менял CSS приложения и не заявляет устранение этого выхода."
+      ],
+      "previewChecks": {
+        "currentProductionSyncOnMockVerified": true,
+        "manualDecisionsLostInMock": true,
+        "actualDatabaseMutated": false,
+        "proposedLogicImplemented": false,
+        "desktopHorizontalOverflow": false,
+        "mobileGlobalPageOverflow": true,
+        "mobileGlobalOverflowCauseInvestigatedInThisItem": false
+      },
+      "userDecision": "Пункт 19 подтверждаю. Показывай следующий."
+    },
+    {
+      "item": "cross-20-responsive-detail-layout",
+      "title": "Помещать параметры карточки в ширину мобильного экрана",
+      "status": "approved_pending_implementation",
+      "scope": "Исправить размеры колонок общей страницы ингредиента: на мобильном экране карточки должны занимать доступную ширину, с читаемыми переносами параметров и связанных блоков. Не скрывать выход за экран обрезкой содержимого. Сохранить данные, ссылки и существующие пропорции десктопных колонок.",
+      "before": "20-responsive-before.png",
+      "proposed": "20-responsive-proposed.png",
+      "imageType": "Actual 390px viewport crop before the change and browser-only CSS prototype after it; horizontal scroll reset to the left edge for both captures.",
+      "evidence": "20-responsive-evidence.json",
+      "proposalOnly": true,
+      "changesSavedToApp": false,
+      "exampleIngredientId": "muntons-premium-pilsner-ekstrakty-kontsentraty",
+      "confirmedCurrentBehavior": {
+        "viewportWidthPx": 390,
+        "parameterCardWidthPx": 460,
+        "documentWidthPx": 476,
+        "rightHandValuesOutsideViewport": true
+      },
+      "proposedExample": {
+        "viewportWidthPx": 390,
+        "parameterCardWidthPx": 358,
+        "documentWidthPx": 390
+      },
+      "testedIngredientIds": [
+        "muntons-premium-pilsner-ekstrakty-kontsentraty",
+        "weyermann--wheat-malt-dark",
+        "fermentis-la-01"
+      ],
+      "previewImplementation": "Explicit minmax(0,1fr) mobile grid tracks, min-width:0 grid children, and matching minmax tracks for the existing desktop proportions.",
+      "codeReferences": [
+        "apps/web/app/(public)/catalog/[source]/[id]/page.tsx:leftColumn",
+        "apps/web/app/(public)/catalog/[source]/[id]/page.tsx:grid gap-6 xl:grid-cols-[1.1fr_0.9fr]"
+      ],
+      "validationRequirements": [
+        "Исправить общую сетку страницы каталога и минимальную ширину её колонок, а не фиксировать специальный размер одной карточки Muntons.",
+        "Использовать существующий адаптивный breakpoint и пропорции десктопных колонок; на мобильном экране задать сжимаемую одну колонку и min-width:0 для обёрток.",
+        "Сохранять читаемость полных параметров, формул, названий стран, источников и длинных значений. Не решать проблему глобальным overflow-x:hidden или уменьшением шрифта.",
+        "Не менять значения ингредиентов, их ID, маршруты ссылок, исходные данные и числовую логику рецептов/воды. Прототип сохранил точный textContent main и все href.",
+        "Проверить параметры, связанные ингредиенты, источники, фасовки, научные названия культур и действия на узких экранах; переносы могут увеличивать высоту строки.",
+        "Проверить 320/390px, планшетную ширину, границу перехода к двум колонкам и десктоп. Прототип проверен в 10 комбинациях карточки/ширины: Muntons 320/390/768/1360; Weyermann и LA-01 320/390/1360.",
+        "Сохранить расположение десктопных блоков и доступность ссылок, элементов управления и фокуса. Тест на 1360px сохранил точную ширину параметров 664.390625px.",
+        "Скриншот «сейчас» должен показывать фактический экран телефона, а не автоматически расширенный снимок элемента: оба кадра сделаны клипом ровно 390px."
+      ],
+      "previewChecks": {
+        "testedCardWidthCombinations": 10,
+        "allAfterChecksWithoutHorizontalOverflow": true,
+        "mainTextContentPreserved": true,
+        "allMainLinksPreserved": true,
+        "desktopGeometryPreserved": true,
+        "dataChanged": false,
+        "actualApplicationCssEdited": false
+      },
+      "userDecision": "подтверждаю"
+    },
+    {
+      "item": "cross-21-self-contained-catalog-sources",
+      "title": "Хранить все записи добавок и расходников в действующих исходных файлах",
+      "status": "approved_pending_implementation",
+      "scope": "Материализовать 28 расходников и 29 существующих добавок из исторического JSON в два действующих файла каталога. Сохранить их точные исходные записи, ID, значения, фасовки, алиасы, источники и происхождение. Загрузка текущих каталогов должна работать без истории Git и внешнего файла /mnt/data.",
+      "comparison": "21-self-contained-catalog-comparison.png",
+      "before": "21-self-contained-catalog-comparison.png",
+      "proposed": "21-self-contained-catalog-comparison.png",
+      "imageType": "Illustration of the actual production loader diagnostic with Git disabled versus tested candidate source files; not a screenshot of a live site outage.",
+      "evidence": "21-self-contained-catalog-evidence.json",
+      "previewEvidence": "21-self-contained-catalog-preview-evidence.json",
+      "proposalFiles": [
+        "/mnt/c/Users/artyo/.codex/visualizations/2026/11/02/01a19b0d-ee77-7bc1-9219-bba5b0d70d71/ingredient-catalog-review/21-proposed-sources/additives_v2_1.json",
+        "/mnt/c/Users/artyo/.codex/visualizations/2026/11/02/01a19b0d-ee77-7bc1-9219-bba5b0d70d71/ingredient-catalog-review/21-proposed-sources/consumables_v1.json"
+      ],
+      "proposalOnly": true,
+      "changesSavedToApp": false,
+      "confirmedCurrentBehavior": {
+        "missingReferencedFile": "ingredients/new/consumables_v4_patch_proposal.json",
+        "workingTreeFileAbsent": true,
+        "externalOverrideAbsent": true,
+        "loaderUsesGitHistoryFallback": true,
+        "affectedHistoricalRecords": {
+          "consumables": 28,
+          "additives": 29,
+          "total": 57
+        },
+        "failedSourceFilesWithoutGit": [
+          "additives_v2_1.json",
+          "consumables_v1.json"
+        ],
+        "entireFileLoadFailsRatherThanOnlyMissingRecords": true,
+        "existingLiveCatalogAvailabilityNotAffectedByDiagnostic": true
+      },
+      "proposedDiagnostic": {
+        "allFilesLoad": true,
+        "preparedItems": 1403,
+        "packageVariants": 704,
+        "canonicalOutputExactlyEqual": true,
+        "baselineDigest": "26fb081e563f801edc2a1bbfca52e203afdeefcb98efa997aff2be4fad9d042e",
+        "proposalDigest": "26fb081e563f801edc2a1bbfca52e203afdeefcb98efa997aff2be4fad9d042e"
+      },
+      "sourceFileHashesAtReview": {
+        "additives": "a583b1e6f86351945502df362f38c74e50ac04f0ebb4096f9e924e5716220ecf",
+        "consumables": "6033f7abff0d5edb6e4cad2e9772ea038a5002bfe5c44e1177f4f94abb02ead3"
+      },
+      "historicalSourceCommit": "6ef8ebd9a0b04683196723641d5aba213038edfd",
+      "simulation": "Only child_process git access was disabled in a separate diagnostic process; the repository .git directory was not modified. Candidate JSON reads were redirected only within that process.",
+      "codeReferences": [
+        "packages/db/scripts/catalog-seed.ts:readCatalogFileText",
+        "packages/db/scripts/catalog-seed.ts:loadCatalogSeedItems",
+        "ingredients/new/additives_v2_1.json:source_manifest_summary.existing_item_ids",
+        "ingredients/new/consumables_v1.json:item_ids/source_catalog"
+      ],
+      "validationRequirements": [
+        "Не создавать второй runtime-каталог: полные данные остаются в двух существующих файлах, которые читает текущий общий загрузчик.",
+        "Не восстанавливать наугад и не пересобирать вручную параметры; перенести точные записи, которые возвращает текущий production-загрузчик с доступной историей.",
+        "Сохранить происхождение исторического файла и версию в метаданных; эти сведения должны быть информацией для аудита, а не обязательной зависимостью загрузки.",
+        "До применения перечитать текущие исходники и сравнить хеши: рабочее дерево развивается параллельно. Кандидатные файлы являются прототипом для обсуждения.",
+        "Проверить все семь файлов в копии без Git и без внешнего override. Текущая диагностика моделирует это отключением только Git subprocess в отдельном процессе и переадресацией чтения двух JSON на предложенные копии; директория .git не изменялась.",
+        "Сравнить полный результат production prepareCatalogSeedFile до/после, включая ID, значения, алиасы, источники и фасовки. В проверке все 1403 записи и 704 фасовки глубоко равны, SHA256 совпадает.",
+        "Не запускать реальный seed или синхронизацию ради проверки. Применение исправления не должно менять сохранённые рецепты, партии, остатки или автоматически пересчитывать мастер рецептов.",
+        "Учесть ранее подтверждённые пункты 18 и 19 перед последующим применением данных к БД: самодостаточные файлы не устраняют обнаруженные риски сохранения фасовок и редакторских решений."
+      ],
+      "userDecision": "подтверждаю"
+    },
+    {
+      "item": "water-22-acidulated-malt-grain-role",
+      "title": "Кислый солод: понятное назначение и выбор производителя",
+      "status": "approved_pending_implementation",
+      "scope": "На общей странице кислого солода показать короткое описание назначения и доступные продукты производителей. Пользователь выбирает свой солод и переходит к его обычной карточке с добавлением на склад. Для другого производителя использовать существующее создание своего солода. Техническую причину изменения оставить в реализации и аудите.",
+      "before": "22-acidulated-role-before-v2.png",
+      "proposed": "22-acidulated-role-proposed-v2.png",
+      "mobilePreview": "22-acidulated-role-proposed-v2-mobile.png",
+      "imageType": "Actual current header versus browser-only revision with direct existing product links.",
+      "evidence": "22-acidulated-role-preview-evidence-v2.json",
+      "calculationEvidence": "22-acidulated-role-calculation-evidence.json",
+      "proposalOnly": true,
+      "changesSavedToApp": false,
+      "exampleIngredientId": "acidulated-malt",
+      "primarySource": "https://www.weyermann.de/wp-content/uploads/2021/05/Weyermann%C2%AE-Acidulated-Malt_Specification-1.pdf",
+      "confirmedCurrentBehavior": {
+        "rawItemKind": "fermentable",
+        "loadedType": "water_treatment",
+        "inventoryEnabled": true,
+        "publicCardStockActionPresent": true,
+        "newWaterSaltPickerOffersThisRecord": false,
+        "diagnosticGenericAcidulatedPct": 0,
+        "diagnosticSpecificMaltAcidulatedPct": 4,
+        "genericStatsEqualToRecipeWithoutGenericLine": true,
+        "liveDatabaseWritten": false
+      },
+      "diagnosticScenario": {
+        "baseGrainG": 4800,
+        "acidulatedMaltG": 200,
+        "totalIntendedGrainG": 5000,
+        "batchVolumeL": 20,
+        "actualSavedRecipe": false
+      },
+      "verifiedScopeLimit": "This diagnostic proves exclusion of a water_treatment line from recipe grain stats and mash-pH grain composition. It does not prove that the normal new-water-addition picker offers this record; that picker intentionally includes only seven supported salts. No exact predicted pH or new extract yield is asserted.",
+      "existingSpecificProducts": [
+        "bestmalz-best-acidulated-malt",
+        "castle-malting-acid-be-special",
+        "ireks--sour",
+        "weyermann-acidulated-malt"
+      ],
+      "codeReferences": [
+        "ingredients/new/water_treatment_catalog_minimal_v2.json:acidulated-malt",
+        "packages/db/scripts/catalog-seed.ts:prepareWaterTreatment",
+        "apps/web/features/recipes/service.ts:computeRecipeStatsSnapshot",
+        "apps/web/features/recipes/water-plan-ingredients.ts:buildWaterPlanFermentables",
+        "apps/web/features/recipes/water-plan.ts:summarizeFermentablesForMashPh",
+        "apps/web/features/recipes/water-additives-catalog.ts:recipeWaterAddFlowCatalogIds",
+        "apps/web/app/(public)/catalog/[source]/[id]/page.tsx"
+      ],
+      "validationRequirements": [
+        "Сохранить найденное несоответствие доменной роли и требования к безопасности исторических данных из первой редакции; пользовательское замечание касается предложенного интерфейса, а не подтверждения пункта.",
+        "Не выводить пользователю служебные объяснения: «справка о солоде», «конкретная карточка», «водная запись», объяснения типов и устройства расчётов. Описание должно говорить о назначении солода, а выбор — предлагать реальные понятные продукты.",
+        "Показать прямые ссылки на существующие продукты Bestmalz, Castle Malting, IREKS и Weyermann с названиями с упаковки. При внедрении переиспользовать текущие ссылки и представление ингредиентов, не строить второй picker или поиск.",
+        "После выбора продукта открыть его обычную карточку, где есть привычное добавление на склад. Прототип проверяет переход на Weyermann и наличие кнопки; ссылки остальных продуктов взяты из действующих записей каталога.",
+        "Для «Другой производитель» использовать текущий /catalog/new?category=fermentable&subtype=malt. Эти параметры поддерживаются существующей страницей создания своего ингредиента. Не наследовать водный тип через derivedFrom общего acidulated-malt.",
+        "Сохранить общий acidulated-malt и его URL для существующих ссылок и истории. Не объединять его автоматически с одним брендом и не менять сохранённые партии, рецепты, движения или количества.",
+        "Не допускать новых физических партий или новых водных добавок из общей записи. Проверять это и на сервере. Конкретный солод добавляется как солод в засыпь и учитывается один раз в соответствующих расчётах.",
+        "Не назначать общему виду солода выдуманные цвет, экстрактивность, кислотность или универсальный бренд. Не представлять отсутствующие характеристики конкретного продукта как точные.",
+        "Убрать повторяющиеся и корявые тексты общей страницы про grist и противопоставление соли/кислоте; сохранить исходные сведения для аудита, а пользователю дать одно понятное описание назначения.",
+        "Сохранить действие сообщения о неточности и учитывать дальнейшее расширение списка производителей. Четыре текущих варианта являются полным проверенным набором, а не лимитом популярности.",
+        "Проверка расчётов из исходного пункта остаётся действующей: для 4800 г базового и 200 г кислого солода общая water_treatment-запись исключается из состава; конкретный malt даёт 5 кг засыпи и 4% кислого. Обычный выбор новых водных солей эту запись не предлагает; не утверждать обратное.",
+        "Проверить узкие экраны и явную доступность всех вариантов. Вторая редакция проверена при 320, 390 и 1360px без горизонтального выхода.",
+        "До применения учесть пункты 18/19 о фасовках и редакторских решениях. Изменение обсуждается как прототип; реальный seed и обновление БД не выполнялись."
+      ],
+      "previewChecks": {
+        "revision": 2,
+        "widthChecks": [
+          {
+            "width": 320,
+            "overflow": false,
+            "allChoicesVisible": true
+          },
+          {
+            "width": 390,
+            "overflow": false,
+            "allChoicesVisible": true
+          },
+          {
+            "width": 1360,
+            "overflow": false,
+            "allChoicesVisible": true
+          }
+        ],
+        "directExistingProductNavigationVerified": true,
+        "destinationHasNormalStockAction": true,
+        "otherManufacturerRouteParametersSupported": true,
+        "actualApplicationCodeEdited": false,
+        "liveDatabaseWritten": false
+      },
+      "userFeedback": [
+        {
+          "revision": 1,
+          "decision": "revise",
+          "comment": "что-то как то плохо, как будто ты внутреннюю реализацию показываешь пользователю, не понятно что ему с этой инфой делать и сформулировано коряво"
+        }
+      ],
+      "supersededRevisions": [
+        {
+          "revision": 1,
+          "status": "superseded_after_user_feedback",
+          "proposed": "22-acidulated-role-proposed.png",
+          "evidence": "22-acidulated-role-preview-evidence.json",
+          "reason": "Пользователь отметил, что интерфейс объясняет внутреннее устройство приложения и не даёт понятного действия."
+        }
+      ],
+      "revision": 2,
+      "proposedProductChoices": [
+        {
+          "id": "bestmalz-best-acidulated-malt",
+          "brand": "Bestmalz",
+          "name": "BEST Acidulated Malt",
+          "href": "/catalog/system/bestmalz-best-acidulated-malt"
+        },
+        {
+          "id": "castle-malting-acid-be-special",
+          "brand": "Castle Malting",
+          "name": "Acid",
+          "href": "/catalog/system/castle-malting-acid-be-special"
+        },
+        {
+          "id": "ireks--sour",
+          "brand": "IREKS",
+          "name": "Sour",
+          "href": "/catalog/system/ireks--sour"
+        },
+        {
+          "id": "weyermann-acidulated-malt",
+          "brand": "Weyermann",
+          "name": "Acidulated Malt",
+          "href": "/catalog/system/weyermann-acidulated-malt"
+        }
+      ],
+      "otherManufacturerHref": "/catalog/new?category=fermentable&subtype=malt",
+      "customerCopy": {
+        "title": "Кислый солод",
+        "categoryLabel": "Солод",
+        "purpose": "Снижает pH затора. Добавляют вместе с остальным солодом.",
+        "choiceHeading": "Выберите производителя",
+        "otherManufacturer": "Другой производитель"
+      },
+      "userDecision": "подтвердить"
+    },
+    {
+      "item": "cross-23-small-quantity-precision",
+      "title": "Показывать и редактировать малые остатки без округления до нуля",
+      "status": "approved_pending_implementation",
+      "scope": "Для малых количеств реагентов поддержать понятное отображение и ввод в миллиграммах. Сохранить точное исходное количество при открытии и сохранении редакторов; общий форматтер не должен превращать ненулевые остатки в ноль. Не менять массу из-за смены единицы показа.",
+      "before": "23-small-quantity-before.png",
+      "proposed": "23-small-quantity-proposed.png",
+      "mobilePreview": "23-small-quantity-proposed-mobile.png",
+      "imageType": "Current production InventoryListItem and InventoryQuantityEditor rendered on an in-memory example, placed into the local app theme; the proposed milligram label and unit are a DOM-only preview. Not an actual user stock screenshot.",
+      "evidence": "23-small-quantity-preview-evidence.json",
+      "calculationEvidence": "23-small-quantity-calculation-evidence.json",
+      "proposalOnly": true,
+      "changesSavedToApp": false,
+      "exampleIngredientId": "potassium-metabisulfite",
+      "diagnosticScenario": {
+        "ingredientId": "potassium-metabisulfite",
+        "name": "Метабисульфит калия",
+        "actualStockItem": false,
+        "remainingG": 0.04,
+        "remainingMg": 40,
+        "quantityIsIllustrativeNotRecommendedDose": true
+      },
+      "confirmedCurrentBehavior": {
+        "affectedPreferredMgRecords": [
+          "ascorbic-acid",
+          "potassium-metabisulfite",
+          "sodium-metabisulfite"
+        ],
+        "supportedWeightUnits": [
+          "g",
+          "kg",
+          "oz",
+          "lb"
+        ],
+        "catalogPreferredUnit": "mg",
+        "actualRemainingG": 0.04,
+        "displayedRemaining": "0 г",
+        "inlineEditorInitialQuantity": "0",
+        "quantityEditorInitialQuantity": "0",
+        "fullEditorInitialQuantity": "0",
+        "canonicalAmountBeforeFormattingRemainsG": 0.04,
+        "normalizedFromRoundedDraftG": 0,
+        "realSaveExecuted": false,
+        "liveQuantityLossClaimed": false
+      },
+      "proposedExample": {
+        "display": "40 мг",
+        "editorQuantity": "40",
+        "editorUnit": "mg",
+        "massGUnchanged": 0.04
+      },
+      "verifiedScopeLimit": "The production formatting and both quantity editors were exercised on an in-memory item, plus the full editor initial-state function. Saving a real stock item was not executed; the diagnostic does not claim any live quantity was lost. Proposed milligram entry is not yet implemented: its mass equivalence was checked by converting to grams and passing through the existing server normalizer.",
+      "codeReferences": [
+        "ingredients/new/water_treatment_catalog_minimal_v2.json:unit_preferred",
+        "apps/web/features/inventory/units.ts:inventoryWeightUnits/getInventoryUnitQuantityPrecision",
+        "apps/web/features/inventory/display.ts:formatInventoryQuantityInputValue/formatInventoryQuantityForDisplay",
+        "apps/web/components/inventory/inventory-inline-quantity-editor.tsx:initialQuantity",
+        "apps/web/components/inventory/inventory-quantity-editor.tsx:initialQuantity",
+        "apps/web/components/inventory/inventory-item-details-editor.tsx:createFormState",
+        "apps/web/features/ingredients/taxonomy.ts:resolveIngredientUnits",
+        "packages/brewing-core/src/units/conversions.ts:convertWeight",
+        "apps/web/features/recipes/units.ts:normalizeRecipeIngredientAmountWithProfile"
+      ],
+      "validationRequirements": [
+        "Отделить форматирование короткой подписи от подготовки редактируемого значения. Поле при открытии должно содержать точное сохранённое количество, а не число, округлённое для компактной подписи.",
+        "Не показывать положительное количество как ноль. Для небольших масс использовать мг либо достаточную точность граммов; правило должно применяться в общем форматтере и во всех редакторах, а не только в одной карточке реагента.",
+        "Добавить мг в существующие общие контракты единиц и серверную нормализацию с корректной размерностью массы. Сохранить канонические граммы для текущих расчётов; не создавать отдельный конвертер или новый каталог для водоподготовки.",
+        "При вводе 40 мг нормализованная масса должна составлять ровно 0.04 г; при смене единицы и повторном открытии/сохранении масса не меняется. Проверить все места, где разрешённые единицы и WeightUnit заданы явным списком.",
+        "Сохранить удобное использование граммов и килограммов для больших количеств. Не превращать все упаковки реагентов в огромные числа миллиграммов только из-за unit_preferred.",
+        "Согласовать точность ввода и серверной нормализации. Текущий нормализатор округляет граммы до трёх знаков; нельзя молча принимать дробные миллиграммы и менять их массу округлением. Либо сохранять достаточную точность, либо явно валидировать неподдерживаемую точность до записи.",
+        "Проверить карточку склада, быстрый редактор, полный редактор, добавление на склад, списание/пополнение, доли остатка, резерв и список покупок. Открытие формы, изменение заметки и сохранение должны сохранять исходное количество.",
+        "Сохранить нормализованные количества в рецептах, партиях, резервах и движениях. Изменение единицы отображения не должно пересчитывать дозировки мастера рецептов или менять исторические данные.",
+        "Проверить стоимость за единицу и эквиваленты фасовок при новой единице массы; не сопоставлять мг с г численно без конвертации.",
+        "Использовать NumericInput и локализованную подпись «мг». Убрать дублирующий одиночный бейдж mg, когда единица уже видна рядом с количеством; не добавлять объяснения устройства расчётов в пользовательскую карточку.",
+        "Проверить ноль, 1/9/40/60/150/999 мг и обычные граммы. Диагностика выполнила 10 контрольных случаев и подтвердила массовую эквивалентность через существующий граммовый нормализатор; это не готовая реализация серверного приёма mg.",
+        "Проверить, что похожее округление не скрывает малые количества при показе других поддерживаемых единиц, и сохранить реальные значения в формах независимо от выбранного компактного формата.",
+        "На снимках использованы текущие production-компоненты с примером в памяти, а не склад пользователя. 40 мг — пример количества, не рекомендация по дозировке. Новая единица в снимке является браузерным прототипом.",
+        "Проверить 320/390/1360px. Макет прошёл эти размеры без горизонтального выхода."
+      ],
+      "previewChecks": {
+        "currentProductionComponentsRendered": true,
+        "renderedComponents": [
+          "InventoryInlineQuantityEditor",
+          "InventoryQuantityEditor",
+          "InventoryListItem"
+        ],
+        "fullEditorInitialStateExercised": true,
+        "normalizationEquivalenceControls": 10,
+        "fixturePreserved": true,
+        "widthChecks": [
+          {
+            "width": 320,
+            "pageOverflow": false,
+            "panelOverflow": false
+          },
+          {
+            "width": 390,
+            "pageOverflow": false,
+            "panelOverflow": false
+          },
+          {
+            "width": 1360,
+            "pageOverflow": false,
+            "panelOverflow": false
+          }
+        ],
+        "proposedMgRuntimeImplemented": false,
+        "actualApplicationCodeEdited": false,
+        "liveDatabaseWritten": false
+      },
+      "userDecision": "подтвердить"
+    },
+    {
+      "item": "consumable-24-iodophor-package-volume",
+      "title": "Показывать объём бутылок йодофора в миллилитрах",
+      "status": "approved_pending_implementation",
+      "scope": "Показывать подтверждённый объём каждой бутылки BTF Iodophor в миллилитрах: 118,3 / 473 / 946 мл. Оригинальную маркировку 4 / 16 / 32 fl oz оставить вторичной подписью для сверки с упаковкой. В данных фасовки задать соответствующее содержимое в мл и источник производителя.",
+      "before": "24-iodophor-volume-before.png",
+      "proposed": "24-iodophor-volume-proposed.png",
+      "mobilePreview": "24-iodophor-volume-proposed-mobile.png",
+      "imageType": "Actual public package section before and browser-only proposed millilitre display after.",
+      "evidence": "24-iodophor-volume-preview-evidence.json",
+      "calculationEvidence": "24-iodophor-volume-calculation-evidence.json",
+      "proposalFile": "24-proposed-iodophor-record.json",
+      "proposalOnly": true,
+      "changesSavedToApp": false,
+      "exampleIngredientId": "iodophor-sanitizer",
+      "primarySource": "https://shop.nationalchemicals.com/content/master_label/Master_Label-BTF-Iodophor.pdf",
+      "primarySourceDescription": "Master Label BTF Iodophor, dated 2012, currently linked from the manufacturer product pages; printed package volumes are on PDF page 1. Use its declared nominal volumes, not additional digits from a theoretical fl-oz conversion.",
+      "manufacturerProductPages": [
+        "https://shop.nationalchemicals.com/btf-iodophor-sanitizer-4-oz",
+        "https://shop.nationalchemicals.com/btf-iodophor-sanitizer-16-oz/",
+        "https://shop.nationalchemicals.com/btf-iodophor-sanitizer-32-oz"
+      ],
+      "confirmedCurrentBehavior": {
+        "publicPackageLabels": [
+          "4 oz",
+          "16 oz",
+          "32 oz"
+        ],
+        "stockContentsMissingForAllThreePackages": true,
+        "onePackageToMlConversionReturnsNull": true,
+        "currentInventoryAddFormEndToEndExercised": false,
+        "liveDatabaseWritten": false
+      },
+      "proposedVolumes": [
+        {
+          "packageId": "btf-iodophor-4oz",
+          "printedOz": 4,
+          "nominalMl": 118.3,
+          "oneBottleMl": 118.3,
+          "twoBottlesMl": 236.6
+        },
+        {
+          "packageId": "btf-iodophor-16oz",
+          "printedOz": 16,
+          "nominalMl": 473,
+          "oneBottleMl": 473,
+          "twoBottlesMl": 946
+        },
+        {
+          "packageId": "btf-iodophor-32oz",
+          "printedOz": 32,
+          "nominalMl": 946,
+          "oneBottleMl": 946,
+          "twoBottlesMl": 1892
+        }
+      ],
+      "verifiedScopeLimit": "Exercises the current source mapper and package-equivalent/conversion helpers in memory. It does not execute an inventory write or prove that the current add form sends a selected package id. That separate UI-to-service linkage remains a follow-up finding.",
+      "codeReferences": [
+        "packages/db/scripts/catalog-seed.ts:readPackageVariants",
+        "ingredients/new/consumables_v1.json:iodophor-sanitizer (currently loaded through the historical source)",
+        "apps/web/app/(public)/catalog/[source]/[id]/page.tsx:packageVariants",
+        "apps/web/features/inventory/pack.ts:resolveInventoryItemPackEquivalent/convertInventoryNormalizedToUnit",
+        "apps/web/features/inventory/service.ts:normalizeMeasurementWithPackageVariant"
+      ],
+      "validationRequirements": [
+        "Задать номинальные объёмы именно из документа производителя: для 4 oz — 118.3 мл, для 16 oz — 473 мл, для 32 oz — 946 мл. Не превращать округлённые заводские номиналы в якобы точные 118.294/473.177/946.353 мл.",
+        "Сохранить ID ингредиента и всех трёх фасовок, их исходные ссылки и маркировки в происхождении данных. Новый основной источник фасовок — документ производителя, который сейчас доступен из официальных продуктовых страниц.",
+        "Отличать жидкие унции США от весовых oz. Не менять значение oz в общих конвертерах массы; для склада каждой бутылки задаётся явное stock_content_per_package в ml. В контрольном случае 32 весовых oz по-прежнему равны 907.185 г в текущем конвертере.",
+        "Пользователю показывать объём в мл крупнее, оригинальную маркировку fl oz меньше. Не добавлять технические объяснения про нормализацию, поля JSON и типы единиц.",
+        "Для отображения и выбора фасовок использовать существующие данные и компоненты, без второго каталога и без отдельного поиска для санитайзеров.",
+        "Дозировку, концентрацию и правила применения не выводить из размера бутылки. Этот пункт касается объёма концентрата в упаковке и не меняет инструкцию по разведению.",
+        "Сохранить нормализованные остатки и движения существующих партий. Старые неоднозначные записи в пачках не пересчитывать автоматически из-за появления нового коэффициента; при необходимости сохранять коэффициент партии или отдельно уточнять фасовку.",
+        "Проверить существующий мост упаковка ↔ мл на новых подтверждённых данных. В диагностике одна и две бутылки каждой фасовки пересчитаны production-хелперами, а прочие 27 расходников, поля ингредиента и алиасы глубоко равны исходным.",
+        "Не утверждать, что этим уже исправлен выбор фасовки в текущей форме добавления на склад: связь выбранного packageVariantId с отправкой формы проверяется отдельно и остаётся следующей найденной проблемой.",
+        "Перед загрузкой исправленных исходников в БД учесть пункты 18 и 19 о сохранении фасовок и редакторских решений и пункт 21 о самодостаточных исходных файлах. Пробную запись не подставлять вместо меняющегося рабочего каталога без повторного сравнения.",
+        "Проверить 320/390/1360px. Макет сохраняет названия бренда/продукта и проходит эти ширины без горизонтального выхода."
+      ],
+      "previewChecks": {
+        "packageIdsPreserved": true,
+        "ingredientAndAliasesUnchanged": true,
+        "other27ConsumableRecordsExactlyUnchanged": true,
+        "existingPackBridgeUsed": true,
+        "oneAndTwoBottleCases": 6,
+        "viewportChecks": [
+          {
+            "width": 320,
+            "pageOverflow": false,
+            "panelOverflow": false
+          },
+          {
+            "width": 390,
+            "pageOverflow": false,
+            "panelOverflow": false
+          },
+          {
+            "width": 1360,
+            "pageOverflow": false,
+            "panelOverflow": false
+          }
+        ],
+        "actualApplicationCodeEdited": false,
+        "liveDatabaseWritten": false
+      },
+      "userDecision": "подтверждаю, давай такие мелкие правки согласовывай не по 1 пункту, сколько там еще осталось"
+    },
+    {
+      "item": "cross-25-minor-display-batch",
+      "title": "Пакет мелких правок отображения каталога",
+      "status": "approved_pending_implementation",
+      "reviewMode": "Single approval for a coherent batch, following the user request on item 24. User can comment on individual numbered examples without a separate approval turn for every label.",
+      "scope": "Локализовать отображаемые единицы, убрать служебные поисковые слова и повторы регистра из блока других названий, скрывать значения --/Generic вместо производителя и связанные подборки без известного бренда, унифицировать отображение и фасеты производителя The Swaen. Числовые характеристики и ID ингредиентов не меняются.",
+      "before": "25-minor-batch-comparison.png",
+      "proposed": "25-minor-batch-comparison.png",
+      "comparison": "25-minor-batch-comparison.png",
+      "mobilePreview": "25-minor-batch-proposed-mobile.png",
+      "evidence": "25-minor-batch-evidence.json",
+      "imageType": "Current DOM fragments from five public cards versus DOM-only display proposals assembled into a comparison. The comparison grid itself is a review illustration, not a new application page.",
+      "proposalOnly": true,
+      "changesSavedToApp": false,
+      "examples": [
+        {
+          "number": 1,
+          "title": "Единицы измерения",
+          "before": [
+            "100 pcs",
+            "2 L"
+          ],
+          "proposed": [
+            "100 шт.",
+            "2 л"
+          ],
+          "scope": "Общее форматирование единиц фасовок по-русски; значения и размерность сохраняются.",
+          "userApproved": true
+        },
+        {
+          "number": 2,
+          "title": "Другие названия",
+          "before": [
+            "iodophor_no_rinse",
+            "sanitizer",
+            "iodophor / Iodophor"
+          ],
+          "proposed": "Скрыть служебные слова и повтор регистра только в отображении. Сохранить реальные альтернативные названия, включая русское «ио стар», и все поисковые алиасы.",
+          "userApproved": true
+        },
+        {
+          "number": 3,
+          "title": "Производитель не указан",
+          "before": [
+            "Ячменный светлый · --",
+            "Generic в строке фасовки",
+            "ДРУГИЕ ИНГРЕДИЕНТЫ -- → Абрикос, Ананас, Апельсин, Банан"
+          ],
+          "proposed": "Оставить название без псевдобренда и не строить подборку по неизвестному производителю.",
+          "userApproved": true
+        },
+        {
+          "number": 4,
+          "title": "Единое название производителя",
+          "before": [
+            "Swaen",
+            "The Swaen"
+          ],
+          "proposed": "The Swaen — единое отображаемое название и совместный фильтр. Старые написания остаются доступны для поиска.",
+          "primarySource": "https://theswaen.com/",
+          "userApproved": true
+        }
+      ],
+      "sourcePageIds": [
+        "crown-caps-26mm",
+        "co2-cylinder-filled",
+        "iodophor-sanitizer",
+        "yachmennyy-svetlyy-ua-base",
+        "swaen-lager-nl-base"
+      ],
+      "confirmedCurrentBehavior": {
+        "publicPackageUnitsUnlocalized": true,
+        "technicalSearchTermsShownAsOtherNames": true,
+        "caseDuplicatesShown": true,
+        "unknownBrandPlaceholderInTitleAndParameters": true,
+        "unknownBrandGroupsUnrelatedFruitWithMalt": true,
+        "rawSwaenBrandCounts": {
+          "Swaen": 2,
+          "The Swaen": 4
+        },
+        "bothSwaenNamesPresentInEachOthersBrandAliases": true
+      },
+      "validationRequirements": [
+        "Одна общая политика отображения единиц в каталоге, карточках фасовок и связанных списках. Не заменять runtime-коды единиц русскими строками и не менять физические количества, коэффициенты и нормализованные единицы.",
+        "Технические слова из категории/поискового ранжирования не выводить как реальные альтернативные имена. Не удалять их из ingredient_aliases и не менять поиск из-за сокращения видимого списка.",
+        "Удалять повторы только по нормализованному написанию в отображении. Сохранять настоящие русские/иностранные имена, бренды и названия вариантов; макет намеренно оставляет «ио стар» и Iodophor Sanitizer.",
+        "Для служебных и пользовательских имён учитывать происхождение/роль алиаса. Не использовать захардкоженный список четырёх популярных названий и не лишать пользователя добавленных им синонимов.",
+        "Фильтровать только подтверждённые значения-заглушки вроде -- и Generic в отображении производителя. Не угадывать производителя и не заменять отсутствующее значение придуманным брендом.",
+        "Не строить список «другие ингредиенты этого производителя» по заглушке или отсутствующему значению. Проверить текущий случай, где солод -- получает в такой подборке фрукты с тем же --.",
+        "Нормализовать отображение и брендовую фильтрацию Swaen/The Swaen на основе существующих взаимных brand_aliases и официального названия производителя. Все шесть карточек должны оставаться отдельными продуктами; не сливать их ID, не изменять технические значения и источники.",
+        "Сохранить поиск по Swaen, The Swaen и существующим русским написаниям. Применить ту же идентификацию производителя в полном списке и ранее согласованных фильтрах, без отдельного поиска.",
+        "Числовые изменения из прежних пунктов, исправления цветовых единиц, выбор фасовки и складские коэффициенты в этот пакет не входят. Не расширять оформление в скрытое изменение расчётов.",
+        "Использовать текущие общие компоненты и сервисы. Снимок сравнения собран из живых DOM-фрагментов пяти публичных карточек и макетов; это иллюстрация проверки, а не новая страница приложения.",
+        "Сохранить ссылку сообщения о неточности и другие действия полных карточек. Сравнение заголовков использует только фрагмент с названием/метаданными для компактности.",
+        "Проверить десктоп и мобильный экран; proposed-фрагменты проверены при 390px без горизонтального выхода. Для реального внедрения проверить и списки/фасеты, а не только показанные карточки."
+      ],
+      "previewChecks": {
+        "sourceFragmentsFromLivePublicPages": true,
+        "mobilePageOverflow": false,
+        "mobilePanelOverflow": false,
+        "recipeValuesChanged": false,
+        "searchAliasRecordsDeleted": false,
+        "ingredientIdsMerged": false,
+        "actualApplicationCodeEdited": false,
+        "liveDatabaseWritten": false
+      },
+      "userDecision": "да, да, да, да"
+    },
+    {
+      "item": "cross-26-select-package-for-stock",
+      "title": "Выбирать фасовку при добавлении на склад и согласованно считать количество и цену",
+      "status": "approved_pending_implementation",
+      "scope": "При складском добавлении известного фасованного товара дать выбрать размер упаковки и количество упаковок; показать итог в штуках/граммах/миллилитрах. Передать выбранный packageVariantId по всей цепочке. Количество, списание и цена за единицу должны использовать одно подтверждённое содержимое упаковки. Сохранить поштучный/весовой/объёмный ввод без упаковки.",
+      "comparison": "26-package-selection-comparison.png",
+      "before": "26-package-selection-before.png",
+      "proposed": "26-package-selection-proposed.png",
+      "mobilePreview": "26-package-selection-proposed-mobile.png",
+      "imageType": "Current React form mounted on an isolated real catalog fixture, alongside a DOM-only proposal. These are not screenshots of a signed-in user account.",
+      "evidence": "26-package-selection-preview-evidence.json",
+      "calculationEvidence": "26-package-selection-calculation-evidence.json",
+      "proposalOnly": true,
+      "changesSavedToApp": false,
+      "exampleIngredientId": "crown-caps-26mm",
+      "examplePackageIds": [
+        "crown-caps-26-100",
+        "crown-caps-26-1000"
+      ],
+      "confirmedCurrentBehavior": {
+        "formHasNoPackageSizeSelector": true,
+        "realReactFormSubmitObserved": true,
+        "actualCurrentPayload": {
+          "ingredientCatalogItemId": "crown-caps-26mm",
+          "enteredQuantity": "1",
+          "enteredUnit": "pack"
+        },
+        "formDropsMatchedPackageVariantId": true,
+        "onePack100And1000HaveSameCurrentStoredQuantity": {
+          "quantity": 1,
+          "unit": "pack",
+          "packageVariantId": null
+        },
+        "currentWriterWithExplicitPackageIdConvertsCountsCorrectly": true,
+        "partialFixPriceNormalizationInconsistent": true,
+        "actualUserStockMutated": false
+      },
+      "currentWriterQuantityCases": [
+        {
+          "packageId": "crown-caps-26-100",
+          "expectedPieceCount": 100,
+          "current": {
+            "packageVariantId": null,
+            "enteredQuantity": 1,
+            "enteredUnit": "pack",
+            "normalizedQuantity": 1,
+            "normalizedUnit": "pack",
+            "unitDimension": "count",
+            "purchasePriceMinor": null,
+            "purchaseQuantityNormalized": null,
+            "purchaseQuantityNormalizedUnit": null,
+            "normalizedUnitCostMinorRub": null
+          },
+          "withExplicitPackageId": {
+            "packageVariantId": "crown-caps-26-100",
+            "enteredQuantity": 1,
+            "enteredUnit": "pack",
+            "normalizedQuantity": 100,
+            "normalizedUnit": "item",
+            "unitDimension": "count",
+            "purchasePriceMinor": null,
+            "purchaseQuantityNormalized": null,
+            "purchaseQuantityNormalizedUnit": null,
+            "normalizedUnitCostMinorRub": null
+          }
+        },
+        {
+          "packageId": "crown-caps-26-1000",
+          "expectedPieceCount": 1000,
+          "current": {
+            "packageVariantId": null,
+            "enteredQuantity": 1,
+            "enteredUnit": "pack",
+            "normalizedQuantity": 1,
+            "normalizedUnit": "pack",
+            "unitDimension": "count",
+            "purchasePriceMinor": null,
+            "purchaseQuantityNormalized": null,
+            "purchaseQuantityNormalizedUnit": null,
+            "normalizedUnitCostMinorRub": null
+          },
+          "withExplicitPackageId": {
+            "packageVariantId": "crown-caps-26-1000",
+            "enteredQuantity": 1,
+            "enteredUnit": "pack",
+            "normalizedQuantity": 1000,
+            "normalizedUnit": "item",
+            "unitDimension": "count",
+            "purchasePriceMinor": null,
+            "purchaseQuantityNormalized": null,
+            "purchaseQuantityNormalizedUnit": null,
+            "normalizedUnitCostMinorRub": null
+          }
+        }
+      ],
+      "priceRegressionCase": {
+        "scenarioIsHypothetical": true,
+        "packagePieces": 1000,
+        "totalPriceRub": 100,
+        "currentWriterWithExplicitPackageId": {
+          "packageVariantId": "crown-caps-26-1000",
+          "enteredQuantity": 1,
+          "enteredUnit": "pack",
+          "normalizedQuantity": 1000,
+          "normalizedUnit": "item",
+          "unitDimension": "count",
+          "purchasePriceMinor": 10000,
+          "purchaseQuantityNormalized": 1,
+          "purchaseQuantityNormalizedUnit": "pack",
+          "normalizedUnitCostMinorRub": 10000
+        },
+        "expectedUnitCostMinorRubPerItem": 10,
+        "finding": "Forwarding the package id fixes the stock count but purchase-price normalization still uses one pack as its divisor. Package-aware purchase normalization must be included in the same fix."
+      },
+      "looseCountControl": {
+        "packageVariantId": null,
+        "enteredQuantity": 37,
+        "enteredUnit": "item",
+        "normalizedQuantity": 37,
+        "normalizedUnit": "item",
+        "unitDimension": "count",
+        "purchasePriceMinor": null,
+        "purchaseQuantityNormalized": null,
+        "purchaseQuantityNormalizedUnit": null,
+        "normalizedUnitCostMinorRub": null
+      },
+      "verifiedScopeLimit": "The current payload builder and inventory writer run against a recording client. Explicit package IDs already work in the current service. The proposed selection field and payload wiring have not been implemented in the application; this is a diagnostic, not a real stock add.",
+      "codeReferences": [
+        "apps/web/components/inventory/catalog-ingredient-form.tsx:CatalogIngredientForm/buildCatalogIngredientPayload",
+        "apps/web/components/ingredients/ingredient-picker.tsx:resolveMatchedConsumablePackageVariant",
+        "apps/web/features/inventory/contracts.ts:addCatalogInventoryItemSchema",
+        "apps/web/features/inventory/service.ts:ensureCatalogPackageVariant/addCatalogIngredientToInventory/normalizeMeasurementWithPackageVariant",
+        "apps/web/features/inventory/purchase-cost.ts:normalizeInventoryPurchaseContext",
+        "apps/web/features/inventory/pack.ts:resolveInventoryItemPackEquivalent",
+        "apps/web/features/ingredients/catalog-links.ts:buildIngredientCatalogActionHref"
+      ],
+      "validationRequirements": [
+        "Использовать существующие ingredient_package_variants и общий CatalogIngredientForm/IngredientPicker. Не создавать второй каталог или отдельный складской слой.",
+        "Когда товар добавляют упаковками, показать доступные реальные фасовки и количество упаковок. Подтверждённую однозначную фасовку можно подставить из выбора/ссылки; при нескольких вариантах размер должен быть видимым и выбранным, а не молча игнорироваться.",
+        "Передавать выбранный packageVariantId через типы payload, buildCatalogIngredientPayload, action и service. Сервер должен проверять принадлежность фасовки выбранному ингредиенту; не доверять клиентскому коэффициенту содержимого.",
+        "Показывать предварительный итог понятной строкой «На склад добавится: 1000 шт.». В макете поле «Ед. изм.» заменено выбором фасовки и количеством упаковок; вариант «Поштучно» возвращает обычный счёт штук.",
+        "Для штучных товаров проверить одну пачку по 100 и по 1000 шт., несколько пачек и ввод 37 шт. без пачки. Модель должна сохранять enteredQuantity/enteredUnit и корректные normalizedQuantity/normalizedUnit.",
+        "Не ограничиваться передачей ID: текущая стоимость закупки нормализуется отдельно без коэффициента упаковки. В реальном production-сервисе на имитации БД 1 пачка 1000 шт. за условные 100 руб. сохраняет количество 1000 item, но purchaseQuantityNormalized=1 pack и unitCost=10000 коп. Это должно стать 1000 item для покупного количества и 10 коп. за штуку при сохранении исходной цены пачки.",
+        "Для количества, стоимости, списания, резерва и матчинга использовать один подтверждённый коэффициент выбранной фасовки и одинаковую каноническую единицу. Не создавать второй ручной пересчёт цены на клиенте.",
+        "Сохранить ввод россыпью/по весу/по объёму. Для такого ввода пользователь не обязан выбирать заводскую упаковку; сервер не должен угадывать её содержимое.",
+        "Для жидкостей применять подтверждённый объём stockContent; для йодофора учитывать согласованный пункт 24. Не смешивать весовые и жидкие oz и не угадывать объём неизвестной бутылки.",
+        "Для package_only, например заполненного CO2-баллона, размер ёмкости остаётся характеристикой выбранного баллона. Количество баллонов не превращать в литры или массу газа по надписи на упаковке.",
+        "Не пересчитывать автоматически существующие партии, остатки, движения, резервы, рецепты и цены по новой фасовке. Сохранять выбранный вариант и коэффициент исторической партии; учитывать пункты 18/19 о стабильных ID и сохранении фасовок.",
+        "Проверить add/update/inline edit/списание и обратную смену единицы, а также семейства yeast/consumable с разными моделями количества. При отсутствии подтверждённого содержимого не применять случайный вариант или универсальную пачку.",
+        "Цвет солода остаётся отдельной последней темой аудита; обнаруженная связанная стоимость упаковки включена в этот пункт и не является новой независимой серией согласований.",
+        "Снимок «Сейчас» использует настоящий React-компонент с примером из текущего каталога. Серверные actions заменены заглушками, сетевые записи блокировались, submit текущей формы перехвачен без запроса. Предлагаемый интерфейс — DOM-прототип; его новая передача packageVariantId в приложение ещё не реализована.",
+        "Проверить корректность статических снимков: выбранное значение фасовки должно сериализоваться вместе с option selected, чтобы в сравнении не появлялась подпись 100 шт. рядом с итогом 1000 шт.",
+        "После реализации выполнить focused-тесты payload/action/service, цены за пачку и за единицу, повторного открытия формы и поштучного списания. Текущая диагностика запускала production-функции на recording-client с блокировкой настоящих методов db."
+      ],
+      "previewChecks": {
+        "currentProductionFormMountedWithReact": true,
+        "actualCurrentSubmitCaptured": true,
+        "currentProductionInventoryWriterExercisedOnMock": true,
+        "serverActionsStubbed": true,
+        "networkWritesAllowed": false,
+        "proposedCountControls": [
+          {
+            "mode": "100-count-pack",
+            "quantity": 1,
+            "total": "На склад добавится: 100 шт."
+          },
+          {
+            "mode": "1000-count-pack",
+            "quantity": 2,
+            "total": "На склад добавится: 2 000 шт."
+          },
+          {
+            "mode": "loose-pieces",
+            "quantity": 37,
+            "total": "На склад добавится: 37 шт."
+          }
+        ],
+        "widthChecks": [
+          {
+            "width": 320,
+            "overflow": false
+          },
+          {
+            "width": 390,
+            "overflow": false
+          },
+          {
+            "width": 1360,
+            "overflow": false
+          }
+        ],
+        "pageErrors": [],
+        "proposedPayloadWiringImplemented": false,
+        "actualApplicationCodeEdited": false,
+        "liveDatabaseWritten": false
+      },
+      "userDecision": "подтвердить"
+    },
+    {
+      "item": "malt-27-verified-colour-ranges",
+      "title": "Цвет солода: подтверждённые диапазоны производителя",
+      "status": "approved_pending_implementation",
+      "scope": "Replace source-confirmed approximate malt colour points with the exact product manufacturer EBC range. Existing pre-production recipes may be updated and recalculated using the corrected values, as expressly authorized by the user. Preserve source provenance and use one documented effective colour value; no blanket coefficient replacement.",
+      "comparison": "27-malt-colour-comparison.png",
+      "proposedMobile": "27-malt-colour-proposed-mobile.png",
+      "calculationEvidence": "27-malt-colour-calculation-evidence.json",
+      "previewEvidence": "27-malt-colour-preview-evidence.json",
+      "candidateCatalog": "27-proposed-malt-colour-catalog.json",
+      "examples": [
+        {
+          "id": "viking-malt-pale-ale-fi-base",
+          "currentEbc": 8.89,
+          "proposedRangeEbc": {
+            "min": 4,
+            "max": 7,
+            "average": 5.5
+          },
+          "source": {
+            "url": "https://www.vikingmalt.com/wp-content/uploads/2022/12/VikingMalt_Standard_Portfolio_2023.pdf",
+            "page": 12
+          },
+          "controlRecipe": {
+            "grainKg": 5,
+            "batchVolumeL": 20,
+            "currentBeerEbc": 13.6,
+            "proposedBeerEbc": 9.9,
+            "ogBefore": 1.059,
+            "ogAfter": 1.059
+          }
+        },
+        {
+          "id": "the-swaen-swaen-pilsner-nl-base",
+          "currentEbc": 4.953,
+          "proposedRangeEbc": {
+            "min": 3,
+            "max": 4.5,
+            "average": 3.75
+          },
+          "source": {
+            "url": "https://theswaen.com/wp-content/uploads/TheSwaen-Swaen-Pilsner.pdf",
+            "page": 1
+          },
+          "controlRecipe": {
+            "grainKg": 5,
+            "batchVolumeL": 20,
+            "currentBeerEbc": 9.1,
+            "proposedBeerEbc": 7.5,
+            "ogBefore": 1.058,
+            "ogAfter": 1.058
+          }
+        }
+      ],
+      "verifiedFindings": [
+        "The live Viking Pale Ale card displays 8.9 EBC, whereas the official 2023 portfolio p.12 gives 4–7 EBC; the manufacturer 2019 handbook independently gives the same range.",
+        "The live The Swaen Pilsner card displays 5 EBC (raw 4.953); the current official product page and linked Typical Analysis give 3–4.5 EBC.",
+        "Current technical-fields.ts already gives EBC range precedence for effective recipe colour. A claim that calculations universally prefer the raw source Lovibond value would be false.",
+        "171 single-value raw malt records satisfy EBC = Lovibond × 2.54. This is a source-review candidate count, not 171 confirmed errors. Avangard Munich Dark at 29.972 EBC is retained as an unchanged control.",
+        "The current production recipe calculator gives 13.6 → 9.9 EBC for 5 kg Viking Pale Ale in 20 L after the source-backed range is supplied; OG remains 1.059. These are illustrative predictions, not measured beer colour.",
+        "Both candidate source records were passed through the current loader; all other 456 prepared malt records are deeply identical, and IDs, aliases and packages are preserved.",
+        "The current recomputeRecipeStats path may read raw current catalog data, and buildPersistedRecipeResolvedSource prefers live technical data. Therefore protecting old recipes requires implementation work; the isolated unchanged snapshot control is not evidence that real old recipes are already protected."
+      ],
+      "validationRequirements": [
+        "Сверять цвет по точному производителю, продукту, версии и единице источника. Не заменять все коэффициенты 2.54/1.97/2.65 одной формулой и не объявлять все различия ошибками.",
+        "Для подтверждённых карточек хранить и показывать весь диапазон EBC и ссылку на спецификацию. Не выдавать среднее значение за измерение конкретной партии.",
+        "В новых расчётах использовать существующий единый механизм эффективного цвета: значение конкретной партии при наличии; иначе документированное среднее полного подтверждённого диапазона. Для Viking Pale Ale это 5.5 EBC, для Swaen Pilsner — 3.75 EBC. Односторонние пределы и конфликтующие источники обрабатывать отдельно согласно пункту 1.",
+        "Сохранить старые источники и исходные значения как происхождение данных. Установить явный приоритет подтверждённого EBC; не оставлять два независимо используемых конфликтующих расчётных значения и не перезаписывать официальные шкалы арифметическим приближением.",
+        "Пользователь разрешил обновлять и пересчитывать существующие рецепты по исправленным данным, поскольку проект ещё не на проде. Не требуется вводить фиксацию старых расчётных значений и отдельное согласование обновления каждого рецепта. Проверить пересчёт, сохранение, повторное открытие, копирование, масштабирование и согласованность показателей; данные конкретной партии и явные пользовательские уточнения обрабатывать по их смыслу.",
+        "Проверить общий IngredientPicker, карточку, склад, создание и сохранение рецепта, публичные рецепты, экспорт/импорт цвета, пользовательское уточнение и обратное чтение. Существующие пользовательские значения не замещать новым средним.",
+        "Проверить зависимые водный план и модель pH: карты цвета для других типов солода могут менять классификацию/оценку кислотности. В двух показанных базовых контролях состав воды и доли групп совпадают; это не глобальная проверка всех солодов.",
+        "Не заменять источник целиком ради одного показателя: экстрактивность, белок, тип, ID и связь с остатками не должны меняться вместе с цветом. Применение учесть в пунктах 18/19 о стабильности ID и ручных правок при синхронизации.",
+        "Оставшиеся приблизительные записи править только после такой же точной проверки источника; неподтверждённые случаи сохранить для проверки без выдуманного точного значения. Не открывать отдельную серию согласований для каждого солода.",
+        "Сравнение — фрагменты текущих публичных карточек и DOM-макет в изолированном документе с текущими стилями. Полный кандидат находится среди артефактов аудита, не в активном ingredients/new. Записи в БД и приложение не выполнялись."
+      ],
+      "previewChecks": {
+        "sourceFragmentsFromLiveCards": true,
+        "widths": [
+          {
+            "width": 320,
+            "documentWidth": 320,
+            "panelWidth": 288,
+            "panelClientWidth": 288
+          },
+          {
+            "width": 390,
+            "documentWidth": 390,
+            "panelWidth": 358,
+            "panelClientWidth": 358
+          }
+        ],
+        "pageErrors": [],
+        "imagesVisuallyInspected": true,
+        "comparisonDimensions": {
+          "x": 70,
+          "y": 24,
+          "width": 1040,
+          "height": 800
+        }
+      },
+      "proposalOnly": true,
+      "actualApplicationCodeEdited": false,
+      "liveDatabaseWritten": false,
+      "finalSubstantiveReviewBlock": true,
+      "userDecision": "Подтверждаю, все равно на рецепты, можно их обновить.. проект еще не на проде",
+      "supersededRequirements": [
+        {
+          "text": "Не менять автоматически цвет и другие технические значения уже сохранённых рецептов и варок. До обновления каталога обеспечить сохранение использованного значения и явный переход на новую спецификацию; проверить обычное открытие, редактирование другого поля, копирование, масштабирование и recomputeRecipeStats, а не только отсутствие фонового пересчёта.",
+          "supersededOn": "2026-11-02",
+          "reason": "Пользователь явно разрешил обновление существующих рецептов: проект ещё не на проде."
+        }
+      ]
+    }
+  ],
+  "observations": [
+    {
+      "date": "2026-11-02",
+      "context": "Revalidated yeast findings before proposing item 10.",
+      "finding": "Current working code already preserves yeast attenuation min/max in catalog-seed.ts, renders yeast ranges/species/POF in detail cards, and prioritizes existing typical attenuation over midpoint in fg-estimate.ts. These changes were present before this review item; not made by this review.",
+      "reviewConsequence": "Did not present the old range-loss finding as a new problem. Confirmed the 50% attenuation floor still exists by executing the current function.",
+      "futureReviewRule": "Re-read current implementation and capture fresh UI for each remaining finding. /tmp/nb-catalog-prepared.json predates these workspace changes and is not a current runtime snapshot."
+    },
+    {
+      "date": "2026-11-02",
+      "finding": "Original Muntons Premium Pilsner detail page at 390px viewport has document width 476px and parameter panel width 460px, before the item 13 mockup. The review did not modify product code to fix this separate layout issue.",
+      "followup": "Revalidate responsive catalog detail layout in the later UI review; do not mark the item 13 mobile preview overflow-free."
+    },
+    {
+      "date": "2026-11-02",
+      "finding": "The mobile overflow noted during items 13 and 19 was reproduced on Muntons and Weyermann. A structural grid CSS prototype in item 20 removed it, including 320px checks, without changing text or links.",
+      "status": "Proposed under item 20; application code not modified by this review."
+    },
+    {
+      "date": "2026-11-02",
+      "context": "User feedback on item 22, revision 1.",
+      "userPreference": "Пользовательский интерфейс должен кратко объяснять назначение и давать понятное действие. Не выводить внутреннюю реализацию и служебные различия карточек/типов как пользовательское содержание.",
+      "reviewConsequence": "Переработана вторая редакция пункта 22 с прямым выбором продукта по производителю. Пункт остаётся на согласовании."
+    },
+    {
+      "date": "2026-11-02",
+      "context": "Packaging source review for item 24.",
+      "finding": "CatalogIngredientSubmitPayload and buildCatalogIngredientSubmitPayload currently omit packageVariantId; the stock add service receives a null package variant unless the caller supplies the ID. The public package list is read-only. A verified package-content coefficient alone does not prove that the normal stock form selects and sends the desired package.",
+      "status": "Needs a focused reproduction of the current form-to-service path before proposing the next item.",
+      "references": [
+        "apps/web/components/inventory/catalog-ingredient-form.tsx:buildCatalogIngredientPayload",
+        "apps/web/features/inventory/service.ts:ensureCatalogPackageVariant/addCatalogIngredientToInventory"
+      ]
+    }
+  ],
+  "reviewPreferences": {
+    "minorChanges": "Group small copy, labels, units-display and formatting fixes into coherent batches; do not ask for each individually.",
+    "materialChanges": "Keep calculation, stock accounting and data identity changes explicit and separate.",
+    "userRequest": "Report the bounded remainder of the audit, distinguish confirmed issues from candidates, and avoid repeating approved or already fixed findings.",
+    "recipeUpdates": "Проект ещё не на проде; пользователь разрешил обновлять и пересчитывать существующие рецепты по исправленным данным. Не требуется сохранять старые значения только ради совместимости с историческими рецептами."
+  },
+  "remainingReviewPlan": "remaining-review-plan.json",
+  "remainingReviewBlockCount": 0,
+  "recipeUpdatePolicy": {
+    "recordedOn": "2026-11-02",
+    "userStatement": "Подтверждаю, все равно на рецепты, можно их обновить.. проект еще не на проде",
+    "projectStage": "pre-production",
+    "existingRecipesMayBeUpdated": true,
+    "existingRecipesMayBeRecalculated": true,
+    "legacyRecipeCalculationSnapshotsRequiredByThisReview": false,
+    "perRecipeConfirmationRequiredByThisReview": false,
+    "appliesTo": "All approved catalog proposals where the only reason to preserve an old recipe calculation value was compatibility with existing production recipes.",
+    "precedence": "This latest user instruction supersedes earlier recipe-value-freezing and per-recipe opt-in requirements in items 1–27. Earlier approval text remains as review history.",
+    "requiredValidation": "Correct calculations, consistent units, saved/reopened recipe values, dependent water/pH calculations and source provenance remain required."
+  },
+  "reviewStatus": "complete",
+  "reviewCompletedOn": "2026-11-02",
+  "approvedItemCount": 27,
+  "implementationStatus": "not_started_by_this_review"
+}

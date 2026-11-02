@@ -1,5 +1,6 @@
 "use client";
 
+import type { MaltBrowseFilters } from "@/features/ingredients/catalog-browse";
 import { useCallback, useEffect, useMemo, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -23,6 +24,7 @@ import { useDebouncedUrlSearch } from "@/components/shared/use-debounced-url-sea
 import { categoryMeta } from "@/components/ingredients/catalog-category-meta";
 
 type Props = {
+  browseFilters?: MaltBrowseFilters;
   view: IngredientCatalogView;
   q: string;
   category: IngredientCategory | "all";
@@ -63,9 +65,9 @@ const sortLabels: Record<IngredientCatalogSortOption, string> = {
   updated: "По дате изменения",
   category: "По категории",
   brand: "По бренду",
-  alpha: "По альфа-кислоте",
+  alpha: "По содержанию альфа-кислот",
   color: "По цвету (EBC)",
-  attenuation: "По аттенюации"
+  attenuation: "По степени сбраживания"
 };
 
 const defaultCatalogSortOption: IngredientCatalogSortOption = "name";
@@ -99,6 +101,7 @@ const buildCatalogHref = (
   }
 ) => {
   const searchParams = new URLSearchParams();
+  for (const [key,value] of Object.entries(params as MaltBrowseFilters)) if (["manufacturer","maltType","ebcMin","ebcMax"].includes(key) && value != null && value !== "") searchParams.set(key,String(value));
 
   if (params.view !== "all") {
     searchParams.set("view", params.view);
@@ -215,6 +218,7 @@ const isSortValidForCategory = (value: IngredientCatalogSortOption, targetCatego
 };
 
 export function IngredientCatalogToolbar({
+  browseFilters = {},
   view,
   q,
   category,
@@ -240,12 +244,13 @@ export function IngredientCatalogToolbar({
   );
 
   const currentHref = useMemo(() => buildContextualHref(landingPath, queryBasePath, {
+    ...browseFilters,
     view,
     q,
     category,
     subtype,
     sort
-  }), [category, landingPath, queryBasePath, q, sort, subtype, view]);
+  }), [category, landingPath, queryBasePath, q, sort, subtype, view, browseFilters]);
 
   const replaceHref = useCallback((href: string) => {
     if (href === currentHref) {
@@ -259,11 +264,12 @@ export function IngredientCatalogToolbar({
 
   const buildSearchHref = useCallback((nextQ: string) => buildContextualHref(landingPath, queryBasePath, {
     view,
+    ...browseFilters,
     q: nextQ,
     category,
     subtype,
     sort
-  }), [category, landingPath, queryBasePath, sort, subtype, view]);
+  }), [category, landingPath, queryBasePath, sort, subtype, view, browseFilters]);
 
   const {
     inputValue: searchValue,
@@ -302,6 +308,7 @@ export function IngredientCatalogToolbar({
     // эффективных next-значений, а не берём внешний landingPath. consumableGroup
     // replaceWith не меняет (нет такого сценария) — берём текущий.
     replaceHref(buildContextualHref(resolveLandingPath(nextCategory, nextSubtype, consumableGroup), queryBasePath, {
+      ...browseFilters,
       view: next.view ?? view,
       q: searchValue,
       category: nextCategory,
@@ -330,6 +337,7 @@ export function IngredientCatalogToolbar({
     if (nextSort !== defaultCatalogSortOption) {
       landingSearchParams.set("sort", nextSort);
     }
+    if (path === "/catalog/malts") for (const [key,value] of Object.entries(browseFilters)) if (value != null && value !== "") landingSearchParams.set(key,String(value));
     const query = landingSearchParams.toString();
     return query ? `${path}?${query}` : path;
   };

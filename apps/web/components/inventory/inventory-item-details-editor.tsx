@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 
 import { Button, Dialog, DialogCloseButton, DialogHeader } from "@nb/ui";
 import { updateInventoryItemAction, type AddIngredientResult } from "@/app/(app)/app/ingredients/actions";
@@ -19,6 +19,8 @@ import {
 } from "@/components/inventory/inventory-ingredient-context-summary";
 import { InventoryPriceInput } from "@/components/inventory/inventory-price-input";
 import { InventoryItemMovements } from "@/components/inventory/inventory-item-movements";
+import { InventoryFormActions } from "./inventory-form-actions";
+import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 import type {
   IngredientCategory,
   IngredientConsumableGroupRefinement,
@@ -31,6 +33,7 @@ import type {
 import {
   consumableInventoryAdditiveGroups,
   consumableInventorySupplyGroups,
+  formatConsumablePackageLabel,
   isConsumableInventoryBroadGroup,
   resolveConsumableInventoryBroadGroup,
   resolveConsumableInventoryBroadGroupLabel,
@@ -53,12 +56,13 @@ import {
   resolveInventoryMeasurementForDisplay
 } from "@/features/inventory/display";
 import { buildHopHarvestYearOptions } from "@/features/inventory/hop-harvest-year";
-import { resolveInventoryPackEquivalent } from "@/features/inventory/pack";
+import { resolveInventoryPackEquivalent, resolveInventoryItemPackEquivalent, convertInventoryNormalizedToUnit } from "@/features/inventory/pack";
 import { inventoryFermentableSubtypeLabels } from "@/features/inventory/page-model";
 import type { InventoryPriceInputMode } from "@/features/inventory/purchase-cost";
 import {
   getInventoryUnitInputStep,
   inventoryUnitLabels,
+  inventoryUnitShortLabels,
   resolveHumanFacingInventoryUnitProfile,
   type InventoryUnit
 } from "@/features/inventory/units";
@@ -78,6 +82,7 @@ type Props = {
 };
 
 type FormState = {
+  packageVariantId?: string | null;
   type: IngredientType;
   category: IngredientCategory;
   subtype: IngredientSubtype | null;
@@ -188,6 +193,8 @@ export const resolveInventoryEditorInitialSelection = (
   groupName: source.groupName ?? null,
   itemKind: source.itemKind ?? null,
   harvestYear: source.harvestYear ?? null,
+  packageVariants: source.packageVariants ?? [],
+  matchedPackageVariantId: source.packageVariantId ?? null,
   source: source.sourceKind === "catalog" ? "catalog" : "custom"
 });
 
@@ -236,8 +243,11 @@ export const createFormState = (
     measurementDimension: item.source.measurementDimension,
     technicalData: item.source.technicalData
   });
-  const storedPriceInputCurrency = item.priceInputCurrency ?? item.purchaseCurrency;
-  const storedPriceInputAmountMinor = item.priceInputAmountMinor ?? item.purchasePriceMinor;
+  const storedPriceInputCurrency = item.purchaseCurrency ?? item.priceInputCurrency;
+  const originalQuantity = item.purchaseQuantityNormalized != null && item.purchaseQuantityNormalizedUnit
+    ? convertInventoryNormalizedToUnit(item.purchaseQuantityNormalized,item.purchaseQuantityNormalizedUnit,displayMeasurement.unit,resolveInventoryItemPackEquivalent({packageVariant:item.source.packageVariant,technicalData:item.source.technicalData})) : null;
+  const storedPriceInputAmountMinor = item.priceInputMode === "per_display_unit" && item.purchasePriceMinor != null && originalQuantity && originalQuantity > 0
+    ? Math.round(item.purchasePriceMinor / originalQuantity) : item.purchasePriceMinor ?? item.priceInputAmountMinor;
   const displayPriceMinor = storedPriceInputAmountMinor != null && storedPriceInputCurrency
     ? convertCurrencyMinor(storedPriceInputAmountMinor, storedPriceInputCurrency, preferredCurrency, currencyRates)
     : storedPriceInputAmountMinor;
@@ -263,6 +273,7 @@ export const createFormState = (
     waterTreatmentConcentrationPct: formatConcentrationInputValue(readWaterTreatmentConcentrationPct(item.source.technicalData)),
     hopAlphaAcidPct: formatHopAlphaInputValue(resolveIngredientTechnicalDataHopAlphaAcidPct(item.source.technicalData)),
     harvestYear: formatHarvestYearInputValue(item.source.harvestYear),
+    packageVariantId: item.packageVariantId ?? null,
     enteredQuantity: formatInventoryQuantityInputValue(displayMeasurement.quantity, displayMeasurement.unit),
     enteredUnit: displayMeasurement.unit,
     priceInputMode: item.priceInputMode ?? (displayPriceMinor != null ? "total" : "total"),
@@ -316,7 +327,7 @@ const validateInventoryEditorNumbers = ({
 
   if (showHopBatchFields) {
     errors.hopAlphaAcidPct = validateNumericInput(form.hopAlphaAcidPct, {
-      label: "Альфа-кислота",
+      label: "Альфа-кислоты",
       min: 0,
       max: 100
     });
@@ -415,6 +426,8 @@ export function InventoryItemDetailsEditor({
   initiallyOpen = false
 }: Props) {
   const [editing, setEditing] = useState(initiallyOpen);
+  const [closeConfirmOpen, setCloseConfirmOpen] = useState(false);
+  const initialLinksRef = useRef<string | null>(null);
   const [form, setForm] = useState<FormState>(() => createFormState(item, preferredCurrency, currencyRates));
   const [selectedSuggestion, setSelectedSuggestion] = useState<IngredientSuggestionItem | null>(() => (
     resolveInventoryEditorInitialSelection(item.source, item.enteredUnit)
@@ -428,23 +441,30 @@ export function InventoryItemDetailsEditor({
   const [pickerFocusSignal, setPickerFocusSignal] = useState(0);
   const [result, setResult] = useState<AddIngredientResult | null>(null);
   const [isPending, startTransition] = useTransition();
+  useEffect(() => {
+    if (purchaseLinksState.isLoaded && initialLinksRef.current === null) {
+      initialLinksRef.current = JSON.stringify(purchaseLinksState.urls);
+    }
+  }, [purchaseLinksState]);
   const unitProfile = useMemo(
     () => resolveInventoryEditorUnitProfile(form, item.source, selectedSuggestion),
     [form, item.source, selectedSuggestion]
   );
   const quantityStep = getInventoryUnitInputStep(form.enteredUnit);
-  const selectedPackEquivalent = useMemo(
-    () => selectedSuggestion
-      ? resolveInventoryPackEquivalent(selectedSuggestion.technicalData ?? null)
-      : null,
-    [selectedSuggestion]
-  );
+  const selectedPackEquivalent = useMemo(() => {
+    if (!selectedSuggestion) return null;
+    const originalPackage = selectedSuggestion.id === item.source.sourceId && selectedSuggestion.source === item.source.sourceKind && form.packageVariantId === item.packageVariantId
+      ? item.source.packageVariant : null;
+    const variant = originalPackage ?? selectedSuggestion.packageVariants?.find((entry) => entry.id === form.packageVariantId);
+    if (selectedSuggestion.packageVariants?.length && !variant) return null;
+    return resolveInventoryItemPackEquivalent({ packageVariant: variant, technicalData: selectedSuggestion.technicalData });
+  }, [selectedSuggestion, form.packageVariantId, item.source, item.packageVariantId]);
   const getUnitLabel = (unit: InventoryUnit) => {
     if (unit !== "pack" || !selectedPackEquivalent) {
       return inventoryUnitLabels[unit];
     }
 
-    return `пачка ${formatInventoryQuantityInputValue(selectedPackEquivalent.normalizedQuantity, selectedPackEquivalent.normalizedUnit)}${selectedPackEquivalent.normalizedUnit}`;
+    return `упаковка · ${formatInventoryQuantityInputValue(selectedPackEquivalent.normalizedQuantity, selectedPackEquivalent.normalizedUnit)} ${inventoryUnitShortLabels[selectedPackEquivalent.normalizedUnit]}`;
   };
   const showPickerStage = shouldShowInventoryEditorPickerStage({
     category: form.category,
@@ -523,6 +543,8 @@ export function InventoryItemDetailsEditor({
   }, [result]);
 
   const resetForm = () => {
+    initialLinksRef.current = null;
+    setCloseConfirmOpen(false);
     setForm(createFormState(item, preferredCurrency, currencyRates));
     setSelectedSuggestion(resolveInventoryEditorInitialSelection(item.source, item.enteredUnit));
     setOptionalOpen(false);
@@ -550,6 +572,7 @@ export function InventoryItemDetailsEditor({
   };
 
   const openEditor = () => {
+    initialLinksRef.current = null;
     setForm(createFormState(item, preferredCurrency, currencyRates));
     setSelectedSuggestion(resolveInventoryEditorInitialSelection(item.source, item.enteredUnit));
     setOptionalOpen(false);
@@ -608,6 +631,14 @@ export function InventoryItemDetailsEditor({
     }
   };
 
+  const hasUnsavedChanges = () => JSON.stringify(form) !== JSON.stringify(createFormState(item, preferredCurrency, currencyRates))
+    || (purchaseLinksState.isLoaded && initialLinksRef.current !== null && JSON.stringify(purchaseLinksState.urls) !== initialLinksRef.current);
+  const requestClose = () => {
+    if (isPending) return;
+    if (hasUnsavedChanges()) setCloseConfirmOpen(true);
+    else resetForm();
+  };
+
   return (
     <>
       {renderTrigger
@@ -628,12 +659,16 @@ export function InventoryItemDetailsEditor({
         onOpenChange={(next) => {
           if (!next) resetForm();
         }}
-        title={`Редактировать ингредиент на складе: ${item.source.displayName}`}
+        title={`Изменить запас: ${item.source.displayName}`}
         hideTitle
         size="lg"
+        guard={{
+          isDirty: () => isPending || hasUnsavedChanges(),
+          onGuardedClose: () => { if (!isPending) setCloseConfirmOpen(true); }
+        }}
       >
         <DialogHeader>
-          <h2 className="text-base font-semibold text-foreground">Редактировать ингредиент</h2>
+          <h2 className="text-base font-semibold text-foreground">Изменить запас</h2>
           <DialogCloseButton />
         </DialogHeader>
 
@@ -657,6 +692,7 @@ export function InventoryItemDetailsEditor({
                     const nextResult = await updateInventoryItemAction({
                       inventoryItemId: item.id,
                       ingredientCatalogItemId: sourcePayload.ingredientCatalogItemId,
+                      packageVariantId: form.packageVariantId,
                       userCustomIngredientId: sourcePayload.userCustomIngredientId,
                       waterTreatmentConcentrationPct: sourcePayload.waterTreatmentConcentrationPct,
                       hopAlphaAcidPct: sourcePayload.hopAlphaAcidPct,
@@ -825,6 +861,7 @@ export function InventoryItemDetailsEditor({
                           pickerValue: displayNames.primaryName,
                           selectedDisplayName: displayNames.primaryName,
                           ingredientCatalogItemId: selected.source === "catalog" ? selected.id : null,
+                          packageVariantId: selected.matchedPackageVariantId ?? selected.packageVariants?.find(variant=>variant.isDefaultForStock)?.id ?? null,
                           userCustomIngredientId: selected.source === "custom" ? selected.id : null,
                           waterTreatmentConcentrationPct: formatConcentrationInputValue(
                             readWaterTreatmentConcentrationPct(selected.technicalData)
@@ -867,7 +904,7 @@ export function InventoryItemDetailsEditor({
                       />
                         {selectedPackEquivalent ? (
                           <p className="text-xs text-muted-foreground">
-                            1 уп. = {selectedPackEquivalent.normalizedQuantity} {selectedPackEquivalent.normalizedUnit}
+                            1 уп. = {selectedPackEquivalent.normalizedQuantity.toLocaleString("ru-RU")} {inventoryUnitShortLabels[selectedPackEquivalent.normalizedUnit]}
                           </p>
                         ) : null}
                     </div>
@@ -896,7 +933,7 @@ export function InventoryItemDetailsEditor({
                     ) : null}
                     {showHopBatchFields ? (
                       <div className="grid gap-3 sm:grid-cols-2 sm:max-w-md">
-                        <label className="block text-sm font-medium text-foreground">Альфа-кислота, %
+                        <label className="block text-sm font-medium text-foreground">Альфа-кислоты, %
                           <NumericInput
                             min={0}
                             max={100}
@@ -930,6 +967,12 @@ export function InventoryItemDetailsEditor({
                         </label>
                       </div>
                     ) : null}
+                    {selectedSuggestion?.packageVariants?.length ? <label className="block text-sm font-medium text-foreground">Фасовка
+                      <select className="mt-1.5 w-full rounded-xl border border-border bg-card px-3 py-2" value={form.packageVariantId ?? ""} onChange={event=>setForm(current=>({...current,packageVariantId:event.target.value || null}))}>
+                        <option value="">Без упаковки</option>
+                        {selectedSuggestion.packageVariants.map(variant=><option key={variant.id} value={variant.id}>{formatConsumablePackageLabel(variant)}{variant.sourceGroup === "unverified_package" ? " · источник не подтверждён" : ""}</option>)}
+                      </select>
+                    </label> : null}
                     <div className="grid gap-3 sm:grid-cols-2">
                       <label className="block text-sm font-medium text-foreground">Количество *
                         <NumericInput
@@ -951,7 +994,13 @@ export function InventoryItemDetailsEditor({
                           className="mt-1.5 w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-base transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
                           value={form.enteredUnit}
                           onChange={(event) => {
-                            setForm((current) => ({ ...current, enteredUnit: event.target.value as InventoryUnit }));
+                            const nextUnit = event.target.value as InventoryUnit;
+                            setForm((current) => {
+                              const quantity = Number(current.enteredQuantity.replace(",", "."));
+                              const converted = current.enteredQuantity.trim() && Number.isFinite(quantity)
+                                ? convertInventoryNormalizedToUnit(quantity, current.enteredUnit, nextUnit, selectedPackEquivalent) : null;
+                              return { ...current, enteredUnit: nextUnit, enteredQuantity: converted == null ? current.enteredQuantity : formatInventoryQuantityInputValue(converted, nextUnit) };
+                            });
                             setResult(null);
                           }}
                         >
@@ -1056,7 +1105,8 @@ export function InventoryItemDetailsEditor({
 
                 {result && !result.ok ? <p role="alert" className="text-xs text-destructive">{result.message}</p> : null}
 
-                <div className="flex gap-3 pt-2">
+                <InventoryItemMovements inventoryItemId={item.id} open={editing} />
+                <InventoryFormActions>
                   <Button
                     type="submit"
                     size="md"
@@ -1065,17 +1115,21 @@ export function InventoryItemDetailsEditor({
                   >
                     {isPending ? "Сохраняем…" : "Сохранить"}
                   </Button>
-                  <Button type="button" variant="outline" size="md" onClick={resetForm}>
-                    Отмена
-                  </Button>
-                </div>
+                  <Button type="button" variant="outline" size="md" disabled={isPending} onClick={requestClose}>Отмена</Button>
+                </InventoryFormActions>
               </form>
 
-              {/* Журнал движений по позиции (UX-находка #19) — под формой, тянется
-                  клиентом при открытии деталей. */}
-              <InventoryItemMovements inventoryItemId={item.id} open={editing} />
         </div>
       </Dialog>
+      <ConfirmActionDialog
+        open={closeConfirmOpen}
+        title="Закрыть без сохранения?"
+        description="Изменения запаса будут потеряны."
+        confirmLabel="Закрыть"
+        cancelLabel="Продолжить редактирование"
+        onConfirm={resetForm}
+        onClose={() => setCloseConfirmOpen(false)}
+      />
     </>
   );
 }

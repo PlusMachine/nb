@@ -11,7 +11,7 @@ export default function BeerNotFound() {
         Такой страницы нет
       </h1>
       <p className="mt-3 max-w-sm text-white/60">
-        Ссылка с наклейки устарела или рецепт удалён.
+        Ссылка с этикетки устарела или рецепт удалён.
       </p>
       <Link
         href="/"

@@ -146,7 +146,7 @@ export function IngredientPurchaseLinksEditor({
   autoStartCreateWhenEmpty = false,
   onRequestClose,
   emptyStateTitle = "Ссылок на покупку пока нет",
-  emptyStateDescription = "Добавьте площадки, где вы обычно заказываете этот ингредиент."
+  emptyStateDescription = "Добавьте ссылки на магазины, где покупаете этот ингредиент."
 }: IngredientPurchaseLinksEditorProps) {
   const referenceSource = reference.source;
   const referenceId = reference.id;

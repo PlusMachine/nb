@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   Bell,
+  BarChart3,
   BookOpen,
   Boxes,
   ClipboardCheck,
@@ -19,7 +20,7 @@ import type { UserRole } from "@nb/auth";
 // Единый источник разделов админки: сайдбар, мобильный drawer и карточки
 // дашборда читают отсюда, чтобы имена и состав не расходились между ними.
 
-export type AdminNavGroupKey = "catalog" | "community" | "content" | "devices" | "system";
+export type AdminNavGroupKey = "analytics" | "catalog" | "community" | "content" | "devices" | "system";
 
 export type AdminNavItem = {
   href: string;
@@ -38,16 +39,18 @@ export type AdminNavGroup = {
 };
 
 const adminGroupLabels: Record<AdminNavGroupKey, string> = {
+  analytics: "Продукт",
   catalog: "Каталог",
   community: "Сообщество",
-  content: "Контент",
+  content: "Материалы",
   devices: "Устройства",
   system: "Система"
 };
 
-const adminGroupOrder: AdminNavGroupKey[] = ["catalog", "community", "content", "devices", "system"];
+const adminGroupOrder: AdminNavGroupKey[] = ["analytics", "catalog", "community", "content", "devices", "system"];
 
 export const adminNavItems: AdminNavItem[] = [
+  { href: "/admin/analytics", label: "Аналитика", description: "Рост, возвраты, воронка и освоение функций", icon: BarChart3, requiredRole: "admin", group: "analytics" },
   { href: "/admin/ingredients", label: "Ингредиенты", icon: Boxes, requiredRole: "admin", group: "catalog" },
   {
     href: "/admin/ingredients/moderation",

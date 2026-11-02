@@ -7,7 +7,7 @@ import { SectionErrorState } from "@/components/shared/section-error-state";
 export default function RootError({ reset }: { error: Error; reset: () => void }) {
   return (
     <SectionErrorState
-      title="Что-то пошло не так"
+      title="Не удалось загрузить страницу"
       message="Попробуйте обновить страницу. Если ошибка повторяется, вернитесь позже."
       reset={reset}
     />

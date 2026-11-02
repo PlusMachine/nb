@@ -129,7 +129,7 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
     getInventorySummaries(user.id),
     listSystemCurrencyRates(),
     addSource === "catalog" || addSource === "custom"
-      ? getIngredientSuggestionByRef(user.id, addSource, addId ?? "")
+      ? getIngredientSuggestionByRef(user.id, addSource, addId ?? "").then((item) => item?.inventoryEnabled === false ? null : item)
       : Promise.resolve(null),
     // Счётчик для таба «Чего не хватает» (без opportunities — дешёвый путь,
     // как у виджета дашборда). При сбое таб просто остаётся без цифры.
@@ -218,7 +218,7 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
 
   return (
     <main className="space-y-5">
-      <section className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <section className="flex items-start justify-between gap-3 sm:items-center">
         <div className="space-y-1">
           <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">Мой склад</h1>
           {hasAnyItems ? (
@@ -248,7 +248,7 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
                     href="#brewable"
                     className="underline decoration-dotted underline-offset-2 transition-colors hover:text-foreground"
                   >
-                    рецепты под склад: {brewableRecipes.length}
+                    рецепты: {brewableRecipes.length}
                   </a>
                 </span>
               ) : null}

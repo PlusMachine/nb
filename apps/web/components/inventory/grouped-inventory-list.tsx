@@ -79,14 +79,14 @@ export function GroupedInventoryList({
   const groups = groupInventoryItems(items);
 
   return (
-    <section className="space-y-8" aria-label="Список ингредиентов по категориям">
+    <section className="space-y-5 sm:space-y-8" aria-label="Список ингредиентов по категориям">
       {groups.map((group) => {
         const Icon = groupIcons[group.key];
         const color = groupColors[group.key];
         const bg = groupBg[group.key];
 
         return (
-          <section key={group.key} className="space-y-3">
+          <section key={group.key} className="space-y-2 sm:space-y-3">
             <div className="flex items-center gap-2.5">
               <div className={`flex h-7 w-7 items-center justify-center rounded-lg ${bg}`}>
                 <Icon className={`h-3.5 w-3.5 ${color}`} />

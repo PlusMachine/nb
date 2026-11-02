@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { ToastProvider } from "@nb/ui";
 import { ConsentProvider } from "@/components/legal/consent-provider";
+import { ProductActivityTracker } from "@/components/analytics/product-activity-tracker";
 import { FeedbackProvider } from "@/components/feedback/feedback-provider";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import type { SkinPreference, ThemePreference } from "@/features/theme/theme";
@@ -93,6 +94,7 @@ export function Providers({
     <ThemeProvider initialPreference={initialThemePreference} initialSkin={initialSkinPreference}>
       <ToastProvider>
         <ConsentProvider>
+          <ProductActivityTracker isAuthenticated={isAuthenticated} />
           <FeedbackProvider isAuthenticated={isAuthenticated}>{children}</FeedbackProvider>
         </ConsentProvider>
       </ToastProvider>

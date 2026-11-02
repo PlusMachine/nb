@@ -2,6 +2,9 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+vi.mock("../features/brew-batches/records-service", () => ({ listOverviewTasks: vi.fn(async () => []) }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
+
 const activeBrew = {
   id: "bb-1",
   name: "Test Brew",
@@ -242,7 +245,7 @@ describe("App dashboard", () => {
 
     expect(html).toContain("Ожидают варки");
     expect(html).toContain("Planned Brew");
-    expect(html).toContain("готова к старту");
+    expect(html).toContain("без даты");
     expect(html).toContain('href="/app/brew-batches/bb-3"');
   });
 

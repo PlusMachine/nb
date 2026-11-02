@@ -81,7 +81,7 @@ const coverImageUrlField = z
   .string()
   .trim()
   .max(2048)
-  .refine((value) => value === "" || value.startsWith("/") || /^https?:\/\//i.test(value), "Укажите http(s)-URL или путь от корня (/...).")
+  .refine((value) => value === "" || value.startsWith("/") || /^https?:\/\//i.test(value), "Укажите ссылку http://, https:// или путь от корня сайта (/...).")
   .transform((value) => (value === "" ? null : value))
   .nullable()
   .optional();

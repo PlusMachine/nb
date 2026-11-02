@@ -238,7 +238,7 @@ export function InventoryConsumeControl({ item, onAction, defaultMode = "consume
               setFeedback(null);
             }}
             className="w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-base tabular-nums transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
-            aria-label={isConsume ? "Количество использованного" : "Количество докупленного"}
+            aria-label={isConsume ? "Сколько использовали" : "Сколько докупили"}
             placeholder="0"
           />
           <select

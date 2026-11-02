@@ -7,6 +7,8 @@ import { getAdminUserDetail } from "@/features/admin-users/service";
 import { userRoleLabels } from "@/features/admin-users/contracts";
 import { listAuditEvents } from "@/features/audit/service";
 import { requireRole } from "@/lib/auth";
+import { getUserAnalytics } from "@/features/product-analytics/service";
+import { sectionLabels } from "@/features/product-analytics/contracts";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +33,10 @@ export default async function AdminUserDetailPage({ params }: { params: Promise<
     notFound();
   }
 
-  const auditLog = await listAuditEvents({ entityType: "user", entityId: user.id, pageSize: 10 });
+  const [auditLog, analytics] = await Promise.all([
+    listAuditEvents({ entityType: "user", entityId: user.id, pageSize: 10 }),
+    getUserAnalytics(user.id)
+  ]);
   const { activity } = user;
 
   return (
@@ -107,6 +112,19 @@ export default async function AdminUserDetailPage({ params }: { params: Promise<
                 )}
               </Row>
             </dl>
+          </section>
+
+          <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+            <h2 className="text-base font-semibold text-foreground">Использование продукта</h2>
+            <dl className="mt-2 divide-y divide-border">
+              <Row label="Последний визит">{analytics.lastSeenAt ? new Date(analytics.lastSeenAt).toLocaleString("ru-RU", { timeZone: "Europe/Moscow" }) : "Нет данных"}</Row>
+              <Row label="Дней активности">{analytics.activeDays}</Row>
+              <Row label="Просмотров">{analytics.views}</Row>
+            </dl>
+            {analytics.sections.length ? <ul className="mt-3 divide-y divide-border">{analytics.sections.map(item => <li key={item.section} className="flex flex-wrap items-baseline justify-between gap-2 py-2 text-sm">
+              <span>{sectionLabels[item.section] ?? item.section}</span><span className="text-xs text-muted-foreground">{item.views} просм. · {new Date(item.lastSeenAt).toLocaleString("ru-RU", { timeZone: "Europe/Moscow" })}</span>
+            </li>)}</ul> : null}
+            <p className="mt-3 text-xs text-muted-foreground">За всё время сбора, только с согласием на аналитику. Разделы отсортированы по последнему посещению. Отсутствие данных не означает неактивность.</p>
           </section>
 
           <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">

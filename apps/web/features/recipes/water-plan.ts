@@ -152,12 +152,12 @@ export const recipeWaterSaltPresentation: Record<
 > = {
   gypsum: { label: "Гипс", formula: "CaSO4" },
   calcium_chloride: {
-    label: "Хлорид кальция",
-    formula: "CaCl2",
+    label: "Хлорид кальция, дигидрат",
+    formula: "CaCl2·2H2O",
   },
-  epsom_salt: { label: "Эпсомская соль", formula: "MgSO4" },
+  epsom_salt: { label: "Английская соль (сульфат магния)", formula: "MgSO4" },
   baking_soda: { label: "Сода пищевая", formula: "NaHCO3" },
-  table_salt: { label: "Соль поваренная (не йодированная)", formula: "NaCl" },
+  table_salt: { label: "Поваренная соль (нейодированная)", formula: "NaCl" },
   chalk: { label: "Мел (карбонат кальция)", formula: "CaCO3" },
   slaked_lime: {
     label: "Гашёная известь (гидроксид кальция)",

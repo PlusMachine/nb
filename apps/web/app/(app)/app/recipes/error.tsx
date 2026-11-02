@@ -6,7 +6,7 @@ import { RecipeErrorState } from "@/components/recipes/recipe-error-state";
 export default function RecipesError({ reset }: { error: Error; reset: () => void }) {
   return (
     <RecipeErrorState
-      title='Не удалось загрузить "Мои рецепты"'
+      title='Не удалось загрузить ваши рецепты'
       message="Попробуйте обновить страницу. Если ошибка повторяется, вернитесь позже."
       reset={reset}
     />

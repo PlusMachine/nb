@@ -26,3 +26,9 @@ export const remainingSeconds = (
   }
   return durationSeconds - (nowMs - startedMs) / 1000;
 };
+
+export const stepRemainingSeconds = (
+  step: { durationSeconds: number | null },
+  state: { timerStartedAt: string | null; timerDurationSeconds?: number | null } | undefined,
+  nowMs: number
+): number | null => remainingSeconds(state?.timerDurationSeconds ?? step.durationSeconds, state?.timerStartedAt ?? null, nowMs);

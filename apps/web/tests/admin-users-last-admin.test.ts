@@ -25,7 +25,9 @@ const { state } = vi.hoisted(() => ({
     lockedFor: [] as string[],
     tx: null as unknown,
     committed: 0,
-    rolledBack: 0
+    rolledBack: 0,
+    deletedTables: [] as string[],
+    failActivityDelete: false
   }
 }));
 
@@ -106,7 +108,10 @@ vi.mock("@nb/db", () => {
   const executor = {
     select: (projection?: Record<string, ColumnRef>) => selectBuilder(projection),
     update: () => ({ set: () => ({ where: () => ({ returning: () => Promise.resolve([]) }) }) }),
-    delete: () => ({ where: () => Promise.resolve() })
+    delete: (table: { __table: string }) => ({ where: () => {
+      state.deletedTables.push(table.__table);
+      return state.failActivityDelete ? Promise.reject(new Error("analytics db down")) : Promise.resolve();
+    } })
   };
 
   const db = {
@@ -133,6 +138,7 @@ vi.mock("@nb/db", () => {
     brewDevices: tableToken("brewDevices"),
     masterProfiles: tableToken("masterProfiles"),
     userIngredients: tableToken("userIngredients"),
+    productActivityDaily: tableToken("productActivityDaily"),
     and: (...args: Clause[]) => ({ op: "and", args }),
     or: (...args: Clause[]) => ({ op: "or", args }),
     eq: (column: ColumnRef, value: unknown) => ({ op: "eq", column, value }),
@@ -213,6 +219,8 @@ beforeEach(() => {
   state.tx = null;
   state.committed = 0;
   state.rolledBack = 0;
+  state.deletedTables = [];
+  state.failActivityDelete = false;
 });
 
 describe("смена роли: проверка и запись в одной транзакции", () => {
@@ -321,6 +329,7 @@ describe("обезличивание: ПДн чистятся одной тра�
 
     expect(mocks.scrubActorEmails).toHaveBeenCalledWith(TARGET, state.tx);
     expect(mocks.purgeMasterProfileForUser).toHaveBeenCalledWith(TARGET, state.tx);
+    expect(state.deletedTables).toContain("productActivityDaily");
     expect(state.committed).toBe(1);
     expect(state.rolledBack).toBe(0);
   });
@@ -337,6 +346,14 @@ describe("обезличивание: ПДн чистятся одной тра�
     // Витрину не тронули, и события «аккаунт обезличен» в журнале нет: снаружи
     // транзакции ничего не произошло.
     expect(mocks.purgeMasterProfileForUser).not.toHaveBeenCalled();
+    expect(mocks.recordAuditEvent).not.toHaveBeenCalled();
+  });
+
+  it("ошибка очистки аналитики откатывает обезличивание целиком", async () => {
+    state.failActivityDelete = true;
+    await expect(anonymizeUserAccount({ actor, userId: TARGET, confirmation: "second@mail.ru" })).rejects.toThrow("analytics db down");
+    expect(state.rolledBack).toBe(1);
+    expect(state.committed).toBe(0);
     expect(mocks.recordAuditEvent).not.toHaveBeenCalled();
   });
 

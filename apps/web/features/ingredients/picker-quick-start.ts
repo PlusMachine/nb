@@ -455,15 +455,15 @@ export const resolveIngredientPickerScopedPlaceholder = ({
   }
 
   if (activeGroupLabel) {
-    return `Искать внутри ${activeGroupLabel}`;
+    return `Искать в категории ${activeGroupLabel}`;
   }
 
   if (activeFamilyLabel) {
-    return `Уточните внутри «${activeFamilyLabel}»`;
+    return `Уточните поиск в «${activeFamilyLabel}»`;
   }
 
   if (activeManufacturerLabel) {
-    return `Искать внутри ${activeManufacturerLabel}`;
+    return `Искать в категории ${activeManufacturerLabel}`;
   }
 
   if (activeFavoritesOnly) {

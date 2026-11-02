@@ -132,7 +132,7 @@ const isCapacityFailureMessage = (message: string) => (
 const buildCapacityNotice = (message: string) => (
   message.includes("40 МБ")
     ? "Часть фото не добавлена: общий лимит 40 МБ."
-    : "Лимит: 8 фото. Лишние файлы не загружали."
+    : "Можно загрузить до 8 фото. Лишние файлы не загружены."
 );
 
 const buildSelectionNotice = ({
@@ -152,7 +152,7 @@ const buildSelectionNotice = ({
     messages.push(
       queuedCount > 0
         ? `Лимит: 8 фото. В очередь добавили ${queuedCount}, лишние не загружали.`
-        : "Лимит: 8 фото. Удалите фото, чтобы добавить новые."
+        : "Можно загрузить до 8 фото. Удалите ненужные, чтобы добавить новые."
     );
   }
 

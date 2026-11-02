@@ -54,7 +54,7 @@ describe("resolveBrewNudge — planned", () => {
 
   it("treats a planned brew without a date as ready to start", () => {
     const nudge = resolveBrewNudge(make("planned"), NOW);
-    expect(nudge).toEqual({ tone: "info", text: "Готова к старту" });
+    expect(nudge).toEqual({ tone: "info", text: "Дата варки не выбрана" });
   });
 });
 

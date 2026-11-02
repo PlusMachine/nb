@@ -261,7 +261,7 @@ export function renderFallbackOgCard(opts: { wordmark: string; tagline?: string 
     <div style={{ ...rootStyle, flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
       <div style={{ fontSize: 128, fontWeight: 700, color: OG_COLORS.foreground }}>{opts.wordmark}</div>
       <div style={{ fontSize: 34, color: OG_COLORS.muted, marginTop: 16 }}>
-        {opts.tagline ?? "Платформа для домашних пивоваров"}
+        {opts.tagline ?? "Помощник домашнего пивовара"}
       </div>
     </div>
   );

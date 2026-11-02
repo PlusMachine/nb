@@ -294,7 +294,7 @@ export function LiveDashboardView({
             {appMode === "brew" ? "Пивоварня свободна" : "Прибор свободен"}
           </p>
           {appMode === "distill" ? (
-            <p className="mt-1 text-sm text-muted-foreground">Старт дистилляции — на устройстве</p>
+            <p className="mt-1 text-sm text-muted-foreground">Запустите перегон на устройстве</p>
           ) : null}
           <div className="mt-3 flex flex-wrap gap-2">
             {idleDeviceId && appMode === "brew" ? (
@@ -365,7 +365,7 @@ export function LiveDashboardView({
               requestConfirm({
                 title: "Остановить варку?",
                 description:
-                  "Плавная остановка: устройство завершит варку и выключит нагрев. Действие необратимо.",
+                  "Варка завершится, нагрев выключится. Продолжить эту варку будет нельзя.",
                 confirmLabel: "Остановить",
                 tone: "danger",
                 run: async () => {

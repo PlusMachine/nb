@@ -83,7 +83,7 @@ const mapUploadError = (error: unknown) => {
 export async function POST(request: Request) {
   const user = await getSessionUser();
   if (!user) {
-    return NextResponse.json({ ok: false, message: "Требуется авторизация." }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Войдите в аккаунт." }, { status: 401 });
   }
 
   try {

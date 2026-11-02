@@ -39,7 +39,7 @@ const MIN_HISTORY_MANUAL_MEASUREMENTS = 2;
 // рендерится вовсе, см. FermentVerdictRow).
 const VERDICT_LABELS: Record<Exclude<FermentVerdict["kind"], "insufficient_data">, string> = {
   batch_completed: "Брожение завершено",
-  fg_confirmed: "Брожение завершено — FG записана",
+  fg_confirmed: "Брожение завершено — КП записана",
   awaiting_start: "Ждём начала брожения",
   not_started: "Брожение не началось?",
   active: "Бродит активно",

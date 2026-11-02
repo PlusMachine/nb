@@ -1,0 +1,168 @@
+<style>
+#nb-precise-review{color:var(--foreground);display:grid;gap:16px}
+#nb-precise-review .pickers{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:14px;align-items:end;padding-right:96px}
+#nb-precise-review .pickers label{display:grid;gap:6px;min-width:0}
+#nb-precise-review .case-heading{display:grid;gap:8px}
+#nb-precise-review .case-meta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+#nb-precise-review .comparison{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+#nb-precise-review figure{margin:0;min-width:0;display:grid;gap:10px;align-content:start}
+#nb-precise-review .comparison>figure{grid-template-rows:subgrid;grid-row:span 2}
+#nb-precise-review figcaption{display:grid;gap:6px}
+#nb-precise-review .capture{display:flex;justify-content:center;align-items:start;padding:12px 0;min-width:0}
+#nb-precise-review .capture img{display:block;max-width:100%;height:auto;object-fit:contain}
+#nb-precise-review .overview img{width:100%;height:auto;display:block}
+#nb-precise-review .reason{display:grid;gap:6px}
+#nb-precise-review details{border-top:1px solid var(--border);padding-top:14px}
+#nb-precise-review details[open] .overview{margin-top:16px}
+#nb-precise-review summary{cursor:pointer}
+#nb-precise-review .navigation{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+#nb-precise-review .review-overview,#nb-precise-review .decision-heading,#nb-precise-review .decision-actions,#nb-precise-review .summary-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#nb-precise-review .review-overview{justify-content:space-between}
+#nb-precise-review .review-body,#nb-precise-review .decision-panel,#nb-precise-review .summary-view,#nb-precise-review .comment-field,#nb-precise-review .summary-list{display:grid;gap:12px;min-width:0}
+#nb-precise-review .review-body{gap:16px}
+#nb-precise-review .decision-panel{border-top:1px solid var(--border);padding-top:14px}
+#nb-precise-review .decision-panel textarea,#nb-precise-review .report-field{width:100%;resize:vertical}
+#nb-precise-review .decision-status{margin-left:auto}
+#nb-precise-review .summary-item{display:grid;gap:7px;border-bottom:1px solid var(--border);padding-bottom:12px;min-width:0}
+#nb-precise-review .summary-item p{white-space:pre-wrap;overflow-wrap:anywhere}
+#nb-precise-review .summary-item button{justify-self:start;text-align:left;white-space:normal}
+#nb-precise-review .summary-counts{display:flex;flex-wrap:wrap;gap:8px 18px}
+#nb-precise-review [hidden]{display:none!important}
+@media(max-width:700px){#nb-precise-review .pickers{grid-template-columns:1fr;padding-right:0}#nb-precise-review .comparison{grid-template-columns:1fr;gap:22px}}
+</style>
+<div id="nb-precise-review">
+ <div class="review-overview"><span id="precise-review-count" class="text-small"></span><button class="btn" type="button" id="precise-summary-toggle" aria-expanded="false" aria-controls="precise-summary">Итог и комментарии</button></div>
+ <div class="review-body" id="precise-review-body">
+ <div class="pickers">
+  <label class="form-label">Калькулятор<select class="form-select" id="precise-picker" aria-label="Калькулятор"></select></label>
+  <label class="form-label" id="precise-case-label">Отдельная правка<select class="form-select" id="precise-case" aria-label="Отдельная правка"></select></label>
+ </div>
+ <div class="case-heading" aria-live="polite">
+  <div class="case-meta"><span class="viz-badge" id="precise-kind"></span><span id="precise-proposal-code" class="text-small"></span><span class="text-small text-muted">Макеты · правки в приложение не внесены</span></div>
+  <h3 id="precise-title"></h3>
+  <p id="precise-scenario" class="text-small text-muted"></p>
+ </div>
+ <section class="decision-panel" aria-label="Ваше решение">
+  <div class="decision-heading"><strong id="precise-decision-label">Ваше решение по этой правке</strong><span id="precise-decision-status" class="text-small decision-status" role="status"></span></div>
+  <div class="decision-actions" id="precise-decision-actions" role="group" aria-label="Выбрать решение">
+   <button class="btn" type="button" data-decision="accepted" aria-pressed="false">Принять</button>
+   <button class="btn" type="button" data-decision="rejected" aria-pressed="false">Отклонить</button>
+   <button class="btn" type="button" data-decision="revise" aria-pressed="false">На доработку</button>
+   <button class="btn btn-ghost" type="button" id="precise-decision-clear" hidden>Снять решение</button>
+  </div>
+  <label class="form-label comment-field" for="precise-comment"><span>Комментарий</span><textarea class="form-control" id="precise-comment" rows="2" maxlength="300" placeholder="Что изменить, какую формулировку оставить или почему отклоняете"></textarea></label>
+  <div class="decision-heading"><span class="text-small text-muted" id="precise-comment-help"></span><span class="text-small text-muted decision-status" id="precise-save-status" role="status"></span></div>
+ </section>
+ <div class="comparison" id="precise-pair">
+  <figure><figcaption><strong>До · как работает сейчас</strong><p class="text-small" id="precise-before-text"></p></figcaption><div class="capture"><img id="precise-before" alt="" /></div></figure>
+  <figure><figcaption><strong>После · одна предлагаемая правка</strong><p class="text-small" id="precise-after-text"></p></figcaption><div class="capture"><img id="precise-after" alt="" /></div></figure>
+ </div>
+ <div id="precise-unchanged" class="reason" hidden><p id="precise-kept"></p><p id="precise-withdrawn" class="text-small text-muted"></p></div>
+ <div class="reason"><strong id="precise-why-label">Зачем</strong><p id="precise-why"></p></div>
+ <details id="precise-context"><summary id="precise-context-label">Весь калькулятор: одинаковая вёрстка и исходные данные</summary><div class="comparison overview"><figure><figcaption>До</figcaption><img id="precise-full-before" alt="" /></figure><figure><figcaption id="precise-full-after-caption">После</figcaption><img id="precise-full-after" alt="" /></figure></div></details>
+ <div class="navigation"><button class="btn" type="button" id="precise-prev">← Назад</button><span class="text-small text-muted" id="precise-progress"></span><button class="btn" type="button" id="precise-next">Далее →</button></div>
+ </div>
+ <section id="precise-summary" class="summary-view" aria-label="Итог решений" hidden>
+  <h3>Итог решений</h3>
+  <div class="summary-counts text-small" id="precise-summary-counts"></div>
+  <p class="text-small text-muted">Пункты без решения ещё не согласованы. Чтобы передать итог в чат, скопируйте его и вставьте в сообщение.</p>
+  <div id="precise-summary-list" class="summary-list"></div>
+  <div class="summary-actions"><button class="btn btn-primary" type="button" id="precise-copy-report">Скопировать для чата</button><span class="text-small" id="precise-copy-status" role="status"></span></div>
+  <label class="form-label comment-field" for="precise-report"><span>Текст для чата</span><textarea id="precise-report" class="form-control report-field" rows="10" readonly></textarea></label>
+ </section>
+</div>
+<script>
+(()=>{
+const root=document.getElementById('nb-precise-review');
+const records=__RECORDS__;
+const assets=__ASSETS__;
+const byId=id=>root.querySelector('#'+id);
+const picker=byId('precise-picker'),casePicker=byId('precise-case');
+const proposals=records.filter(x=>x.patch);
+const codes=new Map(proposals.map((c,i)=>[c.id,'П'+String(i+1).padStart(2,'0')]));
+const statusLabels={pending:'Без решения',accepted:'Принято',rejected:'Отклонено',revise:'На доработку'};
+const groups=[...new Set(records.map(x=>x.slug))];
+for(const slug of groups){const rows=records.filter(x=>x.slug===slug);const o=document.createElement('option');o.value=slug;o.textContent=rows[0].title+(rows.some(x=>x.patch)?'':' · без правок');picker.appendChild(o);}
+let index=0,reviews={},showSummary=false,saveTimer,lastPublished='',saveSequence=0;
+const commentLimit=c=>c.patch?300:150;
+const cleanComment=(value,c)=>typeof value==='string'?value.replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g,'').slice(0,commentLimit(c)):'';
+const reviewFor=c=>reviews[c.id]||{status:'pending',comment:''};
+const restore=s=>{const state=s?.modelContent||s;if(state?.reviewVersion===2||state?.reviewVersion===3){const i=records.findIndex(x=>x.id===state.proposal);if(i>=0)index=i;if(state.reviewVersion===3){reviews={};for(const c of records){const r=state.decisions?.[c.id];if(!r||typeof r!=='object')continue;const status=c.patch&&['accepted','rejected','revise'].includes(r.status)?r.status:'pending';const comment=cleanComment(r.comment,c);if(status!=='pending'||comment)reviews[c.id]={status,comment};}}}};
+restore(window.openai?.widgetState);
+const snapshot=()=>({modelContent:{reviewVersion:3,calculator:records[index].slug,proposal:records[index].id,decisions:reviews},privateContent:null});
+async function save(){
+ clearTimeout(saveTimer);const sequence=++saveSequence;const payload=snapshot();lastPublished=JSON.stringify(payload);
+ if(new TextEncoder().encode(lastPublished).length>16384){byId('precise-save-status').textContent='Не удалось сохранить. Скопируйте итог.';return;}
+ byId('precise-save-status').textContent='Сохраняю…';
+ try{
+  if(!window.openai?.setWidgetState)throw Error('State persistence unavailable');
+  await window.openai.setWidgetState(payload);
+  if(sequence===saveSequence)byId('precise-save-status').textContent=window.openai.statePersistence==='local'?'Сохранено в этом браузере':'Сохранено';
+ }catch{if(sequence===saveSequence)byId('precise-save-status').textContent='Не удалось сохранить. Скопируйте итог перед закрытием.';}
+}
+function counts(){const n={accepted:0,rejected:0,revise:0,pending:0};for(const c of proposals)n[reviewFor(c).status]++;return n;}
+function renderOverview(){const n=counts();byId('precise-review-count').textContent='Рассмотрено '+(proposals.length-n.pending)+' из '+proposals.length+' предложений';}
+function renderDecision(){
+ const c=records[index],r=reviewFor(c);byId('precise-decision-label').textContent=c.patch?'Ваше решение по этой правке':'Замечание к текущему калькулятору';
+ byId('precise-decision-actions').hidden=!c.patch;byId('precise-decision-status').textContent=c.patch?statusLabels[r.status]:'Правок не предложено';
+ root.querySelectorAll('[data-decision]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.decision===r.status)));
+ byId('precise-decision-clear').hidden=r.status==='pending';
+ const input=byId('precise-comment');input.maxLength=commentLimit(c);if(input.value!==r.comment)input.value=r.comment;
+ byId('precise-comment-help').textContent=c.patch?'Для изменений выберите «На доработку» и уточните их в комментарии. До 300 символов.':'Можно оставить замечание, даже если здесь не предложено изменений. До 150 символов.';
+ renderOverview();
+}
+function report(){
+ const n=counts(),lines=['Решения по калькуляторам','Принято: '+n.accepted+'; отклонено: '+n.rejected+'; на доработку: '+n.revise+'; без решения: '+n.pending+'.',''];
+ for(const c of proposals){const r=reviewFor(c);lines.push(codes.get(c.id)+' · '+c.title+' — '+c.change, 'Решение: '+statusLabels[r.status]);if(r.comment.trim())lines.push('Комментарий: '+r.comment.trim());else if(r.status==='revise')lines.push('Комментарий: не указан');lines.push('');}
+ const notes=records.filter(c=>!c.patch&&reviewFor(c).comment.trim());
+ if(notes.length){lines.push('Замечания к калькуляторам без предложенных правок','');for(const c of notes)lines.push(c.title,reviewFor(c).comment.trim(),'');}
+ lines.push('Пункты без решения не согласованы.');return lines.join('\n');
+}
+function renderSummary(){
+ const n=counts();byId('precise-summary-counts').textContent='Принято: '+n.accepted+' · Отклонено: '+n.rejected+' · На доработку: '+n.revise+' · Без решения: '+n.pending;
+ const list=byId('precise-summary-list');list.replaceChildren();
+ for(const c of [...proposals,...records.filter(c=>!c.patch&&reviewFor(c).comment.trim())]){
+  const r=reviewFor(c),row=document.createElement('div');row.className='summary-item';
+  const button=document.createElement('button');button.type='button';button.className='btn btn-ghost';button.dataset.reviewOpen=c.id;button.textContent=(codes.get(c.id)?codes.get(c.id)+' · ':'')+c.title+' — '+c.change;
+  const status=document.createElement('span');status.className='text-small';status.textContent=c.patch?statusLabels[r.status]:'Замечание';row.append(button,status);
+  if(r.comment){const p=document.createElement('p');p.className='text-small';p.textContent=r.comment;row.append(p);}list.append(row);
+ }
+ byId('precise-report').value=report();
+}
+function setSummary(open){showSummary=open;byId('precise-review-body').hidden=open;byId('precise-summary').hidden=!open;byId('precise-summary-toggle').setAttribute('aria-expanded',String(open));byId('precise-summary-toggle').textContent=open?'Вернуться к сравнению':'Итог и комментарии';if(open){renderSummary();byId('precise-copy-status').textContent='';}}
+function render(){
+ const c=records[index];picker.value=c.slug;casePicker.replaceChildren();
+ const peers=records.filter(x=>x.slug===c.slug);for(const r of peers){const o=document.createElement('option');o.value=r.id;o.textContent=r.change;casePicker.appendChild(o);}casePicker.value=c.id;byId('precise-case-label').hidden=peers.length<2;
+ byId('precise-kind').textContent=c.kind;byId('precise-title').textContent=c.change;byId('precise-scenario').textContent=c.scenario;
+ byId('precise-proposal-code').textContent=codes.get(c.id)||'';
+ byId('precise-pair').hidden=!c.patch;byId('precise-unchanged').hidden=!!c.patch;
+ byId('precise-before-text').textContent=c.before;byId('precise-after-text').textContent=c.after;
+ byId('precise-kept').textContent=c.before;byId('precise-withdrawn').textContent=c.after;
+ byId('precise-why-label').textContent=c.patch?'Зачем':'Почему прежнее предложение снято';byId('precise-why').textContent=c.why;
+ for(const [key,asset] of [['before',c.beforeAsset],['after',c.afterAsset],['full-before',c.fullBeforeAsset],['full-after',c.fullAfterAsset]]){const img=byId('precise-'+key);img.src=assets[asset];img.alt=c.title+' — '+(key.includes('before')?'текущий интерфейс':c.patch?'только указанная правка':'тот же интерфейс, без изменений');}
+ byId('precise-context').open=false;
+ byId('precise-context-label').textContent=c.patch?'Весь калькулятор: одинаковая вёрстка и исходные данные':'Показать калькулятор: оба варианта одинаковые';
+ byId('precise-full-after-caption').textContent=c.patch?'После · только выбранная правка':'Без изменений';
+ byId('precise-progress').textContent=(index+1)+' / '+records.length;
+ byId('precise-prev').disabled=index===0;byId('precise-next').disabled=index===records.length-1;
+ renderDecision();if(showSummary)renderSummary();
+}
+picker.addEventListener('change',()=>{index=records.findIndex(x=>x.slug===picker.value);render();save();});
+casePicker.addEventListener('change',()=>{index=records.findIndex(x=>x.id===casePicker.value);render();save();});
+byId('precise-prev').addEventListener('click',()=>{if(index>0){index--;render();save();}});
+byId('precise-next').addEventListener('click',()=>{if(index<records.length-1){index++;render();save();}});
+byId('precise-decision-actions').addEventListener('click',e=>{const b=e.target.closest('[data-decision]');if(!b)return;const c=records[index];reviews[c.id]={...reviewFor(c),status:b.dataset.decision};renderDecision();save();if(b.dataset.decision==='revise')byId('precise-comment').focus();});
+byId('precise-decision-clear').addEventListener('click',()=>{const c=records[index],comment=reviewFor(c).comment;if(comment)reviews[c.id]={status:'pending',comment};else delete reviews[c.id];renderDecision();save();});
+byId('precise-comment').addEventListener('input',e=>{const c=records[index],comment=cleanComment(e.target.value,c);reviews[c.id]={...reviewFor(c),comment};if(comment!==e.target.value)e.target.value=comment;byId('precise-save-status').textContent='Сохраняю…';clearTimeout(saveTimer);saveTimer=setTimeout(save,300);});
+byId('precise-comment').addEventListener('blur',()=>save());
+byId('precise-summary-toggle').addEventListener('click',()=>{save();setSummary(!showSummary);});
+byId('precise-summary-list').addEventListener('click',e=>{const b=e.target.closest('[data-review-open]');if(!b)return;index=records.findIndex(c=>c.id===b.dataset.reviewOpen);setSummary(false);render();save();});
+byId('precise-copy-report').addEventListener('click',async()=>{
+ const text=report(),field=byId('precise-report'),status=byId('precise-copy-status');field.value=text;
+ try{if(!navigator.clipboard?.writeText)throw Error('Clipboard unavailable');await navigator.clipboard.writeText(text);status.textContent='Скопировано. Вставьте итог в сообщение в чате.';}
+ catch{field.focus();field.select();let copied=false;try{copied=document.execCommand('copy');}catch{}status.textContent=copied?'Скопировано. Вставьте итог в сообщение в чате.':'Итог выделен. Нажмите Ctrl+C и вставьте его в чат.';}
+});
+window.addEventListener('openai:set_globals',e=>{const s=e.detail?.globals?.widgetState;if(!s||JSON.stringify(s)===lastPublished)return;restore(s);render();});
+render();
+})();
+</script>

@@ -34,6 +34,7 @@ type InventoryCostDisplayInput = InventoryDisplayInput & {
 };
 
 const formatDisplayNumber = (value: number, precision = 3) => {
+  if (value !== 0 && Math.abs(value) < 1) precision = Math.max(precision, 3);
   const rounded = roundTo(value, precision);
   return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(precision).replace(/0+$/, "").replace(/\.$/, "");
 };
@@ -52,8 +53,8 @@ const convertNormalizedQuantityToDisplayUnit = (
     return normalizedQuantity;
   }
 
-  if (normalizedUnit === "g" && ["g", "kg", "oz", "lb"].includes(displayUnit)) {
-    return convertWeight({ value: normalizedQuantity, unit: "g" }, displayUnit as "g" | "kg" | "oz" | "lb").value;
+  if (normalizedUnit === "g" && ["mg", "g", "kg", "oz", "lb"].includes(displayUnit)) {
+    return convertWeight({ value: normalizedQuantity, unit: "g" }, displayUnit as "mg" | "g" | "kg" | "oz" | "lb").value;
   }
 
   if (normalizedUnit === "ml" && ["ml", "l", "gal"].includes(displayUnit)) {
@@ -85,6 +86,9 @@ export const resolveInventoryHumanDisplayUnit = (
 );
 
 export const resolveInventoryMeasurementForDisplay = (input: InventoryDisplayInput) => {
+  if (input.normalizedUnit === "g" && input.normalizedQuantity > 0 && input.normalizedQuantity < 1) {
+    return { quantity: input.normalizedQuantity * 1000, unit: "mg" as const, converted: true };
+  }
   const displayUnit = resolveInventoryHumanDisplayUnit(input);
   const displayQuantity = convertNormalizedQuantityToDisplayUnit(
     input.normalizedQuantity,
@@ -115,8 +119,12 @@ export const resolveInventoryMeasurementForDisplay = (input: InventoryDisplayInp
   };
 };
 
-export const formatInventoryQuantityInputValue = (value: number, unit?: InventoryUnit) => (
-  formatDisplayNumber(value, unit === "pack" && !Number.isInteger(value) ? 3 : unit ? getInventoryUnitQuantityPrecision(unit) : 3)
+export const formatInventoryQuantityInputValue = (value: number, _unit?: InventoryUnit) => (
+  Number.isFinite(value) ? value.toLocaleString("en-US", { useGrouping: false, maximumFractionDigits: 12 }) : ""
+);
+
+const formatQuantityLabel = (value: number, unit: InventoryUnit) => (
+  formatDisplayNumber(value, unit === "pack" && !Number.isInteger(value) ? 3 : getInventoryUnitQuantityPrecision(unit))
 );
 
 const resolveDisplayUnitCostMinor = (
@@ -131,8 +139,8 @@ const resolveDisplayUnitCostMinor = (
 
   let normalizedUnitsPerDisplayUnit: number | null = null;
 
-  if (normalizedUnit === "g" && ["g", "kg", "oz", "lb"].includes(displayUnit)) {
-    normalizedUnitsPerDisplayUnit = convertWeight({ value: 1, unit: displayUnit as "g" | "kg" | "oz" | "lb" }, "g").value;
+  if (normalizedUnit === "g" && ["mg", "g", "kg", "oz", "lb"].includes(displayUnit)) {
+    normalizedUnitsPerDisplayUnit = convertWeight({ value: 1, unit: displayUnit as "mg" | "g" | "kg" | "oz" | "lb" }, "g").value;
   } else if (normalizedUnit === "ml" && ["ml", "l", "gal"].includes(displayUnit)) {
     normalizedUnitsPerDisplayUnit = convertVolume({ value: 1, unit: displayUnit as "ml" | "l" | "gal" }, "ml").value;
   } else if (displayUnit === "pack") {
@@ -151,7 +159,7 @@ const resolveDisplayUnitCostMinor = (
 
 export const formatInventoryQuantityForDisplay = (input: InventoryDisplayInput) => {
   const displayMeasurement = resolveInventoryMeasurementForDisplay(input);
-  const base = `${formatInventoryQuantityInputValue(displayMeasurement.quantity, displayMeasurement.unit)} ${formatInventoryUnitLabel(displayMeasurement.unit, displayMeasurement.quantity)}`;
+  const base = `${formatQuantityLabel(displayMeasurement.quantity, displayMeasurement.unit)} ${formatInventoryUnitLabel(displayMeasurement.unit, displayMeasurement.quantity)}`;
 
   if (displayMeasurement.unit !== "pack") {
     return base;
@@ -162,7 +170,7 @@ export const formatInventoryQuantityForDisplay = (input: InventoryDisplayInput) 
     return base;
   }
 
-  return `${base} (${formatInventoryQuantityInputValue(input.normalizedQuantity, input.normalizedUnit)} ${formatInventoryUnitLabel(input.normalizedUnit, input.normalizedQuantity)})`;
+  return `${base} (${formatQuantityLabel(input.normalizedQuantity, input.normalizedUnit)} ${formatInventoryUnitLabel(input.normalizedUnit, input.normalizedQuantity)})`;
 };
 
 // Эпсилон-защита ceil от плавающего шума — тот же паттерн, что и в
@@ -195,7 +203,7 @@ export const formatQuantityWithPackCountHint = (
   unit: InventoryUnit,
   packEquivalent?: InventoryPackEquivalent | null
 ): string => {
-  const base = `${formatInventoryQuantityInputValue(quantity, unit)} ${formatInventoryUnitLabel(unit, quantity)}`;
+  const base = `${formatQuantityLabel(quantity, unit)} ${formatInventoryUnitLabel(unit, quantity)}`;
   const hint = formatPackCountHintSuffix(quantity, unit, packEquivalent);
   return hint ? `${base} (${hint})` : base;
 };

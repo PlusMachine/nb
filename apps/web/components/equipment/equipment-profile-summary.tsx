@@ -30,7 +30,7 @@ export function EquipmentProfileSummary({
       ? "space-y-3 rounded-lg border border-border bg-muted px-3 py-3 text-xs text-muted-foreground"
       : "space-y-3 rounded-lg border border-success/30 bg-success-subtle/50 px-3 py-3 text-xs text-muted-foreground"
     }>
-      <h3 className="text-sm font-semibold text-foreground">Что будет рассчитано</h3>
+      <h3 className="text-sm font-semibold text-foreground">Расчёт объёмов</h3>
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
         <div>
           <span className="block text-[11px] uppercase text-muted-foreground">До кипячения</span>
@@ -49,7 +49,7 @@ export function EquipmentProfileSummary({
           <span className="font-medium text-foreground">{formatLiters(summary.mashWaterL)} / {formatLiters(summary.spargeWaterL)}</span>
         </div>
         <div>
-          <span className="block text-[11px] uppercase text-muted-foreground">Макс. объём затора</span>
+          <span className="block text-[11px] uppercase text-muted-foreground">Максимум заторной воды</span>
           <span className="font-medium text-foreground">{formatOptionalLiters(maxMashVolumeL)}</span>
         </div>
       </div>

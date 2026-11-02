@@ -96,6 +96,7 @@ export function InventoryPriceInput({
       return null;
     }
 
+    if (enteredUnit === "pack") return {quantity:parsedQuantity,unit:"pack" as const,converted:false};
     try {
       const measurement = normalizeInventoryMeasurementForProfile(unitProfile, parsedQuantity, enteredUnit);
       return resolveInventoryMeasurementForDisplay({

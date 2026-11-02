@@ -71,8 +71,10 @@ import {
   convertGravityFieldValue,
   convertGravityOffsetValue,
   formatGravity,
+  formatGravityNumber,
   formatGravitySecondary,
   fromCalculatorGravityUnit,
+  gravityUnitLabels,
   toAbvGravityUnit,
   toCalculatorGravityUnit,
   type PreferredGravityUnit
@@ -106,7 +108,7 @@ const CONVERTER_GROUPS: Array<{ id: string; label: string; units: string[]; icon
   { id: "gravity", label: "Плотность", icon: Droplet },
   { id: "color", label: "Цвет", icon: Palette },
   { id: "volume", label: "Объём", icon: Beaker },
-  { id: "weight", label: "Вес", icon: Weight },
+  { id: "weight", label: "Масса", icon: Weight },
   { id: "temperature", label: "Температура", icon: Thermometer },
   { id: "pressure", label: "Давление", icon: Gauge },
   { id: "concentration", label: "Концентрация", icon: FlaskConical }
@@ -540,6 +542,14 @@ function ConverterGroupCard({
                 // Минус разрешён везде: температуры ниже нуля, SG < 1.000 после брожения
                 // (отрицательные GP) — конвертер не форма, ему незачем запрещать ввод.
                 allowNegative
+                onFocus={() => {
+                  if (group.id !== "gravity") return;
+                  onChange("gravityUnitTouched", true);
+                  if (!active) {
+                    onChange("gravityFrom", unit);
+                    onChange("gravityValue", display);
+                  }
+                }}
                 onChange={(event) => {
                   // Нормализация запятой на blur (NumericInput) приходит тем же onChange и для
                   // НЕактивных ячеек (у отображаемого значения срезаются хвостовые нули) —
@@ -549,6 +559,7 @@ function ConverterGroupCard({
                   }
                   onChange(`${group.id}From`, unit);
                   onChange(`${group.id}Value`, event.target.value);
+                  if (group.id === "gravity") onChange("gravityUnitTouched", true);
                 }}
                 className="mt-1 h-9 w-full rounded-lg border border-border bg-card px-2.5 text-base tabular-nums text-foreground shadow-sm focus:border-border focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm [@media(pointer:coarse)]:text-base"
               />
@@ -828,6 +839,7 @@ function SegmentedControl({
           <button
             key={option.value}
             type="button"
+            aria-label={option.label}
             aria-pressed={active}
             onClick={() => onChange(option.value)}
             className={`${fill ? "min-w-0 flex-1" : ""} ${wraps ? "basis-[calc(50%-0.125rem)] sm:basis-0" : ""} rounded-lg px-2 font-medium transition-colors sm:px-3 ${buttonSize} ${
@@ -915,10 +927,19 @@ function RefractoNumberInput({
   );
 }
 
-function WcfCalibrator({ onApply }: { onApply: (wcf: number) => void }) {
+function WcfCalibrator({
+  hydroUnit,
+  onUnitChange,
+  onApply
+}: {
+  hydroUnit: "SG" | "Plato";
+  onUnitChange: (unit: "SG" | "Plato") => void;
+  onApply: (wcf: number) => void;
+}) {
   const [refractoBrix, setRefractoBrix] = useState("");
-  const [hydroReading, setHydroReading] = useState("");
-  const [hydroUnit, setHydroUnit] = useState<"SG" | "Plato">("SG");
+  const [reading, setReading] = useState({ value: "", unit: hydroUnit });
+  // При смене шкалы, в том числе после загрузки профиля, переводим уже введённый замер.
+  const hydroReading = convertGravityFieldValue(reading.value, reading.unit, hydroUnit);
 
   const refracto = Number(refractoBrix);
   const hydro = Number(hydroReading);
@@ -945,7 +966,7 @@ function WcfCalibrator({ onApply }: { onApply: (wcf: number) => void }) {
           unit={hydroUnit === "SG" ? "SG" : "°P"}
           value={hydroReading}
           step={hydroUnit === "SG" ? 0.001 : 0.1}
-          onChange={(value) => setHydroReading(value)}
+          onChange={(value) => setReading({ value, unit: hydroUnit })}
         />
       </div>
 
@@ -954,11 +975,11 @@ function WcfCalibrator({ onApply }: { onApply: (wcf: number) => void }) {
         size="sm"
         fill={false}
         options={[
-          { value: "SG", label: "SG" },
-          { value: "Plato", label: "°P" }
+          { value: "Plato", label: "°P" },
+          { value: "SG", label: "SG" }
         ]}
         value={hydroUnit}
-        onChange={(value) => setHydroUnit(value as "SG" | "Plato")}
+        onChange={(value) => onUnitChange(value as "SG" | "Plato")}
       />
 
       <div className="rounded-lg bg-muted px-3 py-2.5 text-sm tabular-nums text-muted-foreground">
@@ -979,7 +1000,7 @@ function WcfCalibrator({ onApply }: { onApply: (wcf: number) => void }) {
         Применить коэффициент
       </Button>
       <p className="text-[11px] leading-4 text-muted-foreground">
-        Делается один раз — дальше значение постоянно для вашего прибора. Замеряйте по суслу до брожения (без спирта).
+        Определите коэффициент по суслу до брожения, без спирта. Его можно использовать для следующих замеров.
       </p>
     </div>
   );
@@ -994,6 +1015,11 @@ function RefractometerFieldsBlock({
   onChange: (name: string, value: unknown) => void;
   onReset: () => void;
 }) {
+  const { unit: viewerUnit } = useViewerGravityUnit();
+  // Явный выбор WCF хранится вместе с состоянием калькулятора в localStorage.
+  const hydroUnit = state.wcfHydrometerUnit === "SG" || state.wcfHydrometerUnit === "Plato"
+    ? state.wcfHydrometerUnit
+    : toAbvGravityUnit(viewerUnit);
   const mode = String(state.mode ?? "post_fermentation");
   const originalUnit = String(state.originalUnit ?? "Brix");
   const isPost = mode === "post_fermentation";
@@ -1112,9 +1138,13 @@ function RefractometerFieldsBlock({
           </summary>
           <div className="mt-4 space-y-4">
             <p className="text-[11px] leading-4 text-muted-foreground">
-              Рефрактометр откалиброван по чистой сахарозе, а в сусле есть белки и декстрины — поэтому он немного завышает. Поправочный коэффициент подгоняет прибор под ваше сусло: 1,04 — рабочее значение, но точнее измерить своё.
+              Рефрактометр откалиброван по сахарозе, а в сусле есть белки и декстрины. Поправочный коэффициент учитывает эту разницу. Обычно используют 1,04, но точнее определить коэффициент для своего прибора.
             </p>
-            <WcfCalibrator onApply={(wcf) => onChange("wortCorrectionFactor", String(wcf))} />
+            <WcfCalibrator
+              hydroUnit={hydroUnit}
+              onUnitChange={(unit) => onChange("wcfHydrometerUnit", unit)}
+              onApply={(wcf) => onChange("wortCorrectionFactor", String(wcf))}
+            />
           </div>
         </details>
       </div>
@@ -1123,10 +1153,6 @@ function RefractometerFieldsBlock({
 }
 
 function RefractometerResultPanel({ state }: { state: CalculatorState }) {
-  // До брожения нет собственного переключателя единицы (пресна нет OG-контекста) — берём
-  // единицу предпочтения зрителя (до догрузки — дефолт Plato), как и остальные публичные
-  // поверхности. После старта брожения первичной остаётся выбранная единица OG (как была).
-  const { unit: viewerUnit } = useViewerGravityUnit();
   let view: RefractometerView;
   try {
     view = computeRefractometerView(state);
@@ -1142,23 +1168,15 @@ function RefractometerResultPanel({ state }: { state: CalculatorState }) {
   }
 
   const isPost = view.mode === "post_fermentation";
-  // The big result follows the unit chosen for the OG input (post). Pre-fermentation
-  // has no unit picker, so it follows the viewer's density unit preference instead.
-  const primaryUnit = isPost ? String(state.originalUnit ?? "Brix") : toCalculatorGravityUnit(viewerUnit);
-  const correctedUnits = [
-    { key: "SG", value: view.corrected.sg.toFixed(3), label: "SG" },
-    { key: "Plato", value: view.corrected.plato.toFixed(1), label: "°P" },
-    { key: "Brix", value: view.corrected.brix.toFixed(1), label: "Brix" }
-  ];
-  const primary = correctedUnits.find((unit) => unit.key === primaryUnit) ?? correctedUnits[0];
-  // Один чип второй единицы вместо оставшихся двух (см. A5).
-  const secondaryValue = formatGravitySecondary(view.corrected.sg, fromCalculatorGravityUnit(primary.key as CalculatorGravityUnit));
+  // Та же единица из состояния, что у мобильной панели и превью ссылки на расчёт.
+  const primaryValue = formatGravityNumber(view.corrected.sg, view.unit);
+  const secondaryValue = formatGravitySecondary(view.corrected.sg, view.unit);
 
   const attenuationText = view.attenuationBand === "low"
-    ? "Ниже 65% — брожение, возможно, не завершено."
+    ? "Ниже 65%: сравните с ожидаемой степенью сбраживания для вашего рецепта и штамма. Завершение брожения проверяют повторными замерами плотности."
     : view.attenuationBand === "high"
-      ? "Выше 80% — пиво обычно получается сухим; такое сбраживание встречается у лагеров, сэзонов и пива на диких дрожжах."
-      : "65–80% — нормально для большинства элей.";
+      ? "Выше 80%: высокая степень сбраживания. Для некоторых штаммов и рецептов это нормально; ощущение сухости зависит также от состава сусла."
+      : "65–80% — распространённый диапазон для элей. Сравните результат с характеристиками дрожжей и расчётом рецепта.";
 
   return (
     <aside id="calculator-result" className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
@@ -1166,8 +1184,8 @@ function RefractometerResultPanel({ state }: { state: CalculatorState }) {
         <div className="border-b border-border bg-gradient-to-b from-muted to-card px-5 py-5">
           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Скорректированная плотность</p>
           <div className="mt-1.5 flex items-baseline gap-1.5">
-            <span className="text-4xl font-semibold leading-none tabular-nums text-foreground">{primary.value}</span>
-            <span className="text-sm font-medium text-muted-foreground">{primary.label}</span>
+            <span className="text-4xl font-semibold leading-none tabular-nums text-foreground">{primaryValue}</span>
+            <span className="text-sm font-medium text-muted-foreground">{gravityUnitLabels[view.unit]}</span>
           </div>
           <div className="mt-3 flex gap-2">
             {secondaryValue ? (
@@ -1229,6 +1247,8 @@ function AbvFieldsBlock({
   // значение. Для °P и Brix математика одинаковая (обе через platoToSg), так что показываем °P.
   const unit = String(state.gravityUnit ?? "SG") === "SG" ? "SG" : "Plato";
   const unitLabel = unit === "Plato" ? "°P" : "SG";
+  const preferredUnit = fromCalculatorGravityUnit(unit);
+  const strongWortLabel = `${formatGravityNumber(1.07, preferredUnit)} ${unitLabel} (${formatGravitySecondary(1.07, preferredUnit)})`;
   const step = unit === "Plato" ? 0.1 : 0.001;
   const view = computeAbvView(state);
   const highOgOnStandard = view.ogSg >= 1.07 && String(state.abvFormula ?? "standard") === "standard";
@@ -1287,12 +1307,12 @@ function AbvFieldsBlock({
         </div>
 
         <p className="text-xs leading-5 text-muted-foreground">
-          Меряете рефрактометром?{" "}
+          Измеряете рефрактометром?{" "}
           <Link
             href="/calculators/refractometer-correction"
             className="font-medium text-foreground underline underline-offset-2 hover:text-foreground"
           >
-            Сначала поправка рефрактометра
+            Сначала внесите поправку на спирт
           </Link>{" "}
           — показание Brix после брожения занижает крепость.
         </p>
@@ -1311,7 +1331,7 @@ function AbvFieldsBlock({
             </select>
             {highOgOnStandard ? (
               <span className="mt-1 block text-[11px] font-normal leading-4 text-warning-subtle-foreground">
-                OG выше 1.070 (17 °P) — стандартная формула занижает крепость.{" "}
+                НП выше {strongWortLabel} — стандартная формула занижает крепость.{" "}
                 <button
                   type="button"
                   onClick={() => onChange("abvFormula", "alternate")}
@@ -1322,7 +1342,7 @@ function AbvFieldsBlock({
               </span>
             ) : (
               <span className="mt-1 block text-[11px] font-normal leading-4 text-muted-foreground">
-                Альтернативная точнее для крепкого пива (выше ~1.070 (17 °P)).
+                Альтернативная точнее для крепкого пива (выше ~{strongWortLabel}).
               </span>
             )}
           </label>
@@ -1356,16 +1376,16 @@ function AbvResultPanel({ state }: { state: CalculatorState }) {
   }
 
   const attenuationText = view.attenuationBand === "low"
-    ? "Ниже 65% — брожение, возможно, не завершено."
+    ? "Ниже 65%: сравните с ожидаемой степенью сбраживания для вашего рецепта и штамма. Завершение брожения проверяют повторными замерами плотности."
     : view.attenuationBand === "high"
-      ? "Выше 80% — пиво обычно получается сухим; такое сбраживание встречается у лагеров, сэзонов и пива на диких дрожжах."
-      : "65–80% — нормально для большинства элей.";
+      ? "Выше 80%: высокая степень сбраживания. Для некоторых штаммов и рецептов это нормально; ощущение сухости зависит также от состава сусла."
+      : "65–80% — распространённый диапазон для элей. Сравните результат с характеристиками дрожжей и расчётом рецепта.";
 
   // OG/FG в чипах — в единице ввода (как у AbvFieldsBlock), плюс второй слой мельче рядом.
   const unit = String(state.gravityUnit ?? "SG") === "SG" ? "SG" : "Plato";
   const prefUnit = fromCalculatorGravityUnit(unit as CalculatorGravityUnit);
-  const ogText = `OG ${formatGravity(view.ogSg, prefUnit)} · ${formatGravitySecondary(view.ogSg, prefUnit)}`;
-  const fgText = `FG ${formatGravity(view.fgSg, prefUnit)} · ${formatGravitySecondary(view.fgSg, prefUnit)}`;
+  const ogText = view.missingOg ? "OG —" : `OG ${formatGravity(view.ogSg, prefUnit)} · ${formatGravitySecondary(view.ogSg, prefUnit)}`;
+  const fgText = view.missingFg ? "FG —" : `FG ${formatGravity(view.fgSg, prefUnit)} · ${formatGravitySecondary(view.fgSg, prefUnit)}`;
 
   return (
     <aside id="calculator-result" className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
@@ -1373,11 +1393,11 @@ function AbvResultPanel({ state }: { state: CalculatorState }) {
         <div className="border-b border-border bg-gradient-to-b from-muted to-card px-5 py-5">
           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Крепость</p>
           <div className="mt-1.5 flex items-baseline gap-1.5">
-            <span className="text-4xl font-semibold leading-none tabular-nums text-foreground">{view.abv.toFixed(1)}</span>
+            <span className="text-4xl font-semibold leading-none tabular-nums text-foreground">{view.inputError ? "—" : view.abv.toFixed(1)}</span>
             <span className="text-sm font-medium text-muted-foreground">% ABV</span>
           </div>
           <div className="mt-3 flex flex-wrap gap-2">
-            <span className="rounded-md bg-card px-2.5 py-1 text-xs font-medium tabular-nums text-muted-foreground ring-1 ring-ring">ABW {view.abw.toFixed(1)}%</span>
+            <span className="rounded-md bg-card px-2.5 py-1 text-xs font-medium tabular-nums text-muted-foreground ring-1 ring-ring">ABW {view.inputError ? "—" : `${view.abw.toFixed(1)}%`}</span>
             <span className="rounded-md bg-card px-2.5 py-1 text-xs font-medium tabular-nums text-muted-foreground ring-1 ring-ring">{ogText}</span>
             <span className="rounded-md bg-card px-2.5 py-1 text-xs font-medium tabular-nums text-muted-foreground ring-1 ring-ring">{fgText}</span>
           </div>
@@ -1389,7 +1409,7 @@ function AbvResultPanel({ state }: { state: CalculatorState }) {
               <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
               <span>
                 {view.ogTooLow
-                  ? "Начальная плотность должна быть выше 1.000 (0 °P) — проверьте замер."
+                  ? `Начальная плотность должна быть выше ${formatGravity(1, prefUnit)} (${formatGravitySecondary(1, prefUnit)}) — проверьте замер.`
                   : "Конечная плотность выше начальной — проверьте замеры."}
               </span>
             </p>
@@ -1398,22 +1418,24 @@ function AbvResultPanel({ state }: { state: CalculatorState }) {
           <div className="space-y-3 p-5">
             <dl className="grid grid-cols-2 gap-3">
               <div className={`min-w-0 rounded-xl border px-3 py-2.5 ${
-                view.attenuationBand === "normal"
-                  ? "border-success/30 bg-success-subtle text-success-subtle-foreground"
-                  : "border-warning/30 bg-warning-subtle text-warning-subtle-foreground"
+                view.inputError
+                  ? "border-border bg-muted/70"
+                  : view.attenuationBand === "normal"
+                    ? "border-success/30 bg-success-subtle text-success-subtle-foreground"
+                    : "border-warning/30 bg-warning-subtle text-warning-subtle-foreground"
               }`}>
                 <dt className="truncate text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Сбраживание</dt>
-                <dd className="mt-1 text-lg font-semibold tabular-nums">{view.attenuation.toFixed(0)}%</dd>
+                <dd className="mt-1 text-lg font-semibold tabular-nums">{view.inputError ? "—" : `${view.attenuation.toFixed(0)}%`}</dd>
               </div>
               <div className="min-w-0 rounded-xl border border-border bg-muted/70 px-3 py-2.5">
                 <dt className="truncate text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Калории</dt>
                 <dd className="mt-1 text-lg font-semibold tabular-nums text-foreground">
-                  {view.calories} <span className="text-xs font-normal text-muted-foreground">ккал / {Math.round(view.servingSizeMl)} мл</span>
+                  {view.inputError ? "—" : view.calories} <span className="text-xs font-normal text-muted-foreground">ккал / {Math.round(view.servingSizeMl)} мл</span>
                 </dd>
               </div>
             </dl>
             <p className="rounded-xl border border-border bg-muted/70 px-3 py-2.5 text-xs leading-5 text-muted-foreground">
-              Видимая степень сбраживания: {attenuationText}
+              {view.inputError ?? `Видимая степень сбраживания: ${attenuationText}`}
             </p>
           </div>
         )}
@@ -1425,7 +1447,7 @@ function AbvResultPanel({ state }: { state: CalculatorState }) {
 const HYDROMETER_UNIT_OPTIONS = [
   { value: "SG", label: "SG" },
   { value: "Plato", label: "°P" },
-  { value: "Brix", label: "Brix" }
+  { value: "Brix", label: "°Bx" }
 ];
 
 function HydrometerFieldsBlock({
@@ -1438,7 +1460,7 @@ function HydrometerFieldsBlock({
   onReset: () => void;
 }) {
   const unit = String(state.readingUnit ?? "SG");
-  const unitLabel = unit === "SG" ? "SG" : unit === "Brix" ? "Brix" : "°P";
+  const unitLabel = unit === "SG" ? "SG" : unit === "Brix" ? "°Bx" : "°P";
   const step = unit === "SG" ? 0.001 : 0.1;
 
   return (
@@ -1461,7 +1483,7 @@ function HydrometerFieldsBlock({
             label="Показание ареометра"
             unit={unitLabel}
             value={state.reading}
-            min={0}
+            min={unit === "SG" ? 0 : -5}
             step={step}
             onChange={(value) => onChange("reading", value)}
           />
@@ -1540,7 +1562,7 @@ function HydrometerResultPanel({ state }: { state: CalculatorState }) {
     );
   }
 
-  const unitLabel = view.unit === "SG" ? "SG" : view.unit === "Brix" ? "Brix" : "°P";
+  const unitLabel = view.unit === "SG" ? "SG" : view.unit === "Brix" ? "°Bx" : "°P";
   const decimals = view.unit === "SG" ? 3 : 1;
   const deltaDecimals = view.unit === "SG" ? 4 : 2;
   const signedDelta = `${view.deltaInUnit >= 0 ? "+" : "−"}${Math.abs(view.deltaInUnit).toFixed(deltaDecimals)}`;
@@ -1916,8 +1938,8 @@ function DilutionResultPanel({ state }: { state: CalculatorState }) {
 // A1: единый механизм подхвата предпочтения плотности пользователя — slug калькулятора →
 // какое поле хранит единицу, какие поля хранят значения в этой единице, и как смэппить
 // PreferredGravityUnit профиля в CalculatorGravityUnit самого калькулятора (ABV не знает
-// Brix, остальные — SG/Plato/Brix как есть). unit-converter обрабатывается отдельно ниже:
-// там меняется только дефолт активной ячейки, без пересчёта значений.
+// Brix, остальные — SG/Plato/Brix как есть). При загрузке профиля переводятся
+// значения, введённые в первоначальной шкале; явный выбор имеет приоритет.
 type GravityPreferenceConfig = {
   unitField: string;
   valueFields: string[];
@@ -1944,7 +1966,8 @@ const GRAVITY_PREFERENCE_CONFIG: Partial<Record<CalculatorSlug, GravityPreferenc
   ibu: { unitField: "gravityUnit", valueFields: ["wortGravity"], mapPref: toCalculatorGravityUnit },
   "yeast-starter": { unitField: "gravityUnit", valueFields: ["gravity"], mapPref: toCalculatorGravityUnit },
   "speise-krausen": { unitField: "gravityUnit", valueFields: ["speiseGravity"], mapPref: toCalculatorGravityUnit },
-  "brewhouse-efficiency": { unitField: "gravityUnit", valueFields: ["measuredOg"], mapPref: toCalculatorGravityUnit }
+  "brewhouse-efficiency": { unitField: "gravityUnit", valueFields: ["measuredOg"], mapPref: toCalculatorGravityUnit },
+  "unit-converter": { unitField: "gravityFrom", valueFields: ["gravityValue"], mapPref: toCalculatorGravityUnit }
 };
 
 // Переводит состояние калькулятора на единицу предпочтения: переключает unitField и
@@ -2017,36 +2040,6 @@ export function CalculatorPageClient({
         setMounted(true);
       }
     };
-
-    // unit-converter — особый случай: подтягиваем только дефолт активной ячейки при первом
-    // визите (нет сохранённого стейта), сами значения внутри конвертера не пересчитываем —
-    // это живой ввод, а не выбор единицы записи данных.
-    if (definition.catalog.slug === "unit-converter") {
-      if (!storedState) {
-        loadViewerPreferredGravityUnit()
-          .then((unit) => {
-            if (active) {
-              viewerGravityUnitRef.current = unit;
-              setState((current) => (
-                // Пользователь мог успеть начать ввод, пока летел запрос, — тогда активная
-                // ячейка уже его выбор, и перетаскивать её на предпочтение нельзя.
-                current.gravityFrom === definition.defaults.gravityFrom && current.gravityValue === definition.defaults.gravityValue
-                  ? { ...current, gravityFrom: toCalculatorGravityUnit(unit) }
-                  : current
-              ));
-            }
-          })
-          .catch(() => {
-            // Сеть/сессия недоступны — остаёмся на дефолтной ячейке SG.
-          })
-          .finally(finishMounting);
-        return () => {
-          active = false;
-        };
-      }
-      finishMounting();
-      return undefined;
-    }
 
     // Страницы калькуляторов статические (SSG) и не читают сессию на сервере — дефолт
     // единицы плотности подтягивается на клиенте. gravityUnitTouched — «прилипание»
@@ -2134,10 +2127,8 @@ export function CalculatorPageClient({
       const gravityConfig = GRAVITY_PREFERENCE_CONFIG[definition.catalog.slug];
       if (preferred && gravityConfig) {
         next = applyGravityPreference(next, gravityConfig, preferred);
-      } else if (definition.catalog.slug === "unit-converter") {
-        if (preferred) {
-          next.gravityFrom = toCalculatorGravityUnit(preferred);
-        }
+      }
+      if (definition.catalog.slug === "unit-converter") {
         // Сброс возвращает значения, но не телепортирует на первую вкладку —
         // пользователь остаётся в той группе, где нажал «Сбросить».
         next.activeGroup = current.activeGroup ?? next.activeGroup;

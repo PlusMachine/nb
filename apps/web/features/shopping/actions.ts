@@ -64,7 +64,7 @@ const mapShoppingError = (error: unknown): { ok: false; message: string; fieldEr
 
     return {
       ok: false,
-      message: "Проверьте корректность заполнения формы.",
+      message: "Проверьте поля формы.",
       fieldErrors
     };
   }

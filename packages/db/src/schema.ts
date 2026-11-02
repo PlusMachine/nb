@@ -1,5 +1,5 @@
 import { relations, sql } from "drizzle-orm";
-import { type AnyPgColumn, bigserial, boolean, check, doublePrecision, index, integer, jsonb, pgEnum, pgTable, real, smallint, text, timestamp, uniqueIndex, uuid, varchar } from "drizzle-orm/pg-core";
+import { type AnyPgColumn, bigserial, boolean, check, date, doublePrecision, index, integer, jsonb, pgEnum, pgTable, real, smallint, text, timestamp, uniqueIndex, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const userRoleEnum = pgEnum("user_role", ["user", "editor", "moderator", "admin"]);
 export const verificationTypeEnum = pgEnum("verification_type", ["otp", "magic_link", "password_reset", "sms_otp"]);
@@ -94,6 +94,31 @@ export const users = pgTable("users", {
   phoneIdx: uniqueIndex("users_phone_uidx").on(table.phone),
   blockedAtIdx: index("users_blocked_at_idx").on(table.blockedAt)
 }));
+
+// First-party product analytics: consented authenticated page views, aggregated
+// per day/section/source/device. No URL, query, IP, UA, session token or contact.
+export const productActivityDaily = pgTable("product_activity_daily", {
+  id: bigserial("id", { mode: "number" }).primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  day: date("day").notNull(),
+  section: varchar("section", { length: 32 }).notNull(),
+  source: varchar("source", { length: 16 }).notNull(),
+  device: varchar("device", { length: 16 }).notNull(),
+  views: integer("views").default(1).notNull(),
+  firstSeenAt: timestamp("first_seen_at", { withTimezone: true }).defaultNow().notNull(),
+  lastSeenAt: timestamp("last_seen_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  bucketIdx: uniqueIndex("product_activity_daily_bucket_uidx").on(table.userId, table.day, table.section, table.source, table.device),
+  dayUserIdx: index("product_activity_daily_day_user_idx").on(table.day, table.userId),
+  positiveViews: check("product_activity_daily_positive_views", sql`${table.views} > 0`)
+}));
+
+// A persistent start boundary distinguishes unobserved historical retention
+// from a measured zero, even when nobody has opted into analytics yet.
+export const productAnalyticsConfig = pgTable("product_analytics_config", {
+  id: integer("id").primaryKey().default(1),
+  collectionStartedAt: timestamp("collection_started_at", { withTimezone: true }).defaultNow().notNull()
+}, table => ({ singleton: check("product_analytics_config_singleton", sql`${table.id} = 1`) }));
 
 export const sessions = pgTable("sessions", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -748,6 +773,7 @@ export const brewBatches = pgTable("brew_batches", {
   // Дегустация: пишется, когда пиво готово (акт «Итог»). Отдельная колонка, а не
   // переиспользование notes — иначе дегустация затирает журнал варочного дня.
   tastingNotes: text("tasting_notes"),
+  volumeMeasurements: jsonb("volume_measurements").$type<Record<string, unknown>>().default({}).notNull(),
   plannedFor: timestamp("planned_for", { withTimezone: true }),
   startedAt: timestamp("started_at", { withTimezone: true }),
   completedAt: timestamp("completed_at", { withTimezone: true }),
@@ -775,6 +801,19 @@ export const brewBatches = pgTable("brew_batches", {
 // ABV и степень сбраживания считаются на лету (см. features/brew-batches).
 // Инвариант «один финальный замер на партию» держит сервис. Отдельно от
 // brew_telemetry, которое только про устройство.
+export const brewBatchTasks = pgTable("brew_batch_tasks", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  brewBatchId: uuid("brew_batch_id").notNull().references(() => brewBatches.id, { onDelete: "cascade" }),
+  title: varchar("title", { length: 160 }).notNull(),
+  // Календарная дата и местное время: задача на сегодня не зависит от TZ сервера.
+  dueDate: date("due_date").notNull(),
+  dueTime: varchar("due_time", { length: 5 }),
+  completedAt: timestamp("completed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  batchDateIdx: index("brew_batch_tasks_batch_date_idx").on(table.brewBatchId, table.dueDate)
+}));
+
 export const brewMeasurements = pgTable("brew_measurements", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),

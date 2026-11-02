@@ -263,7 +263,7 @@ export function ConsumeInventoryDialog({
       onConsumed(result);
       onOpenChange(false);
     } catch {
-      setSubmitError("Не удалось выполнить операцию.");
+      setSubmitError("Не удалось списать ингредиенты.");
     } finally {
       inFlight.current = false;
       setSubmitting(false);
@@ -300,7 +300,7 @@ export function ConsumeInventoryDialog({
             <Button type="button" variant="outline" size="sm" onClick={() => setLoadRetry((value) => value + 1)}>Повторить загрузку</Button>
           </div>
         ) : plan?.alreadyConsumed ? (
-          <p className="text-sm text-muted-foreground">По этой партии уже списано.</p>
+          <p className="text-sm text-muted-foreground">Ингредиенты для этой партии уже списаны.</p>
         ) : plan ? (
           <ul className="divide-y divide-border">
             {plan.lines.map((line) => (
@@ -318,7 +318,7 @@ export function ConsumeInventoryDialog({
 
         {plan && !plan.alreadyConsumed && overbookedItems.length > 0 ? (
           <p role="status" className="rounded-lg bg-warning-subtle p-3 text-sm text-warning-subtle-foreground">
-            На {overbookedItems.map((item) => `«${item.name}»`).join(", ")} не хватит на все внесения. Спишем только имеющийся остаток по порядку внесений; недостающую часть пропустим. Остальные ингредиенты спишутся как обычно.
+            Не хватит на все внесения: {overbookedItems.map((item) => `«${item.name}»`).join(", ")}. Остаток спишется по порядку внесений.
           </p>
         ) : null}
 

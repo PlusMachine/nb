@@ -1,3 +1,4 @@
+import { MaltCatalogFilters } from "@/components/ingredients/malt-catalog-filters";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -211,7 +212,7 @@ const renderCatalogHub = async ({
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
             {view === "mine"
-              ? "Создайте свой ингредиент с нуля или сделайте свой вариант на основе ингредиента из общего каталога."
+              ? "Добавьте свой ингредиент или создайте копию из общего каталога."
               : "Попробуйте другое название или измените фильтры."}
           </p>
           {q || canManage ? (
@@ -329,7 +330,19 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
   const sort = parseSort(typeof resolvedSearchParams.sort === "string" ? resolvedSearchParams.sort : undefined);
   const page = parsePage(typeof resolvedSearchParams.page === "string" ? resolvedSearchParams.page : undefined);
 
+  const parseColourFilter = (value: unknown) => {
+    if (typeof value !== "string" || !value.trim()) return undefined;
+    const number = Number(value.replace(",", "."));
+    return Number.isFinite(number) && number >= 0 ? number : undefined;
+  };
+  const browseFilters = subtype === "malt" ? {
+    manufacturer: typeof resolvedSearchParams.manufacturer === "string" ? resolvedSearchParams.manufacturer : undefined,
+    maltType: typeof resolvedSearchParams.maltType === "string" ? resolvedSearchParams.maltType : undefined,
+    ebcMin: parseColourFilter(resolvedSearchParams.ebcMin),
+    ebcMax: parseColourFilter(resolvedSearchParams.ebcMax)
+  } : {};
   const result = await listUserCatalogIngredients(userId, {
+    ...browseFilters,
     view,
     q: q || undefined,
     category,
@@ -359,6 +372,7 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
     }
   ) => {
     const pageSearchParams = new URLSearchParams();
+    for (const [key,value] of Object.entries(browseFilters)) if (value != null && value !== "") pageSearchParams.set(key,String(value));
     if (params.view !== "all") {
       pageSearchParams.set("view", params.view);
     }
@@ -412,6 +426,7 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
       </section>
 
       <IngredientCatalogToolbar
+        browseFilters={browseFilters}
         view={view}
         q={q}
         category={currentCategory}
@@ -430,6 +445,7 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
         }}
       />
 
+      {subtype === "malt" && result.browseOptions ? <MaltCatalogFilters options={result.browseOptions} filters={browseFilters} /> : null}
       {showOtherCategoriesLine ? (
         <p className="text-sm text-muted-foreground">
           Ещё {otherCount} {pluralize(otherCount, matchWordForms)} в других разделах —{" "}
@@ -446,7 +462,7 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
             {view === "mine"
-              ? "Создайте свой ингредиент с нуля или сделайте свой вариант на основе ингредиента из общего каталога."
+              ? "Добавьте свой ингредиент или создайте копию из общего каталога."
               : "Попробуйте другое название или измените фильтры."}
           </p>
           {showOtherCategoriesButton || q || canManage ? (
@@ -485,6 +501,7 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
           ) : null}
           <CatalogItemsList
             items={result.items}
+            groupSuppliers={category === "hop"}
             hideSubtypeBadge={Boolean(landing.subtype)}
             canManage={canManage}
           />

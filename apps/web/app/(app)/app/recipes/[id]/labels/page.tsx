@@ -32,7 +32,7 @@ export default async function RecipeLabelsPage({
       <Suspense fallback={null}>
         <LabelStudio
           endpoint={`/api/labels/${recipe.id}`}
-          heading={`Наклейки — ${recipe.title}`}
+          heading={`Этикетки — ${recipe.title}`}
           defaultSlots={slots}
           gravityUnit={gravityUnit}
           backLink={backLink}

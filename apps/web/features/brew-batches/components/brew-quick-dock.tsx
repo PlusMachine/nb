@@ -10,6 +10,8 @@ const goToSection = (id: string) => {
     return;
   }
   const section = document.getElementById(id);
+  let details = section?.closest("details");
+  while (details) { details.open = true; details = details.parentElement?.closest("details") ?? null; }
   section?.scrollIntoView({ behavior: "smooth", block: "start" });
   section?.querySelector<HTMLElement>("input, textarea")?.focus({ preventScroll: true });
 };
@@ -21,12 +23,12 @@ const goToSection = (id: string) => {
  * При открытом cookie-баннере (--nb-cookie-banner-h) поднимается на его высоту,
  * иначе баннер перекрывает кнопки и перехватывает клики.
  */
-export function BrewQuickDock() {
+export function BrewQuickDock({ onMeasure, onNote }: { onMeasure?: () => void; onNote?: () => void } = {}) {
   return (
     <div className="sticky bottom-[calc(3.5rem+var(--nb-cookie-banner-h,0px))] z-50 -mx-4 flex gap-2 border-t border-border bg-card/95 px-4 py-2.5 backdrop-blur lg:hidden">
       <button
         type="button"
-        onClick={() => goToSection("brew-journal")}
+        onClick={onMeasure ?? (() => goToSection("brew-journal"))}
         className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground transition hover:bg-accent"
       >
         <Plus className="h-4 w-4" aria-hidden />
@@ -34,7 +36,7 @@ export function BrewQuickDock() {
       </button>
       <button
         type="button"
-        onClick={() => goToSection("brew-notes")}
+        onClick={onNote ?? (() => goToSection("brew-notes"))}
         className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground transition hover:bg-accent"
       >
         <NotebookPen className="h-4 w-4" aria-hidden />

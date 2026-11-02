@@ -115,7 +115,7 @@ function PlannedBrewsCard({ planned }: { planned: ActiveBrewProgressItem[] }) {
                 <span className="block truncate text-xs text-muted-foreground">{batch.recipeTitle}</span>
               </span>
               <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
-                {batch.plannedFor ? plannedDateFormat.format(batch.plannedFor) : "готова к старту"}
+                {batch.plannedFor ? plannedDateFormat.format(batch.plannedFor) : "без даты"}
               </span>
             </li>
           ))}

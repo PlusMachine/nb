@@ -222,7 +222,7 @@ export function ImportedCatalogMatchDialog({
                   onClick={() => setManualOpen((prev) => ({ ...prev, [line.localId]: true }))}
                   className="mt-2 text-xs font-medium text-foreground underline decoration-dotted underline-offset-2 hover:text-foreground/80"
                 >
-                  Не то? Найти в каталоге вручную
+                  Найти другой ингредиент в каталоге
                 </button>
               )}
             </div>
@@ -235,7 +235,7 @@ export function ImportedCatalogMatchDialog({
         <div className="flex gap-2">
           <Button type="button" variant="outline" size="sm" disabled={pending} onClick={onClose}>Отмена</Button>
           <Button type="button" size="sm" disabled={pending || matchedCount === 0} onClick={handleApply}>
-            {pending ? "Применяем..." : "Применить"}
+            {pending ? "Применяем…" : "Применить"}
           </Button>
         </div>
       </div>

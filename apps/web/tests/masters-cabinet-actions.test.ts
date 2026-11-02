@@ -122,7 +122,7 @@ describe("updateMasterProfileAction", () => {
 
     const result = await updateMasterProfileAction({});
 
-    expect(result).toEqual({ ok: false, error: "Пока заявка на модерации, править нельзя." });
+    expect(result).toEqual({ ok: false, error: "Редактирование недоступно, пока заявка на модерации." });
   });
 });
 
@@ -162,7 +162,7 @@ describe("withdrawMasterSubmissionAction", () => {
 
     const result = await withdrawMasterSubmissionAction();
 
-    expect(result).toEqual({ ok: false, error: "Заявка не на модерации — отзывать нечего." });
+    expect(result).toEqual({ ok: false, error: "Заявка не находится на модерации." });
   });
 });
 

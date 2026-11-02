@@ -25,7 +25,8 @@ export function BrewTransitionButton({
   icon,
   confirm = null,
   className,
-  appendQueryOnSuccess
+  appendQueryOnSuccess,
+  disabled = false
 }: {
   brewBatchId: string;
   to: BrewBatchStatus;
@@ -46,6 +47,7 @@ export function BrewTransitionButton({
    * just-fermenting-prompt.tsx/batch-completed-session-prompt.tsx).
    */
   appendQueryOnSuccess?: string;
+  disabled?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -55,7 +57,7 @@ export function BrewTransitionButton({
   const inFlight = useRef(false);
 
   const run = async () => {
-    if (inFlight.current) {
+    if (inFlight.current || disabled) {
       return;
     }
     inFlight.current = true;
@@ -71,6 +73,8 @@ export function BrewTransitionButton({
           router.replace(`${pathname}?${appendQueryOnSuccess}`, { scroll: false });
         }
       }
+    } catch {
+      setError("Не удалось изменить этап. Проверьте соединение и повторите.");
     } finally {
       inFlight.current = false;
       setBusy(false);
@@ -83,7 +87,7 @@ export function BrewTransitionButton({
         type="button"
         variant={variant}
         size={size}
-        disabled={busy}
+        disabled={busy || disabled}
         onClick={() => (confirm ? setConfirmOpen(true) : run())}
       >
         {busy && !confirm ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : icon}

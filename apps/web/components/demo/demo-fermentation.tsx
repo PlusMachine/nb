@@ -1,7 +1,10 @@
+"use client";
+
 import { FermentHistoryChart } from "@/features/brew-controller/components/ferment-history-chart";
 import { FERMENT_HISTORY_WINDOW_DAYS, type BrewMeasurementDto, type TelemetryHistoryPoint } from "@/features/brew-batches/contracts";
 import { summarizeBrewMeasurements } from "@/features/brew-batches/measurements";
 import { formatGravity, formatGravitySecondary } from "@/features/system/gravity-units";
+import { useViewerGravityUnit } from "@/features/system/use-viewer-gravity-unit";
 
 // Секция 4 «Брожение» (docs/demo-page.md §2.4). График и сводка замеров — те же
 // чистые компоненты/функции, что и на реальной странице партии; интерактивная
@@ -31,7 +34,7 @@ function StatTile({
         <div className="text-lg font-semibold tabular-nums text-foreground">{value}</div>
         {secondary ? <div className="text-[11px] text-muted-foreground">{secondary}</div> : null}
       </div>
-      {target ? <div className="text-[11px] tabular-nums text-muted-foreground">цель {target}</div> : null}
+      {target ? <div className="text-[11px] tabular-nums text-muted-foreground">по рецепту {target}</div> : null}
     </div>
   );
 }
@@ -49,8 +52,7 @@ export function DemoFermentationSection({
   dayIndex: number;
   target: { og: number; fg: number; abv: number };
 }) {
-  // Плотности — фиксированная единица SG (спека §2.4): секция витринная, без
-  // персонального preferredGravityUnit пользователя.
+  const { unit } = useViewerGravityUnit();
   const summary = summarizeBrewMeasurements(measurements, target);
 
   return (
@@ -74,15 +76,15 @@ export function DemoFermentationSection({
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           <StatTile
             label="OG"
-            value={formatGravity(summary.og, "sg")}
-            secondary={formatGravitySecondary(summary.og, "sg")}
-            target={summary.target?.og != null ? formatGravity(summary.target.og, "sg") : null}
+            value={formatGravity(summary.og, unit)}
+            secondary={formatGravitySecondary(summary.og, unit)}
+            target={summary.target?.og != null ? formatGravity(summary.target.og, unit) : null}
           />
           <StatTile
             label="FG"
-            value={formatGravity(summary.fg, "sg")}
-            secondary={formatGravitySecondary(summary.fg, "sg")}
-            target={summary.target?.fg != null ? formatGravity(summary.target.fg, "sg") : null}
+            value={formatGravity(summary.fg, unit)}
+            secondary={formatGravitySecondary(summary.fg, unit)}
+            target={summary.target?.fg != null ? formatGravity(summary.target.fg, unit) : null}
           />
           <StatTile
             label="ABV"
@@ -97,8 +99,9 @@ export function DemoFermentationSection({
             const tag = measurement.isFinal ? "FG" : index === 0 ? "OG" : null;
             return (
               <li key={measurement.id} className="flex items-center gap-3 py-2">
-                <span className="w-16 shrink-0 text-base font-semibold tabular-nums text-foreground">
-                  {formatGravity(measurement.gravitySg, "sg")}
+                <span className="w-24 shrink-0 tabular-nums">
+                  <span className="block text-base font-semibold text-foreground">{formatGravity(measurement.gravitySg, unit)}</span>
+                  <span className="block text-[11px] text-muted-foreground">{formatGravitySecondary(measurement.gravitySg, unit)}</span>
                 </span>
                 {tag ? (
                   <span className="shrink-0 rounded-full bg-foreground px-1.5 py-0.5 text-[10px] font-semibold text-background">

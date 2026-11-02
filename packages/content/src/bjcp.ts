@@ -25,13 +25,13 @@ const SECTION_LABELS: Record<string, string> = {
   aroma: "Аромат",
   appearance: "Внешний вид",
   flavor: "Вкус",
-  mouthfeel: "Ощущение во рту",
+  mouthfeel: "Ощущения во рту",
   comments: "Комментарии",
   history: "История",
   characteristic_ingredients: "Характерные ингредиенты",
-  style_comparison: "Сравнение со стилями",
-  entry_instructions: "Инструкции",
-  commercial_examples: "Коммерческие примеры"
+  style_comparison: "Сравнение с другими стилями",
+  entry_instructions: "Заявка на конкурс",
+  commercial_examples: "Примеры пива этого стиля"
 };
 
 const FEATURED_STYLE_IDS = ["1A", "1C", "2A", "3A", "5B", "10A"] as const;
@@ -64,6 +64,7 @@ type RawBjcpFile = {
     vital_statistics_text?: string;
     vital_statistics?: Record<string, string | null | undefined>;
     commercial_examples_text?: string;
+    tags_en?: string[];
   }>;
 };
 
@@ -135,6 +136,7 @@ export type ContentArticle = {
   seoTitle: string;
   seoDescription: string;
   source: ArticleSourceInfo;
+  tags?: string[];
 };
 
 type BjcpContentIndex = {
@@ -613,7 +615,8 @@ const buildIndex = async (): Promise<BjcpContentIndex> => {
         }),
         seoTitle: `${title} (${bjcpId}) — стиль пива BJCP`,
         seoDescription: description,
-        source
+        source,
+        tags: style.tags_en?.filter(Boolean) ?? []
       });
 
       category.articleCount += 1;

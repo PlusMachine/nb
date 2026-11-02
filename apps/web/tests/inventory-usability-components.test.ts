@@ -93,12 +93,12 @@ describe("inventory usability components", () => {
       onChange: () => undefined
     }));
 
-    expect(html.indexOf("Сбраживаемые")).toBeLessThan(html.indexOf("Хмель"));
+    expect(html.indexOf("Солод и другое сырьё")).toBeLessThan(html.indexOf("Хмель"));
     expect(html.indexOf("Хмель")).toBeLessThan(html.indexOf("Дрожжи"));
     expect(html.indexOf("Дрожжи")).toBeLessThan(html.indexOf("Водоподготовка"));
     expect(html.indexOf("Водоподготовка")).toBeLessThan(html.indexOf("Расходники"));
     expect(html.indexOf("Расходники")).toBeLessThan(html.indexOf("Специи и добавки"));
-    expect(html).toContain("Сбраживаемые");
+    expect(html).toContain("Солод и другое сырьё");
     expect(html).toContain("Хмель");
     expect(html).toContain("Дрожжи");
     expect(html).toContain("Водоподготовка");
@@ -158,7 +158,7 @@ describe("inventory usability components", () => {
     expect(fermentableHtml).toContain("Фрукты и соки");
 
     expect(consumableHtml).toContain("Дезинфицирующие средства");
-    expect(consumableHtml).toContain("Мойка");
+    expect(consumableHtml).toContain("Моющие средства");
     expect(consumableHtml).toContain("Тара и укупорка");
     expect(consumableHtml).toContain("Газы");
   });
@@ -187,7 +187,7 @@ describe("inventory usability components", () => {
     }));
 
     expect(html).toContain("Фильтры по запасам");
-    expect(html).toContain("Сбраживаемые");
+    expect(html).toContain("Солод и другое сырьё");
     expect(html).toContain("Хмель");
     expect(html).toContain("Дрожжи");
     expect(html).toContain("Скрыть закончившиеся");
@@ -239,8 +239,8 @@ describe("inventory usability components", () => {
     expect(html).toMatch(/Хмель<\/span><span[^>]*>1<\/span>/);
   });
 
-  it("hides inventory search for short visible lists and keeps sorting above the list", () => {
-    expect(shouldShowInventorySearchInput({ search: "", visibleItemCount: 12 })).toBe(false);
+  it("keeps inventory search available for short and filtered lists", () => {
+    expect(shouldShowInventorySearchInput({ search: "", visibleItemCount: 12 })).toBe(true);
     expect(shouldShowInventorySearchInput({ search: "", visibleItemCount: 13 })).toBe(true);
     expect(shouldShowInventorySearchInput({ search: "citra", visibleItemCount: 3 })).toBe(true);
 
@@ -265,7 +265,7 @@ describe("inventory usability components", () => {
       })
     }));
 
-    expect(html).not.toContain("Поиск ингредиентов...");
+    expect(html).toContain("Поиск ингредиентов…");
     expect(html).toContain("По умолчанию");
   });
 
@@ -290,7 +290,7 @@ describe("inventory usability components", () => {
       })
     }));
 
-    expect(html).toContain("Сбраживаемые");
+    expect(html).toContain("Солод и другое сырьё");
     expect(html).toContain("Хмель");
     expect(html).toContain(">0</span>");
     expect(html).toContain("disabled");
@@ -322,7 +322,7 @@ describe("inventory usability components", () => {
       onValueChange: () => undefined
     }));
 
-    expect(html).toContain("Поиск ингредиентов...");
+    expect(html).toContain("Поиск ингредиентов…");
     expect(html).not.toContain("Показывать архивные");
   });
 
@@ -386,8 +386,8 @@ describe("inventory usability components", () => {
     expect(html).toContain("BESTMALZ");
     expect(html).not.toContain("Германия");
     expect(html).toContain("2 кг");
-    expect(html).toContain("6-7 EBC");
-    expect(html).toContain("Экстр. 80%");
+    expect(html).toContain("6–7 EBC");
+    expect(html).toContain("Экстрактивность 80%");
     expect(html).toContain("до 100%");
     expect(html).not.toContain("80% extract");
     expect(html).toContain("linear-gradient(180deg");
@@ -964,7 +964,7 @@ describe("inventory usability components", () => {
     expect(html).not.toContain("<option");
     expect(html).toContain("Изменить");
     expect(html).toContain("Fermentis");
-    expect(html).toContain("Атт. 78%");
+    expect(html).toContain("Сбраживание 78%");
     expect(html).toContain("18–24°C");
   });
 

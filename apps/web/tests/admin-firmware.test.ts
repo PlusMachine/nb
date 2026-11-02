@@ -95,7 +95,7 @@ describe("валидация загрузки прошивки", () => {
   it("отбивает версию не по semver", () => {
     const result = validateFirmwareUpload({ ...baseUpload, version: "v2.1" });
     expect(result.ok).toBe(false);
-    expect(result.ok === false && result.error).toContain("semver");
+    expect(result.ok === false && result.error).toContain("2.1.0");
   });
 
   it("требует версию", () => {

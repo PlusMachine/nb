@@ -177,7 +177,7 @@ const manualItemQuantitySchema = z.preprocess((value) => {
   return value;
 }, z.coerce.number({ invalid_type_error: "Введите число." })
   .positive("Количество должно быть больше нуля.")
-  .finite("Введите корректное число.")
+  .finite("Введите число.")
   .nullable()
   .optional());
 
@@ -195,7 +195,7 @@ const manualItemCategorySchema = z.preprocess((value) => {
   }
   const normalized = String(value).trim();
   return normalized || null;
-}, z.enum(ingredientCategories, { invalid_type_error: "Выберите корректную категорию." }).nullable().optional());
+}, z.enum(ingredientCategories, { invalid_type_error: "Выберите категорию." }).nullable().optional());
 
 // Каталожный id — text в БД (packages/db/src/schema.ts, ingredients.id), без
 // ограничения на уровне колонки; 120 символов с запасом покрывает реальные
@@ -303,7 +303,7 @@ export const SHOPPING_LINE_CHECK_RATE_WINDOW_SECONDS = 60 * 60;
 
 const transferQuantitySchema = z.coerce.number({ invalid_type_error: "Введите число." })
   .positive("Количество должно быть больше нуля.")
-  .finite("Введите корректное число.");
+  .finite("Введите число.");
 
 const transferUnitSchema = z.preprocess((value) => (
   typeof value === "string" ? value.trim().toLowerCase() : value

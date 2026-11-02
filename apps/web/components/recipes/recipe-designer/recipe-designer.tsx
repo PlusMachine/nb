@@ -157,7 +157,7 @@ export type { RecipeSaveStatus };
 const EQUIPMENT_PROFILE_FOCUS_DEDUPE_MS = 1000;
 
 const importedMatchCategoryLabels: Record<string, string> = {
-  fermentable: "Сбраживаемое",
+  fermentable: "Солод и другое сырьё",
   hop: "Хмель",
   yeast: "Дрожжи",
   consumable: "Специи и добавки",
@@ -775,17 +775,17 @@ export function RecipeDesigner({
   }> = [
       {
         category: "fermentable",
-        title: "Сбраживаемое",
+        title: "Солод и другое сырьё",
         subtitle: fermentables.length ? `${fermentableTotalKg.toFixed(2)} кг` : undefined,
         items: fermentables,
-        empty: "Добавьте солод, сахар, экстракт или другие сбраживаемые ингредиенты.",
+        empty: "Добавить солод, сахар или экстракт",
       },
       {
         category: "hop",
         title: "Хмель",
         subtitle: hops.length ? `${hopTotalG.toFixed(0)} г` : undefined,
         items: hops,
-        empty: "Добавьте хмель на кипячение, вирпул, сухое охмеление или дип-хоп.",
+        empty: "Добавить хмель",
         renderItems: (items) => {
           const usedTypes = recipeHopUseTypeUiOrder.filter(
             (useType) => useType === "boil" || items.some((item) => getHopUseType(item) === useType)
@@ -835,7 +835,7 @@ export function RecipeDesigner({
                         className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-muted/40 px-4 py-6 text-sm text-muted-foreground transition-colors hover:border-ring hover:bg-muted hover:text-foreground"
                       >
                         <Plus className="h-4 w-4" />
-                        <span>Добавьте хмель на кипячение</span>
+                        <span>Добавить хмель</span>
                       </button>
                     )}
                   </div>
@@ -867,7 +867,7 @@ export function RecipeDesigner({
         category: "yeast",
         title: "Дрожжи",
         items: yeasts,
-        empty: "Укажите дрожжи, которые используются в рецепте. Это нужно для публикации."
+        empty: "Добавить дрожжи"
       },
       {
         category: "water_treatment",
@@ -927,7 +927,7 @@ export function RecipeDesigner({
         title: "Специи и добавки",
         subtitle: consumables.length ? `${consumables.length} поз.` : undefined,
         items: consumables,
-        empty: "Добавляйте сюда Irish Moss, Whirlfloc, подкормку для дрожжей, цедру, специи и другие добавки."
+        empty: "Добавить специи или добавки"
       }
     ];
 
@@ -1474,7 +1474,7 @@ export function RecipeDesigner({
       <ConfirmActionDialog
         open={waterResetConfirmOpen}
         title="Сбросить настройку воды?"
-        description="Сбросятся источник, цель, объёмы, соли и pH. Действие нельзя отменить."
+        description="Сбросятся выбранные профили воды, объёмы, соли и pH. Действие нельзя отменить."
         confirmLabel="Сбросить"
         cancelLabel="Отмена"
         onConfirm={() => {
@@ -1614,7 +1614,7 @@ export function RecipeDesigner({
               value={title}
               onChange={(event) => setTitle(event.target.value)}
               className="h-11 w-full min-w-0 rounded-xl border border-border bg-card px-3.5 text-base font-semibold text-foreground shadow-sm placeholder:font-normal placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-lg"
-              placeholder="Например, Tropical NEIPA"
+              placeholder="Например, NEIPA с тропическим ароматом"
             />
             {sectionErrors.title ? <p className="mt-1 text-xs text-destructive">{sectionErrors.title}</p> : null}
           </div>
@@ -1735,7 +1735,7 @@ export function RecipeDesigner({
             </p>
           </div>
           <Button type="button" size="sm" disabled={matchPending} onClick={() => void openImportedCatalogMatch()}>
-            {matchPending ? "Подбираем..." : "Сопоставить с каталогом"}
+            {matchPending ? "Подбираем…" : "Сопоставить с каталогом"}
           </Button>
         </div>
       ) : null}
@@ -1905,7 +1905,7 @@ export function RecipeDesigner({
                 value={authorNotes}
                 onChange={(event) => setAuthorNotes(event.target.value)}
                 className="min-h-28 w-full rounded-xl border border-border bg-muted/50 px-3 py-2.5 text-base text-foreground placeholder:text-muted-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm [@media(pointer:coarse)]:text-base"
-                placeholder="Видны только вам — планы, партии ингредиентов, наблюдения с прошлых варок…"
+                placeholder="Например, наблюдения с прошлых варок"
               />
             </div>
           </details>
@@ -1917,7 +1917,7 @@ export function RecipeDesigner({
         title="Опубликовать рецепт?"
         description="Рецепт станет доступен всем по ссылке."
         confirmLabel="Опубликовать"
-        pendingLabel="Публикуем..."
+        pendingLabel="Публикуем…"
         tone="primary"
         pending={pendingSave}
         error={publishError}
@@ -1933,7 +1933,7 @@ export function RecipeDesigner({
         title="Скрыть публикацию рецепта?"
         description="Рецепт больше не будет доступен другим пользователям по ссылке."
         confirmLabel="Скрыть публикацию"
-        pendingLabel="Меняем доступ..."
+        pendingLabel="Меняем доступ…"
         pending={pendingSave}
         error={makePrivateError}
         onConfirm={() => void handleMakePrivateConfirm()}

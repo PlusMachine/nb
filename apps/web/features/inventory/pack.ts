@@ -7,6 +7,9 @@ import {
   type InventoryWeightUnit,
   inventoryWeightUnits,
   parseInventoryUnit,
+  normalizeInventoryMeasurementForProfile,
+  getInventoryUnitDimension,
+  type InventoryUnitProfile,
   type InventoryUnit
 } from "./units";
 
@@ -40,6 +43,7 @@ export const resolveInventoryPackEquivalent = (
   if (!technicalData || technicalData.type !== "yeast") {
     return null;
   }
+  if (technicalData.packageSelectionRequired) return null;
 
   const packageSize = normalizePositiveNumber(technicalData.packageSize);
   const packageUnit = parseInventoryUnit(String(technicalData.packageUnit ?? "").trim().toLowerCase());
@@ -89,6 +93,9 @@ export const resolveInventoryItemPackEquivalent = ({
     : null;
 
   if (stockContentAmount != null && stockContentUnit) {
+    if (isWeightUnit(stockContentUnit)) return { normalizedUnit: "g", normalizedQuantity: convertWeight({value:stockContentAmount,unit:stockContentUnit},"g").value };
+    if (isVolumeUnit(stockContentUnit)) return { normalizedUnit: "ml", normalizedQuantity: convertVolume({value:stockContentAmount,unit:stockContentUnit},"ml").value };
+    if (stockContentUnit === "pack") return null;
     return {
       normalizedUnit: stockContentUnit,
       normalizedQuantity: stockContentAmount
@@ -96,6 +103,33 @@ export const resolveInventoryItemPackEquivalent = ({
   }
 
   return resolveInventoryPackEquivalent(technicalData ?? null);
+};
+
+export const normalizeInventoryMeasurementWithPack = (
+  profile: InventoryUnitProfile, quantity: number, unitInput: string,
+  equivalent?: InventoryPackEquivalent | null
+) => {
+  const unit = parseInventoryUnit(unitInput);
+  if (unit === "pack" && equivalent) {
+    if (!Number.isFinite(quantity) || quantity < 0) throw new Error("INVALID_QUANTITY");
+    const normalizedQuantity = roundTo(quantity * equivalent.normalizedQuantity, 3);
+    if (quantity > 0 && normalizedQuantity === 0) throw new Error("INVALID_QUANTITY_PRECISION");
+    return { enteredQuantity: quantity, enteredUnit: unit, normalizedQuantity,
+      normalizedUnit: equivalent.normalizedUnit, unitDimension: getInventoryUnitDimension(equivalent.normalizedUnit) };
+  }
+  return normalizeInventoryMeasurementForProfile(profile,quantity,unitInput);
+};
+
+export const applyInventoryPackageSnapshot = <T extends {
+  id: string; stockContentAmount: number | null; stockContentUnit: string | null;
+}>(variant: T | null, properties?: Record<string, unknown> | null): T | null => {
+  const raw = properties?._package_content_snapshot;
+  if (!variant || !raw || typeof raw !== "object" || Array.isArray(raw)) return variant;
+  const snapshot = raw as Record<string, unknown>;
+  if (snapshot.packageVariantId !== variant.id) return variant;
+  return { ...variant,
+    stockContentAmount: typeof snapshot.stockContentAmount === "number" ? snapshot.stockContentAmount : null,
+    stockContentUnit: typeof snapshot.stockContentUnit === "string" ? snapshot.stockContentUnit : null };
 };
 
 export const convertWithinDimension = (

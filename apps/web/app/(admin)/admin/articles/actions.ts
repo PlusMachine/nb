@@ -16,7 +16,7 @@ import { contentArticleInputSchema } from "@/features/content-articles/contracts
 
 export type ContentArticleActionResult = { ok: boolean; message: string; articleId?: string };
 
-const firstZodMessage = (error: ZodError): string => error.issues[0]?.message ?? "Проверьте корректность данных.";
+const firstZodMessage = (error: ZodError): string => error.issues[0]?.message ?? "Проверьте введённые данные.";
 
 const revalidateAll = (articleId?: string, slug?: string) => {
   revalidatePath("/admin/articles");

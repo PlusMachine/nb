@@ -276,6 +276,7 @@ describe("buildShoppingListForUser — §3.2 агрегация и фикс ба
     expect(computeRecipeMatchesForBrewBatches).toHaveBeenCalledTimes(1);
     expect(computeRecipeMatchesForBrewBatches).toHaveBeenCalledWith({
       userId: "u-1",
+      shareInventory: true,
       batches: [
         { brewBatchId: "bb-1", recipeId: "r-1" },
         { brewBatchId: "bb-2", recipeId: "r-2" }
@@ -449,6 +450,7 @@ describe("buildShoppingListForUser — A2: списанное под парти�
     // Обе партии уходят в матч по отдельности, несмотря на общий рецепт.
     expect(computeRecipeMatchesForBrewBatches).toHaveBeenCalledWith({
       userId: "u-1",
+      shareInventory: true,
       batches: [
         { brewBatchId: "bb-1", recipeId: "r-1" },
         { brewBatchId: "bb-2", recipeId: "r-1" }
@@ -740,6 +742,7 @@ describe("buildShoppingListForUser — §3.3 «Почти можно свари�
     expect(computeRecipeMatchesForUser).not.toHaveBeenCalled();
     expect(computeRecipeMatchesForBrewBatches).toHaveBeenCalledWith({
       userId: "u-1",
+      shareInventory: true,
       batches: [{ brewBatchId: "bb-1", recipeId: "r-v2" }]
     });
   });

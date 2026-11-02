@@ -95,6 +95,7 @@ vi.mock("@/components/feedback/feedback-report-link", () => ({
 import { IngredientCatalogContent } from "../app/(public)/catalog/content";
 import IngredientDetailPage from "../app/(public)/catalog/[source]/[id]/page";
 import { catalogCategoryLandings } from "../features/ingredients/seo";
+import { extractIngredientTechnicalData, extractIngredientTechnicalFields } from "../features/ingredients/technical-fields";
 
 const buildCatalogItem = (overrides: Record<string, unknown> = {}) => ({
   id: "catalog-hop-1",
@@ -336,6 +337,133 @@ describe("ingredient catalog metadata ui", () => {
     expect(html).not.toContain(">Описание<");
   });
 
+  it("renders yeast specifications from database attributes, notes and source links on the detail page", async () => {
+    const source = {
+      type: "yeast",
+      attributes: {
+        form: "dry",
+        attenuation_pct_min: 78,
+        attenuation_pct_max: 84,
+        attenuation_pct_typical: 82,
+        fermentation_temp_c_optimum: 15,
+        alcohol_tolerance_abv_min: 10,
+        alcohol_tolerance_abv_max: 12,
+        alcohol_tolerance_abv_typical: 11,
+        species: "Saccharomyces pastorianus",
+        pof: "negative",
+        sedimentation: "slow",
+        analog_reference: "W-34/70",
+        notes: "Холодное брожение.\n\nСправочные характеристики штамма."
+      }
+    };
+    mockState.detailItem = buildCatalogItem({
+      id: "yeast-1",
+      type: "yeast",
+      category: "yeast",
+      primaryLabelRu: "Лагерные дрожжи",
+      hopAlphaAcidPct: null,
+      hopBetaAcidPct: null,
+      hopForm: null,
+      ...extractIngredientTechnicalFields(source),
+      technicalData: extractIngredientTechnicalData(source),
+      sources: [{ id: "source-1", url: "https://example.com/yeast/specification", position: 0 }]
+    });
+
+    const html = renderToStaticMarkup(await IngredientDetailPage({
+      params: Promise.resolve({ source: "system", id: mockState.detailItem.id })
+    }));
+
+    for (const text of [
+      "82%", "Диапазон степени сбраживания", "78–84%", "Оптимальная температура", "15 °C",
+      "Устойчивость к алкоголю", "11% ABV", "10–12% ABV", "Вид культуры",
+      "Saccharomyces pastorianus", "POF− (нефенольные)", "Скорость оседания дрожжей", "Медленное",
+      "Справочный аналог", "W-34/70", "Примечания", "Холодное брожение.",
+      "Справочные характеристики штамма.", "Источники", "example.com"
+    ]) {
+      expect(html).toContain(text);
+    }
+    expect(html).toContain('href="https://example.com/yeast/specification"');
+    expect(html).toContain('rel="noopener noreferrer"');
+  });
+
+  it("omits missing yeast reference fields and sources, and rejects unsafe source URLs", async () => {
+    mockState.detailItem = buildCatalogItem({
+      type: "yeast",
+      category: "yeast",
+      technicalData: { type: "yeast", form: "liquid", attenuationPctTypical: 75 },
+      sources: [
+        { id: "unsafe", url: "javascript:alert(1)", label: "Unsafe source" },
+        { id: "invalid", url: "not a URL" },
+        { id: "empty", url: null }
+      ]
+    });
+
+    const html = renderToStaticMarkup(await IngredientDetailPage({
+      params: Promise.resolve({ source: "system", id: mockState.detailItem.id })
+    }));
+
+    for (const text of ["Диапазон степени сбраживания", "Вид культуры", "Фенольность (POF)", ">Примечания<", ">Источники<", "Unsafe source", "javascript:"]) {
+      expect(html).not.toContain(text);
+    }
+  });
+
+  it.each([
+    {
+      type: "hop",
+      attributes: { notes: "Особенности сорта.", oil_value_unit_warning: "source anomaly / likely mg vs mL mismatch", aroma_descriptors_en: ["Citrus", "Pine"] },
+      expected: ["Особенности сорта.", "Citrus, Pine", "Уточнения к данным", "несоответствие единиц измерения масел"]
+    },
+    {
+      type: "malt",
+      attributes: { max_usage_pct: 25, source_metadata: [{ url: "https://example.com/spec.pdf", page: 49 }, { position: 1, page: 50 }] },
+      expected: ["Максимальная доля в засыпи", "25%", "Страница 49", "Каталог производителя без ссылки", "Страница 50"]
+    },
+    {
+      type: "fermentable",
+      attributes: { color_lovibond: 5, color_ebc_exact: 12.34, protein_pct: 14, normalization_review_flags: ["hopping_state_not_confirmed"] },
+      expected: ["Цвет из источника", "12.34 EBC", "Белок", "14%", "Уточнения по продукту", "Охмелённость продукта не подтверждена"]
+    },
+    {
+      type: "consumable",
+      attributes: {
+        typical_use_ru: "Мойка оборудования.", storage_notes_ru: "Хранить сухо.", closure_standard: "26mm crown",
+        capacity_per_piece: { amount: 330, unit: "ml" },
+        dosage_reference: { common_ratio: "По инструкции производителя.", example_reference: "Разводится перед мойкой." },
+        package_content_details: [{ package_variant_id: "reference-pack", content_per_piece: { amount: 10, unit: "g_each" }, content_per_package: { amount: 120, unit: "g" } }]
+      },
+      expected: ["Мойка оборудования.", "Хранить сухо.", "26mm crown", "330 мл", "Дозировка из источника", "Разводится перед мойкой.", "На единицу: 10 г", "В упаковке: 120 г"]
+    },
+    {
+      type: "water_treatment",
+      attributes: {
+        ion_contributions_ppm_per_g_per_l: { Ca: 232.8, SO4: 558 },
+        typical_dose_reference: { mg_per_l: 9 }, storage_notes_ru: "Хранить герметично.",
+        typical_use_ru: "Подготовка воды.", cautions_ru: "Учитывать форму реагента."
+      },
+      expected: ["Добавка ионов при дозировке 1 г/л", "Ca: 232.8; SO₄: 558 ppm", "9 мг/л", "Хранить герметично.", "Подготовка воды.", "Учитывать форму реагента."]
+    }
+  ])("renders reference characteristics for $type from database attributes", async ({ type, attributes, expected }) => {
+    const source = { type, attributes };
+    mockState.detailItem = buildCatalogItem({
+      id: "reference-item",
+      type,
+      category: type === "malt" || type === "fermentable" ? "fermentable" : type,
+      subtype: type === "malt" || type === "fermentable" ? type : null,
+      hopAlphaAcidPct: null, hopBetaAcidPct: null, hopForm: null,
+      ...extractIngredientTechnicalFields(source),
+      technicalData: extractIngredientTechnicalData(source),
+      sources: [
+        { id: "reference-source", url: "https://example.com/spec.pdf", label: "Спецификация", position: 0 },
+        { id: "reference-no-url", url: null, label: "Каталог производителя без ссылки", position: 1 }
+      ],
+      packageVariants: type === "consumable" ? [{ id: "reference-pack", productNameRu: "Таблетки", packageAmount: 12, packageUnit: "pcs" }] : []
+    });
+    const html = renderToStaticMarkup(await IngredientDetailPage({
+      params: Promise.resolve({ source: "system", id: "reference-item" })
+    }));
+    for (const text of expected) expect(html).toContain(text);
+  });
+
   it("shows producer as the brand label for fermentables on the detail page", async () => {
     mockState.detailItem = buildCatalogItem({
       id: "catalog-fermentable-1",
@@ -476,10 +604,10 @@ describe("ingredient catalog metadata ui", () => {
       searchParams: Promise.resolve({})
     }));
 
-    expect(html).toContain("Аттенюация 78%");
+    expect(html).toContain("Степень сбраживания 78%");
     expect(html).toContain("Флокуляция очень высокая");
     expect(html).toContain("сухие");
-    expect(html).not.toContain("Атт.");
+    expect(html).not.toContain("Сбраживание");
   });
 
   it("carries the consumable subtype into parameters now that the Тип column is gone", async () => {

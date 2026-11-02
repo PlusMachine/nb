@@ -232,7 +232,7 @@ export const resolveRecipeIngredientEditorCategoryLabel = ({
   category?: IngredientCategory | null;
 }) => {
   if (category === "fermentable") {
-    return "Сбраживаемое";
+    return "Солод и другое сырьё";
   }
 
   return resolveInventoryIngredientContextCategoryLabel({ category });
@@ -316,7 +316,7 @@ export type OpenEditorState = {
 
 export const hopUseTypeSectionLabels: Record<RecipeHopUseType, string> = {
   ...hopUseTypeLabels,
-  boil: "Добавление на кипячение"
+  boil: "Внесение при кипячении"
 };
 
 export const recipeHopUseTypeUiOrder: RecipeHopUseType[] = [
@@ -1319,7 +1319,7 @@ export const buildIngredientPayload = (ingredient: DesignerIngredient): RecipeEd
     const catalogAlphaAcidPct = resolveHopCatalogAlphaAcidPct(ingredient.technicalData);
     if (
       alphaAcidPct != null
-      && alphaAcidPct > 0
+      && alphaAcidPct >= 0
       && alphaAcidPct <= 30
       && alphaAcidPct !== catalogAlphaAcidPct
     ) {
@@ -1445,8 +1445,9 @@ export const buildInitialPreview = (recipe?: RecipeDetailDto): RecipeDraftPrevie
   }
 
   const styleRange = getStyleRangeById(recipe.styleId);
+  const bitternessEstimate = recipe.bitternessEstimate ?? recipe.calculationMeta?.bitternessEstimate ?? null;
   const hasAnyMetric = recipe.og != null || recipe.fg != null || recipe.abv != null || recipe.ibu != null || recipe.color != null;
-  const styleFit = styleRange && hasAnyMetric
+  const styleFit = styleRange && hasAnyMetric && !bitternessEstimate?.missing.length
     ? evaluateStyleFit(styleRange, {
       og: recipe.og ?? 0,
       fg: recipe.fg ?? 0,
@@ -1466,6 +1467,7 @@ export const buildInitialPreview = (recipe?: RecipeDetailDto): RecipeDraftPrevie
     fgEstimateDetails: recipe.fgEstimateDetails ?? recipe.calculationMeta?.fgEstimateDetails ?? null,
     abv: recipe.abv,
     ibu: recipe.ibu,
+    bitternessEstimate,
     bitternessFormula: recipe.calculationMeta?.bitternessFormula ?? "tinseth_whirlpool_v2",
     color: recipe.color,
     styleId: recipe.styleId,
@@ -1651,7 +1653,7 @@ export const buildDesignerIngredientCardSource = (ingredient: DesignerIngredient
 };
 
 export const getSectionTitle = (category: IngredientCategory) => {
-  if (category === "fermentable") return "Сбраживаемое";
+  if (category === "fermentable") return "Солод и другое сырьё";
   if (category === "hop") return "Хмель";
   if (category === "yeast") return "Дрожжи";
   if (category === "water_treatment") return "Водоподготовка";

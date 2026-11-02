@@ -308,7 +308,7 @@ describe("recipe water flow UI", () => {
     expect(html).toContain("Настройка воды");
     expect(html).toContain("1. Исходная вода");
     expect(html).toContain("2. Целевой профиль");
-    expect(html).toContain("источник, цель, объёмы и pH");
+    expect(html).toContain("Не настроена");
     expect(html).not.toContain('aria-pressed="true"');
     expect(html).not.toContain("Выбранный профиль");
     expect(html).not.toContain("3. Объём воды");

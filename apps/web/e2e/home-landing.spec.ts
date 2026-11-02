@@ -113,7 +113,7 @@ test.describe("public homepage examples", () => {
     const note = brew.getByRole("textbox", { name: "Что учесть в следующей варке" });
     await note.fill("Заметка в примере");
     await brew.getByRole("button", { name: "Сохранить в примере", exact: true }).click();
-    await expect(brew.locator(".home-brew-note-footer").getByRole("status")).toHaveText("Сохранено в примере на этом устройстве");
+    await expect(brew.locator(".home-brew-note-footer").getByRole("status")).toHaveText("Заметка сохранена в браузере");
     await brew.locator("summary").click();
     await brew.getByRole("button", { name: "Списать ингредиенты", exact: true }).click();
     const dialog = page.getByRole("dialog");

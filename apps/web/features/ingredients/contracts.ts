@@ -42,7 +42,23 @@ export type IngredientDisplayMode = (typeof ingredientDisplayModes)[number];
 export const ingredientAliasLocales = ["ru", "en", "neutral"] as const;
 export type IngredientAliasLocale = (typeof ingredientAliasLocales)[number];
 
+export type IngredientReferenceQuantity = { amount: number; unit: string };
+
+export type IngredientSourceMetadata = {
+  url?: string | null;
+  position?: number | null;
+  confidence?: string | null;
+  page?: number | string | null;
+};
+
+export type IngredientPackageContentDetail = {
+  packageVariantId: string;
+  contentPerPiece?: IngredientReferenceQuantity | null;
+  contentPerPackage?: IngredientReferenceQuantity | null;
+};
+
 export type HopTechnicalData = {
+  varietyKey?: string | null;
   type: "hop";
   alphaAcidPctMin?: number | null;
   alphaAcidPctMax?: number | null;
@@ -62,6 +78,8 @@ export type HopTechnicalData = {
   isBlend?: boolean | null;
   isPopularInRussia?: boolean | null;
   aromaDescriptorsEn?: string[];
+  oilValueUnitWarning?: string | null;
+  sourceMetadata?: IngredientSourceMetadata[];
   notes?: string | null;
 };
 
@@ -75,9 +93,14 @@ export type MaltTechnicalData = {
   proteinPct?: number | null;
   maxUsagePct?: number | null;
   colorEbcIsApprox?: boolean | null;
+  colorEbcForCalculation?: number | null;
+  colorEbcCalculationBasis?: string | null;
+  dataReview?: Record<string, unknown> | null;
+  sourceMetadata?: IngredientSourceMetadata[];
 };
 
 export type FermentableTechnicalData = {
+  hoppedBitterness?: Record<string, unknown> | null;
   type: "fermentable";
   fermentabilityClass?: string | null;
   extractForm?: "dry" | "liquid" | null;
@@ -97,6 +120,9 @@ export type FermentableTechnicalData = {
   colorEbcMax?: number | null;
   colorLovibond?: number | null;
   colorEbcIsApprox?: boolean | null;
+  colorEbcExact?: number | null;
+  proteinPct?: number | null;
+  normalizationReviewFlags?: string[];
   recommendedMaxPct?: number | null;
   isUsableInBeerGravityCalculations?: boolean | null;
   beerRelevance?: string | null;
@@ -111,17 +137,27 @@ export type YeastTechnicalData = {
   attenuationPctMax?: number | null;
   attenuationPctTypical?: number | null;
   flocculation?: string | null;
+  sedimentation?: string | null;
   fermentationTempCMin?: number | null;
   fermentationTempCMax?: number | null;
   fermentationTempCOptimum?: number | null;
+  alcoholToleranceAbvMin?: number | null;
+  alcoholToleranceAbvMax?: number | null;
   alcoholToleranceAbvTypical?: number | null;
+  species?: string | null;
+  pof?: string | null;
+  analogReference?: string | null;
+  notes?: string | null;
   sourceBasis?: string | null;
   packageSize?: number | null;
   packageUnit?: string | null;
+  packageSelectionRequired?: boolean;
 };
 
 export type ConsumableTechnicalData = {
   type: "consumable";
+  physicalForm?: string | null;
+  productIdentity?: string | null;
   commonForms?: string[];
   usageStage?: string[];
   dosageReference?: Record<string, unknown> | null;
@@ -134,6 +170,14 @@ export type ConsumableTechnicalData = {
   pickerFunctionRu?: string | null;
   pickerUsageRu?: string | null;
   brandFamilyMode?: string | null;
+  typicalUseRu?: string | null;
+  storageNotesRu?: string | null;
+  closureStandard?: string | null;
+  capacityPerPiece?: IngredientReferenceQuantity | null;
+  packageContentDetails?: IngredientPackageContentDetail[];
+  flavorTagsRu?: string[];
+  typicalStylesRu?: string[];
+  notesRu?: string | null;
 };
 
 export type WaterTreatmentTechnicalData = {
@@ -156,6 +200,10 @@ export type WaterTreatmentTechnicalData = {
   commonInProBrewing?: boolean | null;
   recommendationLevel?: string | null;
   cautionsRu?: string | null;
+  storageNotesRu?: string | null;
+  typicalDoseReference?: Record<string, unknown> | null;
+  ionContributionsPpmPerGPerL?: Record<string, number> | null;
+  ionContributionsPpmPerGPerGal?: Record<string, number> | null;
   sourceBasis?: string[] | string | null;
 };
 
@@ -257,6 +305,7 @@ export const ingredientSearchQuerySchema = z.object({
   family: z.string().trim().min(1).max(64).optional(),
   group: z.string().trim().min(1).max(120).optional(),
   manufacturer: z.string().trim().min(1).max(180).optional(),
+  inventoryOnly: z.boolean().optional().default(false),
   favoritesOnly: z.boolean().optional().default(false),
   customOnly: z.boolean().optional().default(false),
   limit: z.coerce.number().min(1).max(100).default(10)
@@ -459,6 +508,7 @@ export type IngredientCatalogItemDto = IngredientTechnicalFields & {
 };
 
 export type IngredientSuggestionItem = {
+  inventoryEnabled?: boolean;
   id: string;
   type: IngredientType;
   category?: IngredientCategory;
@@ -610,6 +660,7 @@ export const ingredientCatalogSortOptions = ["name", "updated", "category", "bra
 export type IngredientCatalogSortOption = (typeof ingredientCatalogSortOptions)[number];
 
 export type UserCatalogIngredientDto = IngredientTechnicalFields & {
+  inventoryEnabled?: boolean;
   id: string;
   source: "catalog" | "custom";
   type: IngredientType;
@@ -693,6 +744,8 @@ export type UserCatalogListResult = {
   // Rescue-выдача (С4): вся выборка нашлась только через раскладку/token-scatter/
   // фаззи-фолбэк (лучший результат по tier — уже rescue, см. resolveCatalogRescueKind
   // в catalog-ranking.ts) — null при точном поиске или без q.
+  browseOptions?: {manufacturers:string[];types:Array<{value:string;label:string}>};
+  totalGroups?: number;
   searchRescue: "layout" | "fuzzy" | "scatter" | null;
 };
 

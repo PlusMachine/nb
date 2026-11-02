@@ -1,4 +1,4 @@
-export type WeightUnit = "g" | "kg" | "oz" | "lb";
+export type WeightUnit = "mg" | "g" | "kg" | "oz" | "lb";
 export type VolumeUnit = "ml" | "l" | "gal";
 export type TemperatureUnit = "c" | "f";
 export type GravityUnit = "sg" | "plato";

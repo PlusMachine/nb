@@ -126,7 +126,7 @@ describe("RecipeMatchPanelView — бренд, флаг и hover «На скла
     ]));
 
     expect(html).toContain("Weyermann");
-    expect(html).toContain("Сбраживаемые");
+    expect(html).toContain("Солод и другое сырьё");
     expect(html).toMatch(/viewBox="0 0 18 12"/);
     expect(html).toContain("#DD0000");
   });

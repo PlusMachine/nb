@@ -59,7 +59,7 @@ export const resolveBrewNudge = (item: BrewNudgeInput, now: Date): BrewNudge => 
       if (item.plannedFor) {
         return { tone: "info", text: "Запланирована" };
       }
-      return { tone: "info", text: "Готова к старту" };
+      return { tone: "info", text: "Дата варки не выбрана" };
     }
     case "brewing": {
       if (item.measurementCount === 0) {

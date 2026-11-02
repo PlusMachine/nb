@@ -22,7 +22,7 @@ const longTitleView = (): OgCardView => ({
   stats: [
     { label: "ABV", value: "12,4 %" },
     { label: "IBU", value: "95" },
-    { label: "OG", value: "1.092" },
+    { label: "OG", value: "22.0 °P" },
     { label: "Объём", value: "20 л" }
   ],
   secondaryLine: { kind: "rating", value: "4,8", count: 231, extra: "сварен 14 раз" },

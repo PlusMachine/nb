@@ -54,8 +54,8 @@
         "soft-water styles",
         "high-alkalinity tap water correction"
       ],
-      "typical_use_ru": "База для построения профиля воды с нуля или для разбавления минерализованной/щелочной воды.",
-      "cautions_ru": "Не путать с полностью гарантированно нулевой минерализацией. Качество зависит от мембраны и состояния системы; желательно контролировать TDS.",
+      "typical_use_ru": "Вода с низкой минерализацией для приготовления нужного состава или разбавления воды с высокой минерализацией и щёлочностью.",
+      "cautions_ru": "Остаточная минерализация зависит от мембраны и состояния системы. Её можно контролировать TDS-метром.",
       "calculation_support": "full",
       "common_in_homebrewing": true,
       "common_in_pro_brewing": true,
@@ -97,8 +97,8 @@
         "full water rebuild",
         "soft-water styles"
       ],
-      "typical_use_ru": "Стартовая вода с практически нулевой минерализацией для точной сборки целевого профиля.",
-      "cautions_ru": "Как и RO, сама по себе не даёт нужного профиля: обычно требует последующего внесения солей.",
+      "typical_use_ru": "Вода с практически нулевой минерализацией для приготовления нужного состава с помощью солей.",
+      "cautions_ru": "Как и вода после обратного осмоса, обычно требует добавления солей под выбранный рецепт.",
       "calculation_support": "full",
       "common_in_homebrewing": true,
       "common_in_pro_brewing": true,
@@ -141,7 +141,7 @@
         "chloramine removal",
         "chlorine removal"
       ],
-      "typical_use_ru": "Рабочая альтернатива метабисульфиту для удаления хлора/хлораминов.",
+      "typical_use_ru": "Альтернатива метабисульфиту для удаления свободного хлора и хлораминов.",
       "cautions_ru": "Снижает pH; для большинства пивоваров метабисульфит обычно удобнее и дешевле.",
       "storage_notes_ru": "Хранить сухо, в закрытой упаковке.",
       "calculation_support": "partial",
@@ -202,8 +202,8 @@
         "tap water dechlorination",
         "chloramine removal"
       ],
-      "typical_use_ru": "Самый практичный реагент для быстрого удаления хлора и хлораминов из водопроводной воды перед варкой.",
-      "cautions_ru": "Использовать малые дозировки; это не минеральная соль для настройки профиля, а реагент для удаления дезинфектантов.",
+      "typical_use_ru": "Реагент для удаления свободного хлора и хлораминов из водопроводной воды перед варкой.",
+      "cautions_ru": "Применяют в небольших дозах для удаления остаточных дезинфицирующих веществ из воды. Дозировку выбирают по инструкции к препарату.",
       "storage_notes_ru": "Хранить сухо и герметично.",
       "calculation_support": "partial",
       "common_in_homebrewing": true,
@@ -266,7 +266,7 @@
         "chloramine removal"
       ],
       "typical_use_ru": "Альтернатива калиевому метабисульфиту для удаления хлора и хлораминов.",
-      "cautions_ru": "Если контролируешь натрий очень строго, калиевая форма обычно удобнее.",
+      "cautions_ru": "Вносит натрий. Если его содержание нужно ограничить, выбирают метабисульфит калия.",
       "storage_notes_ru": "Хранить сухо и герметично.",
       "calculation_support": "partial",
       "common_in_homebrewing": true,
@@ -338,9 +338,9 @@
         "West Coast styles",
         "dry/crisp bitter beers"
       ],
-      "typical_use_ru": "Главная соль для увеличения кальция и сульфатов; часто используется для хмелевых и более сухих профилей.",
-      "cautions_ru": "Слишком высокие сульфаты могут делать пиво жёстким, сернистым или слишком сухим.",
-      "storage_notes_ru": "Стабильный по хранению, обычно не тянет влагу так сильно, как хлорид кальция.",
+      "typical_use_ru": "Повышает содержание кальция и сульфатов. Часто применяется для сухого пива с выраженным хмелевым характером.",
+      "cautions_ru": "Избыток сульфатов может сделать горечь грубой и усилить ощущение сухости.",
+      "storage_notes_ru": "Хранить в сухом месте в закрытой упаковке.",
       "calculation_support": "full",
       "common_in_homebrewing": true,
       "common_in_pro_brewing": true,
@@ -356,7 +356,7 @@
       "type": "water_treatment",
       "item_kind": "chemical",
       "category": "mineral_salt",
-      "name_ru": "Соль поваренная (не йодированная)",
+      "name_ru": "Поваренная соль (нейодированная)",
       "name_en": "Sodium Chloride",
       "display_mode_ru": "localized_first",
       "aliases_ru": [
@@ -366,7 +366,8 @@
         "засолочная соль",
         "NaCl",
         "каменная соль",
-        "обычная соль"
+        "обычная соль",
+        "Соль поваренная (не йодированная)"
       ],
       "aliases_en": [
         "Table Salt",
@@ -405,9 +406,9 @@
         "minor sodium/chloride tuning",
         "some malt-forward beers"
       ],
-      "typical_use_ru": "Используется в небольших дозах для подъёма натрия и хлоридов.",
+      "typical_use_ru": "В небольших дозах повышает содержание натрия и хлоридов.",
       "cautions_ru": "Избегать йодированной соли; избыток натрия быстро даёт солоноватый и жёсткий вкус.",
-      "storage_notes_ru": "Стабильна по хранению.",
+      "storage_notes_ru": "Хранить в сухом месте.",
       "calculation_support": "full",
       "common_in_homebrewing": true,
       "common_in_pro_brewing": true,
@@ -466,9 +467,9 @@
         "chloride increase without sodium",
         "special cases with sodium-sensitive profiles"
       ],
-      "typical_use_ru": "Нишевая соль для поднятия хлоридов без натрия и без дополнительного кальция; уместна в некоторых продвинутых профилях.",
-      "cautions_ru": "Для большинства варок не обязательна; калий обычно не является целевым ионом в пивоварной воде и используется скорее как техническая альтернатива NaCl.",
-      "storage_notes_ru": "Стабилен по хранению, держать сухим.",
+      "typical_use_ru": "Повышает содержание хлоридов без добавления натрия или кальция.",
+      "cautions_ru": "Применяется для отдельных рецептов. Обычно содержание калия в пивоваренной воде специально не корректируют.",
+      "storage_notes_ru": "Хранить в сухом месте.",
       "calculation_support": "full",
       "common_in_homebrewing": false,
       "common_in_pro_brewing": false,
@@ -530,8 +531,8 @@
         "same as calcium chloride",
         "advanced calculators where hydration form is known"
       ],
-      "typical_use_ru": "Используется там, где известна именно безводная форма; на грамм даёт больше Ca и Cl, чем дигидрат.",
-      "cautions_ru": "Если форма определена неверно, легко пересолить воду хлоридами.",
+      "typical_use_ru": "Повышает содержание кальция и хлоридов. При той же массе вносит больше этих ионов, чем дигидрат.",
+      "cautions_ru": "Для расчёта дозировки нужно знать форму соли: безводная и двухводная формы содержат разное количество кальция и хлоридов на грамм.",
       "storage_notes_ru": "Очень гигроскопичен; хранить только герметично.",
       "calculation_support": "full",
       "common_in_homebrewing": true,
@@ -548,8 +549,8 @@
       "type": "water_treatment",
       "item_kind": "chemical",
       "category": "mineral_salt",
-      "name_ru": "Хлорид кальция",
-      "name_en": "Calcium Chloride",
+      "name_ru": "Хлорид кальция, дигидрат",
+      "name_en": "Calcium Chloride Dihydrate",
       "display_mode_ru": "localized_first",
       "aliases_ru": [
         "хлористый кальций",
@@ -603,8 +604,8 @@
         "malty lagers",
         "general-purpose calcium addition"
       ],
-      "typical_use_ru": "Ключевая соль для повышения кальция и хлоридов; даёт более полный, мягкий, округлый профиль.",
-      "cautions_ru": "Сильно гигроскопичен; масса меняется из-за влаги, поэтому дозировки по весу со временем могут плыть.",
+      "typical_use_ru": "Повышает содержание кальция и хлоридов. Хлориды подчёркивают полноту тела и мягкость вкуса.",
+      "cautions_ru": "Сильно поглощает влагу из воздуха. При хранении в открытой упаковке расчёт дозы по массе становится менее точным.",
       "storage_notes_ru": "Хранить герметично и сухо.",
       "calculation_support": "full",
       "common_in_homebrewing": true,
@@ -614,7 +615,12 @@
         "Brewfather",
         "Brewer's Friend",
         "Bru'n Water"
-      ]
+      ],
+      "display_formula": "CaCl2·2H2O",
+      "seed_baseline": {
+        "nameRu": "Хлорид кальция",
+        "nameEn": "Calcium Chloride"
+      }
     },
     {
       "id": "calcium-chloride-liquid",
@@ -722,8 +728,8 @@
         "advanced tuning",
         "specific chloride-heavy profiles without more calcium"
       ],
-      "typical_use_ru": "Редкая, но полезная соль для особых случаев, когда нужен хлорид без добавления кальция.",
-      "cautions_ru": "Для большинства варок не обязательна; магний легко переборщить.",
+      "typical_use_ru": "Повышает содержание магния и хлоридов без добавления кальция.",
+      "cautions_ru": "Применяется для отдельных рецептов. Избыточное содержание магния нежелательно.",
       "storage_notes_ru": "Гигроскопичен, хранить герметично.",
       "calculation_support": "full",
       "common_in_homebrewing": false,
@@ -739,7 +745,7 @@
       "type": "water_treatment",
       "item_kind": "chemical",
       "category": "mineral_salt",
-      "name_ru": "Эпсомская соль",
+      "name_ru": "Английская соль (сульфат магния)",
       "name_en": "Epsom Salt",
       "display_mode_ru": "localized_first",
       "aliases_ru": [
@@ -749,7 +755,8 @@
         "английская соль",
         "горькая соль",
         "эпсомит",
-        "MgSO4"
+        "MgSO4",
+        "Эпсомская соль"
       ],
       "aliases_en": [
         "Magnesium Sulfate",
@@ -789,9 +796,9 @@
         "hoppy beers when magnesium is low",
         "fine tuning sulfate without more calcium"
       ],
-      "typical_use_ru": "Точечная соль для поднятия магния и сульфатов, когда не хочется добавлять ещё кальций.",
-      "cautions_ru": "Магний в пивоваренной воде обычно нужен умеренно; высокие уровни могут делать вкус жёстким.",
-      "storage_notes_ru": "По хранению обычно стабилен.",
+      "typical_use_ru": "Повышает содержание магния и сульфатов без добавления кальция.",
+      "cautions_ru": "Магний в пивоваренной воде нужен в небольших количествах. Его избыток может сделать вкус грубым.",
+      "storage_notes_ru": "Хранить в сухом месте в закрытой упаковке.",
       "calculation_support": "full",
       "common_in_homebrewing": true,
       "common_in_pro_brewing": true,
@@ -857,9 +864,9 @@
         "advanced dark beer water adjustment",
         "raising alkalinity without sodium"
       ],
-      "typical_use_ru": "Сильный и эффективный способ поднять щёлочность и pH без добавления натрия.",
+      "typical_use_ru": "Повышает щёлочность и pH без добавления натрия.",
       "cautions_ru": "Очень легко передозировать; реагент едкий и требует осторожного обращения.",
-      "storage_notes_ru": "Боится влажного воздуха и со временем деградирует в мел; хранить герметично.",
+      "storage_notes_ru": "На воздухе постепенно превращается в карбонат кальция. Хранить герметично.",
       "calculation_support": "full",
       "common_in_homebrewing": false,
       "common_in_pro_brewing": true,
@@ -922,9 +929,9 @@
         "advanced users only",
         "special cases where dissolved chalk is intentionally used"
       ],
-      "typical_use_ru": "Традиционный, но капризный источник щёлочности и кальция.",
+      "typical_use_ru": "Источник кальция и щёлочности с низкой растворимостью в воде.",
       "cautions_ru": "Плохо растворяется и в обычной пивоваренной практике часто не рекомендуется как основной способ поднять щёлочность.",
-      "storage_notes_ru": "Сам по себе стабилен по хранению.",
+      "storage_notes_ru": "Хранить в сухом месте.",
       "calculation_support": "full_with_dissolution_caveat",
       "common_in_homebrewing": true,
       "common_in_pro_brewing": true,
@@ -940,7 +947,7 @@
       "type": "water_treatment",
       "item_kind": "chemical",
       "category": "alkali",
-      "name_ru": "Сода пищевая",
+      "name_ru": "Пищевая сода",
       "name_en": "Sodium Bicarbonate",
       "display_mode_ru": "localized_first",
       "aliases_ru": [
@@ -949,7 +956,8 @@
         "питьевая сода",
         "NaHCO3",
         "натрий двууглекислый",
-        "baking soda"
+        "baking soda",
+        "Сода пищевая"
       ],
       "aliases_en": [
         "Baking Soda",
@@ -987,9 +995,9 @@
         "roasty grists",
         "when alkalinity must be raised quickly"
       ],
-      "typical_use_ru": "Самый практичный щелочной реагент для подъёма щёлочности и pH в тёмных заторах.",
-      "cautions_ru": "Вместе с щёлочностью сильно поднимает натрий; не лучший выбор для больших доз.",
-      "storage_notes_ru": "Стабильна по хранению.",
+      "typical_use_ru": "Повышает щёлочность воды и pH затора, например при большой доле тёмного солода.",
+      "cautions_ru": "Одновременно повышает содержание натрия. При расчёте дозы учитывайте его исходное содержание в воде.",
+      "storage_notes_ru": "Хранить в сухом месте.",
       "calculation_support": "full",
       "common_in_homebrewing": true,
       "common_in_pro_brewing": true,
@@ -1051,8 +1059,8 @@
         "raising alkalinity without sodium",
         "dark beers when sodium must stay lower"
       ],
-      "typical_use_ru": "Продвинутый вариант для подъёма щёлочности без внесения натрия; может быть полезен в тёмных сортах и при жёстком лимите по Na.",
-      "cautions_ru": "Гораздо менее базовый реагент, чем пищевая сода; калий обычно не целят отдельно, поэтому использовать только если понимаешь зачем он нужен.",
+      "typical_use_ru": "Повышает щёлочность без добавления натрия, например для тёмного пива при ограничении его содержания.",
+      "cautions_ru": "Применяется реже пищевой соды. Обычно содержание калия специально не корректируют; дозу рассчитывают по необходимой щёлочности.",
       "storage_notes_ru": "Хранить сухо и герметично.",
       "calculation_support": "full",
       "common_in_homebrewing": false,
@@ -1109,7 +1117,7 @@
         "UK-style workflows",
         "alkalinity reduction with simultaneous ion contribution"
       ],
-      "typical_use_ru": "Профессионально-ориентированная кислотная смесь для снижения щёлочности воды.",
+      "typical_use_ru": "Смесь кислот для снижения щёлочности пивоваренной воды.",
       "cautions_ru": "Требует аккуратного расчёта и безопасной работы с кислотами; для большинства домашних варок молочная или фосфорная проще.",
       "storage_notes_ru": "Хранить как кислотный реагент, с защитой от пролива и доступа детей.",
       "calculation_support": "partial",
@@ -1157,7 +1165,7 @@
         "situational acidification",
         "specific recipe workflows"
       ],
-      "typical_use_ru": "Рабочая кислота, но в пивоварении обычно менее базовая, чем молочная или фосфорная.",
+      "typical_use_ru": "Кислота для подкисления воды. В пивоварении применяется реже молочной и фосфорной кислот.",
       "cautions_ru": "Может влиять на вкус сильнее, чем фосфорная; не самый универсальный выбор.",
       "storage_notes_ru": "Хранить сухо.",
       "calculation_support": "partial",
@@ -1212,8 +1220,8 @@
         "sparge water acidification",
         "simple homebrew acid adjustment"
       ],
-      "typical_use_ru": "Самая распространённая кислота для подкисления заторной и промывной воды.",
-      "cautions_ru": "При больших дозах может дать заметную молочную ноту; концентрацию нужно учитывать в калькуляторе.",
+      "typical_use_ru": "Распространённая кислота для подкисления заторной и промывной воды.",
+      "cautions_ru": "При высокой дозировке может стать заметной на вкус. В расчёте необходимо учитывать концентрацию раствора.",
       "storage_notes_ru": "Хранить плотно закрытой.",
       "calculation_support": "full_with_strength",
       "common_in_homebrewing": true,
@@ -1264,7 +1272,7 @@
         "safer low-strength acid dosing",
         "larger-volume acidification"
       ],
-      "typical_use_ru": "Мягкая по концентрации форма фосфорной кислоты для более безопасной ручной дозировки.",
+      "typical_use_ru": "Разбавленный раствор фосфорной кислоты для подкисления воды и затора.",
       "cautions_ru": "Из-за низкой концентрации требуется больший объём по сравнению с 75–85% раствором.",
       "storage_notes_ru": "Хранить закрытой.",
       "calculation_support": "full_with_strength",
@@ -1323,7 +1331,7 @@
         "flavor-neutral acidification",
         "larger acid additions where lactic flavor is undesirable"
       ],
-      "typical_use_ru": "Часто предпочтительна, когда нужно подкислить воду без риска молочного привкуса.",
+      "typical_use_ru": "Концентрированный раствор фосфорной кислоты для снижения щёлочности воды и pH затора.",
       "cautions_ru": "Более концентрированная и требует аккуратного обращения.",
       "storage_notes_ru": "Хранить плотно закрытой; работать в перчатках и защите глаз.",
       "calculation_support": "full_with_strength",
@@ -1383,7 +1391,7 @@
         "alkalinity reduction with chloride contribution",
         "professional workflows"
       ],
-      "typical_use_ru": "Продвинутая кислота для снижения щёлочности воды с одновременным подъёмом хлоридов.",
+      "typical_use_ru": "Снижает щёлочность воды и одновременно повышает содержание хлоридов.",
       "cautions_ru": "Опасный реагент; для большинства домашних варок проще и безопаснее молочная или фосфорная кислота. Точная концентрация обязательна для расчёта.",
       "storage_notes_ru": "Хранить как кислотный реагент, герметично и отдельно от щелочей/металлов.",
       "calculation_support": "user_defined_concentration",
@@ -1443,7 +1451,7 @@
         "alkalinity reduction with sulfate contribution",
         "professional workflows"
       ],
-      "typical_use_ru": "Продвинутая кислота для снижения щёлочности воды с одновременным подъёмом сульфатов.",
+      "typical_use_ru": "Снижает щёлочность воды и одновременно повышает содержание сульфатов.",
       "cautions_ru": "Очень опасный реагент, практически не нужен большинству домашних пивоваров. Без точной концентрации и строгой техники безопасности использовать не стоит.",
       "storage_notes_ru": "Хранить как сильную кислоту; обязательны защита глаз/кожи и аккуратное обращение.",
       "calculation_support": "user_defined_concentration",
@@ -1494,8 +1502,8 @@
         "German-style acidification",
         "small mash pH corrections via grist"
       ],
-      "typical_use_ru": "Ферментируемый способ слегка подкислить затор через состав засыпи.",
-      "cautions_ru": "Это уже не водная соль/кислота, а часть засыпи; обычно используется в умеренном проценте от grist.",
+      "typical_use_ru": "Снижает pH затора. Добавляют вместе с остальным солодом.",
+      "cautions_ru": null,
       "calculation_support": "grist_based",
       "common_in_homebrewing": true,
       "common_in_pro_brewing": true,
@@ -1503,21 +1511,27 @@
       "source_basis": [
         "Brewer's Friend",
         "BeerSmith"
-      ]
+      ],
+      "inventory_enabled": false,
+      "seed_baseline": {
+        "inventoryEnabled": true,
+        "attributes.typical_use_ru": "Ферментируемый способ слегка подкислить затор через состав засыпи."
+      }
     },
     {
       "id": "aeration-dechlorination",
       "type": "water_treatment",
       "item_kind": "method",
       "category": "water_treatment_method",
-      "name_ru": "Аэрация / отстаивание",
+      "name_ru": "Аэрация и отстаивание воды",
       "name_en": "Aeration",
       "display_mode_ru": "localized_first",
       "aliases_ru": [
         "отстаивание воды",
         "проветривание воды",
         "аэрация",
-        "выстаивание воды"
+        "выстаивание воды",
+        "Аэрация / отстаивание"
       ],
       "aliases_en": [
         "Open-Air Dechlorination"
@@ -1532,15 +1546,19 @@
         "no_direct_flavor_ion_addition": true
       },
       "pH_effect_direction": "contextual",
-      "typical_use_ru": "Медленный бытовой способ снижения свободного хлора.",
-      "cautions_ru": "Для хлораминов может требовать дни и потому обычно не лучший путь.",
+      "typical_use_ru": "Способ удаления свободного хлора из воды.",
+      "cautions_ru": "Для удаления хлораминов отстаивание и аэрация малоэффективны.",
       "calculation_support": "not_an_additive",
       "common_in_homebrewing": true,
       "common_in_pro_brewing": true,
       "recommendation_level": "situational",
       "source_basis": [
         "Bru'n Water"
-      ]
+      ],
+      "inventory_enabled": false,
+      "seed_baseline": {
+        "inventoryEnabled": true
+      }
     },
     {
       "id": "boiling-water-decarbonation",
@@ -1578,7 +1596,11 @@
       "recommendation_level": "situational",
       "source_basis": [
         "Bru'n Water"
-      ]
+      ],
+      "inventory_enabled": false,
+      "seed_baseline": {
+        "inventoryEnabled": true
+      }
     },
     {
       "id": "activated-carbon-filtration",
@@ -1614,7 +1636,7 @@
         "no_direct_flavor_ion_addition": true
       },
       "pH_effect_direction": "contextual",
-      "typical_use_ru": "Метод удаления хлора/хлораминов и части органики без внесения солей.",
+      "typical_use_ru": "Удаление хлора, хлораминов и части органических примесей без добавления солей.",
       "cautions_ru": "Для хлораминов работает медленно; эффективность зависит от картриджа, расхода и состояния фильтра.",
       "calculation_support": "not_an_additive",
       "common_in_homebrewing": true,
@@ -1622,7 +1644,11 @@
       "recommendation_level": "situational",
       "source_basis": [
         "Bru'n Water"
-      ]
+      ],
+      "inventory_enabled": false,
+      "seed_baseline": {
+        "inventoryEnabled": true
+      }
     }
   ]
 }

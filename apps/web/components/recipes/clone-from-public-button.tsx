@@ -58,7 +58,7 @@ export function CloneFromPublicButton({
       onClose={() => setShowConfirm(false)}
       onConfirm={handleConfirm}
       title="Скопировать рецепт?"
-      description="Рецепт попадёт в ваши рецепты как черновик, который вы сможете редактировать."
+      description="Копия сохранится в «Моих рецептах» как черновик."
       confirmLabel="Скопировать"
       pendingLabel="Копируем…"
       tone="primary"

@@ -5,7 +5,7 @@ import { devicePairingErrorText } from "@/features/devices/pairing-error-text";
 describe("devicePairingErrorText", () => {
   it("translates known pairing error codes", () => {
     expect(devicePairingErrorText("INVALID_CLAIM_CODE")).toBe(
-      "Код привязки неверен или истёк. Сгенерируйте новый на устройстве."
+      "Код привязки неверен или истёк. Получите новый код на устройстве."
     );
     expect(devicePairingErrorText("DEVICE_OWNED_BY_OTHER_USER")).toBe(
       "Устройство уже привязано к другому аккаунту."

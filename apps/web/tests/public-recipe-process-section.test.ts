@@ -72,9 +72,9 @@ describe("PublicRecipeMashSection", () => {
     expect(html).toContain("15 мин");
     expect(html).toContain("66 °C");
     expect(html).toContain("60 мин");
-    // Итог: 2 шага · 75 мин.
+    // Итог: 2 паузы · 75 мин.
     expect(html).toContain("75 мин");
-    expect(html).toContain("2 шага");
+    expect(html).toContain("2 паузы");
   });
 
   it("добавляет длительность кипячения строкой после шагов затора", () => {
@@ -95,11 +95,11 @@ describe("PublicRecipeMashSection", () => {
     expect(html).not.toContain("Кипячение");
   });
 
-  it("генерик-имя шага заменяет на «Шаг N»", () => {
+  it("типовое имя шага заменяет на «Пауза N»", () => {
     const html = renderMash(buildProcessMeta({
       mashProfile: { steps: [{ id: "m1", name: "Инфузия", temperatureC: 67, durationMinutes: 60 }] }
     }));
-    expect(html).toContain("Шаг 1");
+    expect(html).toContain("Пауза 1");
     expect(html).not.toContain("Инфузия");
   });
 

@@ -349,8 +349,7 @@ export function FirmwareReleasesPanel({ releases }: { releases: AdminFirmwareRel
 
         <div className="space-y-4 p-5">
           <p className="text-sm leading-6 text-muted-foreground">
-            Устройства перестанут получать эту версию. Запись и файл останутся — вернуть релиз обратно нельзя, нужно
-            выпустить новую версию.
+            Устройства перестанут получать эту версию. Запись и файл сохранятся. Для повторной публикации понадобится новая версия.
           </p>
 
           <div className="space-y-1.5">

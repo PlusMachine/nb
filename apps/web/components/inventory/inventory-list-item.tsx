@@ -1,5 +1,6 @@
 "use client";
 
+import { formatCatalogColorEbc } from "@/features/ingredients/catalog-display";
 import React, { useRef } from "react";
 import Link from "next/link";
 import {
@@ -72,6 +73,8 @@ const resolveMaltColorBadgeAccent = (item: InventoryListItemDto): IngredientColo
 
 const formatColorBadge = (item: InventoryListItemDto) => {
   const technicalData = item.source.technicalData;
+  const boundLabel = formatCatalogColorEbc(technicalData);
+  if (boundLabel) return boundLabel;
   if (!technicalData || (technicalData.type !== "malt" && technicalData.type !== "fermentable")) {
     return null;
   }
@@ -100,10 +103,13 @@ type InventoryBadge = {
   opensEditor?: boolean;
 };
 
-const buildTypedBadges = (item: InventoryListItemDto) => {
+const buildTypedBadges = (item: InventoryListItemDto): Omit<InventoryBadge, "key">[] => {
   const technicalData = item.source.technicalData;
   if (!technicalData) {
     return [];
+  }
+  if (technicalData.type === "fermentable" && technicalData.functionalRole === "process_only") {
+    return [{ label: "Для фильтрации затора" }];
   }
 
   if (technicalData.type === "hop") {
@@ -140,7 +146,7 @@ const buildTypedBadges = (item: InventoryListItemDto) => {
       formatColorBadge(item)
         ? { label: formatColorBadge(item) ?? "", accent: resolveMaltColorBadgeAccent(item) }
         : null,
-      fermentable.extractPctDryBasis != null ? { label: `Экстр. ${formatValue(fermentable.extractPctDryBasis)}%` } : null,
+      fermentable.extractPctDryBasis != null ? { label: `Экстрактивность ${formatValue(fermentable.extractPctDryBasis)}%` } : null,
       fermentable.type === "malt" && fermentable.maxUsagePct != null
         ? { label: `до ${formatValue(fermentable.maxUsagePct)}%` }
         : fermentable.type === "fermentable" && fermentable.recommendedMaxPct != null
@@ -154,7 +160,7 @@ const buildTypedBadges = (item: InventoryListItemDto) => {
     const yeastFormLabel = resolveYeastFormLabelRu(yeast.form);
     return [
       yeastFormLabel ? { label: yeastFormLabel } : null,
-      yeast.attenuationPctTypical != null ? { label: `Атт. ${formatValue(yeast.attenuationPctTypical)}%` } : null,
+      yeast.attenuationPctTypical != null ? { label: `Сбраживание ${formatValue(yeast.attenuationPctTypical)}%` } : null,
       yeast.fermentationTempCMin != null && yeast.fermentationTempCMax != null
         ? { label: `${formatValue(yeast.fermentationTempCMin)}–${formatValue(yeast.fermentationTempCMax)}°C` }
         : null
@@ -380,7 +386,7 @@ export function InventoryListItem({
     || hasReserved;
 
   return (
-    <li title={statusTitle} className={`group relative rounded-2xl border bg-card p-4 shadow-sm transition-all duration-200 hover:shadow-md sm:p-5 ${statusBorderColor} ${isEmpty ? "opacity-60" : ""}`}>
+    <li title={statusTitle} className={`group relative rounded-2xl border bg-card p-3 shadow-sm transition-all duration-200 hover:shadow-md sm:p-5 ${statusBorderColor} ${isEmpty ? "opacity-60" : ""}`}>
       {/* Top row: title + actions */}
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
@@ -472,8 +478,8 @@ export function InventoryListItem({
       </div>
 
       {/* Badges + quantity row */}
-      <div className="mt-2.5 flex items-end justify-between gap-3">
-        <div className="min-w-0 space-y-2">
+      <div className="mt-2 flex items-end justify-between gap-3">
+        <div className="min-w-0 space-y-1 sm:space-y-2">
           {badges.length > 0 ? (
             <div className="flex flex-wrap items-center gap-1.5">
               {badges.map((badge) => {

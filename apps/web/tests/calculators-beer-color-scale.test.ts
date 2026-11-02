@@ -7,6 +7,22 @@ import { calculatorDefinitionBySlug, type ArrayCalculatorField, type ScalarCalcu
 // gravityScaleField) — эти тесты проверяют сам пересчёт строк засыпи.
 describe("beer-color: пересчёт цвета солода при смене шкалы", () => {
   const definition = calculatorDefinitionBySlug["beer-color"];
+
+  it.each([0, -1, "", " ", "abc", Number.NaN, Number.POSITIVE_INFINITY])("без допустимого объёма %s нет цвета, оттенка и численных MCU", (batchVolumeL) => {
+    const result = definition.calculate({ ...definition.defaults, batchVolumeL });
+    expect(result.primary.value).toBe("—");
+    expect(result.primary.helper).toBe("Укажите объём партии больше 0 л");
+    expect(result.primary.swatchColor).toBeUndefined();
+    expect(result.stats).toHaveLength(2);
+    expect(result.stats.every((stat) => stat.value === "—" && stat.helper === "MCU —")).toBe(true);
+  });
+
+  it("после заполнения объёма снова рассчитываются цвет и вклад засыпи", () => {
+    const result = definition.calculate({ ...definition.defaults, batchVolumeL: "20" });
+    expect(result.primary.value).toBe("6.6 SRM / 13 EBC");
+    expect(result.primary.swatchColor).toBeTruthy();
+    expect(result.stats[0].helper).not.toBe("MCU —");
+  });
   const colorUnitField = definition.fields.find(
     (field): field is ScalarCalculatorField => field.kind !== "array" && field.name === "colorUnit"
   );

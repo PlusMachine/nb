@@ -116,6 +116,11 @@ const resolveGravityAtVolume = (gravityPoints: number, volumeL: number, fallback
 
 const normalizeUse = (addition: HopAdditionInput): NonNullable<HopAdditionInput["use"]> => addition.use ?? "boil";
 
+export const isHopUseIncludedInBitternessFormula = (
+  formula: string, use: HopAdditionInput["use"]
+) => use === "boil" || use === "first_wort_hop"
+  || (formula === "tinseth_whirlpool_v2" && (use === "whirlpool" || use === "dip_hop"));
+
 // Кипятильное внесение с временем больше самого кипячения — почти всегда опечатка
 // (напр. 90 мин при кипячении 60). Время клампится, но об этом стоит предупредить.
 const boilTimeExceedsBoil = (addition: HopAdditionInput, boilTimeMinutes: number): boolean => (

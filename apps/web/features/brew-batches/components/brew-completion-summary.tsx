@@ -5,10 +5,12 @@ import { buttonVariants } from "@nb/ui";
 import { RecipeRatingForm } from "@/components/recipes/recipe-rating-form";
 import type { BrewMeasurementSummary } from "@/features/brew-batches/contracts";
 import { formatGravity, formatGravitySecondary, type PreferredGravityUnit } from "@/features/system/gravity-units";
+import { formatGravityNumber } from "@/features/system/gravity-units";
+import { signedDifference, volumeLabels, type VolumeMeasurements } from "../records";
 
-const fmtAbv = (value: number | null) => (value == null ? "—" : `${value.toFixed(1)}%`);
+const fmtAbv = (value: number | null) => (value == null ? "—" : `${value.toFixed(1).replace(".", ",")}%`);
 const fmtAtt = (value: number | null) => (value == null ? "—" : `${Math.round(value)}%`);
-const fmtVolume = (value: number | null) => (value == null ? "—" : `${value.toFixed(1)} л`);
+const fmtVolume = (value: number | null | undefined) => (value == null ? "—" : `${value.toFixed(1).replace(".", ",")} л`);
 
 function StatTile({
   label,
@@ -33,7 +35,7 @@ function StatTile({
       </div>
       {target ? (
         <div className="text-[11px] text-muted-foreground">
-          цель <span className="whitespace-nowrap">{target}</span>
+          по расчёту <span className="whitespace-nowrap">{target}</span>
           {targetSecondary ? <span className="whitespace-nowrap text-muted-foreground"> · {targetSecondary}</span> : null}
         </div>
       ) : null}
@@ -44,9 +46,8 @@ function StatTile({
 /**
  * Итог партии — карточка, которая появляется на детали партии при статусе
  * `completed`. Данные не пересчитываются: сводка (OG/FG/ABV/сбраживание) уже
- * приходит из `getBrewBatchDetail` → `summarizeBrewMeasurements`. Объём — из
- * снапшота плана варки (не «факт», плана без отдельного поля фактического
- * объёма в системе нет). Оценка исходного рецепта — опциональный блок,
+ * приходит из `getBrewBatchDetail` → `summarizeBrewMeasurements`. Расчётные
+ * объёмы сравниваем с записанными замерами. Оценка исходного рецепта — опциональный блок,
  * показывается только когда `ratingTarget` разрешён (см. `resolveBrewCompletionRatingSlug`).
  */
 export function BrewCompletionSummary({
@@ -54,7 +55,9 @@ export function BrewCompletionSummary({
   preferredGravityUnit,
   batchVolumeL,
   ratingTarget,
-  labelsHref
+  labelsHref,
+  volumes = {},
+  volumeTargets = {}
 }: {
   summary: BrewMeasurementSummary;
   preferredGravityUnit: PreferredGravityUnit;
@@ -62,9 +65,17 @@ export function BrewCompletionSummary({
   ratingTarget: { recipeId: string; slug: string } | null;
   /** Ссылка на наклейки; null — посчитать некуда (нет ни рецепта, ни снапшота). */
   labelsHref?: string | null;
+  volumes?: VolumeMeasurements;
+  volumeTargets?: VolumeMeasurements;
 }) {
   const target = summary.target;
   const fmtGravity = (value: number | null) => formatGravity(value, preferredGravityUnit);
+  const gravityDelta = (actual: number | null, expected: number | null | undefined) => actual == null || expected == null ? "—" : signedDifference(Number(formatGravityNumber(actual, preferredGravityUnit)), Number(formatGravityNumber(expected, preferredGravityUnit)), preferredGravityUnit === "sg" ? 3 : 1);
+  const rows = [
+    ...Object.entries(volumeLabels).map(([key, label]) => ({ label, actual: fmtVolume(volumes[key as keyof VolumeMeasurements]), expected: fmtVolume(volumeTargets[key as keyof VolumeMeasurements]), delta: signedDifference(volumes[key as keyof VolumeMeasurements], volumeTargets[key as keyof VolumeMeasurements]) })),
+    { label: "Начальная плотность", actual: fmtGravity(summary.og), expected: fmtGravity(target?.og ?? null), delta: gravityDelta(summary.og, target?.og) },
+    { label: "Конечная плотность", actual: fmtGravity(summary.fg), expected: fmtGravity(target?.fg ?? null), delta: gravityDelta(summary.fg, target?.fg) }
+  ];
 
   return (
     <section className="space-y-4 rounded-2xl border border-border bg-card p-5 shadow-sm">
@@ -87,8 +98,13 @@ export function BrewCompletionSummary({
         />
         <StatTile label="ABV" value={fmtAbv(summary.abv)} target={target?.abv != null ? fmtAbv(target.abv) : null} />
         <StatTile label="Сбраживание" value={fmtAtt(summary.apparentAttenuation)} />
-        <StatTile label="Объём" value={fmtVolume(batchVolumeL)} />
+        <StatTile label="Разлито" value={fmtVolume(volumes.bottledL)} target={volumeTargets.bottledL != null ? fmtVolume(volumeTargets.bottledL) : null} />
       </div>
+
+      <details className="border-t border-border pt-3">
+        <summary className="cursor-pointer text-sm font-medium">Отклонения от расчёта</summary>
+        <div className="mt-3 overflow-x-auto"><table className="w-full text-left text-xs sm:text-sm"><thead><tr className="text-xs text-muted-foreground"><th className="py-2 pr-2 font-normal">Показатель</th><th className="px-2 font-normal">Расчёт</th><th className="px-2 font-normal">Замер</th><th className="pl-2 font-normal">Разница</th></tr></thead><tbody>{rows.map(row => <tr key={row.label} className="border-t border-border"><th scope="row" className="py-3 pr-2 font-normal">{row.label}</th><td className="px-2 tabular-nums">{row.expected}</td><td className="px-2 tabular-nums">{row.actual}</td><td className="pl-2 tabular-nums">{row.delta}</td></tr>)}</tbody></table></div>
+      </details>
 
       {ratingTarget || labelsHref ? (
         <div className="space-y-3 border-t border-border pt-4">
@@ -101,7 +117,7 @@ export function BrewCompletionSummary({
           {labelsHref ? (
             <Link href={labelsHref} className={buttonVariants({ variant: "outline", size: "md" })}>
               <Sticker className="h-4 w-4 text-muted-foreground" />
-              Наклейки
+              Этикетки
             </Link>
           ) : null}
         </div>

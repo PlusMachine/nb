@@ -179,7 +179,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
       if (!options) throw new Error("VOLUME_OPTIONS_UNAVAILABLE");
       setVolumeOptions(options);
     } catch {
-      if (epoch === requestEpochRef.current) setVolumeOptionsError("Не удалось загрузить параметры объёма и оборудования. Повторите загрузку перед варкой.");
+      if (epoch === requestEpochRef.current) setVolumeOptionsError("Не удалось загрузить объёмы и параметры оборудования. Повторите загрузку.");
     } finally {
       if (epoch === requestEpochRef.current) setVolumeOptionsLoading(false);
     }
@@ -395,18 +395,9 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
             <h2 className="text-base font-semibold text-foreground">
               {recipeTitle ? `Сварить «${recipeTitle}»` : "Сварить"}
             </h2>
-            <p className="mt-1 text-sm leading-6 text-muted-foreground">
-              {screen === "gate" ? "Проверяем ваши устройства…" : null}
-              {screen === "login" ? "Войдите, чтобы начать варку." : null}
-              {screen === "mode" ? "Выберите, как варить." : null}
-              {screen === "virtual" ? "Перед варкой вы сможете проверить ингредиенты и план." : null}
-              {screen === "device-pick" ? "Выберите устройство BrewForge." : null}
-              {screen === "device-confirm"
-                ? startStep === "schedule"
-                  ? "Выберите дату варки."
-                  : "Подтвердите запуск нагрева."
-                : null}
-            </p>
+            {screen === "login" ? (
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">Войдите, чтобы начать варку.</p>
+            ) : null}
           </div>
         </div>
         <DialogCloseButton disabled={submitting} />
@@ -486,7 +477,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
             <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2.5 text-xs text-muted-foreground">
               <Cpu className="h-4 w-4 shrink-0" />
               <span className="flex-1">
-                Варить можно не только вручную — BrewForge сам греет и держит паузы затирания.
+                BrewForge управляет нагревом и выдерживает паузы затирания.
               </span>
               <a
                 href={`/app/devices?returnRecipe=${encodeURIComponent(recipeId)}`}

@@ -350,14 +350,14 @@ export function AdminCatalogList({ items, basePath, q, category, status, sort, p
       title: targetIds.length > 1 ? "Отправить в архив?" : "Отправить ингредиент в архив?",
       description: `Карточки останутся в базе, но пропадут из каталога и подбора. Позиций: ${targetIds.length}.`,
       confirmLabel: "В архив",
-      pendingLabel: "Архивируем...",
+      pendingLabel: "Отправляем в архив…",
       tone: "primary" as const
     }
     : {
       title: targetIds.length > 1 ? "Удалить ингредиенты?" : "Удалить ингредиент?",
       description: `Неиспользуемые карточки будут удалены безвозвратно, остальные — переведены в архив. Позиций: ${targetIds.length}.`,
       confirmLabel: "Удалить",
-      pendingLabel: "Удаляем...",
+      pendingLabel: "Удаляем…",
       tone: "danger" as const
     };
 

@@ -71,7 +71,7 @@ describe("buildRecipeOgView", () => {
     expect(view.stats).toEqual([
       { label: "ABV", value: "4.9 %" },
       { label: "IBU", value: "35" },
-      { label: "OG", value: "1.048" },
+      { label: "OG", value: "11.9 °P" },
       { label: "Объём", value: "20 л" }
     ]);
     expect(view.stripColor).toBe(srmToHex(4));

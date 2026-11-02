@@ -59,7 +59,7 @@ export const validateFirmwareUpload = (input: FirmwareUploadInput): FirmwareUplo
   if (!isValidFirmwareVersion(version)) {
     return {
       ok: false,
-      error: `Версия «${version}» не semver — ожидается вида 2.1.0 или 2.1.0-dev.`
+      error: `Версия «${version}» должна быть в формате 2.1.0 или 2.1.0-dev.`
     };
   }
 
@@ -96,7 +96,7 @@ export const validateFirmwareUpload = (input: FirmwareUploadInput): FirmwareUplo
 
 const FIRMWARE_ERROR_MESSAGES: { match: string; message: (version: string) => string }[] = [
   { match: "RELEASE_ALREADY_EXISTS", message: (v) => `Версия ${v} уже публиковалась — выпустите новую.` },
-  { match: "INVALID_VERSION", message: (v) => `Версия «${v}» не semver — ожидается вида 2.1.0 или 2.1.0-dev.` },
+  { match: "INVALID_VERSION", message: (v) => `Версия «${v}» должна быть в формате 2.1.0 или 2.1.0-dev.` },
   { match: "RELEASE_NOT_FOUND", message: (v) => `Релиз ${v} не найден — обновите страницу.` },
   { match: "FILE_NOT_FOUND", message: () => "Файл прошивки не дошёл до сервера — попробуйте ещё раз." },
   { match: "FIRMWARE_PATH_OUTSIDE_STORAGE", message: () => "Недопустимый путь файла." }

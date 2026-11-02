@@ -76,7 +76,7 @@ const formatNumber = (value: number, fractionDigits = 1) => (
 );
 
 const categoryLabels: Record<CanonicalRecipe["ingredients"][number]["category"], string> = {
-  fermentable: "сбраживаемое",
+  fermentable: "солод и другое сырьё",
   hop: "хмель",
   yeast: "дрожжи",
   consumable: "специи и добавки",
@@ -139,7 +139,7 @@ const summarizeCanonicalRecipe = (
     title: canonical.title,
     ingredientCountLabel: `${totalIngredients} поз.`,
     ingredientBreakdown: ingredientBreakdown || "категории не определены",
-    parameters: parameters || "объём и процесс не указаны",
+    parameters: parameters || "объём и этапы варки не указаны",
     stats: statsLabel || "расчётные показатели в файле не указаны",
     mash: mashStepCount ? `Шагов затирания: ${mashStepCount}` : "профиль затирания не найден",
     ingredientPreview: ingredientPreview || "позиции не найдены",
@@ -207,7 +207,7 @@ export const buildImportRecipeSummary = (
       summary.ingredientBreakdown = "Состав указан для каждого рецепта в списке";
       summary.stats = "Показатели сохраняются отдельно для каждого рецепта";
       summary.mash = `Всего шагов затирания: ${recipes.reduce((sum, recipe) => sum + readMashStepCount(recipe), 0)}`;
-      summary.ingredientPreview = "Полный состав доступен после открытия рецепта";
+      summary.ingredientPreview = "Полный состав будет доступен в рецепте после импорта";
       summary.recipes = recipes.map((recipe) => ({ title: recipe.title, ingredientCount: recipe.ingredients.length }));
       summary.warnings = recipes.flatMap((recipe) => importWarnings(recipe.importMeta).map((warning) => `${recipe.title}: ${warning}`));
     }
@@ -259,7 +259,7 @@ function ImportSummaryCard({ result }: { result: ImportRecipeSummaryResult | nul
           <dd className="font-medium text-foreground">{summary.stats}</dd>
         </div>
       </dl>
-      {summary.warnings.length ? <div className="mt-3 rounded border border-warning/30 bg-warning-subtle p-3 text-xs"><p className="font-semibold">Проверьте после переноса</p><ul className="mt-1 max-h-48 list-disc overflow-auto pl-4">{summary.warnings.map((warning, index) => <li key={index}>{warning}</li>)}</ul></div> : null}
+      {summary.warnings.length ? <div className="mt-3 rounded border border-warning/30 bg-warning-subtle p-3 text-xs"><p className="font-semibold">Проверьте после импорта</p><ul className="mt-1 max-h-48 list-disc overflow-auto pl-4">{summary.warnings.map((warning, index) => <li key={index}>{warning}</li>)}</ul></div> : null}
       <p className="mt-3 text-xs text-muted-foreground">Затирание: {summary.mash}</p>
       <p className="mt-1 text-xs text-muted-foreground">Позиции: {summary.ingredientPreview}</p>
     </div>
@@ -413,7 +413,7 @@ export function ImportExportModal({
         setStatus({
           tone: "success",
           importCompleted: true,
-          message: result.message || `${formatLabel} импортирован. Открываем рецепт...`
+          message: result.message || `${formatLabel} импортирован. Открываем рецепт…`
         });
       } else {
         setStatus({
@@ -435,7 +435,7 @@ export function ImportExportModal({
 
   const handleExport = async () => {
     if (!activeRecipeId) {
-      setStatus({ tone: "error", message: "Сначала сохраните рецепт, затем подготовьте экспорт." });
+      setStatus({ tone: "error", message: "Сохраните рецепт перед экспортом." });
       return;
     }
 
@@ -491,7 +491,7 @@ export function ImportExportModal({
 
         <div className="space-y-4 p-5">
           <section className="space-y-2">
-            <h4 className="text-sm font-semibold text-foreground">1. Что хотите сделать?</h4>
+            <h4 className="text-sm font-semibold text-foreground">Действие</h4>
             <div className="grid gap-2 sm:grid-cols-2">
               <button type="button" onClick={() => setMode("import")} className={`rounded-lg px-3 py-3 text-sm ${mode === "import" ? "bg-foreground text-background" : "border border-border bg-card text-foreground"}`}>Импортировать рецепт</button>
               <button type="button" onClick={() => setMode("export")} className={`rounded-lg px-3 py-3 text-sm ${mode === "export" ? "bg-foreground text-background" : "border border-border bg-card text-foreground"}`}>Экспортировать рецепт</button>
@@ -500,7 +500,7 @@ export function ImportExportModal({
 
           {mode === "import" ? (
             <section className="space-y-2">
-              <h4 className="text-sm font-semibold text-foreground">2. Формат импорта</h4>
+              <h4 className="text-sm font-semibold text-foreground">Формат импорта</h4>
               <div className="grid gap-2 sm:grid-cols-2">
                 <button type="button" onClick={() => setFormat("beerxml")} className={`rounded-lg px-3 py-3 text-sm ${format === "beerxml" ? "bg-foreground text-background" : "border border-border bg-card text-foreground"}`}>BeerXML</button>
                 <button type="button" onClick={() => setFormat("brewfather_json")} className={`rounded-lg px-3 py-3 text-sm ${format === "brewfather_json" ? "bg-foreground text-background" : "border border-border bg-card text-foreground"}`}>Импорт из Brewfather</button>
@@ -521,7 +521,7 @@ export function ImportExportModal({
 
           {mode === "import" ? (
             <section className="space-y-2">
-              <h4 className="text-sm font-semibold text-foreground">3. Вставьте текст или загрузите файл</h4>
+              <h4 className="text-sm font-semibold text-foreground">Файл или текст рецепта</h4>
               <p className="text-xs text-muted-foreground">{format === "brewfather_json" ? "В Brewfather экспортируйте рецепт в JSON или скачайте резервную копию: Settings → Data → Export. Можно загрузить один или несколько рецептов, в том числе из резервной копии: до 100 рецептов и до 8 МБ. Склад и история варок не переносятся. Исходный файл рецепта сохранится и будет доступен только вам." : "Можно загрузить один рецепт или несколько рецептов в одном файле: до 100 рецептов и до 8 МБ."} Все импортированные рецепты будут доступны только вам.</p>
               <input type="file" accept={fileAccept} onChange={(event) => handleFile(event.target.files?.[0] ?? null)} className="block w-full text-sm text-muted-foreground" />
               <textarea
@@ -537,12 +537,12 @@ export function ImportExportModal({
                 disabled={busy || !importText.trim() || !importSummary?.ok}
                 onClick={() => void handleImport()}
               >
-                {busy ? "Импортируем..." : importSummary?.ok && importSummary.summary.recipes ? `Импортировать рецепты (${importSummary.summary.recipes.length})` : "Импортировать"}
+                {busy ? "Импортируем…" : importSummary?.ok && importSummary.summary.recipes ? `Импортировать рецепты (${importSummary.summary.recipes.length})` : "Импортировать"}
               </Button>
             </section>
           ) : (
             <section className="space-y-2">
-              <h4 className="text-sm font-semibold text-foreground">2. Экспорт BeerXML</h4>
+              <h4 className="text-sm font-semibold text-foreground">Экспорт в BeerXML</h4>
               <p className="text-xs text-muted-foreground">В файл входят описание, ингредиенты и процесс. Личные заметки автора в файл не включаются. Дополнительные поля NB позволяют восстановить настройки воды и этапы варки при повторном импорте.</p>
               {originalBrewfatherJson ? <div className="rounded border border-border p-3 text-xs"><p>Исходный рецепт Brewfather доступен только владельцу и содержит все поля исходного JSON, включая заметки.</p><a className="mt-1 inline-block underline" href={`data:application/json;charset=utf-8,${encodeURIComponent(originalBrewfatherJson)}`} download="original-brewfather-recipe.json">Скачать исходный Brewfather JSON</a></div> : null}
               <Button
@@ -551,7 +551,7 @@ export function ImportExportModal({
                 disabled={!activeRecipeId || busy}
                 onClick={() => void handleExport()}
               >
-                {busy ? "Экспортируем..." : "Экспортировать BeerXML"}
+                {busy ? "Экспортируем…" : "Экспортировать BeerXML"}
               </Button>
               <textarea
                 value={beerXmlExport}

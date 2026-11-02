@@ -114,20 +114,20 @@ describe("features/recipes/seo — публичная деталка рецеп�
     const recipe = buildRecipe({ heroImageId: "img-42" });
     const metadata = buildPublicRecipeMetadata(recipe, americanIpaStyle);
 
-    expect(metadata.title).toBe("Hazy IPA — рецепт Американский IPA");
+    expect(metadata.title).toBe("Hazy IPA — рецепт пива в стиле «Американский IPA»");
     expect(metadata.alternates?.canonical).toBe("/recipes/hazy-ipa");
-    expect(metadata.description).toContain("Рецепт Американский IPA");
+    expect(metadata.description).toContain("Рецепт пива в стиле «Американский IPA»");
     expect(metadata.description).toContain("ABV");
     expect(metadata.description).toContain("IBU 42");
     expect(metadata.description).toContain("20 л");
-    expect(metadata.description).toContain("Солод: Пейл эль солод");
+    expect(metadata.description).toContain("Солод и другое сырьё: Пейл эль солод");
     expect(metadata.description).toContain("хмель: Цитра");
     expect(metadata.description).not.toContain("Свободный текст автора");
     // Ф5: og:image ВСЕГДА генерённая карточка 1200×630, даже когда у рецепта
     // есть heroImageId — фото встраивается врезкой внутри api/og/recipes/[slug]
     // (features/og/photo.ts:loadRecipeOgPhoto), сырым og:image больше не отдаётся.
     expect(metadata.openGraph?.images).toEqual([
-      { url: "/api/og/recipes/hazy-ipa", width: 1200, height: 630, alt: "Hazy IPA — рецепт Американский IPA" }
+      { url: "/api/og/recipes/hazy-ipa", width: 1200, height: 630, alt: "Hazy IPA — рецепт пива в стиле «Американский IPA»" }
     ]);
     expect(metadata.twitter).toMatchObject({ card: "summary_large_image", images: ["/api/og/recipes/hazy-ipa"] });
   });

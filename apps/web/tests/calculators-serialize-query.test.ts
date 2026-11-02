@@ -14,6 +14,24 @@ import {
 // засыпь) сериализуются как один query-ключ на поле: строки через ";", подполя внутри
 // строки — через "~", в порядке объявления field.fields (см. definitions.ts).
 describe("calculator query serialization round-trip", () => {
+  it.each([
+    ["abv-attenuation", "gravityUnit", "SG"],
+    ["hydrometer-correction", "readingUnit", "SG"],
+    ["refractometer-correction", "originalUnit", "Brix"],
+    ["ibu", "gravityUnit", "Plato"]
+  ] as const)("%s: шкала из ссылки считается явным выбором и защищена от профиля", (slug, field, unit) => {
+    const definition = calculatorDefinitionBySlug[slug];
+    const restored = initialCalculatorStateFromQuery(definition, { [field]: unit });
+    expect(restored[field]).toBe(unit);
+    expect(restored.gravityUnitTouched).toBe(true);
+  });
+
+  it("ссылка без шкалы или с неизвестной шкалой не закрепляет выбор", () => {
+    const definition = calculatorDefinitionBySlug["abv-attenuation"];
+    expect(initialCalculatorStateFromQuery(definition, { og: "1.050" }).gravityUnitTouched).not.toBe(true);
+    expect(initialCalculatorStateFromQuery(definition, { gravityUnit: "unknown" }).gravityUnitTouched).not.toBe(true);
+  });
+
   it("abv-attenuation: og/fg/шкала восстанавливаются из скопированной ссылки", () => {
     const definition = calculatorDefinitionBySlug["abv-attenuation"];
     const state = {

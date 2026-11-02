@@ -148,20 +148,35 @@ const resolveYeastGroupKey = (profile: IngredientMatchProfile): string | null =>
 };
 
 const resolveWaterTreatmentGroupKey = (profile: IngredientMatchProfile): string | null => {
-  const formula = normalizeSearchText(
-    techStringField(profile.technicalData, "water_treatment", "formula", "displayFormula")
-  );
-  if (formula) {
-    return `water:${formula}`;
-  }
-
-  const subtype = normalizeSearchText(profile.subtype ?? "");
-  return subtype ? `water:${subtype}` : null;
+  const data = profile.technicalData;
+  if (data?.type !== "water_treatment") return null;
+  const explicit = techStringField(data, "water_treatment", "calculationFormula");
+  const formula = explicit || techStringField(data, "water_treatment", "displayFormula", "formula");
+  // A generic CaCl2 label does not establish its hydration state.
+  if (!explicit && /^cacl2$/i.test(formula.replace(/\s/g, ""))) return null;
+  if (!formula) return null;
+  const concentration = typeof data.concentrationPct === "number" ? data.concentrationPct
+    : typeof data.defaultConcentrationPct === "number" ? data.defaultConcentrationPct : null;
+  const forms = Array.isArray(data.commonForms) ? data.commonForms : [];
+  if (forms.includes("solution") && concentration == null) return null;
+  return `water:${normalizeSearchText(formula)}:${concentration ?? "solid"}`;
 };
 
 const resolveConsumableGroupKey = (profile: IngredientMatchProfile): string | null => {
-  const subtype = normalizeSearchText(profile.subtype ?? "");
-  return subtype ? `consumable:${subtype}` : null;
+  const data = profile.technicalData;
+  if (data?.type !== "consumable") return null;
+  if (profile.subtype === "packaging") {
+    const family = techStringField(data, "consumable", "familyKey");
+    const closure = techStringField(data, "consumable", "closureStandard");
+    if (!family || !closure) return null;
+    const capacity = data.capacityPerPiece;
+    return `consumable:packaging:${normalizeSearchText(family)}:${normalizeSearchText(closure)}:${capacity ? JSON.stringify(capacity) : ""}`;
+  }
+  // Category names ("spice", "sanitizer", ...) establish purpose, not identity.
+  const identity = techStringField(data, "consumable", "productIdentity");
+  const form = techStringField(data, "consumable", "physicalForm");
+  if (!identity || !form) return null;
+  return `consumable:${normalizeSearchText(identity)}:${normalizeSearchText(form)}`;
 };
 
 // Дрожжи штамм-специфичны: замена меняет пиво, поэтому только точное совпадение.

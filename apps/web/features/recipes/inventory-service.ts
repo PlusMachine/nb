@@ -1,3 +1,4 @@
+import { isPhysicalIngredient, derivedCatalogIngredientId } from "../ingredients/material-policy";
 import {
   and,
   db,
@@ -37,6 +38,7 @@ import {
   convertInventoryNormalizedToUnit,
   convertQuantityToInventoryNormalizedUnit,
   resolveInventoryItemPackEquivalent,
+  applyInventoryPackageSnapshot,
   type InventoryPackEquivalent
 } from "../inventory/pack";
 import { parseInventoryUnit, type InventoryUnit } from "../inventory/units";
@@ -280,6 +282,24 @@ const allocationRecipeScope = (recipeId: string, options: ScopedOptions) => (
   options.batchSnapshot ? undefined : eq(recipeInventoryAllocations.recipeId, recipeId)
 );
 
+const assertInventoryItemStockable = async (
+  item: Pick<InventoryItemRow, "ingredientCatalogItemId" | "userCustomIngredientId">,
+  client: InventoryDbClient
+) => {
+  if (item.ingredientCatalogItemId) {
+    const source = await client.query.ingredients.findFirst({ where: eq(ingredients.id, item.ingredientCatalogItemId) });
+    if (source && !isPhysicalIngredient(source)) throw new Error("INGREDIENT_NOT_STOCKABLE");
+  } else if (item.userCustomIngredientId) {
+    const source = await client.query.userCustomIngredients.findFirst({ where: eq(userCustomIngredients.id, item.userCustomIngredientId) });
+    if (source && !isPhysicalIngredient(source)) throw new Error("INGREDIENT_NOT_STOCKABLE");
+    const derivedId = source ? derivedCatalogIngredientId(source) : null;
+    if (derivedId) {
+      const base = await client.query.ingredients.findFirst({ where: eq(ingredients.id, derivedId) });
+      if (base && !isPhysicalIngredient(base)) throw new Error("INGREDIENT_NOT_STOCKABLE");
+    }
+  }
+};
+
 const ensureOwnedInventoryItem = async (
   userId: string,
   inventoryItemId: string,
@@ -293,6 +313,7 @@ const ensureOwnedInventoryItem = async (
     throw new Error("NOT_FOUND");
   }
 
+  await assertInventoryItemStockable(item,client);
   return item;
 };
 
@@ -361,7 +382,7 @@ export const isPresenceBasedRecipeLine = (line: RecipeLineRow | null) => (
 type PackEquivalentSource = Pick<
   InventoryItemRow,
   "packageVariantId" | "ingredientCatalogItemId" | "userCustomIngredientId"
->;
+> & { properties?: Record<string, unknown> };
 
 /**
  * Эквивалент пачки для складской позиции: вариант фасовки (если выбран) или
@@ -397,7 +418,7 @@ export const loadInventoryItemPackEquivalent = async (
       : null;
 
   return resolveInventoryItemPackEquivalent({
-    packageVariant: packageVariant ?? null,
+    packageVariant: applyInventoryPackageSnapshot(packageVariant ?? null,item.properties),
     technicalData
   });
 };
@@ -747,6 +768,7 @@ const allocateRecipeLineFromInventoryItem = async (input: {
   fromSnapshot?: boolean;
   split?: { groupId: string; quantity: number; append: boolean };
 }) => {
+  await assertInventoryItemStockable(input.inventoryItem,input.client);
   const requiredQuantity = input.split?.quantity ?? await resolveRecipeLineAllocationQuantity(
     input.line,
     input.inventoryItem,
@@ -1202,6 +1224,7 @@ export const consumeRecipeInventoryAllocations = async (
       // Курс «пачка → содержимое» нужен только позиции, которую вводили не в
       // нормализованной единице («2 пачки» → 22 г): без него entered_quantity
       // протухнет после списания.
+      await assertInventoryItemStockable(locked,tx);
       const packEquivalent = locked.enteredUnit !== locked.normalizedUnit
         ? await loadInventoryItemPackEquivalent(locked, tx)
         : null;

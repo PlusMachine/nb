@@ -31,7 +31,7 @@ export function RecipeMetaFields({ value, onChange, fieldErrors }: Props) {
           value={value.title}
           onChange={(event) => onChange({ title: event.target.value })}
           className="h-10 w-full rounded-md border border-border px-3 text-sm"
-          placeholder="Например, Czech Pils"
+          placeholder="Например, Чешский пилснер"
         />
       </div>
 

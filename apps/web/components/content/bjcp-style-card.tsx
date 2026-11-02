@@ -19,11 +19,12 @@ export function BjcpStyleCard({ style }: Props) {
   const abvStat = getBjcpCardStatDisplay(style, "abv");
   const ibuStat = getBjcpCardStatDisplay(style, "ibu");
   const colorInfo = getBjcpCardColorInfo(style);
+  const fermentationLabel = getStyleFermentationLabel(style);
   const stats = [
     { label: "ABV", value: abvStat.value, isFallback: abvStat.isFallback },
     { label: "IBU", value: ibuStat.value, isFallback: ibuStat.isFallback },
     { label: "SRM", value: colorInfo.value, accent: colorInfo, isFallback: colorInfo.isFallback },
-    { label: "Брожение", value: getStyleFermentationLabel(style), isFallback: false }
+    { label: "Тип брожения", value: fermentationLabel, isFallback: fermentationLabel === "Не указано" || fermentationLabel === "Зависит от рецепта" }
   ];
 
   return (

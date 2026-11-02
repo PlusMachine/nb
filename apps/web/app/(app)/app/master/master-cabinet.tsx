@@ -136,7 +136,7 @@ function StatusPanel({
 
       {isPristineDraft ? (
         <p className="text-sm text-muted-foreground">
-          Дальше — добавьте фото и изделия, затем отправьте витрину на модерацию.
+          Добавьте фотографии и изделия перед отправкой на модерацию.
         </p>
       ) : null}
     </section>

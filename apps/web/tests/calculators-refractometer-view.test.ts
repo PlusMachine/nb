@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  calculatorDefinitionBySlug,
   computeRefractometerView,
   convertRefractometerOgFieldValue,
   readRefractometerInput
 } from "../features/calculators/definitions";
+import { buildCalculatorResultOgView } from "../features/og/calculator";
 
 // Семантика шкал OG (фикс 2026-07-10): Brix — сырое показание рефрактометра (÷ WCF),
 // SG и °P — истинная плотность (ареометр/сахаромер или рецепт, без WCF). Раньше °P
@@ -42,6 +44,31 @@ describe("readRefractometerInput: маршрутизация WCF по шкале
     expect(viaPlato.ogSg).toBeCloseTo(viaSg.ogSg, 3);
     expect(viaPlato.corrected.sg).toBeCloseTo(viaSg.corrected.sg, 3);
     expect(viaPlato.estimatedABV).toBeCloseTo(viaSg.estimatedABV, 1);
+  });
+});
+
+describe("рефрактометр: одна основная шкала для панели, мобильного результата и превью", () => {
+  const definition = calculatorDefinitionBySlug["refractometer-correction"];
+
+  it.each(["pre_fermentation", "post_fermentation"])("%s: без выбора SG основным остаётся °Bx", (mode) => {
+    const state = { ...definition.defaults, mode };
+    const result = definition.calculate(state);
+    expect(result.primary.value).toMatch(/ °Bx$/);
+    expect(result.primary.helper).toMatch(/ SG$/);
+  });
+
+  it.each([
+    ["Plato", "12.4", "°P", "SG"],
+    ["Brix", "12.4", "°Bx", "SG"],
+    ["SG", "1.050", "SG", "°P"]
+  ] as const)("явный выбор %s сохраняется и в превью ссылки", (originalUnit, originalValue, primary, secondary) => {
+    const state = { ...definition.defaults, originalUnit, originalValue };
+    const result = definition.calculate(state);
+    const card = buildCalculatorResultOgView(definition.catalog, result, { domain: "local.test", wordmark: "NB" });
+    expect(result.primary.value).toMatch(new RegExp(` ${primary}$`));
+    expect(result.primary.helper).toMatch(new RegExp(` ${secondary}$`));
+    expect(card.title).toBe(result.primary.value);
+    expect(card.subtitle).toContain(result.primary.helper);
   });
 });
 

@@ -25,7 +25,7 @@ const AdminWordmark = ({ onClick }: { onClick?: () => void }) => (
     style={{ fontFamily: "var(--font-display)" }}
   >
     NB
-    <span className="text-xs font-medium tracking-[0.16em] text-muted-foreground">АДМИНКА</span>
+    <span className="text-xs font-medium tracking-[0.16em] text-muted-foreground">УПРАВЛЕНИЕ</span>
   </Link>
 );
 

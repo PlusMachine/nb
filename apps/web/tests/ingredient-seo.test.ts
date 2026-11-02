@@ -277,7 +277,7 @@ describe("buildIngredientDetailMetadata", () => {
 
   it("includes category-specific facts in the description", () => {
     const metadata = buildIngredientDetailMetadata(buildYeastItem(), { source: "system", id: "us-05" });
-    expect(metadata.description).toContain("Аттенюация: 78%");
+    expect(metadata.description).toContain("Степень сбраживания: 78%");
     expect(metadata.description).toContain("15–22°C");
   });
 
@@ -305,7 +305,7 @@ describe("buildIngredientDetailMetadata", () => {
 
   it("falls back to the fact generator when descriptionRu is blank", () => {
     const metadata = buildIngredientDetailMetadata(buildHopItem({ descriptionRu: "   " }), { source: "system", id: "us-citra-standard" });
-    expect(metadata.description).toContain("Альфа-кислота: 12.7%");
+    expect(metadata.description).toContain("Альфа-кислоты: 12.7%");
   });
 });
 
@@ -344,7 +344,7 @@ describe("buildIngredientDetailJsonLd", () => {
         expect.objectContaining({ "@type": "PropertyValue", value: "12.7%" })
       ])
     );
-    expect(product.description).toContain("Альфа-кислота: 12.7%");
+    expect(product.description).toContain("Альфа-кислоты: 12.7%");
   });
 
   it("uses descriptionRu for Product.description, matching the metadata description", () => {

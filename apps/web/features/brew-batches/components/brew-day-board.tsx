@@ -1,271 +1,139 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
-import { ArrowRight, Check, CheckCircle2, Loader2, Play, RotateCcw, Timer, Undo2 } from "lucide-react";
-
-import { Button } from "@nb/ui";
-import {
-  groupsForAct,
-  resolveBrewDayCursor,
-  resolveLastDoneStep
-} from "@/features/brew-batches/brew-day";
-import { type BrewDayProgress, type BrewDayStageGroup } from "@/features/brew-batches/contracts";
+import React, { useEffect, useRef, useState } from "react";
+import { ArrowRight, Bell, BellOff, Check, NotebookPen, Plus, Undo2, WifiOff } from "lucide-react";
+import { Button, Dialog, DialogCloseButton, DialogHeader } from "@nb/ui";
+import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 import { useWakeLock } from "@/features/brew-controller/use-wake-lock";
-import { fmtClock, remainingSeconds } from "./brew-day-timer";
-import { BrewStageRail } from "./brew-stage-rail";
-import { BrewStepList } from "./brew-step-list";
+import type { PreferredGravityUnit } from "@/features/system/gravity-units";
+import { manualBrewPhases, resolveManualBrewFocus } from "../manual-brew";
+import type { BrewDayProgress, BrewDayStageGroup, BrewDayStep } from "../contracts";
+import { fmtClock, stepRemainingSeconds } from "./brew-day-timer";
+import { BrewProcessPlan } from "./brew-process-plan";
+import { BrewQuickDock } from "./brew-quick-dock";
 import { BrewTransitionButton } from "./brew-transition-button";
-import { useBrewDayProgress, type BrewDayProgressController } from "./use-brew-day-progress";
+import { ManualBrewStep } from "./manual-brew-step";
+import { ManualBrewTransfer } from "./manual-brew-transfer";
+import { useBrewDayProgress } from "./use-brew-day-progress";
 
-// Короткий одиночный сигнал по завершении таймера текущего шага (переживает то,
-// что вкладка на переднем плане; серверный web-push — отдельная будущая фаза).
-const beep = () => {
-  if (typeof window === "undefined") {
-    return;
-  }
-  try {
-    const Ctor = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (!Ctor) {
-      return;
-    }
-    const ctx = new Ctor();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.frequency.value = 880;
-    gain.gain.value = 0.08;
-    osc.connect(gain).connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.35);
-    osc.onended = () => ctx.close();
-  } catch {
-    // Звук — best-effort; без него шаг всё равно виден как «готово».
-  }
-};
-
-function CurrentStepHero({
-  controller,
-  brewdayGroups,
-  brewBatchId,
-  hasOg
-}: {
-  controller: BrewDayProgressController;
-  brewdayGroups: BrewDayStageGroup[];
-  brewBatchId: string;
-  hasOg: boolean;
+export function BrewDayBoard({ brewBatchId, ownerId, groups, initialProgress, hasOg, calibration, records, notes,
+  preferredGravityUnit = "plato", targetOgSg = null, initialFermenterL = null, fermentationLabel }: {
+  brewBatchId: string; ownerId?: string; groups: BrewDayStageGroup[]; initialProgress: BrewDayProgress;
+  hasOg: boolean; calibration?: React.ReactNode; records?: React.ReactNode; notes?: React.ReactNode;
+  preferredGravityUnit?: PreferredGravityUnit; targetOgSg?: number | null; initialFermenterL?: number | null; fermentationLabel?: string;
 }) {
-  const { progress, pending, now, patchStep } = controller;
-  const cursor = resolveBrewDayCursor(brewdayGroups, progress, "brewday");
-  const step = cursor.current;
-  const lastDone = resolveLastDoneStep(brewdayGroups, progress, "brewday");
-  const lastDoneBusy = lastDone ? Boolean(pending[lastDone.id]) : false;
-  const beeped = useRef<Set<string>>(new Set());
-
-  const isTimer = step?.kind === "timer" && step.durationSeconds != null;
-  const state = step ? progress.steps[step.id] ?? { done: false, timerStartedAt: null } : null;
-  const remaining = isTimer && now != null ? remainingSeconds(step!.durationSeconds, state?.timerStartedAt ?? null, now) : null;
-  const timerRunning = isTimer && state?.timerStartedAt != null;
-  const timerDone = remaining != null && remaining <= 0;
-  const busy = step ? Boolean(pending[step.id]) : false;
-
-  // Экран не гаснет, только пока реально идёт отсчёт активного шага — у котла телефон
-  // не должен разряжаться зря, а таймер/сигнал завершения не должны пропадать из виду.
-  useWakeLock(isTimer && timerRunning);
-
+  const controller = useBrewDayProgress(brewBatchId, initialProgress, ownerId);
+  const { progress, now, patchStep } = controller;
+  const phases = manualBrewPhases(groups);
+  const focus = resolveManualBrewFocus(phases, progress, now);
+  const step = focus.current;
+  const [preview, setPreview] = useState<BrewDayStep | null>(null);
+  const [panel, setPanel] = useState<"measure" | "note" | null>(null);
+  const [earlyHop, setEarlyHop] = useState<BrewDayStep | null>(null);
+  const [sound, setSound] = useState(false);
+  const [audioReady, setAudioReady] = useState(false);
+  const audio = useRef<AudioContext | null>(null);
+  const signalled = useRef(new Set<string>());
+  const soundKey = `nb:brew-sound:${ownerId ?? "local"}`;
+  useEffect(() => { setPreview(null); setPanel(null); signalled.current.clear(); }, [brewBatchId]);
   useEffect(() => {
-    if (step && timerDone && !beeped.current.has(step.id)) {
-      beeped.current.add(step.id);
-      beep();
-    }
-  }, [step, timerDone]);
+    try { setSound(localStorage.getItem(soundKey) !== "off"); } catch { /* Optional preference. */ }
+    return () => { void audio.current?.close(); audio.current = null; };
+  }, [soundKey]);
+  const unlockAudio = () => {
+    if (!sound) return;
+    try { audio.current ??= new AudioContext(); void audio.current.resume().then(() => setAudioReady(audio.current?.state === "running")); } catch { /* Visual alerts remain available. */ }
+  };
+  const timerRunning = phases.some(phase => phase.steps.some(item => item.kind === "timer" && !progress.steps[item.id]?.done && progress.steps[item.id]?.timerStartedAt && (now == null || (stepRemainingSeconds(item, progress.steps[item.id], now) ?? 0) > 0)));
+  useWakeLock(timerRunning);
+  useEffect(() => {
+    if (now == null) return;
+    const due = phases.flatMap(phase => phase.steps).filter(item => {
+      if (progress.steps[item.id]?.done) return false;
+      if (item.id === focus.current?.id && item.stage === "whirlpool" && !progress.steps[item.id]?.timerStartedAt && focus.holdOrigin !== null) return true;
+      if (item.boilSecondsBeforeEnd != null) return Boolean(focus.boil && progress.steps[focus.boil.id]?.timerStartedAt && !progress.steps[focus.boil.id]?.done && focus.boilRemaining != null && focus.boilRemaining <= item.boilSecondsBeforeEnd);
+      return item.kind === "timer" && (stepRemainingSeconds(item, progress.steps[item.id], now) ?? Infinity) <= 0;
+    });
+    const keys = due.map(item => `${item.id}:${progress.steps[item.id]?.timerStartedAt ?? progress.steps["boil:timer"]?.timerStartedAt}:${progress.steps[item.id]?.timerDurationSeconds ?? ""}`);
+    const newSignal = keys.some(key => !signalled.current.has(key));
+    signalled.current = new Set(keys);
+    if (!newSignal || !sound || !audioReady || audio.current?.state !== "running") return;
+    try {
+      const oscillator = audio.current.createOscillator(); const gain = audio.current.createGain();
+      oscillator.frequency.value = 880; gain.gain.value = 0.08;
+      oscillator.connect(gain).connect(audio.current.destination); oscillator.start(); oscillator.stop(audio.current.currentTime + 0.35);
+      oscillator.onended = () => { oscillator.disconnect(); gain.disconnect(); };
+    } catch { /* Sound is best effort; the due action stays on screen. */ }
+  }, [now, progress, sound, audioReady, focus.boilRemaining]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Акт пройден (или план пуст) — герой уступает место переходу «на брожение»:
-  // primary CTA живёт прямо в зелёной панели, а не отдельным виджетом ниже.
-  if (!step) {
-    return (
-      <div className="rounded-2xl border border-success/30 bg-success-subtle/60 p-5">
-        <div className="flex items-center gap-2 text-success">
-          <CheckCircle2 className="h-5 w-5" aria-hidden />
-          <p className="text-sm font-semibold">Варка завершена</p>
-        </div>
-        <p className="mt-1 text-sm text-success">Перелейте сусло в ферментер, внесите дрожжи и поставьте на брожение.</p>
-        <div className="mt-3 flex flex-wrap items-center gap-3">
-          <BrewTransitionButton
-            brewBatchId={brewBatchId}
-            to="fermenting"
-            label="Поставить на брожение"
-            variant="primary"
-            size="md"
-            icon={<ArrowRight className="h-4 w-4" aria-hidden />}
-            appendQueryOnSuccess="just-fermenting=1"
-          />
-          {lastDone ? (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => patchStep(lastDone.id, { done: false })}
-              disabled={lastDoneBusy}
-            >
-              <Undo2 className="h-4 w-4" aria-hidden />
-              Отметить невыполненным
-            </Button>
-          ) : null}
-        </div>
-        {cursor.actComplete && !hasOg ? (
-          <a href="#brew-journal" className="mt-2 inline-block text-xs text-warning-subtle-foreground underline-offset-2 hover:underline">
-            Замерьте начальную плотность (OG) перед брожением
-          </a>
-        ) : null}
-      </div>
-    );
-  }
+  const boilRunning = focus.boil && progress.steps[focus.boil.id]?.timerStartedAt && !progress.steps[focus.boil.id]?.done;
+  const activeTimerRemaining = step?.kind === "timer" && now !== null && progress.steps[step.id]?.timerStartedAt
+    ? Math.max(...focus.companions.map(item => stepRemainingSeconds(item, progress.steps[item.id], now) ?? 0)) : null;
+  const runningBar = boilRunning && (step?.id !== "boil:timer" || panel !== null || preview !== null) ? <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-3 py-2.5 text-sm">
+    <span>До конца кипячения</span><strong className="shrink-0 tabular-nums">{focus.boilRemaining == null ? "—:—" : fmtClock(focus.boilRemaining)}</strong>
+  </div> : activeTimerRemaining !== null && (panel !== null || preview !== null) ? <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-3 py-2.5 text-sm"><span>{step?.title}</span><strong className="tabular-nums">{fmtClock(activeTimerRemaining)}</strong></div> : null;
+  const holdBar = focus.holdRemaining != null && step?.stage === "whirlpool" && !progress.steps[step.id]?.timerStartedAt ? <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-3 py-2.5 text-sm"><span>До конца выдержки</span><strong className="tabular-nums">{fmtClock(focus.holdRemaining)}</strong></div> : null;
+  const transfer = progress.steps["brew:transfer"];
+  const ogRecorded = hasOg || transfer?.gravitySg != null;
+  const showPitch = step?.id === "brew:pitch" || !step;
+  const previous = phases.flatMap(phase => phase.steps).reverse().filter(item => progress.steps[item.id]?.done).sort((a, b) => (Date.parse(progress.steps[b.id]?.completedAt ?? "") || 0) - (Date.parse(progress.steps[a.id]?.completedAt ?? "") || 0))[0];
+  const busySync = controller.queuedCount > 0;
+  const nextHolding = focus.next?.stage === "whirlpool" && progress.steps[focus.next.id]?.timerStartedAt;
+  const sanitationShownEarlier = phases.some(phase => phase.id === "dip" && phase.steps.some(item => progress.steps[item.id]?.done || progress.steps[item.id]?.timerStartedAt));
 
-  return (
-    <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Сейчас</p>
-      <div className="mt-1 flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          {/* line-clamp — длинное название шага не должно раздвигать герой и таймер на узких экранах. */}
-          <h2 className="line-clamp-2 text-xl font-semibold text-foreground">{step.title}</h2>
-          {step.detail ? <p className="mt-0.5 text-sm text-muted-foreground">{step.detail}</p> : null}
-        </div>
+  return <section className="space-y-4" aria-label="Мастер ручной варки">
+    <BrewProcessPlan phases={phases} progress={progress} current={step} phaseIndex={focus.phaseIndex} now={now}
+      storageKey={`nb:brew-plan:${ownerId ?? "local"}:${brewBatchId}`} onPreview={item => setPreview(item.id === step?.id ? null : item)} />
 
-        {isTimer && timerRunning ? (
-          <div className="flex shrink-0 items-center gap-2">
-            <span
-              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-2xl font-semibold tabular-nums ${
-                timerDone ? "bg-success-subtle text-success-subtle-foreground" : "bg-warning-subtle text-warning-subtle-foreground"
-              }`}
-            >
-              <Timer className="h-5 w-5" aria-hidden />
-              {now == null ? "—:—" : timerDone ? "готово" : fmtClock(remaining ?? 0)}
-            </span>
-            <button
-              type="button"
-              onClick={() => patchStep(step.id, { timerStartedAt: null })}
-              disabled={busy}
-              aria-label="Сбросить таймер"
-              className="relative inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground disabled:opacity-50 before:absolute before:-inset-1 before:content-['']"
-            >
-              <RotateCcw className="h-4 w-4" aria-hidden />
-            </button>
-          </div>
-        ) : null}
-      </div>
+    {controller.offline ? <div role="status" className="flex items-start gap-2 rounded-xl bg-warning-subtle p-3 text-sm text-warning-subtle-foreground">
+      <WifiOff className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+      <div><p className="font-medium">Нет связи</p><p className="text-xs">{controller.queuedCount ? `Изменения сохранены на устройстве. В очереди: ${controller.queuedCount}.` : "Можно продолжать варку: новые отметки сохраняются на устройстве."}</p></div>
+    </div> : busySync ? <span role="status" className="sr-only">Отправляем сохранённые изменения</span> : null}
+    {controller.error ? <div role="alert" className="space-y-2 rounded-xl bg-destructive-subtle p-3 text-sm text-destructive-subtle-foreground"><p>{controller.error}</p><Button type="button" size="sm" variant="outline" onClick={() => controller.retry()}>Повторить отправку</Button></div> : null}
 
-      {/* Таймер ещё не запущен — крупная primary-кнопка «Начать шаг», читаемая как
-          основное действие героя. Пока она не нажата, «Готово» ниже — outline, чтобы
-          на экране была только одна primary-кнопка одновременно. */}
-      {isTimer && !timerRunning ? (
-        <div className="mt-4">
-          <Button
-            type="button"
-            variant="primary"
-            size="md"
-            onClick={() => patchStep(step.id, { timerStartedAt: new Date().toISOString() })}
-            disabled={busy}
-          >
-            <Play className="h-4 w-4" aria-hidden />
-            Начать шаг{step.durationSeconds != null ? ` · ${fmtClock(step.durationSeconds)}` : ""}
-          </Button>
-        </div>
-      ) : null}
-
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-        {cursor.next ? (
-          <p className="text-xs text-muted-foreground">
-            Следом: <span className="text-foreground">{cursor.next.title}</span>
-          </p>
-        ) : <span />}
-        <div className="flex items-center gap-2">
-          {lastDone ? (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => patchStep(lastDone.id, { done: false })}
-              disabled={lastDoneBusy}
-              aria-label="Отметить невыполненным"
-            >
-              <Undo2 className="h-4 w-4" aria-hidden />
-              Отметить невыполненным
-            </Button>
-          ) : null}
-          <Button
-            type="button"
-            variant={isTimer && !timerRunning ? "outline" : "primary"}
-            size="md"
-            onClick={() => patchStep(step.id, { done: true })}
-            disabled={busy}
-          >
-            {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Check className="h-4 w-4" aria-hidden />}
-            Готово
-          </Button>
-        </div>
-      </div>
+    {runningBar}
+    {holdBar}
+    <div className="space-y-4 rounded-2xl border border-border bg-card p-5 shadow-sm" data-testid="manual-brew-current-step">
+      {preview ? <>
+        <p className="text-sm text-muted-foreground">Просмотр плана</p><h2 className="text-xl font-semibold">{preview.title}</h2>
+        {preview.detail ? <p className="text-sm">{preview.detail}</p> : null}
+        {preview.instructions ? <p className="text-sm">{preview.instructions}</p> : null}
+        {progress.steps[preview.id]?.measurementValue != null ? <p className="text-sm">pH: {progress.steps[preview.id].measurementValue}</p> : null}
+        {progress.steps[preview.id]?.done ? <p className="flex items-center gap-2 text-sm text-success"><Check className="h-4 w-4" aria-hidden />{progress.steps[preview.id]?.skipped ? "Пропущено" : "Выполнено"}</p> : null}
+        <Button type="button" variant="primary" className="w-full" onClick={() => setPreview(null)}>Вернуться к варке</Button>
+        {progress.steps[preview.id]?.done ? <Button type="button" variant="ghost" onClick={async () => { await patchStep(preview.id, { done: false, skipped: false }); setPreview(null); }}>Вернуть шаг</Button> : null}
+        {!progress.steps[preview.id]?.done && preview.boilSecondsBeforeEnd != null && focus.phase?.id === "boil" && boilRunning ? <Button type="button" variant="ghost" onClick={() => setEarlyHop(preview)}>Отметить внесение сейчас</Button> : null}
+      </> : showPitch ? <>
+        <h2 className="text-xl font-semibold">Внесите дрожжи</h2>
+        <p className="text-sm">Внесите дрожжи по рецепту, закройте ферментер и установите гидрозатвор.</p>
+        {!ogRecorded && !transfer?.skipped ? <div className="rounded-lg bg-warning-subtle p-3 text-sm text-warning-subtle-foreground"><p>Начальная плотность не записана</p><Button type="button" variant="ghost" size="sm" onClick={() => setPanel("measure")}>Записать</Button></div> : null}
+        <BrewTransitionButton brewBatchId={brewBatchId} to="fermenting" label="Поставить на брожение" variant="primary" size="md" className="[&_button]:w-full" disabled={busySync} icon={<ArrowRight className="h-4 w-4" aria-hidden />} appendQueryOnSuccess="just-fermenting=1" />
+        {busySync ? <p className="text-xs text-muted-foreground">Перед переходом дождитесь отправки сохранённых шагов.</p> : null}
+        {fermentationLabel ? <p className="border-t border-border pt-3 text-sm text-muted-foreground">{fermentationLabel}</p> : null}
+        {calibration ? <div className="pt-2">{calibration}</div> : null}
+      </> : step?.id === "brew:transfer" ? <>
+        <h2 className="text-xl font-semibold">Перелейте сусло в ферментер</h2>
+        <ManualBrewTransfer controller={controller} preferredGravityUnit={preferredGravityUnit} targetOgSg={targetOgSg} initialFermenterL={initialFermenterL} />
+      </> : step ? <>
+        {step.boilSecondsBeforeEnd != null && focus.boilRemaining != null ? <p className="text-sm text-success">{focus.boilRemaining < step.boilSecondsBeforeEnd - 5 ? `По плану — ${fmtClock(step.boilSecondsBeforeEnd - focus.boilRemaining)} назад` : "Пора внести"}</p> : null}
+        <ManualBrewStep key={brewBatchId} step={step} companions={focus.companions} controller={controller} onInteract={unlockAudio} showSanitationReminder={!sanitationShownEarlier} />
+        {focus.next ? <div className="space-y-1 border-t border-border pt-3"><p className="text-xs text-muted-foreground">Далее</p><p className="text-sm">{nextHolding ? focus.next.useType === "dip_hop" ? "Выдержка хмеля в ферментере" : "Выдержка на вирпуле" : `${focus.next.title}${focus.next.ingredientName && focus.next.amountLabel ? ` · ${focus.next.amountLabel}` : ""}`}</p>{focus.next.boilSecondsBeforeEnd != null && focus.boilRemaining != null ? <p className="text-xs tabular-nums text-muted-foreground">{focus.boilRemaining > focus.next.boilSecondsBeforeEnd ? `Через ${fmtClock(focus.boilRemaining - focus.next.boilSecondsBeforeEnd)}` : "Пора внести"}</p> : focus.nextUntilSeconds != null ? <p className="text-xs tabular-nums text-muted-foreground">{focus.nextUntilSeconds > 0 ? `Через ${fmtClock(focus.nextUntilSeconds)}` : "Пора внести"}</p> : null}</div> : null}
+      </> : null}
     </div>
-  );
-}
 
-/**
- * Акт «Варочный день» (статус brewing): герой с текущим шагом и таймером, лента
- * этапов, список шагов затора→охлаждения (текущий этап раскрыт), переход на
- * брожение. Шаги брожения/розлива в этом акте не показываются (следующий акт).
- */
-export function BrewDayBoard({
-  brewBatchId,
-  groups,
-  initialProgress,
-  hasOg
-}: {
-  brewBatchId: string;
-  groups: BrewDayStageGroup[];
-  initialProgress: BrewDayProgress;
-  hasOg: boolean;
-}) {
-  const controller = useBrewDayProgress(brewBatchId, initialProgress);
-  const brewdayGroups = groupsForAct(groups, "brewday");
-  const cursor = resolveBrewDayCursor(brewdayGroups, controller.progress, "brewday");
-  const currentStage = cursor.current?.stage ?? null;
-
-  const undone = cursor.total - cursor.doneCount;
-  const transitionConfirm = !cursor.actComplete && undone > 0
-    ? {
-        title: "Поставить на брожение?",
-        description: `Невыполненных шагов варочного дня: ${undone}. Всё равно перейти к брожению?`
-      }
-    : null;
-
-  return (
-    <section className="space-y-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
-      <div className="flex items-center justify-between gap-2">
-        <h2 className="text-base font-semibold text-foreground">Варочный день</h2>
-        <span className="text-xs tabular-nums text-muted-foreground">{cursor.doneCount} / {cursor.total}</span>
-      </div>
-
-      <BrewStageRail groups={brewdayGroups} progress={controller.progress} currentStage={currentStage} />
-
-      {controller.error ? <p role="alert" className="text-xs text-destructive">{controller.error}</p> : null}
-
-      <CurrentStepHero controller={controller} brewdayGroups={brewdayGroups} brewBatchId={brewBatchId} hasOg={hasOg} />
-
-      <BrewStepList groups={brewdayGroups} controller={controller} currentStage={currentStage} />
-
-      {/* Пока в дне остались неотмеченные шаги — мягкий переход с подтверждением,
-          последним элементом секции. Когда день пройден (или план пуст), CTA
-          переезжает в зелёную панель героя выше — см. CurrentStepHero. */}
-      {cursor.current ? (
-        <BrewTransitionButton
-          brewBatchId={brewBatchId}
-          to="fermenting"
-          label="Поставить на брожение"
-          variant="outline"
-          size="md"
-          icon={<ArrowRight className="h-4 w-4" aria-hidden />}
-          confirm={transitionConfirm}
-          appendQueryOnSuccess="just-fermenting=1"
-        />
-      ) : null}
-    </section>
-  );
+    <div className="flex flex-wrap items-center justify-between gap-2">
+      {previous && !preview ? <Button type="button" variant="ghost" size="sm" onClick={() => setPreview(previous)}><Undo2 className="h-4 w-4" aria-hidden />Вернуть шаг</Button> : <span />}
+      <Button type="button" variant="ghost" size="sm" aria-pressed={sound && audioReady} onClick={() => {
+        const enabled = !(sound && audioReady); setSound(enabled);
+        try { localStorage.setItem(soundKey, enabled ? "on" : "off"); if (enabled) { audio.current ??= new AudioContext(); void audio.current.resume().then(() => { setAudioReady(audio.current?.state === "running"); signalled.current.clear(); }); } } catch { /* Visual alerts remain available. */ }
+      }}>{sound && audioReady ? <Bell className="h-4 w-4" aria-hidden /> : <BellOff className="h-4 w-4" aria-hidden />}{sound && audioReady ? "Звук включён" : "Включить звук"}</Button>
+    </div>
+    <div className="hidden gap-2 lg:flex"><Button type="button" variant="outline" onClick={() => setPanel("measure")}><Plus className="h-4 w-4" aria-hidden />Замер</Button><Button type="button" variant="outline" onClick={() => setPanel("note")}><NotebookPen className="h-4 w-4" aria-hidden />Заметка</Button></div>
+    <BrewQuickDock onMeasure={() => setPanel("measure")} onNote={() => setPanel("note")} />
+    <Dialog open={panel !== null} onOpenChange={value => { if (!value) setPanel(null); }} title={panel === "measure" ? "Замеры" : "Заметки о варке"} hideTitle size="lg">
+      <DialogHeader><h2 className="text-base font-semibold">{panel === "measure" ? "Замеры" : "Заметки о варке"}</h2><DialogCloseButton /></DialogHeader>
+      <div className="space-y-4 p-4">{runningBar}{panel === "measure" ? records ?? <p className="text-sm">Журнал замеров доступен ниже на странице.</p> : notes ?? <p className="text-sm">Заметки доступны ниже на странице.</p>}</div>
+    </Dialog>
+    <ConfirmActionDialog open={earlyHop !== null} title="Отметить внесение раньше?" description="Будет записано фактическое время внесения. Таймер кипячения продолжит идти." confirmLabel="Хмель внесён" tone="primary" onClose={() => setEarlyHop(null)} onConfirm={async () => { if (!earlyHop) return; await patchStep(earlyHop.id, { done: true }); setEarlyHop(null); setPreview(null); }} />
+  </section>;
 }

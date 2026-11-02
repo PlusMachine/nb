@@ -12,7 +12,7 @@ import { resolveConsumableInventoryBroadGroup } from "@/features/ingredients/con
 import type { InventorySourceDto } from "@/features/inventory/contracts";
 
 const inventoryIngredientContextCategoryLabels: Record<IngredientCategory, string> = {
-  fermentable: "Сбраживаемые",
+  fermentable: "Солод и другое сырьё",
   hop: "Хмель",
   yeast: "Дрожжи",
   water_treatment: "Водоподготовка",

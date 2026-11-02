@@ -75,7 +75,7 @@ describe("archiveCatalogIngredientsAction", () => {
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/catalog");
     expect(mocks.recordAuditEvent).toHaveBeenCalledTimes(1);
     expect(mocks.recordAuditEvent.mock.calls[0]?.[0]).toMatchObject({
-      summary: "Архивация ингредиентов: 2, не прошло: 2",
+      summary: "Отправлено в архив: 2, не удалось: 2",
       payload: { mode: "archive", ids: ["a", "b"], failed: [
         { reason: "merged", ids: ["merged-1"] },
         { reason: "missing", ids: ["ghost-1"] }

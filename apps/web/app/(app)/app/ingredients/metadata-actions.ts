@@ -35,7 +35,7 @@ const revalidateIngredientMetadataPaths = (reference: UserIngredientReference) =
 const mapMetadataErrorMessage = (error: unknown) => {
   if (error instanceof Error) {
     if (error.message === "INVALID_PURCHASE_LINK_URL") {
-      return "Укажите корректную ссылку.";
+      return "Проверьте адрес ссылки.";
     }
 
     if (error.message === "PURCHASE_LINK_NOT_FOUND") {
@@ -43,7 +43,7 @@ const mapMetadataErrorMessage = (error: unknown) => {
     }
 
     if (error.message === "CUSTOM_INGREDIENT_NOT_FOUND") {
-      return "Пользовательский ингредиент не найден.";
+      return "Ваш ингредиент не найден.";
     }
 
     if (error.message === "RATE_LIMITED") {

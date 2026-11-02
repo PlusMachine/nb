@@ -1,7 +1,7 @@
 import { convertWeight } from "@nb/brewing-core";
 
 import type { IngredientTechnicalData } from "../ingredients/contracts";
-import { fermentableAppliesMashEfficiency } from "../ingredients/technical-fields";
+import { fermentableAppliesMashEfficiency, isFermentableIncludedInCalculations } from "../ingredients/technical-fields";
 import type { RecipeIngredientDto } from "./contracts";
 import type { RecipeWaterPlanFermentableInput } from "./water-plan";
 
@@ -24,7 +24,7 @@ export const buildWaterPlanFermentables = (
   const isFermentable = ingredient.category === "fermentable"
     || ingredient.type === "malt" || ingredient.type === "fermentable";
   const use = ingredient.stepMeta?.use;
-  if (!isFermentable || ingredient.stage !== "mash"
+  if (!isFermentable || !isFermentableIncludedInCalculations(ingredient.technicalData) || ingredient.stage !== "mash"
     || (use != null && use !== "mash" && use !== "steep")
     || !fermentableAppliesMashEfficiency(
       ingredient.technicalData,
@@ -33,12 +33,12 @@ export const buildWaterPlanFermentables = (
     return [];
   }
   if (!Number.isFinite(ingredient.quantity) || ingredient.quantity <= 0
-    || !["g", "kg", "oz", "lb"].includes(ingredient.unit)) {
+    || !["mg", "g", "kg", "oz", "lb"].includes(ingredient.unit)) {
     return [];
   }
   const weightKg = convertWeight({
     value: ingredient.quantity,
-    unit: ingredient.unit as "g" | "kg" | "oz" | "lb"
+    unit: ingredient.unit as "mg" | "g" | "kg" | "oz" | "lb"
   }, "kg").value;
   const malt = ingredient.technicalData?.type === "malt"
     ? ingredient.technicalData as Extract<IngredientTechnicalData, { type: "malt" }>

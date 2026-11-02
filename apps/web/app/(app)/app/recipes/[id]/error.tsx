@@ -7,7 +7,7 @@ export default function RecipeDetailError({ reset }: { error: Error; reset: () =
   return (
     <RecipeErrorState
       title="Не удалось загрузить рецепт"
-      message="Попробуйте ещё раз. Если проблема сохраняется, вернитесь к списку рецептов позже."
+      message="Попробуйте ещё раз. Если ошибка повторяется, вернитесь к списку рецептов."
       reset={reset}
     />
   );

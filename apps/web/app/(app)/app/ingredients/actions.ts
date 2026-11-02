@@ -58,12 +58,12 @@ const translateInventoryZodIssue = (issue: ZodIssue) => {
 
   if (issue.code === "invalid_enum_value") {
     if (field === "enteredUnit") {
-      return "Выберите корректную единицу измерения.";
+      return "Выберите единицу измерения.";
     }
     if (field === "priceInputCurrency") {
-      return "Выберите корректную валюту.";
+      return "Выберите валюту.";
     }
-    return "Выберите корректное значение.";
+    return "Проверьте выбранное значение.";
   }
 
   if (issue.code === "invalid_type" || issue.message.includes("nan")) {
@@ -89,14 +89,14 @@ const mapError = (error: unknown): AddIngredientResult => {
 
     return {
       ok: false,
-      message: "Проверьте корректность заполнения формы.",
+      message: "Проверьте поля формы.",
       fieldErrors
     };
   }
 
   if (error instanceof Error) {
     if (error.message === "INVALID_SOURCE_LINKAGE") {
-      return { ok: false, message: "Выберите корректный ингредиент для сохранения." };
+      return { ok: false, message: "Выберите ингредиент." };
     }
     if (error.message === "CATALOG_INGREDIENT_NOT_FOUND") {
       return { ok: false, message: "Ингредиент из каталога не найден или недоступен." };
@@ -114,11 +114,14 @@ const mapError = (error: unknown): AddIngredientResult => {
       return { ok: false, message: "Единица измерения покупки не поддерживается." };
     }
     if (error.message === "DERIVED_CUSTOM_NAME_CONFLICT") {
-      return { ok: false, message: "Не удалось создать пользовательскую версию ингредиента. Попробуйте ещё раз." };
+      return { ok: false, message: "Не удалось создать свой вариант ингредиента. Попробуйте ещё раз." };
     }
     if (error.message === "INVALID_PURCHASE_LINK_URL") {
-      return { ok: false, message: "Проверьте ссылки на покупку: одна из ссылок заполнена некорректно." };
+      return { ok: false, message: "Проверьте адреса в ссылках на покупку." };
     }
+    if (error.message === "INVALID_QUANTITY_PRECISION") return { ok: false, message: "Укажите массу с точностью до 1 мг." };
+    if (error.message === "PACKAGE_VARIANT_REQUIRED") return { ok: false, message: "Выберите фасовку или укажите фактический вес, объём либо число штук." };
+    if (error.message === "INGREDIENT_NOT_STOCKABLE") return { ok: false, message: "Этот способ обработки воды не учитывается на складе." };
     if (error.message === "RATE_LIMITED") {
       return { ok: false, message: "Слишком много добавлений подряд. Немного подождите и попробуйте снова." };
     }
@@ -147,6 +150,7 @@ export const addCatalogIngredientAction = async (_prevState: AddIngredientResult
     );
     const payload = addCatalogInventoryItemSchema.parse({
       ingredientCatalogItemId: String(formData.get("ingredientCatalogItemId") ?? ""),
+      packageVariantId: String(formData.get("packageVariantId") ?? "").trim() || null,
       enteredQuantity: String(formData.get("enteredQuantity") ?? ""),
       enteredUnit: String(formData.get("enteredUnit") ?? ""),
       priceInputMode: String(formData.get("priceInputMode") ?? "").trim() || null,
@@ -350,7 +354,7 @@ export const addCustomIngredientAction = async (_prevState: AddIngredientResult 
 
     revalidatePath("/app/ingredients");
     revalidatePath("/catalog");
-    return { ok: true, message: "Собственный ингредиент создан и добавлен в запасы." };
+    return { ok: true, message: "Свой ингредиент создан и добавлен в запасы." };
   } catch (error) {
     return mapError(error);
   }
@@ -358,6 +362,7 @@ export const addCustomIngredientAction = async (_prevState: AddIngredientResult 
 
 export const updateInventoryItemAction = async (payload: {
   inventoryItemId: string;
+  packageVariantId?: string | null;
   ingredientCatalogItemId?: string | null;
   userCustomIngredientId?: string | null;
   waterTreatmentConcentrationPct?: string | null;
@@ -387,6 +392,7 @@ export const updateInventoryItemAction = async (payload: {
 
     const parsed = updateInventoryItemSchema.parse({
       ingredientCatalogItemId: payload.ingredientCatalogItemId ?? null,
+      packageVariantId: payload.packageVariantId ?? undefined,
       userCustomIngredientId: payload.userCustomIngredientId ?? null,
       enteredQuantity: payload.enteredQuantity,
       enteredUnit: payload.enteredUnit,
@@ -500,7 +506,7 @@ export const getInventoryItemMovementsAction = async (
     const movements = await listInventoryItemMovements(user.id, inventoryItemId);
     return { ok: true, movements };
   } catch {
-    return { ok: false, message: "Не удалось загрузить историю запасов." };
+    return { ok: false, message: "Не удалось загрузить историю операций со складом." };
   }
 };
 

@@ -1,0 +1,15 @@
+{
+  "entries": 19,
+  "calculators": 18,
+  "isolatedProposals": 8,
+  "unchangedComparisons": 11,
+  "checks": [
+    "same form values and positions captured before/after",
+    "only declared text replacement in all 5 copy proposals",
+    "comma result 5.0 to 5.3 verified against current calculator",
+    "19 navigation steps and full context",
+    "aligned before/after crops",
+    "36 narrow layouts"
+  ],
+  "errors": []
+}

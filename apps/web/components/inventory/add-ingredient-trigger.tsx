@@ -53,13 +53,15 @@ export function AddIngredientTrigger({
     <>
       <Button
         type="button"
+        aria-label="Добавить ингредиент"
         variant="brand"
         size="md"
         onClick={() => setOpen(true)}
         className={`${fullWidth ? "w-full justify-center" : ""} ${className ?? ""}`.trim()}
       >
         <Plus className="h-4 w-4" strokeWidth={2.5} />
-        Добавить ингредиент
+        <span className="sm:hidden">Добавить</span>
+        <span className="hidden sm:inline">Добавить ингредиент</span>
       </Button>
       <AddIngredientModal
         open={open}

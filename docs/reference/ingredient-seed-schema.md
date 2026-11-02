@@ -2,7 +2,7 @@
 
 > **Назначение:** структура JSON seed-данных по группам ингредиентов и критичные несовместимости полей.
 > **Источники истины (код/данные):** seed-скрипты `packages/db/*`, JSON-каталоги ингредиентов
-> **Обновлено:** 2026-06-25
+> **Обновлено:** 2026-11-02
 > **См. также:** [CONTEXT.md](../../CONTEXT.md), [ingredient-add-and-search.md](ingredient-add-and-search.md)
 
 ---
@@ -25,15 +25,15 @@
 
 | Тип (`ingredients.type`) | Файл (`ingredients/new/`) | Root shape | Записей (после resolve) |
 | --- | --- | --- | ---: |
-| `hop` | [hop_catalog_minimal_v2.json](../../ingredients/new/hop_catalog_minimal_v2.json) | массив | 218 |
-| `malt` | [malt_catalog_minimal_v2.json](../../ingredients/new/malt_catalog_minimal_v2.json) | массив | 442 |
-| `fermentable` | [fermentables_catalog_minimal_v2.normalized.json](../../ingredients/new/fermentables_catalog_minimal_v2.normalized.json) | массив | 173 |
-| `yeast` | [yeasts_catalog_minimal_v2.json](../../ingredients/new/yeasts_catalog_minimal_v2.json) | объект с `items[]` | 191 |
+| `hop` | [hop_catalog_minimal_v2.json](../../ingredients/new/hop_catalog_minimal_v2.json) | массив | 248 |
+| `malt` | [malt_catalog_minimal_v2.json](../../ingredients/new/malt_catalog_minimal_v2.json) | массив | 458 |
+| `fermentable` | [fermentables_catalog_minimal_v2.normalized.json](../../ingredients/new/fermentables_catalog_minimal_v2.normalized.json) | массив | 174 |
+| `yeast` | [yeasts_catalog_minimal_v2.json](../../ingredients/new/yeasts_catalog_minimal_v2.json) | объект с `items[]` | 349 |
 | `consumable` | [additives_v2_1.json](../../ingredients/new/additives_v2_1.json) | объект с `items[]` + `source_manifest_summary` | 118 |
 | `consumable` | [consumables_v1.json](../../ingredients/new/consumables_v1.json) | объект-манифест c `item_ids[]` + `source_catalog` | 28 |
 | `water_treatment` | [water_treatment_catalog_minimal_v2.json](../../ingredients/new/water_treatment_catalog_minimal_v2.json) | объект с `items[]` | 28 |
 
-Итого `prepareCatalogSeedFile` готовит **1198** записей: 218 hop + 442 malt + 173 fermentable + 191 yeast + **146 consumable** (118 + 28) + 28 water_treatment. Эти числа жёстко проверяются тестом `catalog-seed-data.test.ts`.
+Итого `prepareCatalogSeedFile` готовит **1403** записи: 248 hop + 458 malt + 174 fermentable + 349 yeast + **146 consumable** (118 + 28) + 28 water_treatment. Эти числа жёстко проверяются тестом `catalog-seed-data.test.ts`.
 
 ### Три формы корня JSON
 
@@ -62,9 +62,9 @@
 
 ## Поля по группам
 
-Ниже — фактические поля JSON. Колонка «→ маппинг» показывает, куда поле уезжает в `prepareXxx` (`attributes.*` = JSONB-колонка `attributes`). Поля, которые сидер **не читает**, помечены «— (не маппится)»: на карточке/поиске они доступны только если фронт читает их из исходного JSON напрямую.
+Ниже — фактические поля JSON. Колонка «→ маппинг» показывает, куда поле уезжает в `prepareXxx` (`attributes.*` = JSONB-колонка `attributes`). Справочные характеристики проходят через загрузчик и слой чтения карточек; значения для расчётов и складского учёта описаны отдельно там, где они отличаются от справочных.
 
-### 1. Malt — `malt_catalog_minimal_v2.json` (массив, 442)
+### 1. Malt — `malt_catalog_minimal_v2.json` (массив, 458)
 
 | Поле | Тип | → маппинг |
 | --- | --- | --- |
@@ -84,11 +84,11 @@
 | `max_usage_pct` | `number \| null` | `attributes.max_usage_pct` |
 | `is_birrf_present` | `boolean` | `ingredients.presentOnBirrf` |
 | `color_ebc_is_approx` | `boolean` | `attributes.color_ebc_is_approx` |
-| `sources[]` | `{kind, label, url, page}` | `ingredient_sources` |
+| `sources[]` | `{kind, label, url, page}` | основные поля → `ingredient_sources`; `page` → `attributes.source_metadata` с позицией источника и URL, если он есть |
 
 > ⚠️ Признак Бир.РФ у солода называется `is_birrf_present` (у остальных — `present_on_birrf`), но оба маппятся в одну колонку `presentOnBirrf`.
 
-### 2. Hop — `hop_catalog_minimal_v2.json` (массив, 218)
+### 2. Hop — `hop_catalog_minimal_v2.json` (массив, 248)
 
 | Поле | Тип | → маппинг |
 | --- | --- | --- |
@@ -109,10 +109,10 @@
 | `oil_ml_100g_{min,max,typical}` | `number \| null` | `attributes.*` |
 | `aroma_descriptors_en` | `string[]` (теги аромата) | `attributes.aroma_descriptors_en` |
 | `notes` | `string \| null` | `attributes.notes` |
-| `oil_value_unit_warning` | `string \| null` (редко) | — (не маппится) |
-| `sources[]` | `{group, label, url, confidence}` | `ingredient_sources` (`group`→`kind`) |
+| `oil_value_unit_warning` | `string \| null` (редко) | `attributes.oil_value_unit_warning` |
+| `sources[]` | `{group, label, url, confidence}` | `ingredient_sources` (`group`→`kind`); `confidence` → `attributes.source_metadata` |
 
-### 3. Fermentable — `fermentables_catalog_minimal_v2.normalized.json` (массив, 173)
+### 3. Fermentable — `fermentables_catalog_minimal_v2.normalized.json` (массив, 174)
 
 Самый разнородный каталог: несоложёнка, сахара, сиропы, мёд, фрукты, экстракты, концентраты, технические добавки.
 
@@ -130,8 +130,8 @@
 | `subtype_key` | `string` | `ingredients.itemKind` + `attributes.subtype_key` (fallback `ingredient_type`) |
 | `extract_pct_dry_basis` | `number` | `attributes.extract_pct_dry_basis` |
 | `color_lovibond` | `number` (у 1 записи нет) | `attributes.color_lovibond` |
-| `color_ebc_exact` | `number?` | — (не маппится) |
-| `protein_pct` | `number?` | — (не маппится) |
+| `color_ebc_exact` | `number?` | `attributes.color_ebc_exact`; справочное значение, отдельно от расчётного `color_lovibond` |
+| `protein_pct` | `number?` | `attributes.protein_pct` |
 | `recommended_max_pct` | `number?` | `attributes.recommended_max_pct` |
 | `present_on_birrf` | `boolean` | `ingredients.presentOnBirrf` |
 | `is_usable_in_beer_gravity_calculations` | `boolean` | `attributes.*` |
@@ -146,10 +146,10 @@
 | `functional_role` | enum (`gravity_source, body_adjustment, color_adjustment, process_only, …`) | `attributes.functional_role` |
 | `gravity_calc_mode` | enum `excluded \| normal` | `attributes.gravity_calc_mode` |
 | `display_type_ru` / `display_type_en` | `string` | `attributes.display_type_*` |
-| `normalization_review_flags` | `string[]?` (редко) | — (не маппится) |
+| `normalization_review_flags` | `string[]?` (редко) | `attributes.normalization_review_flags` |
 | `sources[]` | `{kind, label, url}` | `ingredient_sources` |
 
-### 4. Yeast — `yeasts_catalog_minimal_v2.json` (объект `items[]`, 191)
+### 4. Yeast — `yeasts_catalog_minimal_v2.json` (объект `items[]`, 349)
 
 Root-метаданные: `dataset`, `schema_version` (`v1_minimal_clean`), `scope`, `stats` (в т.ч. `by_brand`).
 
@@ -163,19 +163,20 @@ Root-метаданные: `dataset`, `schema_version` (`v1_minimal_clean`), `sc
 | `form` | enum `dry \| liquid` | `attributes.form` |
 | `yeast_family` | enum (~25: `ale, lager, hazy, ipa, kveik, saison, belgian, wheat, brett, sour, …`) | `attributes.yeast_family` |
 | `birrf_category` | enum (`Лагерные, Пшеничные, Прочие, Элевые`) | `attributes.birrf_category` |
-| `attenuation_pct_{min,max,typical}` | `number?` | только `typical` → `attributes.attenuation_pct_typical` |
+| `attenuation_pct_{min,max,typical}` | `number?` | `attributes.attenuation_pct_{min,max,typical}` |
 | `flocculation` | enum (`low … very high`) | `attributes.flocculation` |
 | `fermentation_temp_c_{min,max,optimum}` | `number?` | `attributes.fermentation_temp_c_{min,max,optimum}` |
-| `alcohol_tolerance_abv_{min,max,typical}` | `number?` | только `typical` → `attributes.alcohol_tolerance_abv_typical` |
+| `alcohol_tolerance_abv_{min,max,typical}` | `number?` | `attributes.alcohol_tolerance_abv_{min,max,typical}` |
 | `present_on_birrf` | `boolean?` (есть не у всех) | `ingredients.presentOnBirrf` |
 | `source_basis` | enum (`birrf, official, official+birrf, …`) | `attributes.source_basis` |
 | `aliases_ru` / `aliases_en` | `string[]?` | alias `ru`/`en` |
-| `pof` | `negative \| positive` (?) | — (не маппится) |
-| `species` | `string?` (латынь) | — (не маппится) |
-| `sedimentation` | `fast \| medium \| slow` (?) | — (не маппится) |
-| `notes`, `analog_reference`, `source_urls` | `string`/`string[]` (?) | — (не маппится) |
+| `pof` | `negative \| positive` | `attributes.pof` |
+| `species` | `string?` (латынь) | `attributes.species` |
+| `sedimentation` | `fast \| medium \| slow` | `attributes.sedimentation` |
+| `notes`, `analog_reference` | `string?` | `attributes.notes`, `attributes.analog_reference` |
+| `source_urls` | `string[]?` | `ingredient_sources.url`; `source_basis` сохраняется в `sourceBasis`, повторные URL удаляются |
 
-> ⚠️ У yeast `sources[]` нет — `prepareYeast` всегда пишет `sources: []`. `min`/`max` для attenuation и alcohol tolerance в `attributes` не попадают (берётся только `typical`). Поля `pof`, `species`, `flocculation`-extremes, `sedimentation` доступны только из сырого JSON.
+Карточка дрожжей показывает диапазоны отдельно от типичных значений, вид культуры, POF, осаждение, справочный аналог, примечания и ссылки на источники. Входные числовые поля мастера рецепта и калькуляторов по-прежнему используют `attenuation_pct_typical`. В прогнозе FG типичное значение имеет приоритет; середина диапазона используется только при его отсутствии, а границы задают диапазон прогноза. Ручные значения FG и аттенюации сохраняют высший приоритет.
 
 ### 5. Water treatment — `water_treatment_catalog_minimal_v2.json` (объект `items[]`, 28)
 
@@ -198,14 +199,14 @@ Root-метаданные: `schema_version` (`2.1-minimal`), `catalog`, `languag
 | `recommended_for` | `string[]?` (~52 фразы) | `attributes.recommended_for` |
 | `typical_use_ru` | `string` | `attributes.typical_use_ru` |
 | `cautions_ru` | `string` | `attributes.cautions_ru` |
-| `storage_notes_ru` | `string?` | — (не маппится) |
+| `storage_notes_ru` | `string?` | `attributes.storage_notes_ru` |
 | `calculation_support` | enum (`full, partial, grist_based, not_an_additive, …`) | `attributes.calculation_support` |
 | `common_in_homebrewing` / `common_in_pro_brewing` | `boolean` | `attributes.*` |
-| `recommendation_level` | enum (`default, situational, advanced, caution`) | — (не маппится) |
+| `recommendation_level` | enum (`default, situational, advanced, caution`) | `attributes.recommendation_level` |
 | `concentration_options` | `string[]?` | `attributes.concentration_options` |
 | `default_concentration_pct` | `number?` | `attributes.default_concentration_pct` |
 | `source_basis` | `string[]` (`BYO, BeerSmith, Bru'n Water, …`) | `attributes.source_basis` (массив сохраняется как есть) |
-| `typical_dose_reference`, `ion_contributions_ppm_per_g_per_{gal,l}` | объекты с плавающими ион-ключами | — (не маппится) |
+| `typical_dose_reference`, `ion_contributions_ppm_per_g_per_{gal,l}` | объекты с плавающими ион-ключами | `attributes.*` как есть; используются для справочного отображения |
 
 > ⚠️ `effect_on_ions` и `ion_contributions_*` имеют динамические ключи, зависящие от вещества — flat-DTO по ним делать нельзя (см. раздел несовместимостей).
 
@@ -251,17 +252,19 @@ Split-манифест: `source_catalog`, `item_ids[]`, `primary_quick_filter_ch
 | `common_forms` | `string[]` | `attributes.common_forms` |
 | `usage_stage` | `string[]` | `attributes.usage_stage` |
 | `quantity_defaults` | объект (`quantity_model, recipe_unit_default, stock_unit_default, stock_mode_default, stock_modes_supported, allow_fractional_stock, secondary_measurements_supported[]`) | `ingredients.quantityDefaults` (как есть) |
-| `package_variants[]` | массив SKU (`id, brand, product_name_*, package{amount,unit}, country_name_*, source{group,url}, stock_content_per_*`/`content_per_*`) | `ingredient_package_variants` |
+| `package_variants[]` | массив SKU (`id, brand, product_name_*, package{amount,unit}, country_name_*, source{group,url}, stock_content_per_*`/`content_per_*`) | основные поля и `stock_content_per_package` → `ingredient_package_variants`; `content_per_piece`/`content_per_package` → `attributes.package_content_details` с ID фасовки |
 | `market_names_ru` / `market_names_en` | `string[]` | alias `ru`/`en` (`seed_market_name`) + `attributes.market_names_*` |
 | `search_priority_terms_ru` / `_en` | `string[]` | alias (`seed_priority_term`) + `attributes.*` |
 | `picker_function_ru`, `picker_usage_ru` | `string` | `attributes.*` |
 | `family_key` | `string` (~46 знач.) | `attributes.family_key` |
 | `brand_family_mode` | `matched_variant_brand \| none` | `attributes.brand_family_mode` |
 | `dosage_reference` | объект (`common_ratio, example_reference`) | `attributes.dosage_reference` |
-| `capacity_per_piece`, `closure_standard` | объект / `string` (у packaging) | — (не маппится напрямую; `closure_standard` не читается сидером) |
-| `typical_use_ru`, `storage_notes_ru` | `string?` | — (не маппится) |
+| `capacity_per_piece`, `closure_standard` | объект / `string` (у packaging) | `attributes.capacity_per_piece`, `attributes.closure_standard` |
+| `typical_use_ru`, `storage_notes_ru` | `string?` | `attributes.typical_use_ru`, `attributes.storage_notes_ru` |
 
-> ⚠️ Только consumable пишет `package_variants` и непустой `quantityDefaults`. У остальных типов `packageVariants: []` и `quantityDefaults: null`. Тест `catalog-seed-data.test.ts` это закрепляет.
+Фасовки сохраняются для consumable, хмеля и части дрожжей. Непустые `quantityDefaults` задаёт только consumable. Дополнительные масса и объём содержимого сохраняются как справочные данные и не заменяют складские единицы: 12 таблеток по 10 г остаются 12 `item`, а не 120 `g`.
+
+Карточки показывают сохранённые сведения о применении, дозировке и хранении, вместимости и укупорке тары, содержимом фасовок и вкладе ионов. Справочный цвет `color_ebc_exact` не подменяет значение для расчёта цвета; справочные дозировки и ионные вклады не заменяют параметры движка водоподготовки. Существующие числовые поля мастера рецепта и калькуляторов остаются прежними.
 
 ---
 
@@ -287,7 +290,7 @@ Split-манифест: `source_catalog`, `item_ids[]`, `primary_quick_filter_ch
 
 7. **Полу-открытая таксономия / свободный текст.** `subcategory`, `family_key`, `search_priority_terms_*`, `recommended_for`, `aroma_descriptors_en`, `notes*` — не подходят как UI-enum первого уровня; это теги/подбор/свободный текст.
 
-8. **Часть полей JSON сидер не читает.** `color_ebc_exact`, `protein_pct` (fermentable), `pof`, `species`, `sedimentation`, `notes` (yeast), `recommendation_level`, `storage_notes_ru`, `closure_standard` и др. отсутствуют в `attributes`. Если они нужны на карточке/в фильтре — придётся либо расширить `prepareXxx`, либо читать из сырого JSON.
+8. **Справочные поля и расчётные значения разделены.** `color_ebc_exact`, вторичное содержимое фасовок и справочные ионные вклады сохраняются в `attributes` и доступны в карточке, но не меняют существующие входы расчётов и учёт количества.
 
 ---
 
@@ -298,8 +301,8 @@ Split-манифест: `source_catalog`, `item_ids[]`, `primary_quick_filter_ch
 - **Malt** — enum: `malt_type`, `country_code`, `brand`, `presentOnBirrf`; range: `color_ebc_min/max`, `extract_pct_dry_basis`, `protein_pct`, `max_usage_pct`.
 - **Hop** — enum: `country_code`, `hop_form`, `category_birrf`, `producer`, `present_on_birrf`, `is_popular_in_russia`, `is_blend`; range: `alpha/beta/cohumulone/oil ..._typical`; tag: `aroma_descriptors_en`.
 - **Fermentable** — enum: `group`, `ingredient_type`, `fermentability_class`, `product_family`, `physical_form`, `base_material_family`, `hopping_state`, `functional_role`, `beer_relevance`; bool: `present_on_birrf`, `is_hopped_product`, `is_usable_in_beer_gravity_calculations`; range: `extract_pct_dry_basis`, `color_lovibond`, `recommended_max_pct`.
-- **Yeast** — enum: `form`, `yeast_family`, `brand`, `producer_country`, `birrf_category`, `source_basis`, `flocculation`; range: `attenuation_pct_typical`, `fermentation_temp_c_{min,max}`, `alcohol_tolerance_abv_typical`. (`pof`/`species`/`sedimentation` — только если расширить маппинг.)
-- **Water treatment** — enum: `item_kind`, `category`, `calculation_support`, `common_in_homebrewing`, `common_in_pro_brewing`; tag: `water_calc_role`, `recommended_for`. (`recommendation_level` сейчас не в `attributes`.)
+- **Yeast** — enum: `form`, `yeast_family`, `brand`, `producer_country`, `birrf_category`, `source_basis`, `flocculation`, `pof`, `species`, `sedimentation`; range: `attenuation_pct_{min,max,typical}`, `fermentation_temp_c_{min,max}`, `alcohol_tolerance_abv_{min,max,typical}`.
+- **Water treatment** — enum: `item_kind`, `category`, `calculation_support`, `common_in_homebrewing`, `common_in_pro_brewing`, `recommendation_level`; tag: `water_calc_role`, `recommended_for`.
 - **Consumable** — верхний уровень: `category`/`picker_group`, `item_kind`; второй уровень: `subcategory`, `usage_stage`, `common_forms`, `brand_family_mode`; складские: `quantity_defaults.quantity_model`, `quantity_defaults.stock_mode_default`.
 
 ### Модель карточек по типам

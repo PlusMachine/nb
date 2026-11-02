@@ -40,7 +40,7 @@ describe("custom catalog ingredient form", () => {
     expect(html).toContain("Белок, %");
     expect(html).toContain("Тип солода");
     expect(html).toContain("Не указано");
-    expect(html).toContain("Макс. засыпь, %");
+    expect(html).toContain("Максимальная доля в засыпи, %");
     expect(html).not.toContain("Тип ферментируемого");
     expect(html).not.toContain("Display mode");
     expect(html).not.toContain("Display override");

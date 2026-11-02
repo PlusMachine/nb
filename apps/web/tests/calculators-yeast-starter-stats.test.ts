@@ -9,6 +9,14 @@ import { calculatorDefinitionBySlug } from "../features/calculators/definitions"
 describe("К21: статы стартера дрожжей (плотность, пропорция) и однословный статус", () => {
   const definition = calculatorDefinitionBySlug["yeast-starter"];
 
+  it.each(["none", "simple", "stirPlate"])("при нуле живых клеток нужны свежие дрожжи: %s", (starterMode) => {
+    const result = definition.calculate({ ...definition.defaults, viabilityPercent: 0, starterMode });
+    expect(result.primary.value).toBe("Недосев");
+    expect(result.primary.helper).toBe("По расчёту жизнеспособных клеток почти не осталось — нужны свежие дрожжи");
+    expect(result.stats.find((stat) => stat.label === "Доступно")?.value).toBe("0 млрд");
+    expect(result.stats.some((stat) => stat.label === "Экстракт на стартер")).toBe(false);
+  });
+
   it("нужен стартер (недосев) — статы несут плотность сусла и пропорцию вода:DME", () => {
     const result = definition.calculate({ ...definition.defaults, gravityUnit: "SG", gravity: 1.05 });
 

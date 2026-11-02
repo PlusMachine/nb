@@ -341,7 +341,7 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
     subtype: selectedSubtype
   });
 
-  const showPackageVariants = selectedCategory === "consumable";
+  const showPackageVariants = ["consumable", "hop", "yeast"].includes(selectedCategory) || packageVariantRows.length > 0;
   const showQuantityDefaults = selectedCategory === "consumable" || selectedCategory === "water_treatment";
 
   const jsonError = validateJsonText(attributesJson, "object")
@@ -464,7 +464,7 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
               sourceBasis: source.sourceBasis ?? null,
               position: source.position ?? index
             })),
-            packageVariants: showPackageVariants ? buildPackageVariantPayload(packageVariantRows) : []
+            packageVariants: showPackageVariants ? buildPackageVariantPayload(packageVariantRows) : initial?.packageVariants ?? []
           };
 
           const method = initial?.id ? "PATCH" : "POST";

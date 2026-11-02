@@ -52,6 +52,55 @@ describe("ingredient technical fields", () => {
       extractPctDryBasis: 79
     });
   });
+
+  it("exposes yeast reference characteristics while retaining the typical value used by recipe and calculator inputs", () => {
+    const source = {
+      type: "yeast",
+      attributes: {
+        form: "dry",
+        attenuation_pct_min: 78,
+        attenuation_pct_max: 84,
+        attenuation_pct_typical: 82,
+        alcohol_tolerance_abv_min: 10,
+        alcohol_tolerance_abv_max: 12,
+        alcohol_tolerance_abv_typical: 11,
+        fermentation_temp_c_min: 9,
+        fermentation_temp_c_max: 20,
+        species: "Saccharomyces pastorianus",
+        pof: "negative",
+        sedimentation: "medium",
+        analog_reference: "W-34/70",
+        notes: "Справочное описание культуры."
+      }
+    };
+
+    expect(extractIngredientTechnicalData(source)).toMatchObject({
+      type: "yeast",
+      attenuationPctMin: 78,
+      attenuationPctMax: 84,
+      attenuationPctTypical: 82,
+      alcoholToleranceAbvMin: 10,
+      alcoholToleranceAbvMax: 12,
+      alcoholToleranceAbvTypical: 11,
+      species: "Saccharomyces pastorianus",
+      pof: "negative",
+      sedimentation: "medium",
+      analogReference: "W-34/70",
+      notes: "Справочное описание культуры."
+    });
+    expect(extractIngredientTechnicalFields(source)).toEqual({
+      yeastAttenuationPct: 82,
+      yeastForm: "dry",
+      yeastMinFermentationTempC: 9,
+      yeastMaxFermentationTempC: 20
+    });
+    expect(extractIngredientTechnicalData({ type: "yeast", attributes: { form: "liquid" } })).toMatchObject({
+      species: null,
+      pof: null,
+      attenuationPctMin: null,
+      alcoholToleranceAbvMin: null
+    });
+  });
 });
 
 describe("fermentableAppliesMashEfficiency", () => {

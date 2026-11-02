@@ -18,7 +18,7 @@ type Props = {
 export function InventorySearchInput({
   value,
   onValueChange,
-  placeholder = "Поиск ингредиентов..."
+  placeholder = "Поиск ингредиентов…"
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
 

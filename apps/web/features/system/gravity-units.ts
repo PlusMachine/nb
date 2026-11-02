@@ -162,14 +162,14 @@ export const formatGravityRangeSecondary = (
 
 /**
  * Пересчёт строкового значения поля плотности при смене единицы ввода (переключатель
- * SG/°P/°Bx в калькуляторах): число остаётся осмысленным, а не «1.050 как Plato».
+ * SG/°P/°Bx, а в конвертере также GP): число сохраняет физический смысл.
  * Пустое/некорректное значение возвращается как есть, чтобы не мешать набору.
  * Единственная общая реализация — вместо локальных копий в калькуляторах.
  */
 export const convertGravityFieldValue = (
   rawValue: unknown,
-  fromUnit: CalculatorGravityUnit,
-  toUnit: CalculatorGravityUnit
+  fromUnit: CalculatorGravityUnit | "points",
+  toUnit: CalculatorGravityUnit | "points"
 ): string => {
   if (fromUnit === toUnit) {
     return String(rawValue ?? "");
@@ -184,7 +184,10 @@ export const convertGravityFieldValue = (
     return String(rawValue ?? "");
   }
 
-  const sg = gravityToSg(value, fromUnit);
+  const sg = fromUnit === "points" ? 1 + value / 1000 : gravityToSg(value, fromUnit);
+  if (toUnit === "points") {
+    return formatConvertedGravity((sg - 1) * 1000, 1);
+  }
   return toUnit === "SG" ? sg.toFixed(3) : formatConvertedGravity(sgToGravityUnit(sg, toUnit), 1);
 };
 

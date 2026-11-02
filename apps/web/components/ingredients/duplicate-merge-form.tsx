@@ -132,9 +132,9 @@ export const DuplicateMergeForm = ({ initialSource = null, initialTarget = null 
       <ConfirmActionDialog
         open={confirmOpen}
         title="Объединить ингредиенты?"
-        description={`«${sourceLabel}» получит статус «объединён» и уступит место карточке «${targetLabel}». Отменить объединение нельзя.`}
+        description={`«${sourceLabel}» будет объединён с карточкой «${targetLabel}». Отменить объединение нельзя.`}
         confirmLabel="Объединить"
-        pendingLabel="Объединяем..."
+        pendingLabel="Объединяем…"
         pending={isSubmitting}
         error={error}
         onConfirm={merge}

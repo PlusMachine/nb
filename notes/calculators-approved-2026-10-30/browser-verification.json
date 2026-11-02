@@ -1,0 +1,16 @@
+{
+  "checks": [
+    "P02: decimal comma recalculates before blur",
+    "P01: cleared OG leaves no computed ABV, ABW, attenuation, calories or example OG",
+    "Required inputs recover after filling",
+    "Decimal comma also works in SG",
+    "P03: acid label follows mash water volume; existing dose and pH remain",
+    "P04: zero viability gives a consistent fresh-yeast helper",
+    "P05: gauge pressure label with existing table and pressure",
+    "P06: 59 full bottles, existing 0.03 L remainder",
+    "P07: zero and empty volume hide color and MCU; valid volume recovers",
+    "P08: fresh-hop assumption only when date is absent",
+    "Seven affected calculators fit 390px"
+  ],
+  "pageErrors": []
+}

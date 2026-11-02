@@ -372,7 +372,7 @@ export const resolvePassportStat = (
       return {
         ...definition,
         value: subtypeAbv,
-        supportingText: "Диапазон зависит от подстиля Specialty IPA.",
+        supportingText: "Диапазон зависит от разновидности специального IPA.",
         isTextual: true
       };
     }
@@ -620,7 +620,7 @@ export function BjcpArticlePage({
                 </h2>
               </div>
               <Link href="/bjcp" className="sm:shrink-0 text-sm font-semibold text-foreground hover:text-foreground">
-                Весь BJCP <span aria-hidden="true">→</span>
+                Все стили BJCP <span aria-hidden="true">→</span>
               </Link>
             </div>
 

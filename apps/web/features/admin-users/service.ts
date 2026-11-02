@@ -13,6 +13,7 @@ import {
   isNull,
   masterProfiles,
   or,
+  productActivityDaily,
   recipes,
   sql,
   userIngredients,
@@ -63,6 +64,10 @@ const normalizePageSize = (pageSize: number | undefined): number => {
 // или «a_b» превращался бы в маску.
 const likePattern = (query: string): string => `%${query.replace(/[\\%_]/g, (match) => `\\${match}`)}%`;
 
+// Drizzle unqualifies column objects in SELECT expressions without joins. Keep
+// this outer reference qualified inside correlated subqueries (a.id is bigint).
+const outerUserId = sql`"users"."id"`;
+
 const buildWhere = (filters: AdminUserFilters) => {
   const conditions = [];
 
@@ -85,6 +90,19 @@ const buildWhere = (filters: AdminUserFilters) => {
     conditions.push(isNotNull(users.anonymizedAt));
   }
 
+  if (filters.segment) {
+    conditions.push(isNull(users.anonymizedAt));
+    switch (filters.segment) {
+      case "new": conditions.push(sql`${users.createdAt} >= now() - interval '7 days'`); break;
+      case "active": conditions.push(sql`exists (select 1 from product_activity_daily a where a.user_id = ${users.id} and a.last_seen_at >= now() - interval '7 days')`); break;
+      // No measurement is not evidence of churn: only previously observed users.
+      case "dormant": conditions.push(sql`(select max(a.last_seen_at) from product_activity_daily a where a.user_id = ${users.id}) < now() - interval '30 days'`); break;
+      case "unactivated": conditions.push(sql`${users.createdAt} < now() - interval '7 days' and not exists (select 1 from recipes r where r.author_id = ${users.id})`); break;
+      case "no_batches": conditions.push(sql`exists (select 1 from recipes r where r.author_id = ${users.id}) and not exists (select 1 from brew_batches b where b.user_id = ${users.id})`); break;
+      case "brewers": conditions.push(sql`exists (select 1 from brew_batches b where b.user_id = ${users.id} and b.status = 'completed')`); break;
+    }
+  }
+
   return conditions.length > 0 ? and(...conditions) : undefined;
 };
 
@@ -98,6 +116,8 @@ const buildOrderBy = (filters: AdminUserFilters) => {
     // поднимает администраторов наверх.
     case "role":
       return [desc(users.role), asc(users.displayName)];
+    case "last_seen":
+      return [sql`(select max(a.last_seen_at) from product_activity_daily a where a.user_id = ${users.id}) desc nulls last`, desc(users.id)];
     default:
       return [desc(users.createdAt), desc(users.id)];
   }
@@ -138,7 +158,8 @@ export const listAdminUsers = async (filters: AdminUserFilters = {}): Promise<Ad
       blockedAt: users.blockedAt,
       blockedReason: users.blockedReason,
       anonymizedAt: users.anonymizedAt,
-      createdAt: users.createdAt
+      createdAt: users.createdAt,
+      lastSeenAt: sql<Date | null>`(select max(a.last_seen_at) from product_activity_daily a where a.user_id = ${outerUserId} and "users"."anonymized_at" is null)`
     })
     .from(users)
     .where(where)
@@ -163,6 +184,15 @@ export const listAdminUsers = async (filters: AdminUserFilters = {}): Promise<Ad
 
   return { items, total, page, pageSize, totalPages: Math.ceil(total / pageSize) };
 };
+
+// A single bounded query gives exports a consistent snapshot, independent of UI pagination.
+export const listAdminUsersForExport = async (filters: AdminUserFilters) => db.select({
+  id: users.id, displayName: users.displayName, email: users.email, phone: users.phone, role: users.role,
+  blockedAt: users.blockedAt, anonymizedAt: users.anonymizedAt, createdAt: users.createdAt,
+  lastSeenAt: sql<string | null>`(select max(a.last_seen_at) from product_activity_daily a where a.user_id = ${outerUserId} and "users"."anonymized_at" is null)`,
+  recipesCount: sql<number>`(select count(*)::integer from recipes r where r.author_id = ${outerUserId})`,
+  batchesCount: sql<number>`(select count(*)::integer from brew_batches b where b.user_id = ${outerUserId})`
+}).from(users).where(buildWhere(filters)).orderBy(...buildOrderBy(filters)).limit(10001);
 
 const loadActivity = async (userId: string): Promise<AdminUserActivity> => {
   const [recipesTotal, publishedTotal, batchesTotal, inventoryTotal, devicesTotal, masterRows] = await Promise.all([
@@ -485,6 +515,7 @@ export const anonymizeUserAccount = async ({
 
     await anonymizeUser({ userId, byUserId: actor.id }, tx);
     await scrubActorEmails(userId, tx);
+    await tx.delete(productActivityDaily).where(eq(productActivityDaily.userId, userId));
     // anonymizeUser чистит только users, а контакты мастера лежат в master_profiles
     // и в опубликованном снапшоте: без этого /masters/<slug> и /market продолжали бы
     // отдавать настоящие телефон и почту «удалённого пользователя».

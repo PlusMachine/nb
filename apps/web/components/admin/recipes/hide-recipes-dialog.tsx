@@ -80,7 +80,7 @@ export function HideRecipesDialog({
           Отмена
         </Button>
         <Button type="button" variant="danger" onClick={() => onConfirm(trimmed)} disabled={pending || !valid}>
-          {pending ? "Скрываем..." : "Скрыть"}
+          {pending ? "Скрываем…" : "Скрыть"}
         </Button>
       </DialogFooter>
     </Dialog>

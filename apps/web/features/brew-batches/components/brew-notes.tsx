@@ -26,13 +26,13 @@ const NOTE_SECTIONS: Record<BrewNotesKind, {
   brew: {
     id: "brew-notes",
     title: "Заметки о варке",
-    placeholder: "Как прошла варка: отклонения от плана, температуры, что учесть в следующий раз…",
+    placeholder: "Что учесть при следующей варке",
     save: updateBrewBatchNotesAction
   },
   tasting: {
     id: "tasting-notes",
     title: "Дегустация",
-    placeholder: "Аромат, вкус, тело, карбонизация — что удалось и что поменять…",
+    placeholder: "Аромат, вкус, тело, карбонизация",
     save: updateBrewBatchTastingNotesAction
   }
 };

@@ -41,7 +41,7 @@ export function HomeExperience({
     <section className="home-hero" id="home-top">
       <div className="home-hero-copy"><p className="home-free">Бесплатный сервис для домашних пивоваров</p><h1>Что сварить из ваших запасов</h1><p className="home-lead">Выберите рецепт, пересчитайте его под свой объём и узнайте, что нужно докупить.</p><div className="home-actions"><Link className="home-button home-primary" href={stockHref}>Добавить свои запасы <ArrowRight /></Link><Link className="home-button" href="/recipes">Выбрать рецепт</Link></div><p className="home-hero-note">Рецепты, расчёты и журнал ваших варок.</p></div>
       <div className="home-stock" id="home-stock"><div className="home-stock-title"><h2>Ваши запасы</h2><span>Пример склада</span></div>
-        {stock.length > 0 && <p className="home-stock-hint">Измените количество — рецепты ниже пересчитаются.</p>}
+        {stock.length > 0 && <p className="home-stock-hint">Измените количество, чтобы проверить, на какие рецепты хватит запасов.</p>}
         <div className="home-stock-list" id="home-stock-example">{visibleStock.map(item => <div className="home-stock-row home-stock-example-row" key={item.key}><HomeIngredientDetails ingredient={item.ingredient} name={item.name} badgeLimit={1} /><StockQuantity item={item} onCommit={quantity => setStock(values => values.map(row => row.key === item.key ? {
               ...row,
               quantity
@@ -215,10 +215,10 @@ export function HomeLabels({
   const region = useRef<HTMLDivElement>(null);
   return <section id="home-labels"><div className="home-section-heading"><div><h2>Этикетки для вашего пива</h2><p className="home-section-lead">Распечатайте этикетку. По QR-коду гости откроют описание вашего пива.</p></div></div><div className="home-share" data-expanded={expanded} onKeyDown={event => {
       if (event.key === "Escape") setExpanded(false);
-    }}><div className="home-label-side"><div className="home-batch"><NotebookPen /><div><strong>{title}</strong>{author && <span>{author}</span>}</div></div><div className="home-label-tabs" role="group" aria-label="Шаблоны этикеток">{["Типографика", "Крафт"].map((name, index) => <button type="button" key={name} aria-pressed={index === template} onClick={() => setTemplate(index)}>{name}</button>)}</div><button type="button" className="home-expand" aria-expanded={expanded} onClick={() => {
+    }}><div className="home-label-side"><div className="home-batch"><NotebookPen /><div><strong>{title}</strong>{author && <span>{author}</span>}</div></div><div className="home-label-tabs" role="group" aria-label="Шаблоны этикеток">{["Классика", "Крафт"].map((name, index) => <button type="button" key={name} aria-pressed={index === template} onClick={() => setTemplate(index)}>{name}</button>)}</div><button type="button" className="home-expand" aria-expanded={expanded} onClick={() => {
           setExpanded(!expanded);
           region.current?.scrollTo({
             left: 0
           });
-        }}><Expand />{expanded ? "Свернуть этикетку" : "Рассмотреть этикетку"}</button><div className="home-label-image" ref={region} role="region" aria-label="Этикетка, при увеличении доступна горизонтальная прокрутка"><img src={images[template]} alt={`Этикетка «${template ? "Крафт" : "Типографика"}»: ${title}`} /></div><Link href="/labels" className="home-inline-link">Создать свою этикетку ↗</Link><Link href={`/beer/${slug}`} className="home-inline-link home-beer-mobile-link">Страница пива ↗</Link></div><div className="home-beer-preview"><h3><Link href={`/beer/${slug}`}>Страница пива ↗</Link></h3><div className="home-beer-frame">{beerPreview}</div></div></div></section>;
+        }}><Expand />{expanded ? "Свернуть этикетку" : "Рассмотреть этикетку"}</button><div className="home-label-image" ref={region} role="region" aria-label="Этикетка, при увеличении доступна горизонтальная прокрутка"><img src={images[template]} alt={`Этикетка «${template ? "Крафт" : "Классика"}»: ${title}`} /></div><Link href="/labels" className="home-inline-link">Создать свою этикетку ↗</Link><Link href={`/beer/${slug}`} className="home-inline-link home-beer-mobile-link">Страница пива ↗</Link></div><div className="home-beer-preview"><h3><Link href={`/beer/${slug}`}>Страница пива ↗</Link></h3><div className="home-beer-frame">{beerPreview}</div></div></div></section>;
 }

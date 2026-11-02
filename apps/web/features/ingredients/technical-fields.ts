@@ -1,4 +1,11 @@
-import type { IngredientTechnicalData, IngredientTechnicalFields, IngredientType } from "./contracts";
+import type {
+  IngredientPackageContentDetail,
+  IngredientReferenceQuantity,
+  IngredientSourceMetadata,
+  IngredientTechnicalData,
+  IngredientTechnicalFields,
+  IngredientType
+} from "./contracts";
 import { normalizeWaterTreatmentConcentrationPct } from "./water-treatment";
 
 export const hopForms = ["pellet", "whole_cone", "lupulin", "cryo", "standard"] as const;
@@ -144,6 +151,44 @@ const readStringArray = (...values: unknown[]) => {
   return [];
 };
 
+const readReferenceQuantity = (value: unknown): IngredientReferenceQuantity | null => {
+  const record = readRecord(value);
+  const amount = readNumber(record.amount);
+  const unit = readString(record.unit);
+  return amount != null && amount >= 0 && unit ? { amount, unit } : null;
+};
+
+const readPackageContentDetails = (value: unknown): IngredientPackageContentDetail[] => (
+  Array.isArray(value) ? value.flatMap((entry) => {
+    const record = readRecord(entry);
+    const packageVariantId = readString(record.package_variant_id);
+    return packageVariantId ? [{
+      packageVariantId,
+      contentPerPiece: readReferenceQuantity(record.content_per_piece),
+      contentPerPackage: readReferenceQuantity(record.content_per_package)
+    }] : [];
+  }) : []
+);
+
+const readSourceMetadata = (value: unknown): IngredientSourceMetadata[] => (
+  Array.isArray(value) ? value.flatMap((entry) => {
+    const record = readRecord(entry);
+    const url = readString(record.url);
+    const position = readNumber(record.position);
+    return url || position != null ? [{
+      url,
+      position,
+      confidence: readString(record.confidence),
+      page: readNumber(record.page) ?? readString(record.page)
+    }] : [];
+  }) : []
+);
+
+const readNumericRecord = (value: unknown): Record<string, number> | null => (
+  isRecord(value) ? Object.fromEntries(Object.entries(value)
+    .filter((entry): entry is [string, number] => typeof entry[1] === "number" && Number.isFinite(entry[1]))) : null
+);
+
 const readFermentableExtractForm = (...values: unknown[]) => {
   const normalized = readString(...values)?.toLowerCase();
   return normalized === "dry" || normalized === "liquid" ? normalized : null;
@@ -197,8 +242,9 @@ export const resolveIngredientColorRangeEbc = (
 
   const start = normalizedMin ?? normalizedMax ?? 0;
   const end = normalizedMax ?? normalizedMin ?? 0;
-  const min = Math.min(start, end);
-  const max = Math.max(start, end);
+  if (start > end) return null;
+  const min = start;
+  const max = end;
 
   return {
     min,
@@ -247,6 +293,9 @@ export const resolveIngredientTechnicalDataColorRangeEbc = (
 export const resolveIngredientTechnicalDataColorLovibond = (
   technicalData: IngredientTechnicalData | null | undefined
 ) => {
+  if (technicalData?.type === "malt" && typeof technicalData.colorEbcForCalculation === "number") {
+    return toLovibondFromEbc(technicalData.colorEbcForCalculation);
+  }
   const range = resolveIngredientTechnicalDataColorRangeEbc(technicalData);
   if (range) {
     return toLovibondFromEbc(range.average);
@@ -338,9 +387,12 @@ const fromAttributes = (
       categoryBirrf: readString(attributes.category_birrf),
       categoryBirrfRu: readString(attributes.category_birrf_ru),
       hopForm: readString(attributes.hop_form),
+      varietyKey: readString(attributes.variety_key),
       isBlend: readBoolean(attributes.is_blend),
       isPopularInRussia: readBoolean(attributes.is_popular_in_russia),
       aromaDescriptorsEn: readStringArray(attributes.aroma_descriptors_en),
+      oilValueUnitWarning: readString(attributes.oil_value_unit_warning),
+      sourceMetadata: readSourceMetadata(attributes.source_metadata),
       notes: readString(attributes.notes)
     };
   }
@@ -355,13 +407,17 @@ const fromAttributes = (
       type,
       maltType: readString(attributes.malt_type),
       extractPctDryBasis: readNumber(attributes.extract_pct_dry_basis),
-      colorEbcMin: colorRange?.min ?? null,
-      colorEbcMax: colorRange?.max ?? null,
+      colorEbcMin: sanitizeIngredientColorValue(readNumber(attributes.color_ebc_min)),
+      colorEbcMax: sanitizeIngredientColorValue(readNumber(attributes.color_ebc_max)),
       colorLovibond: sanitizeIngredientColorValue(readNumber(attributes.color_lovibond))
         ?? (colorRange ? toLovibondFromEbc(colorRange.average) : null),
       proteinPct: readNumber(attributes.protein_pct),
       maxUsagePct: readNumber(attributes.max_usage_pct),
-      colorEbcIsApprox: readBoolean(attributes.color_ebc_is_approx)
+      colorEbcIsApprox: readBoolean(attributes.color_ebc_is_approx),
+      colorEbcForCalculation: sanitizeIngredientColorValue(readNumber(attributes.color_ebc_for_calculation)),
+      colorEbcCalculationBasis: readString(attributes.color_ebc_calculation_basis),
+      dataReview: isRecord(attributes.data_review) ? attributes.data_review : null,
+      sourceMetadata: readSourceMetadata(attributes.source_metadata)
     };
   }
 
@@ -381,6 +437,7 @@ const fromAttributes = (
       baseMaterialFamily: readString(attributes.base_material_family),
       baseMaterials: readStringArray(attributes.base_materials),
       hoppingState: readFermentableHoppingState(attributes.hopping_state),
+      hoppedBitterness: isRecord(attributes.hopped_bitterness) ? attributes.hopped_bitterness : null,
       isHoppedProduct: readBoolean(attributes.is_hopped_product),
       functionalRole: readString(attributes.functional_role),
       gravityCalcMode: readString(attributes.gravity_calc_mode),
@@ -392,6 +449,9 @@ const fromAttributes = (
       colorLovibond: sanitizeIngredientColorValue(readNumber(attributes.color_lovibond))
         ?? (colorRange ? toLovibondFromEbc(colorRange.average) : null),
       colorEbcIsApprox: readBoolean(attributes.color_ebc_is_approx),
+      colorEbcExact: readNumber(attributes.color_ebc_exact),
+      proteinPct: readNumber(attributes.protein_pct),
+      normalizationReviewFlags: readStringArray(attributes.normalization_review_flags),
       recommendedMaxPct: readNumber(attributes.recommended_max_pct),
       isUsableInBeerGravityCalculations: readBoolean(attributes.is_usable_in_beer_gravity_calculations),
       beerRelevance: readString(attributes.beer_relevance)
@@ -400,7 +460,8 @@ const fromAttributes = (
 
   if (type === "yeast") {
     const form = readString(attributes.form);
-    const packageSize = readNumber(attributes.package_size) ?? (form === "dry" ? 11 : null);
+    const packageSelectionRequired = attributes.package_selection_required === true;
+    const packageSize = packageSelectionRequired ? null : readNumber(attributes.package_size) ?? (form === "dry" ? 11 : null);
     const packageUnit = readString(attributes.package_unit) ?? (form === "dry" ? "g" : null);
 
     return {
@@ -412,19 +473,29 @@ const fromAttributes = (
       attenuationPctMax: readNumber(attributes.attenuation_pct_max),
       attenuationPctTypical: readNumber(attributes.attenuation_pct_typical),
       flocculation: readString(attributes.flocculation),
+      sedimentation: readString(attributes.sedimentation),
       fermentationTempCMin: readNumber(attributes.fermentation_temp_c_min),
       fermentationTempCMax: readNumber(attributes.fermentation_temp_c_max),
       fermentationTempCOptimum: readNumber(attributes.fermentation_temp_c_optimum),
+      alcoholToleranceAbvMin: readNumber(attributes.alcohol_tolerance_abv_min),
+      alcoholToleranceAbvMax: readNumber(attributes.alcohol_tolerance_abv_max),
       alcoholToleranceAbvTypical: readNumber(attributes.alcohol_tolerance_abv_typical),
+      species: readString(attributes.species),
+      pof: readString(attributes.pof),
+      analogReference: readString(attributes.analog_reference),
+      notes: readString(attributes.notes),
       sourceBasis: readString(attributes.source_basis),
       packageSize,
-      packageUnit
+      packageUnit,
+      packageSelectionRequired
     };
   }
 
   if (type === "consumable") {
     return {
       type,
+      physicalForm: readString(attributes.physical_form),
+      productIdentity: readString(attributes.product_identity),
       commonForms: readStringArray(attributes.common_forms),
       usageStage: readStringArray(attributes.usage_stage),
       dosageReference: isRecord(attributes.dosage_reference) ? attributes.dosage_reference : null,
@@ -436,7 +507,15 @@ const fromAttributes = (
       searchPriorityTermsEn: readStringArray(attributes.search_priority_terms_en),
       pickerFunctionRu: readString(attributes.picker_function_ru),
       pickerUsageRu: readString(attributes.picker_usage_ru),
-      brandFamilyMode: readString(attributes.brand_family_mode)
+      brandFamilyMode: readString(attributes.brand_family_mode),
+      typicalUseRu: readString(attributes.typical_use_ru),
+      storageNotesRu: readString(attributes.storage_notes_ru),
+      closureStandard: readString(attributes.closure_standard),
+      capacityPerPiece: readReferenceQuantity(attributes.capacity_per_piece),
+      packageContentDetails: readPackageContentDetails(attributes.package_content_details),
+      flavorTagsRu: readStringArray(attributes.flavor_tags_ru),
+      typicalStylesRu: readStringArray(attributes.typical_styles_ru),
+      notesRu: readString(attributes.notes_ru)
     };
   }
 
@@ -460,6 +539,10 @@ const fromAttributes = (
     commonInProBrewing: readBoolean(attributes.common_in_pro_brewing),
     recommendationLevel: readString(attributes.recommendation_level),
     cautionsRu: readString(attributes.cautions_ru),
+    storageNotesRu: readString(attributes.storage_notes_ru),
+    typicalDoseReference: isRecord(attributes.typical_dose_reference) ? attributes.typical_dose_reference : null,
+    ionContributionsPpmPerGPerL: readNumericRecord(attributes.ion_contributions_ppm_per_g_per_l),
+    ionContributionsPpmPerGPerGal: readNumericRecord(attributes.ion_contributions_ppm_per_g_per_gal),
     sourceBasis: Array.isArray(attributes.source_basis)
       ? attributes.source_basis.filter((item): item is string => typeof item === "string")
       : readString(attributes.source_basis)
@@ -473,8 +556,8 @@ const normalizeStructuredTechnicalData = (technicalData: IngredientTechnicalData
 
     return {
       ...malt,
-      colorEbcMin: colorRange?.min ?? null,
-      colorEbcMax: colorRange?.max ?? null,
+      colorEbcMin: sanitizeIngredientColorValue(malt.colorEbcMin),
+      colorEbcMax: sanitizeIngredientColorValue(malt.colorEbcMax),
       colorLovibond: sanitizeIngredientColorValue(malt.colorLovibond)
         ?? (colorRange ? toLovibondFromEbc(colorRange.average) : null)
     };
@@ -685,7 +768,15 @@ export const getIngredientColorLovibond = (source: IngredientTechnicalSource, fa
   return fields.fermentableColorLovibond ?? fallback;
 };
 
-export const getIngredientAlphaAcidPercent = (source: IngredientTechnicalSource, fallback = 5) => {
+export const getIngredientAlphaAcidPercent = (source: IngredientTechnicalSource, fallback: number | null = null) => {
   const fields = extractIngredientTechnicalFields(source);
   return fields.hopAlphaAcidPct ?? fallback;
 };
+
+/** Process aids retain their physical stock mass without contributing extract or colour. */
+export const isFermentableIncludedInCalculations = (data: IngredientTechnicalData | null | undefined) => (
+  data?.type !== "fermentable" || (
+    data.gravityCalcMode !== "excluded" && data.functionalRole !== "process_only"
+    && data.isUsableInBeerGravityCalculations !== false
+  )
+);

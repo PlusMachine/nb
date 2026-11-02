@@ -1,0 +1,830 @@
+{
+  "appliedOn": "2026-11-02",
+  "backupDir": "/tmp/nb-catalog-before-apply-1793646168739",
+  "catalog": {
+    "processed": 1403,
+    "inserted": 0,
+    "updated": 1403,
+    "conflicts": [],
+    "repeatConflicts": [],
+    "packageVariants": 706,
+    "repeatPackageStable": true
+  },
+  "stock": {
+    "checked": 103,
+    "quantitiesPackagesAndCostsUnchanged": true
+  },
+  "recipes": {
+    "recomputed": 126,
+    "changed": 45,
+    "failed": [],
+    "changes": [
+      {
+        "id": "577f94dc-b2b7-4cc8-801f-9ecbccd364ee",
+        "before": {
+          "og": 1.074,
+          "fg": 1.014,
+          "abv": 8.25,
+          "ibu": 100,
+          "color": 8
+        },
+        "after": {
+          "og": 1.082,
+          "fg": 1.016,
+          "abv": 8.66,
+          "ibu": 223,
+          "color": 7.5
+        }
+      },
+      {
+        "id": "3ea6c64d-7d96-4c94-b2ba-66f09eabf479",
+        "before": {
+          "og": 1.048,
+          "fg": 1.015,
+          "abv": 4.4,
+          "ibu": 40,
+          "color": 4
+        },
+        "after": {
+          "og": 1.053,
+          "fg": 1.009,
+          "abv": 5.78,
+          "ibu": 41.9,
+          "color": 5.8
+        }
+      },
+      {
+        "id": "b717de87-cbae-4154-b6dd-f4ef0c07ab36",
+        "before": {
+          "og": 1.065,
+          "fg": 1.012,
+          "abv": 6.9,
+          "ibu": 77,
+          "color": 8
+        },
+        "after": {
+          "og": 1.071,
+          "fg": 1.024,
+          "abv": 6.17,
+          "ibu": 60.9,
+          "color": 9.8
+        }
+      },
+      {
+        "id": "8b3839ce-85ce-4013-afcd-8b7c0d5ddd18",
+        "before": {
+          "og": 1.041,
+          "fg": 1.008,
+          "abv": 4.33,
+          "ibu": 29.5,
+          "color": 13.6
+        },
+        "after": {
+          "og": 1.041,
+          "fg": 1.01,
+          "abv": 4.07,
+          "ibu": 29.5,
+          "color": 13.6
+        }
+      },
+      {
+        "id": "f46d7a05-ec09-4646-81d7-5a61bdff68b1",
+        "before": {
+          "og": 1.072,
+          "fg": 1.012,
+          "abv": 8,
+          "ibu": 90,
+          "color": 8
+        },
+        "after": {
+          "og": 1.082,
+          "fg": 1.028,
+          "abv": 7.09,
+          "ibu": 89.2,
+          "color": 10.3
+        }
+      },
+      {
+        "id": "db029109-a8a1-4af3-a46a-86aeb6ecc968",
+        "before": {
+          "og": 1.068,
+          "fg": 1.012,
+          "abv": 7.3,
+          "ibu": 74,
+          "color": 15
+        },
+        "after": {
+          "og": 1.078,
+          "fg": 1.018,
+          "abv": 7.88,
+          "ibu": 47.8,
+          "color": 20.4
+        }
+      },
+      {
+        "id": "e9fc167c-32c1-451e-a227-265c7e3e1519",
+        "before": {
+          "og": 1.071,
+          "fg": 1.023,
+          "abv": 6.3,
+          "ibu": 60.3,
+          "color": 9.8
+        },
+        "after": {
+          "og": 1.071,
+          "fg": 1.024,
+          "abv": 6.17,
+          "ibu": 60.3,
+          "color": 9.8
+        }
+      },
+      {
+        "id": "08eb2789-40d4-4881-8bc7-0351968dfb8d",
+        "before": {
+          "og": 1.053,
+          "fg": 1.011,
+          "abv": 5.6,
+          "ibu": 37,
+          "color": 10
+        },
+        "after": {
+          "og": 1.06,
+          "fg": 1.014,
+          "abv": 6.04,
+          "ibu": 65.3,
+          "color": 10.9
+        }
+      },
+      {
+        "id": "4f5d99c8-0a9d-4c54-a81f-247cee2df271",
+        "before": {
+          "og": 1.049,
+          "fg": 1.012,
+          "abv": 4.9,
+          "ibu": 13,
+          "color": 3
+        },
+        "after": {
+          "og": 1.047,
+          "fg": 1.012,
+          "abv": 4.59,
+          "ibu": 6.3,
+          "color": 4.3
+        }
+      },
+      {
+        "id": "545a253a-67f3-4bff-b760-a187c622afa0",
+        "before": {
+          "og": 1.063,
+          "fg": 1.012,
+          "abv": 6.7,
+          "ibu": 55,
+          "color": 10
+        },
+        "after": {
+          "og": 1.07,
+          "fg": 1.014,
+          "abv": 7.35,
+          "ibu": 63.8,
+          "color": 8.1
+        }
+      },
+      {
+        "id": "6223fea3-15ee-485b-bc1e-5d46ba85fed8",
+        "before": {
+          "og": 1.072,
+          "fg": 1.023,
+          "abv": 6.3,
+          "ibu": 47,
+          "color": 30
+        },
+        "after": {
+          "og": 1.074,
+          "fg": 1.024,
+          "abv": 6.56,
+          "ibu": null,
+          "color": 48.1
+        }
+      },
+      {
+        "id": "6041b19b-ffdc-4964-9dc9-68fa44238a5a",
+        "before": {
+          "og": 1.071,
+          "fg": 1.023,
+          "abv": 6.3,
+          "ibu": 61.4,
+          "color": 9.8
+        },
+        "after": {
+          "og": 1.071,
+          "fg": 1.024,
+          "abv": 6.17,
+          "ibu": 61.4,
+          "color": 9.8
+        }
+      },
+      {
+        "id": "876aaddc-506c-4e10-93f9-435e020a79a1",
+        "before": {
+          "og": 1.05,
+          "fg": 1.016,
+          "abv": 4.46,
+          "ibu": 23.2,
+          "color": 33.5
+        },
+        "after": {
+          "og": 1.043,
+          "fg": 1.012,
+          "abv": 4.07,
+          "ibu": 24.5,
+          "color": 33.4
+        }
+      },
+      {
+        "id": "84b1938f-8018-4322-baa6-fb841ffd6cdd",
+        "before": {
+          "og": 1.048,
+          "fg": 1.012,
+          "abv": 4.7,
+          "ibu": 33,
+          "color": 13
+        },
+        "after": {
+          "og": 1.053,
+          "fg": 1.018,
+          "abv": 4.59,
+          "ibu": 30.3,
+          "color": 11.1
+        }
+      },
+      {
+        "id": "d8d7a8c7-ea76-4283-a3e9-d0d11f975b27",
+        "before": {
+          "og": 1.05,
+          "fg": 1.01,
+          "abv": 5.3,
+          "ibu": 12,
+          "color": 3
+        },
+        "after": {
+          "og": 1.056,
+          "fg": 1.014,
+          "abv": 5.51,
+          "ibu": 11.7,
+          "color": 4.8
+        }
+      },
+      {
+        "id": "34feeaa6-3396-4f2b-8e33-6a8c0d9a8084",
+        "before": {
+          "og": 1.081,
+          "fg": 1.015,
+          "abv": 8.5,
+          "ibu": 39,
+          "color": 5
+        },
+        "after": {
+          "og": 1.081,
+          "fg": 1.018,
+          "abv": 8.27,
+          "ibu": 29.6,
+          "color": 12.8
+        }
+      },
+      {
+        "id": "bdeac911-0a2b-4042-8933-3225e6c71f0d",
+        "before": {
+          "og": 1.049,
+          "fg": 1.012,
+          "abv": 4.8,
+          "ibu": 13,
+          "color": 3
+        },
+        "after": {
+          "og": 1.053,
+          "fg": 1.013,
+          "abv": 5.25,
+          "ibu": 10,
+          "color": 4.7
+        }
+      },
+      {
+        "id": "4d103e08-e759-42af-9065-5fe333684c6a",
+        "before": {
+          "og": 1.053,
+          "fg": 1.012,
+          "abv": 5.4,
+          "ibu": 14,
+          "color": 4
+        },
+        "after": {
+          "og": 1.054,
+          "fg": 1.011,
+          "abv": 5.64,
+          "ibu": 10.5,
+          "color": 4.8
+        }
+      },
+      {
+        "id": "6480611f-7b56-4a48-8991-28b9216f5530",
+        "before": {
+          "og": 1.054,
+          "fg": 1.004,
+          "abv": 6.5,
+          "ibu": 25,
+          "color": 5
+        },
+        "after": {
+          "og": 1.067,
+          "fg": 1.019,
+          "abv": 6.3,
+          "ibu": 18.4,
+          "color": 8.7
+        }
+      },
+      {
+        "id": "7146e56f-e573-4413-b9fc-831d5c23dea0",
+        "before": {
+          "og": 1.09,
+          "fg": 1.012,
+          "abv": 11.2,
+          "ibu": 35,
+          "color": 33
+        },
+        "after": {
+          "og": 1.083,
+          "fg": 1.02,
+          "abv": 8.27,
+          "ibu": 28.6,
+          "color": 21.8
+        }
+      },
+      {
+        "id": "7440adc5-2cbf-41b2-9263-54c7450f25a6",
+        "before": {
+          "og": 1.053,
+          "fg": 1.01,
+          "abv": 5.64,
+          "ibu": 45.7,
+          "color": 6.5
+        },
+        "after": {
+          "og": 1.053,
+          "fg": 1.01,
+          "abv": 5.64,
+          "ibu": 45.7,
+          "color": 4.7
+        }
+      },
+      {
+        "id": "96d79951-6e54-4518-ae35-73606335eed1",
+        "before": {
+          "og": 1.04,
+          "fg": 1.006,
+          "abv": 4.3,
+          "ibu": 8,
+          "color": 3
+        },
+        "after": {
+          "og": 1.044,
+          "fg": 1.008,
+          "abv": 4.73,
+          "ibu": 5.7,
+          "color": 4.4
+        }
+      },
+      {
+        "id": "4b382cab-4ed8-4276-b02b-a1922ffe135c",
+        "before": {
+          "og": 1.071,
+          "fg": 1.023,
+          "abv": 6.3,
+          "ibu": 61.4,
+          "color": 9.8
+        },
+        "after": {
+          "og": 1.071,
+          "fg": 1.024,
+          "abv": 6.17,
+          "ibu": 61.4,
+          "color": 9.8
+        }
+      },
+      {
+        "id": "afb2495d-3f4c-4417-8e24-2bb9c43f7531",
+        "before": {
+          "og": 1.06,
+          "fg": 1.014,
+          "abv": 6.1,
+          "ibu": 22,
+          "color": 11
+        },
+        "after": {
+          "og": 1.097,
+          "fg": 1.017,
+          "abv": 10.5,
+          "ibu": 15.4,
+          "color": 14.3
+        }
+      },
+      {
+        "id": "34747f7b-d805-49f7-8a40-54c2c5999057",
+        "before": {
+          "og": 1.083,
+          "fg": 1.02,
+          "abv": 8.2,
+          "ibu": 53,
+          "color": 43
+        },
+        "after": {
+          "og": 1.089,
+          "fg": 1.016,
+          "abv": 9.58,
+          "ibu": 40.7,
+          "color": 41.6
+        }
+      },
+      {
+        "id": "f2a2f33e-5024-49d0-b8f1-adde91408950",
+        "before": {
+          "og": 1.047,
+          "fg": 1.01,
+          "abv": 4.8,
+          "ibu": 24,
+          "color": 4
+        },
+        "after": {
+          "og": 1.055,
+          "fg": 1.013,
+          "abv": 5.51,
+          "ibu": 13,
+          "color": 5
+        }
+      },
+      {
+        "id": "a83be695-d90d-4555-b8cf-cb4745718b3c",
+        "before": {
+          "og": 1.071,
+          "fg": 1.023,
+          "abv": 6.3,
+          "ibu": 61.4,
+          "color": 9.8
+        },
+        "after": {
+          "og": 1.071,
+          "fg": 1.024,
+          "abv": 6.17,
+          "ibu": 61.4,
+          "color": 9.8
+        }
+      },
+      {
+        "id": "9d54c306-8808-4c65-adf4-f3e63c9cf641",
+        "before": {
+          "og": 1.041,
+          "fg": 1.01,
+          "abv": 4.1,
+          "ibu": 41,
+          "color": 35
+        },
+        "after": {
+          "og": 1.045,
+          "fg": 1.012,
+          "abv": 4.33,
+          "ibu": 30.9,
+          "color": 36
+        }
+      },
+      {
+        "id": "af7b007f-0d71-4aaa-b416-dfcf3d9ca02c",
+        "before": {
+          "og": 1.09,
+          "fg": 1.022,
+          "abv": 9,
+          "ibu": 75,
+          "color": 38
+        },
+        "after": {
+          "og": 1.1,
+          "fg": 1.024,
+          "abv": 9.98,
+          "ibu": 37.5,
+          "color": 43
+        }
+      },
+      {
+        "id": "75c331b1-fc5d-4db1-828a-0547be54baf8",
+        "before": {
+          "og": 1.052,
+          "fg": 1.014,
+          "abv": 5,
+          "ibu": 33,
+          "color": 39
+        },
+        "after": {
+          "og": 1.063,
+          "fg": 1.018,
+          "abv": 5.91,
+          "ibu": 27.6,
+          "color": 29.2
+        }
+      },
+      {
+        "id": "cf4aa96c-01d7-4538-985f-a2a006634563",
+        "before": {
+          "og": 1.058,
+          "fg": 1.011,
+          "abv": 6.9,
+          "ibu": 17,
+          "color": 4
+        },
+        "after": {
+          "og": 1.053,
+          "fg": 1.01,
+          "abv": 5.64,
+          "ibu": 17,
+          "color": 5.2
+        }
+      },
+      {
+        "id": "de710a89-1cbe-45e1-b498-a89caf12167b",
+        "before": {
+          "og": 1.042,
+          "fg": 1.01,
+          "abv": 4.2,
+          "ibu": 15,
+          "color": 4
+        },
+        "after": {
+          "og": 1.043,
+          "fg": 1.009,
+          "abv": 4.46,
+          "ibu": 18.5,
+          "color": 4.3
+        }
+      },
+      {
+        "id": "6f1b2225-86a8-4900-af3e-14f9ef1d5871",
+        "before": {
+          "og": 1.055,
+          "fg": 1.009,
+          "abv": 6,
+          "ibu": 32,
+          "color": 4
+        },
+        "after": {
+          "og": 1.054,
+          "fg": 1.01,
+          "abv": 5.78,
+          "ibu": 17.6,
+          "color": 4.6
+        }
+      },
+      {
+        "id": "774724c1-2ec6-4f2c-b49e-87cab42ee998",
+        "before": {
+          "og": 1.044,
+          "fg": 1.015,
+          "abv": 3.8,
+          "ibu": 21,
+          "color": 7
+        },
+        "after": {
+          "og": 1.041,
+          "fg": 1.008,
+          "abv": 4.33,
+          "ibu": 13.2,
+          "color": 5.3
+        }
+      },
+      {
+        "id": "38ca96a1-a531-4fd4-8cc3-33f5f0254872",
+        "before": {
+          "og": 1.061,
+          "fg": 1.012,
+          "abv": 6.5,
+          "ibu": 56,
+          "color": 5
+        },
+        "after": {
+          "og": 1.067,
+          "fg": 1.013,
+          "abv": 7.09,
+          "ibu": 45,
+          "color": 5.6
+        }
+      },
+      {
+        "id": "52ffb2b1-9097-4712-900d-697b2bb9cbee",
+        "before": {
+          "og": 1.054,
+          "fg": 1.012,
+          "abv": 5.5,
+          "ibu": 30,
+          "color": 15
+        },
+        "after": {
+          "og": 1.059,
+          "fg": 1.014,
+          "abv": 5.91,
+          "ibu": 29.6,
+          "color": 16
+        }
+      },
+      {
+        "id": "b79b7da9-c140-4a06-ae60-3d184b810d22",
+        "before": {
+          "og": 1.071,
+          "fg": 1.023,
+          "abv": 6.3,
+          "ibu": 61.4,
+          "color": 9.8
+        },
+        "after": {
+          "og": 1.071,
+          "fg": 1.024,
+          "abv": 6.17,
+          "ibu": 61.4,
+          "color": 9.8
+        }
+      },
+      {
+        "id": "14a9439c-8fe0-437c-841a-cdd416280fa4",
+        "before": {
+          "og": 1.067,
+          "fg": 1.013,
+          "abv": 7.1,
+          "ibu": 23,
+          "color": 6
+        },
+        "after": {
+          "og": 1.063,
+          "fg": 1.014,
+          "abv": 6.43,
+          "ibu": 14.9,
+          "color": 9.5
+        }
+      },
+      {
+        "id": "23aeab64-635c-4091-9216-1badcd5d2113",
+        "before": {
+          "og": 1.088,
+          "fg": 1.025,
+          "abv": 8.3,
+          "ibu": 82,
+          "color": 39
+        },
+        "after": {
+          "og": 1.117,
+          "fg": 1.025,
+          "abv": 12.08,
+          "ibu": 35.7,
+          "color": 84.2
+        }
+      },
+      {
+        "id": "db07ca32-6f8a-4b49-96d7-0985018124ef",
+        "before": {
+          "og": 1.06,
+          "fg": 1.014,
+          "abv": 5.9,
+          "ibu": 35,
+          "color": 14
+        },
+        "after": {
+          "og": 1.066,
+          "fg": 1.022,
+          "abv": 5.78,
+          "ibu": 30.6,
+          "color": 13.1
+        }
+      },
+      {
+        "id": "0ae7e640-db5c-420f-aa23-cceda83e14ae",
+        "before": {
+          "og": 1.057,
+          "fg": 1.014,
+          "abv": 5.8,
+          "ibu": 49,
+          "color": 4
+        },
+        "after": {
+          "og": 1.054,
+          "fg": 1.009,
+          "abv": 5.91,
+          "ibu": 38.3,
+          "color": 5.5
+        }
+      },
+      {
+        "id": "3927fd29-f303-4050-aaea-3311729fde69",
+        "before": {
+          "og": 1.099,
+          "fg": 1.026,
+          "abv": 10.6,
+          "ibu": 28,
+          "color": 20
+        },
+        "after": {
+          "og": 1.098,
+          "fg": 1.035,
+          "abv": 8.27,
+          "ibu": 10.8,
+          "color": 19.7
+        }
+      },
+      {
+        "id": "eacc836f-dcfd-49e7-adeb-35cfb89bcd7b",
+        "before": {
+          "og": 1.047,
+          "fg": 1.011,
+          "abv": 4.8,
+          "ibu": 20,
+          "color": 4
+        },
+        "after": {
+          "og": 1.052,
+          "fg": 1.009,
+          "abv": 5.64,
+          "ibu": 20.2,
+          "color": 5.4
+        }
+      },
+      {
+        "id": "c531abb3-ce32-451b-b768-f6fa5593b9d1",
+        "before": {
+          "og": 1.045,
+          "fg": 1.011,
+          "abv": 4.5,
+          "ibu": 22,
+          "color": 6
+        },
+        "after": {
+          "og": 1.045,
+          "fg": 1.008,
+          "abv": 4.86,
+          "ibu": 14,
+          "color": 5.6
+        }
+      },
+      {
+        "id": "451da85f-fd05-41e2-96a4-6fc08cb8e8e5",
+        "before": {
+          "og": 1.048,
+          "fg": 1.011,
+          "abv": 4.8,
+          "ibu": 20,
+          "color": 10
+        },
+        "after": {
+          "og": 1.046,
+          "fg": 1.007,
+          "abv": 5.12,
+          "ibu": 12.2,
+          "color": 6.2
+        }
+      }
+    ]
+  },
+  "checks": {
+    "bestmalz-best-heidelberg-malt": {
+      "isActive": true,
+      "colorMin": null,
+      "colorMax": 2.9,
+      "protein": 10,
+      "packageSelectionRequired": false
+    },
+    "viking-malt-caramel-250-fi-special": {
+      "isActive": true,
+      "colorMin": 220.218,
+      "colorMax": 220.218,
+      "protein": null,
+      "packageSelectionRequired": false
+    },
+    "viking-malt-pale-ale-fi-base": {
+      "isActive": true,
+      "colorMin": 4,
+      "colorMax": 7,
+      "protein": 11.2,
+      "packageSelectionRequired": false
+    },
+    "the-swaen-swaen-pilsner-nl-base": {
+      "isActive": true,
+      "colorMin": 3,
+      "colorMax": 4.5,
+      "protein": 10.25,
+      "packageSelectionRequired": false
+    },
+    "fermentis-la-01": {
+      "isActive": true,
+      "packageSelectionRequired": true
+    },
+    "weyermann-dark-wheat-de-base": {
+      "isActive": false,
+      "colorMin": 18.288,
+      "colorMax": 18.288,
+      "protein": 12,
+      "packageSelectionRequired": false
+    }
+  }
+}

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   appendBatchIdParam,
+  convertLabelGravityFields,
   LABEL_STUDIO_FIELD_KEYS,
   parseLabelStudioQuery,
   readBatchIdParam,
@@ -30,6 +31,21 @@ const baseDefaults: LabelStudioState = {
 };
 
 describe("label studio URL round-trip", () => {
+  it("правки OG/FG всегда передаются вместе со шкалой, даже совпадающей с профилем", () => {
+    const state = { ...baseDefaults, fields: { ...baseDefaults.fields, og: "13,0", fg: "0" } };
+    const query = Object.fromEntries(serializeLabelStudioState(state, baseDefaults));
+    expect(query.gravityUnit).toBe("plato");
+    expect(parseLabelStudioQuery(query, { qrAvailable: true })).toMatchObject({
+      gravityUnit: "plato", fields: { og: "13,0", fg: "0" }
+    });
+  });
+
+  it("смена шкалы наклейки переводит OG/FG, сохраняя остальные поля", () => {
+    const fields = { ...emptyFields, title: "Проверка", og: "12,4", fg: "-0.5" };
+    expect(convertLabelGravityFields(fields, "plato", "sg")).toEqual({ ...fields, og: "1.050", fg: "0.998" });
+    expect(convertLabelGravityFields({ ...fields, og: "", fg: "" }, "plato", "sg")).toEqual({ ...fields, og: "", fg: "" });
+  });
+
   it("serialize→parse восстанавливает изменённые поля/настройки", () => {
     const state: LabelStudioState = {
       template: "craft",

@@ -12,6 +12,7 @@ import type {
 } from "./types";
 
 const WEIGHT_FACTORS_TO_GRAMS: Record<WeightUnit, number> = {
+  mg: 0.001,
   g: 1,
   kg: 1000,
   oz: 28.349523125,

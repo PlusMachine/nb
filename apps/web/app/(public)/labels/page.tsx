@@ -17,8 +17,8 @@ import { getServerEnv } from "@/lib/env";
 // просто не показываем.
 
 export const metadata: Metadata = {
-  title: "Наклейки на бутылки",
-  description: "Генератор наклеек на бутылки домашнего пива: заполните поля и скачайте готовый файл для печати (PNG или PDF).",
+  title: "Этикетки на бутылки",
+  description: "Генератор этикеток на бутылки домашнего пива: заполните поля и скачайте готовый файл для печати (PNG или PDF).",
   alternates: {
     canonical: "/labels"
   },
@@ -29,8 +29,8 @@ export const metadata: Metadata = {
     locale: "ru_RU",
     siteName: getServerEnv().SITE_NAME,
     url: "/labels",
-    title: "Наклейки на бутылки",
-    description: "Генератор наклеек на бутылки домашнего пива: заполните поля и скачайте готовый файл для печати.",
+    title: "Этикетки на бутылки",
+    description: "Генератор этикеток на бутылки домашнего пива: заполните поля и скачайте готовый файл для печати.",
     images: [getSectionOgImage("labels")]
   }
 };
@@ -51,7 +51,7 @@ export default async function LabelsPage({ searchParams }: { searchParams?: Prom
     <Suspense fallback={null}>
       <LabelStudio
         endpoint="/api/labels/custom"
-        heading="Наклейки на бутылки"
+        heading="Этикетки на бутылки"
         defaultSlots={buildCustomLabelSlots({ gravityUnit })}
         gravityUnit={gravityUnit}
         qrUnavailableReason="custom"

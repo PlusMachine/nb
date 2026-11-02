@@ -35,7 +35,7 @@ export function FeedbackWidget({ open, onOpenChange, prefill, isAuthenticated }:
 
   const submit = async () => {
     if (message.trim().length < 5) {
-      setError("Опишите чуть подробнее — минимум 5 символов.");
+      setError("Напишите хотя бы 5 символов.");
       return;
     }
     setSubmitting(true);
@@ -173,7 +173,7 @@ export function FeedbackWidget({ open, onOpenChange, prefill, isAuthenticated }:
             Отмена
           </Button>
           <Button type="button" variant="primary" onClick={() => void submit()} disabled={submitting}>
-            {submitting ? "Отправляем..." : "Отправить"}
+            {submitting ? "Отправляем…" : "Отправить"}
           </Button>
         </div>
       </div>

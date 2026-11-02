@@ -118,7 +118,7 @@ const userFacingIngredientKindOptions = [
   },
   {
     value: "fermentable",
-    label: "Сбраживаемое",
+    label: "Сбраживаемое сырьё",
     description: "Сахар, сироп, мёд",
     category: "fermentable",
     subtype: "fermentable",
@@ -135,7 +135,7 @@ const userFacingIngredientKindOptions = [
   {
     value: "yeast",
     label: "Дрожжи",
-    description: "Форма и аттенюация",
+    description: "Штамм и степень сбраживания",
     category: "yeast",
     subtype: null,
     icon: FlaskConical
@@ -213,7 +213,7 @@ const resolveDisplayNamePlaceholder = (kind: UserFacingIngredientKind) => {
     return "Например, Молочная кислота 80%";
   }
 
-  return "Например, Irish Moss";
+  return "Например, Ирландский мох";
 };
 
 const resolveKindToneClasses = (category: IngredientCategory): ToneClasses => {
@@ -613,7 +613,7 @@ export function CustomCatalogIngredientForm({
                 <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_220px]">
                   <label className="text-sm">
                     <div className="flex items-center gap-2">
-                      <span>Альфа-кислота, %</span>
+                      <span>Альфа-кислоты, %</span>
                       <FieldBadge required />
                     </div>
                     <input type="number" min="0" max="100" step="0.1" value={hopAlphaAcidPct} onChange={(event) => setHopAlphaAcidPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base" />
@@ -621,7 +621,7 @@ export function CustomCatalogIngredientForm({
                   </label>
                   <label className="text-sm">
                     <div className="flex items-center gap-2">
-                      <span>Бета-кислота, %</span>
+                      <span>Бета-кислоты, %</span>
                       <FieldBadge required={false} />
                     </div>
                     <input type="number" min="0" max="100" step="0.1" value={hopBetaAcidPct} onChange={(event) => setHopBetaAcidPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base" />
@@ -702,7 +702,7 @@ export function CustomCatalogIngredientForm({
                     </div>
                     <label className="text-sm">
                       <div className="flex items-center gap-2">
-                        <span>Макс. засыпь, %</span>
+                        <span>Максимальная доля в засыпи, %</span>
                         <FieldBadge required={false} />
                       </div>
                       <input type="number" min="0" max="100" step="0.1" value={fermentableMaxUsagePct} onChange={(event) => setFermentableMaxUsagePct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base" placeholder="Не указано" />
@@ -731,7 +731,7 @@ export function CustomCatalogIngredientForm({
                 <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                   <label className="text-sm">
                     <div className="flex items-center gap-2">
-                      <span>Аттенюация, %</span>
+                      <span>Степень сбраживания, %</span>
                       <FieldBadge required />
                     </div>
                     <input type="number" min="0" max="100" step="0.1" value={yeastAttenuationPct} onChange={(event) => setYeastAttenuationPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base" />

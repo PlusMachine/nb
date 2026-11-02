@@ -222,11 +222,16 @@ const computeAggregatedShoppingLines = async (userId: string): Promise<Aggregate
   const plannedBatches = allBatches.filter(
     (batch): batch is PlannedBrewBatch =>
       batch.status === "planned" && Boolean(batch.recipeId)
+  ).sort((a, b) =>
+    (a.plannedFor?.getTime() ?? Number.MAX_SAFE_INTEGER) - (b.plannedFor?.getTime() ?? Number.MAX_SAFE_INTEGER)
+    || a.createdAt.getTime() - b.createdAt.getTime()
+    || a.id.localeCompare(b.id)
   );
 
   const matchByBatch = plannedBatches.length > 0
     ? await computeRecipeMatchesForBrewBatches({
         userId,
+        shareInventory: true,
         batches: plannedBatches.map((batch) => ({ brewBatchId: batch.id, recipeId: batch.recipeId }))
       })
     : ({} as Record<string, RecipeMatchDto>);

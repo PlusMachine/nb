@@ -309,10 +309,11 @@ const renderBeerXmlMash = (canonical: CanonicalRecipe) => {
 const getRecipeImportStats = (recipe: RecipeDetailDto) => {
   const importMeta = isRecord(recipe.importMeta) ? recipe.importMeta : null;
   const importedStats = isRecord(importMeta?.importedStats) ? importMeta.importedStats : null;
+  const bitternessEstimate = recipe.bitternessEstimate ?? recipe.calculationMeta?.bitternessEstimate;
   return {
     og: recipe.og ?? readFiniteNumber(importedStats?.og),
     fg: recipe.fg ?? readFiniteNumber(importedStats?.fg),
-    ibu: recipe.ibu ?? readFiniteNumber(importedStats?.ibu),
+    ibu: bitternessEstimate?.missing.length ? null : recipe.ibu ?? readFiniteNumber(importedStats?.ibu),
     color: recipe.color ?? readFiniteNumber(importedStats?.color),
     abv: recipe.abv ?? readFiniteNumber(importedStats?.abv)
   };

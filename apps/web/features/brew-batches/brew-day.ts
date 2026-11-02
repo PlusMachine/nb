@@ -121,6 +121,8 @@ const fmtAmount = (record: Record<string, unknown>): string | null => {
   return packHint ? `${base} (${packHint})` : base;
 };
 
+export const formatBrewAdditionAmount = fmtAmount;
+
 const joinDetail = (...parts: Array<string | null>): string | null => {
   const filtered = parts.filter((part): part is string => Boolean(part && part.trim()));
   return filtered.length ? filtered.join(" · ") : null;
@@ -391,7 +393,7 @@ export const buildBrewDaySteps = (snapshot: BrewPlanSnapshot): BrewDayStageGroup
     .filter(({ raw }) => isRecord(raw) && readString(raw, "stage") === "boil")
     .map(({ raw, index }) => {
       const record = raw as Record<string, unknown>;
-      const timing = readNumber(record, "timeOffsetMinutes");
+      const timing = readAdditionTiming(record);
       return {
         record,
         index,
@@ -798,7 +800,14 @@ export const normalizeBrewDayProgress = (raw: unknown): BrewDayProgress => {
     }
     steps[key] = {
       done: value.done === true,
-      timerStartedAt: typeof value.timerStartedAt === "string" ? value.timerStartedAt : null
+      timerStartedAt: typeof value.timerStartedAt === "string" ? value.timerStartedAt : null,
+      ...(typeof value.timerDurationSeconds === "number" && Number.isFinite(value.timerDurationSeconds) && value.timerDurationSeconds >= 0 ? { timerDurationSeconds: value.timerDurationSeconds } : {}),
+      ...(typeof value.completedAt === "string" || value.completedAt === null ? { completedAt: value.completedAt as string | null } : {}),
+      ...(typeof value.measurementValue === "number" && Number.isFinite(value.measurementValue) ? { measurementValue: value.measurementValue } : {}),
+      ...(typeof value.skipped === "boolean" ? { skipped: value.skipped } : {}),
+      ...(typeof value.measurementOperationId === "string" ? { measurementOperationId: value.measurementOperationId } : {}),
+      ...(typeof value.gravitySg === "number" && Number.isFinite(value.gravitySg) ? { gravitySg: value.gravitySg } : {}),
+      ...(Array.isArray(value.checkedItems) ? { checkedItems: value.checkedItems.filter((item): item is string => typeof item === "string") } : {})
     };
   }
   const updatedAt = typeof raw.updatedAt === "string" ? raw.updatedAt : null;
@@ -809,11 +818,13 @@ export const normalizeBrewDayProgress = (raw: unknown): BrewDayProgress => {
 export const applyBrewDayStepPatch = (
   progress: BrewDayProgress,
   stepId: string,
-  patch: { done?: boolean; timerStartedAt?: string | null },
+  patch: Partial<BrewDayStepState>,
   now: string
 ): BrewDayProgress => {
   const current = progress.steps[stepId] ?? defaultStepState();
   const next: BrewDayStepState = {
+    ...current,
+    ...Object.fromEntries(Object.entries(patch).filter(([, value]) => value !== undefined)),
     done: patch.done ?? current.done,
     timerStartedAt: patch.timerStartedAt !== undefined ? patch.timerStartedAt : current.timerStartedAt
   };
@@ -891,7 +902,7 @@ export const buildFinishBrewConfirm = ({
     );
   }
 
-  parts.push("Партия перейдёт в «Завершена», подведём итог. Этап можно вернуть через меню ⋯ → «Изменить этап».");
+  parts.push("Откроются итоги партии. Вернуться к брожению можно через меню ⋯ → «Изменить этап».");
 
   return {
     title: "Завершить партию?",

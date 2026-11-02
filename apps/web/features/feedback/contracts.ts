@@ -41,7 +41,7 @@ export const feedbackInputSchema = z.object({
     .string()
     .trim()
     .min(5, "Опишите чуть подробнее — минимум 5 символов.")
-    .max(2000, "Слишком длинно — до 2000 символов."),
+    .max(2000, "Сократите сообщение до 2000 символов."),
   contactEmail: z
     .string()
     .trim()

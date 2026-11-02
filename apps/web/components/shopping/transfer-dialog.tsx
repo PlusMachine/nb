@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Button, Dialog, DialogCloseButton, DialogFooter, DialogHeader, useToast } from "@nb/ui";
 
 import { NumericInput } from "@/components/shared/numeric-input";
+import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 import { parseDecimalInput } from "@/features/forms/numeric-validation";
 import { formatInventoryUnitLabel, type InventoryUnit } from "@/features/inventory/units";
 import { transferCheckedToStockAction } from "@/features/shopping/actions";
@@ -173,6 +174,7 @@ export function TransferDialog({
   const [quantities, setQuantities] = useState<Record<string, string>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [closeConfirmOpen, setCloseConfirmOpen] = useState(false);
 
   const { transferable, unresolved } = deriveRows(groups, manualItems);
 
@@ -193,6 +195,12 @@ export function TransferDialog({
 
   const allQuantitiesValid = transferable.every((row) => isValidQuantity(quantities[row.key] ?? ""));
   const confirmDisabled = isPending || transferable.length === 0 || !allQuantitiesValid;
+  const hasUnsavedChanges = () => transferable.some((row) => (quantities[row.key] ?? String(row.defaultQuantity)) !== String(row.defaultQuantity));
+  const requestClose = () => {
+    if (isPending) return;
+    if (hasUnsavedChanges()) setCloseConfirmOpen(true);
+    else onOpenChange(false);
+  };
 
   const submit = () => {
     if (confirmDisabled) {
@@ -228,10 +236,12 @@ export function TransferDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} title="Пополнить склад" hideTitle size="lg">
+    <>
+    <Dialog open={open} onOpenChange={onOpenChange} title="Принять покупку" hideTitle size="lg"
+      guard={{ isDirty: () => isPending || hasUnsavedChanges(), onGuardedClose: () => { if (!isPending) setCloseConfirmOpen(true); } }}>
       <DialogHeader>
-        <h3 className="text-base font-semibold text-foreground">Пополнить склад</h3>
-        <DialogCloseButton />
+        <h3 className="text-base font-semibold text-foreground">Принять покупку</h3>
+        <DialogCloseButton disabled={isPending} />
       </DialogHeader>
 
       <div className="space-y-4 p-5">
@@ -266,8 +276,8 @@ export function TransferDialog({
         ) : null}
       </div>
 
-      <DialogFooter>
-        <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
+      <DialogFooter className="sticky bottom-0 z-20 bg-popover">
+        <Button type="button" variant="outline" onClick={requestClose} disabled={isPending}>
           Отмена
         </Button>
         {transferable.length > 0 ? (
@@ -277,5 +287,9 @@ export function TransferDialog({
         ) : null}
       </DialogFooter>
     </Dialog>
+    <ConfirmActionDialog open={closeConfirmOpen} title="Закрыть без сохранения?"
+      description="Введённые количества будут сброшены." confirmLabel="Закрыть" cancelLabel="Продолжить ввод"
+      onConfirm={() => { setCloseConfirmOpen(false); onOpenChange(false); }} onClose={() => setCloseConfirmOpen(false)} />
+    </>
   );
 }

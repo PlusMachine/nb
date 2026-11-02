@@ -301,16 +301,16 @@ export const consumablePickerGroupOrder = [
 ] as const;
 
 export const consumablePickerGroupLabels: Record<string, string> = {
-  technical_additives: "Техдобавки",
+  technical_additives: "Технологические добавки",
   lauter_aid: "Фильтрация затора",
   spice: "Специи",
-  citrus_zest: "Цедра и цитрус",
+  citrus_zest: "Цедра и цитрусовые",
   herb_flower: "Травы и цветы",
   coffee_cacao: "Кофе/какао",
-  wood_aging: "Дерево/выдержка",
+  wood_aging: "Древесина для выдержки",
   flavoring: "Ароматизаторы",
   sanitizer: "Дезинфицирующие средства",
-  cleaner: "Мойка",
+  cleaner: "Моющие средства",
   packaging: "Тара и укупорка",
   gas: "Газы",
   other: "Другое"
@@ -337,14 +337,14 @@ const consumableFormLabels: Record<string, string> = {
   crystal: "Кристаллы",
   crystals: "Кристаллы",
   cylinder: "Баллон",
-  dried_berries: "Сушеные ягоды",
-  dried_chili: "Сушеный чили",
-  dried_flowers: "Сушеные цветы",
+  dried_berries: "Сушёные ягоды",
+  dried_chili: "Сушёный чили",
+  dried_flowers: "Сушёные цветы",
   dried_fruit: "Сухофрукты",
   dried_or_fresh: "Свежие/сушеные",
-  dried_peel: "Сушеная цедра",
-  dried_root: "Сушеный корень",
-  dried_tips: "Сушеные побеги",
+  dried_peel: "Сушёная цедра",
+  dried_root: "Сушёный корень",
+  dried_tips: "Сушёные побеги",
   extract: "Экстракт",
   flakes: "Хлопья",
   fresh_or_dried: "Свежие/сушеные",
@@ -358,7 +358,7 @@ const consumableFormLabels: Record<string, string> = {
   ground: "Молотый",
   husk: "Лузга",
   liquid: "Жидкость",
-  nibs: "Нибсы",
+  nibs: "Какао-крупка",
   paste: "Паста",
   pellets: "Гранулы",
   peppercorns: "Горошины",
@@ -367,7 +367,7 @@ const consumableFormLabels: Record<string, string> = {
   powder: "Порошок",
   process: "Процесс",
   seed: "Семена",
-  solid: "Твердое",
+  solid: "Твёрдая форма",
   solution: "Раствор",
   spice_blend: "Смесь специй",
   stick: "Палочки",
@@ -627,19 +627,16 @@ const normalizePackageUnit = (value?: string | null) => {
 };
 
 export const formatConsumablePackageLabel = (variant?: Pick<
-  IngredientPackageVariantDto,
-  "packageAmount" | "packageUnit"
-> | null) => {
-  if (!variant || variant.packageAmount == null) {
-    return null;
+  IngredientPackageVariantDto, "packageAmount" | "packageUnit"
+> & Partial<Pick<IngredientPackageVariantDto, "stockContentAmount" | "stockContentUnit">> | null) => {
+  if (!variant || variant.packageAmount == null) return null;
+  const originalUnit = variant.packageUnit?.trim() ?? "";
+  const labels: Record<string,string> = { mg:"мг",g:"г",kg:"кг",ml:"мл",l:"л",pcs:"шт.",item:"шт.",pack:"уп.",oz:"унц.",lb:"фунт",gal:"гал" };
+  const format = (amount: number) => amount.toLocaleString("ru-RU", { maximumFractionDigits: 3 });
+  if (originalUnit === "fl oz (US)" && variant.stockContentAmount != null && variant.stockContentUnit === "ml") {
+    return `${format(variant.stockContentAmount)} мл · ${format(variant.packageAmount)} fl oz`;
   }
-
-  const unit = normalizePackageUnit(variant.packageUnit);
-  if (!unit) {
-    return String(variant.packageAmount);
-  }
-
-  return `${variant.packageAmount} ${unit}`;
+  return `${format(variant.packageAmount)}${originalUnit ? " " + (labels[originalUnit.toLowerCase()] ?? originalUnit) : ""}`;
 };
 
 export const resolveConsumablePackageVariantName = (

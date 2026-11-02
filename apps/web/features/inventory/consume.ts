@@ -8,6 +8,7 @@ import {
 import {
   convertInventoryNormalizedToUnit,
   resolveInventoryPackEquivalent,
+  resolveInventoryItemPackEquivalent,
   type InventoryPackEquivalent
 } from "./pack";
 import {
@@ -73,7 +74,7 @@ export type InventoryConsumeContext = {
  */
 export const resolveInventoryConsumeContext = (item: InventoryListItemDto): InventoryConsumeContext => {
   const profile = resolveItemUnitProfile(item);
-  const packEquivalent = resolveInventoryPackEquivalent(item.source.technicalData);
+  const packEquivalent = resolveInventoryItemPackEquivalent({ packageVariant: item.source.packageVariant, technicalData: item.source.technicalData });
   const remainingDisplay = resolveInventoryMeasurementForDisplay(buildInventoryDisplayInput(item));
 
   return {

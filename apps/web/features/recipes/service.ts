@@ -1,3 +1,6 @@
+import { isPhysicalIngredient, derivedCatalogIngredientId } from "../ingredients/material-policy";
+import { isHopUseIncludedInBitternessFormula } from "@nb/brewing-core";
+import { calculateVerifiedExtractIbu, type RecipeBitternessIssue, type RecipeBitternessEstimate } from "./bitterness-completeness";
 import {
   and,
   asc,
@@ -116,6 +119,7 @@ import {
   fermentableAppliesMashEfficiency,
   getIngredientAlphaAcidPercent,
   getIngredientColorLovibond,
+  isFermentableIncludedInCalculations,
   getIngredientPotentialPpg
 } from "../ingredients/technical-fields";
 import { ingredientCategories, ingredientTypes } from "../ingredients/contracts";
@@ -773,6 +777,7 @@ const prepareRecipeIngredientEntries = async (
 
     if (ingredient.ingredientCatalogItemId) {
       const catalog = await ensureCatalogIngredientExists(ingredient.ingredientCatalogItemId, client);
+      if (!isPhysicalIngredient(catalog)) throw new Error("INGREDIENT_NOT_STOCKABLE");
       resolvedSource = buildCatalogIngredientLinkage(catalog);
       rawSource = catalog;
       if (ingredient.familyId != null && ingredient.familyId !== resolvedSource.familyId) {
@@ -780,6 +785,12 @@ const prepareRecipeIngredientEntries = async (
       }
     } else if (ingredient.userCustomIngredientId) {
       const custom = await ensureOwnedCustomIngredient(authorId, ingredient.userCustomIngredientId, client);
+      if (!isPhysicalIngredient(custom)) throw new Error("INGREDIENT_NOT_STOCKABLE");
+      const derivedId = derivedCatalogIngredientId(custom);
+      if (derivedId) {
+        const base = await client.query.ingredients.findFirst({ where: eq(ingredients.id, derivedId) });
+        if (base && !isPhysicalIngredient(base)) throw new Error("INGREDIENT_NOT_STOCKABLE");
+      }
       resolvedSource = buildCustomIngredientLinkage(custom);
       rawSource = custom;
       if (ingredient.familyId != null) {
@@ -1297,6 +1308,7 @@ const mapRecipeDetailDto = async (
     calculationMeta,
     fgEstimateMode: calculationMeta.fgEstimateMode ?? null,
     fgEstimateDetails: calculationMeta.fgEstimateDetails ?? null,
+    bitternessEstimate: calculationMeta.bitternessEstimate ?? null,
     draftState: (recipe.draftState as Record<string, unknown> | null | undefined) ?? null,
     importMeta: (recipe.importMeta as Record<string, unknown> | null | undefined) ?? null,
     equipmentProfileId: recipe.equipmentProfileId ?? null,
@@ -1417,14 +1429,24 @@ const computeRecipeStatsSnapshot = (input: {
   const efficiency = input.efficiency ?? DEFAULT_EFFICIENCY;
   const fermentables: Array<{ id: string; name: string; weightKg: number; potentialPpg: number; colorLovibond: number; appliesBrewhouseEfficiency: boolean }> = [];
   const hops: HopAdditionInput[] = [];
+  const bitternessMissing: RecipeBitternessIssue[] = [];
+  let extractIbu = 0;
+  let verifiedExtractCount = 0;
 
   for (const ingredient of input.ingredients) {
-    if (ingredient.type === "fermentable" || ingredient.type === "malt") {
+    if ((ingredient.type === "fermentable" || ingredient.type === "malt")
+      && isFermentableIncludedInCalculations(ingredient.source.technicalData)) {
       const weightKg = ingredient.amountNormalizedUnit === "g"
         ? roundTo(ingredient.amountNormalizedQuantity / 1000, 3)
         : 0;
 
       if (weightKg > 0) {
+        const data = ingredient.source.technicalData;
+        if (data?.type === "fermentable" && (data.hoppingState === "hopped" || data.isHoppedProduct === true)) {
+          const verified = calculateVerifiedExtractIbu(data.hoppedBitterness,weightKg * 1000,batchVolumeL);
+          if (verified == null) bitternessMissing.push({ingredientId:ingredient.id,name:ingredient.source.displayName,reason:"hopped_extract"});
+          else { extractIbu += verified; verifiedExtractCount++; }
+        }
         fermentables.push({
           id: ingredient.id,
           name: ingredient.source.displayName,
@@ -1456,10 +1478,15 @@ const computeRecipeStatsSnapshot = (input: {
               ? "other"
               : "boil";
 
+      const alphaAcidPercent = readNumberMeta(ingredient.stepMeta, "alphaAcidPct") ?? getIngredientAlphaAcidPercent(ingredient.source.raw);
+      if (alphaAcidPercent == null || !Number.isFinite(alphaAcidPercent) || alphaAcidPercent < 0 || alphaAcidPercent > 30) {
+        if (isHopUseIncludedInBitternessFormula(input.calculationMeta.bitternessFormula,use)) bitternessMissing.push({ingredientId:ingredient.id,name:ingredient.source.displayName,reason:"hop_alpha"});
+        continue;
+      }
       hops.push({
         id: ingredient.id,
         name: ingredient.source.displayName,
-        alphaAcidPercent: readNumberMeta(ingredient.stepMeta, "alphaAcidPct") ?? getIngredientAlphaAcidPercent(ingredient.source.raw, 5),
+        alphaAcidPercent,
         weightG,
         boilTimeMinutes: resolveHopTimeMinutes(ingredient, input.boilTimeMinutes),
         use,
@@ -1478,6 +1505,7 @@ const computeRecipeStatsSnapshot = (input: {
       abv: null,
       ibu: null,
       bitternessFormula: input.calculationMeta.bitternessFormula,
+      bitternessEstimate: {status: bitternessMissing.length ? "unavailable" : "complete",knownIbu:null,missing:bitternessMissing} as RecipeBitternessEstimate,
       color: null
     };
   }
@@ -1515,7 +1543,7 @@ const computeRecipeStatsSnapshot = (input: {
     current ?? hop.temperatureC ?? null
   ), null);
   const bitternessSettings = input.calculationMeta.bitternessSettings ?? {};
-  const ibu = hops.length && og
+  const hopIbu = hops.length && og
     ? calculateBitterness({
       formula: input.calculationMeta.bitternessFormula,
       og,
@@ -1535,6 +1563,9 @@ const computeRecipeStatsSnapshot = (input: {
       altitudeM: input.equipmentProfileSnapshot?.altitudeM ?? 0
     }).ibu
     : null;
+  const knownIbu = hopIbu != null || verifiedExtractCount > 0 ? roundTo((hopIbu ?? 0) + extractIbu,1) : null;
+  const bitternessEstimate: RecipeBitternessEstimate = { status: bitternessMissing.length ? (knownIbu == null ? "unavailable" : "partial") : "complete", knownIbu, missing: bitternessMissing };
+  const ibu = bitternessMissing.length ? null : knownIbu;
   const color = fermentables.length ? calculateColor(fermentables, batchVolumeL).srm : null;
 
   return {
@@ -1546,7 +1577,8 @@ const computeRecipeStatsSnapshot = (input: {
     abv,
     ibu,
     color,
-    bitternessFormula: input.calculationMeta.bitternessFormula
+    bitternessFormula: input.calculationMeta.bitternessFormula,
+    bitternessEstimate
   };
 };
 
@@ -1649,7 +1681,8 @@ export const recomputeRecipeStats = async (authorId: string, recipeId: string, c
   const nextCalculationMeta = sanitizeRecipeCalculationMeta({
     ...calculationMeta,
     fgEstimateMode: stats.fgEstimateMode,
-    fgEstimateDetails: stats.fgEstimateDetails
+    fgEstimateDetails: stats.fgEstimateDetails,
+    bitternessEstimate: stats.bitternessEstimate ?? null
   });
 
   const [updated] = await client.update(recipes).set({
@@ -3419,7 +3452,7 @@ export const previewRecipeDraft = async (authorId: string, payload: unknown): Pr
   });
   const styleRange = resolveRecipeStyleRange(parsed.styleId ?? null);
   const hasAnyMetric = stats.og != null || stats.fg != null || stats.abv != null || stats.ibu != null || stats.color != null;
-  const styleFit = styleRange && hasAnyMetric
+  const styleFit = styleRange && hasAnyMetric && !stats.bitternessEstimate?.missing.length
     ? evaluateStyleFit(styleRange, {
       og: stats.og ?? 0,
       fg: stats.fg ?? 0,
@@ -3439,6 +3472,7 @@ export const previewRecipeDraft = async (authorId: string, payload: unknown): Pr
     fgEstimateDetails: stats.fgEstimateDetails,
     abv: stats.abv,
     ibu: stats.ibu,
+    bitternessEstimate: stats.bitternessEstimate ?? null,
     bitternessFormula: stats.bitternessFormula,
     color: stats.color,
     styleId: parsed.styleId ?? null,

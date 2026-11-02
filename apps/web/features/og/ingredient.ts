@@ -9,7 +9,7 @@ import { OG_COLORS, resolveTitleFontSize, stripUnsupportedGlyphs, truncateForCar
 // Карточка ингредиента (docs/specs/og-images.md §5.3). Фото у ингредиентов нет —
 // карточка генерится всегда. Строка фактов зависит от типа: хмель → альфа/форма/
 // страна, солод → цвет EBC/бренд/страна (+полоса цвета пива), дрожжи →
-// аттенюация/температура/форма.
+// степень сбраживания/температура/форма.
 
 const TITLE_MAX_LENGTH = 60;
 
@@ -76,7 +76,7 @@ const buildFactsLine = (item: UserCatalogIngredientDto): string | null => {
     const temp = formatNumberRange(yeast.fermentationTempCMin, yeast.fermentationTempCMax, { digits: 0 });
     const form = resolveYeastFormLabelRu(yeast.form);
     return joinFacts([
-      attenuation ? `Аттенюация ${attenuation} %` : null,
+      attenuation ? `Степень сбраживания ${attenuation} %` : null,
       temp ? `${temp} °C` : null,
       form
     ]);

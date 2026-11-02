@@ -177,7 +177,7 @@ export function BrewRecipeOnDevicePicker({ open, onOpenChange, deviceId, deviceN
             {tab === "mine" ? (
               pushableRecipes.length === 0 ? (
                 <p className="py-4 text-sm text-muted-foreground">
-                  У вас пока нет рецептов. Создайте рецепт, чтобы варить по нему на этой пивоварне.
+                  Рецептов пока нет. Создайте рецепт для этой пивоварни.
                 </p>
               ) : (
                 <ul className="max-h-72 space-y-2 overflow-y-auto">

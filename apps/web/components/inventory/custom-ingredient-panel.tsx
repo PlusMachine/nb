@@ -20,8 +20,9 @@ type Props = {
   initialUnit?: string | null;
   preferredCurrency: SystemCurrency;
   pending: boolean;
+  continuousEntry?: boolean;
   fieldErrors?: Record<string, string>;
-  onSubmitCreate: (payload: CustomIngredientSubmitPayload) => Promise<void>;
+  onSubmitCreate: (payload: CustomIngredientSubmitPayload, keepOpen?: boolean) => Promise<void>;
   /** Не сохранённые данные — для guard'а модалки-обёртки (закрыть без подтверждения?). */
   onDirtyChange?: (dirty: boolean) => void;
 };
@@ -34,6 +35,7 @@ export function CustomIngredientPanel({
   initialUnit = null,
   preferredCurrency,
   pending,
+  continuousEntry = false,
   fieldErrors,
   onSubmitCreate,
   onDirtyChange
@@ -48,6 +50,7 @@ export function CustomIngredientPanel({
         initialUnit={initialUnit}
         preferredCurrency={preferredCurrency}
         pending={pending}
+        continuousEntry={continuousEntry}
         fieldErrors={fieldErrors}
         onSubmit={onSubmitCreate}
         onDirtyChange={onDirtyChange}

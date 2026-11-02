@@ -1,5 +1,7 @@
 "use client";
 
+import { convertWeight, type WeightUnit } from "@nb/brewing-core";
+import { convertCalciumChlorideHydrationDose } from "@/features/ingredients/water-treatment";
 import { CircleAlert, Package, Search, Sparkles, Trash2, X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -89,6 +91,21 @@ export function IngredientEditor({
     resolveRecipeFermentablePickerScopeFromIngredient(draft)
   ));
 
+  const [hydrationReplacement,setHydrationReplacement] = useState<{massG:number;fromFormula:string;toFormula:string;targetId:string}|null>(null);
+  const [fromPurity,setFromPurity] = useState("");
+  const [toPurity,setToPurity] = useState("");
+  const equivalentSaltDose = hydrationReplacement ? convertCalciumChlorideHydrationDose({ ...hydrationReplacement, fromPurityPct:Number(fromPurity.replace(",",".")),toPurityPct:Number(toPurity.replace(",",".")) }) : null;
+  const chooseIngredient = (item: Parameters<typeof applySelection>[1]) => {
+    const before=draft.technicalData?.type === "water_treatment" ? draft.technicalData.calculationFormula : null;
+    const after=item.technicalData?.type === "water_treatment" ? item.technicalData.calculationFormula : null;
+    const forms=["CaCl2","CaCl2·2H2O"];
+    if (typeof before === "string" && typeof after === "string" && before !== after && forms.includes(before) && forms.includes(after)
+      && ["mg","g","kg","oz","lb"].includes(draft.amountEnteredUnit) && Number(draft.amountEnteredQuantity.replace(",",".")) > 0) {
+      setHydrationReplacement({massG:convertWeight({value:Number(draft.amountEnteredQuantity.replace(",",".")),unit:draft.amountEnteredUnit as WeightUnit},"g").value,fromFormula:before,toFormula:after,targetId:item.id});
+      setFromPurity("");setToPurity("");
+    } else setHydrationReplacement(null);
+    onChange(applySelection(draft,item));
+  };
   const isHop = draft.category === "hop";
   const isWaterTreatmentAddFlow = !isExisting && draft.category === "water_treatment";
   const hopUseType = getHopUseType(draft);
@@ -172,7 +189,7 @@ export function IngredientEditor({
       hop: "Найти сорт или форму хмеля",
       yeast: "Найти дрожжи",
       water_treatment: "Найти соль",
-      consumable: "Найти Irish Moss, цедру, специю или другую добавку"
+      consumable: "Найти ирландский мох, цедру, специю или другую добавку"
     }[draft.category];
   const ingredientSearchType = resolveRecipeIngredientSearchType({
     category: draft.category,
@@ -439,7 +456,7 @@ export function IngredientEditor({
           {selectedPreview ? (
             <IngredientSelectionCard
               item={selectedPreview}
-              label={selectedStockPreview ? "Выбрано со склада" : selectedPreview.source === "custom" ? "Выбрано: свой ингредиент" : "Выбрано из каталога"}
+              label={selectedStockPreview ? "Выбрано со склада" : selectedPreview.source === "custom" ? "Выбран свой ингредиент" : "Выбрано из каталога"}
               actionLabel="Изменить выбор"
               onAction={() => {
                 setShowStockSearch(false);
@@ -503,7 +520,7 @@ export function IngredientEditor({
                   onValueChange={(value) => onChange(applyQueryChange(draft, value))}
                   onSelect={(item) => {
                     setShowStockSearch(false);
-                    onChange(applySelection(draft, item));
+                    chooseIngredient(item);
                   }}
                   searchIngredients={
                     sourceMode === "use_stock"
@@ -538,11 +555,22 @@ export function IngredientEditor({
                 onOverflowChange={setShowStockSearch}
                 onSelect={(item) => {
                   setShowStockSearch(false);
-                  onChange(applySelection(draft, item));
+                  chooseIngredient(item);
                 }}
               />
             </>
           )}
+          {hydrationReplacement && draft.ingredientCatalogItemId === hydrationReplacement.targetId ? (
+            <div className="space-y-3 rounded-xl border border-border bg-muted p-4 text-sm">
+              <p>Выбрана другая форма хлорида кальция. Для пересчёта дозы укажите чистоту обеих солей с упаковки.</p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label>Чистота {hydrationReplacement.fromFormula}, %<NumericInput min={0.1} max={100} value={fromPurity} onChange={event=>setFromPurity(event.target.value)} className="mt-1 w-full rounded-md border border-border bg-card p-2" /></label>
+                <label>Чистота {hydrationReplacement.toFormula}, %<NumericInput min={0.1} max={100} value={toPurity} onChange={event=>setToPurity(event.target.value)} className="mt-1 w-full rounded-md border border-border bg-card p-2" /></label>
+              </div>
+              {equivalentSaltDose != null ? <p>Эквивалентная масса: {equivalentSaltDose.toLocaleString("ru-RU")} г</p> : null}
+              <button type="button" disabled={equivalentSaltDose == null} onClick={()=>{if(equivalentSaltDose != null){onChange({...draft,amountEnteredQuantity:String(equivalentSaltDose),amountEnteredUnit:"g"});setHydrationReplacement(null)}}} className="rounded-lg border border-border bg-card px-3 py-2 disabled:opacity-50">Применить пересчёт</button>
+            </div>
+          ) : null}
           {showIngredientHint ? (
             <p className="text-xs text-destructive">Выберите ингредиент из списка, чтобы продолжить.</p>
           ) : null}
@@ -626,7 +654,7 @@ export function IngredientEditor({
             {isHop ? (
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className="space-y-1 text-xs font-medium text-foreground">
-                  Тип добавления
+                  Способ внесения
                   <select
                     value={hopUseType}
                     onChange={(event) => onChange(applyHopUseTypeChange(
@@ -658,6 +686,7 @@ export function IngredientEditor({
                       placeholder={catalogAlphaAcidPct != null ? formatEquipmentProfileRecipeValue(catalogAlphaAcidPct) : undefined}
                       className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/10"
                     />
+                    {catalogAlphaAcidPct == null && !draft.stepMeta.alphaAcidPct && hopUseType !== "dry_hop" ? <span className="block font-normal text-muted-foreground">Укажите содержание альфа-кислот с упаковки, чтобы рассчитать горечь.</span> : null}
                   </label>
                 ) : null}
 
@@ -791,7 +820,7 @@ export function IngredientEditor({
                   </select>
                 </label>
                 <label className="space-y-1 text-xs font-medium text-foreground">
-                  Время, если нужно
+                  Время (необязательно)
                   <NumericInput
                     integer
                     min={0}
@@ -838,7 +867,7 @@ export function IngredientEditor({
                   </div>
                 </fieldset>
                 <label className="space-y-1 text-xs font-medium text-foreground">
-                  Время, если нужно
+                  Время (необязательно)
                   <NumericInput
                     integer
                     min={0}

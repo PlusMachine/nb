@@ -10,14 +10,14 @@ import { streamWizardHardwareKinds, type StreamHardwareKind } from "./contracts"
 
 const INSTRUCTIONS: Record<StreamHardwareKind, string> = {
   ispindel:
-    "В веб-конфигураторе iSpindel (открывается при первом включении/через Wi-Fi-точку устройства) вставьте ссылку выше в поле Server Address, URL или Token — смотря что показывает ваша прошивка.",
+    "В настройках iSpindel выберите HTTP или HTTPS по схеме ссылки выше. В обычной прошивке адрес сервера задаётся в Server Address, а путь и параметры ссылки — в Path / URI. Для HTTPS адрес сервера должен начинаться с https://. Саму ссылку в Token / API key не вставляют. В других прошивках названия полей могут отличаться.",
   gravitymon: "В настройках GravityMon откройте раздел HTTP Push и вставьте ссылку выше как URL назначения.",
   tilt:
     "В приложении Tilt (или TiltPi/TiltBridge) откройте Настройки → Use Custom Cloud URL и вставьте ссылку выше. Телефон с приложением Tilt должен быть рядом с ферментером (связь по Bluetooth) — для надёжности лучше использовать TiltPi или TiltBridge.",
   floaty: "В приложении Floaty включите отправку на пользовательский сервер и вставьте ссылку выше как адрес назначения.",
   brewpiless: "В настройках BrewPiLess откройте раздел Remote logging и вставьте ссылку выше.",
   "rapt-pill": "RAPT Pill подключается через RAPT Cloud. Вернитесь к выбору типа подключения и выберите RAPT Cloud.",
-  "rapt-chamber": "RAPT-камера подключается через RAPT Cloud. Вернитесь к выбору типа подключения и выберите RAPT Cloud.",
+  "rapt-chamber": "Камера брожения RAPT подключается через RAPT Cloud. Вернитесь к выбору типа подключения и выберите RAPT Cloud.",
   "rapt-brewzilla": "BrewZilla подключается через RAPT Cloud. Вернитесь к выбору типа подключения и выберите RAPT Cloud.",
   other: "Устройство должно уметь отправлять HTTP push в формате iSpindel или Brewfather — впишите ссылку выше как адрес назначения (обычно поле Server/URL)."
 };

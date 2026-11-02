@@ -63,7 +63,7 @@ export function InventoryEmptyState({
     title = `Нет позиций`;
     description = `В «${filterLabel}» пока нет ингредиентов.`;
   } else if (!showFinished && !hasFilters) {
-    title = "Сейчас в наличии ничего нет";
+    title = "На складе ничего не осталось";
     description = "Включите «Показать закончившиеся», чтобы увидеть позиции с нулевым остатком.";
   } else if (showFinished) {
     title = "Ничего не найдено";

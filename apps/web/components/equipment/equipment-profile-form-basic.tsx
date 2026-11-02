@@ -245,10 +245,10 @@ export function EquipmentProfileFormFields({
           <NumberField name="fermenterLossL" label="Потери в ферментере, л" value={values.fermenterLossL} onChange={setNumberField} error={fieldErrors.fermenterLossL} />
           <NumberField name="coolingShrinkagePct" label="Уменьшение объёма при охлаждении, %" value={values.coolingShrinkagePct} onChange={setNumberField} step={0.1} max={20} error={fieldErrors.coolingShrinkagePct} />
           <NumberField name="mashTunDeadspaceL" label="Мёртвый объём заторника, л" value={values.mashTunDeadspaceL} onChange={setNumberField} error={fieldErrors.mashTunDeadspaceL} />
-          <NumberField name="minMashVolumeL" label="Мин. объём заторника, л (необязательно)" value={values.minMashVolumeL} onChange={setNumberField} error={fieldErrors.minMashVolumeL} />
+          <NumberField name="minMashVolumeL" label="Минимум заторной воды, л (необязательно)" value={values.minMashVolumeL} onChange={setNumberField} error={fieldErrors.minMashVolumeL} />
           <NumberField name="maxGrainKg" label="Макс. засыпь, кг (необязательно)" value={values.maxGrainKg} onChange={setNumberField} error={fieldErrors.maxGrainKg} />
-          <NumberField name="maxMashVolumeL" label="Макс. объём заторника, л (необязательно)" value={values.maxMashVolumeL} onChange={setNumberField} error={fieldErrors.maxMashVolumeL} />
-          <NumberField name="maxKettleVolumeL" label="Макс. объём котла, л (необязательно)" value={values.maxKettleVolumeL} onChange={setNumberField} error={fieldErrors.maxKettleVolumeL} />
+          <NumberField name="maxMashVolumeL" label="Максимум заторной воды, л (необязательно)" value={values.maxMashVolumeL} onChange={setNumberField} error={fieldErrors.maxMashVolumeL} />
+          <NumberField name="maxKettleVolumeL" label="Рабочий объём котла, л (необязательно)" value={values.maxKettleVolumeL} onChange={setNumberField} error={fieldErrors.maxKettleVolumeL} />
           <NumberField name="hopUtilizationFactor" label="Коэффициент использования хмеля" value={values.hopUtilizationFactor} onChange={setNumberField} step={0.01} min={0.01} error={fieldErrors.hopUtilizationFactor} />
           <NumberField name="altitudeM" label="Высота над уровнем моря, м" value={values.altitudeM} onChange={setNumberField} step={1} min={-500} max={9000} error={fieldErrors.altitudeM} />
           <label className="text-xs font-medium text-muted-foreground md:col-span-3">

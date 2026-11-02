@@ -31,7 +31,7 @@ export type HideRecipesActionResult =
   | { ok: true; processed: number; failed: RecipeBulkFailureGroup[] }
   | { ok: false; error: string; failed?: RecipeBulkFailureGroup[] };
 
-const firstZodMessage = (error: ZodError): string => error.issues[0]?.message ?? "Проверьте корректность данных.";
+const firstZodMessage = (error: ZodError): string => error.issues[0]?.message ?? "Проверьте введённые данные.";
 
 const ERROR_MESSAGES: Record<string, string> = {
   NOT_FOUND: "Рецепт не найден — возможно, страницу нужно обновить.",

@@ -1,0 +1,16 @@
+{
+  "checks": [
+    "three decisions and clear",
+    "separate comments across navigation",
+    "notes without a proposal",
+    "report includes pending decisions and exact comments",
+    "copy or selected-text fallback",
+    "browser reload restores all decisions",
+    "comparison remains aligned",
+    "desktop and 320/390 layouts",
+    "comments render as plain text"
+  ],
+  "clipboard": "Скопировано. Вставьте итог в сообщение в чате.",
+  "maxSnapshotBytes": 13131,
+  "pageErrors": []
+}

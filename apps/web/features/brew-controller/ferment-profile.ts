@@ -88,12 +88,12 @@ export function mapFermentationPlanToDeviceSteps(fermentationPlan: unknown): Fer
 
   const primaryTempC = readNumber(fermentationPlan, "primaryTemperatureC");
   if (primaryTempC === null) {
-    return { ok: false, error: "В плане не задана температура главного брожения" };
+    return { ok: false, error: "В рецепте не задана температура основного брожения" };
   }
   const primaryDays = readNumber(fermentationPlan, "primaryDurationDays");
 
   const steps: MappedFermentStep[] = [
-    { name: "Главное брожение", tempC: primaryTempC, hours: daysToHours(primaryDays) },
+    { name: "Основное брожение", tempC: primaryTempC, hours: daysToHours(primaryDays) },
   ];
 
   const extraSteps = Array.isArray(fermentationPlan.extraSteps) ? fermentationPlan.extraSteps : [];

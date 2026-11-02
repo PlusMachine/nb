@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 
 import { requireUser } from "@/lib/auth";
+import { listOverviewTasks } from "@/features/brew-batches/records-service";
+import { BatchTasks } from "@/features/brew-batches/components/batch-tasks";
 import { countRecipesForAuthor, countSavedRecipes, listAuthorRecipeCards } from "@/features/recipes/service";
 import { findBrewableOwnRecipesForUser } from "@/features/recipes/match-service";
 import { formatRelativeTimestamp } from "@/features/recipes/format";
@@ -277,7 +279,7 @@ function PlannedBrewsCard({ planned, showAllLink }: { planned: ActiveBrewProgres
                   )}
                 </div>
                 <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
-                  {batch.plannedFor ? plannedDateFormat.format(batch.plannedFor) : "готова к старту"}
+                  {batch.plannedFor ? plannedDateFormat.format(batch.plannedFor) : "без даты"}
                 </span>
               </Link>
             </li>
@@ -508,7 +510,8 @@ export default async function AppZonePage() {
     brewBatchCount,
     devices,
     shopping,
-    favoriteCalculators
+    favoriteCalculators,
+    overviewTasks
   ] = await Promise.all([
       countRecipesForAuthor(user.id),
       countSavedRecipes(user.id),
@@ -518,7 +521,8 @@ export default async function AppZonePage() {
       countBrewBatchesForUser(user.id),
       listUserDevices(user.id),
       buildShoppingListForUser(user.id),
-      listFavoriteCalculators(user.id, user.role)
+      listFavoriteCalculators(user.id, user.role),
+      listOverviewTasks(user.id)
     ]);
 
   const now = new Date();
@@ -605,6 +609,8 @@ export default async function AppZonePage() {
       <h1 className="text-sm font-normal text-muted-foreground">
         С возвращением, {greetingName}
       </h1>
+
+      <BatchTasks tasks={overviewTasks} overview />
 
       {attentionShown.length > 0 ? (
         <section className="space-y-3">

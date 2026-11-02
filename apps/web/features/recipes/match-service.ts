@@ -1,3 +1,4 @@
+import { resolveInventoryItemPackEquivalent, convertInventoryNormalizedToUnit, convertQuantityToInventoryNormalizedUnit, type InventoryPackEquivalent } from "../inventory/pack";
 import { and, db, eq, inArray, ingredients, recipeImages, recipeIngredients, recipes, userCustomIngredients } from "@nb/db";
 import { getBeerStyleById, getBjcpArticleHrefByStyleId, roundTo } from "@nb/brewing-core";
 import { getBjcpStyleHeroImageByBjcpId } from "@nb/content";
@@ -119,6 +120,7 @@ export type MatchLineInput = {
 };
 
 export type InventoryMatchEntry = {
+  packEquivalent?: InventoryPackEquivalent | null;
   itemId: string;
   key: IngredientMatchKey;
   /** Русское имя поддерживает старые снимки партий без английского названия сорта. */
@@ -169,7 +171,7 @@ export const buildInventoryEntries = (
   credits?: InventoryCreditMap
 ): InventoryMatchEntry[] => (
   items
-    .filter((item) => !item.archivedAt)
+    .filter((item) => !item.archivedAt && item.source.inventoryEnabled !== false)
     .map((item) => {
       const credit = credits?.get(item.id);
       // Единица позиции могла смениться после списания — тогда кредит не сводится
@@ -190,7 +192,8 @@ export const buildInventoryEntries = (
           : [],
         available,
         normalizedUnit: parseInventoryUnit(item.normalizedUnit),
-        technicalData: profile.technicalData ?? null
+        technicalData: profile.technicalData ?? null,
+        packEquivalent: resolveInventoryItemPackEquivalent({packageVariant:item.source.packageVariant,technicalData:profile.technicalData})
       };
     })
 );
@@ -220,17 +223,8 @@ const dimensionMatches = (
   lineUnit: InventoryUnit | null,
   entry: InventoryMatchEntry
 ): boolean => {
-  if (!lineKey.dimension || !entry.key.dimension || lineKey.dimension !== entry.key.dimension) {
-    return false;
-  }
-
-  // Вес→g и объём→ml всегда сводятся к одной канонической единице, count (item/
-  // pack) — нет, поэтому для count требуем точного совпадения единицы.
-  if (lineKey.dimension === "count") {
-    return Boolean(lineUnit && entry.normalizedUnit && lineUnit === entry.normalizedUnit);
-  }
-
-  return true;
+  if (!lineUnit || !entry.normalizedUnit) return false;
+  return convertInventoryNormalizedToUnit(1,entry.normalizedUnit,lineUnit,entry.packEquivalent) != null;
 };
 
 // Числовая характеристика для сравнения кандидатов замены (Ф2): EBC у солода
@@ -363,6 +357,8 @@ const resolveAddSuggestion = (
     let exact: number;
     if (unit === line.normalizedUnit) {
       exact = shortfall;
+    } else if (line.normalizedUnit === "g" && unit === "mg") {
+      exact = shortfall * 1000;
     } else if ((line.normalizedUnit === "g" && unit === "kg") || (line.normalizedUnit === "ml" && unit === "l")) {
       exact = shortfall / 1000;
     } else {
@@ -388,7 +384,8 @@ const remainingOf = (
 const depleteRemaining = (
   chosen: Map<string, { entry: InventoryMatchEntry; tier: "exact" | "substitute" }>,
   required: number,
-  remainingByItemId: Map<string, number> | undefined
+  remainingByItemId: Map<string, number> | undefined,
+  lineUnit?: InventoryUnit | null
 ) => {
   if (!remainingByItemId || required <= 0) {
     return;
@@ -399,8 +396,10 @@ const depleteRemaining = (
     if (avail <= 0) {
       continue;
     }
-    const take = Math.min(need, avail);
-    remainingByItemId.set(entry.itemId, roundTo(avail - take, 3));
+    const comparable = lineUnit && entry.normalizedUnit ? convertInventoryNormalizedToUnit(avail, entry.normalizedUnit, lineUnit, entry.packEquivalent) ?? 0 : avail;
+    const take = Math.min(need, comparable);
+    const nativeTake = lineUnit && entry.normalizedUnit ? convertQuantityToInventoryNormalizedUnit(take, lineUnit, entry.normalizedUnit, entry.packEquivalent) ?? 0 : take;
+    remainingByItemId.set(entry.itemId, roundTo(avail - nativeTake, 3));
     need = roundTo(need - take, 3);
     if (need <= 0) {
       break;
@@ -456,7 +455,8 @@ export const matchLineAgainstInventory = (
   let availableExact = 0;
   let availableTotal = 0;
   for (const { entry, tier } of chosen.values()) {
-    const available = remainingOf(entry, remainingByItemId);
+    const nativeAvailable = remainingOf(entry, remainingByItemId);
+    const available = line.normalizedUnit && entry.normalizedUnit ? convertInventoryNormalizedToUnit(nativeAvailable,entry.normalizedUnit,line.normalizedUnit,entry.packEquivalent) ?? 0 : nativeAvailable;
     availableTotal += available;
     if (tier === "exact") {
       availableExact += available;
@@ -526,7 +526,7 @@ export const matchLineAgainstInventory = (
   // Списываем то, что строка реально забрала (не больше required и не больше
   // остатка) — следующая добавка того же хмеля увидит уменьшенный бюджет.
   const consumed = roundTo(Math.min(required, availableTotal), 3);
-  depleteRemaining(chosen, consumed, remainingByItemId);
+  depleteRemaining(chosen, consumed, remainingByItemId, line.normalizedUnit);
 
   return {
     recipeIngredientId: line.id,
@@ -576,9 +576,9 @@ export const buildInventoryRemainingBudget = (
 export const matchRecipeLinesAgainstInventory = (
   lines: MatchLineInput[],
   index: ReturnType<typeof indexInventoryEntries>,
-  scaleFactorFor: (line: MatchLineInput) => number
+  scaleFactorFor: (line: MatchLineInput) => number,
+  remaining = buildInventoryRemainingBudget(index)
 ): RecipeMatchLineDto[] => {
-  const remaining = buildInventoryRemainingBudget(index);
   return [...lines]
     .sort((a, b) => a.displayOrder - b.displayOrder || a.id.localeCompare(b.id))
     .map((line) => matchLineAgainstInventory(line, index, scaleFactorFor(line), remaining));
@@ -933,7 +933,8 @@ const computeMatchForRecipeRow = (
   // Ф6: батчи здесь матчат рецепты произвольных авторов (чужие избранные/
   // публичные) для одного смотрящего — customId строки принадлежит владельцу
   // строки в БД (не обязательно смотрящему), гейт сужает его до владения.
-  ownedCustomIngredientIds: Set<string>
+  ownedCustomIngredientIds: Set<string>,
+  remaining?: Map<string, number>
 ): RecipeMatchDto => {
   const lineInputs: MatchLineInput[] = recipe.ingredients.map((row) => {
     const catalog = catalogById.get(row.ingredientCatalogItemId ?? "");
@@ -959,7 +960,8 @@ const computeMatchForRecipeRow = (
   const lines = matchRecipeLinesAgainstInventory(
     lineInputs,
     index,
-    (line) => resolveLineScaleFactor(line.profile, volume.factor, volume.efficiencyFactor)
+    (line) => resolveLineScaleFactor(line.profile, volume.factor, volume.efficiencyFactor),
+    remaining
   ).map((matched) => withOwnedCustomIngredientId(matched, ownedCustomIngredientIds));
 
   return summarizeMatch(recipe.id, lines, {
@@ -1249,6 +1251,8 @@ export const computeRecipeMatchesForBrewBatches = async (input: {
   userId: string;
   batches: { brewBatchId: string; recipeId: string }[];
   targetBatchVolumeL?: number | null;
+  /** План закупок делит остаток между партиями в переданном порядке. */
+  shareInventory?: boolean;
 }): Promise<Record<string, RecipeMatchDto>> => {
   const batches = input.batches.filter((batch) => batch.brewBatchId && batch.recipeId);
   if (batches.length === 0) {
@@ -1285,6 +1289,7 @@ export const computeRecipeMatchesForBrewBatches = async (input: {
   // ещё ничего не списали. Партия с кредитом получает СВОЙ индекс: общий трогать
   // нельзя, иначе её кредит утечёт в матч соседней партии.
   const baseIndex = indexInventoryEntries(buildInventoryEntries(inventoryItems));
+  const sharedRemaining = input.shareInventory ? buildInventoryRemainingBudget(baseIndex) : null;
 
   const result: Record<string, RecipeMatchDto> = {};
   for (const batch of batches) {
@@ -1299,13 +1304,30 @@ export const computeRecipeMatchesForBrewBatches = async (input: {
       const index = credits && credits.size > 0
         ? indexInventoryEntries(buildInventoryEntries(inventoryItems, credits))
         : baseIndex;
+      // Уже списанное принадлежит только этой партии. Сначала расходуется её
+      // кредит, затем общий остаток; кредит не становится запасом соседней варки.
+      const remaining = sharedRemaining ? new Map(sharedRemaining) : undefined;
+      if (remaining && credits) {
+        for (const item of inventoryItems) {
+          const credit = credits.get(item.id);
+          if (credit && credit.normalizedUnit === item.normalizedUnit) {
+            remaining.set(item.id, roundTo((remaining.get(item.id) ?? 0) + credit.quantityNormalized, 3));
+          }
+        }
+      }
       const batchScale = batchScales.get(batch.brewBatchId) ?? null;
       const volume = resolveMatchFactor(recipe, {
         targetBatchVolumeL: input.targetBatchVolumeL ?? batchScale?.targetBatchVolumeL ?? null,
         defaultBatchVolumeL: null,
         efficiencyFactor: batchScale?.efficiencyFactor ?? null
       });
-      result[batch.brewBatchId] = computeMatchForRecipeRow(recipe, index, catalogById, volume, ownedCustomIngredientIds);
+      result[batch.brewBatchId] = computeMatchForRecipeRow(recipe, index, catalogById, volume, ownedCustomIngredientIds, remaining);
+      // Фиксируем бюджет только после успешного матча всей партии.
+      if (sharedRemaining && remaining) {
+        for (const [itemId, available] of sharedRemaining) {
+          sharedRemaining.set(itemId, Math.min(available, remaining.get(itemId) ?? available));
+        }
+      }
     } catch (error) {
       console.error("[recipes] computeRecipeMatchesForBrewBatches: skipping batch after match error", {
         brewBatchId: batch.brewBatchId,

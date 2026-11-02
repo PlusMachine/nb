@@ -137,7 +137,7 @@ export function MasterProfileFormFields({
 
       <label className={labelClassName}>
         <span className="flex items-center justify-between text-muted-foreground">
-          <span>Коротко о себе (для карточки на витрине)</span>
+          <span>Краткое описание для карточки</span>
           <span className="text-xs tabular-nums text-muted-foreground">{values.summary.length}/200</span>
         </span>
         <input
@@ -158,7 +158,7 @@ export function MasterProfileFormFields({
           onChange={(event) => setField("about", event.target.value)}
           maxLength={5000}
           disabled={disabled}
-          placeholder="Что делаете, из чего, сроки изготовления, география доставки…"
+          placeholder="Что изготавливаете, из каких материалов, сроки и доставка"
         />
       </label>
 

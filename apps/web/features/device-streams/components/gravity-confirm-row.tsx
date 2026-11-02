@@ -17,7 +17,7 @@ import type { PreferredGravityUnit } from "@nb/auth";
 import { confirmGravityFromCurveAction } from "@/features/device-streams/actions";
 import { formatGravity } from "@/features/system/gravity-units";
 
-const KIND_LABEL = { og: "OG", fg: "FG" } as const;
+const KIND_LABEL = { og: "НП", fg: "КП" } as const;
 
 export function GravityConfirmRow({
   sessionId,
@@ -43,7 +43,7 @@ export function GravityConfirmRow({
         show({ title: result.message, tone: "danger" });
         return;
       }
-      show({ title: `${KIND_LABEL[kind]} записан: ${formatGravity(result.result.gravitySg, gravityUnit)}`, tone: "success" });
+      show({ title: `${KIND_LABEL[kind]} записана: ${formatGravity(result.result.gravitySg, gravityUnit)}`, tone: "success" });
       router.refresh();
     } finally {
       setPending(false);

@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     template: `%s · ${SITE_NAME}`
   },
   description:
-    "Платформа для домашних пивоваров: каталог ингредиентов, склад, рецепты, расчёты и справочник стилей BJCP.",
+    "Рецепты, склад ингредиентов, калькуляторы и справочник стилей BJCP для домашних пивоваров.",
   openGraph: {
     type: "website",
     locale: "ru_RU",

@@ -71,7 +71,7 @@ export function InventoryItemMovements({
 
   return (
     <section className="mt-6 space-y-2 border-t border-border pt-4">
-      <h3 className="text-sm font-semibold text-foreground">История запасов</h3>
+      <h3 className="text-sm font-semibold text-foreground">История операций</h3>
 
       {state.status === "loading" ? <p className="text-sm text-muted-foreground">Загрузка…</p> : null}
       {state.status === "error" ? (
@@ -81,7 +81,7 @@ export function InventoryItemMovements({
       ) : null}
       {state.status === "ready" && state.movements.length === 0 ? (
         <p className="text-sm text-muted-foreground">
-          История этой позиции пока пуста. Здесь появятся пополнения, списания и расход на варки.
+          Операций с этим ингредиентом пока не было.
         </p>
       ) : null}
 

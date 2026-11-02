@@ -95,7 +95,7 @@ describe("inventory unit normalization", () => {
         packageSize: null,
         packageUnit: null
       }
-    }).allowedUnits).toEqual(["pack", "g"]);
+    }).allowedUnits).toEqual(["pack", "g", "mg"]);
   });
 
   it("preserves explicit pack support for yeast without package metadata", () => {
@@ -180,9 +180,9 @@ describe("inventory unit normalization", () => {
     })).toBe("0.5 кг");
   });
 
-  it("formats inventory quantities with unit-specific precision", () => {
-    expect(formatInventoryQuantityInputValue(0.925, "kg")).toBe("0.93");
-    expect(formatInventoryQuantityInputValue(120.24, "g")).toBe("120.2");
+  it("preserves exact inventory values for editing", () => {
+    expect(formatInventoryQuantityInputValue(0.925, "kg")).toBe("0.925");
+    expect(formatInventoryQuantityInputValue(120.24, "g")).toBe("120.24");
     expect(formatInventoryQuantityInputValue(2.4, "pack")).toBe("2.4");
   });
 

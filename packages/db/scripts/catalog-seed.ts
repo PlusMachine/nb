@@ -6,6 +6,11 @@ import { fileURLToPath } from "node:url";
 import {
   and,
   db,
+  eq,
+  sql,
+  userIngredients,
+  reconcileCatalogSeed,
+  type CatalogSeedConflict,
   inArray,
   ingredientAliases,
   ingredients,
@@ -359,6 +364,22 @@ const readPackageVariants = (
     : []
 );
 
+// Secondary contents describe the product; stock quantities keep using the
+// existing package rows and quantity defaults.
+const readPackageContentDetails = (source: Record<string, unknown>) => (
+  Array.isArray(source.package_variants)
+    ? source.package_variants.filter(isRecord).flatMap((variant) => {
+      const contentPerPiece = isRecord(variant.content_per_piece) ? variant.content_per_piece : null;
+      const contentPerPackage = isRecord(variant.content_per_package) ? variant.content_per_package : null;
+      return contentPerPiece || contentPerPackage ? [compactRecord({
+        package_variant_id: readString(variant.id),
+        content_per_piece: contentPerPiece,
+        content_per_package: contentPerPackage
+      })] : [];
+    })
+    : []
+);
+
 export const normalizeCatalogAlias = (value: string) => value
   .normalize("NFKC")
   .toLowerCase()
@@ -673,6 +694,20 @@ const buildSourceRows = (
     });
 };
 
+const buildSourceMetadata = (sources: unknown) => (
+  Array.isArray(sources)
+    ? sources.map((entry, position) => {
+      const source = isRecord(entry) ? entry : {};
+      return compactRecord({
+        position,
+        url: readString(source.url),
+        confidence: readString(source.confidence),
+        page: readNumber(source.page) ?? readString(source.page)
+      });
+    }).filter((source) => source.confidence != null || source.page != null)
+    : []
+);
+
 const resolveDisplayModeRu = (
   type: CatalogSeedFileSpec["type"],
   explicitMode: unknown,
@@ -729,9 +764,12 @@ const prepareHop = (item: unknown): PreparedSeedIngredient => {
         category_birrf: readString(source.category_birrf),
         category_birrf_ru: readString(source.category_birrf_ru),
         hop_form: readString(source.hop_form),
+        variety_key: readString(source.variety_key),
         is_blend: readBoolean(source.is_blend),
         is_popular_in_russia: readBoolean(source.is_popular_in_russia),
         aroma_descriptors_en: readStringArray(source.aroma_descriptors_en),
+        oil_value_unit_warning: readString(source.oil_value_unit_warning),
+        source_metadata: buildSourceMetadata(source.sources),
         notes: readString(source.notes)
       }),
       quantityDefaults: null
@@ -753,6 +791,10 @@ const prepareMalt = (item: unknown): PreparedSeedIngredient => {
     throw new Error("Malt item is missing id");
   }
 
+  const min = readNumber(source.color_ebc_min);
+  const max = readNumber(source.color_ebc_max);
+  if (min != null && max != null && min > max) throw new Error(`Invalid malt colour range: ${id}`);
+
   return {
     ingredient: {
       id,
@@ -773,7 +815,10 @@ const prepareMalt = (item: unknown): PreparedSeedIngredient => {
         color_lovibond: readNumber(source.color_lovibond),
         protein_pct: readNumber(source.protein_pct),
         max_usage_pct: readNumber(source.max_usage_pct),
-        color_ebc_is_approx: readBoolean(source.color_ebc_is_approx)
+        color_ebc_is_approx: readBoolean(source.color_ebc_is_approx),
+        color_ebc_for_calculation: readNumber(source.color_ebc_for_calculation),
+        color_ebc_calculation_basis: readString(source.color_ebc_calculation_basis),
+        source_metadata: buildSourceMetadata(source.sources)
       }),
       quantityDefaults: null
     },
@@ -818,6 +863,11 @@ const prepareFermentable = (item: unknown): PreparedSeedIngredient => {
         physical_form: readString(source.physical_form),
         extract_pct_dry_basis: readNumber(source.extract_pct_dry_basis),
         color_lovibond: readNumber(source.color_lovibond),
+        // Keep the published EBC separately: existing recipe/calculator color
+        // inputs continue using color_lovibond until explicitly changed.
+        color_ebc_exact: readNumber(source.color_ebc_exact),
+        protein_pct: readNumber(source.protein_pct),
+        normalization_review_flags: readStringArray(source.normalization_review_flags),
         recommended_max_pct: readNumber(source.recommended_max_pct),
         is_usable_in_beer_gravity_calculations: readBoolean(source.is_usable_in_beer_gravity_calculations),
         beer_relevance: readString(source.beer_relevance),
@@ -867,12 +917,21 @@ const prepareYeast = (item: unknown): PreparedSeedIngredient => {
         form: readString(source.form),
         yeast_family: readString(source.yeast_family),
         birrf_category: readString(source.birrf_category),
+        attenuation_pct_min: readNumber(source.attenuation_pct_min),
+        attenuation_pct_max: readNumber(source.attenuation_pct_max),
         attenuation_pct_typical: readNumber(source.attenuation_pct_typical),
         flocculation: readString(source.flocculation),
+        sedimentation: readString(source.sedimentation),
         fermentation_temp_c_min: readNumber(source.fermentation_temp_c_min),
         fermentation_temp_c_max: readNumber(source.fermentation_temp_c_max),
         fermentation_temp_c_optimum: readNumber(source.fermentation_temp_c_optimum),
+        alcohol_tolerance_abv_min: readNumber(source.alcohol_tolerance_abv_min),
+        alcohol_tolerance_abv_max: readNumber(source.alcohol_tolerance_abv_max),
         alcohol_tolerance_abv_typical: readNumber(source.alcohol_tolerance_abv_typical),
+        species: readString(source.species),
+        pof: readString(source.pof),
+        analog_reference: readString(source.analog_reference),
+        notes: readString(source.notes),
         source_basis: readString(source.source_basis)
       }),
       quantityDefaults: null
@@ -881,7 +940,10 @@ const prepareYeast = (item: unknown): PreparedSeedIngredient => {
       { locale: "ru", values: source.aliases_ru },
       { locale: "en", values: source.aliases_en }
     ]),
-    sources: [],
+    sources: buildSourceRows(id, [...new Set(readStringArray(source.source_urls))].map((url) => ({
+      url,
+      source_basis: readString(source.source_basis)
+    }))),
     packageVariants: readPackageVariants(source, id)
   };
 };
@@ -955,6 +1017,8 @@ const prepareConsumable = (item: unknown): PreparedSeedIngredient => {
             allowed_uses: allowedUses
           }),
         family_key: readString(source.family_key),
+        physical_form: readString(source.form) ?? readString(source.physical_form),
+        product_identity: readString(source.product_identity),
         picker_group: pickerGroup,
         market_names_ru: marketNamesRu,
         market_names_en: marketNamesEn,
@@ -973,6 +1037,11 @@ const prepareConsumable = (item: unknown): PreparedSeedIngredient => {
         flavor_tags_ru: readStringArray(source.flavor_tags_ru),
         typical_styles_ru: readStringArray(source.typical_styles_ru),
         gravity_contribution: readString(source.gravity_contribution),
+        typical_use_ru: readString(source.typical_use_ru),
+        storage_notes_ru: readString(source.storage_notes_ru),
+        closure_standard: readString(source.closure_standard),
+        capacity_per_piece: isRecord(source.capacity_per_piece) ? source.capacity_per_piece : null,
+        package_content_details: readPackageContentDetails(source),
         notes_ru: readString(source.notes_ru)
       }),
       quantityDefaults: buildConsumableQuantityDefaults(source)
@@ -1008,7 +1077,7 @@ const prepareWaterTreatment = (item: unknown): PreparedSeedIngredient => {
       isActive: true,
       category: readString(source.category),
       itemKind: readString(source.item_kind),
-      inventoryEnabled: true,
+      inventoryEnabled: source.inventory_enabled !== false && source.item_kind !== "method" && source.calculation_support !== "not_an_additive",
       attributes: compactRecord({
         formula: readString(source.formula),
         display_formula: readString(source.display_formula),
@@ -1027,6 +1096,12 @@ const prepareWaterTreatment = (item: unknown): PreparedSeedIngredient => {
         common_in_pro_brewing: readBoolean(source.common_in_pro_brewing),
         recommendation_level: readString(source.recommendation_level),
         cautions_ru: readString(source.cautions_ru),
+        storage_notes_ru: readString(source.storage_notes_ru),
+        typical_dose_reference: isRecord(source.typical_dose_reference) ? source.typical_dose_reference : null,
+        ion_contributions_ppm_per_g_per_l: isRecord(source.ion_contributions_ppm_per_g_per_l)
+          ? source.ion_contributions_ppm_per_g_per_l : null,
+        ion_contributions_ppm_per_g_per_gal: isRecord(source.ion_contributions_ppm_per_g_per_gal)
+          ? source.ion_contributions_ppm_per_g_per_gal : null,
         source_basis: Array.isArray(source.source_basis) ? source.source_basis : readString(source.source_basis)
       }),
       quantityDefaults: null
@@ -1044,12 +1119,29 @@ const prepareSeedIngredient = (
   spec: CatalogSeedFileSpec,
   item: unknown
 ): PreparedSeedIngredient => {
-  if (spec.type === "hop") return prepareHop(item);
-  if (spec.type === "malt") return prepareMalt(item);
-  if (spec.type === "fermentable") return prepareFermentable(item);
-  if (spec.type === "yeast") return prepareYeast(item);
-  if (spec.type === "consumable") return prepareConsumable(item);
-  return prepareWaterTreatment(item);
+  const prepared = spec.type === "hop" ? prepareHop(item)
+    : spec.type === "malt" ? prepareMalt(item)
+    : spec.type === "fermentable" ? prepareFermentable(item)
+    : spec.type === "yeast" ? prepareYeast(item)
+    : spec.type === "consumable" ? prepareConsumable(item)
+    : prepareWaterTreatment(item);
+  const source = isRecord(item) ? item : {};
+  if (source.is_active === false) prepared.ingredient.isActive = false;
+  prepared.ingredient.attributes = {
+    ...prepared.ingredient.attributes,
+    ...(spec.type === "malt" && source.color_ebc_min === null ? { color_ebc_min: null } : {}),
+    ...(spec.type === "malt" && source.color_ebc_max === null ? { color_ebc_max: null } : {}),
+    package_variant_count: prepared.packageVariants.length,
+    package_selection_required: prepared.packageVariants.length > 1
+      && !prepared.packageVariants.some((variant) => variant.isDefaultForStock && variant.sourceGroup !== "unverified_package"),
+    ...(isRecord(source.seed_baseline) ? { _seed_previous: source.seed_baseline } : {}),
+    ...(isRecord(source.data_review) ? { data_review: source.data_review } : {}),
+    ...(source.catalog_status ? { _catalog_status: source.catalog_status } : {}),
+    ...(source.merged_into_id ? { _merged_into_id: source.merged_into_id } : {}),
+    ...(isRecord(source.data_review) && isRecord(source.data_review.protein_pct)
+      && source.data_review.protein_pct.status === "unverified" ? { protein_pct: null } : {})
+  };
+  return prepared;
 };
 
 export const prepareCatalogSeedFile = (spec: CatalogSeedFileSpec) => (
@@ -1059,108 +1151,80 @@ export const prepareCatalogSeedFile = (spec: CatalogSeedFileSpec) => (
 const seedCatalogFile = async (spec: CatalogSeedFileSpec) => {
   const items = prepareCatalogSeedFile(spec);
   const ingredientIds = items.map((item) => item.ingredient.id);
-
-  if (ingredientIds.length === 0) {
-    console.log(`${spec.fileName}: processed 0, inserted 0, updated 0`);
-    return { processed: 0, inserted: 0, updated: 0 };
-  }
-
+  if (!ingredientIds.length) return { processed: 0, inserted: 0, updated: 0, conflicts: [] as CatalogSeedConflict[] };
   return db.transaction(async (tx) => {
-    const existingRows = await tx.select({ id: ingredients.id })
-      .from(ingredients)
-      .where(inArray(ingredients.id, ingredientIds));
-
-    const existingIds = new Set(existingRows.map((row) => row.id));
-    const inserted = ingredientIds.filter((id) => !existingIds.has(id)).length;
-    const updated = ingredientIds.length - inserted;
-
+    const existingRows = await tx.select().from(ingredients).where(inArray(ingredients.id, ingredientIds));
+    const existing = new Map(existingRows.map((row) => [row.id, row]));
+    const conflicts: CatalogSeedConflict[] = [];
     for (const item of items) {
-      await tx.insert(ingredients).values(item.ingredient).onConflictDoUpdate({
-        target: [ingredients.id],
-        set: {
-          ...item.ingredient,
-          updatedAt: new Date()
-        }
+      const result = reconcileCatalogSeed(item.ingredient, existing.get(item.ingredient.id) as unknown as Record<string, unknown>);
+      conflicts.push(...result.conflicts);
+      await tx.insert(ingredients).values(result.values as typeof ingredients.$inferInsert).onConflictDoUpdate({
+        target: [ingredients.id], set: { ...result.values, updatedAt: new Date() }
       });
     }
-
-    // aliases/sources: ничего в БД не ссылается на конкретную строку этих
-    // таблиц (нет пользовательских FK) — delete-all-по-ingredientId+insert
-    // безопасен, id генерируется заново на каждый прогон, терять нечего.
-    await tx.delete(ingredientAliases).where(inArray(ingredientAliases.ingredientId, ingredientIds));
-    await tx.delete(ingredientSources).where(inArray(ingredientSources.ingredientId, ingredientIds));
-
-    const aliases = items.flatMap((item) => item.aliases);
-    const sources = items.flatMap((item) => item.sources);
-    const packageVariants = items.flatMap((item) => item.packageVariants);
-
-    if (aliases.length) {
-      await tx.insert(ingredientAliases).values(aliases);
+    // Keep manual and disabled aliases, and retain old sources as provenance.
+    const aliases = await tx.select().from(ingredientAliases).where(inArray(ingredientAliases.ingredientId, ingredientIds));
+    const aliasKeys = new Set(aliases.map((row) => `${row.ingredientId}:${row.locale}:${row.aliasNormalized}`));
+    const newAliases = items.flatMap((item) => item.aliases).filter((row) => {
+      const key = `${row.ingredientId}:${row.locale}:${row.aliasNormalized}`;
+      if (aliasKeys.has(key)) return false; aliasKeys.add(key); return true;
+    });
+    if (newAliases.length) await tx.insert(ingredientAliases).values(newAliases).onConflictDoNothing();
+    const sources = await tx.select().from(ingredientSources).where(inArray(ingredientSources.ingredientId, ingredientIds));
+    const sourceKey = (row: typeof ingredientSources.$inferInsert) => JSON.stringify([row.ingredientId,row.kind,row.url,row.label]);
+    const sourceKeys = new Set(sources.map(sourceKey));
+    const newSources = items.flatMap((item) => item.sources).filter((row) => {
+      const key = sourceKey(row); if (sourceKeys.has(key)) return false; sourceKeys.add(key); return true;
+    });
+    if (newSources.length) await tx.insert(ingredientSources).values(newSources);
+    const variants = items.flatMap((item) => item.packageVariants);
+    const previousVariants = await tx.select().from(ingredientPackageVariants).where(inArray(ingredientPackageVariants.ingredientId, ingredientIds));
+    const previousById = new Map(previousVariants.map((row) => [row.id,row]));
+    // Freeze the old package coefficient on existing stock before updating its source.
+    const stock = await tx.select().from(userIngredients).where(inArray(userIngredients.ingredientCatalogItemId, ingredientIds));
+    for (const row of stock) {
+      const variant = row.packageVariantId ? previousById.get(row.packageVariantId) : null;
+      if (variant && !Object.prototype.hasOwnProperty.call(row.properties, "_package_content_snapshot")) {
+        await tx.update(userIngredients).set({ properties: { ...row.properties, _package_content_snapshot: {
+          packageVariantId: variant.id, stockContentAmount: variant.stockContentAmount, stockContentUnit: variant.stockContentUnit
+        } } }).where(eq(userIngredients.id,row.id));
+      }
     }
-
-    if (sources.length) {
-      await tx.insert(ingredientSources).values(sources);
+    for (const variant of variants) {
+      const owner = existing.get(variant.ingredientId);
+      const overrides = owner?.attributes?._seed_package_overrides;
+      if ((Array.isArray(overrides) && overrides.includes(variant.id)) || previousById.get(variant.id)?.sourceGroup === "manual") {
+        conflicts.push({ingredientId:variant.ingredientId,field:`packageVariants.${variant.id}`,current:previousById.get(variant.id),incoming:variant});
+        continue;
+      }
+      await tx.insert(ingredientPackageVariants).values(variant).onConflictDoUpdate({ target: [ingredientPackageVariants.id], set: { ...variant, updatedAt: new Date() } });
     }
-
-    // package_variants — В ОТЛИЧИЕ от aliases/sources выше НЕЛЬЗЯ delete-all+
-    // insert: user_ingredients.package_variant_id ссылается на эту таблицу с
-    // ON DELETE SET NULL. Delete всех вариантов файла на каждом db:seed/
-    // catalog:sync рвёт привязку фасовки у пользователей, у которых она есть —
-    // повторная вставка строки с ТЕМ ЖЕ id ничего не восстанавливает, потому
-    // что ссылающаяся запись user_ingredients уже получила NULL и остаётся с
-    // ним навсегда. Вместо этого — upsert по id (сохраняет саму строку и FK на
-    // неё при изменении остальных полей) + удаление точечно только вариантов,
-    // исчезнувших из файла.
-    const newPackageVariantIds = packageVariants.map((variant) => variant.id);
-
-    for (const variant of packageVariants) {
-      await tx.insert(ingredientPackageVariants).values(variant).onConflictDoUpdate({
-        target: [ingredientPackageVariants.id],
-        set: {
-          ...variant,
-          updatedAt: new Date()
-        }
-      });
-    }
-
-    if (newPackageVariantIds.length > 0) {
-      await tx.delete(ingredientPackageVariants).where(
-        and(
-          inArray(ingredientPackageVariants.ingredientId, ingredientIds),
-          notInArray(ingredientPackageVariants.id, newPackageVariantIds)
-        )
-      );
-    } else {
-      // Пустой список — та же ловушка drizzle, что и в pruneOrphanLineChecks
-      // (features/shopping/data.ts): notInArray с [] не эквивалентен «всё» —
-      // короткое замыкание явным delete без notInArray.
-      await tx.delete(ingredientPackageVariants).where(inArray(ingredientPackageVariants.ingredientId, ingredientIds));
-    }
-
-    console.log(`${spec.fileName}: processed ${items.length}, inserted ${inserted}, updated ${updated}`);
-    return {
-      processed: items.length,
-      inserted,
-      updated
-    };
+    // Removed source variants remain addressable: deleting them would SET NULL on stock.
+    const inserted = ingredientIds.filter((id) => !existing.has(id)).length;
+    console.log(`${spec.fileName}: processed ${items.length}, inserted ${inserted}, updated ${items.length-inserted}, conflicts ${conflicts.length}`);
+    return { processed: items.length, inserted, updated: items.length-inserted, conflicts };
   });
 };
 
-export const seedCatalogFromSources = async () => {
+export const seedCatalogFromSources = async (manifest: readonly CatalogSeedFileSpec[] = catalogSeedManifest) => {
   let processed = 0;
   let inserted = 0;
   let updated = 0;
+  const conflicts: CatalogSeedConflict[] = [];
 
-  for (const spec of catalogSeedManifest) {
+  for (const spec of manifest) {
     const result = await seedCatalogFile(spec);
     processed += result.processed;
     inserted += result.inserted;
     updated += result.updated;
+    conflicts.push(...result.conflicts);
   }
 
   return {
     processed,
     inserted,
-    updated
+    updated,
+    conflicts
   };
 };

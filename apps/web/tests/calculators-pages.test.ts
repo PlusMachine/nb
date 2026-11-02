@@ -100,7 +100,7 @@ describe("calculator pages", () => {
     // они вне каталога калькуляторов, но живут на той же странице).
     const h2Headings = [...html.matchAll(/<h2[^>]*>([^<]*)<\/h2>/g)].map((match) => match[1]);
     expect(h2Headings).toEqual([...calculatorSections, "Инструменты"]);
-    expect(html).toContain("Наклейки на бутылки");
+    expect(html).toContain("Этикетки на бутылки");
     expect(html).toContain('href="/labels"');
 
     for (const calculator of calculators) {

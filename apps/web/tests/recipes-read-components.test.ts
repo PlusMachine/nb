@@ -151,7 +151,7 @@ describe("recipes read components", () => {
     expect(html).toContain("Параметры рецепта");
     expect(html).toContain("OG");
     expect(html).not.toContain("Прогноз по умолчанию");
-    expect(html).not.toContain("Аттенюация задана вручную");
+    expect(html).not.toContain("Степень сбраживания задана вручную");
     expect(html).not.toContain("FG задана вручную");
     expect(html).toContain("ABV");
     expect(html).toContain("IBU");
@@ -225,7 +225,7 @@ describe("recipes read components", () => {
     expect(html).toContain("Pilsner Malt");
     expect(html).toContain("Castle Malting");
     expect(html).toContain("5-8 EBC");
-    expect(html).toContain("Экст-ть 80%");
+    expect(html).toContain("Экстрактивность 80%");
     expect(html).toContain("Citra");
     expect(html).toContain("Yakima Chief");
     expect(html).toContain("Альфа 12.5%");
@@ -389,7 +389,7 @@ describe("recipes read components", () => {
 
     expect(badges.map((badge) => badge.label)).toEqual([
       "12 EBC",
-      "Экст-ть 79%"
+      "Экстрактивность 79%"
     ]);
     expect(badges[0]?.accent).toMatchObject({
       startHex: expect.any(String),
@@ -408,7 +408,7 @@ describe("recipes read components", () => {
       }
     });
 
-    expect(badges.map((badge) => badge.label)).toEqual(["CaSO4"]);
+    expect(badges.map((badge) => badge.label)).toEqual(["CaSO4·2H2O"]);
   });
 
   it("can suppress catalog usage badges for consumables in recipe cards", () => {
@@ -420,7 +420,7 @@ describe("recipes read components", () => {
       }
     }, { includeConsumableUsageStage: false });
 
-    expect(badges.map((badge) => badge.label)).toEqual(["Сушеная цедра"]);
+    expect(badges.map((badge) => badge.label)).toEqual(["Сушёная цедра"]);
   });
 
   it("renders public recipe page composition", () => {

@@ -91,7 +91,7 @@ export function SessionTempCorridorControl({ sessionId, tempMinC, tempMaxC, aler
     const min = Number(trimmedMin.replace(",", "."));
     const max = Number(trimmedMax.replace(",", "."));
     if (!Number.isFinite(min) || !Number.isFinite(max)) {
-      setError("Введите корректные числа.");
+      setError("Введите числа.");
       return;
     }
     if (min >= max) {

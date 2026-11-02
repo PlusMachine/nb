@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
+import { InventoryFormActions } from "./inventory-form-actions";
 import { useEffect, useRef, useState } from "react";
 
-import { IngredientPicker, IngredientSelectionCard } from "@/components/ingredients/ingredient-picker";
+import { IngredientPicker, IngredientSelectionCard, defaultSearchIngredients } from "@/components/ingredients/ingredient-picker";
 import { IngredientPurchaseLinksField } from "@/components/ingredients/ingredient-purchase-links-field";
 import { InventoryPriceInput } from "@/components/inventory/inventory-price-input";
 import {
@@ -22,6 +23,7 @@ import type {
   IngredientSuggestionItem
 } from "@/features/ingredients/contracts";
 import {
+  formatConsumablePackageLabel,
   consumableInventoryAdditiveGroups,
   consumableInventorySupplyGroups,
   isConsumableInventoryBroadGroup,
@@ -48,12 +50,16 @@ import type { InventoryPriceInputMode } from "@/features/inventory/purchase-cost
 import { buildHopHarvestYearOptions } from "@/features/inventory/hop-harvest-year";
 import {
   inventoryUnitLabels,
+  inventoryUnitShortLabels,
   resolveHumanFacingInventoryUnitProfile,
   type InventoryUnit
 } from "@/features/inventory/units";
-import { resolveInventoryPackEquivalent } from "@/features/inventory/pack";
+import { resolveInventoryPackEquivalent, resolveInventoryItemPackEquivalent, convertInventoryNormalizedToUnit } from "@/features/inventory/pack";
+import { formatInventoryQuantityInputValue } from "@/features/inventory/display";
 import type { SystemCurrency } from "@/features/system/currency";
 import { hasValidationErrors, validateNumericInput } from "@/features/forms/numeric-validation";
+
+const searchStockableIngredients = (params: Parameters<typeof defaultSearchIngredients>[0]) => defaultSearchIngredients({ ...params, inventoryOnly: true });
 
 type InventoryCommonFields = InventoryOptionalFieldsState & {
   enteredQuantity: string;
@@ -74,6 +80,7 @@ type CatalogBatchSummaryEntry = {
 };
 
 export type CatalogIngredientSubmitPayload = {
+  packageVariantId?: string;
   ingredientCatalogItemId?: string;
   userCustomIngredientId?: string;
   enteredQuantity: string;
@@ -99,6 +106,7 @@ type Props = {
   initialQuickStartAvailability?: IngredientPickerQuickStartAvailability | null;
   preferredCurrency: SystemCurrency;
   pending: boolean;
+  continuousEntry?: boolean;
   autoFocus?: boolean;
   initialSelection?: IngredientSuggestionItem | null;
   /** Дефицит из «Чего не хватает» (UX-находка #20): предзаполнить количество/единицу.
@@ -109,7 +117,7 @@ type Props = {
   hidePicker?: boolean;
   selectionActionLabel?: string;
   forcedGroup?: string | null;
-  onSubmit: (payload: CatalogIngredientSubmitPayload) => Promise<void>;
+  onSubmit: (payload: CatalogIngredientSubmitPayload, keepOpen?: boolean) => Promise<void>;
   onRequestCustom: () => void;
   onSelectionCleared?: () => void;
   onSelectedIngredientChange?: (selected: IngredientSuggestionItem | null) => void;
@@ -298,7 +306,7 @@ const validateCatalogIngredientNumbers = ({
     });
   } else if (batchOverrideDefaults.kind === "hop") {
     errors.hopAlphaAcidPct = validateNumericInput(batchOverrides.hopAlphaAcidPct, {
-      label: "Альфа-кислота",
+      label: "Альфа-кислоты",
       min: 0,
       max: 100
     });
@@ -552,13 +560,13 @@ export const resolveCatalogBatchOverrideSummaryState = ({
       ? hopAlphaOverride && parseInputNumber(overrides.hopAlphaAcidPct) != null
         ? formatHopAlphaAcidAaValue(parseInputNumber(overrides.hopAlphaAcidPct)!, { userOverride: true })
         : currentAlpha
-      : "Альфа-кислота не указана";
-    const catalogAlpha = formatCatalogBatchNumber(defaults.hopAlphaAcidPct, "% AA") ?? "Альфа-кислота не указана";
+      : "Содержание альфа-кислот не указано";
+    const catalogAlpha = formatCatalogBatchNumber(defaults.hopAlphaAcidPct, "% AA") ?? "Содержание альфа-кислот не указано";
     const currentHarvestYear = formatCatalogBatchNumber(
       hasTechnicalOverrides ? overrides.harvestYear : "",
     );
     const currentEntries: CatalogBatchSummaryEntry[] = [
-      { label: "Альфа-кислота", value: currentAlphaValue }
+      { label: "Альфа-кислоты", value: currentAlphaValue }
     ];
     if (currentHarvestYear) {
       currentEntries.push({ label: "Урожай", value: currentHarvestYear });
@@ -568,7 +576,7 @@ export const resolveCatalogBatchOverrideSummaryState = ({
       currentEntries,
       catalogEntries: hasTechnicalOverrides
         ? [
-          { label: "Альфа-кислота", value: catalogAlpha }
+          { label: "Альфа-кислоты", value: catalogAlpha }
         ]
         : null,
       statusBadgeLabel: null
@@ -615,7 +623,7 @@ export const resolveCatalogDerivedVariantPresentation = ({
   return {
     isDerivedVariantFlow,
     submitLabel: isDerivedVariantFlow ? "Добавить как свой вариант" : "Добавить в запасы",
-    noticeText: isDerivedVariantFlow ? "Сохранится как ваш изменённый вариант ингредиента." : null,
+    noticeText: isDerivedVariantFlow ? "Сохранится как ваш вариант ингредиента." : null,
     inlineHelper: isDerivedVariantFlow ? "Каталог не изменится." : null
   };
 };
@@ -733,6 +741,7 @@ export const buildCatalogIngredientPayload = (
   fields: InventoryCommonFields,
   options?: {
     includeOptionalDetails?: boolean;
+    packageVariantId?: string | null;
     batchOverrides?: Partial<CatalogBatchOverrideFields> | null;
   }
 ): CatalogIngredientSubmitPayload => {
@@ -747,6 +756,9 @@ export const buildCatalogIngredientPayload = (
     enteredQuantity: fields.enteredQuantity,
     enteredUnit: fields.enteredUnit
   };
+
+  const packageId = options?.packageVariantId ?? selected.matchedPackageVariantId;
+  if (fields.enteredUnit === "pack" && selected.source === "catalog" && packageId) payload.packageVariantId = packageId;
 
   if (includeOptionalDetails) {
     payload.priceInputMode = fields.priceInputMode;
@@ -783,6 +795,7 @@ export function CatalogIngredientForm({
   initialQuickStartAvailability = null,
   preferredCurrency,
   pending,
+  continuousEntry = false,
   autoFocus = false,
   initialSelection = null,
   initialQuantity = null,
@@ -812,6 +825,7 @@ export function CatalogIngredientForm({
     });
     return resolvedSelection ? resolveIngredientDisplayNames(resolvedSelection).primaryName : "";
   });
+  const [packageVariantId, setPackageVariantId] = useState("");
   const [fields, setFields] = useState<InventoryCommonFields>(() => createInitialCommonFields(category));
   const [batchOverrides, setBatchOverrides] = useState<CatalogBatchOverrideFields>(() => buildInitialBatchOverridesFromSelection(
     resolveInitialSelectionForContext({
@@ -838,7 +852,18 @@ export function CatalogIngredientForm({
   const selectedRef = useRef<IngredientSuggestionItem | null>(selected);
   const pickerValueRef = useRef(pickerValue);
   const unitProfile = resolveCatalogIngredientUnitProfile(category, selected);
-  const selectedPackEquivalent = selected ? resolveInventoryPackEquivalent(selected.technicalData ?? null) : null;
+  const selectedPackageVariant = selected?.packageVariants?.find((variant) => variant.id === packageVariantId) ?? null;
+  const selectedPackEquivalent = selected && (!selected.packageVariants?.length || selectedPackageVariant)
+    ? resolveInventoryItemPackEquivalent({ packageVariant: selectedPackageVariant, technicalData: selected.technicalData ?? null })
+    : null;
+  const hasPackageVariants = Boolean(selected?.source === "catalog" && selected.packageVariants?.length);
+  const changeEnteredUnit = (nextUnit: InventoryUnit) => setFields((current) => {
+    const quantity = Number(current.enteredQuantity.replace(",", "."));
+    const converted = current.enteredQuantity.trim() && Number.isFinite(quantity)
+      ? convertInventoryNormalizedToUnit(quantity, current.enteredUnit, nextUnit, selectedPackEquivalent) : null;
+    return { ...current, enteredUnit: nextUnit, enteredQuantity: converted == null ? current.enteredQuantity : formatInventoryQuantityInputValue(converted, nextUnit) };
+  });
+  const looseUnit = unitProfile.allowedUnits.find((unit) => unit !== "pack") ?? unitProfile.defaultUnit;
   const batchOverrideDefaults = resolveCatalogBatchOverrideDefaults(selected);
   const showRequiredInventoryBlock = shouldShowCatalogRequiredInventoryBlock(selected);
   const showBatchOverrideSection = shouldShowCatalogBatchOverrideSection(selected);
@@ -1033,6 +1058,14 @@ export function CatalogIngredientForm({
   }, [category, initialQuantity, initialUnit]);
 
   useEffect(() => {
+    const variants = selected?.packageVariants ?? [];
+    const matched = variants.find((variant) => variant.id === selected?.matchedPackageVariantId);
+    const defaultVariant = variants.find((variant) => variant.isDefaultForStock && variant.sourceGroup !== "unverified_package");
+    setPackageVariantId(matched?.id ?? defaultVariant?.id ?? (variants.length === 1 ? variants[0].id : ""));
+    if (variants.length && !initialQuantity) setFields((current) => ({ ...current, enteredUnit: "pack" }));
+  }, [selected?.id, selected?.matchedPackageVariantId, initialQuantity]);
+
+  useEffect(() => {
     const hasOptionalErrors = Boolean(
       fieldErrors?.priceInputAmountMinor
       || fieldErrors?.purchasePriceMinor
@@ -1126,7 +1159,12 @@ export function CatalogIngredientForm({
           if (hasValidationErrors(nextFieldErrors)) {
             return;
           }
+          if (hasPackageVariants && fields.enteredUnit === "pack" && !packageVariantId) {
+            setLocalError("Выберите фасовку или укажите количество без упаковки.");
+            return;
+          }
           const payload = buildCatalogIngredientPayload(selected, fields, {
+            packageVariantId,
             includeOptionalDetails: optionalTouched,
             batchOverrides: shouldIncludeBatchOverrides ? batchOverrides : null
           });
@@ -1135,7 +1173,7 @@ export function CatalogIngredientForm({
             payload.purchaseLinks = purchaseLinksState.urls;
           }
           setLocalError(null);
-          await onSubmit(payload);
+          await onSubmit(payload, (event.nativeEvent as SubmitEvent).submitter?.getAttribute("value") === "continue");
         } catch (error) {
           if (error instanceof Error && error.message === "CATALOG_SELECTION_REQUIRED") {
             setLocalError("Выберите ингредиент из каталога.");
@@ -1196,6 +1234,7 @@ export function CatalogIngredientForm({
           ) : null}
           <label className="text-sm font-medium text-foreground">Ингредиент</label>
           <IngredientPicker
+            searchIngredients={searchStockableIngredients}
             value={pickerValue}
             category={category}
             subtype={subtype}
@@ -1345,7 +1384,7 @@ export function CatalogIngredientForm({
 
                   {batchOverrideMode === "customize" && batchOverrideDefaults.kind === "hop" ? (
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:max-w-md">
-                      <label className="text-sm">Альфа-кислота, %
+                      <label className="text-sm">Альфа-кислоты, %
                         <NumericInput
                           min={0}
                           max={100}
@@ -1414,7 +1453,7 @@ export function CatalogIngredientForm({
             />
             {selectedPackEquivalent ? (
               <p className="text-xs text-muted-foreground">
-                1 уп. = {selectedPackEquivalent.normalizedQuantity} {selectedPackEquivalent.normalizedUnit}
+                1 уп. = {selectedPackEquivalent.normalizedQuantity.toLocaleString("ru-RU")} {inventoryUnitShortLabels[selectedPackEquivalent.normalizedUnit]}
               </p>
             ) : null}
             {derivedVariantPresentation.noticeText ? (
@@ -1432,7 +1471,7 @@ export function CatalogIngredientForm({
       {showRequiredInventoryBlock ? (
         <section className="space-y-3 rounded-xl border border-border bg-card p-4" data-testid="catalog-required-fields">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <label className="text-sm">Количество *
+            <label className="text-sm">{hasPackageVariants && fields.enteredUnit === "pack" ? "Количество упаковок *" : "Количество *"}
               <NumericInput
                 min={0.0001}
                 className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
@@ -1445,16 +1484,43 @@ export function CatalogIngredientForm({
               {(localFieldErrors.enteredQuantity || fieldErrors?.enteredQuantity) && <span className="text-xs text-destructive">{localFieldErrors.enteredQuantity ?? fieldErrors?.enteredQuantity}</span>}
             </label>
 
+            {hasPackageVariants ? (
+              <div className="space-y-3">
+                <label className="block text-sm">Фасовка *
+                  <select className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm" value={fields.enteredUnit === "pack" ? packageVariantId : "__loose"}
+                    onChange={(event) => {
+                      const id = event.target.value;
+                      setPackageVariantId(id === "__loose" ? "" : id);
+                      setFields((current) => ({ ...current, enteredUnit: id === "__loose" ? looseUnit : "pack" }));
+                    }}>
+                    <option value="">Выберите фасовку</option>
+                    {selected?.packageVariants?.map((variant) => <option key={variant.id} value={variant.id}>
+                      {formatConsumablePackageLabel(variant)}{variant.sourceGroup === "unverified_package" ? " · источник не подтверждён" : ""}
+                    </option>)}
+                    <option value="__loose">{looseUnit === "item" ? "Поштучно" : looseUnit === "ml" || looseUnit === "l" ? "По объёму" : looseUnit === "pack" ? "Без указания фасовки" : "По весу"}</option>
+                  </select>
+                </label>
+                {fields.enteredUnit !== "pack" ? <label className="block text-sm">Ед. изм.
+                  <select className="mt-1 w-full rounded-md border px-2 py-2" value={fields.enteredUnit} onChange={(event) => changeEnteredUnit(event.target.value as InventoryUnit)}>
+                    {unitProfile.allowedUnits.filter((unit) => unit !== "pack").map((unit) => <option key={unit} value={unit}>{inventoryUnitLabels[unit]}</option>)}
+                  </select>
+                </label> : null}
+              </div>
+            ) : (
             <label className="text-sm">Ед. изм. *
               <select
                 className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
                 value={fields.enteredUnit}
-                onChange={(e) => setFields((s) => ({ ...s, enteredUnit: e.target.value as InventoryUnit }))}
+                onChange={(e) => changeEnteredUnit(e.target.value as InventoryUnit)}
               >
                 {unitProfile.allowedUnits.map((unit) => <option key={unit} value={unit}>{inventoryUnitLabels[unit]}</option>)}
               </select>
               {fieldErrors?.enteredUnit && <span className="text-xs text-destructive">{fieldErrors.enteredUnit}</span>}
             </label>
+            )}
+            {fields.enteredUnit === "pack" && selectedPackageVariant && selectedPackEquivalent && Number(fields.enteredQuantity.replace(",", ".")) > 0 ? (
+              <p className="text-sm text-muted-foreground sm:col-span-2" aria-live="polite">На склад добавится: {(Number(fields.enteredQuantity.replace(",", ".")) * selectedPackEquivalent.normalizedQuantity).toLocaleString("ru-RU", { maximumFractionDigits: 3 })} {inventoryUnitShortLabels[selectedPackEquivalent.normalizedUnit]}</p>
+            ) : null}
           </div>
         </section>
       ) : null}
@@ -1541,9 +1607,12 @@ export function CatalogIngredientForm({
       ) : null}
 
       {selected ? (
-        <button type="submit" disabled={pending} className="w-full rounded-md bg-foreground px-4 py-2.5 text-sm text-background disabled:opacity-60">
+        <InventoryFormActions>
+        <button type="submit" value="close" disabled={pending} className="min-h-11 flex-1 rounded-lg bg-foreground px-4 py-2.5 text-sm text-background disabled:opacity-60">
           {pending ? "Сохраняем…" : derivedVariantPresentation.submitLabel}
         </button>
+        {continuousEntry ? <button type="submit" value="continue" disabled={pending} className="min-h-11 flex-1 rounded-lg border border-border bg-card px-3 py-2 text-sm disabled:opacity-60">Добавить и продолжить</button> : null}
+        </InventoryFormActions>
       ) : null}
     </form>
   );

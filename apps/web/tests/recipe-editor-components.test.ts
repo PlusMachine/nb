@@ -531,7 +531,7 @@ describe("recipe editor components", () => {
       onSubmit: async () => undefined
     }));
 
-    expect(html).toContain("техдобавка");
+    expect(html).toContain("технологическая добавка");
     expect(html).toContain("фильтрация затора");
     expect(html).toContain("специя");
     expect(html).toContain("цедра и цитрус");
@@ -645,7 +645,7 @@ describe("recipe editor components", () => {
     expect(html).toContain("Название рецепта");
     expect(html).toContain("Стиль BJCP");
     expect(html).toContain("Оборудование");
-    expect(html).toContain("Без профиля — ручной ввод параметров");
+    expect(html).toContain("Ввести параметры вручную");
     expect(html).not.toContain("Профиль не выбран. Параметры задаются вручную.");
     expect(html).not.toContain("На основе профиля оборудования");
     expect(html).not.toContain("Значения сохраняются в рецепте");
@@ -930,7 +930,7 @@ describe("recipe editor components", () => {
       preferredGravityUnit: "plato"
     });
 
-    expect(html).toContain("Специальное пиво по коммерческому образцу");
+    expect(html).toContain("Пиво по образцу коммерческого сорта");
     expect(html).toContain("Диапазоны BJCP не указаны");
     expect(html).toContain("Диапазон не указан в BJCP");
   });
@@ -1013,8 +1013,8 @@ describe("recipe editor components", () => {
   it("opens the empty boil hop additions group by default", () => {
     const html = renderDesignerMarkup({ mode: "create", preferredGravityUnit: "plato" });
 
-    expect(html).toContain("Добавление на кипячение");
-    expect(html).toContain("Добавьте хмель на кипячение");
+    expect(html).toContain("Внесение при кипячении");
+    expect(html).toContain("Добавить хмель");
     expect(html).toContain("Другие типы охмеления");
     expect(html.indexOf("Сухое охмеление")).toBeLessThan(html.indexOf("Вирпул / хопстенд"));
     expect(html.indexOf("Вирпул / хопстенд")).toBeLessThan(html.indexOf("Дип-хоп"));

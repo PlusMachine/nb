@@ -65,7 +65,8 @@ export async function GET(request: Request) {
       favoritesOnly: searchParams.get("favoritesOnly") === "true",
       customOnly: searchParams.get("customOnly") === "true",
       limit: Number(searchParams.get("limit") ?? "10"),
-      includeCustom: searchParams.get("includeCustom") !== "false"
+      includeCustom: searchParams.get("includeCustom") !== "false",
+      inventoryOnly: searchParams.get("inventoryOnly") === "true"
     });
 
     return NextResponse.json(result);

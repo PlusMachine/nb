@@ -1,5 +1,6 @@
 "use client";
 
+import { formatRecipeBitternessMissing } from "@/features/recipes/bitterness-completeness";
 import { getBeerStyleById, getBjcpStyleDisplayName, srmToEbc } from "@nb/brewing-core";
 import React from "react";
 
@@ -123,7 +124,8 @@ export function RecipeBatchParametersBlock({
     {
       key: "ibu",
       label: "IBU",
-      value: preview?.ibu != null ? `${preview.ibu.toFixed(0)}` : "—",
+      value: preview?.ibu != null ? `${preview.ibu.toFixed(0)}` : preview?.bitternessEstimate?.missing.length ? "Неполный" : "—",
+      helperText: formatRecipeBitternessMissing(preview?.bitternessEstimate),
       settingsControl: (
         <button
           type="button"
@@ -260,7 +262,7 @@ export function RecipeBatchParametersBlock({
                 className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-base normal-case tracking-normal text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm [@media(pointer:coarse)]:text-base"
               >
                 <option value={equipmentProfileSelectValue} hidden>{selectedEquipmentProfileLabel}</option>
-                <option value="">Без профиля — ручной ввод параметров</option>
+                <option value="">Ввести параметры вручную</option>
                 {equipmentProfiles.map((profile) => (
                   <option key={profile.id} value={profile.id}>
                     {profile.name}{profile.isDefault ? " · Основной" : ""} — {formatEquipmentProfileLitersValue(profile.targetBatchVolumeL)} · {formatEquipmentProfilePercentValue(profile.brewhouseEfficiencyPct)}

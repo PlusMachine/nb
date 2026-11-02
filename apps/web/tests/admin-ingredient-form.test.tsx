@@ -66,7 +66,7 @@ describe("admin ingredient form", () => {
     expect(html).toContain("Атрибуты");
     expect(html).toContain("Источники");
     expect(html).toContain("Другие названия");
-    expect(html).not.toContain("Варианты упаковки");
+    expect(html).toContain("Варианты упаковки");
     expect(html).toContain("Cascade");
     expect(html).toContain("Каскад");
   });

@@ -1,3 +1,4 @@
+import { canonicalManufacturerLabel, formatCatalogColorEbc } from "./catalog-display";
 import type { IngredientDisplayMode, IngredientTechnicalData } from "./contracts";
 import { formatConsumableFormLabel } from "./consumables";
 import { inventoryUnitShortLabels } from "../inventory/units";
@@ -55,7 +56,7 @@ type IngredientPresentationSource = {
 // Где показывается конкретный ингредиент, а не вся категория, лейбл берётся по
 // broad group — resolveConsumableInventoryBroadGroupLabel в consumables.ts.
 export const ingredientCategoryLabels: Record<IngredientCategory, string> = {
-  fermentable: "Сбраживаемые",
+  fermentable: "Солод и другое сырьё",
   hop: "Хмель",
   yeast: "Дрожжи",
   consumable: "Расходники и добавки",
@@ -67,19 +68,19 @@ const subtypeLabels: Record<string, string> = {
   fermentable: "другое сбраживаемое сырьё",
   hop: "хмель",
   yeast: "дрожжи",
-  technical_additives: "техдобавка",
+  technical_additives: "технологическая добавка",
   lauter_aid: "фильтрация затора",
   spice: "специя",
-  citrus_zest: "цедра и цитрус",
+  citrus_zest: "цедра и цитрусовые",
   herb_flower: "травы и цветы",
   coffee_cacao: "кофе/какао",
-  wood_aging: "дерево/выдержка",
+  wood_aging: "древесина для выдержки",
   flavoring: "ароматизатор",
-  process_aid: "техдобавка",
-  nutrient: "техдобавка",
-  enzyme: "техдобавка",
-  antioxidant: "техдобавка",
-  fining: "техдобавка",
+  process_aid: "технологическая добавка",
+  nutrient: "технологическая добавка",
+  enzyme: "технологическая добавка",
+  antioxidant: "технологическая добавка",
+  fining: "технологическая добавка",
   sanitizer: "дезинфицирующее средство",
   cleaner: "моющее средство",
   packaging: "тара и укупорка",
@@ -109,7 +110,7 @@ const fermentableItemKindLabels: Record<string, string> = {
   kvass_concentrate: "Концентрат квасного сусла",
   body_builder: "Добавка для полноты вкуса",
   sour_wort: "Кислое сусло",
-  process_adjunct: "Техническая добавка",
+  process_adjunct: "Технологическая добавка",
   coloring_extract: "Красящий экстракт",
   coloring_sugar: "Сахарный колер",
   malt_corn_concentrate: "Солодовый концентрат",
@@ -319,11 +320,8 @@ export const resolveIngredientCountry = (source: Pick<IngredientPresentationSour
 
 export const resolveIngredientBrandLabel = (
   source: Pick<IngredientPresentationSource, "brand" | "producer" | "brandName" | "manufacturer">
-) => normalizeOptionalName(source.brand)
-  ?? normalizeOptionalName(source.producer)
-  ?? normalizeOptionalName(source.brandName)
-  ?? normalizeOptionalName(source.manufacturer)
-  ?? null;
+) => [source.brand, source.producer, source.brandName, source.manufacturer]
+  .map(canonicalManufacturerLabel).find((label) => label != null) ?? null;
 
 type FermentableTypeBadgeInput = {
   displayTypeRu?: string | null;
@@ -617,10 +615,10 @@ const yeastFlocculationLabelsRu: Record<string, string> = {
   high: "высокая",
   "very high": "очень высокая",
   "very-high": "очень высокая",
-  "low-medium": "низкая-средняя",
-  "medium-low": "низкая-средняя",
-  "medium-high": "средняя-высокая",
-  "high-medium": "средняя-высокая"
+  "low-medium": "от низкой до средней",
+  "medium-low": "от низкой до средней",
+  "medium-high": "от средней до высокой",
+  "high-medium": "от средней до высокой"
 };
 
 export const resolveYeastFlocculationLabelRu = (value?: string | null): string | null => {
@@ -686,6 +684,8 @@ const buildHopSummary = (technicalData: Extract<IngredientTechnicalData, { type:
 );
 
 const resolveMaltColorSummary = (technicalData: Extract<IngredientTechnicalData, { type: "malt" }>) => {
+  const label = formatCatalogColorEbc(technicalData);
+  if (label) return label;
   const range = resolveIngredientTechnicalDataColorRangeEbc(technicalData);
   if (range && (technicalData.colorEbcMin != null || technicalData.colorEbcMax != null)) {
     return range.min === range.max
@@ -703,16 +703,17 @@ const resolveMaltColorSummary = (technicalData: Extract<IngredientTechnicalData,
 const buildMaltSummary = (technicalData: Extract<IngredientTechnicalData, { type: "malt" }>) => (
   [
     resolveMaltColorSummary(technicalData),
-    technicalData.extractPctDryBasis != null ? `Экст-ть ${formatNumber(technicalData.extractPctDryBasis)}%` : null
+    technicalData.extractPctDryBasis != null ? `Экстрактивность ${formatNumber(technicalData.extractPctDryBasis)}%` : null
   ].filter(Boolean).join(" • ")
 );
 
 const buildFermentableSummary = (technicalData: Extract<IngredientTechnicalData, { type: "fermentable" }>) => {
+  if (technicalData.functionalRole === "process_only") return "Для фильтрации затора";
   const colorRange = resolveIngredientTechnicalDataColorRangeEbc(technicalData);
 
   return [
     colorRange ? `${formatNumber(colorRange.average)} EBC` : null,
-    technicalData.extractPctDryBasis != null ? `Экст-ть ${formatNumber(technicalData.extractPctDryBasis)}%` : null
+    technicalData.extractPctDryBasis != null ? `Экстрактивность ${formatNumber(technicalData.extractPctDryBasis)}%` : null
   ].filter(Boolean).join(" • ");
 };
 
@@ -720,7 +721,7 @@ const buildYeastSummary = (technicalData: Extract<IngredientTechnicalData, { typ
   [
     resolveYeastFormLabelRu(technicalData.form),
     technicalData.attenuationPctTypical != null
-      ? `Атт. ${formatNumber(technicalData.attenuationPctTypical)}%`
+      ? `Сбраживание ${formatNumber(technicalData.attenuationPctTypical)}%`
       : null,
     technicalData.fermentationTempCMin != null && technicalData.fermentationTempCMax != null
       ? `${formatNumber(technicalData.fermentationTempCMin)}-${formatNumber(technicalData.fermentationTempCMax)}°C`

@@ -208,6 +208,12 @@ const sampleRecipe = {
 } satisfies RecipeDetailDto;
 
 describe("recipe interop and brew plan foundation", () => {
+  it("omits incomplete IBU from BeerXML instead of substituting a source value", () => {
+    const bitternessEstimate = { status: "unavailable" as const, knownIbu: null, missing: [{ ingredientId: "hop", name: "Willamette", reason: "hop_alpha" as const }] };
+    const beerXml = exportRecipeToBeerXml({ ...sampleRecipe, ibu: null, bitternessEstimate, importMeta: { importedStats: { ibu: 40 } }, calculationMeta: { ...sampleRecipe.calculationMeta, bitternessEstimate } });
+    expect(beerXml).not.toContain("<IBU>");
+    expect(beerXml).toContain("hop_alpha");
+  });
   it("exports and imports a BeerXML-compatible recipe shell", () => {
     const beerXml = exportRecipeToBeerXml(sampleRecipe);
     const imported = importBeerXmlToCanonicalRecipe(beerXml);

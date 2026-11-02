@@ -32,7 +32,7 @@ export const builtInSourceWaterProfiles = [
   {
     id: "distilled_water",
     name: "Дистиллированная вода",
-    description: "Дистиллят.",
+    description: "Дистиллированная вода без добавленных солей.",
     profile: profile(0, 0, 0, 0, 0, 0, 7),
     kind: "source"
   },
@@ -66,7 +66,7 @@ export const builtInTargetWaterProfiles = [
   {
     id: "balanced",
     name: "Balanced Ale",
-    description: "Нейтральный старт для большинства светлых и янтарных элей.",
+    description: "Базовый профиль для светлых и янтарных элей.",
     profile: profile(80, 5, 25, 75, 80, 100),
     kind: "target",
     badge: "универсальный",
@@ -75,7 +75,7 @@ export const builtInTargetWaterProfiles = [
   {
     id: "neipa",
     name: "NEIPA / Hazy IPA",
-    description: "Мягкий хлоридный профиль для сочного хмелевого характера.",
+    description: "Профиль с преобладанием хлоридов для мягкого, полнотелого хмелевого пива.",
     profile: profile(100, 10, 20, 175, 80, 0),
     kind: "target",
     badge: "hoppy",
@@ -84,7 +84,7 @@ export const builtInTargetWaterProfiles = [
   {
     id: "west_coast_ipa",
     name: "West Coast IPA",
-    description: "Сульфатный профиль для сухого, четкого хмелевого акцента.",
+    description: "Профиль с преобладанием сульфатов для сухого пива с выраженной хмелевой горечью.",
     profile: profile(100, 10, 15, 60, 250, 0),
     kind: "target",
     badge: "hoppy",
@@ -93,7 +93,7 @@ export const builtInTargetWaterProfiles = [
   {
     id: "pilsner",
     name: "Pilsner",
-    description: "Чистый светлый профиль с умеренной минерализацией.",
+    description: "Для светлого пива с умеренной минерализацией воды.",
     profile: profile(50, 5, 10, 50, 75, 0),
     kind: "target",
     badge: "lager",
@@ -111,7 +111,7 @@ export const builtInTargetWaterProfiles = [
   {
     id: "dubbel",
     name: "Dubbel",
-    description: "Профиль для темных бельгийских элей с умеренной щелочностью.",
+    description: "Профиль для тёмных бельгийских элей с умеренной щелочностью.",
     profile: profile(70, 10, 25, 75, 75, 150),
     kind: "target",
     badge: "belgian",
@@ -120,7 +120,7 @@ export const builtInTargetWaterProfiles = [
   {
     id: "stout",
     name: "Stout",
-    description: "Более щелочной профиль для темной засыпи.",
+    description: "Более щелочной профиль для тёмной засыпи.",
     profile: profile(90, 10, 35, 80, 60, 180),
     kind: "target",
     badge: "dark",

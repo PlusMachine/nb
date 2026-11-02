@@ -40,7 +40,7 @@ export function CalculatorsIndex({ calculators }: { calculators: CalculatorCardI
               <Sticker className="h-5 w-5" aria-hidden />
             </span>
             <span>
-              <span className="block text-base font-semibold text-foreground">Наклейки на бутылки</span>
+              <span className="block text-base font-semibold text-foreground">Этикетки на бутылки</span>
               <span className="mt-0.5 block text-sm leading-5 text-muted-foreground">
                 Готовый файл для печати: заполните поля или возьмите данные рецепта
               </span>

@@ -123,7 +123,7 @@ export function FirstBrewScaleWidget() {
         </div>
       ) : (
         <p className="mt-3 text-sm text-muted-foreground">
-          Укажи объём от {MIN_LITERS} до {MAX_LITERS} литров.
+          Укажите объём от {MIN_LITERS} до {MAX_LITERS} литров.
         </p>
       )}
     </section>

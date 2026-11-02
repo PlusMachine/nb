@@ -274,24 +274,24 @@ describe("ingredient picker state helpers", () => {
 
     expect(resolveIngredientPickerLoadingLabel({
       query: "castle"
-    })).toBe("Ищем совпадения...");
+    })).toBe("Ищем совпадения…");
 
     expect(resolveIngredientPickerLoadingLabel({
       query: "",
       hasSearchScope: true
-    })).toBe("Подбираем варианты по выбранным фильтрам...");
+    })).toBe("Ищем по выбранным фильтрам…");
 
     expect(resolveIngredientPickerLoadingLabel({
       query: "",
       searchOnEmptyQuery: true
-    })).toBe("Подбираем варианты...");
+    })).toBe("Подбираем варианты…");
 
     const html = renderToStaticMarkup(React.createElement(IngredientPickerLoadingState, {
-      label: "Ищем совпадения..."
+      label: "Ищем совпадения…"
     }));
 
     expect(html).toContain('data-testid="ingredient-picker-loading"');
-    expect(html).toContain("Ищем совпадения...");
+    expect(html).toContain("Ищем совпадения…");
     expect(html).toContain("animate-spin");
   });
 
@@ -494,7 +494,7 @@ describe("ingredient picker state helpers", () => {
     expect(view.primaryName).toBe("Star San");
     expect(view.secondaryName).toBe("Кислотный no-rinse санитайзер");
     expect(view.country).toBeNull();
-    expect(view.subtitle).toBe("Beergineer • 100 ml");
+    expect(view.subtitle).toBe("Beergineer • 100 мл");
   });
 
   it("keeps matched consumable aliases searchable but hidden from row labels", () => {
@@ -789,7 +789,7 @@ describe("ingredient picker state helpers", () => {
       placeholder: "Начните вводить название ингредиента",
       query: "",
       activeFamilyLabel: activeFamily.label
-    })).toBe("Уточните внутри «Пилснер»");
+    })).toBe("Уточните поиск в «Пилснер»");
 
     expect(resolveIngredientPickerScopedPlaceholder({
       placeholder: "Начните вводить название ингредиента",
@@ -1095,9 +1095,9 @@ describe("ingredient picker state helpers", () => {
     }));
 
     expect(favoritesHtml).toContain("Избранные");
-    expect(favoritesHtml).toContain("Убрать фильтр Избранные");
+    expect(favoritesHtml).toContain("Убрать фильтр «Избранные»");
     expect(customOnlyHtml).toContain("Только свои");
-    expect(customOnlyHtml).toContain("Убрать фильтр Только свои");
+    expect(customOnlyHtml).toContain("Убрать фильтр «Только свои»");
     expect(resetHtml).toContain("Сбросить всё");
   });
 
@@ -1254,7 +1254,7 @@ describe("ingredient picker state helpers", () => {
       onSelect: () => undefined
     }));
 
-    expect(html).toContain('placeholder="Искать внутри Сахара и сиропы"');
+    expect(html).toContain('placeholder="Искать в категории Сахара и сиропы"');
     expect(html).not.toContain('data-testid="ingredient-picker-quick-start"');
     expect(html).not.toContain('data-testid="ingredient-picker-group-chip"');
     expect(html).not.toContain('data-testid="ingredient-picker-clear-all-scopes"');
@@ -1310,7 +1310,7 @@ describe("ingredient picker state helpers", () => {
     expect(html).toContain("Castle Malting");
     expect(html).toContain("По типу");
     expect(html).toContain("Недавние");
-    expect(html).toContain("Загружаем недавние...");
+    expect(html).toContain("Загружаем недавние…");
     expect(html).toContain('data-testid="ingredient-picker-quick-start-recent-loading"');
   });
 
@@ -1334,7 +1334,7 @@ describe("ingredient picker state helpers", () => {
     expect(html).toContain("Только свои");
     expect(html).not.toContain("По бренду");
     expect(html).not.toContain('data-testid="ingredient-picker-quick-start-types"');
-    expect(html).toContain("Загружаем недавние...");
+    expect(html).toContain("Загружаем недавние…");
   });
 
   it("renders the zero-query panel inside the picker for yeast inventory flows", () => {
@@ -1365,7 +1365,7 @@ describe("ingredient picker state helpers", () => {
     expect(html).toContain("По бренду");
     expect(html).toContain("Fermentis");
     expect(html).not.toContain('data-testid="ingredient-picker-quick-start-types"');
-    expect(html).toContain("Загружаем недавние...");
+    expect(html).toContain("Загружаем недавние…");
   });
 
   it("renders the zero-query panel inside the picker for water treatment inventory flows", () => {
@@ -1429,7 +1429,7 @@ describe("ingredient picker state helpers", () => {
     expect(html).toContain("Дехлорирование");
     expect(html).toContain("База воды");
     expect(html).not.toContain("По бренду");
-    expect(html).toContain("Загружаем недавние...");
+    expect(html).toContain("Загружаем недавние…");
   });
 
   it("renders the zero-query panel inside the picker for consumable inventory flows", () => {
@@ -1517,7 +1517,7 @@ describe("ingredient picker state helpers", () => {
     expect(html).toContain("Тара и укупорка");
     expect(html).toContain("Газы");
     expect(html).not.toContain("По бренду");
-    expect(html).toContain("Загружаем недавние...");
+    expect(html).toContain("Загружаем недавние…");
   });
 
   it("seeds brand chips from recent history before remote quick-start data finishes loading", () => {
@@ -1723,7 +1723,7 @@ describe("ingredient picker state helpers", () => {
 
     expect(buildIngredientPickerTechnicalBadges(item).map((badge) => badge.label)).toEqual([
       "жидкие",
-      "Атт. 75%"
+      "Сбраживание 75%"
     ]);
   });
 
@@ -1740,8 +1740,8 @@ describe("ingredient picker state helpers", () => {
     const badges = buildIngredientPickerTechnicalBadges(item);
 
     expect(badges.map((badge) => badge.label)).toEqual([
-      "5-8 EBC",
-      "Экст-ть 80%"
+      "5–8 EBC",
+      "Экстрактивность 80%"
     ]);
     expect(badges[0]?.accent).toMatchObject({
       startHex: expect.any(String),
@@ -1765,7 +1765,7 @@ describe("ingredient picker state helpers", () => {
 
     expect(badges.map((badge) => badge.label)).toEqual([
       "12 EBC",
-      "Экст-ть 79%"
+      "Экстрактивность 79%"
     ]);
     expect(badges[0]?.accent).toMatchObject({
       startHex: expect.any(String),
@@ -1792,7 +1792,7 @@ describe("ingredient picker state helpers", () => {
     });
 
     expect(buildIngredientPickerTechnicalBadges(item).map((badge) => badge.label)).toEqual([
-      "CaSO4"
+      "CaSO4·2H2O"
     ]);
   });
 
@@ -1860,7 +1860,7 @@ describe("ingredient picker state helpers", () => {
       source: "catalog"
     });
 
-    expect(view.subtitle).toBe("1 l");
+    expect(view.subtitle).toBe("1 л");
   });
 
   it("adds stock quantity to picker cards without replacing catalog metadata", () => {

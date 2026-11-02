@@ -71,6 +71,7 @@ function SourceBrewRows({ plannedBrews }: { plannedBrews: ShoppingListSourceBrew
   return (
     <div>
       <p className="text-sm text-muted-foreground">Для запланированных партий:</p>
+      <p className="mt-1 text-xs text-muted-foreground">Общий запас распределён между партиями: сначала ближайшие по дате варки.</p>
       <ul className="mt-1">
         {plannedBrews.map((brew) => (
           <li key={brew.brewBatchId}>

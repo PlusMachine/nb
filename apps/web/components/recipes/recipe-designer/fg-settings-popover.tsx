@@ -7,6 +7,7 @@ import { Popover } from "@nb/ui";
 import { NumericInput } from "@/components/shared/numeric-input";
 import { type RecipeCalculationMeta, type RecipeDraftPreviewDto } from "@/features/recipes/contracts";
 import {
+  convertGravityFieldValue,
   formatGravityRange,
   formatGravitySecondary,
   gravityUnitLabels,
@@ -46,9 +47,12 @@ export function FgSettingsPopover({
   const [manualAttenuationInput, setManualAttenuationInput] = useState(
     toInputString(calculationMeta.manualAttenuationOverridePct ?? null)
   );
-  const [manualFgInput, setManualFgInput] = useState(
-    toInputString(sgToManualFgInput(calculationMeta.manualFgOverrideValue ?? null))
-  );
+  const [manualFgDraft, setManualFgDraft] = useState({
+    value: toInputString(sgToManualFgInput(calculationMeta.manualFgOverrideValue ?? null)),
+    unit: preferredGravityUnit
+  });
+  const manualFgInput = convertGravityFieldValue(manualFgDraft.value, toCalculatorGravityUnit(manualFgDraft.unit), manualFgUnit);
+  const setManualFgInput = (value: string) => setManualFgDraft({ value, unit: preferredGravityUnit });
 
   useEffect(() => {
     if (calculationMeta.manualFgOverrideValue != null) {
@@ -61,8 +65,12 @@ export function FgSettingsPopover({
   }, [calculationMeta.manualAttenuationOverridePct]);
 
   useEffect(() => {
-    setManualFgInput(toInputString(sgToManualFgInput(calculationMeta.manualFgOverrideValue ?? null)));
-  }, [calculationMeta.manualFgOverrideValue, preferredGravityUnit]);
+    setManualFgDraft(current => ({
+      ...current,
+      value: toInputString(calculationMeta.manualFgOverrideValue == null ? null
+        : sgToGravityUnit(calculationMeta.manualFgOverrideValue, toCalculatorGravityUnit(current.unit)))
+    }));
+  }, [calculationMeta.manualFgOverrideValue]);
 
   const commitManualAttenuation = () => {
     const parsed = toOptionalNumber(manualAttenuationInput);
@@ -136,7 +144,7 @@ export function FgSettingsPopover({
 
           <div className="mt-2.5 space-y-2.5">
             <label className="space-y-1 text-[11px] font-medium text-muted-foreground">
-              Ожидаемая аттенюация, %
+              Ожидаемая степень сбраживания, %
               <NumericInput
                 min={60}
                 max={90}
@@ -193,6 +201,7 @@ export function FgSettingsPopover({
                     min={manualFgMin}
                     max={manualFgMax}
                     step={manualFgStep}
+                    aria-label={`Плотность КП, ${gravityUnitLabels[preferredGravityUnit]}`}
                     value={manualFgInput}
                     onChange={(event) => setManualFgInput(event.target.value)}
                     onBlur={commitManualFg}
@@ -214,7 +223,7 @@ export function FgSettingsPopover({
             {preview?.fgEstimateDetails ? (
               <div className="space-y-1 border-t border-border pt-2.5 text-[11px] text-muted-foreground">
                 <div className="flex items-center justify-between gap-2">
-                  <span>База {preview.fgEstimateDetails.attenuationSource === "yeast" ? "по дрожжам" : "по умолчанию"}</span>
+                  <span>Базовая степень сбраживания {preview.fgEstimateDetails.attenuationSource === "yeast" ? "по дрожжам" : "по умолчанию"}</span>
                   <span className="font-medium tabular-nums text-foreground">{preview.fgEstimateDetails.baseAttenuationPct.toFixed(1)}%</span>
                 </div>
                 {preview.fgEstimateDetails.mainMashTempC != null && preview.fgEstimateDetails.mashAdjPctPoints !== 0 ? (
@@ -242,7 +251,7 @@ export function FgSettingsPopover({
                   </div>
                 ) : null}
                 <div className="flex items-center justify-between gap-2 border-t border-border pt-1 font-medium text-foreground">
-                  <span>Итоговая аттенюация</span>
+                  <span>Итоговая степень сбраживания</span>
                   <span className="tabular-nums">{preview.fgEstimateDetails.effectiveAttenuationPct.toFixed(1)}%</span>
                 </div>
                 {(() => {

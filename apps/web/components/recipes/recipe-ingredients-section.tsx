@@ -36,7 +36,7 @@ const sectionOrder = ["fermentable", "hop", "yeast", "water_treatment", "consuma
 type SectionCategory = (typeof sectionOrder)[number];
 
 const sectionLabels: Record<SectionCategory, string> = {
-  fermentable: "Сбраживаемое",
+  fermentable: "Солод и другое сырьё",
   hop: "Хмель",
   yeast: "Дрожжи",
   water_treatment: "Водоподготовка",

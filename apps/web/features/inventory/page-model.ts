@@ -26,7 +26,7 @@ import { inventoryPrimaryGroupKeys } from "./contracts";
 export const inventoryCategoryOrder: IngredientCategory[] = ["fermentable", "hop", "yeast", "water_treatment", "consumable"];
 
 export const inventoryCategoryLabels: Record<IngredientCategory, string> = {
-  fermentable: "Сбраживаемые",
+  fermentable: "Солод и другое сырьё",
   hop: "Хмель",
   yeast: "Дрожжи",
   water_treatment: "Водоподготовка",
@@ -53,7 +53,7 @@ export const inventoryPrimaryGroupLabels: Record<InventoryPrimaryGroupKey, strin
 export const inventoryTypeOrder: IngredientType[] = [...ingredientTypes];
 export const inventoryTypeLabels: Record<IngredientType, string> = {
   malt: "Солод",
-  fermentable: "Сбраживаемые",
+  fermentable: "Солод и другое сырьё",
   hop: "Хмель",
   yeast: "Дрожжи",
   consumable: "Расходники и добавки",

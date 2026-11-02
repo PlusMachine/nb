@@ -203,7 +203,7 @@ export function IngredientPurchaseLinksField({
       </div>
 
       {isLoading ? (
-        <p className="text-sm text-muted-foreground">Загружаем ссылки...</p>
+        <p className="text-sm text-muted-foreground">Загружаем ссылки…</p>
       ) : null}
 
       {rows.length > 0 ? (

@@ -720,7 +720,7 @@ export function makeDemoData(now: Date): DemoData {
       // День 9 — последний замер, но брожение ещё идёт: финальный (FG) замер
       // не проставлен, поэтому summarizeBrewMeasurements честно вернёт fg=null.
       isFinal: false,
-      note: dayIndex === 0 ? "OG на старте варки" : null,
+      note: dayIndex === 0 ? "Начальная плотность" : null,
       createdAt: takenAt
     };
   });

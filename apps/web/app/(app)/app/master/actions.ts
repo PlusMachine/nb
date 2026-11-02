@@ -32,18 +32,18 @@ import { requireUser } from "@/lib/auth";
 // {ok:true}|{ok:false,error}) и app/(admin)/admin/articles/actions.ts (маппинг
 // ZodError/NEXT_REDIRECT).
 
-const firstZodMessage = (error: ZodError): string => error.issues[0]?.message ?? "Проверьте корректность данных.";
+const firstZodMessage = (error: ZodError): string => error.issues[0]?.message ?? "Проверьте введённые данные.";
 
 const ERROR_MESSAGES: Record<string, string> = {
   PROFILE_EXISTS: "У вас уже есть профиль мастера.",
   NOT_FOUND: "Не найдено — возможно, страницу нужно обновить.",
-  PROFILE_LOCKED_PENDING: "Пока заявка на модерации, править нельзя.",
+  PROFILE_LOCKED_PENDING: "Редактирование недоступно, пока заявка на модерации.",
   ITEM_LIMIT_REACHED: "Можно добавить не больше 12 изделий.",
   ITEM_REORDER_MISMATCH: "Список изделий уже изменился — обновите страницу.",
   PROFILE_INCOMPLETE: "Заполните профиль полностью перед отправкой на модерацию.",
   SUBMIT_NOT_ALLOWED: "Заявка уже на модерации.",
-  UPLOAD_IN_PROGRESS: "Дождитесь окончания загрузки фото, потом отправляйте на модерацию.",
-  WITHDRAW_NOT_ALLOWED: "Заявка не на модерации — отзывать нечего.",
+  UPLOAD_IN_PROGRESS: "Дождитесь загрузки фотографий перед отправкой на модерацию.",
+  WITHDRAW_NOT_ALLOWED: "Заявка не находится на модерации.",
   IMAGE_LIMIT_REACHED: "Можно загрузить не больше 24 фотографий на витрину.",
   ITEM_IMAGE_LIMIT_REACHED: "У одного изделия — не больше 6 фотографий.",
   IMAGE_NOT_ELIGIBLE: "Это фото нельзя сделать обложкой этого изделия.",

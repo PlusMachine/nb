@@ -20,6 +20,7 @@ import {
   type BrewMeasurementSummary
 } from "@/features/brew-batches/contracts";
 import {
+  convertGravityFieldValue,
   formatGravity,
   formatGravitySecondary,
   gravityUnitLabels,
@@ -27,7 +28,7 @@ import {
   type PreferredGravityUnit
 } from "@/features/system/gravity-units";
 
-const fmtAbv = (value: number | null) => (value == null ? "—" : `${value.toFixed(1)}%`);
+const fmtAbv = (value: number | null) => (value == null ? "—" : `${value.toFixed(1).replace(".", ",")}%`);
 const fmtAtt = (value: number | null) => (value == null ? "—" : `${Math.round(value)}%`);
 
 // Подсказка в поле ввода — голое число: единица уже стоит в подписи поля
@@ -63,7 +64,7 @@ function StatTile({
         <div className="text-lg font-semibold tabular-nums text-foreground">{value}</div>
         {secondary ? <div className="text-[11px] text-muted-foreground">{secondary}</div> : null}
       </div>
-      {target ? <div className="text-[11px] text-muted-foreground">цель {target}</div> : null}
+      {target ? <div className="text-[11px] text-muted-foreground">по расчёту {target}</div> : null}
     </div>
   );
 }
@@ -88,7 +89,9 @@ export function BrewJournal({
   /** Контекстный заголовок секции (OG на варочном дне, FG на брожении). */
   title?: string;
 }) {
-  const [gravity, setGravity] = useState("");
+  const [gravityDraft, setGravityDraft] = useState({ value: "", unit: preferredGravityUnit });
+  const gravity = convertGravityFieldValue(gravityDraft.value, toCalculatorGravityUnit(gravityDraft.unit), toCalculatorGravityUnit(preferredGravityUnit));
+  const setGravity = (value: string) => setGravityDraft({ value, unit: preferredGravityUnit });
   const [takenAt, setTakenAt] = useState("");
   const [note, setNote] = useState("");
   const [markFinal, setMarkFinal] = useState(false);
@@ -141,7 +144,7 @@ export function BrewJournal({
         // (ISO с таймзоной браузера), иначе сервер распарсит его в своей TZ.
         takenAt: takenAt ? new Date(takenAt).toISOString() : null,
         note: note || null,
-        isFinal: markFinal
+        isFinal: measurementKind === "og" ? false : markFinal
       });
       if (!result.ok) {
         setError(result.message);
@@ -230,6 +233,7 @@ export function BrewJournal({
             <NumericInput
               min={gravityInputMin}
               max={gravityInputMax}
+              step={preferredGravityUnit === "sg" ? 0.001 : 0.1}
               value={gravity}
               onChange={(event) => setGravity(event.target.value)}
               disabled={busy}
@@ -256,7 +260,7 @@ export function BrewJournal({
               value={note}
               onChange={(event) => setNote(event.target.value)}
               disabled={busy}
-              placeholder="напр. внёс дрожжи"
+              placeholder="Например, внёс дрожжи"
               maxLength={500}
               aria-label="Заметка к замеру"
               className="h-9 w-full rounded-md border border-border px-2 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm [@media(pointer:coarse)]:text-base"
@@ -268,7 +272,7 @@ export function BrewJournal({
           </Button>
         </div>
         {takenAtPreview ? <p className="text-xs text-muted-foreground">{takenAtPreview}</p> : null}
-        <label className="flex w-fit items-center gap-2 text-xs text-muted-foreground">
+        {measurementKind !== "og" ? <label className="flex w-fit items-center gap-2 text-xs text-muted-foreground">
           <input
             type="checkbox"
             checked={markFinal}
@@ -277,7 +281,7 @@ export function BrewJournal({
             className="h-3.5 w-3.5 rounded border-border text-foreground focus:ring-ring"
           />
           Это замер конечной плотности (КП)
-        </label>
+        </label> : null}
         {error ? <p role="alert" className="text-xs text-destructive">{error}</p> : null}
       </form>
 

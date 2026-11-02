@@ -1,12 +1,16 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { AlertTriangle, CheckCircle2, FlaskConical } from "lucide-react";
 
 import { buildFinishBrewConfirm, groupsForAct, resolveBrewDayCursor } from "@/features/brew-batches/brew-day";
 import { type BrewDayProgress, type BrewDayStageGroup } from "@/features/brew-batches/contracts";
 import { useWakeLock } from "@/features/brew-controller/use-wake-lock";
 import { BrewStepList } from "./brew-step-list";
+import { BrewProcessPlan } from "./brew-process-plan";
+import { ManualBrewStep } from "./manual-brew-step";
+import type { BrewDayStep } from "../contracts";
+import { Button } from "@nb/ui";
 import { BrewTransitionButton } from "./brew-transition-button";
 import { useBrewDayProgress } from "./use-brew-day-progress";
 
@@ -47,15 +51,18 @@ function NudgeLine({ nudge }: { nudge: FermentationNudge | null }) {
  */
 export function FermentationBoard({
   brewBatchId,
+  ownerId,
   groups,
   initialProgress,
   dayLabel,
   fermentDayN,
   plannedDays,
   targetTempLabel,
-  nudge
+  nudge,
+  manual = true
 }: {
   brewBatchId: string;
+  ownerId?: string;
   groups: BrewDayStageGroup[];
   initialProgress: BrewDayProgress;
   dayLabel: string | null;
@@ -65,8 +72,10 @@ export function FermentationBoard({
   plannedDays: number | null;
   targetTempLabel: string | null;
   nudge: FermentationNudge | null;
+  manual?: boolean;
 }) {
-  const controller = useBrewDayProgress(brewBatchId, initialProgress);
+  const controller = useBrewDayProgress(brewBatchId, initialProgress, ownerId);
+  const [preview, setPreview] = useState<BrewDayStep | null>(null);
 
   const fermentGroups = groupsForAct(groups, "fermentation")
     .map((group) => ({ ...group, steps: group.steps.filter((step) => !HERO_STEP_IDS.has(step.id)) }))
@@ -110,9 +119,14 @@ export function FermentationBoard({
 
       {controller.error ? <p role="alert" className="text-xs text-destructive">{controller.error}</p> : null}
 
-      {fermentGroups.length > 0 ? (
-        <BrewStepList groups={fermentGroups} controller={controller} currentStage={cursor.current?.stage ?? null} />
-      ) : null}
+      {manual && fermentGroups.length > 0 ? <>
+        <BrewProcessPlan phases={fermentGroups.map(group => ({ id: group.stage, label: group.label, steps: group.steps }))} progress={controller.progress} current={cursor.current}
+          phaseIndex={fermentGroups.findIndex(group => group.steps.some(step => !controller.progress.steps[step.id]?.done))} now={controller.now}
+          storageKey={`nb:ferment-plan:${ownerId ?? "local"}:${brewBatchId}`} onPreview={step => setPreview(step.id === cursor.current?.id ? null : step)} />
+        {preview ? <div className="space-y-3 rounded-xl border border-border p-4"><p className="text-xs text-muted-foreground">Просмотр плана</p><h3 className="text-lg font-semibold">{preview.title}</h3><p className="text-sm">{preview.detail}</p>{preview.instructions ? <p className="text-sm">{preview.instructions}</p> : null}<Button type="button" onClick={() => setPreview(null)}>Вернуться к брожению</Button></div>
+          : cursor.current ? <div className="rounded-xl border border-border p-4"><ManualBrewStep key={cursor.current.id} step={cursor.current} companions={[cursor.current]} controller={controller} onInteract={() => {}} /></div> : null}
+        {controller.queuedCount ? <p role="status" className="text-xs text-muted-foreground">Изменений в очереди: {controller.queuedCount}. {controller.offline ? "Шаги сохранены на устройстве." : "Отправляем."}</p> : null}
+      </> : fermentGroups.length > 0 ? <BrewStepList groups={fermentGroups} controller={controller} currentStage={cursor.current?.stage ?? null} /> : null}
 
       <div className="border-t border-border pt-3">
         {/* Завершение раньше плана — не основной путь: кнопка остаётся outline,
@@ -125,6 +139,7 @@ export function FermentationBoard({
           size="md"
           confirm={finishConfirm}
           appendQueryOnSuccess="just-completed=1"
+          disabled={controller.queuedCount > 0}
         />
       </div>
     </section>

@@ -21,7 +21,7 @@ export const adminUserStatusLabels: Record<AdminUserStatus, string> = {
   anonymized: "Обезличен"
 };
 
-export const adminUserSortOptions = ["recent", "oldest", "name", "role"] as const;
+export const adminUserSortOptions = ["recent", "oldest", "name", "role", "last_seen"] as const;
 export type AdminUserSortOption = (typeof adminUserSortOptions)[number];
 
 export const defaultAdminUserSortOption: AdminUserSortOption = "recent";
@@ -30,8 +30,15 @@ export const adminUserSortLabels: Record<AdminUserSortOption, string> = {
   recent: "Сначала новые",
   oldest: "Сначала старые",
   name: "По имени",
-  role: "По роли"
+  role: "По роли",
+  last_seen: "По последнему визиту"
 };
+
+export const adminUserSegmentLabels = {
+  new: "Новые за 7 дней", active: "Заходили за 7 дней", dormant: "Не возвращались 30 дней",
+  unactivated: "Без рецепта спустя 7 дней", no_batches: "Рецепты есть, партий нет", brewers: "Завершили варку"
+} as const;
+export type AdminUserSegment = keyof typeof adminUserSegmentLabels;
 
 export const BLOCK_REASON_MIN = 3;
 export const BLOCK_REASON_MAX = 1000;
@@ -46,6 +53,7 @@ export type AdminUserFilters = {
   sort?: AdminUserSortOption;
   page?: number;
   pageSize?: number;
+  segment?: AdminUserSegment;
 };
 
 export type AdminUserListItem = {
@@ -61,6 +69,7 @@ export type AdminUserListItem = {
   createdAt: Date;
   recipesCount: number;
   batchesCount: number;
+  lastSeenAt?: Date | null;
 };
 
 export type AdminUserListPage = {
@@ -132,7 +141,8 @@ export const parseAdminUserFilters = (searchParams: Record<string, string | unde
     status: isAdminUserStatus(searchParams.status) ? searchParams.status : undefined,
     sort: parseAdminUserSort(searchParams.sort),
     page: parseAdminUserPage(searchParams.page),
-    pageSize: parseAdminUserPageSize(searchParams.pageSize)
+    pageSize: parseAdminUserPageSize(searchParams.pageSize),
+    segment: searchParams.segment && Object.hasOwn(adminUserSegmentLabels, searchParams.segment) ? searchParams.segment as AdminUserSegment : undefined
   };
 };
 
@@ -142,6 +152,7 @@ type AdminUsersToolbarState = {
   status?: AdminUserStatus | "all";
   sort?: AdminUserSortOption;
   pageSize?: number;
+  segment?: AdminUserSegment | "all";
 };
 
 /** Ссылка тулбара: пустые/дефолтные значения в URL не попадают, page сбрасывается. */
@@ -152,7 +163,8 @@ export const buildAdminUsersHref = (
     role = "all",
     status = "all",
     sort = defaultAdminUserSortOption,
-    pageSize = ADMIN_USERS_PAGE_SIZE_DEFAULT
+    pageSize = ADMIN_USERS_PAGE_SIZE_DEFAULT,
+    segment = "all"
   }: AdminUsersToolbarState
 ): string => {
   const params = new URLSearchParams();
@@ -164,6 +176,7 @@ export const buildAdminUsersHref = (
   if (role !== "all") {
     params.set("role", role);
   }
+  if (segment !== "all") params.set("segment", segment);
   if (status !== "all") {
     params.set("status", status);
   }

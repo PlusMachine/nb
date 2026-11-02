@@ -133,7 +133,7 @@ const quickChips: Record<BjcpQuickChipId, BjcpQuickChip> = {
   light: {
     id: "light",
     label: "Светлое",
-    description: "Стили со светлым цветом пива"
+    description: "Светлые стили пива"
   },
   dark: {
     id: "dark",
@@ -142,13 +142,13 @@ const quickChips: Record<BjcpQuickChipId, BjcpQuickChip> = {
   },
   ipa_hoppy: {
     id: "ipa_hoppy",
-    label: "IPA / Хмелевое",
-    description: "IPA, APA и ярко хмелевые стили"
+    label: "IPA и хмелевое",
+    description: "IPA, APA и другие стили с выраженным хмелевым вкусом и ароматом"
   },
   lager: {
     id: "lager",
     label: "Лагер",
-    description: "Лагеры всех подтипов"
+    description: "Светлые, янтарные и тёмные лагеры"
   },
   session: {
     id: "session",
@@ -163,12 +163,12 @@ const quickChips: Record<BjcpQuickChipId, BjcpQuickChip> = {
   sour: {
     id: "sour",
     label: "Кислое",
-    description: "Кислые стили и пиво смешанного брожения"
+    description: "Стили с выраженной кислотностью"
   }
 };
 
 export const sortLabels: Record<BjcpCatalogSortOption, string> = {
-  relevance: "По релевантности",
+  relevance: "По совпадению с запросом",
   name: "По названию",
   code: "По коду BJCP"
 };
@@ -191,9 +191,9 @@ export const advancedFilterDefinitions: Array<{
     id: "fermentation",
     label: "Тип брожения",
     options: [
-      { id: "ale", label: "Эль" },
-      { id: "lager", label: "Лагер" },
-      { id: "mixed", label: "Смешанное / дикое" }
+      { id: "ale", label: "Верховое" },
+      { id: "lager", label: "Низовое" },
+      { id: "mixed", label: "Смешанное или дикое" }
     ]
   },
   {
@@ -208,28 +208,28 @@ export const advancedFilterDefinitions: Array<{
   },
   {
     id: "region",
-    label: "Школа / регион",
+    label: "Пивоваренная традиция",
     options: [
       { id: "america", label: "Америка" },
       { id: "britain_ireland", label: "Британия и Ирландия" },
       { id: "germany_czech", label: "Германия и Чехия" },
       { id: "belgium_france", label: "Бельгия и Франция" },
       { id: "eastern_europe", label: "Восточная Европа" },
-      { id: "local_other", label: "Локальные / прочее" }
+      { id: "local_other", label: "Другие регионы" }
     ]
   },
   {
     id: "character",
-    label: "Характер / особенности",
+    label: "Вкус и особенности",
     options: [
       { id: "hoppy", label: "Хмелевое" },
       { id: "malty", label: "Солодовое" },
       { id: "sour", label: "Кислое" },
-      { id: "roasty", label: "Тёмное / жжёное" },
+      { id: "roasty", label: "Жжёные и обжаренные ноты" },
       { id: "smoked", label: "Копчёное" },
       { id: "fruity", label: "Фруктовое" },
       { id: "spiced", label: "Пряное" },
-      { id: "wood_aged", label: "Выдержанное в дереве / бочке" }
+      { id: "wood_aged", label: "Выдержка в бочке или на древесине" }
     ]
   }
 ];
@@ -373,25 +373,41 @@ const getStyleColor = (style: BjcpCatalogStyle): BjcpFilterOptionId => {
 };
 
 export const getStyleFermentationLabel = (style: BjcpCatalogStyle) => {
-  const badges = getBadges(style);
-  if (badges.has("Лагер")) {
-    return "Лагер";
+  const types = getStyleFermentation(style);
+  if (types.includes("mixed")) {
+    return "Смешанное или дикое";
   }
-  if (badges.has("Дикое/смешанное брожение")) {
-    return "Смешанное / дикое";
+  if (types.includes("ale") && types.includes("lager")) {
+    return "Верховое или низовое";
   }
-  return badges.has("Эль") ? "Эль" : "Эль";
+  if (types.includes("lager")) {
+    return "Низовое";
+  }
+  if (types.includes("ale")) {
+    return "Верховое";
+  }
+  return style.tags?.includes("specialty-beer") ? "Зависит от рецепта" : "Не указано";
 };
 
-const getStyleFermentation = (style: BjcpCatalogStyle): BjcpFilterOptionId => {
+const getStyleFermentation = (style: BjcpCatalogStyle): BjcpFilterOptionId[] => {
+  // Use the source tags before display badges: lagered means cold conditioning,
+  // and any-fermentation explicitly allows either ale or lager yeast.
+  const tags = new Set(style.tags ?? []);
+  if (tags.has("wild-fermented")) return ["mixed"];
+  if (tags.has("any-fermentation")) return ["ale", "lager"];
+  const taggedTypes: BjcpFilterOptionId[] = [];
+  if (tags.has("top-fermented")) taggedTypes.push("ale");
+  if (tags.has("bottom-fermented")) taggedTypes.push("lager");
+  if (taggedTypes.length) return taggedTypes;
+
   const badges = getBadges(style);
-  if (badges.has("Лагер")) {
-    return "lager";
-  }
   if (badges.has("Дикое/смешанное брожение")) {
-    return "mixed";
+    return ["mixed"];
   }
-  return "ale";
+  const types: BjcpFilterOptionId[] = [];
+  if (badges.has("Эль")) types.push("ale");
+  if (badges.has("Лагер")) types.push("lager");
+  return types;
 };
 
 const getStyleStrength = (style: BjcpCatalogStyle): BjcpFilterOptionId => {
@@ -468,10 +484,10 @@ const getStyleCharacters = (style: BjcpCatalogStyle): BjcpFilterOptionId[] => {
   if (badges.has("Солодовое") || styleInFamily(style, "malty_lagers") || styleInFamily(style, "british_irish")) {
     out.add("malty");
   }
-  if (badges.has("Кислое") || styleInFamily(style, "sour_wild")) {
+  if (badges.has("Кислое") || style.tags?.includes("sour")) {
     out.add("sour");
   }
-  if (badges.has("Жжёное") || styleInFamily(style, "porters_stouts") || getStyleColor(style) === "dark") {
+  if (badges.has("Жжёное") || badges.has("Обжаренное") || styleInFamily(style, "porters_stouts")) {
     out.add("roasty");
   }
   if (badges.has("Копчёное")) {
@@ -483,7 +499,7 @@ const getStyleCharacters = (style: BjcpCatalogStyle): BjcpFilterOptionId[] => {
   if (badges.has("Пряное")) {
     out.add("spiced");
   }
-  if (badges.has("Выдержка в дереве/бочке")) {
+  if (badges.has("Выдержка в бочке или на древесине")) {
     out.add("wood_aged");
   }
 
@@ -502,13 +518,13 @@ const matchesQuickChip = (style: BjcpCatalogStyle, chipId: BjcpQuickChipId) => {
     case "ipa_hoppy":
       return styleInFamily(style, "ipa_hoppy") || badges.has("Хмелевое");
     case "lager":
-      return badges.has("Лагер");
+      return getStyleFermentation(style).includes("lager");
     case "session":
       return strength === "session";
     case "strong":
       return strength === "strong" || strength === "very_strong";
     case "sour":
-      return styleInFamily(style, "sour_wild") || badges.has("Кислое");
+      return badges.has("Кислое") || Boolean(style.tags?.includes("sour"));
     default:
       return false;
   }
@@ -518,7 +534,7 @@ const matchesAdvancedFilters = (style: BjcpCatalogStyle, filters: BjcpAdvancedFi
   if (filters.color.length && !filters.color.includes(getStyleColor(style))) {
     return false;
   }
-  if (filters.fermentation.length && !filters.fermentation.includes(getStyleFermentation(style))) {
+  if (filters.fermentation.length && !getStyleFermentation(style).some((type) => filters.fermentation.includes(type))) {
     return false;
   }
   if (filters.strength.length && !filters.strength.includes(getStyleStrength(style))) {

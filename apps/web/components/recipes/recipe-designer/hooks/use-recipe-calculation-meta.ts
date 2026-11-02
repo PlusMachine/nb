@@ -6,7 +6,7 @@ import type { RecipeCalculationMeta, RecipeDetailDto } from "@/features/recipes/
 
 import { cloneRecipeCalculationMeta } from "../helpers";
 
-// calculationMeta — ручные оверрайды FG/аттенюации и настройки формулы
+// calculationMeta — ручные оверрайды FG/степени сбраживания и настройки формулы
 // горечи, которыми управляют FgSettingsPopover (через
 // RecipeBatchParametersBlock) и BitternessSettingsDrawer.
 export function useRecipeCalculationMeta({ initialRecipe }: { initialRecipe?: RecipeDetailDto }) {

@@ -56,7 +56,7 @@ describe("BJCP content index", () => {
     expect(article?.bjcpId).toBe("1B");
     expect(article?.sections.some((section) => (
       section.id === "commercial_examples"
-      && section.label === "Коммерческие примеры"
+      && section.label === "Примеры пива этого стиля"
       && section.content.includes("Budweiser")
     ))).toBe(true);
   });

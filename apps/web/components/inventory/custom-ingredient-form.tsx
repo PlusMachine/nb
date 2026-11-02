@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { InventoryFormActions } from "./inventory-form-actions";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { IngredientPurchaseLinksField } from "@/components/ingredients/ingredient-purchase-links-field";
@@ -73,11 +74,12 @@ type Props = {
   initialUnit?: string | null;
   preferredCurrency?: SystemCurrency;
   pending: boolean;
+  continuousEntry?: boolean;
   mode?: "inventory" | "recipe";
   submitLabel?: string;
   fieldErrors?: Record<string, string>;
   onDisplayNameChange?: (value: string) => void;
-  onSubmit: (payload: CustomIngredientSubmitPayload) => Promise<void>;
+  onSubmit: (payload: CustomIngredientSubmitPayload, keepOpen?: boolean) => Promise<void>;
   /** Не сохранённые данные — для guard'а модалки-обёртки (закрыть без подтверждения?). */
   onDirtyChange?: (dirty: boolean) => void;
 };
@@ -239,7 +241,7 @@ const resolveCustomIngredientDisplayNamePlaceholder = (kind: CustomIngredientPla
     return "Например: Молочная кислота 80%";
   }
 
-  return "Например: Irish Moss";
+  return "Например: Ирландский мох";
 };
 
 const resolveCustomIngredientBrandPlaceholder = (kind: CustomIngredientPlaceholderKind) => {
@@ -317,6 +319,7 @@ export function CustomIngredientForm({
   initialUnit = null,
   preferredCurrency = "RUB",
   pending,
+  continuousEntry = false,
   mode = "inventory",
   submitLabel,
   fieldErrors,
@@ -430,7 +433,7 @@ export function CustomIngredientForm({
 
     if (category === "hop") {
       errors.hopAlphaAcidPct = validateNumericInput(hopAlphaAcidPct, {
-        label: "Альфа-кислота",
+        label: "Альфа-кислоты",
         min: 0,
         max: 100
       });
@@ -438,7 +441,7 @@ export function CustomIngredientForm({
 
     if (category === "yeast") {
       errors.yeastAttenuationPct = validateNumericInput(yeastAttenuationPct, {
-        label: "Аттенюация",
+        label: "Степень сбраживания",
         min: 0,
         max: 100
       });
@@ -613,75 +616,11 @@ export function CustomIngredientForm({
     });
   };
 
-  return (
-    <form
-      className="space-y-4"
-      onSubmit={async (event) => {
-        event.preventDefault();
-        const nextFieldErrors = validateLocalFields();
-        setLocalFieldErrors(nextFieldErrors);
-        if (hasValidationErrors(nextFieldErrors)) {
-          return;
-        }
-
-        const payload: CustomIngredientSubmitPayload = {
-          type: resolvedType,
-          category,
-          subtype: normalizedSubtype ?? "",
-          displayName,
-          brand,
-          country,
-          harvestYear,
-          fermentableColorEbc,
-          fermentableExtractYieldPct,
-          hopAlphaAcidPct,
-          hopForm: category === "hop" ? hopForm : "",
-          yeastAttenuationPct,
-          yeastForm: category === "yeast" ? yeastForm : "",
-          waterTreatmentConcentrationPct: category === "water_treatment" && resolvedSubtype === "acid"
-            ? waterTreatmentConcentrationPct
-            : "",
-          defaultDisplayUnit: unitProfile.defaultUnit,
-          enteredQuantity,
-          enteredUnit
-        };
-
-        if (optionalTouched) {
-          payload.priceInputMode = priceInputMode;
-          payload.priceInputAmount = priceInputAmount;
-          payload.purchasedAt = purchasedAt;
-          payload.freshnessDate = freshnessDate;
-          payload.notes = notes;
-          if (purchaseLinksState.isLoaded) {
-            payload.purchaseLinksTouched = true;
-            payload.purchaseLinks = purchaseLinksState.urls;
-          }
-        }
-
-        await onSubmit(payload);
-      }}
-    >
-      <div className="rounded-xl border border-border p-4">
-        <div className="mb-3">
-          <h3 className="text-sm font-medium text-foreground">Параметры ингредиента</h3>
-        </div>
-
-        <div className="space-y-3">
+  const technicalFields = (
+      <details className="rounded-xl border border-border p-4" open={!showInventoryFields || Object.keys(fieldErrors ?? {}).some((key) => !["displayName", "enteredQuantity", "enteredUnit", "notes", "purchasedAt", "freshnessDate"].includes(key)) || Object.values(localFieldErrors).some(Boolean)}>
+        <summary className="cursor-pointer text-sm font-medium">Характеристики ингредиента</summary>
+        <div className="mt-3 space-y-3">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <label className="block text-sm">
-              <span className="flex items-center gap-2">
-                <span>Название ингредиента</span>
-                <FieldBadge required />
-              </span>
-              <input
-                className="mt-1 w-full rounded-md border px-2 py-2"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder={resolveCustomIngredientDisplayNamePlaceholder(placeholderKind)}
-              />
-              {fieldErrors?.displayName && <span className="text-xs text-destructive">{fieldErrors.displayName}</span>}
-            </label>
-
             <label className="block text-sm">Бренд
               <input
                 className="mt-1 w-full rounded-md border px-2 py-2"
@@ -716,7 +655,7 @@ export function CustomIngredientForm({
                     setFermentableColorEbc(e.target.value);
                     setLocalFieldErrors((current) => ({ ...current, fermentableColorEbc: null }));
                   }}
-                  placeholder="Например: 3.5"
+                  placeholder="Например: 3,5"
                 />
                 {(localFieldErrors.fermentableColorEbc || fieldErrors?.fermentableColorEbc) && <span className="text-xs text-destructive">{localFieldErrors.fermentableColorEbc ?? fieldErrors?.fermentableColorEbc}</span>}
               </label>
@@ -776,7 +715,7 @@ export function CustomIngredientForm({
                     setHopAlphaAcidPct(e.target.value);
                     setLocalFieldErrors((current) => ({ ...current, hopAlphaAcidPct: null }));
                   }}
-                  placeholder="Например: 12.5"
+                  placeholder="Например: 12,5"
                 />
                 {(localFieldErrors.hopAlphaAcidPct || fieldErrors?.hopAlphaAcidPct) && <span className="text-xs text-destructive">{localFieldErrors.hopAlphaAcidPct ?? fieldErrors?.hopAlphaAcidPct}</span>}
               </label>
@@ -809,7 +748,7 @@ export function CustomIngredientForm({
                 </select>
                 {fieldErrors?.yeastForm && <span className="text-xs text-destructive">{fieldErrors.yeastForm}</span>}
               </label>
-              <label className="text-sm">Аттенюация, %
+              <label className="text-sm">Степень сбраживания, %
                 <NumericInput
                   min={0}
                   max={100}
@@ -847,8 +786,83 @@ export function CustomIngredientForm({
             </div>
           ) : null}
         </div>
+      </details>
+  );
+
+  return (
+    <form
+      className="space-y-4"
+      onSubmit={async (event) => {
+        event.preventDefault();
+        const nextFieldErrors = validateLocalFields();
+        setLocalFieldErrors(nextFieldErrors);
+        if (hasValidationErrors(nextFieldErrors)) {
+          return;
+        }
+
+        const payload: CustomIngredientSubmitPayload = {
+          type: resolvedType,
+          category,
+          subtype: normalizedSubtype ?? "",
+          displayName,
+          brand,
+          country,
+          harvestYear,
+          fermentableColorEbc,
+          fermentableExtractYieldPct,
+          hopAlphaAcidPct,
+          hopForm: category === "hop" ? hopForm : "",
+          yeastAttenuationPct,
+          yeastForm: category === "yeast" ? yeastForm : "",
+          waterTreatmentConcentrationPct: category === "water_treatment" && resolvedSubtype === "acid"
+            ? waterTreatmentConcentrationPct
+            : "",
+          defaultDisplayUnit: unitProfile.defaultUnit,
+          enteredQuantity,
+          enteredUnit
+        };
+
+        if (optionalTouched) {
+          payload.priceInputMode = priceInputMode;
+          payload.priceInputAmount = priceInputAmount;
+          payload.purchasedAt = purchasedAt;
+          payload.freshnessDate = freshnessDate;
+          payload.notes = notes;
+          if (purchaseLinksState.isLoaded) {
+            payload.purchaseLinksTouched = true;
+            payload.purchaseLinks = purchaseLinksState.urls;
+          }
+        }
+
+        await onSubmit(payload, (event.nativeEvent as SubmitEvent).submitter?.getAttribute("value") === "continue");
+      }}
+    >
+      <div className="rounded-xl border border-border p-4">
+        <div className="mb-3">
+          <h3 className="text-sm font-medium text-foreground">Параметры ингредиента</h3>
+        </div>
+
+        <div className="space-y-3">
+          <div className="grid gap-3">
+            <label className="block text-sm">
+              <span className="flex items-center gap-2">
+                <span>Название ингредиента</span>
+                <FieldBadge required />
+              </span>
+              <input
+                className="mt-1 w-full rounded-md border px-2 py-2"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder={resolveCustomIngredientDisplayNamePlaceholder(placeholderKind)}
+              />
+              {fieldErrors?.displayName && <span className="text-xs text-destructive">{fieldErrors.displayName}</span>}
+            </label>
+
+          </div>
+        </div>
       </div>
 
+      {!showInventoryFields ? technicalFields : null}
       {showInventoryFields ? (
         <>
           <div className="rounded-xl border border-border p-4">
@@ -884,6 +898,7 @@ export function CustomIngredientForm({
             </div>
           </div>
 
+          {technicalFields}
           <InventoryOptionalDisclosure
             open={optionalOpen}
             onToggle={toggleOptionalSection}
@@ -954,9 +969,12 @@ export function CustomIngredientForm({
         </>
       ) : null}
 
-      <button type="submit" disabled={pending} className="w-full rounded-md bg-foreground px-4 py-2 text-sm text-background disabled:opacity-60">
+      <InventoryFormActions sticky={showInventoryFields}>
+      <button type="submit" value="close" disabled={pending} className="min-h-11 flex-1 rounded-md bg-foreground px-4 py-2 text-sm text-background disabled:opacity-60">
         {pending ? "Сохраняем…" : resolvedSubmitLabel}
       </button>
+      {continuousEntry ? <button type="submit" value="continue" disabled={pending} className="min-h-11 flex-1 rounded-lg border border-border bg-card px-3 py-2 text-sm disabled:opacity-60">Добавить и продолжить</button> : null}
+      </InventoryFormActions>
     </form>
   );
 }

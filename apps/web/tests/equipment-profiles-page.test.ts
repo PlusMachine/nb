@@ -174,8 +174,8 @@ describe("equipment profiles page", () => {
     expect(html).not.toContain("Кипячение, мин");
     expect(html).not.toContain("Вода / затор");
     expect(html).toContain("Дополнительные параметры (необязательно)");
-    expect(html).toContain("Макс. объём котла, л (необязательно)");
-    expect(html).toContain("Макс. объём заторника, л (необязательно)");
+    expect(html).toContain("Рабочий объём котла, л (необязательно)");
+    expect(html).toContain("Максимум заторной воды, л (необязательно)");
     expect(html).not.toContain("Dead space заторника");
     expect(html).not.toContain("Dead space промывки");
     expect(html).not.toContain("Долив воды");

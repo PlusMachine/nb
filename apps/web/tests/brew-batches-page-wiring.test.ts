@@ -52,10 +52,12 @@ const mocks = vi.hoisted(() => ({
   // закрытом Dialog, а подсказка журнала — во внутреннем состоянии; в статичной
   // разметке их не видно, а проверять надо именно проводку страницы.
   journalProps: [] as Record<string, unknown>[],
+  brewDayProps: [] as Record<string, unknown>[],
   fermentationProps: [] as Record<string, unknown>[]
 }));
 
 vi.mock("../lib/auth", () => ({ requireUser: mocks.requireUser }));
+vi.mock("../features/brew-batches/records-service", () => ({ listBatchTasks: vi.fn(async () => []) }));
 vi.mock("../features/brew-batches/service", () => ({
   listBrewBatchesForUser: mocks.listBrewBatchesForUser,
   getBrewBatchDetail: mocks.getBrewBatchDetail,
@@ -99,6 +101,12 @@ vi.mock("../features/brew-batches/components/fermentation-board", () => ({
   },
   HERO_STEP_IDS: new Set(["ferment:primary"])
 }));
+vi.mock("../features/brew-batches/components/brew-day-board", () => ({
+  BrewDayBoard: (props: Record<string, unknown>) => {
+    mocks.brewDayProps.push(props);
+    return React.createElement("section", null, props.records as React.ReactNode, props.notes as React.ReactNode);
+  }
+}));
 // Блок «Брожение» (M2-C) — асинхронный серверный компонент (сам читает БД через
 // readBatchFermentSeries/listAvailableStreamDevices); renderToStaticMarkup не умеет
 // ждать вложенные async-компоненты (только верхний BrewBatchDetailPage резолвится
@@ -121,6 +129,7 @@ import BrewBatchDetailPage from "../app/(app)/app/brew-batches/[id]/page";
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.journalProps.length = 0;
+  mocks.brewDayProps.length = 0;
   mocks.fermentationProps.length = 0;
   mocks.requireUser.mockResolvedValue({ id: "u-1", email: "brewer@example.com", displayName: "Brewer", preferredGravityUnit: "plato" as const });
   mocks.listBrewBatchesForUser.mockResolvedValue([]);
@@ -266,7 +275,7 @@ describe("Страница партии — акт «Итог» (A4)", () => {
     expect(html).toContain("Итоги партии");
     expect(html).toContain("Склад");
     expect(html).toContain("Пильзнер");
-    expect(html).toContain("История запасов");
+    expect(html).toContain("История операций");
     expect(html).toContain("партия №1");
   });
 
@@ -293,11 +302,11 @@ describe("Страница партии — акт «Итог» (A4)", () => {
 
     const html = await renderDetail();
 
-    expect(html).toContain("Варка отменена");
+    expect(html).toContain("Партия отменена");
     expect(html).toContain("Заметки о варке");
     expect(html).not.toContain('id="tasting-notes"');
     // Склад остаётся доступным и в архиве — что списано и что вернулось.
-    expect(html).toContain("История запасов");
+    expect(html).toContain("История операций");
   });
 });
 
@@ -312,7 +321,8 @@ describe("Страница партии — подсказка плотност�
     await renderDetail();
 
     expect(mocks.journalProps.at(-1)?.measurementKind).toBe("og");
-    expect(mocks.journalProps.at(-1)?.title).toBe("Начальная плотность (OG)");
+    expect(mocks.journalProps.at(-1)?.title).toBe("Начальная плотность");
+    expect(mocks.brewDayProps.at(-1)?.ownerId).toBe("u-1");
   });
 
   it("на брожении журнал ждёт FG", async () => {

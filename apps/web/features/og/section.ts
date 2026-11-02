@@ -46,7 +46,7 @@ const SECTION_HUBS = {
   // app/(public)/demo/page.tsx.
   demo: { title: "Демо" },
   // app/(public)/labels/page.tsx.
-  labels: { title: "Наклейки на бутылки" },
+  labels: { title: "Этикетки на бутылки" },
   // app/(public)/brewforge/page.tsx.
   brewforge: { title: "BrewForge — автоматика варки" }
 } as const satisfies Record<string, SectionOgEntry>;

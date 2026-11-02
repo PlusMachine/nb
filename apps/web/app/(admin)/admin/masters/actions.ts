@@ -15,7 +15,7 @@ import { requireRole } from "@/lib/auth";
 // {ok:true}|{ok:false,error}) и маппинга ошибок из app/(app)/app/master/actions.ts
 // (ZodError → первое сообщение, NEXT_REDIRECT пробрасывается наружу).
 
-const firstZodMessage = (error: ZodError): string => error.issues[0]?.message ?? "Проверьте корректность данных.";
+const firstZodMessage = (error: ZodError): string => error.issues[0]?.message ?? "Проверьте введённые данные.";
 
 const ERROR_MESSAGES: Record<string, string> = {
   NOT_FOUND: "Не найдено — возможно, страницу нужно обновить.",

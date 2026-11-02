@@ -96,7 +96,7 @@ export function SessionCalibrationControl({
         setError(result.message);
         return;
       }
-      show({ title: "Кривая выровнена по замеру", tone: "success" });
+      show({ title: "Показания скорректированы по замеру", tone: "success" });
       router.refresh();
       setOpen(false);
     } finally {
@@ -127,7 +127,7 @@ export function SessionCalibrationControl({
           key={s.id}
           className="inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs text-foreground"
         >
-          Кривая скорректирована на {formatOffset(s.calibrationOffsetSg, gravityUnit)}
+          Показания скорректированы на {formatOffset(s.calibrationOffsetSg, gravityUnit)}
           <button
             type="button"
             aria-label="Отменить калибровку"
@@ -141,7 +141,7 @@ export function SessionCalibrationControl({
       ))}
 
       <Button type="button" variant="outline" size="sm" onClick={openDialog}>
-        Выровнять по замеру
+        Внести поправку по замеру
       </Button>
 
       <Dialog
@@ -149,7 +149,7 @@ export function SessionCalibrationControl({
         onOpenChange={(next) => {
           if (!next && !pending) setOpen(false);
         }}
-        title="Выровнять по замеру"
+        title="Внести поправку по замеру"
         size="sm"
       >
         <div className="space-y-3 p-5">
@@ -176,7 +176,7 @@ export function SessionCalibrationControl({
             </Select>
           </label>
           <p className="text-xs leading-5 text-muted-foreground">
-            Кривая устройства сдвинется так, чтобы в этот момент совпасть с выбранным замером — поправка применяется ко всем показаниям за этот сеанс.
+            Все показания за сеанс будут скорректированы так, чтобы совпасть с выбранным ручным замером в момент его записи.
           </p>
           {error ? (
             <p role="alert" className="text-xs text-destructive">
@@ -189,7 +189,7 @@ export function SessionCalibrationControl({
             Отмена
           </Button>
           <Button type="button" onClick={() => void submit()} disabled={pending || !sessionId}>
-            {pending ? "Выравниваем…" : "Выровнять"}
+            {pending ? "Сохраняем поправку…" : "Применить поправку"}
           </Button>
         </DialogFooter>
       </Dialog>

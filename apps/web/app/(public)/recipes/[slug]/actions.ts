@@ -154,7 +154,7 @@ export const setRecipeFeaturedAction = async (input: {
       action: "recipe.editors_choice",
       entityType: "recipe",
       entityId: input.recipeId,
-      summary: result.featured ? "«Выбор редакции» поставлен" : "«Выбор редакции» снят",
+      summary: result.featured ? "Добавлена отметка «Выбор редакции»" : "Отметка «Выбор редакции» снята",
       payload: { featured: result.featured, slug: input.slug }
     });
     revalidatePath(`/recipes/${input.slug}`);

@@ -237,7 +237,7 @@ describe("inventory add-flow", () => {
     expect(html).toContain("Выберите страну");
     expect(html).toContain("placeholder=\"Например: Пшеничный солод\"");
     expect(html).toContain("placeholder=\"Например: Castle Malting\"");
-    expect(html).toContain("placeholder=\"Например: 3.5\"");
+    expect(html).toContain("placeholder=\"Например: 3,5\"");
     expect(html).toContain("placeholder=\"Например: 81\"");
     expect(html).not.toContain("Базовая ед. изм.");
     expect(html).not.toContain("Ед. изм. *");
@@ -291,7 +291,7 @@ describe("inventory add-flow", () => {
     expect(yeastHtml).toContain("placeholder=\"Например: Fermentis\"");
     expect(waterTreatmentHtml).toContain("placeholder=\"Например: Молочная кислота 80%\"");
     expect(waterTreatmentHtml).toContain("placeholder=\"Например: Неохим\"");
-    expect(consumableHtml).toContain("placeholder=\"Например: Irish Moss\"");
+    expect(consumableHtml).toContain("placeholder=\"Например: Ирландский мох\"");
     expect(consumableHtml).toContain("placeholder=\"Например: Five Star Chemicals\"");
   });
 
@@ -467,7 +467,7 @@ describe("inventory add-flow", () => {
     expect(html).toContain('data-testid="catalog-picker-stage"');
     expect(html).toContain("Начните вводить название ингредиента");
     expect(html).toContain('data-testid="ingredient-picker-quick-start"');
-    expect(html).toContain("Загружаем недавние...");
+    expect(html).toContain("Загружаем недавние…");
     expect(html).not.toContain('data-testid="catalog-selection-stage"');
     expect(html).not.toContain("Изменить выбор");
   });
@@ -495,7 +495,7 @@ describe("inventory add-flow", () => {
     expect(html).toContain("По бренду");
     expect(html).toContain("Castle Malting");
     expect(html).toContain("По типу");
-    expect(html).toContain("Загружаем недавние...");
+    expect(html).toContain("Загружаем недавние…");
   });
 
   it("shows fermentable quick-start groups in the catalog form for generic fermentables", () => {
@@ -555,7 +555,7 @@ describe("inventory add-flow", () => {
     expect(html).toContain("Только свои");
     expect(html).not.toContain("По бренду");
     expect(html).not.toContain('data-testid="ingredient-picker-quick-start-types"');
-    expect(html).toContain("Загружаем недавние...");
+    expect(html).toContain("Загружаем недавние…");
   });
 
   it("uses the passed yeast quick-start context in the catalog form", () => {
@@ -587,7 +587,7 @@ describe("inventory add-flow", () => {
     expect(html).toContain("По бренду");
     expect(html).toContain("Fermentis");
     expect(html).not.toContain('data-testid="ingredient-picker-quick-start-types"');
-    expect(html).toContain("Загружаем недавние...");
+    expect(html).toContain("Загружаем недавние…");
   });
 
   it("uses the passed water treatment quick-start context in the catalog form", () => {
@@ -652,7 +652,7 @@ describe("inventory add-flow", () => {
     expect(html).toContain("Дехлорирование");
     expect(html).toContain("База воды");
     expect(html).not.toContain("По бренду");
-    expect(html).toContain("Загружаем недавние...");
+    expect(html).toContain("Загружаем недавние…");
   });
 
   it("shows catalog acid concentration override for stock additions", () => {
@@ -701,7 +701,7 @@ describe("inventory add-flow", () => {
           score: 80
         }, {
           type: "consumable_group",
-          label: "Мойка",
+          label: "Моющие средства",
           normalizedLabel: "cleaner",
           value: "cleaner",
           count: 0,
@@ -765,7 +765,7 @@ describe("inventory add-flow", () => {
     expect(html).toContain("Только свои");
     expect(html).toContain("По группе");
     expect(html).toContain("Дезинфицирующие средства");
-    expect(html).toContain("Мойка");
+    expect(html).toContain("Моющие средства");
     expect(html).toContain("Техдобавки");
     expect(html).toContain("Фильтрация затора");
     expect(html).toContain("Специи");
@@ -773,7 +773,7 @@ describe("inventory add-flow", () => {
     expect(html).toContain("Тара и укупорка");
     expect(html).toContain("Газы");
     expect(html).not.toContain("По бренду");
-    expect(html).toContain("Загружаем недавние...");
+    expect(html).toContain("Загружаем недавние…");
   });
 
   it("renders split consumable chips in the catalog picker", () => {
@@ -789,7 +789,7 @@ describe("inventory add-flow", () => {
 
     expect(html).toContain('data-testid="catalog-consumable-group-switch"');
     expect(html).toContain("Дезинфицирующие средства");
-    expect(html).toContain("Мойка");
+    expect(html).toContain("Моющие средства");
     expect(html).toContain("Тара и укупорка");
     expect(html).toContain("Газы");
   });
@@ -1105,10 +1105,10 @@ describe("inventory add-flow", () => {
       hasTechnicalOverrides: true
     })).toEqual({
       currentEntries: [
-        { label: "Альфа-кислота", value: "6.1% AA (ваше значение)" }
+        { label: "Альфа-кислоты", value: "6.1% AA (ваше значение)" }
       ],
       catalogEntries: [
-        { label: "Альфа-кислота", value: "5.5% AA" }
+        { label: "Альфа-кислоты", value: "5.5% AA" }
       ],
       statusBadgeLabel: null
     });
@@ -1129,11 +1129,11 @@ describe("inventory add-flow", () => {
       hasTechnicalOverrides: true
     })).toEqual({
       currentEntries: [
-        { label: "Альфа-кислота", value: "5.5% AA" },
+        { label: "Альфа-кислоты", value: "5.5% AA" },
         { label: "Урожай", value: "2024" }
       ],
       catalogEntries: [
-        { label: "Альфа-кислота", value: "5.5% AA" }
+        { label: "Альфа-кислоты", value: "5.5% AA" }
       ],
       statusBadgeLabel: null
     });
@@ -1232,7 +1232,7 @@ describe("inventory add-flow", () => {
     })).toEqual({
       isDerivedVariantFlow: true,
       submitLabel: "Добавить как свой вариант",
-      noticeText: "Сохранится как ваш изменённый вариант ингредиента.",
+      noticeText: "Сохранится как ваш вариант ингредиента.",
       inlineHelper: "Каталог не изменится."
     });
 
@@ -2034,6 +2034,6 @@ describe("inventory add-flow", () => {
     });
 
     expect(profile.defaultUnit).toBe("pack");
-    expect(profile.allowedUnits).toEqual(["pack", "g"]);
+    expect(profile.allowedUnits).toEqual(["pack", "g", "mg"]);
   });
 });

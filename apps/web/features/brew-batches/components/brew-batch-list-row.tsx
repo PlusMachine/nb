@@ -29,11 +29,12 @@ const relevantDate = (batch: BrewBatchListItem): { label: string; value: Date } 
 };
 
 /** Строка списка партий: ссылка на деталь + меню (отмена/удаление) сбоку. */
-export function BrewBatchListRow({ batch }: { batch: BrewBatchListItem }) {
+export function BrewBatchListRow({ batch, selection }: { batch: BrewBatchListItem; selection?: { checked: boolean; disabled: boolean; onChange: (checked: boolean) => void } }) {
   const date = relevantDate(batch);
 
   return (
     <li className="flex items-stretch gap-0 overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-border/70">
+      {selection ? <label className="flex w-11 shrink-0 items-center justify-center border-r border-border/60"><input type="checkbox" className="h-4 w-4 accent-foreground" aria-label={`Сравнить: ${formatBrewBatchDisplayTitle(batch.name, batch.brewNumber)}`} checked={selection.checked} disabled={selection.disabled} onChange={event => selection.onChange(event.target.checked)} /></label> : null}
       <Link
         href={`/app/brew-batches/${batch.id}`}
         className="flex min-w-0 flex-1 items-center justify-between gap-3 px-4 py-3"

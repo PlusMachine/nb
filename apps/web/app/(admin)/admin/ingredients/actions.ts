@@ -78,8 +78,8 @@ export const archiveCatalogIngredientsAction = async (ids: string[]): Promise<Ca
         action: "ingredient.update",
         entityType: "ingredient",
         entityId: result.archivedIds.length === 1 ? result.archivedIds[0] : null,
-        summary: `Архивация ингредиентов: ${result.archivedIds.length}`
-          + (failed.length > 0 ? `, не прошло: ${countCatalogBulkFailures(failed)}` : ""),
+        summary: `Отправлено в архив: ${result.archivedIds.length}`
+          + (failed.length > 0 ? `, не удалось: ${countCatalogBulkFailures(failed)}` : ""),
         payload: { mode: "archive", ids: result.archivedIds, failed }
       });
 
@@ -123,8 +123,8 @@ export const deleteCatalogIngredientsAction = async (ids: string[]): Promise<Cat
         action: "ingredient.delete",
         entityType: "ingredient",
         entityId: processed === 1 ? (result.deletedIds[0] ?? result.archivedIds[0] ?? null) : null,
-        summary: `Удаление ингредиентов: ${result.deletedIds.length}, в архив: ${result.archivedIds.length}`
-          + (failed.length > 0 ? `, не прошло: ${countCatalogBulkFailures(failed)}` : ""),
+        summary: `Удалено ингредиентов: ${result.deletedIds.length}, отправлено в архив: ${result.archivedIds.length}`
+          + (failed.length > 0 ? `, не удалось: ${countCatalogBulkFailures(failed)}` : ""),
         payload: {
           deletedIds: result.deletedIds,
           archivedIds: result.archivedIds,

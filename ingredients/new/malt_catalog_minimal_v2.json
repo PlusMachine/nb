@@ -857,13 +857,13 @@
   ],
   "malt_type": "base",
   "extract_pct_dry_basis": 80.5,
-  "color_ebc_min": 4.064,
+  "color_ebc_min": null,
   "color_ebc_max": 2.9,
   "color_lovibond": 1.6,
   "protein_pct": 10,
   "max_usage_pct": 100,
   "is_birrf_present": true,
-  "color_ebc_is_approx": true,
+  "color_ebc_is_approx": false,
   "sources": [
    {
     "kind": "official_pdf",
@@ -876,8 +876,29 @@
     "label": "Бир.РФ / Базовый солод стр.3",
     "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-3",
     "page": null
+   },
+   {
+    "kind": "official_product",
+    "label": "BESTMALZ — BEST Heidelberg",
+    "url": "https://bestmalz.de/en/malts/best-heidelberg/",
+    "page": null
    }
-  ]
+  ],
+  "data_review": {
+   "color": {
+    "original_ebc_min": 4.064,
+    "original_ebc_max": 2.9,
+    "original_lovibond": 1.6,
+    "reason": "Несогласованные значения исходных источников; подтверждён только верхний предел EBC."
+   }
+  },
+  "color_ebc_for_calculation": 2.9,
+  "color_ebc_calculation_basis": "upper_bound",
+  "seed_baseline": {
+   "attributes.color_ebc_min": 4.064,
+   "attributes.color_ebc_max": 2.9,
+   "attributes.color_ebc_is_approx": true
+  }
  },
  {
   "id": "bestmalz-best-heidelberg-wheat-malt",
@@ -9819,21 +9840,39 @@
   "aliases_ru": [],
   "malt_type": "base",
   "extract_pct_dry_basis": 81,
-  "color_ebc_min": 4.953,
-  "color_ebc_max": 4.953,
+  "color_ebc_min": 3,
+  "color_ebc_max": 4.5,
   "color_lovibond": 1.95,
   "protein_pct": 10.25,
   "max_usage_pct": 100,
   "is_birrf_present": true,
-  "color_ebc_is_approx": true,
+  "color_ebc_is_approx": false,
   "sources": [
    {
     "kind": "birrf_ingredient_listing",
     "label": "Бир.РФ / Базовый солод стр.4",
     "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-4",
     "page": null
+   },
+   {
+    "kind": "official_pdf",
+    "label": "The Swaen — Swaen Pilsner: Typical Analysis",
+    "url": "https://theswaen.com/wp-content/uploads/TheSwaen-Swaen-Pilsner.pdf",
+    "page": 1
    }
-  ]
+  ],
+  "data_review": {
+   "color": {
+    "original_ebc_min": 4.953,
+    "original_ebc_max": 4.953,
+    "original_lovibond": 1.95
+   }
+  },
+  "seed_baseline": {
+   "attributes.color_ebc_min": 4.953,
+   "attributes.color_ebc_max": 4.953,
+   "attributes.color_ebc_is_approx": true
+  }
  },
  {
   "id": "thomas-fawcett-crystal-rye-gb-special",
@@ -10255,7 +10294,7 @@
   "color_ebc_min": 220.218,
   "color_ebc_max": 220.218,
   "color_lovibond": 86.7,
-  "protein_pct": 75,
+  "protein_pct": null,
   "max_usage_pct": 10,
   "is_birrf_present": true,
   "color_ebc_is_approx": true,
@@ -10266,7 +10305,17 @@
     "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10-2",
     "page": null
    }
-  ]
+  ],
+  "data_review": {
+   "protein_pct": {
+    "status": "unverified",
+    "original_value": 75,
+    "source_url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10-2"
+   }
+  },
+  "seed_baseline": {
+   "attributes.protein_pct": 75
+  }
  },
  {
   "id": "viking-malt-caramel-malt-100",
@@ -10618,21 +10667,39 @@
   "aliases_ru": [],
   "malt_type": "base",
   "extract_pct_dry_basis": 81.5,
-  "color_ebc_min": 8.89,
-  "color_ebc_max": 8.89,
+  "color_ebc_min": 4,
+  "color_ebc_max": 7,
   "color_lovibond": 3.5,
   "protein_pct": 11.2,
   "max_usage_pct": 100,
   "is_birrf_present": true,
-  "color_ebc_is_approx": true,
+  "color_ebc_is_approx": false,
   "sources": [
    {
     "kind": "birrf_ingredient_listing",
     "label": "Бир.РФ / Базовый солод стр.4",
     "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-4",
     "page": null
+   },
+   {
+    "kind": "official_pdf",
+    "label": "Viking Malt — Standard Portfolio 2023: Pale Ale Malt",
+    "url": "https://www.vikingmalt.com/wp-content/uploads/2022/12/VikingMalt_Standard_Portfolio_2023.pdf",
+    "page": 12
    }
-  ]
+  ],
+  "data_review": {
+   "color": {
+    "original_ebc_min": 8.89,
+    "original_ebc_max": 8.89,
+    "original_lovibond": 3.5
+   }
+  },
+  "seed_baseline": {
+   "attributes.color_ebc_min": 8.89,
+   "attributes.color_ebc_max": 8.89,
+   "attributes.color_ebc_is_approx": true
+  }
  },
  {
   "id": "viking-malt-pilsner",
@@ -12005,7 +12072,16 @@
     "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-4",
     "page": null
    }
-  ]
+  ],
+  "is_active": false,
+  "catalog_status": "merged",
+  "merged_into_id": "weyermann--wheat-malt-dark",
+  "data_review": {
+   "duplicate": {
+    "canonical_id": "weyermann--wheat-malt-dark",
+    "source_url": "https://www.weyermann.de/en-gb/product/weyermann-wheat-malt-dark/"
+   }
+  }
  },
  {
   "id": "weyermann--diastatic-barley-malt",
@@ -12929,7 +13005,9 @@
   "name_en": "Wheat Malt Dark",
   "name_ru": "Пшеничный темный",
   "aliases_en": [
-   "wheat"
+   "wheat",
+   "Dark Wheat",
+   "Wheat Malt Dark"
   ],
   "aliases_ru": [
    "пшеничный",
@@ -12950,6 +13028,12 @@
     "label": "Weyermann Brewery Product Catalog",
     "url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
     "page": 13
+   },
+   {
+    "kind": "official_product",
+    "label": "Weyermann — Wheat Malt dark",
+    "url": "https://www.weyermann.de/en-gb/product/weyermann-wheat-malt-dark/",
+    "page": null
    }
   ]
  },

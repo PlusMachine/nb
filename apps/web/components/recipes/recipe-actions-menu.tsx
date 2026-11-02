@@ -40,7 +40,7 @@ export function RecipeActionsMenu({
   const secondaryMobileItems: DropdownMenuItem[] = [
     ...(labelsHref ? [{
       key: "labels",
-      label: "Наклейки",
+      label: "Этикетки",
       icon: <Sticker className="h-4 w-4" aria-hidden />,
       onSelect: () => router.push(labelsHref)
     }] : []),
@@ -74,9 +74,9 @@ export function RecipeActionsMenu({
   return (
     <div className="flex min-w-0 max-w-full flex-wrap items-center justify-end gap-1.5 md:gap-2">
       {labelsHref ? (
-        <Link href={labelsHref} className={`${buttonVariants({ variant: "outline", size: "md" })} hidden md:inline-flex`} aria-label="Наклейки" title="Наклейки">
+        <Link href={labelsHref} className={`${buttonVariants({ variant: "outline", size: "md" })} hidden md:inline-flex`} aria-label="Этикетки" title="Этикетки">
           <Sticker className="h-4 w-4 text-muted-foreground" />
-          <span className="hidden md:inline">Наклейки</span>
+          <span className="hidden md:inline">Этикетки</span>
         </Link>
       ) : null}
       <Button

@@ -1344,7 +1344,7 @@ describe("user catalog ingredient search", () => {
 
     expect(result.refinements.slice(0, 2)).toMatchObject([
       { type: "consumable_group", label: "Дезинфицирующие средства", value: "sanitizer", count: 1 },
-      { type: "consumable_group", label: "Мойка", value: "cleaner", count: 2 }
+      { type: "consumable_group", label: "Моющие средства", value: "cleaner", count: 2 }
     ]);
     expect(result.appliedManufacturer).toBeNull();
     expect(result.appliedGroup).toBeNull();
@@ -1517,7 +1517,7 @@ describe("user catalog ingredient search", () => {
     });
 
     expect(result.appliedGroup).toMatchObject({
-      label: "Мойка",
+      label: "Моющие средства",
       value: "cleaner"
     });
     expect(result.refinements).toMatchObject([

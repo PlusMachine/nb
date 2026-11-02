@@ -2,10 +2,11 @@
 
 import React, { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Loader2, MoreHorizontal, Pencil, RotateCcw, Sticker, Trash2, XCircle } from "lucide-react";
+import { ArrowLeftRight, Check, Loader2, MoreHorizontal, Pencil, RotateCcw, Sticker, Trash2, XCircle } from "lucide-react";
 
 import { Button, Dialog, DialogFooter, DropdownMenu, type DropdownMenuItem } from "@nb/ui";
 import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
+import { BatchComparisonDialog } from "./batch-comparison";
 import {
   deleteBrewBatchAction,
   setBrewBatchStatusAction
@@ -39,6 +40,7 @@ export function BatchMenu({
 }) {
   const router = useRouter();
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+  const [compareOpen, setCompareOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -110,7 +112,7 @@ export function BatchMenu({
             ? [
                 {
                   key: "labels",
-                  label: "Наклейки",
+                  label: "Этикетки",
                   icon: <Sticker className="h-4 w-4" aria-hidden />,
                   onSelect: () => router.push(labelsHref as string)
                 } satisfies DropdownMenuItem
@@ -118,6 +120,7 @@ export function BatchMenu({
             : [])
         ]
       : []),
+    ...(variant === "full" ? [{ key: "compare", label: "Сравнить с другой партией…", icon: <ArrowLeftRight className="h-4 w-4" aria-hidden />, onSelect: () => setCompareOpen(true) } satisfies DropdownMenuItem] : []),
     status === "cancelled"
       ? {
           key: "restore",
@@ -143,6 +146,7 @@ export function BatchMenu({
 
   return (
     <>
+      {variant === "full" ? <BatchComparisonDialog open={compareOpen} onOpenChange={setCompareOpen} sourceId={brewBatchId} /> : null}
       <DropdownMenu
         align="end"
         aria-label="Действия с партией"
@@ -166,7 +170,6 @@ export function BatchMenu({
           size="md"
         >
           <div className="space-y-3 p-5">
-            <p className="text-sm text-muted-foreground">Обычно переход к следующему этапу выполняется кнопками на странице. Здесь можно выбрать этап вручную — например, чтобы исправить ошибку.</p>
             <div className="grid grid-cols-2 gap-2">
               {MANUAL_STATUSES.map((option) => {
                 const isCurrent = option === status;
@@ -201,7 +204,7 @@ export function BatchMenu({
       <ConfirmActionDialog
         open={cancelOpen}
         title="Отменить партию?"
-        description="Партия будет помечена отменённой. Остатки на складе не изменятся. Неиспользованные ингредиенты можно вернуть отдельно. Партию можно вернуть в план."
+        description="Остатки на складе не изменятся. Неиспользованные ингредиенты можно вернуть отдельно. Партию можно вернуть в план."
         confirmLabel="Отменить партию"
         tone="danger"
         pending={busy}
@@ -213,7 +216,7 @@ export function BatchMenu({
       <ConfirmActionDialog
         open={deleteOpen}
         title="Удалить партию?"
-        description="Партия будет удалена безвозвратно вместе с журналом замеров. Остатки на складе не изменятся. Если ингредиенты не были использованы, верните их на склад до удаления партии."
+        description="Партия, замеры и задачи будут удалены безвозвратно. Остатки на складе не изменятся. Неиспользованные ингредиенты верните на склад до удаления партии."
         confirmLabel="Удалить партию"
         tone="danger"
         pending={busy}

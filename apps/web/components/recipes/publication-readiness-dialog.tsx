@@ -36,7 +36,6 @@ export function PublicationReadinessDialog({
       <DialogHeader>
         <div className="space-y-1">
           <h3 className="text-base font-semibold text-foreground">Для публикации рецепта заполните:</h3>
-          <p className="text-sm leading-6 text-muted-foreground">Рецепт можно будет опубликовать, когда будут заполнены все обязательные поля.</p>
         </div>
         <DialogCloseButton />
       </DialogHeader>

@@ -75,7 +75,7 @@ describe("public recipe presentation", () => {
       stage: "boil", timeOffset: 60, ingredientTechnicalData: { type: "hop", alphaAcidPctTypical: 4 }
     };
     const html = renderToStaticMarkup(<RecipeIngredientsSection ingredients={[base, hop]} batchSizeEnteredQuantity={30} batchSizeEnteredUnit="l" efficiency={72} />);
-    for (const value of ["Пильзнер", "Saaz", "5.3 EBC", "Экст-ть 80.5%", "100%", "60 мин", "30 л", "72%"]) expect(textContent(html)).toContain(value);
+    for (const value of ["Пильзнер", "Saaz", "5.3 EBC", "Экстрактивность 80.5%", "100%", "60 мин", "30 л", "72%"]) expect(textContent(html)).toContain(value);
     expect(html).toContain('href="/catalog/system/pilsner"');
     expect(html).toContain('href="/catalog/system/saaz"');
     expect(html).toContain("border-l-amber-400");

@@ -136,7 +136,7 @@ const collectIngredientNamesByCategory = (
  */
 const buildRecipeFactDescription = (recipe: RecipeDetailDto, style: BeerStyle | null): string => {
   const styleName = resolveStyleName(style);
-  const intro = styleName ? `Рецепт ${styleName}` : "Рецепт";
+  const intro = styleName ? `Рецепт пива в стиле «${styleName}»` : "Рецепт";
 
   const facts = [
     recipe.abv != null ? `ABV ${formatAbvShort(recipe.abv)}` : null,
@@ -151,7 +151,7 @@ const buildRecipeFactDescription = (recipe: RecipeDetailDto, style: BeerStyle | 
   const maltNames = collectIngredientNamesByCategory(recipe.ingredients, "fermentable");
   const hopNames = collectIngredientNamesByCategory(recipe.ingredients, "hop");
   const ingredientClauses = [
-    maltNames.length > 0 ? `Солод: ${maltNames.join(", ")}` : null,
+    maltNames.length > 0 ? `Солод и другое сырьё: ${maltNames.join(", ")}` : null,
     hopNames.length > 0 ? `хмель: ${hopNames.join(", ")}` : null
   ].filter((clause): clause is string => Boolean(clause));
 
@@ -164,7 +164,7 @@ const buildRecipeFactDescription = (recipe: RecipeDetailDto, style: BeerStyle | 
 
 export const buildPublicRecipeMetadata = (recipe: RecipeDetailDto, style: BeerStyle | null): Metadata => {
   const styleName = resolveStyleName(style);
-  const title = styleName ? `${recipe.title} — рецепт ${styleName}` : `${recipe.title} — рецепт`;
+  const title = styleName ? `${recipe.title} — рецепт пива в стиле «${styleName}»` : `${recipe.title} — рецепт`;
   const description = buildRecipeFactDescription(recipe, style);
   // Всегда генерённая карточка (docs/specs/og-images.md §5.1, Ф5): своё фото
   // (heroImageId) больше не отдаётся сырым в og:image — оно встраивается
@@ -320,7 +320,7 @@ export const buildRecipeBreadcrumbJsonLd = (
 
 const RECIPES_LIST_TITLE = "Рецепты сообщества";
 const RECIPES_LIST_DESCRIPTION =
-  "Готовые рецепты от домашних пивоваров — выберите идею под свой стиль и оборудование. Фильтры по стилю, цвету, крепости и горечи.";
+  "Рецепты домашних пивоваров. Поиск по стилю, цвету, крепости и горечи.";
 
 // "recipes" — ключ реестра обложек разделов (features/og/section.ts,
 // SECTION_HUBS.recipes), типизирован SectionOgKey — getSectionOgImage

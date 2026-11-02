@@ -40,21 +40,21 @@ export type RecipeInventoryIntentMode = (typeof recipeInventoryIntentModes)[numb
 export type RecipeWaterManualSaltAdditionTarget = (typeof recipeWaterManualSaltAdditionTargets)[number];
 
 export const recipeBitternessFormulaLabels: Record<BitternessFormula, string> = {
-  tinseth_whirlpool_v2: "Tinseth + whirlpool v2",
-  tinseth_classic: "Tinseth classic",
+  tinseth_whirlpool_v2: "Tinseth + вирпул",
+  tinseth_classic: "Tinseth (классическая)",
   rager: "Rager",
   garetz: "Garetz",
-  noonan_legacy: "Noonan legacy"
+  noonan_legacy: "Noonan (прежняя модель)"
 };
 
 export const recipeWaterEngineLabels: Record<WaterEngineMode, string> = {
   profile_only: "Профиль воды",
-  balanced_default: "Баланс + pH",
-  advanced_manual: "Advanced manual"
+  balanced_default: "Минеральный состав и pH",
+  advanced_manual: "Ручная настройка"
 };
 
 export const recipeMashPhModelLabels: Record<MashPhModel, string> = {
-  kolbach_ra_quick: "Быстрая по RA (Кольбах)",
+  kolbach_ra_quick: "По остаточной щёлочности (Кольбах)",
   hybrid_mash_ph_v1: "По составу засыпи (Riffe)"
 };
 
@@ -148,7 +148,7 @@ export const recipeFgAttenuationSources = ["default", "yeast", "manual"] as cons
 export type RecipeFgAttenuationSource = (typeof recipeFgAttenuationSources)[number];
 
 export const recipeFgEstimateDetailsSchema = z.object({
-  baseAttenuationPct: numberField().min(0, "Аттенюация не может быть меньше 0%.").max(100, "Аттенюация не может быть больше 100%."),
+  baseAttenuationPct: numberField().min(0, "Степень сбраживания не может быть меньше 0%.").max(100, "Степень сбраживания не может быть больше 100%."),
   attenuationSource: z.enum(recipeFgAttenuationSources),
   mainMashTempC: z.coerce.number().min(0).max(100).optional().nullable(),
   mashAdjPctPoints: z.coerce.number().min(-20).max(20),
@@ -156,7 +156,7 @@ export const recipeFgEstimateDetailsSchema = z.object({
   crystalDextrinSharePct: z.coerce.number().min(0).max(100),
   lactoseSharePct: z.coerce.number().min(0).max(100),
   // Взвешенная модель (Э2) может дать дельту до ~100 п.п. на экстремальных
-  // засыпях (почти чистый сахар/лактоза при низкой базовой аттенюации);
+  // засыпях (почти чистый сахар/лактоза при низкой базовой степени сбраживания);
   // прежний потолок 10 был калиброван под старую аддитивную формулу.
   simpleSugarAdj: z.coerce.number().min(0).max(100),
   crystalDextrinAdj: z.coerce.number().min(0).max(100),
@@ -168,6 +168,12 @@ export const recipeFgEstimateDetailsSchema = z.object({
 
 export type RecipeFgEstimateDetails = z.infer<typeof recipeFgEstimateDetailsSchema>;
 
+export const recipeBitternessEstimateSchema = z.object({
+  status: z.enum(["complete", "partial", "unavailable"]),
+  knownIbu: z.number().finite().min(0).nullable(),
+  missing: z.array(z.object({ ingredientId: z.string(), name: z.string(), reason: z.enum(["hop_alpha", "hopped_extract"]) }))
+});
+
 export const recipeCalculationMetaSchema = z.object({
   bitternessFormula: z.enum(recipeBitternessFormulas).default("tinseth_whirlpool_v2"),
   bitternessSettings: z.object({
@@ -177,9 +183,10 @@ export const recipeCalculationMetaSchema = z.object({
     firstWortHopMode: z.enum(["bonus_10pct", "treat_as_20min", "treat_as_boil_start"]).default("bonus_10pct")
   }).partial().default({}),
   fgEstimateMode: z.enum(recipeFgEstimateModes).optional().nullable(),
-  manualAttenuationOverridePct: numberField().min(0, "Аттенюация не может быть меньше 0%.").max(100, "Аттенюация не может быть больше 100%.").optional().nullable(),
+  manualAttenuationOverridePct: numberField().min(0, "Степень сбраживания не может быть меньше 0%.").max(100, "Степень сбраживания не может быть больше 100%.").optional().nullable(),
   manualFgOverrideValue: numberField().min(0.99, "КП не может быть ниже 0.990.").max(1.2, "КП не может быть выше 1.200.").optional().nullable(),
-  fgEstimateDetails: recipeFgEstimateDetailsSchema.optional().nullable()
+  fgEstimateDetails: recipeFgEstimateDetailsSchema.optional().nullable(),
+  bitternessEstimate: recipeBitternessEstimateSchema.optional().nullable()
 }).default({
   bitternessFormula: "tinseth_whirlpool_v2",
   bitternessSettings: {}
@@ -222,7 +229,7 @@ export const recipeWaterPlanMetaSchema = z.object({
   showWaterAdditivesInIngredients: z.coerce.boolean().default(false),
   blendRatio: z.object({
     tap: numberField().min(0, "Доля водопроводной воды не может быть меньше 0.").max(1, "Доля водопроводной воды не может быть больше 1.").default(1),
-    ro: numberField().min(0, "Доля RO-воды не может быть меньше 0.").max(1, "Доля RO-воды не может быть больше 1.").default(0),
+    ro: numberField().min(0, "Доля воды после обратного осмоса не может быть меньше 0.").max(1, "Доля воды после обратного осмоса не может быть больше 1.").default(0),
     distilled: numberField().min(0, "Доля дистиллированной воды не может быть меньше 0.").max(1, "Доля дистиллированной воды не может быть больше 1.").default(0)
   }).optional().nullable(),
   mashWaterVolumeL: numberField().min(0, "Объём заторной воды не может быть меньше 0 л.").optional().nullable(),
@@ -833,6 +840,7 @@ export type RecipeCloneActionResult =
   | { ok: false; code: "AUTH" | "NOT_FOUND" | "ERROR"; message: string };
 
 export type RecipeDetailDto = RecipeListItemDto & {
+  bitternessEstimate?: z.infer<typeof recipeBitternessEstimateSchema> | null;
   description: string | null;
   authorNotes: string | null;
   // Имя автора для деталки/JSON-LD (schema.org Recipe.author) — резолвится из
@@ -899,6 +907,7 @@ export type RecipeOgData = Pick<
 };
 
 export type RecipeDraftPreviewDto = {
+  bitternessEstimate?: z.infer<typeof recipeBitternessEstimateSchema> | null;
   batchSizeEnteredQuantity: number;
   batchSizeEnteredUnit: InventoryUnit;
   boilTimeMinutes: number;

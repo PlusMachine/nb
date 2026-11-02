@@ -11,9 +11,9 @@ import type {
 const DEFAULT_ATTENUATION_PCT = 75;
 const DEFAULT_ATTENUATION_RANGE_MIN_PCT = 72;
 const DEFAULT_ATTENUATION_RANGE_MAX_PCT = 78;
-const MIN_EFFECTIVE_ATTENUATION_PCT = 50;
-const MAX_EFFECTIVE_ATTENUATION_PCT = 98;
-// Видимая аттенюация классов засыпи в взвешенной модели сбраживаемости (Э2).
+const MIN_EFFECTIVE_ATTENUATION_PCT = 0;
+const MAX_EFFECTIVE_ATTENUATION_PCT = 100;
+// Видимая степень сбраживания классов засыпи в взвешенной модели сбраживаемости (Э2).
 const SIMPLE_SUGAR_APPARENT_ATTENUATION_PCT = 100;
 const LACTOSE_APPARENT_ATTENUATION_PCT = 0;
 const CRYSTAL_DEXTRIN_ATTENUATION_FACTOR = 0.6;
@@ -202,11 +202,13 @@ const resolveYeastAttenuation = (
       continue;
     }
 
-    const min = readFiniteNumber(yeast.technicalData.attenuationPctMin);
-    const max = readFiniteNumber(yeast.technicalData.attenuationPctMax);
-    const single = readFiniteNumber(yeast.technicalData.attenuationPctTypical);
+    const validAttenuation = (value: unknown) => { const n=readFiniteNumber(value); return n != null && n >= 0 && n <= 100 ? n : null; };
+    const min = validAttenuation(yeast.technicalData.attenuationPctMin);
+    const max = validAttenuation(yeast.technicalData.attenuationPctMax);
+    const rawSingle = readFiniteNumber(yeast.technicalData.attenuationPctTypical);
+    const single = rawSingle != null && rawSingle >= 0 && rawSingle <= 100 ? rawSingle : null;
 
-    if (min != null && max != null) {
+    if (min != null && max != null && min <= max) {
       const normalizedMin = Math.min(min, max);
       const normalizedMax = Math.max(min, max);
 
@@ -310,12 +312,15 @@ export const calculateRecipeFgEstimate = (input: {
 
   const rawManualAttenuationOverridePct = readFiniteNumber(input.calculationMeta?.manualAttenuationOverridePct);
   const manualAttenuationOverridePct = rawManualAttenuationOverridePct == null
+    || rawManualAttenuationOverridePct < 0 || rawManualAttenuationOverridePct > 100
     ? null
     : clamp(rawManualAttenuationOverridePct, MIN_EFFECTIVE_ATTENUATION_PCT, MAX_EFFECTIVE_ATTENUATION_PCT);
   const resolvedYeastAttenuation = resolveYeastAttenuation(input.yeasts);
+  // Enriching a catalog entry with min/max must not replace its existing
+  // typical attenuation in the main FG estimate. Bounds still drive the range.
   const baseAttenuationPct = manualAttenuationOverridePct
-    ?? resolvedYeastAttenuation?.midpointPct
     ?? resolvedYeastAttenuation?.singlePct
+    ?? resolvedYeastAttenuation?.midpointPct
     ?? DEFAULT_ATTENUATION_PCT;
   const fgEstimateMode: RecipeFgEstimateMode = manualAttenuationOverridePct != null
     ? "manual_attenuation_override"
@@ -328,9 +333,14 @@ export const calculateRecipeFgEstimate = (input: {
       ? "yeast"
       : "default";
 
+  const limitedSugarFermentation = input.yeasts.some((yeast) => (
+    yeast.technicalData?.type === "yeast"
+    && yeast.technicalData.yeastFamily === "low_no_alcohol"
+  ));
+  const crystalAttenuationFactor = limitedSugarFermentation ? 1 : CRYSTAL_DEXTRIN_ATTENUATION_FACTOR;
   const mainMashStep = resolveMainMashStep(input.processMeta);
   const mainMashTempC = mainMashStep?.temperatureC ?? null;
-  const mashAdjPctPoints = mainMashTempC == null
+  const mashAdjPctPoints = mainMashTempC == null || limitedSugarFermentation
     ? 0
     : clamp((67 - mainMashTempC) * 0.75, -4, 4);
 
@@ -359,8 +369,8 @@ export const calculateRecipeFgEstimate = (input: {
   }
 
   // Взвешенная модель сбраживаемости (Э2): у каждого класса засыпи своя видимая
-  // аттенюация, итоговая attEff — среднее по долям gravity-вклада. shareBase —
-  // доля обычной засыпи, унаследующая базовую аттенюацию дрожжей как есть.
+  // степень сбраживания, итоговая attEff — среднее по долям gravity-вклада. shareBase —
+  // доля обычной засыпи, унаследующая базовую степень сбраживания дрожжей как есть.
   const shareBase = Math.max(0, 100 - simpleSugarSharePct - crystalDextrinSharePct - lactoseSharePct);
 
   const computeWeightedAttenuation = (attBase: number) => (
@@ -368,7 +378,7 @@ export const calculateRecipeFgEstimate = (input: {
       shareBase * attBase
       + simpleSugarSharePct * SIMPLE_SUGAR_APPARENT_ATTENUATION_PCT
       + lactoseSharePct * LACTOSE_APPARENT_ATTENUATION_PCT
-      + crystalDextrinSharePct * (attBase * CRYSTAL_DEXTRIN_ATTENUATION_FACTOR)
+      + crystalDextrinSharePct * (attBase * crystalAttenuationFactor)
     ) / 100
   );
 
@@ -377,7 +387,7 @@ export const calculateRecipeFgEstimate = (input: {
   // Эффективные дельты по классам — вклад каждого в (attEff − attBase), п.п.
   // Хранятся ≥0 (как и в прежнем контракте), знак применяется при отображении.
   const simpleSugarAdj = simpleSugarSharePct * (SIMPLE_SUGAR_APPARENT_ATTENUATION_PCT - attBase) / 100;
-  const crystalDextrinAdj = crystalDextrinSharePct * (attBase * (1 - CRYSTAL_DEXTRIN_ATTENUATION_FACTOR)) / 100;
+  const crystalDextrinAdj = crystalDextrinSharePct * (attBase * (1 - crystalAttenuationFactor)) / 100;
   const lactoseAdj = lactoseSharePct * (attBase - LACTOSE_APPARENT_ATTENUATION_PCT) / 100;
 
   const effectiveAttenuationPct = clamp(
@@ -439,11 +449,11 @@ export const resolveRecipeFgSourceLabel = (
   _fgEstimateDetails: RecipeFgEstimateDetails | null | undefined
 ) => {
   if (fgEstimateMode === "manual_fg_override") {
-    return "FG задана вручную";
+    return "КП задана вручную";
   }
 
   if (fgEstimateMode === "manual_attenuation_override") {
-    return "Аттенюация задана вручную";
+    return "Степень сбраживания задана вручную";
   }
 
   if (fgEstimateMode === "default_estimate") {

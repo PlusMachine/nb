@@ -27,7 +27,7 @@ const categoryOptions: Array<{
   activeText: string;
   activeRing: string;
 }> = [
-  { value: "fermentable", label: "Сбраживаемые", icon: Wheat, iconClassName: "text-amber-500 dark:text-amber-400", activeBg: "bg-amber-50 dark:bg-amber-500/15", activeText: "text-amber-800 dark:text-amber-300", activeRing: "ring-amber-200 dark:ring-amber-500/30" },
+  { value: "fermentable", label: "Солод и другое сырьё", icon: Wheat, iconClassName: "text-amber-500 dark:text-amber-400", activeBg: "bg-amber-50 dark:bg-amber-500/15", activeText: "text-amber-800 dark:text-amber-300", activeRing: "ring-amber-200 dark:ring-amber-500/30" },
   { value: "hop", label: "Хмель", icon: Hop, iconClassName: "text-emerald-500 dark:text-emerald-400", activeBg: "bg-emerald-50 dark:bg-emerald-500/15", activeText: "text-emerald-800 dark:text-emerald-300", activeRing: "ring-emerald-200 dark:ring-emerald-500/30" },
   { value: "yeast", label: "Дрожжи", icon: FlaskConical, iconClassName: "text-violet-500 dark:text-violet-400", activeBg: "bg-violet-50 dark:bg-violet-500/15", activeText: "text-violet-800 dark:text-violet-300", activeRing: "ring-violet-200 dark:ring-violet-500/30" },
   { value: "water_treatment", label: "Водоподготовка", icon: Droplets, iconClassName: "text-sky-500 dark:text-sky-400", activeBg: "bg-sky-50 dark:bg-sky-500/15", activeText: "text-sky-800 dark:text-sky-300", activeRing: "ring-sky-200 dark:ring-sky-500/30" },

@@ -35,7 +35,7 @@ export function DeleteEquipmentProfileButton({ profileId, profileName }: Props) 
       <ConfirmActionDialog
         open={open}
         title="Удалить профиль оборудования?"
-        description={`Профиль "${profileName}" будет удален без возможности восстановления.`}
+        description={`Профиль «${profileName}» будет удалён без возможности восстановления.`}
         confirmLabel="Удалить профиль"
         pending={isPending}
         error={error}

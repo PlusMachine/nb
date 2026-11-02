@@ -1,87 +1,3268 @@
-{
-  "schema_version": "brewing_consumables_split_manifest_v1",
-  "source_catalog": "consumables_v4_patch_proposal.json / brewing_consumables_unified_v4_stock_aware",
-  "target_catalog": {
-    "catalog_name": "Пивоваренные расходники",
-    "catalog_name_en": "Brewing Consumables",
-    "top_level_type": "consumable",
-    "scope": "Эксплуатационные расходники, мойка, санитация, тара, укупорка и газы."
+[
+  {
+    "id": "acid-beerstone-remover",
+    "type": "consumable",
+    "name_ru": "Кислотное средство от пивного камня",
+    "name_en": "Acid Beerstone Remover (Acid #5 Family)",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "acid #5",
+      "кислотная мойка",
+      "средство от beerstone",
+      "удалитель пивного камня",
+      "acid 5",
+      "acid-5",
+      "пивной камень",
+      "Кислотная мойка от пивного камня / Acid #5 тип"
+    ],
+    "aliases_en": [
+      "Acid #5",
+      "beerstone remover",
+      "acid cleaner"
+    ],
+    "item_kind": "process_aid",
+    "category": "cleaner",
+    "subcategory": "acid_descaler",
+    "common_forms": [
+      "liquid"
+    ],
+    "usage_stage": [
+      "cleaning",
+      "passivation",
+      "cip"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "volume",
+      "recipe_unit_default": "ml",
+      "stock_unit_default": "ml",
+      "stock_mode_default": "by_package_content",
+      "stock_modes_supported": [
+        "package",
+        "bulk_by_volume"
+      ],
+      "allow_fractional_stock": true
+    },
+    "package_variants": [
+      {
+        "id": "fivestar-acid5-1gal",
+        "brand": "Five Star Chemicals",
+        "product_name_en": "Acid #5",
+        "package": {
+          "amount": 1,
+          "unit": "gal"
+        },
+        "country_name_en": "United States",
+        "source": {
+          "group": "Five Star official",
+          "url": "https://fivestarchemicals.com/acid-5"
+        },
+        "stock_content_per_package": {
+          "amount": 3785.412,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "fivestar-acid5-5gal",
+        "brand": "Five Star Chemicals",
+        "product_name_en": "Acid #5",
+        "package": {
+          "amount": 5,
+          "unit": "gal"
+        },
+        "country_name_en": "United States",
+        "source": {
+          "group": "market listing",
+          "url": "https://fhsteinbart.com/product/five-star-acid-5-nitricphosphoric-acid-blend/"
+        },
+        "stock_content_per_package": {
+          "amount": 18927.059,
+          "unit": "ml"
+        }
+      }
+    ],
+    "typical_use_ru": "Кислотное средство для удаления пивного камня и других минеральных отложений. Возможность пассивации нержавеющей стали зависит от состава — проверьте инструкцию.",
+    "dosage_reference": {
+      "common_ratio": "по инструкции производителя",
+      "example_reference": "типовые кислотные cleaners обычно разводятся перед циркуляцией"
+    },
+    "storage_notes_ru": "Только для химически стойких материалов; использовать СИЗ.",
+    "picker_group": "cleaner",
+    "family_key": "acid_cleaner_family",
+    "market_names_ru": [
+      "Acid #5",
+      "средство от beerstone",
+      "acid 5",
+      "acid-5"
+    ],
+    "market_names_en": [
+      "Acid #5",
+      "beerstone remover",
+      "acid cleaner"
+    ],
+    "search_priority_terms_ru": [
+      "acid 5",
+      "acid #5",
+      "пивной камень",
+      "beerstone",
+      "средство от beerstone",
+      "acid-5",
+      "Кислотная мойка и дескейлер",
+      "cleaner",
+      "acid_descaler",
+      "кислотная мойка"
+    ],
+    "search_priority_terms_en": [
+      "acid 5",
+      "acid #5",
+      "beerstone remover",
+      "acid cleaner",
+      "Acid Beerstone Remover (Acid #5 Family)"
+    ],
+    "picker_function_ru": "Средство от пивного камня",
+    "picker_usage_ru": "Удаление пивного камня и минеральных отложений",
+    "brand_family_mode": "matched_variant_brand"
   },
-  "split_rationale_ru": [
-    "В эту категорию попадает то, что пивовар держит как хозрасходник или packaging/serving inventory, а не как рецептурную добавку.",
-    "First-level flow тоже должен быть group-first, без упора на бренды.",
-    "Тара и укупорка требуют count-based inventory flow; санитайзеры и мойка — function-first flow."
-  ],
-  "primary_quick_filter_chips_ru": [
-    "Санитайзеры",
-    "Мойка",
-    "Тара",
-    "Укупорка",
-    "Газы"
-  ],
-  "secondary_chips_by_primary_ru": {
-    "Санитайзеры": [
-      "No-rinse",
-      "Низкопенные",
+  {
+    "id": "pbw-liquid-cleaner",
+    "type": "consumable",
+    "name_ru": "PBW Liquid — жидкое щелочное моющее средство",
+    "name_en": "PBW Liquid",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "pbw liquid",
+      "жидкий pbw",
+      "жидкое щелочное моющее средство",
+      "PBW Liquid / жидкое щелочное моющее средство"
+    ],
+    "aliases_en": [
+      "PBW Liquid"
+    ],
+    "item_kind": "cleaner",
+    "category": "cleaner",
+    "subcategory": "alkaline_liquid",
+    "common_forms": [
+      "liquid"
+    ],
+    "usage_stage": [
+      "pre-clean",
+      "equipment_cleaning",
+      "cip"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "volume",
+      "recipe_unit_default": "ml",
+      "stock_unit_default": "ml",
+      "stock_mode_default": "by_package_content",
+      "stock_modes_supported": [
+        "package",
+        "bulk_by_volume"
+      ],
+      "allow_fractional_stock": true
+    },
+    "package_variants": [
+      {
+        "id": "pbw-liquid-8oz",
+        "brand": "Five Star Chemicals",
+        "package": {
+          "amount": 8,
+          "unit": "oz"
+        },
+        "source": {
+          "group": "Five Star official family",
+          "url": "https://fivestarchemicals.com/pbw-liquid-8oz"
+        },
+        "product_name_en": "PBW Liquid",
+        "country_name_en": "United States",
+        "stock_content_per_package": {
+          "amount": 236.588,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "pbw-liquid-16oz",
+        "brand": "Five Star Chemicals",
+        "package": {
+          "amount": 16,
+          "unit": "oz"
+        },
+        "source": {
+          "group": "Five Star official family",
+          "url": "https://fivestarchemicals.com/pbw-liquid"
+        },
+        "product_name_en": "PBW Liquid",
+        "country_name_en": "United States",
+        "stock_content_per_package": {
+          "amount": 473.176,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "pbw-liquid-32oz",
+        "brand": "Five Star Chemicals",
+        "package": {
+          "amount": 32,
+          "unit": "oz"
+        },
+        "source": {
+          "group": "Five Star official family",
+          "url": "https://fivestarchemicals.com/pbw-liquid-32-oz"
+        },
+        "product_name_en": "PBW Liquid",
+        "country_name_en": "United States",
+        "stock_content_per_package": {
+          "amount": 946.352,
+          "unit": "ml"
+        }
+      }
+    ],
+    "picker_group": "cleaner",
+    "family_key": "pbw_family",
+    "market_names_ru": [
+      "PBW Liquid"
+    ],
+    "market_names_en": [
+      "PBW Liquid"
+    ],
+    "search_priority_terms_ru": [
+      "pbw liquid",
+      "жидкий pbw"
+    ],
+    "search_priority_terms_en": [
+      "pbw liquid"
+    ],
+    "picker_function_ru": "Жидкое щелочное моющее средство",
+    "picker_usage_ru": "Мойка оборудования и линий",
+    "brand_family_mode": "matched_variant_brand",
+    "typical_use_ru": "Жидкая версия PBW для щелочной мойки."
+  },
+  {
+    "id": "alkaline-low-foam-cip-cleaner",
+    "type": "consumable",
+    "name_ru": "Низкопенное щелочное CIP-моющее средство",
+    "name_en": "Low-Foam Alkaline CIP Cleaner",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "термит гало",
+      "щелочное низкопенное",
+      "cip щелочь"
+    ],
+    "aliases_en": [
+      "low-foam alkaline cleaner",
+      "CIP alkaline cleaner"
+    ],
+    "item_kind": "cleaner",
+    "category": "cleaner",
+    "subcategory": "alkaline_low_foam_cip",
+    "common_forms": [
+      "liquid"
+    ],
+    "usage_stage": [
+      "cip",
+      "equipment_cleaning"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "volume",
+      "recipe_unit_default": "ml",
+      "stock_unit_default": "ml",
+      "stock_mode_default": "by_package_content",
+      "stock_modes_supported": [
+        "package",
+        "bulk_by_volume"
+      ],
+      "allow_fractional_stock": true
+    },
+    "package_variants": [
+      {
+        "id": "thermit-galo-antifoam-1l",
+        "brand": "Chemitex",
+        "product_name_ru": "Щелочное моющее средство «Термит Гало антипена»",
+        "package": {
+          "amount": 1,
+          "unit": "L"
+        },
+        "country_name_ru": "Россия",
+        "source": {
+          "group": "Bir.RF store"
+        },
+        "stock_content_per_package": {
+          "amount": 1000,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "thermit-galo-antifoam-5l",
+        "brand": "Chemitex",
+        "product_name_ru": "Щелочное моющее средство «Термит Гало антипена»",
+        "package": {
+          "amount": 5,
+          "unit": "L"
+        },
+        "country_name_ru": "Россия",
+        "source": {
+          "group": "Bir.RF store",
+          "url": "https://xn--90aoy.xn--p1ai/shop/1782/desc/shhelochnoe-mojushhee-sredstvo-termit-galo-antipena-5-l"
+        },
+        "stock_content_per_package": {
+          "amount": 5000,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "generic-cip-lowfoam-20l",
+        "brand": "Generic",
+        "product_name_ru": "Низкопенное щелочное CIP-моющее средство",
+        "package": {
+          "amount": 20,
+          "unit": "L"
+        },
+        "source": {
+          "group": "canonical_generic"
+        },
+        "stock_content_per_package": {
+          "amount": 20000,
+          "unit": "ml"
+        }
+      }
+    ],
+    "typical_use_ru": "Безразборная мойка оборудования, где критично низкое пенообразование.",
+    "dosage_reference": {
+      "common_ratio": "по инструкции производителя",
+      "example_reference": "обычно используется в циркуляционной мойке (CIP)"
+    },
+    "picker_group": "cleaner",
+    "family_key": "alkaline_low_foam_cip_cleaner",
+    "market_names_ru": [
+      "cip щелочь",
+      "Щелочное моющее средство «Термит Гало антипена»",
+      "Низкопенное щелочное CIP-моющее средство"
+    ],
+    "market_names_en": [
+      "low-foam alkaline cleaner",
+      "CIP alkaline cleaner",
+      "Низкопенное щелочное CIP-моющее средство"
+    ],
+    "search_priority_terms_ru": [
+      "cip щелочь",
+      "Щелочное моющее средство «Термит Гало антипена»",
+      "Низкопенное щелочное CIP-моющее средство",
+      "cleaner",
+      "alkaline_low_foam_cip",
+      "термит гало",
+      "щелочное низкопенное"
+    ],
+    "search_priority_terms_en": [
+      "low-foam alkaline cleaner",
+      "CIP alkaline cleaner",
+      "Низкопенное щелочное CIP-моющее средство",
+      "Low-Foam Alkaline CIP Cleaner"
+    ],
+    "picker_function_ru": "Низкопенное щелочное CIP-моющее средство",
+    "picker_usage_ru": "Безразборная мойка оборудования, где критично низкое пенообразование.",
+    "brand_family_mode": "matched_variant_brand"
+  },
+  {
+    "id": "alkaline-brewery-cleaner-powder",
+    "type": "consumable",
+    "name_ru": "Порошковое щелочное моющее средство типа PBW",
+    "name_en": "Alkaline Brewery Cleaner Powder (PBW Family)",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "pbw",
+      "powdered brewery wash",
+      "кислородный щелочной очиститель",
+      "пбв",
+      "powder brewery wash",
+      "порошковая мойка для пивоварения",
+      "Щелочное порошковое моющее средство (PBW тип)"
+    ],
+    "aliases_en": [
+      "PBW",
+      "PBW type cleaner",
+      "Powdered Brewery Wash",
+      "Brewery wash",
+      "alkaline brewery wash"
+    ],
+    "item_kind": "cleaner",
+    "category": "cleaner",
+    "subcategory": "alkaline_powder",
+    "common_forms": [
+      "powder"
+    ],
+    "usage_stage": [
+      "pre-clean",
+      "cip",
+      "equipment_cleaning"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "weight",
+      "recipe_unit_default": "g",
+      "stock_unit_default": "g",
+      "stock_mode_default": "by_package_content",
+      "stock_modes_supported": [
+        "package",
+        "bulk_by_weight"
+      ],
+      "allow_fractional_stock": true
+    },
+    "package_variants": [
+      {
+        "id": "fivestar-pbw-1lb",
+        "brand": "Five Star Chemicals",
+        "product_name_en": "PBW",
+        "package": {
+          "amount": 1,
+          "unit": "lb"
+        },
+        "country_name_en": "United States",
+        "source": {
+          "group": "Five Star official",
+          "url": "https://fivestarchemicals.com/pbw-cleaner-1bs"
+        },
+        "stock_content_per_package": {
+          "amount": 453.592,
+          "unit": "g"
+        }
+      },
+      {
+        "id": "pbw-1kg",
+        "brand": "Kegland",
+        "product_name_ru": "Моющее средство Powdered Brewery Wash (PBW)",
+        "package": {
+          "amount": 1,
+          "unit": "kg"
+        },
+        "country_name_ru": "Австралия",
+        "source": {
+          "group": "Bir.RF store",
+          "url": "https://xn--90aoy.xn--p1ai/shop/2007/comm/mojushhee-sredstvo-powdered-brewery-wash-pbw-1-kg"
+        },
+        "stock_content_per_package": {
+          "amount": 1000,
+          "unit": "g"
+        }
+      },
+      {
+        "id": "kegland-pbw-1kg",
+        "brand": "Kegland",
+        "product_name_ru": "Моющее средство Powdered Brewery Wash (PBW)",
+        "product_name_en": "PBW",
+        "package": {
+          "amount": 1,
+          "unit": "kg"
+        },
+        "country_name_ru": "Австралия",
+        "source": {
+          "group": "Bir.RF store",
+          "url": "https://xn--90aoy.xn--p1ai/shop/2007/desc/mojushhee-sredstvo-powdered-brewery-wash-pbw-1-kg"
+        },
+        "stock_content_per_package": {
+          "amount": 1000,
+          "unit": "g"
+        }
+      },
+      {
+        "id": "fivestar-pbw-4lb",
+        "brand": "Five Star Chemicals",
+        "product_name_en": "PBW",
+        "package": {
+          "amount": 4,
+          "unit": "lb"
+        },
+        "country_name_en": "United States",
+        "source": {
+          "group": "Five Star official family",
+          "url": "https://fivestarchemicals.com/pbw-cleaner-1bs"
+        },
+        "stock_content_per_package": {
+          "amount": 1814.369,
+          "unit": "g"
+        }
+      },
+      {
+        "id": "fivestar-pbw-8lb",
+        "brand": "Five Star Chemicals",
+        "product_name_en": "PBW",
+        "package": {
+          "amount": 8,
+          "unit": "lb"
+        },
+        "country_name_en": "United States",
+        "source": {
+          "group": "Five Star official family",
+          "url": "https://fivestarchemicals.com/pbw-cleaner-1bs"
+        },
+        "stock_content_per_package": {
+          "amount": 3628.739,
+          "unit": "g"
+        }
+      }
+    ],
+    "typical_use_ru": "Щелочная мойка бродильных ёмкостей, котлов, линий и тары перед дезинфекцией.",
+    "dosage_reference": {
+      "common_ratio": "по инструкции производителя",
+      "example_reference": "PBW: 7–14 г/л для обычной мойки; ~21 г/л для тяжёлых загрязнений"
+    },
+    "picker_group": "cleaner",
+    "family_key": "pbw_family",
+    "market_names_ru": [
+      "PBW",
+      "Powdered Brewery Wash",
+      "powder brewery wash",
+      "Моющее средство Powdered Brewery Wash (PBW)"
+    ],
+    "market_names_en": [
+      "PBW",
+      "Powdered Brewery Wash",
+      "PBW type cleaner",
+      "Brewery wash"
+    ],
+    "search_priority_terms_ru": [
+      "пбв",
+      "pbw",
+      "powdered brewery wash",
+      "powder brewery wash",
+      "Моющее средство Powdered Brewery Wash (PBW)",
+      "Щелочная порошковая мойка",
+      "cleaner",
+      "alkaline_powder",
+      "кислородный щелочной очиститель",
+      "порошковая мойка для пивоварения"
+    ],
+    "search_priority_terms_en": [
+      "pbw",
+      "powdered brewery wash",
+      "PBW type cleaner",
+      "Brewery wash",
+      "Alkaline Brewery Cleaner Powder (PBW Family)",
+      "alkaline brewery wash"
+    ],
+    "picker_function_ru": "Порошковое щелочное моющее средство",
+    "picker_usage_ru": "Мойка оборудования и тары перед дезинфекцией",
+    "brand_family_mode": "matched_variant_brand"
+  },
+  {
+    "id": "pbw-tablets-large",
+    "type": "consumable",
+    "name_ru": "PBW Tablets 10 г",
+    "name_en": "PBW Tablets 10 g",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "pbw tablets",
+      "таблетки pbw",
+      "таблетки для кегов"
+    ],
+    "aliases_en": [
+      "PBW Tablets"
+    ],
+    "item_kind": "cleaner",
+    "category": "cleaner",
+    "subcategory": "alkaline_tablets",
+    "common_forms": [
+      "tablet"
+    ],
+    "usage_stage": [
+      "pre-clean",
+      "equipment_cleaning"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "pieces",
+      "recipe_unit_default": "pcs",
+      "stock_unit_default": "pcs",
+      "stock_mode_default": "package_count",
+      "stock_modes_supported": [
+        "package",
+        "pieces"
+      ],
+      "allow_fractional_stock": false
+    },
+    "package_variants": [
+      {
+        "id": "pbw-tablets-10g-x12",
+        "brand": "Five Star Chemicals",
+        "package": {
+          "amount": 12,
+          "unit": "pcs"
+        },
+        "source": {
+          "group": "Five Star official",
+          "url": "https://fivestarchemicals.com/pbw-cleaner-10g-tablets-12-count"
+        },
+        "product_name_en": "PBW Tablets (10 g x 12 ct)",
+        "country_name_en": "United States",
+        "stock_content_per_package": {
+          "amount": 12,
+          "unit": "pcs"
+        },
+        "content_per_piece": {
+          "amount": 10,
+          "unit": "g_each"
+        },
+        "content_per_package": {
+          "amount": 120,
+          "unit": "g"
+        }
+      },
+      {
+        "id": "pbw-tablets-10g-x40",
+        "brand": "Five Star Chemicals",
+        "package": {
+          "amount": 40,
+          "unit": "pcs"
+        },
+        "source": {
+          "group": "Five Star official family",
+          "url": "https://fivestarchemicals.com/sitemap"
+        },
+        "product_name_en": "PBW Tablets (10 g x 40 ct)",
+        "country_name_en": "United States",
+        "stock_content_per_package": {
+          "amount": 40,
+          "unit": "pcs"
+        },
+        "content_per_piece": {
+          "amount": 10,
+          "unit": "g_each"
+        },
+        "content_per_package": {
+          "amount": 400,
+          "unit": "g"
+        }
+      }
+    ],
+    "picker_group": "cleaner",
+    "family_key": "pbw_family",
+    "market_names_ru": [
+      "PBW Tablets 10 г"
+    ],
+    "market_names_en": [
+      "PBW Tablets 10 g"
+    ],
+    "search_priority_terms_ru": [
+      "pbw tablets 10",
+      "таблетки pbw 10"
+    ],
+    "search_priority_terms_en": [
+      "pbw tablets 10 g"
+    ],
+    "picker_function_ru": "Щелочное моющее средство в таблетках",
+    "picker_usage_ru": "Мойка кегов, ферментеров и бутылей",
+    "brand_family_mode": "matched_variant_brand"
+  },
+  {
+    "id": "pbw-tablets-small",
+    "type": "consumable",
+    "name_ru": "PBW Tablets 2.5 г",
+    "name_en": "PBW Tablets 2.5 g",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "pbw tablets",
+      "таблетки pbw",
+      "таблетки для мойки"
+    ],
+    "aliases_en": [
+      "PBW Tablets"
+    ],
+    "item_kind": "cleaner",
+    "category": "cleaner",
+    "subcategory": "alkaline_tablets",
+    "common_forms": [
+      "tablet"
+    ],
+    "usage_stage": [
+      "pre-clean",
+      "equipment_cleaning"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "pieces",
+      "recipe_unit_default": "pcs",
+      "stock_unit_default": "pcs",
+      "stock_mode_default": "package_count",
+      "stock_modes_supported": [
+        "package",
+        "pieces"
+      ],
+      "allow_fractional_stock": false
+    },
+    "package_variants": [
+      {
+        "id": "pbw-tablets-2-5g-x30",
+        "brand": "Five Star Chemicals",
+        "package": {
+          "amount": 30,
+          "unit": "pcs"
+        },
+        "source": {
+          "group": "Five Star official",
+          "url": "https://fivestarchemicals.com/pbw-cleaner-2-5g-tablets-30-count"
+        },
+        "product_name_en": "PBW Tablets (2.5 g x 30 ct)",
+        "country_name_en": "United States",
+        "stock_content_per_package": {
+          "amount": 30,
+          "unit": "pcs"
+        },
+        "content_per_piece": {
+          "amount": 2.5,
+          "unit": "g_each"
+        },
+        "content_per_package": {
+          "amount": 75,
+          "unit": "g"
+        }
+      },
+      {
+        "id": "pbw-tablets-2-5g-x50",
+        "brand": "Five Star Chemicals",
+        "package": {
+          "amount": 50,
+          "unit": "pcs"
+        },
+        "source": {
+          "group": "Five Star official",
+          "url": "https://fivestarchemicals.com/pbw-tablets-2-5g"
+        },
+        "product_name_en": "PBW Tablets (2.5 g x 50 ct)",
+        "country_name_en": "United States",
+        "stock_content_per_package": {
+          "amount": 50,
+          "unit": "pcs"
+        },
+        "content_per_piece": {
+          "amount": 2.5,
+          "unit": "g_each"
+        },
+        "content_per_package": {
+          "amount": 125,
+          "unit": "g"
+        }
+      }
+    ],
+    "picker_group": "cleaner",
+    "family_key": "pbw_family",
+    "market_names_ru": [
+      "PBW Tablets"
+    ],
+    "market_names_en": [
+      "PBW Tablets"
+    ],
+    "search_priority_terms_ru": [
+      "pbw tablets",
+      "таблетки pbw"
+    ],
+    "search_priority_terms_en": [
+      "pbw tablets"
+    ],
+    "picker_function_ru": "Щелочное моющее средство в таблетках",
+    "picker_usage_ru": "Мойка бутылей для пива, распылителей и небольшой тары",
+    "brand_family_mode": "matched_variant_brand"
+  },
+  {
+    "id": "caustic-alkali-cleaner",
+    "type": "consumable",
+    "name_ru": "Моющее средство на основе едкой щёлочи",
+    "name_en": "Caustic Alkali Cleaner",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "каустическая сода",
+      "едкий натр",
+      "naoh",
+      "каустик",
+      "Каустический щелочной очиститель"
+    ],
+    "aliases_en": [
+      "Caustic Soda",
+      "Sodium Hydroxide",
+      "NaOH"
+    ],
+    "item_kind": "process_aid",
+    "category": "cleaner",
+    "subcategory": "caustic",
+    "common_forms": [
+      "flakes",
+      "pellets",
+      "powder"
+    ],
+    "usage_stage": [
+      "cleaning",
+      "cip"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "weight",
+      "recipe_unit_default": "g",
+      "stock_unit_default": "g",
+      "stock_mode_default": "by_package_content",
+      "stock_modes_supported": [
+        "package",
+        "bulk_by_weight"
+      ],
+      "allow_fractional_stock": true
+    },
+    "package_variants": [
+      {
+        "id": "generic-caustic-cleaner-1kg",
+        "brand": "Generic",
+        "product_name_ru": "Каустический щелочной очиститель",
+        "package": {
+          "amount": 1,
+          "unit": "kg"
+        },
+        "source": {
+          "group": "canonical_generic"
+        },
+        "stock_content_per_package": {
+          "amount": 1000,
+          "unit": "g"
+        }
+      },
+      {
+        "id": "generic-caustic-cleaner-25kg",
+        "brand": "Generic",
+        "product_name_ru": "Каустический щелочной очиститель",
+        "package": {
+          "amount": 25,
+          "unit": "kg"
+        },
+        "source": {
+          "group": "canonical_generic"
+        },
+        "stock_content_per_package": {
+          "amount": 25000,
+          "unit": "g"
+        }
+      }
+    ],
+    "typical_use_ru": "Удаление стойких органических загрязнений и безразборная мойка оборудования.",
+    "dosage_reference": {
+      "common_ratio": "только по регламенту и инструкции"
+    },
+    "storage_notes_ru": "Опасный едкий реагент; хранить и использовать с повышенной осторожностью.",
+    "picker_group": "cleaner",
+    "family_key": "caustic_alkali_cleaner",
+    "market_names_ru": [
+      "naoh",
+      "Каустический щелочной очиститель"
+    ],
+    "market_names_en": [
+      "Caustic Soda",
+      "Sodium Hydroxide",
+      "NaOH"
+    ],
+    "search_priority_terms_ru": [
+      "naoh",
+      "Каустический щелочной очиститель",
+      "cleaner",
+      "caustic",
+      "каустическая сода",
+      "едкий натр",
+      "каустик"
+    ],
+    "search_priority_terms_en": [
+      "Caustic Soda",
+      "Sodium Hydroxide",
+      "NaOH",
+      "Caustic Alkali Cleaner"
+    ],
+    "picker_function_ru": "Средство на основе едкой щёлочи",
+    "picker_usage_ru": "Удаление стойких органических загрязнений и безразборная мойка оборудования",
+    "brand_family_mode": "matched_variant_brand"
+  },
+  {
+    "id": "liquid-line-cleaner",
+    "type": "consumable",
+    "name_ru": "Жидкое средство для мойки пивных линий",
+    "name_en": "Liquid Line Cleaner",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "мойка пивных линий",
+      "line cleaner",
+      "beer line cleaner"
+    ],
+    "aliases_en": [
+      "Liquid Line Cleaner",
+      "Beer Line Cleaner"
+    ],
+    "item_kind": "cleaner",
+    "category": "cleaner",
+    "subcategory": "draft_line_cleaner",
+    "common_forms": [
+      "liquid"
+    ],
+    "usage_stage": [
+      "draft_system_cleaning",
+      "cip"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "volume",
+      "recipe_unit_default": "ml",
+      "stock_unit_default": "ml",
+      "stock_mode_default": "by_package_content",
+      "stock_modes_supported": [
+        "package",
+        "bulk_by_volume"
+      ],
+      "allow_fractional_stock": true
+    },
+    "package_variants": [
+      {
+        "id": "liquid-line-cleaner-4oz",
+        "brand": "Five Star Chemicals",
+        "package": {
+          "amount": 4,
+          "unit": "oz"
+        },
+        "source": {
+          "group": "Five Star official",
+          "url": "https://fivestarchemicals.com/liquid-line-cleaner-4oz"
+        },
+        "product_name_en": "Liquid Line Cleaner",
+        "country_name_en": "United States",
+        "stock_content_per_package": {
+          "amount": 118.294,
+          "unit": "ml"
+        }
+      }
+    ],
+    "picker_group": "cleaner",
+    "family_key": "draft_line_cleaner",
+    "market_names_ru": [
+      "Liquid Line Cleaner"
+    ],
+    "market_names_en": [
+      "Liquid Line Cleaner"
+    ],
+    "search_priority_terms_ru": [
+      "мойка пивных линий",
+      "line cleaner",
+      "beer line cleaner"
+    ],
+    "search_priority_terms_en": [
+      "liquid line cleaner",
+      "beer line cleaner"
+    ],
+    "picker_function_ru": "Средство для мойки пивных линий",
+    "picker_usage_ru": "Регулярная мойка пивопроводов и кранов",
+    "brand_family_mode": "matched_variant_brand",
+    "typical_use_ru": "Мойка пивопроводов, шлангов и разливочных кранов."
+  },
+  {
+    "id": "oxygen-based-cleaner",
+    "type": "consumable",
+    "name_ru": "Кислородный очиститель (Oxi / ChemiPro Oxi)",
+    "name_en": "Oxygen-Based Cleaner (Oxi Family)",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "chemipro oxi",
+      "oxi",
+      "кислородный очиститель",
+      "перкарбонат",
+      "окси",
+      "окси клинер",
+      "chemi pro oxi",
+      "chemiprooxi"
+    ],
+    "aliases_en": [
+      "ChemiPro Oxi",
+      "oxygen cleaner",
+      "sodium percarbonate cleaner",
+      "oxi cleaner",
+      "oxi-cleaner",
+      "chemi pro oxi"
+    ],
+    "item_kind": "process_aid",
+    "category": "cleaner",
+    "subcategory": "oxygen_based",
+    "common_forms": [
+      "powder",
+      "crystals"
+    ],
+    "usage_stage": [
+      "cleaning",
+      "bottle_cleaning"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "weight",
+      "recipe_unit_default": "g",
+      "stock_unit_default": "g",
+      "stock_mode_default": "by_package_content",
+      "stock_modes_supported": [
+        "package",
+        "bulk_by_weight"
+      ],
+      "allow_fractional_stock": true
+    },
+    "package_variants": [
+      {
+        "id": "chemipro-oxi-100g",
+        "brand": "ChemiPro",
+        "product_name_en": "ChemiPro Oxi",
+        "package": {
+          "amount": 100,
+          "unit": "g"
+        },
+        "country_name_en": "Belgium",
+        "source": {
+          "group": "retail listing",
+          "url": "https://brouwland.com/nl/reinigingsmiddelen/14864-chemipro-oxi-100-g.html"
+        },
+        "stock_content_per_package": {
+          "amount": 100,
+          "unit": "g"
+        }
+      },
+      {
+        "id": "generic-oxygen-cleaner-500g",
+        "brand": "Generic",
+        "product_name_ru": "Кислородный очиститель",
+        "package": {
+          "amount": 500,
+          "unit": "g"
+        },
+        "source": {
+          "group": "canonical_generic"
+        },
+        "stock_content_per_package": {
+          "amount": 500,
+          "unit": "g"
+        }
+      },
+      {
+        "id": "chemipro-oxi-1kg",
+        "brand": "ChemiPro",
+        "product_name_en": "ChemiPro Oxi",
+        "package": {
+          "amount": 1,
+          "unit": "kg"
+        },
+        "country_name_en": "Belgium",
+        "source": {
+          "group": "retail listing",
+          "url": "https://www.stookwinkel.nl/product/chemipro-oxi-multifunctionele-reiniger-1-kg/"
+        },
+        "stock_content_per_package": {
+          "amount": 1000,
+          "unit": "g"
+        }
+      }
+    ],
+    "typical_use_ru": "Быстрая мойка лёгких органических загрязнений и бутылок за счёт активного кислорода.",
+    "dosage_reference": {
+      "common_ratio": "по инструкции производителя"
+    },
+    "storage_notes_ru": "Хранить сухо и герметично.",
+    "picker_group": "cleaner",
+    "family_key": "oxygen_cleaner_family",
+    "market_names_ru": [
+      "Oxi",
+      "ChemiPro Oxi",
+      "chemi pro oxi",
+      "chemiprooxi"
+    ],
+    "market_names_en": [
+      "Oxi",
+      "ChemiPro Oxi",
+      "oxygen cleaner",
+      "sodium percarbonate cleaner",
+      "oxi cleaner"
+    ],
+    "search_priority_terms_ru": [
+      "oxi",
+      "oxi cleaner",
+      "chemipro oxi",
+      "кислородный очиститель",
+      "chemi pro oxi",
+      "chemiprooxi",
+      "Кислородная мойка",
+      "cleaner",
+      "oxygen_based",
+      "перкарбонат"
+    ],
+    "search_priority_terms_en": [
+      "oxi",
+      "oxygen cleaner",
+      "chemipro oxi",
+      "sodium percarbonate cleaner",
+      "oxi cleaner",
+      "Oxygen-Based Cleaner (Oxi Family)",
+      "oxi-cleaner",
+      "chemi pro oxi"
+    ],
+    "picker_function_ru": "Кислородное моющее средство",
+    "picker_usage_ru": "Мойка бутылок и удаление лёгких загрязнений",
+    "brand_family_mode": "matched_variant_brand"
+  },
+  {
+    "id": "co2-threaded-cartridge",
+    "type": "consumable",
+    "name_ru": "Резьбовой баллончик CO₂",
+    "name_en": "Threaded CO2 Cartridge",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "баллончик co2 16 г",
+      "CO₂ баллончик резьбовой"
+    ],
+    "aliases_en": [
+      "16 g CO2 cartridge"
+    ],
+    "item_kind": "gas",
+    "category": "gas",
+    "subcategory": "cartridge",
+    "common_forms": [
+      "gas_cartridge"
+    ],
+    "usage_stage": [
+      "carbonation",
+      "dispense"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "pieces",
+      "recipe_unit_default": "pcs",
+      "stock_unit_default": "pcs",
+      "stock_mode_default": "package_count",
+      "stock_modes_supported": [
+        "package",
+        "pieces"
+      ],
+      "allow_fractional_stock": false,
+      "secondary_measurements_supported": [
+        {
+          "unit": "g_co2",
+          "amount_per_piece": 16
+        }
+      ]
+    },
+    "package_variants": [
+      {
+        "id": "co2-cartridge-16g-single",
+        "brand": "Kegland",
+        "product_name_ru": "Баллончики CO2 с резьбой",
+        "package": {
+          "amount": 1,
+          "unit": "pcs"
+        },
+        "country_name_ru": "Китай",
+        "source": {
+          "group": "Bir.RF store",
+          "url": "https://xn--90aoy.xn--p1ai/shop/741/desc/ballonchiki-co2-s-rezboj-16-g"
+        },
+        "stock_content_per_package": {
+          "amount": 1,
+          "unit": "pcs"
+        },
+        "content_per_piece": {
+          "amount": 16,
+          "unit": "g"
+        },
+        "content_per_package": {
+          "amount": 16,
+          "unit": "g_co2"
+        }
+      },
+      {
+        "id": "co2-cartridge-16g-pack10",
+        "brand": "Kegland",
+        "product_name_ru": "Баллончики CO2 с резьбой",
+        "package": {
+          "amount": 10,
+          "unit": "pcs"
+        },
+        "country_name_ru": "Китай",
+        "source": {
+          "group": "Bir.RF store",
+          "url": "https://xn--90aoy.xn--p1ai/shop/741/desc/ballonchiki-co2-s-rezboj-16-g"
+        },
+        "stock_content_per_package": {
+          "amount": 10,
+          "unit": "pcs"
+        },
+        "content_per_piece": {
+          "amount": 16,
+          "unit": "g_each"
+        },
+        "content_per_package": {
+          "amount": 160,
+          "unit": "g_co2"
+        }
+      }
+    ],
+    "dosage_reference": {
+      "common_ratio": "не дозируется в рецепте; используется как сменная газовая ёмкость",
+      "example_reference": "16-граммовые картриджи подходят для портативного розлива и малых объёмов"
+    },
+    "picker_group": "gas",
+    "family_key": "co2_threaded_cartridge",
+    "market_names_ru": [
+      "баллончик co2 16 г",
+      "Баллончики CO2 с резьбой"
+    ],
+    "market_names_en": [
+      "16 g CO2 cartridge",
+      "Баллончики CO2 с резьбой"
+    ],
+    "search_priority_terms_ru": [
+      "баллончик co2 16 г",
+      "Баллончики CO2 с резьбой",
+      "gas",
+      "cartridge"
+    ],
+    "search_priority_terms_en": [
+      "16 g CO2 cartridge",
+      "Баллончики CO2 с резьбой",
+      "Threaded CO2 Cartridge"
+    ],
+    "picker_function_ru": "Резьбовой баллончик CO₂",
+    "picker_usage_ru": "16-граммовые картриджи подходят для портативного розлива и малых объёмов",
+    "brand_family_mode": "matched_variant_brand"
+  },
+  {
+    "id": "co2-cylinder-filled",
+    "type": "consumable",
+    "name_ru": "Заправленный баллон CO₂",
+    "name_en": "Filled CO2 Cylinder",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "углекислотный баллон",
+      "баллон co2",
+      "CO₂ баллон заправленный"
+    ],
+    "aliases_en": [
+      "CO2 cylinder"
+    ],
+    "item_kind": "gas",
+    "category": "gas",
+    "subcategory": "cylinder",
+    "common_forms": [
+      "cylinder"
+    ],
+    "usage_stage": [
+      "carbonation",
+      "dispense"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "package_only",
+      "recipe_unit_default": "pcs",
+      "stock_unit_default": "pcs",
+      "stock_mode_default": "package_count",
+      "stock_modes_supported": [
+        "package"
+      ],
+      "allow_fractional_stock": false
+    },
+    "package_variants": [
+      {
+        "id": "co2-cylinder-2l",
+        "brand": null,
+        "product_name_ru": "Баллон углекислотный (заправленный)",
+        "package": {
+          "amount": 2,
+          "unit": "L"
+        },
+        "country_name_ru": "Россия",
+        "source": {
+          "group": "Bir.RF store"
+        }
+      },
+      {
+        "id": "co2-cylinder-5l",
+        "brand": null,
+        "product_name_ru": "Баллон углекислотный (заправленный)",
+        "package": {
+          "amount": 5,
+          "unit": "L"
+        },
+        "country_name_ru": "Россия",
+        "source": {
+          "group": "Bir.RF store",
+          "url": "https://xn--90aoy.xn--p1ai/shop/779/comm/ballon-uglekislotnyj-zapravlennyj-5-l"
+        }
+      },
+      {
+        "id": "co2-cylinder-10l",
+        "brand": null,
+        "product_name_ru": "Баллон углекислотный (заправленный)",
+        "package": {
+          "amount": 10,
+          "unit": "L"
+        },
+        "country_name_ru": "Россия",
+        "source": {
+          "group": "Bir.RF store",
+          "url": "https://xn--90aoy.xn--p1ai/shop/636/desc/ballon-uglekislotnyj-zapravlennyj-10-l"
+        }
+      }
+    ],
+    "typical_use_ru": "Подача и поддержание давления при карбонизации и розливе.",
+    "dosage_reference": {
+      "common_ratio": "не дозируется в рецепте; выбирается по объёму баллона и расходу на карбонизацию/розлив",
+      "example_reference": "2 л, 5 л и 10 л — типовые домашние/полупрофильные размеры"
+    },
+    "picker_group": "gas",
+    "family_key": "co2_cylinder_filled",
+    "market_names_ru": [
+      "баллон co2",
+      "Баллон углекислотный (заправленный)"
+    ],
+    "market_names_en": [
+      "CO2 cylinder"
+    ],
+    "search_priority_terms_ru": [
+      "баллон co2",
+      "Баллон углекислотный (заправленный)",
+      "gas",
+      "cylinder",
+      "углекислотный баллон"
+    ],
+    "search_priority_terms_en": [
+      "CO2 cylinder",
+      "Filled CO2 Cylinder"
+    ],
+    "picker_function_ru": "Заправленный баллон CO₂",
+    "picker_usage_ru": "Подача и поддержание давления при карбонизации и розливе.",
+    "brand_family_mode": "matched_variant_brand"
+  },
+  {
+    "id": "aluminum-can-330-with-lids",
+    "type": "consumable",
+    "name_ru": "Алюминиевая банка 0,33 л с крышками",
+    "name_en": "330 ml Aluminum Can with Lids",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "банка 0.33",
+      "алюминиевая банка 330",
+      "банка 330 мл",
+      "202 lid",
+      "cdl202",
+      "Алюминиевая банка 0.33 л с крышками"
+    ],
+    "aliases_en": [
+      "330 ml aluminum can",
+      "202 can",
+      "cdl202 can"
+    ],
+    "item_kind": "packaging_item",
+    "category": "packaging",
+    "subcategory": "aluminum_can",
+    "common_forms": [
+      "piece"
+    ],
+    "usage_stage": [
+      "packaging"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "pieces",
+      "recipe_unit_default": "pcs",
+      "stock_unit_default": "pcs",
+      "stock_mode_default": "package_count",
+      "stock_modes_supported": [
+        "package",
+        "pieces"
+      ],
+      "allow_fractional_stock": false
+    },
+    "package_variants": [
+      {
+        "id": "aluminum-can-330-pack20",
+        "brand": "MB",
+        "package": {
+          "amount": 20,
+          "unit": "pcs"
+        },
+        "source": {
+          "group": "MirBeer",
+          "url": "https://www.mirbeer.ru/catalog/pivovarenie/oborudovanie/rozliv_tara_i_oborudovanie/tara/banka_alyuminievaya_0_33_l_20sht_v_kartonnoy_korobke_v_kopmlekte_s_krishkami/"
+        },
+        "product_name_ru": "Банка алюминиевая 0,33 л, 20шт в картонной коробке, в комплекте с крышками",
+        "country_name_ru": "Россия",
+        "stock_content_per_package": {
+          "amount": 20,
+          "unit": "pcs"
+        },
+        "content_per_piece": {
+          "amount": 330,
+          "unit": "ml_each"
+        }
+      }
+    ],
+    "picker_group": "packaging",
+    "family_key": "aluminum_can_330_with_lids",
+    "market_names_ru": [
+      "Алюминиевая банка 0.33 л с крышками"
+    ],
+    "market_names_en": [
+      "330 ml Aluminum Can with Lids"
+    ],
+    "search_priority_terms_ru": [
+      "банка 0.33",
+      "алюминиевая банка 330",
+      "банка 330 мл",
+      "202 lid",
+      "cdl202",
+      "Алюминиевая банка 0.33 л с крышками"
+    ],
+    "search_priority_terms_en": [
+      "330 ml aluminum can",
+      "202 can",
+      "cdl202 can",
+      "330 ml Aluminum Can with Lids"
+    ],
+    "picker_function_ru": "Алюминиевая банка 0,33 л с крышками",
+    "picker_usage_ru": "Розлив домашнего и крафтового пива в банки",
+    "brand_family_mode": "matched_variant_brand",
+    "capacity_per_piece": {
+      "amount": 330,
+      "unit": "ml"
+    },
+    "closure_standard": "202 / CDL202 / B64"
+  },
+  {
+    "id": "aluminum-can-500-with-lids",
+    "type": "consumable",
+    "name_ru": "Алюминиевая банка 0,5 л с крышками",
+    "name_en": "500 ml Aluminum Can with Lids",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "банка 0.5",
+      "алюминиевая банка 500",
+      "банка 500 мл",
+      "202 lid",
+      "b64",
+      "Алюминиевая банка 0.5 л с крышками"
+    ],
+    "aliases_en": [
+      "500 ml aluminum can",
+      "202 can",
+      "b64 can"
+    ],
+    "item_kind": "packaging_item",
+    "category": "packaging",
+    "subcategory": "aluminum_can",
+    "common_forms": [
+      "piece"
+    ],
+    "usage_stage": [
+      "packaging"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "pieces",
+      "recipe_unit_default": "pcs",
+      "stock_unit_default": "pcs",
+      "stock_mode_default": "package_count",
+      "stock_modes_supported": [
+        "package",
+        "pieces"
+      ],
+      "allow_fractional_stock": false
+    },
+    "package_variants": [
+      {
+        "id": "aluminum-can-500-pack20",
+        "brand": "MB",
+        "package": {
+          "amount": 20,
+          "unit": "pcs"
+        },
+        "source": {
+          "group": "MirBeer",
+          "url": "https://www.mirbeer.ru/catalog/pivovarenie/oborudovanie/rozliv_tara_i_oborudovanie/tara/banka_alyuminievaya_0_5_l_20sht_v_kartonnoy_korobke_v_komplekte_s_krishkami/"
+        },
+        "product_name_ru": "Банка алюминиевая 0,5 л, 20шт в картонной коробке, в комплекте с крышками",
+        "country_name_ru": "Россия",
+        "stock_content_per_package": {
+          "amount": 20,
+          "unit": "pcs"
+        },
+        "content_per_piece": {
+          "amount": 500,
+          "unit": "ml_each"
+        }
+      }
+    ],
+    "picker_group": "packaging",
+    "family_key": "aluminum_can_500_with_lids",
+    "market_names_ru": [
+      "Алюминиевая банка 0.5 л с крышками"
+    ],
+    "market_names_en": [
+      "500 ml Aluminum Can with Lids"
+    ],
+    "search_priority_terms_ru": [
+      "банка 0.5",
+      "алюминиевая банка 500",
+      "банка 500 мл",
+      "202 lid",
+      "b64",
+      "Алюминиевая банка 0.5 л с крышками"
+    ],
+    "search_priority_terms_en": [
+      "500 ml aluminum can",
+      "202 can",
+      "b64 can",
+      "500 ml Aluminum Can with Lids"
+    ],
+    "picker_function_ru": "Алюминиевая банка 0,5 л с крышками",
+    "picker_usage_ru": "Розлив пива в банки объёмом 0,5 л",
+    "brand_family_mode": "matched_variant_brand",
+    "capacity_per_piece": {
+      "amount": 500,
+      "unit": "ml"
+    },
+    "closure_standard": "202 / CDL202 / B64"
+  },
+  {
+    "id": "can-lids-cdl202",
+    "type": "consumable",
+    "name_ru": "Крышки для банок CDL202",
+    "name_en": "CDL202 / 202 Can Lids",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "крышки для банок 202",
+      "cdl202",
+      "b64 lids",
+      "can ends",
+      "Крышки для банок CDL202 / 202 end"
+    ],
+    "aliases_en": [
+      "CDL202 lids",
+      "202 can lids",
+      "B64 lids"
+    ],
+    "item_kind": "packaging_item",
+    "category": "packaging",
+    "subcategory": "can_lid",
+    "common_forms": [
+      "piece"
+    ],
+    "usage_stage": [
+      "packaging"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "pieces",
+      "recipe_unit_default": "pcs",
+      "stock_unit_default": "pcs",
+      "stock_mode_default": "package_count",
+      "stock_modes_supported": [
+        "package",
+        "pieces"
+      ],
+      "allow_fractional_stock": false
+    },
+    "package_variants": [
+      {
+        "id": "can-lids-cdl202-100",
+        "brand": "Generic",
+        "package": {
+          "amount": 100,
+          "unit": "pcs"
+        },
+        "source": {
+          "group": "retail listing",
+          "url": "https://eshop.czechminibreweries.com/product-tag/cans/"
+        },
+        "product_name_en": "CDL202 silver lids",
+        "country_name_en": "Czech Republic",
+        "stock_content_per_package": {
+          "amount": 100,
+          "unit": "pcs"
+        }
+      },
+      {
+        "id": "can-lids-cdl202-650",
+        "brand": "Generic",
+        "package": {
+          "amount": 650,
+          "unit": "pcs"
+        },
+        "source": {
+          "group": "retail listing",
+          "url": "https://www.staffordshirebrewery.co.uk/cans-lids-boxes/"
+        },
+        "product_name_en": "Industry Standard Can Lids",
+        "country_name_en": "United Kingdom",
+        "stock_content_per_package": {
+          "amount": 650,
+          "unit": "pcs"
+        }
+      }
+    ],
+    "picker_group": "packaging",
+    "family_key": "can_lids_cdl202",
+    "market_names_ru": [
+      "Крышки для банок CDL202 / 202 end"
+    ],
+    "market_names_en": [
+      "CDL202 / 202 Can Lids"
+    ],
+    "search_priority_terms_ru": [
+      "крышки для банок 202",
+      "cdl202",
+      "b64 lids",
+      "can ends",
+      "Крышки для банок CDL202 / 202 end"
+    ],
+    "search_priority_terms_en": [
+      "CDL202 lids",
+      "202 can lids",
+      "B64 lids",
+      "CDL202 / 202 Can Lids"
+    ],
+    "picker_function_ru": "Крышки для банок CDL202",
+    "picker_usage_ru": "Закатка банок; крышки учитываются отдельно",
+    "brand_family_mode": "matched_variant_brand",
+    "closure_standard": "202 / CDL202 / B64"
+  },
+  {
+    "id": "crown-caps-26mm",
+    "type": "consumable",
+    "name_ru": "Кроненпробки 26 мм",
+    "name_en": "26 mm Crown Caps",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "кроненпробка 26 мм",
+      "кронен-пробки 26 мм",
+      "крышки 26 мм"
+    ],
+    "aliases_en": [
+      "26 mm crown caps"
+    ],
+    "item_kind": "packaging_item",
+    "category": "packaging",
+    "subcategory": "crown_cap",
+    "common_forms": [
+      "piece"
+    ],
+    "usage_stage": [
+      "packaging"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "pieces",
+      "recipe_unit_default": "pcs",
+      "stock_unit_default": "pcs",
+      "stock_mode_default": "package_count",
+      "stock_modes_supported": [
+        "package",
+        "pieces"
+      ],
+      "allow_fractional_stock": false
+    },
+    "package_variants": [
+      {
+        "id": "crown-caps-26-100",
+        "brand": "Generic",
+        "package": {
+          "amount": 100,
+          "unit": "pcs"
+        },
+        "source": {
+          "group": "canonical_generic"
+        },
+        "product_name_ru": "Кроненпробки 26 мм",
+        "stock_content_per_package": {
+          "amount": 100,
+          "unit": "pcs"
+        }
+      },
+      {
+        "id": "crown-caps-26-1000",
+        "brand": "Generic",
+        "package": {
+          "amount": 1000,
+          "unit": "pcs"
+        },
+        "source": {
+          "group": "canonical_generic"
+        },
+        "product_name_ru": "Кроненпробки 26 мм",
+        "stock_content_per_package": {
+          "amount": 1000,
+          "unit": "pcs"
+        }
+      }
+    ],
+    "picker_group": "packaging",
+    "family_key": "crown_caps_26mm",
+    "market_names_ru": [
+      "Кроненпробки 26 мм"
+    ],
+    "market_names_en": [
+      "26 mm Crown Caps"
+    ],
+    "search_priority_terms_ru": [
+      "кроненпробка 26 мм",
+      "кронен-пробки 26 мм",
+      "крышки 26 мм",
+      "Кроненпробки 26 мм"
+    ],
+    "search_priority_terms_en": [
+      "26 mm crown caps",
+      "26 mm Crown Caps"
+    ],
+    "picker_function_ru": "Кроненпробки 26 мм",
+    "picker_usage_ru": "Укупорка пивных бутылок под кроненпробку 26 мм",
+    "brand_family_mode": "matched_variant_brand",
+    "closure_standard": "26mm crown"
+  },
+  {
+    "id": "crown-caps-29mm",
+    "type": "consumable",
+    "name_ru": "Кроненпробки 29 мм",
+    "name_en": "29 mm Crown Caps",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "кроненпробки 29 мм",
+      "крышки 29 мм",
+      "шампанские кроненпробки"
+    ],
+    "aliases_en": [
+      "29 mm crown caps"
+    ],
+    "item_kind": "packaging_item",
+    "category": "packaging",
+    "subcategory": "crown_cap",
+    "common_forms": [
+      "piece"
+    ],
+    "usage_stage": [
+      "packaging"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "pieces",
+      "recipe_unit_default": "pcs",
+      "stock_unit_default": "pcs",
+      "stock_mode_default": "package_count",
+      "stock_modes_supported": [
+        "package",
+        "pieces"
+      ],
+      "allow_fractional_stock": false
+    },
+    "package_variants": [
+      {
+        "id": "crown-caps-29-100",
+        "brand": "Generic",
+        "package": {
+          "amount": 100,
+          "unit": "pcs"
+        },
+        "source": {
+          "group": "retail listing",
+          "url": "https://brouwland.com/en/crown-caps/20276-crown-corks-29-mm-black-100-pcs.html"
+        },
+        "product_name_en": "Crown corks 29 mm black - 100 pcs",
+        "country_name_en": "Belgium",
+        "stock_content_per_package": {
+          "amount": 100,
+          "unit": "pcs"
+        }
+      }
+    ],
+    "picker_group": "packaging",
+    "family_key": "crown_caps_29mm",
+    "market_names_ru": [
+      "Кроненпробки 29 мм"
+    ],
+    "market_names_en": [
+      "29 mm Crown Caps"
+    ],
+    "search_priority_terms_ru": [
+      "кроненпробки 29 мм",
+      "крышки 29 мм",
+      "шампанские кроненпробки",
+      "Кроненпробки 29 мм"
+    ],
+    "search_priority_terms_en": [
+      "29 mm crown caps",
+      "29 mm Crown Caps"
+    ],
+    "picker_function_ru": "Кроненпробки 29 мм",
+    "picker_usage_ru": "Укупорка бутылок, рассчитанных на кроненпробку 29 мм",
+    "brand_family_mode": "matched_variant_brand",
+    "closure_standard": "29mm crown"
+  },
+  {
+    "id": "crown-caps-26mm-oxygen-scavenging",
+    "type": "consumable",
+    "name_ru": "Кроненпробки 26 мм кислородопоглощающие",
+    "name_en": "26 mm Oxygen Scavenging Crown Caps",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "кроненпробки 26 мм кислородопоглощающие",
+      "oxygen scavenging caps",
+      "о2 капсы"
+    ],
+    "aliases_en": [
+      "oxygen scavenging crown caps",
+      "26 mm oxygen scavenging caps"
+    ],
+    "item_kind": "packaging_item",
+    "category": "packaging",
+    "subcategory": "crown_cap_oxygen_scavenging",
+    "common_forms": [
+      "piece"
+    ],
+    "usage_stage": [
+      "packaging"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "pieces",
+      "recipe_unit_default": "pcs",
+      "stock_unit_default": "pcs",
+      "stock_mode_default": "package_count",
+      "stock_modes_supported": [
+        "package",
+        "pieces"
+      ],
+      "allow_fractional_stock": false
+    },
+    "package_variants": [
+      {
+        "id": "crown-caps-26-oxygen-100",
+        "brand": "Hophead",
+        "package": {
+          "amount": 100,
+          "unit": "pcs"
+        },
+        "source": {
+          "group": "retail listing",
+          "url": "https://brouwland.com/en/crown-caps/19931-crown-corks-26-mm-oxygen-scavenging-hophead-100-pcs.html"
+        },
+        "product_name_en": "Crown corks 26 mm - oxygen scavenging - 100 pcs",
+        "country_name_en": "Belgium",
+        "stock_content_per_package": {
+          "amount": 100,
+          "unit": "pcs"
+        }
+      }
+    ],
+    "picker_group": "packaging",
+    "family_key": "crown_caps_26mm_oxygen_scavenging",
+    "market_names_ru": [
+      "Кроненпробки 26 мм кислородопоглощающие"
+    ],
+    "market_names_en": [
+      "26 mm Oxygen Scavenging Crown Caps"
+    ],
+    "search_priority_terms_ru": [
+      "кроненпробки 26 мм кислородопоглощающие",
+      "oxygen scavenging caps",
+      "о2 капсы",
+      "Кроненпробки 26 мм кислородопоглощающие"
+    ],
+    "search_priority_terms_en": [
+      "oxygen scavenging crown caps",
+      "26 mm oxygen scavenging caps",
+      "26 mm Oxygen Scavenging Crown Caps"
+    ],
+    "picker_function_ru": "Кроненпробки 26 мм кислородопоглощающие",
+    "picker_usage_ru": "Защита пива от окисления благодаря кислородопоглощающему вкладышу",
+    "brand_family_mode": "matched_variant_brand",
+    "closure_standard": "26mm crown"
+  },
+  {
+    "id": "glass-beer-bottle-330-crown-26",
+    "type": "consumable",
+    "name_ru": "Пивная бутылка 0,33 л под кроненпробку 26 мм",
+    "name_en": "330 ml Beer Bottle (26 mm crown)",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "бутылка 0.33",
+      "бутылка 330 мл",
+      "пивная бутылка 0.33",
+      "26 мм",
+      "Пивная бутылка 0.33 л под кроненпробку 26 мм"
+    ],
+    "aliases_en": [
+      "330 ml beer bottle",
+      "26 mm crown bottle"
+    ],
+    "item_kind": "packaging_item",
+    "category": "packaging",
+    "subcategory": "glass_bottle",
+    "common_forms": [
+      "piece"
+    ],
+    "usage_stage": [
+      "packaging"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "pieces",
+      "recipe_unit_default": "pcs",
+      "stock_unit_default": "pcs",
+      "stock_mode_default": "package_count",
+      "stock_modes_supported": [
+        "package",
+        "pieces"
+      ],
+      "allow_fractional_stock": false
+    },
+    "package_variants": [
+      {
+        "id": "glass-bottle-330-pack20",
+        "brand": "MB",
+        "package": {
+          "amount": 20,
+          "unit": "pcs"
+        },
+        "source": {
+          "group": "MirBeer",
+          "url": "https://www.mirbeer.ru/catalog/pivovarenie/oborudovanie/rozliv_tara_i_oborudovanie/tara/butilka_pivnaya_kpd_9_330_nh_0_33l_temnaya_20_sht_v_kartonnoy_korobke/"
+        },
+        "product_name_ru": "Бутылка пивная КПД-9-330-НХ 0,33л. темная 20 шт в картонной коробке",
+        "country_name_ru": "Россия",
+        "stock_content_per_package": {
+          "amount": 20,
+          "unit": "pcs"
+        },
+        "content_per_piece": {
+          "amount": 330,
+          "unit": "ml_each"
+        }
+      }
+    ],
+    "picker_group": "packaging",
+    "family_key": "glass_beer_bottle_330_crown_26",
+    "market_names_ru": [
+      "Пивная бутылка 0.33 л под кроненпробку 26 мм"
+    ],
+    "market_names_en": [
+      "330 ml Beer Bottle (26 mm crown)"
+    ],
+    "search_priority_terms_ru": [
+      "бутылка 0.33",
+      "бутылка 330 мл",
+      "пивная бутылка 0.33",
+      "26 мм",
+      "Пивная бутылка 0.33 л под кроненпробку 26 мм"
+    ],
+    "search_priority_terms_en": [
+      "330 ml beer bottle",
+      "26 mm crown bottle",
+      "330 ml Beer Bottle (26 mm crown)"
+    ],
+    "picker_function_ru": "Пивная бутылка 0,33 л под кроненпробку 26 мм",
+    "picker_usage_ru": "Розлив пива, сидра и медовухи в стандартную стеклянную тару",
+    "brand_family_mode": "matched_variant_brand",
+    "capacity_per_piece": {
+      "amount": 330,
+      "unit": "ml"
+    },
+    "closure_standard": "26mm crown"
+  },
+  {
+    "id": "glass-beer-bottle-500-crown-26",
+    "type": "consumable",
+    "name_ru": "Пивная бутылка 0,5 л под кроненпробку 26 мм",
+    "name_en": "500 ml Beer Bottle (26 mm crown)",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "бутылка 0.5",
+      "бутылка 500 мл",
+      "пивная бутылка 0.5",
+      "26 мм",
+      "Пивная бутылка 0.5 л под кроненпробку 26 мм"
+    ],
+    "aliases_en": [
+      "500 ml beer bottle",
+      "26 mm crown bottle"
+    ],
+    "item_kind": "packaging_item",
+    "category": "packaging",
+    "subcategory": "glass_bottle",
+    "common_forms": [
+      "piece"
+    ],
+    "usage_stage": [
+      "packaging"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "pieces",
+      "recipe_unit_default": "pcs",
+      "stock_unit_default": "pcs",
+      "stock_mode_default": "package_count",
+      "stock_modes_supported": [
+        "package",
+        "pieces"
+      ],
+      "allow_fractional_stock": false
+    },
+    "package_variants": [
+      {
+        "id": "glass-bottle-500-pack20",
+        "brand": "MB",
+        "package": {
+          "amount": 20,
+          "unit": "pcs"
+        },
+        "source": {
+          "group": "MirBeer",
+          "url": "https://www.mirbeer.ru/catalog/pivovarenie/oborudovanie/rozliv_tara_i_oborudovanie/tara/butilki_pivnie_0_5_l_20_sht_v_kartonnoy_korobke_bez_logotipa/"
+        },
+        "product_name_ru": "Бутылки пивные 0,5 л, 20 шт в картонной коробке",
+        "country_name_ru": "Россия",
+        "stock_content_per_package": {
+          "amount": 20,
+          "unit": "pcs"
+        },
+        "content_per_piece": {
+          "amount": 500,
+          "unit": "ml_each"
+        }
+      }
+    ],
+    "picker_group": "packaging",
+    "family_key": "glass_beer_bottle_500_crown_26",
+    "market_names_ru": [
+      "Пивная бутылка 0.5 л под кроненпробку 26 мм"
+    ],
+    "market_names_en": [
+      "500 ml Beer Bottle (26 mm crown)"
+    ],
+    "search_priority_terms_ru": [
+      "бутылка 0.5",
+      "бутылка 500 мл",
+      "пивная бутылка 0.5",
+      "26 мм",
+      "Пивная бутылка 0.5 л под кроненпробку 26 мм"
+    ],
+    "search_priority_terms_en": [
+      "500 ml beer bottle",
+      "26 mm crown bottle",
+      "500 ml Beer Bottle (26 mm crown)"
+    ],
+    "picker_function_ru": "Пивная бутылка 0,5 л под кроненпробку 26 мм",
+    "picker_usage_ru": "Стандартная бутылка для домашнего розлива под кроненпробку",
+    "brand_family_mode": "matched_variant_brand",
+    "capacity_per_piece": {
+      "amount": 500,
+      "unit": "ml"
+    },
+    "closure_standard": "26mm crown"
+  },
+  {
+    "id": "pet-beer-bottle-1l-screwcap",
+    "type": "consumable",
+    "name_ru": "ПЭТ-бутылка 1 л с винтовой крышкой",
+    "name_en": "1 L PET Beer Bottle with Screw Cap",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "пэт бутылка 1 л",
+      "pet бутылка 1 л",
+      "бутылка 1л пластиковая",
+      "винтовая крышка 28 мм"
+    ],
+    "aliases_en": [
+      "1 l pet bottle",
+      "screw cap pet bottle"
+    ],
+    "item_kind": "packaging_item",
+    "category": "packaging",
+    "subcategory": "pet_bottle",
+    "common_forms": [
+      "piece"
+    ],
+    "usage_stage": [
+      "packaging"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "pieces",
+      "recipe_unit_default": "pcs",
+      "stock_unit_default": "pcs",
+      "stock_mode_default": "package_count",
+      "stock_modes_supported": [
+        "package",
+        "pieces"
+      ],
+      "allow_fractional_stock": false
+    },
+    "package_variants": [
+      {
+        "id": "pet-bottle-1l-single",
+        "brand": "Generic",
+        "package": {
+          "amount": 1,
+          "unit": "pcs"
+        },
+        "source": {
+          "group": "retail listing",
+          "url": "https://doitathome.co.uk/en/1969-1l-pet-bottle-with-a-screw-cap-28mm-5060770601215.html"
+        },
+        "product_name_en": "1L PET Bottle with a Screw Cap 28mm",
+        "country_name_en": "United Kingdom",
+        "stock_content_per_package": {
+          "amount": 1,
+          "unit": "pcs"
+        },
+        "content_per_piece": {
+          "amount": 1000,
+          "unit": "ml_each"
+        }
+      },
+      {
+        "id": "pet-bottle-1l-pack24",
+        "brand": "Generic",
+        "package": {
+          "amount": 24,
+          "unit": "pcs"
+        },
+        "source": {
+          "group": "retail listing",
+          "url": "https://www.ebay.co.uk/itm/255143242765"
+        },
+        "product_name_en": "24 x 1L PET Beer Cider Bottles with Screw Caps",
+        "country_name_en": "United Kingdom",
+        "stock_content_per_package": {
+          "amount": 24,
+          "unit": "pcs"
+        },
+        "content_per_piece": {
+          "amount": 1000,
+          "unit": "ml_each"
+        }
+      }
+    ],
+    "picker_group": "packaging",
+    "family_key": "pet_beer_bottle_1l_screwcap",
+    "market_names_ru": [
+      "ПЭТ-бутылка 1 л с винтовой крышкой"
+    ],
+    "market_names_en": [
+      "1 L PET Beer Bottle with Screw Cap"
+    ],
+    "search_priority_terms_ru": [
+      "пэт бутылка 1 л",
+      "pet бутылка 1 л",
+      "бутылка 1л пластиковая",
+      "винтовая крышка 28 мм",
+      "ПЭТ-бутылка 1 л с винтовой крышкой"
+    ],
+    "search_priority_terms_en": [
+      "1 l pet bottle",
+      "screw cap pet bottle",
+      "1 L PET Beer Bottle with Screw Cap"
+    ],
+    "picker_function_ru": "ПЭТ-бутылка 1 л с винтовой крышкой",
+    "picker_usage_ru": "Розлив пива, сидра и других газированных напитков в ПЭТ-тару",
+    "brand_family_mode": "matched_variant_brand",
+    "capacity_per_piece": {
+      "amount": 1000,
+      "unit": "ml"
+    },
+    "closure_standard": "28mm screw cap"
+  },
+  {
+    "id": "swing-top-bottle-500",
+    "type": "consumable",
+    "name_ru": "Бугельная бутылка 0,5 л",
+    "name_en": "500 ml Swing-Top Bottle",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "бугельная бутылка",
+      "бутылка с бугельной пробкой",
+      "бутылка 0.5 с бугелем",
+      "Бугельная бутылка 0.5 л"
+    ],
+    "aliases_en": [
+      "swing-top bottle",
+      "flip-top bottle"
+    ],
+    "item_kind": "packaging_item",
+    "category": "packaging",
+    "subcategory": "swing_top_bottle",
+    "common_forms": [
+      "piece"
+    ],
+    "usage_stage": [
+      "packaging"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "pieces",
+      "recipe_unit_default": "pcs",
+      "stock_unit_default": "pcs",
+      "stock_mode_default": "package_count",
+      "stock_modes_supported": [
+        "package",
+        "pieces"
+      ],
+      "allow_fractional_stock": false
+    },
+    "package_variants": [
+      {
+        "id": "swing-top-bottle-500-single",
+        "brand": "MB",
+        "package": {
+          "amount": 1,
+          "unit": "pcs"
+        },
+        "source": {
+          "group": "MirBeer",
+          "url": "https://www.mirbeer.ru/catalog/pivovarenie/oborudovanie/rozliv_tara_i_oborudovanie/tara/butilka_bugelnaya_korichnevaya_s_probkoy_0_5_l/"
+        },
+        "product_name_ru": "Бутылка бугельная коричневая с пробкой, 0,5 л",
+        "country_name_ru": "Россия",
+        "stock_content_per_package": {
+          "amount": 1,
+          "unit": "pcs"
+        },
+        "content_per_piece": {
+          "amount": 500,
+          "unit": "ml_each"
+        }
+      }
+    ],
+    "picker_group": "packaging",
+    "family_key": "swing_top_bottle_500",
+    "market_names_ru": [
+      "Бугельная бутылка 0.5 л"
+    ],
+    "market_names_en": [
+      "500 ml Swing-Top Bottle"
+    ],
+    "search_priority_terms_ru": [
+      "бугельная бутылка",
+      "бутылка с бугельной пробкой",
+      "бутылка 0.5 с бугелем",
+      "Бугельная бутылка 0.5 л"
+    ],
+    "search_priority_terms_en": [
+      "swing-top bottle",
+      "flip-top bottle",
+      "500 ml Swing-Top Bottle"
+    ],
+    "picker_function_ru": "Бугельная бутылка 0,5 л",
+    "picker_usage_ru": "Многоразовая бутылка с бугельной пробкой для пива, сидра и газированных напитков",
+    "brand_family_mode": "matched_variant_brand",
+    "capacity_per_piece": {
+      "amount": 500,
+      "unit": "ml"
+    },
+    "closure_standard": "swing-top"
+  },
+  {
+    "id": "bio-san-acid-no-rinse-sanitizer",
+    "type": "consumable",
+    "name_ru": "Bio San — кислотное дезинфицирующее средство",
+    "name_en": "Bio San Acid No-Rinse Sanitizer",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "bio san",
+      "био сан",
+      "аналог star san",
+      "санитайзер без смывания",
+      "Bio San / кислотный санитайзер без смывания"
+    ],
+    "aliases_en": [
+      "Bio San",
+      "no-rinse sanitizer"
+    ],
+    "item_kind": "process_aid",
+    "category": "sanitizer",
+    "subcategory": "acid_no_rinse",
+    "common_forms": [
+      "liquid"
+    ],
+    "usage_stage": [
+      "sanitation"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "volume",
+      "recipe_unit_default": "ml",
+      "stock_unit_default": "ml",
+      "stock_mode_default": "by_package_content",
+      "stock_modes_supported": [
+        "package",
+        "bulk_by_volume"
+      ],
+      "allow_fractional_stock": true
+    },
+    "package_variants": [
+      {
+        "id": "brew-clean-bio-san-100ml",
+        "brand": "Неохим",
+        "package": {
+          "amount": 100,
+          "unit": "ml"
+        },
+        "source": {
+          "group": "Bir.RF store",
+          "url": "https://xn--90aoy.xn--p1ai/shop/1234/desc/dezinficirujushhee-sredstvo-brew-clean-bio-san-analog-star-san-100-ml"
+        },
+        "product_name_ru": "Brew Clean Bio San (аналог Star San)",
+        "country_name_ru": "Россия",
+        "stock_content_per_package": {
+          "amount": 100,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "brew-clean-bio-san-250ml",
+        "brand": "Неохим",
+        "package": {
+          "amount": 250,
+          "unit": "ml"
+        },
+        "source": {
+          "group": "Bir.RF store",
+          "url": "https://xn--90aoy.xn--p1ai/shop/1235/desc/dezinficirujushhee-sredstvo-brew-clean-bio-san-analog-star-san-250-ml"
+        },
+        "product_name_ru": "Brew Clean Bio San (аналог Star San)",
+        "country_name_ru": "Россия",
+        "stock_content_per_package": {
+          "amount": 250,
+          "unit": "ml"
+        }
+      }
+    ],
+    "picker_group": "sanitizer",
+    "family_key": "acid_no_rinse_sanitizer",
+    "market_names_ru": [
+      "Bio San",
+      "Био Сан"
+    ],
+    "market_names_en": [
+      "Bio San"
+    ],
+    "search_priority_terms_ru": [
+      "bio san",
+      "био сан",
+      "санитайзер без смывания"
+    ],
+    "search_priority_terms_en": [
+      "bio san",
+      "no-rinse sanitizer"
+    ],
+    "picker_function_ru": "Кислотное дезинфицирующее средство",
+    "picker_usage_ru": "Дезинфекция тары и оборудования по инструкции производителя",
+    "brand_family_mode": "matched_variant_brand",
+    "typical_use_ru": "Дезинфекция предварительно вымытой тары и оборудования. Не требует смывания при соблюдении дозировки и условий применения производителя."
+  },
+  {
+    "id": "brew-san-acid-no-rinse-sanitizer",
+    "type": "consumable",
+    "name_ru": "Brew San — кислотное дезинфицирующее средство",
+    "name_en": "Brew San Acid No-Rinse Sanitizer",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "brew san",
+      "брю сан",
+      "аналог star san",
+      "санитайзер без смывания",
+      "Brew San / кислотный санитайзер без смывания"
+    ],
+    "aliases_en": [
+      "Brew San",
+      "no-rinse sanitizer"
+    ],
+    "item_kind": "process_aid",
+    "category": "sanitizer",
+    "subcategory": "acid_no_rinse",
+    "common_forms": [
+      "liquid"
+    ],
+    "usage_stage": [
+      "sanitation"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "volume",
+      "recipe_unit_default": "ml",
+      "stock_unit_default": "ml",
+      "stock_mode_default": "by_package_content",
+      "stock_modes_supported": [
+        "package",
+        "bulk_by_volume"
+      ],
+      "allow_fractional_stock": true
+    },
+    "package_variants": [
+      {
+        "id": "beergineer-brew-san-100ml",
+        "brand": "Beergineer",
+        "package": {
+          "amount": 100,
+          "unit": "ml"
+        },
+        "source": {
+          "group": "Bir.RF store",
+          "url": "https://xn--90aoy.xn--p1ai/shop/1707/desc/dezinfektor-beergineer-brew-san-analog-star-san-100-ml"
+        },
+        "product_name_ru": "Дезинфектор Beergineer – Brew San (аналог Star San)",
+        "product_name_en": "Beergineer Brew San",
+        "country_name_ru": "Россия",
+        "stock_content_per_package": {
+          "amount": 100,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "beergineer-brew-san-250ml",
+        "brand": "Beergineer",
+        "package": {
+          "amount": 250,
+          "unit": "ml"
+        },
+        "source": {
+          "group": "Bir.RF store",
+          "url": "https://xn--90aoy.xn--p1ai/shop/1708/desc/dezinfektor-beergineer-brew-san-analog-star-san-250-ml"
+        },
+        "product_name_ru": "Дезинфектор Beergineer – Brew San (аналог Star San)",
+        "product_name_en": "Beergineer Brew San",
+        "country_name_ru": "Россия",
+        "stock_content_per_package": {
+          "amount": 250,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "beergineer-brew-san-1l",
+        "brand": "Beergineer",
+        "package": {
+          "amount": 1,
+          "unit": "L"
+        },
+        "source": {
+          "group": "Bir.RF store",
+          "url": "https://xn--90aoy.xn--p1ai/shop/1709/desc/dezinfektor-beergineer-brew-san-analog-star-san-1-l"
+        },
+        "product_name_ru": "Дезинфектор Beergineer – Brew San (аналог Star San)",
+        "country_name_ru": "Россия",
+        "stock_content_per_package": {
+          "amount": 1000,
+          "unit": "ml"
+        }
+      }
+    ],
+    "picker_group": "sanitizer",
+    "family_key": "acid_no_rinse_sanitizer",
+    "market_names_ru": [
+      "Brew San",
+      "Брю Сан"
+    ],
+    "market_names_en": [
+      "Brew San"
+    ],
+    "search_priority_terms_ru": [
+      "brew san",
+      "брю сан",
+      "санитайзер без смывания"
+    ],
+    "search_priority_terms_en": [
+      "brew san",
+      "no-rinse sanitizer"
+    ],
+    "picker_function_ru": "Кислотное дезинфицирующее средство",
+    "picker_usage_ru": "Дезинфекция тары и оборудования по инструкции производителя",
+    "brand_family_mode": "matched_variant_brand",
+    "typical_use_ru": "Дезинфекция предварительно вымытой тары и оборудования. Не требует смывания при соблюдении дозировки и условий применения производителя."
+  },
+  {
+    "id": "chemipro-san-acid-no-rinse-sanitizer",
+    "type": "consumable",
+    "name_ru": "ChemiPro San — кислотное дезинфицирующее средство",
+    "name_en": "ChemiPro San Acid No-Rinse Sanitizer",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "chemipro san",
+      "chemi pro san",
+      "чемипро сан",
+      "санитайзер без смывания",
+      "ChemiPro San / кислотный санитайзер без смывания"
+    ],
+    "aliases_en": [
+      "ChemiPro San",
+      "Chemipro San",
+      "no-rinse sanitizer"
+    ],
+    "item_kind": "process_aid",
+    "category": "sanitizer",
+    "subcategory": "acid_no_rinse",
+    "common_forms": [
+      "liquid"
+    ],
+    "usage_stage": [
+      "sanitation"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "volume",
+      "recipe_unit_default": "ml",
+      "stock_unit_default": "ml",
+      "stock_mode_default": "by_package_content",
+      "stock_modes_supported": [
+        "package",
+        "bulk_by_volume"
+      ],
+      "allow_fractional_stock": true
+    },
+    "package_variants": [
+      {
+        "id": "chemipro-san-100ml",
+        "brand": "ChemiPro",
+        "package": {
+          "amount": 100,
+          "unit": "ml"
+        },
+        "source": {
+          "group": "retail listing",
+          "url": "https://www.stookwinkel.nl/product/chemipro-san-100-ml/"
+        },
+        "product_name_en": "ChemiPro San",
+        "country_name_en": "Belgium",
+        "stock_content_per_package": {
+          "amount": 100,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "chemipro-san-250ml",
+        "brand": "ChemiPro",
+        "package": {
+          "amount": 250,
+          "unit": "ml"
+        },
+        "source": {
+          "group": "retail listing",
+          "url": "https://www.brouwstore.nl/chemipro-san-250-ml/"
+        },
+        "product_name_en": "ChemiPro San",
+        "country_name_en": "Belgium",
+        "stock_content_per_package": {
+          "amount": 250,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "chemipro-san-1l",
+        "brand": "ChemiPro",
+        "package": {
+          "amount": 1,
+          "unit": "L"
+        },
+        "source": {
+          "group": "retail listing",
+          "url": "https://brouwland.com/en/cleaning-products/10224-chemipro-san-1-l.html"
+        },
+        "product_name_en": "ChemiPro San",
+        "country_name_en": "Belgium",
+        "stock_content_per_package": {
+          "amount": 1000,
+          "unit": "ml"
+        }
+      }
+    ],
+    "picker_group": "sanitizer",
+    "family_key": "acid_no_rinse_sanitizer",
+    "market_names_ru": [
+      "ChemiPro San",
+      "ЧемиПро Сан"
+    ],
+    "market_names_en": [
+      "ChemiPro San"
+    ],
+    "search_priority_terms_ru": [
+      "chemipro san",
+      "chemi pro san",
+      "чемипро сан",
+      "санитайзер без смывания"
+    ],
+    "search_priority_terms_en": [
+      "chemipro san",
+      "no-rinse sanitizer"
+    ],
+    "picker_function_ru": "Кислотное дезинфицирующее средство",
+    "picker_usage_ru": "Дезинфекция тары и оборудования по инструкции производителя",
+    "brand_family_mode": "matched_variant_brand",
+    "typical_use_ru": "Дезинфекция предварительно вымытой тары и оборудования. Не требует смывания при соблюдении дозировки и условий применения производителя."
+  },
+  {
+    "id": "star-san-acid-no-rinse-sanitizer",
+    "type": "consumable",
+    "name_ru": "Star San — кислотное дезинфицирующее средство",
+    "name_en": "Star San Acid No-Rinse Sanitizer",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "стар сан",
+      "старсан",
+      "star san",
+      "санитайзер без смывания",
+      "кислотный санитайзер",
+      "Star San / кислотный санитайзер без смывания"
+    ],
+    "aliases_en": [
+      "Star San",
+      "acid sanitizer",
+      "no-rinse sanitizer"
+    ],
+    "item_kind": "process_aid",
+    "category": "sanitizer",
+    "subcategory": "acid_no_rinse",
+    "common_forms": [
+      "liquid"
+    ],
+    "usage_stage": [
+      "sanitation"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "volume",
+      "recipe_unit_default": "ml",
+      "stock_unit_default": "ml",
+      "stock_mode_default": "by_package_content",
+      "stock_modes_supported": [
+        "package",
+        "bulk_by_volume"
+      ],
+      "allow_fractional_stock": true
+    },
+    "package_variants": [
+      {
+        "id": "star-san-4oz",
+        "brand": "Five Star Chemicals",
+        "package": {
+          "amount": 4,
+          "unit": "oz"
+        },
+        "source": {
+          "group": "Five Star official family",
+          "url": "https://fivestarchemicals.com/star-san-sanitizer-16-oz"
+        },
+        "product_name_en": "Star San",
+        "country_name_en": "United States",
+        "stock_content_per_package": {
+          "amount": 118.294,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "star-san-8oz",
+        "brand": "Five Star Chemicals",
+        "package": {
+          "amount": 8,
+          "unit": "oz"
+        },
+        "source": {
+          "group": "Five Star official family",
+          "url": "https://fivestarchemicals.com/star-san-sanitizer-16-oz"
+        },
+        "product_name_en": "Star San",
+        "country_name_en": "United States",
+        "stock_content_per_package": {
+          "amount": 236.588,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "star-san-16oz",
+        "brand": "Five Star Chemicals",
+        "package": {
+          "amount": 16,
+          "unit": "oz"
+        },
+        "source": {
+          "group": "Five Star official family",
+          "url": "https://fivestarchemicals.com/star-san-sanitizer-16-oz"
+        },
+        "product_name_en": "Star San",
+        "country_name_en": "United States",
+        "stock_content_per_package": {
+          "amount": 473.176,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "star-san-32oz",
+        "brand": "Five Star Chemicals",
+        "package": {
+          "amount": 32,
+          "unit": "oz"
+        },
+        "source": {
+          "group": "Five Star official family",
+          "url": "https://fivestarchemicals.com/star-san-sanitizer-32-oz"
+        },
+        "product_name_en": "Star San",
+        "country_name_en": "United States",
+        "stock_content_per_package": {
+          "amount": 946.352,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "star-san-1gal",
+        "brand": "Five Star Chemicals",
+        "package": {
+          "amount": 1,
+          "unit": "gal"
+        },
+        "source": {
+          "group": "Five Star official",
+          "url": "https://fivestarchemicals.com/star-san"
+        },
+        "product_name_en": "Star San",
+        "country_name_en": "United States",
+        "stock_content_per_package": {
+          "amount": 3785.412,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "star-san-5gal",
+        "brand": "Five Star Chemicals",
+        "package": {
+          "amount": 5,
+          "unit": "gal"
+        },
+        "source": {
+          "group": "Five Star official",
+          "url": "https://fivestarchemicals.com/star-san"
+        },
+        "product_name_en": "Star San",
+        "country_name_en": "United States",
+        "stock_content_per_package": {
+          "amount": 18927.06,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "star-san-15gal",
+        "brand": "Five Star Chemicals",
+        "package": {
+          "amount": 15,
+          "unit": "gal"
+        },
+        "source": {
+          "group": "Five Star official",
+          "url": "https://fivestarchemicals.com/star-san"
+        },
+        "product_name_en": "Star San",
+        "country_name_en": "United States",
+        "stock_content_per_package": {
+          "amount": 56781.18,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "star-san-55gal",
+        "brand": "Five Star Chemicals",
+        "package": {
+          "amount": 55,
+          "unit": "gal"
+        },
+        "source": {
+          "group": "Five Star official",
+          "url": "https://fivestarchemicals.com/star-san"
+        },
+        "product_name_en": "Star San",
+        "country_name_en": "United States",
+        "stock_content_per_package": {
+          "amount": 208197.66,
+          "unit": "ml"
+        }
+      }
+    ],
+    "picker_group": "sanitizer",
+    "family_key": "acid_no_rinse_sanitizer",
+    "market_names_ru": [
+      "Star San",
+      "Стар Сан",
+      "Старсан"
+    ],
+    "market_names_en": [
+      "Star San"
+    ],
+    "search_priority_terms_ru": [
+      "star san",
+      "стар сан",
+      "старсан",
+      "санитайзер без смывания"
+    ],
+    "search_priority_terms_en": [
+      "star san",
+      "no-rinse sanitizer",
+      "acid sanitizer"
+    ],
+    "picker_function_ru": "Кислотное дезинфицирующее средство",
+    "picker_usage_ru": "Дезинфекция тары и оборудования по инструкции производителя",
+    "brand_family_mode": "matched_variant_brand",
+    "typical_use_ru": "Дезинфекция предварительно вымытой тары и оборудования. Не требует смывания при соблюдении дозировки и условий применения производителя.",
+    "dosage_reference": {
+      "common_ratio": "по инструкции производителя",
+      "example_reference": "Star San: 1 oz на 5 gal воды"
+    },
+    "storage_notes_ru": "Хранить плотно закрытым; не использовать на мягких металлах без проверки инструкции."
+  },
+  {
+    "id": "saniclean-low-foam-acid-sanitizer",
+    "type": "consumable",
+    "name_ru": "SaniClean — низкопенное кислотное дезинфицирующее средство",
+    "name_en": "SaniClean Low-Foam Acid Sanitizer",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "saniclean",
+      "саниклин",
+      "низкопенный кислотный санитайзер",
+      "acid rinse",
+      "SaniClean / низкопенный кислотный санитайзер"
+    ],
+    "aliases_en": [
+      "SaniClean",
+      "low-foam acid rinse",
+      "acid final rinse"
+    ],
+    "item_kind": "process_aid",
+    "category": "sanitizer",
+    "subcategory": "acid_no_rinse_low_foam",
+    "common_forms": [
+      "liquid"
+    ],
+    "usage_stage": [
+      "sanitation",
+      "cip"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "volume",
+      "recipe_unit_default": "ml",
+      "stock_unit_default": "ml",
+      "stock_mode_default": "by_package_content",
+      "stock_modes_supported": [
+        "package",
+        "bulk_by_volume"
+      ],
+      "allow_fractional_stock": true
+    },
+    "package_variants": [
+      {
+        "id": "saniclean-16oz",
+        "brand": "Five Star Chemicals",
+        "package": {
+          "amount": 16,
+          "unit": "oz"
+        },
+        "source": {
+          "group": "Five Star official family",
+          "url": "https://fivestarchemicals.com/saniclean-32-oz"
+        },
+        "product_name_en": "SaniClean",
+        "country_name_en": "United States",
+        "stock_content_per_package": {
+          "amount": 473.176,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "saniclean-32oz",
+        "brand": "Five Star Chemicals",
+        "package": {
+          "amount": 32,
+          "unit": "oz"
+        },
+        "source": {
+          "group": "Five Star official family",
+          "url": "https://fivestarchemicals.com/saniclean-32-oz"
+        },
+        "product_name_en": "SaniClean",
+        "country_name_en": "United States",
+        "stock_content_per_package": {
+          "amount": 946.352,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "saniclean-1gal",
+        "brand": "Five Star Chemicals",
+        "package": {
+          "amount": 1,
+          "unit": "gal"
+        },
+        "source": {
+          "group": "Five Star official",
+          "url": "https://fivestarchemicals.com/saniclean"
+        },
+        "product_name_en": "SaniClean",
+        "country_name_en": "United States",
+        "stock_content_per_package": {
+          "amount": 3785.412,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "saniclean-5gal",
+        "brand": "Five Star Chemicals",
+        "package": {
+          "amount": 5,
+          "unit": "gal"
+        },
+        "source": {
+          "group": "Five Star official",
+          "url": "https://fivestarchemicals.com/saniclean"
+        },
+        "product_name_en": "SaniClean",
+        "country_name_en": "United States",
+        "stock_content_per_package": {
+          "amount": 18927.06,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "saniclean-15gal",
+        "brand": "Five Star Chemicals",
+        "package": {
+          "amount": 15,
+          "unit": "gal"
+        },
+        "source": {
+          "group": "Five Star official",
+          "url": "https://fivestarchemicals.com/saniclean"
+        },
+        "product_name_en": "SaniClean",
+        "country_name_en": "United States",
+        "stock_content_per_package": {
+          "amount": 56781.18,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "saniclean-30gal",
+        "brand": "Five Star Chemicals",
+        "package": {
+          "amount": 30,
+          "unit": "gal"
+        },
+        "source": {
+          "group": "Five Star official",
+          "url": "https://fivestarchemicals.com/saniclean"
+        },
+        "product_name_en": "SaniClean",
+        "country_name_en": "United States",
+        "stock_content_per_package": {
+          "amount": 113562.36,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "saniclean-55gal",
+        "brand": "Five Star Chemicals",
+        "package": {
+          "amount": 55,
+          "unit": "gal"
+        },
+        "source": {
+          "group": "Five Star official",
+          "url": "https://fivestarchemicals.com/saniclean"
+        },
+        "product_name_en": "SaniClean",
+        "country_name_en": "United States",
+        "stock_content_per_package": {
+          "amount": 208197.66,
+          "unit": "ml"
+        }
+      }
+    ],
+    "picker_group": "sanitizer",
+    "family_key": "low_foam_acid_sanitizer",
+    "market_names_ru": [
+      "SaniClean",
+      "Саниклин"
+    ],
+    "market_names_en": [
+      "SaniClean"
+    ],
+    "search_priority_terms_ru": [
+      "saniclean",
+      "саниклин",
+      "низкопенный санитайзер",
+      "acid rinse"
+    ],
+    "search_priority_terms_en": [
+      "saniclean",
+      "low-foam acid rinse",
+      "acid final rinse"
+    ],
+    "picker_function_ru": "Низкопенное дезинфицирующее средство",
+    "picker_usage_ru": "Дезинфекция оборудования и пивопроводов при низком пенообразовании",
+    "brand_family_mode": "matched_variant_brand",
+    "typical_use_ru": "Низкопенное кислотное средство для заключительной санитарной обработки оборудования и пивопроводов.",
+    "dosage_reference": {
+      "common_ratio": "по инструкции производителя",
+      "example_reference": "SaniClean: 1 oz на 3 gal воды"
+    }
+  },
+  {
+    "id": "iodophor-sanitizer",
+    "type": "consumable",
+    "name_ru": "Йодофорное дезинфицирующее средство",
+    "name_en": "Iodophor No-Rinse Sanitizer",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "йодофор",
+      "iodophor",
+      "io-star",
+      "btf iodophor",
+      "ио стар",
+      "io star",
+      "Йодофорный санитайзер без смывания"
+    ],
+    "aliases_en": [
+      "Iodophor",
+      "BTF Iodophor",
+      "Io-Star",
+      "Iodophor Sanitizer"
+    ],
+    "item_kind": "process_aid",
+    "category": "sanitizer",
+    "subcategory": "iodophor_no_rinse",
+    "common_forms": [
+      "liquid"
+    ],
+    "usage_stage": [
+      "sanitation"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "volume",
+      "recipe_unit_default": "ml",
+      "stock_unit_default": "ml",
+      "stock_mode_default": "by_package_content",
+      "stock_modes_supported": [
+        "package",
+        "bulk_by_volume"
+      ],
+      "allow_fractional_stock": true
+    },
+    "package_variants": [
+      {
+        "id": "btf-iodophor-4oz",
+        "brand": "BTF",
+        "product_name_en": "BTF Iodophor Sanitizer",
+        "package": {
+          "amount": 4,
+          "unit": "fl oz (US)"
+        },
+        "country_name_en": "United States",
+        "source": {
+          "group": "manufacturer_master_label",
+          "url": "https://shop.nationalchemicals.com/content/master_label/Master_Label-BTF-Iodophor.pdf"
+        },
+        "stock_content_per_package": {
+          "amount": 118.3,
+          "unit": "ml"
+        },
+        "source_provenance": {
+          "original_package": {
+            "amount": 4,
+            "unit": "oz"
+          },
+          "original_source": {
+            "group": "market listing",
+            "url": "https://www.brewinternational.com/sanitizer-btf-iodophor-4-oz/"
+          },
+          "manufacturer_product_url": "https://shop.nationalchemicals.com/btf-iodophor-sanitizer-4-oz",
+          "volume_basis": "Manufacturer-declared nominal millilitres, not a more precise mathematical conversion of fluid ounces."
+        }
+      },
+      {
+        "id": "btf-iodophor-16oz",
+        "brand": "BTF",
+        "product_name_en": "BTF Iodophor Sanitizer",
+        "package": {
+          "amount": 16,
+          "unit": "fl oz (US)"
+        },
+        "country_name_en": "United States",
+        "source": {
+          "group": "manufacturer_master_label",
+          "url": "https://shop.nationalchemicals.com/content/master_label/Master_Label-BTF-Iodophor.pdf"
+        },
+        "stock_content_per_package": {
+          "amount": 473,
+          "unit": "ml"
+        },
+        "source_provenance": {
+          "original_package": {
+            "amount": 16,
+            "unit": "oz"
+          },
+          "original_source": {
+            "group": "market listing",
+            "url": "https://www.amazon.com/Homebrewers-Outpost-Does-Not-Apply/dp/B008YHMGK8"
+          },
+          "manufacturer_product_url": "https://shop.nationalchemicals.com/btf-iodophor-sanitizer-16-oz/",
+          "volume_basis": "Manufacturer-declared nominal millilitres, not a more precise mathematical conversion of fluid ounces."
+        }
+      },
+      {
+        "id": "btf-iodophor-32oz",
+        "brand": "BTF",
+        "product_name_en": "BTF Iodophor Sanitizer",
+        "package": {
+          "amount": 32,
+          "unit": "fl oz (US)"
+        },
+        "country_name_en": "United States",
+        "source": {
+          "group": "manufacturer_master_label",
+          "url": "https://shop.nationalchemicals.com/content/master_label/Master_Label-BTF-Iodophor.pdf"
+        },
+        "stock_content_per_package": {
+          "amount": 946,
+          "unit": "ml"
+        },
+        "source_provenance": {
+          "original_package": {
+            "amount": 32,
+            "unit": "oz"
+          },
+          "original_source": {
+            "group": "market listing",
+            "url": "https://www.kegoutlet.com/sni32-btf-iodophor-sanitizer-32-oz-bottle.html"
+          },
+          "manufacturer_product_url": "https://shop.nationalchemicals.com/btf-iodophor-sanitizer-32-oz",
+          "volume_basis": "Manufacturer-declared nominal millilitres, not a more precise mathematical conversion of fluid ounces."
+        }
+      }
+    ],
+    "typical_use_ru": "Низкопенное средство на основе йода для дезинфекции тары и оборудования.",
+    "dosage_reference": {
+      "common_ratio": "по инструкции производителя",
+      "example_reference": "часто указывается как no-rinse раствор с коротким временем контакта"
+    },
+    "storage_notes_ru": "Хранить плотно закрытым; возможна окраска некоторых материалов.",
+    "picker_group": "sanitizer",
+    "family_key": "iodophor_sanitizer",
+    "market_names_ru": [
       "Йодофор",
-      "PAA"
+      "Io-Star",
+      "BTF Iodophor",
+      "iodophor"
     ],
-    "Мойка": [
-      "Щелочная",
-      "Кислотная",
-      "CIP",
-      "Для линий"
+    "market_names_en": [
+      "Iodophor",
+      "Io-Star",
+      "BTF Iodophor"
     ],
-    "Тара": [
-      "Банки",
-      "Стекло",
-      "ПЭТ"
+    "search_priority_terms_ru": [
+      "йодофор",
+      "io star",
+      "btf iodophor",
+      "Io-Star",
+      "iodophor",
+      "Йодофорный no-rinse санитайзер",
+      "sanitizer",
+      "iodophor_no_rinse",
+      "ио стар"
     ],
-    "Укупорка": [
-      "Кронен 26",
-      "Кронен 29",
-      "Баночные крышки",
-      "O2 cap"
+    "search_priority_terms_en": [
+      "iodophor",
+      "io-star",
+      "btf iodophor",
+      "Iodophor No-Rinse Sanitizer",
+      "Iodophor Sanitizer"
     ],
-    "Газы": [
-      "Картриджи",
-      "Баллоны"
-    ]
+    "picker_function_ru": "Йодофорное дезинфицирующее средство",
+    "picker_usage_ru": "Дезинфекция тары и оборудования",
+    "brand_family_mode": "matched_variant_brand"
   },
-  "existing_category_to_new_group": {
-    "sanitizer": "Санитайзеры",
-    "cleaner": "Мойка",
-    "packaging": "Тара/Укупорка",
-    "gas": "Газы"
-  },
-  "item_ids": [
-    "acid-beerstone-remover",
-    "pbw-liquid-cleaner",
-    "alkaline-low-foam-cip-cleaner",
-    "alkaline-brewery-cleaner-powder",
-    "pbw-tablets-large",
-    "pbw-tablets-small",
-    "caustic-alkali-cleaner",
-    "liquid-line-cleaner",
-    "oxygen-based-cleaner",
-    "co2-threaded-cartridge",
-    "co2-cylinder-filled",
-    "aluminum-can-330-with-lids",
-    "aluminum-can-500-with-lids",
-    "can-lids-cdl202",
-    "crown-caps-26mm",
-    "crown-caps-29mm",
-    "crown-caps-26mm-oxygen-scavenging",
-    "glass-beer-bottle-330-crown-26",
-    "glass-beer-bottle-500-crown-26",
-    "pet-beer-bottle-1l-screwcap",
-    "swing-top-bottle-500",
-    "bio-san-acid-no-rinse-sanitizer",
-    "brew-san-acid-no-rinse-sanitizer",
-    "chemipro-san-acid-no-rinse-sanitizer",
-    "star-san-acid-no-rinse-sanitizer",
-    "saniclean-low-foam-acid-sanitizer",
-    "iodophor-sanitizer",
-    "peracetic-acid-sanitizer"
-  ]
-}
+  {
+    "id": "peracetic-acid-sanitizer",
+    "type": "consumable",
+    "name_ru": "Дезинфицирующее средство на основе надуксусной кислоты",
+    "name_en": "Peracetic Acid Sanitizer (PAA)",
+    "display_mode_ru": "localized_first",
+    "aliases_ru": [
+      "надуксусная кислота",
+      "переуксусная кислота",
+      "перуксусная кислота",
+      "PAA",
+      "Надуксусный санитайзер / PAA"
+    ],
+    "aliases_en": [
+      "Peracetic Acid",
+      "PAA",
+      "Peroxyacetic Acid"
+    ],
+    "item_kind": "process_aid",
+    "category": "sanitizer",
+    "subcategory": "paa",
+    "common_forms": [
+      "liquid"
+    ],
+    "usage_stage": [
+      "sanitation",
+      "cip"
+    ],
+    "quantity_defaults": {
+      "quantity_model": "volume",
+      "recipe_unit_default": "ml",
+      "stock_unit_default": "ml",
+      "stock_mode_default": "by_package_content",
+      "stock_modes_supported": [
+        "package",
+        "bulk_by_volume"
+      ],
+      "allow_fractional_stock": true
+    },
+    "package_variants": [
+      {
+        "id": "generic-paa-1l",
+        "brand": "Generic",
+        "product_name_ru": "Надуксусный санитайзер",
+        "package": {
+          "amount": 1,
+          "unit": "L"
+        },
+        "source": {
+          "group": "canonical_generic"
+        },
+        "stock_content_per_package": {
+          "amount": 1000,
+          "unit": "ml"
+        }
+      },
+      {
+        "id": "generic-paa-5l",
+        "brand": "Generic",
+        "product_name_ru": "Надуксусный санитайзер",
+        "package": {
+          "amount": 5,
+          "unit": "L"
+        },
+        "source": {
+          "group": "canonical_generic"
+        },
+        "stock_content_per_package": {
+          "amount": 5000,
+          "unit": "ml"
+        }
+      }
+    ],
+    "typical_use_ru": "Жидкое средство для дезинфекции оборудования, в том числе ёмкостей и пивопроводов после охлаждения сусла.",
+    "dosage_reference": {
+      "common_ratio": "только по инструкции производителя и нормам безопасности"
+    },
+    "storage_notes_ru": "Хранить как агрессивный химический реагент; работать в СИЗ.",
+    "picker_group": "sanitizer",
+    "family_key": "paa_sanitizer",
+    "market_names_ru": [
+      "PAA",
+      "Надуксусная кислота",
+      "Перуксусная кислота",
+      "Надуксусный санитайзер"
+    ],
+    "market_names_en": [
+      "PAA",
+      "Peracetic Acid",
+      "Peroxyacetic Acid"
+    ],
+    "search_priority_terms_ru": [
+      "paa",
+      "надуксусная кислота",
+      "переуксусная кислота",
+      "Перуксусная кислота",
+      "Надуксусный санитайзер",
+      "Профессиональный санитайзер для CIP",
+      "sanitizer"
+    ],
+    "search_priority_terms_en": [
+      "paa",
+      "peracetic acid",
+      "peroxyacetic acid",
+      "Peracetic Acid Sanitizer (PAA)"
+    ],
+    "picker_function_ru": "Средство на основе надуксусной кислоты",
+    "picker_usage_ru": "Дезинфекция оборудования и пивопроводов",
+    "brand_family_mode": "none"
+  }
+]

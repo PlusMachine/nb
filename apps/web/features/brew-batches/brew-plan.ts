@@ -117,7 +117,7 @@ const readHopUseType = (ingredient: RecipeDetailDto["ingredients"][number]) => {
 
 const buildTimedAddition = (ingredient: RecipeDetailDto["ingredients"][number]) => ({
   linePersistentKey: ingredient.persistentKey,
-  name: ingredient.ingredientDisplayName ?? ingredient.ingredientDisplayNameSnapshot ?? "Ingredient",
+  name: ingredient.ingredientDisplayName ?? ingredient.ingredientDisplayNameSnapshot ?? "Ингредиент",
   category: ingredient.ingredientCategory ?? null,
   stage: ingredient.stage,
   timeOffsetMinutes: ingredient.timeOffset,
@@ -146,18 +146,27 @@ export const buildBrewPlanSnapshot = (
     targetTemperatureC: step.temperatureC,
     durationMinutes: step.durationMinutes
   }));
+  const destination = (ingredient: RecipeDetailDto["ingredients"][number]) => {
+    if (ingredient.ingredientCategory === "hop") {
+      const use = readHopUseType(ingredient);
+      if (use === "whirlpool" || use === "dip_hop") return "whirlpool";
+      if (use === "dry_hop") return "fermentation";
+      if (use === "boil" || use === "first_wort_hop") return "boil";
+    }
+    return ingredient.stage;
+  };
   const timedAdditions = recipe.ingredients
-    .filter((ingredient) => ingredient.stage === "boil" || ingredient.stage === "mash")
-    .map(buildTimedAddition);
+    .filter((ingredient) => ["boil", "mash"].includes(destination(ingredient)))
+    .map(ingredient => ({ ...buildTimedAddition(ingredient), stage: destination(ingredient) }));
   const whirlpoolPlan = recipe.ingredients
-    .filter((ingredient) => readHopUseType(ingredient) === "whirlpool" || readHopUseType(ingredient) === "dip_hop")
+    .filter((ingredient) => destination(ingredient) === "whirlpool")
     .map(buildTimedAddition);
   // Сухой хмель и другие внесения на брожении: стадия fermentation целиком, кроме
   // дрожжей (питчинг дрожжей уже покрыт шагом «Поставить на брожение» — отдельный
   // шаг для него был бы дублем). Не хмель ли это — не важно: category сохраняется
   // в записи для рендера (см. buildTimedAddition), гид размечает единообразно.
   const dryHopPlan = recipe.ingredients
-    .filter((ingredient) => ingredient.stage === "fermentation" && ingredient.ingredientCategory !== "yeast")
+    .filter((ingredient) => destination(ingredient) === "fermentation" && ingredient.ingredientCategory !== "yeast")
     .map(buildTimedAddition);
   // Позиции рецепта на розливе (прайминг-сахар и т.п.) — раньше вообще не попадали
   // в снапшот варки (только настройки packagingPlan, не строки состава). См. #6c.
@@ -205,6 +214,7 @@ export const buildBrewPlanSnapshot = (
       timedAdditions
     },
     whirlpoolPlan,
+    otherAdditions: recipe.ingredients.filter(ingredient => ingredient.ingredientCategory === "hop" && destination(ingredient) === "other").map(buildTimedAddition),
     dryHopPlan,
     fermentationPlan: recipe.processMeta.fermentationProfile as unknown as Record<string, unknown>,
     packagingPlan: recipe.brewPlanMeta?.packagingPlan && isRecord(recipe.brewPlanMeta.packagingPlan)

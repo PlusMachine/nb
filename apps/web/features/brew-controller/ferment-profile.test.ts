@@ -29,13 +29,13 @@ describe("mapFermentationPlanToDeviceSteps", () => {
     const result = mapFermentationPlanToDeviceSteps({ primaryTemperatureC: 19, primaryDurationDays: 10 });
     expect(result).toEqual({
       ok: true,
-      steps: [{ name: "Главное брожение", tempC: 19, hours: 240 }],
+      steps: [{ name: "Основное брожение", tempC: 19, hours: 240 }],
     });
   });
 
   it("нет primaryDurationDays → hours=0 (держать вручную)", () => {
     const result = mapFermentationPlanToDeviceSteps({ primaryTemperatureC: 19, primaryDurationDays: null });
-    expect(result).toEqual({ ok: true, steps: [{ name: "Главное брожение", tempC: 19, hours: 0 }] });
+    expect(result).toEqual({ ok: true, steps: [{ name: "Основное брожение", tempC: 19, hours: 0 }] });
   });
 
   it("extraSteps: с температурой попадают в маппинг, без температуры пропускаются", () => {
@@ -50,7 +50,7 @@ describe("mapFermentationPlanToDeviceSteps", () => {
     expect(result).toEqual({
       ok: true,
       steps: [
-        { name: "Главное брожение", tempC: 19, hours: 240 },
+        { name: "Основное брожение", tempC: 19, hours: 240 },
         { name: "Диацетильная пауза", tempC: 20, hours: 48 },
       ],
     });
@@ -77,7 +77,7 @@ describe("mapFermentationPlanToDeviceSteps", () => {
     expect(result).toEqual({
       ok: true,
       steps: [
-        { name: "Главное брожение", tempC: 19, hours: 240 },
+        { name: "Основное брожение", tempC: 19, hours: 240 },
         { name: "Холодная выдержка", tempC: 2, hours: 72 },
       ],
     });
@@ -135,7 +135,7 @@ describe("mapFermentationPlanToDeviceSteps", () => {
 
 describe("stepsMatchPlan", () => {
   const plan: MappedFermentStep[] = [
-    { name: "Главное брожение", tempC: 19, hours: 240 },
+    { name: "Основное брожение", tempC: 19, hours: 240 },
     { name: "Холодная выдержка", tempC: 2, hours: 72 },
   ];
 
@@ -170,12 +170,12 @@ describe("resolveStepLabels", () => {
     { tempC: 2, hours: 72 },
   ];
   const plan: MappedFermentStep[] = [
-    { name: "Главное брожение", tempC: 19, hours: 240 },
+    { name: "Основное брожение", tempC: 19, hours: 240 },
     { name: "Холодная выдержка", tempC: 2, hours: 72 },
   ];
 
   it("план опознан → имена плана", () => {
-    expect(resolveStepLabels(device, plan)).toEqual(["Главное брожение", "Холодная выдержка"]);
+    expect(resolveStepLabels(device, plan)).toEqual(["Основное брожение", "Холодная выдержка"]);
   });
 
   it("план не передан → «Ступень N»", () => {
@@ -247,13 +247,13 @@ describe("buildFermentProgress", () => {
 
   it("подписи ступеней берутся из плана, когда он опознан", () => {
     const planSteps: MappedFermentStep[] = [
-      { name: "Главное брожение", tempC: 19, hours: 168 },
+      { name: "Основное брожение", tempC: 19, hours: 168 },
       { name: "Диацетильная пауза", tempC: 20, hours: 48 },
       { name: "Холодная выдержка", tempC: 2, hours: 0 },
     ];
     const progress = buildFermentProgress({ steps, currentIndex: 0, elapsedSec: 0, planSteps });
     expect(progress.steps.map((s) => s.label)).toEqual([
-      "Главное брожение",
+      "Основное брожение",
       "Диацетильная пауза",
       "Холодная выдержка",
     ]);

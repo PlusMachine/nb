@@ -16,6 +16,7 @@ type SeedWaterProfile = {
     hco3: number | null;
   };
   description?: string | null;
+  description_ru?: string | null;
   is_quick_pick?: boolean | null;
   quick_pick_rank?: number | null;
   display_priority?: number | null;
@@ -165,7 +166,7 @@ const toCatalogItem = (
     displayName: pickerName ?? nameRu,
     group: profile.profile_group ?? "general_template",
     badge: groupLabels[profile.profile_group ?? ""] ?? "Профиль",
-    description: profile.description ?? null,
+    description: profile.description_ru ?? profile.description ?? null,
     profile: toWaterProfile(profile.canonical_target_ppm),
     isQuickPick: Boolean(profile.is_quick_pick ?? profile.picker?.quick_pick_rank),
     quickPickRank: profile.quick_pick_rank ?? profile.picker?.quick_pick_rank ?? null,

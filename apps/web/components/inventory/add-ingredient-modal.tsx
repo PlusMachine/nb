@@ -267,6 +267,7 @@ type BodyProps = {
   onClose: () => void;
   /** Не сохранённые данные — для guard'а Dialog-обёртки (закрыть без подтверждения?). */
   onDirtyChange?: (dirty: boolean) => void;
+  onPendingChange?: (pending: boolean) => void;
 };
 
 /**
@@ -286,7 +287,8 @@ export function AddIngredientModalBody({
   initialUnit = null,
   initialQuickStartDataByContext = null,
   onClose,
-  onDirtyChange
+  onDirtyChange,
+  onPendingChange
 }: BodyProps) {
   const router = useRouter();
   const [catalogCategory, setCatalogCategory] = useState<IngredientCategory | null>(() => resolveAddIngredientStartContext({
@@ -335,11 +337,20 @@ export function AddIngredientModalBody({
   // имя и нет existing-ингредиента для выбора — стартуем сразу в «Добавить свой»,
   // не заставляя пользователя переключать вкладку самому.
   const [mode, setMode] = useState<Mode>(() => (initialDisplayName ? "custom" : "catalog"));
+  const [entryVersion, setEntryVersion] = useState(0);
   const [result, setResult] = useState<AddIngredientResult | null>(null);
   const [pending, setPending] = useState(false);
   const [selectedIngredient, setSelectedIngredient] = useState<IngredientSuggestionItem | null>(initialSelection);
   const [catalogFormDirty, setCatalogFormDirty] = useState(false);
   const [customFormDirty, setCustomFormDirty] = useState(false);
+  const [pendingChange, setPendingChange] = useState<(() => void) | null>(null);
+  const requestFormChange = (change: () => void) => {
+    if (pending) return;
+    if (mode === "catalog" ? catalogFormDirty : customFormDirty) setPendingChange(() => change);
+    else change();
+  };
+
+  useEffect(() => { onPendingChange?.(pending); }, [pending, onPendingChange]);
 
   useEffect(() => {
     onDirtyChange?.(mode === "catalog" ? catalogFormDirty : customFormDirty);
@@ -392,10 +403,18 @@ export function AddIngredientModalBody({
     setCatalogGroup(nextResolvedGroup);
   };
 
-  const handleSuccess = (nextResult: AddIngredientResult) => {
+  const handleSuccess = (nextResult: AddIngredientResult, keepOpen = false) => {
     setResult(nextResult);
     if (nextResult.ok && selectedCategoryValue) {
       persistAddIngredientCategoryValue(selectedCategoryValue);
+    }
+    if (nextResult.ok && keepOpen) {
+      setSelectedIngredient(null);
+      setCatalogFormDirty(false);
+      setCustomFormDirty(false);
+      setEntryVersion((version) => version + 1);
+      router.refresh();
+      return;
     }
     applyAddIngredientSuccessEffects(nextResult, {
       onClose,
@@ -410,11 +429,26 @@ export function AddIngredientModalBody({
 
   return (
     <div className="space-y-4" data-testid="add-ingredient-modal">
+      <ConfirmActionDialog
+        open={pendingChange !== null}
+        title="Сменить способ добавления?"
+        description="Введённые данные текущей формы будут сброшены."
+        confirmLabel="Сменить"
+        cancelLabel="Продолжить ввод"
+        onConfirm={() => {
+          pendingChange?.();
+          setCatalogFormDirty(false);
+          setCustomFormDirty(false);
+          setPendingChange(null);
+          setResult(null);
+        }}
+        onClose={() => setPendingChange(null)}
+      />
       {showSelectionStageChrome ? (
         <>
           <InventoryIngredientCategoryGrid
             value={selectedCategoryValue}
-            onChange={handleCategoryChange}
+            onChange={(category) => requestFormChange(() => handleCategoryChange(category))}
             testId="add-ingredient-category-grid"
           />
 
@@ -423,14 +457,14 @@ export function AddIngredientModalBody({
               type="button"
               onPointerDown={(event) => applyAddIngredientImmediateControlAction({
                 event,
-                action: () => setMode("catalog")
+                action: () => { if (mode !== "catalog") requestFormChange(() => setMode("catalog")); }
               })}
               onClick={(event) => {
                 if (!shouldApplyAddIngredientControlActionOnClick({ detail: event.detail })) {
                   return;
                 }
 
-                setMode("catalog");
+                if (mode !== "catalog") requestFormChange(() => setMode("catalog"));
               }}
               className={`rounded-lg px-3 py-2 font-medium transition-all duration-150 ${mode === "catalog" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
             >
@@ -440,14 +474,14 @@ export function AddIngredientModalBody({
               type="button"
               onPointerDown={(event) => applyAddIngredientImmediateControlAction({
                 event,
-                action: () => setMode("custom")
+                action: () => { if (mode !== "custom") requestFormChange(() => setMode("custom")); }
               })}
               onClick={(event) => {
                 if (!shouldApplyAddIngredientControlActionOnClick({ detail: event.detail })) {
                   return;
                 }
 
-                setMode("custom");
+                if (mode !== "custom") requestFormChange(() => setMode("custom"));
               }}
               className={`rounded-lg px-3 py-2 font-medium transition-all duration-150 ${mode === "custom" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
             >
@@ -473,6 +507,8 @@ export function AddIngredientModalBody({
       <div>
         {mode === "catalog" && catalogCategory ? (
           <CatalogIngredientForm
+            key={`catalog-${entryVersion}`}
+            continuousEntry
             category={catalogCategory}
             subtype={catalogSubtype}
             initialQuickStartData={initialQuickStartData}
@@ -480,9 +516,9 @@ export function AddIngredientModalBody({
             preferredCurrency={preferredCurrency}
             pending={pending}
             autoFocus
-            initialSelection={initialSelection}
-            initialQuantity={initialQuantity}
-            initialUnit={initialUnit}
+            initialSelection={entryVersion === 0 ? initialSelection : null}
+            initialQuantity={entryVersion === 0 ? initialQuantity : null}
+            initialUnit={entryVersion === 0 ? initialUnit : null}
             fieldErrors={result?.fieldErrors}
             selectionActionLabel="Изменить выбор"
             onSubtypeChange={(next) => {
@@ -499,42 +535,54 @@ export function AddIngredientModalBody({
               setSelectedIngredient(null);
               setMode("custom");
             }}
-            onSubmit={async (payload) => {
+            onSubmit={async (payload, keepOpen) => {
               setPending(true);
               const formData = new FormData();
               appendPayloadToFormData(formData, payload);
-              const nextResult = await addSelectedIngredientAction(null, formData);
-              setPending(false);
-              handleSuccess(nextResult);
+              try {
+                const nextResult = await addSelectedIngredientAction(null, formData);
+                handleSuccess(nextResult, keepOpen);
+              } catch {
+                setResult({ ok: false, message: "Не удалось сохранить запас. Проверьте соединение и повторите попытку." });
+              } finally {
+                setPending(false);
+              }
             }}
           />
         ) : null}
 
         {mode === "custom" && customCategory ? (
           <CustomIngredientPanel
+            key={`custom-${entryVersion}`}
+            continuousEntry
             category={customCategory}
             initialSubtype={customSubtype}
-            initialDisplayName={initialDisplayName}
-            initialQuantity={initialQuantity}
-            initialUnit={initialUnit}
+            initialDisplayName={entryVersion === 0 ? initialDisplayName : null}
+            initialQuantity={entryVersion === 0 ? initialQuantity : null}
+            initialUnit={entryVersion === 0 ? initialUnit : null}
             preferredCurrency={preferredCurrency}
             pending={pending}
             fieldErrors={result?.fieldErrors}
             onDirtyChange={setCustomFormDirty}
-            onSubmitCreate={async (payload) => {
+            onSubmitCreate={async (payload, keepOpen) => {
               setPending(true);
               const formData = new FormData();
               appendPayloadToFormData(formData, payload);
-              const nextResult = await addCustomIngredientAction(null, formData);
-              setPending(false);
-              handleSuccess(nextResult);
+              try {
+                const nextResult = await addCustomIngredientAction(null, formData);
+                handleSuccess(nextResult, keepOpen);
+              } catch {
+                setResult({ ok: false, message: "Не удалось сохранить запас. Проверьте соединение и повторите попытку." });
+              } finally {
+                setPending(false);
+              }
             }}
           />
         ) : null}
 
         {((mode === "catalog" && !catalogCategory) || (mode === "custom" && !customCategory)) ? (
           <div className="flex h-full min-h-[18rem] items-center justify-center rounded-xl border border-dashed border-border bg-muted/50 px-4 text-center text-sm text-muted-foreground">
-            Выберите категорию, и после этого появится {mode === "catalog" ? "поиск" : "форма создания своего ингредиента"}.
+            Выберите категорию ингредиента.
           </div>
         ) : null}
       </div>
@@ -556,6 +604,7 @@ export function AddIngredientModal({
   initialQuickStartDataByContext
 }: Props) {
   const dirtyRef = useRef(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [closeConfirmOpen, setCloseConfirmOpen] = useState(false);
 
   return (
@@ -567,17 +616,17 @@ export function AddIngredientModal({
             onClose();
           }
         }}
-        title="Добавить ингредиент"
+        title="Добавить запас"
         hideTitle
         size="lg"
         guard={{
-          isDirty: () => dirtyRef.current,
-          onGuardedClose: () => setCloseConfirmOpen(true)
+          isDirty: () => isSubmitting || dirtyRef.current,
+          onGuardedClose: () => { if (!isSubmitting) setCloseConfirmOpen(true); }
         }}
       >
         <DialogHeader>
-          <h2 className="text-base font-semibold text-foreground">Добавить ингредиент</h2>
-          <DialogCloseButton />
+          <h2 className="text-base font-semibold text-foreground">Добавить запас</h2>
+          <DialogCloseButton disabled={isSubmitting} />
         </DialogHeader>
         <div className="p-5">
           <AddIngredientModalBody
@@ -591,6 +640,7 @@ export function AddIngredientModal({
             initialUnit={initialUnit}
             initialQuickStartDataByContext={initialQuickStartDataByContext}
             onClose={onClose}
+            onPendingChange={setIsSubmitting}
             onDirtyChange={(dirty) => {
               dirtyRef.current = dirty;
             }}

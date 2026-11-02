@@ -181,17 +181,37 @@ describe("recipe FG estimate", () => {
     expect(yeastEstimate.predictedFg).toBeLessThan(defaultEstimate.predictedFg ?? 99);
   });
 
-  it("uses the yeast midpoint for the main estimate", () => {
+  it("uses the yeast midpoint when the typical attenuation is unavailable", () => {
     const result = calculateRecipeFgEstimate({
       og: OG,
       fermentables: baseFermentables,
-      yeasts: rangeYeast,
+      yeasts: [{ name: "US-05", technicalData: { type: "yeast", attenuationPctMin: 74, attenuationPctMax: 82 } }],
       processMeta: defaultRecipeProcessMeta,
       calculationMeta: buildCalculationMeta()
     });
 
     expect(result.fgEstimateDetails?.baseAttenuationPct).toBe(78);
     expect(result.predictedFg).toBe(1.011);
+  });
+
+  it("keeps the same main FG and ABV after a yeast gains an attenuation range", () => {
+    const typical = { type: "yeast", attenuationPctTypical: 82, form: "dry" } as const;
+    const estimate = (technicalData: typeof typical & { attenuationPctMin?: number; attenuationPctMax?: number }) => calculateRecipeFgEstimate({
+      og: OG,
+      fermentables: baseFermentables,
+      yeasts: [{ name: "BF27", technicalData }],
+      processMeta: defaultRecipeProcessMeta,
+      calculationMeta: buildCalculationMeta()
+    });
+    const before = estimate(typical);
+    const after = estimate({ ...typical, attenuationPctMin: 78, attenuationPctMax: 84 });
+
+    expect(after.fgEstimateDetails?.baseAttenuationPct).toBe(82);
+    expect(after.predictedFg).toBe(before.predictedFg);
+    expect(calculateAbv(OG, after.predictedFg!)).toBe(calculateAbv(OG, before.predictedFg!));
+    expect(before.fgEstimateDetails?.fgRangeMin).toBeNull();
+    expect(after.fgEstimateDetails?.fgRangeMin).toBe(1.008);
+    expect(after.fgEstimateDetails?.fgRangeMax).toBe(1.011);
   });
 
   it("builds FG range from min and max yeast attenuation", () => {
@@ -475,8 +495,8 @@ describe("recipe FG estimate", () => {
   });
 
   it("uses short manual override labels", () => {
-    expect(resolveRecipeFgSourceLabel("manual_attenuation_override", null)).toBe("Аттенюация задана вручную");
-    expect(resolveRecipeFgSourceLabel("manual_fg_override", null)).toBe("FG задана вручную");
+    expect(resolveRecipeFgSourceLabel("manual_attenuation_override", null)).toBe("Степень сбраживания задана вручную");
+    expect(resolveRecipeFgSourceLabel("manual_fg_override", null)).toBe("КП задана вручную");
   });
 
   it("updates ABV when the new FG estimate changes", () => {

@@ -151,7 +151,7 @@ describe("ingredient presentation", () => {
         colorLovibond: -0.5,
         extractPctDryBasis: 80
       }
-    })).toBe("Экст-ть 80%");
+    })).toBe("Экстрактивность 80%");
   });
 
   it("prefers explicit fermentable display type overrides", () => {

@@ -218,7 +218,7 @@ const resolveSemanticColorHint = (
   const normalized = descriptor ? normalizeDescriptor(descriptor) : "";
   const isFruit = hasBadge(style, "Фруктовое");
   const isSpice = hasBadge(style, "Пряное");
-  const isWoodAged = hasBadge(style, "Выдержка в дереве/бочке");
+  const isWoodAged = hasBadge(style, "Выдержка в бочке или на древесине");
   const isSmoked = hasBadge(style, "Копчёное");
   const isSourOrWild = style.familyId === "sour_wild" || hasBadge(style, "Кислое") || hasBadge(style, "Дикое/смешанное брожение");
 

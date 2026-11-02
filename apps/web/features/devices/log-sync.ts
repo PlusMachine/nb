@@ -154,7 +154,7 @@ async function importLogFile(
   // то, что device уже был зарезолвлен выше в syncDeviceLog.
   const content = await provider.readLog!({ userId, deviceId, name: file.name });
   if (content === null) {
-    throw new Error("устройство не отдало файл (мог быть вытеснен ретеншном между list и read)");
+    throw new Error("Устройство не передало файл журнала. Возможно, он уже удалён из памяти.");
   }
 
   const parsed = parseLogJsonl(content);

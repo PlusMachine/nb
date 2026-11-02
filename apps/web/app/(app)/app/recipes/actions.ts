@@ -133,11 +133,14 @@ const mapRecipeEditorError = (error: unknown): RecipeEditorResult => {
     }
 
     if (["INVALID_UNIT", "INCOMPATIBLE_UNIT", "INVALID_BATCH_SIZE_UNIT"].includes(error.message)) {
-      return { ok: false, message: "Проверьте единицы измерения: найдены некорректные значения." };
+      return { ok: false, message: "Проверьте единицы измерения ингредиентов." };
     }
 
     if (["CATALOG_INGREDIENT_NOT_FOUND", "CUSTOM_INGREDIENT_NOT_FOUND"].includes(error.message)) {
       return { ok: false, message: "Один или несколько ингредиентов больше недоступны." };
+    }
+    if (error.message === "INGREDIENT_NOT_STOCKABLE") {
+      return { ok: false, message: "Выберите конкретный ингредиент. Для справочного метода обработки воды количество не указывается." };
     }
 
     if (error.message === "INGREDIENT_TYPE_MISMATCH") {
@@ -207,7 +210,7 @@ const mapRecipeImportError = (error: unknown, formatLabel: string): RecipeEditor
     if (error.message === "IMPORTED_CUSTOM_NAME_CONFLICT") {
       return {
         ok: false,
-        message: `${formatLabel}: не удалось подобрать уникальное имя для одного из импортируемых ингредиентов. Переименуйте похожий собственный ингредиент или попробуйте импорт ещё раз.`
+        message: `${formatLabel}: не удалось подобрать название для ингредиента. Переименуйте свой ингредиент с таким же названием и повторите импорт.`
       };
     }
 
@@ -261,7 +264,7 @@ export const createRecipeAction = async (payload: RecipeEditorPayload): Promise<
 
     return {
       ok: true,
-      message: "Рецепт создан, показатели рассчитаны.",
+      message: "Рецепт создан.",
       recipe
     };
   } catch (error) {
@@ -479,14 +482,14 @@ export const createRecipeCustomIngredientAction = async (payload: {
 
     return {
       ok: true,
-      message: "Собственный ингредиент создан.",
+      message: "Свой ингредиент создан.",
       item: {
         id: customIngredient.id,
         type: linkage.type,
         category: linkage.category,
         subtype: linkage.subtype,
         displayName: customIngredient.displayName,
-        subtitle: linkage.summary ?? "Собственный ингредиент",
+        subtitle: linkage.summary ?? "Свой ингредиент",
         defaultUnit: linkage.defaultDisplayUnit,
         defaultDisplayUnit: linkage.defaultDisplayUnit,
         allowedUnits: linkage.allowedUnits,
@@ -665,7 +668,7 @@ export const importBrewfatherJsonRecipeAction = async (
 
     return {
       ok: true,
-      message: canonical.length > 1 ? `Импортировано рецептов: ${canonical.length}. Все доступны в разделе «Рецепты».` : "Brewfather JSON импортирован.",
+      message: canonical.length > 1 ? `Импортировано рецептов: ${canonical.length}. Все доступны в разделе «Рецепты».` : "Рецепт из Brewfather импортирован.",
       recipe,
       importedCount: imported.length
     };

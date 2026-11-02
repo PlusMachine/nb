@@ -171,10 +171,10 @@ export function FermentHistoryChart({ source, hasDevice, initial, planSteps, win
   return (
     <section className="rounded-2xl border border-border bg-muted/60 p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">План и факт</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Температура брожения</h3>
         <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-          <Legend color="hsl(var(--chart-setpoint))" label="План" dashed />
-          <Legend color="hsl(var(--chart-temp))" label="Факт" />
+          <Legend color="hsl(var(--chart-setpoint))" label="По профилю" dashed />
+          <Legend color="hsl(var(--chart-temp))" label="Измерено" />
         </div>
       </div>
 
@@ -191,7 +191,7 @@ export function FermentHistoryChart({ source, hasDevice, initial, planSteps, win
             viewBox={`0 0 ${VB_W} ${VB_H}`}
             className="h-auto w-full"
             role="img"
-            aria-label="График температуры брожения: план и факт по дням"
+            aria-label="График заданной и измеренной температуры брожения по дням"
             preserveAspectRatio="none"
           >
             {geom.tempTicks.map((t, i) => (

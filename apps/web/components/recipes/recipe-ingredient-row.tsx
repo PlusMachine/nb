@@ -261,7 +261,7 @@ export function RecipeIngredientRow({
             {value.selectedSummary ? ` ${value.selectedSummary}.` : ""}
           </p>
         ) : (
-          <p className="text-xs text-muted-foreground">Сначала выберите категорию и позицию из подсказок, затем вводите количество.</p>
+          <p className="text-xs text-muted-foreground">Выберите ингредиент и укажите количество.</p>
         )}
       </div>
 
@@ -292,7 +292,7 @@ export function RecipeIngredientRow({
           </select>
         </div>
         <div className="space-y-1">
-          <label className="text-xs font-medium text-foreground">Смещение по времени (мин)</label>
+          <label className="text-xs font-medium text-foreground">Время внесения, мин</label>
           <input
             type="number"
             disabled={amountFieldsDisabled}

@@ -45,7 +45,7 @@ export function RecipeProfiles({
               <div className="flex flex-wrap items-center gap-3 sm:flex-nowrap">
                 <div className="flex min-w-0 flex-1 items-center gap-2">
                   <div className="flex h-8 w-7 items-center justify-center rounded-md bg-orange-100 text-xs font-bold text-orange-600 dark:bg-orange-500/20 dark:text-orange-400">{index + 1}</div>
-                  <span className="text-sm font-medium text-foreground">Шаг {index + 1}</span>
+                  <span className="text-sm font-medium text-foreground">Пауза {index + 1}</span>
                 </div>
                 <div className="ml-auto flex shrink-0 items-end gap-2">
                   <label className="space-y-0.5 text-right">
@@ -93,7 +93,7 @@ export function RecipeProfiles({
                     }
                   })}
                   className="relative rounded-md p-2 text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive before:absolute before:-inset-2 before:content-['']"
-                  aria-label="Удалить шаг"
+                  aria-label="Удалить паузу"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -108,7 +108,7 @@ export function RecipeProfiles({
               mashProfile: {
                 steps: [...processMeta.mashProfile.steps, {
                   id: createLocalId(),
-                  name: `Шаг ${processMeta.mashProfile.steps.length + 1}`,
+                  name: `Пауза ${processMeta.mashProfile.steps.length + 1}`,
                   temperatureC: 72,
                   durationMinutes: 20
                 }]
@@ -116,7 +116,7 @@ export function RecipeProfiles({
             })}
             className="rounded-lg px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
-            + Добавить шаг
+            + Добавить паузу
           </button>
         </div>
       </section>

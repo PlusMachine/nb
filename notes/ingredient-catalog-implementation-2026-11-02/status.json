@@ -1,0 +1,144 @@
+{
+  "status": "in_progress",
+  "authorizedOn": "2026-11-02",
+  "existingRecipesMayBeUpdated": true,
+  "items": [
+    {
+      "item": "malt-01-heidelberg-colour",
+      "title": "BEST Heidelberg: верхний предел цветности",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "malt-02-specific-search-ranking",
+      "title": "Поиск солода: точный бренд, название и номер продукта",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "malt-03-unverified-protein",
+      "title": "Viking Caramel 250: неподтверждённый белок 75%",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "malt-04-weyermann-duplicates",
+      "title": "Две карточки тёмного пшеничного Weyermann",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "malt-05-browse-filters",
+      "title": "Фильтры каталога солода: тип, производитель и диапазон EBC",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "hop-06-aroma-profile",
+      "title": "Показывать известный аромат хмеля в карточке",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "hop-07-supplier-variants",
+      "title": "Группировать варианты одного сорта, страны и формы хмеля для сравнения поставщиков",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "hop-08-missing-alpha-fallback",
+      "title": "Явно показывать отсутствие альфы и убрать молчаливую подстановку 5% в расчёте горечи",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "hop-09-characteristic-ranges",
+      "title": "Показывать диапазоны характеристик хмеля и отдельно альфу, используемую для расчёта",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "yeast-10-low-attenuation-calculation",
+      "title": "Не повышать низкую аттенюацию специальных дрожжей до 50% в расчёте FG",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "yeast-11-product-specific-packages",
+      "title": "Проверять фасовки конкретного продукта и показывать их происхождение",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "fermentable-12-rice-hulls-process-role",
+      "title": "Учитывать рисовую лузгу как техническую добавку без прямого вклада в экстракт и цвет",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "fermentable-13-hopped-extract-bitterness",
+      "title": "Учитывать охмелённые экстракты в полноте расчёта IBU",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "water-14-calcium-chloride-hydration",
+      "title": "Различать безводный хлорид кальция и дигидрат в карточке, расчёте и подборе замены",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "water-15-methods-without-inventory",
+      "title": "Оставить методы водоподготовки в справочнике, исключив складской учёт в граммах",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "additive-16-spice-substitution-identity",
+      "title": "Не считать разные специи аналогами по одному общему типу",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "consumable-17-closure-compatibility",
+      "title": "Учитывать размер и стандарт укупорки при подборе расходников",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "cross-18-preserve-packages-on-save",
+      "title": "Сохранять фасовки и складские привязки при редактировании карточки",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "cross-19-sync-preserve-editorial-decisions",
+      "title": "Сохранять редакторские решения при синхронизации каталога из файлов",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "cross-20-responsive-detail-layout",
+      "title": "Помещать параметры карточки в ширину мобильного экрана",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "cross-21-self-contained-catalog-sources",
+      "title": "Хранить все записи добавок и расходников в действующих исходных файлах",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "water-22-acidulated-malt-grain-role",
+      "title": "Кислый солод: понятное назначение и выбор производителя",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "cross-23-small-quantity-precision",
+      "title": "Показывать и редактировать малые остатки без округления до нуля",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "consumable-24-iodophor-package-volume",
+      "title": "Показывать объём бутылок йодофора в миллилитрах",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "cross-25-minor-display-batch",
+      "title": "Пакет мелких правок отображения каталога",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "cross-26-select-package-for-stock",
+      "title": "Выбирать фасовку при добавлении на склад и согласованно считать количество и цену",
+      "status": "implemented_pending_final_verification"
+    },
+    {
+      "item": "malt-27-verified-colour-ranges",
+      "title": "Цвет солода: подтверждённые диапазоны производителя",
+      "status": "implemented_pending_final_verification"
+    }
+  ],
+  "checks": [],
+  "databaseApplied": true
+}

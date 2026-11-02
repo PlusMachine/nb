@@ -175,7 +175,7 @@ describe("дефолты калькуляторов плотности — ос�
     expect(definition.defaults.gravityFrom).toBe("Plato");
   });
 
-  it("refractometer-correction: originalUnit остаётся Brix (рефрактометр Plato не меряет)", () => {
+  it("refractometer-correction: до загрузки предпочтения основная шкала — Brix", () => {
     const definition = calculatorDefinitionBySlug["refractometer-correction"];
 
     expect(definition.defaults.originalUnit).toBe("Brix");

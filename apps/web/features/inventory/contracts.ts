@@ -4,6 +4,7 @@ import {
   ingredientCategories,
   ingredientDisplayModes,
   type IngredientPurchaseLinkSummaryDto,
+  type IngredientPackageVariantDto,
   ingredientTypes,
   type IngredientCategory,
   type IngredientCompletenessLevel,
@@ -158,8 +159,8 @@ const createUserCustomIngredientBaseSchema = z.object({
     return normalized || null;
   }, z.enum(["base", "specialty"]).nullable().optional()),
   fermentableMaxUsagePct: nullableNumber(numberField().min(0, "Доля использования не может быть меньше 0%.").max(100, "Доля использования не может быть больше 100%.")),
-  hopAlphaAcidPct: nullableNumber(numberField().min(0, "Альфа-кислота не может быть меньше 0%.").max(100, "Альфа-кислота не может быть больше 100%.")),
-  hopBetaAcidPct: nullableNumber(numberField().min(0, "Бета-кислота не может быть меньше 0%.").max(100, "Бета-кислота не может быть больше 100%.")),
+  hopAlphaAcidPct: nullableNumber(numberField().min(0, "Содержание альфа-кислот не может быть меньше 0%.").max(100, "Содержание альфа-кислот не может быть больше 100%.")),
+  hopBetaAcidPct: nullableNumber(numberField().min(0, "Содержание бета-кислот не может быть меньше 0%.").max(100, "Содержание бета-кислот не может быть больше 100%.")),
   hopForm: z.preprocess((value) => {
     if (value == null) {
       return null;
@@ -168,7 +169,7 @@ const createUserCustomIngredientBaseSchema = z.object({
     const normalized = String(value).trim().toLowerCase();
     return normalized || null;
   }, z.enum(["pellet", "whole_cone", "lupulin", "cryo", "standard"]).nullable().optional()),
-  yeastAttenuationPct: nullableNumber(numberField().min(0, "Аттенюация не может быть меньше 0%.").max(100, "Аттенюация не может быть больше 100%.")),
+  yeastAttenuationPct: nullableNumber(numberField().min(0, "Степень сбраживания не может быть меньше 0%.").max(100, "Степень сбраживания не может быть больше 100%.")),
   yeastForm: z.preprocess((value) => {
     if (value == null) {
       return null;
@@ -275,7 +276,7 @@ const buildCreateUserCustomIngredientSchema = ({
   if (resolvedCategory === "hop" && value.hopAlphaAcidPct == null) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: "Укажите альфа-кислоту.",
+      message: "Укажите содержание альфа-кислот.",
       path: ["hopAlphaAcidPct"]
     });
   }
@@ -284,7 +285,7 @@ const buildCreateUserCustomIngredientSchema = ({
     if (value.yeastAttenuationPct == null) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Укажите аттенюацию.",
+        message: "Укажите степень сбраживания.",
         path: ["yeastAttenuationPct"]
       });
     }
@@ -314,7 +315,7 @@ export const catalogInventoryTechnicalOverrideSchema = z.object({
   ingredientCatalogItemId: z.string().trim().min(1),
   fermentableColorEbc: nullableNumber(numberField().min(0, "Цвет EBC не может быть меньше 0.").max(9999, "Цвет EBC не может быть больше 9999.")),
   fermentableExtractYieldPct: nullableNumber(numberField().min(0, "Экстрактивность не может быть меньше 0%.").max(100, "Экстрактивность не может быть больше 100%.")),
-  hopAlphaAcidPct: nullableNumber(numberField().min(0, "Альфа-кислота не может быть меньше 0%.").max(100, "Альфа-кислота не может быть больше 100%.")),
+  hopAlphaAcidPct: nullableNumber(numberField().min(0, "Содержание альфа-кислот не может быть меньше 0%.").max(100, "Содержание альфа-кислот не может быть больше 100%.")),
   harvestYear: nullableNumber(numberField().int("Год урожая должен быть целым числом.").min(1900, "Год урожая не может быть раньше 1900.").max(2100, "Год урожая не может быть позже 2100.")),
   waterTreatmentConcentrationPct: nullableNumber(numberField().positive("Концентрация кислоты должна быть больше 0%.").max(100, "Концентрация кислоты не может быть больше 100%."))
 });
@@ -341,7 +342,7 @@ export const updateInventoryItemSchema = withPurchaseValidation(baseInventoryFie
   userCustomIngredientId: z.string().uuid().optional().nullable(),
   packageVariantId: z.string().trim().min(1).optional().nullable(),
   waterTreatmentConcentrationPct: nullableNumber(numberField().positive("Концентрация кислоты должна быть больше 0%.").max(100, "Концентрация кислоты не может быть больше 100%.")),
-  hopAlphaAcidPct: nullableNumber(numberField().min(0, "Альфа-кислота не может быть меньше 0%.").max(100, "Альфа-кислота не может быть больше 100%.")),
+  hopAlphaAcidPct: nullableNumber(numberField().min(0, "Содержание альфа-кислот не может быть меньше 0%.").max(100, "Содержание альфа-кислот не может быть больше 100%.")),
   harvestYear: nullableNumber(numberField().int("Год урожая должен быть целым числом.").min(1900, "Год урожая не может быть раньше 1900.").max(2100, "Год урожая не может быть позже 2100."))
 })).superRefine((value, ctx) => {
   const linkage = inventorySourceLinkageSchema.safeParse({
@@ -371,6 +372,9 @@ export const inventoryListQuerySchema = z.object({
 });
 
 export type InventorySourceDto = {
+  packageVariants?: IngredientPackageVariantDto[];
+  inventoryEnabled?: boolean;
+  packageVariant?: { id: string; stockContentAmount: number | null; stockContentUnit: string | null } | null;
   sourceKind: "catalog" | "custom";
   sourceId: string;
   type: IngredientType;

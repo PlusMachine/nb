@@ -1,3 +1,5 @@
+import { isPhysicalIngredient, derivedCatalogIngredientId } from "../ingredients/material-policy";
+import { resolveInventoryMeasurementForDisplay } from "./display";
 import { assertRateLimit } from "@nb/auth";
 import {
   and,
@@ -90,7 +92,7 @@ import {
 } from "../ingredients/taxonomy";
 import { listIngredientPurchaseLinkSummaries } from "../ingredients/user-metadata-service";
 import { type SystemCurrency, listSystemCurrencyRates } from "../system/currency-rates";
-import { normalizeInventoryPurchaseContext } from "./purchase-cost";
+import { normalizeInventoryPurchaseContext, type InventoryPurchaseContext } from "./purchase-cost";
 import {
   buildInventoryCostDisplay,
   formatInventoryQuantityForDisplay
@@ -104,7 +106,7 @@ import {
   type InventoryUnit,
   type InventoryUnitProfile
 } from "./units";
-import { resolveInventoryPackEquivalent } from "./pack";
+import { resolveInventoryPackEquivalent, resolveInventoryItemPackEquivalent, normalizeInventoryMeasurementWithPack, applyInventoryPackageSnapshot } from "./pack";
 import {
   buildCustomIngredientTechnicalData,
   resolveCustomIngredientUnitProfile
@@ -379,6 +381,7 @@ const buildCatalogSourceDto = (
   const linkage = buildCatalogIngredientLinkage(catalog);
   return {
     sourceKind: "catalog",
+    inventoryEnabled: catalog.inventoryEnabled,
     sourceId: catalog.id,
     type: linkage.type,
     category: linkage.category,
@@ -415,6 +418,7 @@ const buildCatalogSourceDto = (
     defaultDisplayUnit: linkage.defaultDisplayUnit,
     allowedUnits: linkage.allowedUnits,
     measurementDimension: linkage.measurementDimension,
+    packageVariant: packageVariant ? { id: packageVariant.id, stockContentAmount: packageVariant.stockContentAmount, stockContentUnit: packageVariant.stockContentUnit } : null,
     packageVariantId: packageVariant?.id ?? null,
     packageVariantName: packageVariant?.productNameRu ?? packageVariant?.productNameEn ?? null,
     summary: linkage.summary,
@@ -498,7 +502,7 @@ const resolvePersistedInventorySource = (row: InventoryRow) => {
   if (row.catalog) {
     const snapshotCategory = normalizeStoredCategory(row.inventory.ingredientCategory);
     const source = applyInventoryPropertiesToSource(
-      buildCatalogSourceDto(row.catalog, row.packageVariant),
+      buildCatalogSourceDto(row.catalog, applyInventoryPackageSnapshot(row.packageVariant, inventoryProperties)),
       inventoryProperties
     );
 
@@ -749,6 +753,7 @@ const ensureCatalogIngredientExists = async (
     throw new Error("CATALOG_INGREDIENT_NOT_FOUND");
   }
 
+  if (!isPhysicalIngredient(catalogItem)) throw new Error("INGREDIENT_NOT_STOCKABLE");
   return catalogItem;
 };
 
@@ -791,6 +796,12 @@ const ensureOwnedCustomIngredient = async (
     throw new Error("CUSTOM_INGREDIENT_NOT_FOUND");
   }
 
+  if (!isPhysicalIngredient(customIngredient)) throw new Error("INGREDIENT_NOT_STOCKABLE");
+  const derivedId = derivedCatalogIngredientId(customIngredient);
+  if (derivedId) {
+    const base = await client.query.ingredients.findFirst({ where: eq(ingredients.id, derivedId) });
+    if (base && !isPhysicalIngredient(base)) throw new Error("INGREDIENT_NOT_STOCKABLE");
+  }
   return customIngredient;
 };
 
@@ -816,45 +827,8 @@ const normalizeMeasurementWithPackageVariant = (
   packageVariant: typeof ingredientPackageVariants.$inferSelect | null,
   technicalData?: IngredientTechnicalData | null
 ) => {
-  const enteredUnit = parseInventoryUnit(enteredUnitInput);
-  if (!enteredUnit) {
-    throw new Error("INVALID_UNIT");
-  }
-
-  if (
-    packageVariant
-    && enteredUnit === "pack"
-    && packageVariant.stockContentAmount != null
-    && packageVariant.stockContentUnit
-  ) {
-    const stockUnit = parseInventoryUnit(packageVariant.stockContentUnit);
-    if (!stockUnit) {
-      throw new Error("INVALID_UNIT");
-    }
-
-    return {
-      enteredQuantity,
-      enteredUnit,
-      normalizedQuantity: Number((enteredQuantity * packageVariant.stockContentAmount).toFixed(3)),
-      normalizedUnit: stockUnit,
-      unitDimension: getInventoryUnitDimension(stockUnit)
-    };
-  }
-
-  if (enteredUnit === "pack") {
-    const packEquivalent = resolveInventoryPackEquivalent(technicalData);
-    if (packEquivalent) {
-      return {
-        enteredQuantity,
-        enteredUnit,
-        normalizedQuantity: Number((enteredQuantity * packEquivalent.normalizedQuantity).toFixed(3)),
-        normalizedUnit: packEquivalent.normalizedUnit,
-        unitDimension: getInventoryUnitDimension(packEquivalent.normalizedUnit)
-      };
-    }
-  }
-
-  return normalizeInventoryMeasurementForProfile(profile, enteredQuantity, enteredUnitInput);
+  return normalizeInventoryMeasurementWithPack(profile, enteredQuantity, enteredUnitInput,
+    resolveInventoryItemPackEquivalent({ packageVariant, technicalData }));
 };
 
 const buildCatalogProfile = (catalogItem: typeof ingredients.$inferSelect) => {
@@ -1648,6 +1622,7 @@ export const addCatalogIngredientToInventory = async (
     listSystemCurrencyRates(client)
   ]);
   const packageVariant = await ensureCatalogPackageVariant(catalogItem.id, parsed.packageVariantId ?? null, client);
+  if (parsed.enteredUnit === "pack" && !packageVariant && Number(catalogItem.attributes?.package_variant_count ?? 0) > 1) throw new Error("PACKAGE_VARIANT_REQUIRED");
   const linkage = buildCatalogIngredientLinkage(catalogItem);
   const { profile, category, subtype } = buildCatalogProfile(catalogItem);
   const properties = buildWaterTreatmentConcentrationInventoryProperties({
@@ -1672,7 +1647,9 @@ export const addCatalogIngredientToInventory = async (
     linkage.technicalData
   );
   const purchase = normalizeInventoryPurchaseContext(profile, parsed, rates, {
+    packEquivalent: resolveInventoryItemPackEquivalent({ packageVariant, technicalData: linkage.technicalData }),
     defaultCurrency: context.preferredCurrency ?? null,
+    displayMeasurement: amount.enteredUnit === "pack" ? {quantity:amount.enteredQuantity,unit:"pack"} : resolveInventoryMeasurementForDisplay({...amount,...linkage}),
     fallbackMeasurement: {
       quantity: amount.enteredQuantity,
       unit: amount.enteredUnit
@@ -1705,7 +1682,7 @@ export const addCatalogIngredientToInventory = async (
     purchaseQuantityNormalized: purchase.purchaseQuantityNormalized,
     purchaseQuantityNormalizedUnit: purchase.purchaseQuantityNormalizedUnit,
     normalizedUnitCostMinorRub: purchase.normalizedUnitCostMinorRub,
-    properties,
+    properties: { ...properties, ...(packageVariant ? { _package_content_snapshot: { packageVariantId: packageVariant.id, stockContentAmount: packageVariant.stockContentAmount, stockContentUnit: packageVariant.stockContentUnit } } : {}) },
     purchasedAt: parsed.purchasedAt,
     freshnessDate: parsed.freshnessDate,
     notes: parsed.notes
@@ -1749,7 +1726,9 @@ export const addCustomIngredientToInventory = async (
     linkage.technicalData
   );
   const purchase = normalizeInventoryPurchaseContext(profile, parsed, rates, {
+    packEquivalent: resolveInventoryPackEquivalent(linkage.technicalData),
     defaultCurrency: context.preferredCurrency ?? null,
+    displayMeasurement: amount.enteredUnit === "pack" ? {quantity:amount.enteredQuantity,unit:"pack"} : resolveInventoryMeasurementForDisplay({...amount,...linkage}),
     fallbackMeasurement: {
       quantity: amount.enteredQuantity,
       unit: amount.enteredUnit
@@ -1810,6 +1789,8 @@ export const updateInventoryQuantity = async (userId: string, inventoryItemId: s
     throw new Error("NOT_FOUND");
   }
 
+  if (row.catalog && !isPhysicalIngredient(row.catalog)) throw new Error("INGREDIENT_NOT_STOCKABLE");
+  if (row.custom) await ensureOwnedCustomIngredient(userId, row.custom.id);
   const source = resolvePersistedInventorySource(row);
   const profile = resolveHumanFacingInventoryUnitProfile({
     type: source.source.type,
@@ -1824,7 +1805,7 @@ export const updateInventoryQuantity = async (userId: string, inventoryItemId: s
     profile,
     parsed.enteredQuantity,
     parsed.enteredUnit,
-    row.packageVariant,
+    applyInventoryPackageSnapshot(row.packageVariant, current.properties),
     source.source.technicalData ?? null
   );
 
@@ -1876,6 +1857,12 @@ export const updateInventoryQuantity = async (userId: string, inventoryItemId: s
 
 export const setInventoryItemQuantityToZero = async (userId: string, inventoryItemId: string) => {
   const current = await ensureInventoryItem(userId, inventoryItemId);
+  if (current.ingredientCatalogItemId) {
+    const source = await db.query.ingredients.findFirst({ where: eq(ingredients.id, current.ingredientCatalogItemId) });
+    if (source && !isPhysicalIngredient(source)) throw new Error("INGREDIENT_NOT_STOCKABLE");
+  } else if (current.userCustomIngredientId) {
+    await ensureOwnedCustomIngredient(userId, current.userCustomIngredientId);
+  }
   await db.transaction(async (tx) => {
     // Остаток читаем под блокировкой строки (тот же TOCTOU-мотив, что в
     // updateInventoryQuantity, #19-ревью).
@@ -1980,9 +1967,11 @@ export const updateInventoryItem = async (
   if (sourceLinkage.ingredientCatalogItemId) {
     const [catalogItem, packageVariant, rates] = await Promise.all([
       ensureCatalogIngredientExists(sourceLinkage.ingredientCatalogItemId),
-      ensureCatalogPackageVariant(sourceLinkage.ingredientCatalogItemId, parsed.packageVariantId ?? null),
+      ensureCatalogPackageVariant(sourceLinkage.ingredientCatalogItemId, parsed.packageVariantId === undefined ? (sourceLinkage.ingredientCatalogItemId === current.ingredientCatalogItemId ? current.packageVariantId : null) : parsed.packageVariantId),
       listSystemCurrencyRates()
     ]);
+    const effectivePackageVariant = packageVariant?.id === current.packageVariantId
+      ? applyInventoryPackageSnapshot(packageVariant, current.properties) : packageVariant;
     const { profile, category, subtype } = buildCatalogProfile(catalogItem);
     const linkage = buildCatalogIngredientLinkage(catalogItem);
     const properties = buildWaterTreatmentConcentrationInventoryProperties({
@@ -2004,11 +1993,14 @@ export const updateInventoryItem = async (
       profile,
       parsed.enteredQuantity,
       parsed.enteredUnit,
-      packageVariant,
+      effectivePackageVariant,
       linkage.technicalData
     );
     const purchase = normalizeInventoryPurchaseContext(profile, parsed, rates, {
+      packEquivalent: resolveInventoryItemPackEquivalent({ packageVariant: effectivePackageVariant, technicalData: linkage.technicalData }),
       defaultCurrency: context.preferredCurrency ?? null,
+      previousPurchase: sourceLinkage.ingredientCatalogItemId === current.ingredientCatalogItemId && (packageVariant?.id ?? null) === (current.packageVariantId ?? null) ? current as unknown as InventoryPurchaseContext : null,
+      displayMeasurement: amount.enteredUnit === "pack" ? {quantity:amount.enteredQuantity,unit:"pack"} : resolveInventoryMeasurementForDisplay({...amount,...linkage}),
       fallbackMeasurement: {
         quantity: amount.enteredQuantity,
         unit: amount.enteredUnit
@@ -2039,7 +2031,7 @@ export const updateInventoryItem = async (
       purchaseQuantityNormalized: purchase.purchaseQuantityNormalized,
       purchaseQuantityNormalizedUnit: purchase.purchaseQuantityNormalizedUnit,
       normalizedUnitCostMinorRub: purchase.normalizedUnitCostMinorRub,
-      properties,
+      properties: { ...properties, ...(effectivePackageVariant ? { _package_content_snapshot: { packageVariantId: effectivePackageVariant.id, stockContentAmount: effectivePackageVariant.stockContentAmount, stockContentUnit: effectivePackageVariant.stockContentUnit } } : {}) },
       purchasedAt: parsed.purchasedAt,
       freshnessDate: parsed.freshnessDate,
       notes: parsed.notes,
@@ -2084,7 +2076,10 @@ export const updateInventoryItem = async (
     linkage.technicalData
   );
   const purchase = normalizeInventoryPurchaseContext(profile, parsed, rates, {
+    packEquivalent: resolveInventoryPackEquivalent(linkage.technicalData),
+    previousPurchase: sourceLinkage.userCustomIngredientId === current.userCustomIngredientId ? current as unknown as InventoryPurchaseContext : null,
     defaultCurrency: context.preferredCurrency ?? null,
+    displayMeasurement: amount.enteredUnit === "pack" ? {quantity:amount.enteredQuantity,unit:"pack"} : resolveInventoryMeasurementForDisplay({...amount,...linkage}),
     fallbackMeasurement: {
       quantity: amount.enteredQuantity,
       unit: amount.enteredUnit
@@ -2285,6 +2280,21 @@ export const listInventoryForUserWithMeta = async (
   }
 
   let items = rows.map((row) => mapInventoryRow(row));
+  const catalogIds = [...new Set(items.map((item)=>item.ingredientCatalogItemId).filter((id):id is string=>Boolean(id)))];
+  if (catalogIds.length) {
+    const variants = await db.select().from(ingredientPackageVariants).where(inArray(ingredientPackageVariants.ingredientId,catalogIds));
+    items = items.map((item) => ({
+      ...item,
+      source: {
+        ...item.source,
+        packageVariants: variants.filter((variant) => variant.ingredientId === item.ingredientCatalogItemId).map((variant) => (
+          variant.id === item.packageVariantId && item.source.packageVariant
+            ? { ...variant, stockContentAmount: item.source.packageVariant.stockContentAmount, stockContentUnit: item.source.packageVariant.stockContentUnit }
+            : variant
+        ))
+      }
+    }));
+  }
   items = await enrichInventoryDerivedCustomCountry(items);
 
   if (parsed.type) {

@@ -12,7 +12,7 @@
  * вызову эндпоинта рендера).
  */
 
-import { preferredGravityUnits, type PreferredGravityUnit } from "../system/gravity-units";
+import { convertGravityFieldValue, preferredGravityUnits, toCalculatorGravityUnit, type PreferredGravityUnit } from "../system/gravity-units";
 
 import {
   isValidIsoDate,
@@ -45,6 +45,17 @@ export type LabelStudioFields = {
   volume: string;
   batch: string;
 };
+
+/** Меняет шкалу только OG/FG, сохраняя остальные поля и пустые значения. */
+export const convertLabelGravityFields = <T extends Pick<LabelStudioFields, "og" | "fg">>(
+  fields: T,
+  from: PreferredGravityUnit,
+  to: PreferredGravityUnit
+): T => ({
+  ...fields,
+  og: convertGravityFieldValue(fields.og, toCalculatorGravityUnit(from), toCalculatorGravityUnit(to)),
+  fg: convertGravityFieldValue(fields.fg, toCalculatorGravityUnit(from), toCalculatorGravityUnit(to))
+});
 
 export const LABEL_STUDIO_FIELD_KEYS = [
   "title",
@@ -124,7 +135,9 @@ export const serializeLabelStudioState = (
   if (state.dpi !== defaults.dpi) {
     params.set("dpi", String(state.dpi));
   }
-  if (state.gravityUnit !== defaults.gravityUnit) {
+  // Числа из ссылки должны сохранять шкалу и при открытии в другом профиле.
+  if (state.gravityUnit !== defaults.gravityUnit
+    || state.fields.og !== defaults.fields.og || state.fields.fg !== defaults.fields.fg) {
     params.set("gravityUnit", state.gravityUnit);
   }
   if (state.bottlingDate !== defaults.bottlingDate) {

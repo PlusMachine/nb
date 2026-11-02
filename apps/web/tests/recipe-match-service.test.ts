@@ -1319,4 +1319,40 @@ describe("computeRecipeMatchesForBrewBatches — ключ по партии, а 
     // Профиль оборудования на пути партий не при чём.
     expect(listEquipmentProfiles).not.toHaveBeenCalled();
   });
+  it("shared planning: 5 kg covers only 5 kg across two 4 kg batches", async () => {
+    (listInventoryForUser as Mock).mockResolvedValue([pilsnerStock(5000)]);
+    const result = await computeRecipeMatchesForBrewBatches({userId: "u-1", shareInventory: true, batches: [
+      {brewBatchId: "bb-1", recipeId: "r-1"}, {brewBatchId: "bb-2", recipeId: "r-1"}
+    ]});
+    expect(result["bb-1"].lines[0].shortfallNormalized).toBe(0);
+    expect(result["bb-2"].lines[0].shortfallNormalized).toBe(3000);
+    expect(result["bb-2"].lines[0].suggestedAddQuantity).toBe(3);
+  });
+
+  it("shared planning keeps consumed credits private and uses them before stock", async () => {
+    (listInventoryForUser as Mock).mockResolvedValue([pilsnerStock(1000)]);
+    (getBrewBatchInventoryCreditsForBatches as Mock).mockResolvedValue(new Map([["bb-1", credit(4000)]]));
+    const result = await computeRecipeMatchesForBrewBatches({userId: "u-1", shareInventory: true, batches: [
+      {brewBatchId: "bb-1", recipeId: "r-1"}, {brewBatchId: "bb-2", recipeId: "r-1"}
+    ]});
+    expect(result["bb-1"].lines[0].shortfallNormalized).toBe(0);
+    expect(result["bb-2"].lines[0].shortfallNormalized).toBe(3000);
+  });
+
+  it("shared planning never reuses depleted stock for a third batch", async () => {
+    (listInventoryForUser as Mock).mockResolvedValue([pilsnerStock(5000)]);
+    const result = await computeRecipeMatchesForBrewBatches({userId: "u-1", shareInventory: true, batches: [
+      {brewBatchId: "bb-1", recipeId: "r-1"}, {brewBatchId: "bb-2", recipeId: "r-1"}, {brewBatchId: "bb-3", recipeId: "r-1"}
+    ]});
+    expect(Object.values(result).map((match) => match.lines[0].shortfallNormalized)).toEqual([0, 3000, 4000]);
+  });
+
+  it("independent batch previews still compare against the whole stock", async () => {
+    (listInventoryForUser as Mock).mockResolvedValue([pilsnerStock(5000)]);
+    const result = await computeRecipeMatchesForBrewBatches({userId: "u-1", batches: [
+      {brewBatchId: "bb-1", recipeId: "r-1"}, {brewBatchId: "bb-2", recipeId: "r-1"}
+    ]});
+    expect(Object.values(result).map((match) => match.lines[0].shortfallNormalized)).toEqual([0, 0]);
+  });
+
 });

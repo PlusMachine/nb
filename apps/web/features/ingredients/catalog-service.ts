@@ -1,3 +1,6 @@
+import { isPhysicalIngredient } from "./material-policy";
+import { buildMaltBrowseOptions, matchesMaltBrowseFilters, groupConfirmedHopSuppliers, type MaltBrowseFilters } from "./catalog-browse";
+import { canonicalManufacturerLabel } from "./catalog-display";
 import {
   and,
   db,
@@ -122,9 +125,10 @@ type CatalogSearchParams = {
   customOnly?: boolean;
   limit?: number;
   includeCustom?: boolean;
+  inventoryOnly?: boolean;
 };
 
-type CatalogListParams = {
+type CatalogListParams = MaltBrowseFilters & {
   view?: "all" | "mine";
   page?: number;
   pageSize?: number;
@@ -259,6 +263,7 @@ const mapCustomIngredient = (
   return {
     id: item.id,
     source: "custom",
+    inventoryEnabled: isPhysicalIngredient({ properties: item.properties, technicalData }),
     type,
     category,
     subtype,
@@ -364,6 +369,7 @@ export const toIngredientSuggestionItem = (
   score?: number,
   matchRescue?: "layout" | "fuzzy" | "scatter"
 ): IngredientSuggestionItem => ({
+  inventoryEnabled: item.inventoryEnabled,
   id: item.id,
   type: item.type,
   category: item.category,
@@ -433,7 +439,7 @@ const filterItemsByManufacturer = (
     return items;
   }
 
-  const normalizedManufacturer = normalizeSearchText(manufacturer);
+  const normalizedManufacturer = normalizeSearchText(canonicalManufacturerLabel(manufacturer) ?? manufacturer);
   if (!normalizedManufacturer) {
     return items;
   }
@@ -916,7 +922,7 @@ const applyUsageCounts = async (
 };
 
 // Числовое сравнение по возрастанию для параметрических сортировок (альфа/цвет/
-// аттенюация): элементы без значения всегда уходят в конец, независимо от того,
+// степень сбраживания): элементы без значения всегда уходят в конец, независимо от того,
 // какая сторона сравнения null.
 const compareNullableNumericAscending = (
   left: number | null | undefined,
@@ -1020,7 +1026,7 @@ const enrichCustomItemsFromDerivedCatalog = (
       return item;
     }
 
-    let next = item;
+    let next = isPhysicalIngredient(base) ? item : { ...item, inventoryEnabled: false };
 
     if (item.category === "hop") {
       const storedCatalogAlpha = item.derivedFromHopAlphaAcidPct ?? null;
@@ -1688,13 +1694,18 @@ export const searchUserCatalogIngredients = async (
     : params.includeCustom === false
       ? scopedCatalogItems
       : scopedAllItems;
+  const catalogById = new Map(catalogItems.map((item) => [item.id, item]));
+  const materialItems = query.inventoryOnly ? searchableItems.filter((item) => {
+    const base = item.derivedFromIngredientId ? catalogById.get(item.derivedFromIngredientId) : null;
+    return isPhysicalIngredient(item) && (!base || isPhysicalIngredient(base));
+  }) : searchableItems;
   const groupScopedItems = query.category === "consumable"
-    ? filterItemsByGroup(searchableItems, "consumable", query.group)
+    ? filterItemsByGroup(materialItems, "consumable", query.group)
     : query.category === "water_treatment"
-      ? filterItemsByGroup(searchableItems, "water_treatment", query.group)
+      ? filterItemsByGroup(materialItems, "water_treatment", query.group)
     : query.category === "fermentable" && query.subtype === "fermentable"
-      ? filterItemsByGroup(searchableItems, "fermentable", query.group)
-      : searchableItems;
+      ? filterItemsByGroup(materialItems, "fermentable", query.group)
+      : materialItems;
   const manufacturerScopedItems = filterItemsByManufacturer(groupScopedItems, query.manufacturer);
   const favoriteScopedItems = filterItemsByFavoriteState(manufacturerScopedItems, query.favoritesOnly);
   const normalizedQuery = normalizeSearchText(query.q);
@@ -1885,6 +1896,7 @@ export const listUserCatalogIngredients = async (
   const selected = rankItems(sourceItems, (item) => (
     (!params.category || item.category === params.category)
     && (!params.subtype || (item.category === "fermentable" && item.subtype === params.subtype))
+    && matchesMaltBrowseFilters(item,params)
     && (!params.consumableGroup || (
       item.category === "consumable" && resolveConsumableInventoryBroadGroup(item) === params.consumableGroup
     ))
@@ -1902,12 +1914,18 @@ export const listUserCatalogIngredients = async (
   });
 
   const total = filtered.length;
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  const pagedItems = filtered.slice((page - 1) * pageSize, page * pageSize);
+  const groups = params.category === "hop" ? groupConfirmedHopSuppliers(filtered) : null;
+  const totalGroups = groups?.length ?? total;
+  const totalPages = Math.max(1, Math.ceil(totalGroups / pageSize));
+  const pagedItems = groups
+    ? groups.slice((page - 1) * pageSize,page * pageSize).flatMap((group)=>group.variants)
+    : filtered.slice((page - 1) * pageSize, page * pageSize);
   const hydratedItems = await applyUsageCounts(userId, pagedItems);
 
   return {
     items: hydratedItems,
+    browseOptions: params.subtype === "malt" ? buildMaltBrowseOptions(sourceItems) : undefined,
+    totalGroups,
     page,
     pageSize,
     total,
@@ -2105,7 +2123,12 @@ export const getUserCatalogIngredientByRef = async (
   let item: UserCatalogIngredientDto | null = null;
 
   if (source === "catalog") {
-    const systemItem = await getIngredientById(id);
+    let systemItem = await getIngredientById(id);
+    const visited = new Set<string>();
+    while (systemItem?.status === "merged" && systemItem.mergedIntoId && !visited.has(systemItem.id)) {
+      visited.add(systemItem.id);
+      systemItem = await getIngredientById(systemItem.mergedIntoId);
+    }
     item = systemItem ? mapSystemIngredient(systemItem) : null;
   } else if (!userId) {
     // Пользовательские (custom) ингредиенты доступны только их владельцу.
@@ -2142,11 +2165,12 @@ export const getUserCatalogIngredientByRef = async (
     const needsBaseDisplayName = !result.derivedFromDisplayName;
     const needsCatalogHopAlpha = result.category === "hop" && result.derivedFromHopAlphaAcidPct == null;
     const needsCountryCode = !result.countryCode;
-    if (needsBaseDisplayName || needsCatalogHopAlpha || needsCountryCode) {
+    if (needsBaseDisplayName || needsCatalogHopAlpha || needsCountryCode || result.inventoryEnabled !== false) {
       const baseItem = await getIngredientById(result.derivedFromIngredientId);
       if (baseItem) {
         result = {
           ...result,
+          inventoryEnabled: isPhysicalIngredient(result) && isPhysicalIngredient(baseItem),
           derivedFromDisplayName: needsBaseDisplayName ? baseItem.primaryLabelRu : result.derivedFromDisplayName,
           derivedFromHopAlphaAcidPct: needsCatalogHopAlpha ? baseItem.hopAlphaAcidPct ?? null : result.derivedFromHopAlphaAcidPct,
           countryCode: needsCountryCode ? baseItem.countryCode ?? null : result.countryCode,

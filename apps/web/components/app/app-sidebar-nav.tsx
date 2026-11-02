@@ -42,7 +42,7 @@ export function AppSidebarNav({ user, onNavigate }: AppSidebarNavProps) {
 
   return (
     <div className="flex h-full flex-col">
-      <nav className="flex flex-1 flex-col gap-1" aria-label="Навигация рабочей зоны">
+      <nav className="flex flex-1 flex-col gap-1" aria-label="Навигация по личному кабинету">
         {resolveAppNavGroups(user).map((group, groupIndex) => (
           <React.Fragment key={groupIndex}>
             {groupIndex > 0 ? <div className="my-2 border-t border-border/70" /> : null}
@@ -80,7 +80,7 @@ export function AppSidebarNav({ user, onNavigate }: AppSidebarNavProps) {
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
             <Shield className="h-4 w-4 shrink-0" />
-            Админка
+            Панель управления
           </Link>
         ) : null}
         <Link

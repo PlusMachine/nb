@@ -61,7 +61,7 @@ export function DeleteCustomCatalogIngredientButton({
       <ConfirmActionDialog
         open={open}
         title="Удалить ингредиент?"
-        description={`Пользовательский ингредиент «${displayName}» будет удалён из вашего каталога, если он не используется в рецептах или на складе.`}
+        description={`Ваш ингредиент «${displayName}» будет удалён из вашего каталога, если он не используется в рецептах или на складе.`}
         confirmLabel="Удалить ингредиент"
         pendingLabel="Удаляем..."
         pending={isPending}

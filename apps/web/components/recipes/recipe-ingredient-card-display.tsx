@@ -132,6 +132,9 @@ export const buildRecipeIngredientTechnicalBadges = (
   if (!technicalData) {
     return [];
   }
+  if (technicalData.type === "fermentable" && technicalData.functionalRole === "process_only") {
+    return [{ key: "process", label: "Для фильтрации затора" }];
+  }
 
   const badges: RecipeIngredientTechnicalBadge[] = [];
   const seen = new Set<string>();
@@ -162,7 +165,7 @@ export const buildRecipeIngredientTechnicalBadges = (
   } else if (technicalData.type === "malt" || technicalData.type === "fermentable") {
     const fermentable = technicalData as Extract<IngredientTechnicalData, { type: "malt" | "fermentable" }>;
     pushBadge(formatColorBadge(technicalData), resolveColorBadgeAccent(technicalData));
-    pushBadge(fermentable.extractPctDryBasis != null ? `Экст-ть ${formatValue(fermentable.extractPctDryBasis)}%` : null);
+    pushBadge(fermentable.extractPctDryBasis != null ? `Экстрактивность ${formatValue(fermentable.extractPctDryBasis)}%` : null);
     pushBadge(
       fermentable.type === "malt" && fermentable.maxUsagePct != null
         ? `до ${formatValue(fermentable.maxUsagePct)} % засыпи`
@@ -173,7 +176,7 @@ export const buildRecipeIngredientTechnicalBadges = (
   } else if (technicalData.type === "yeast") {
     const yeast = technicalData as Extract<IngredientTechnicalData, { type: "yeast" }>;
     pushBadge(resolveYeastFormLabelRu(yeast.form));
-    pushBadge(yeast.attenuationPctTypical != null ? `Атт. ${formatValue(yeast.attenuationPctTypical)}%` : null);
+    pushBadge(yeast.attenuationPctTypical != null ? `Сбраживание ${formatValue(yeast.attenuationPctTypical)}%` : null);
     pushBadge(
       yeast.fermentationTempCMin != null && yeast.fermentationTempCMax != null
         ? `${formatValue(yeast.fermentationTempCMin)}-${formatValue(yeast.fermentationTempCMax)}°C`

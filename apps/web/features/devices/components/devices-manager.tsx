@@ -514,7 +514,7 @@ export function DevicesManager({ initialTiles, demoAvailable, preferredGravityUn
       {tiles.length === 0 ? (
         <Card className="p-6 text-sm text-muted-foreground">
           Пока нет подключённых устройств. Подключите BrewForge или цифровой ареометр
-          {demoAvailable ? ", либо создайте демо-пивоварню без железа" : ""}.
+          {demoAvailable ? ", либо попробуйте демо-пивоварню" : ""}.
         </Card>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">

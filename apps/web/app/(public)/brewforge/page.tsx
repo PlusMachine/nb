@@ -13,7 +13,7 @@ const DemoPult = dynamic(() => import("@/components/demo/demo-pult").then((mod) 
 
 const title = "BrewForge — автоматика варки";
 const description =
-  "Контроллер BrewForge ведёт варку по рецепту с сайта: нагрев, паузы затирания, таймеры хмеля. Проект в разработке.";
+  "Контроллер BrewForge ведёт варку по рецепту с сайта: нагрев, паузы затирания, таймеры внесения хмеля. Проект в разработке.";
 
 export const metadata: Metadata = {
   title,

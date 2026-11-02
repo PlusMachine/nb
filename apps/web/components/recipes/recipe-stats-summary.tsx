@@ -1,3 +1,4 @@
+import { formatRecipeBitternessMissing } from "@/features/recipes/bitterness-completeness";
 import React from "react";
 import Link from "next/link";
 import { CircleAlert, CircleCheck, ExternalLink } from "lucide-react";
@@ -10,7 +11,7 @@ import { formatGravity, formatGravityRange, formatGravitySecondary, type Preferr
 import { BeerGlassIcon } from "@/components/recipes/beer-glass-icon";
 
 type RecipeStatsSource = Pick<RecipeListItemDto | RecipeDetailDto, "og" | "fg" | "abv" | "ibu" | "color" | "styleId">
-  & Partial<Pick<RecipeDetailDto, "fgEstimateMode" | "fgEstimateDetails">>;
+  & Partial<Pick<RecipeDetailDto, "fgEstimateMode" | "fgEstimateDetails" | "bitternessEstimate">>;
 
 type MetricStatus = "in_range" | "below" | "above";
 
@@ -162,7 +163,7 @@ export function RecipeStatsSummary({
 
   const statuses = items.map((item) => metricStatusOf(item.rawValue, item.range));
   const evaluated = statuses.filter((status): status is MetricStatus => status != null);
-  const overallFit = evaluated.length > 0 && evaluated.every((status) => status === "in_range");
+  const overallFit = !recipe.bitternessEstimate?.missing.length && evaluated.length > 0 && evaluated.every((status) => status === "in_range");
 
   return (
     <section className={compact ? "border-b border-border py-4" : "rounded-2xl border border-border bg-card p-5 shadow-sm"}>
@@ -234,6 +235,7 @@ export function RecipeStatsSummary({
           );
         })}
       </dl>
+      {recipe.bitternessEstimate?.missing.length ? <p className="mt-3 text-xs leading-5 text-muted-foreground">{formatRecipeBitternessMissing(recipe.bitternessEstimate)}</p> : null}
     </section>
   );
 }

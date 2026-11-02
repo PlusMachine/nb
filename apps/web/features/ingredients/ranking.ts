@@ -1541,6 +1541,15 @@ export const createIngredientRanker = (
     }
 
     const normalizedCandidate = prepared ?? normalizeCandidate(candidate);
+    const brandWords = new Set(normalizedCandidate.brandEntries.flatMap((entry) => entry.normalized.split(" ")));
+    const brandTokens = queryInfo.tokens.filter((token) => brandWords.has(token));
+    const productTokens = queryInfo.tokens.filter((token) => !brandWords.has(token));
+    if (brandTokens.length && productTokens.some((token) => /\d/.test(token))
+      && normalizedCandidate.nameEntries.some((entry) => {
+        const words = entry.normalized.split(" ");
+        return productTokens.every((token) => words.some((word) => word === token || (!/\d/.test(token) && token.length >= 3 && word.startsWith(token))));
+      })) return { tier: 0, score: buildScore(0, 1200 + queryInfo.base.length), matchType: "name" };
+
     const consumableRank = isConsumableCandidate(candidate)
       ? buildConsumableRank(queryInfo, candidate, normalizedCandidate)
       : null;

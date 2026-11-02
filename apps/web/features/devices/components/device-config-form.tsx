@@ -205,7 +205,7 @@ export function DeviceConfigForm({ deviceId, deviceName, initialProfiles }: Prop
       }
       const parsed = DeviceConfigSchema.safeParse(body.config);
       if (!parsed.success) {
-        setLoadError("Устройство вернуло неожиданный формат конфигурации");
+        setLoadError("Не удалось прочитать настройки, полученные от устройства");
         return;
       }
       setBaseline(parsed.data);
@@ -343,7 +343,7 @@ export function DeviceConfigForm({ deviceId, deviceName, initialProfiles }: Prop
       </Card>
 
       {loading ? (
-        <Card className="p-6 text-sm text-muted-foreground">Загрузка конфигурации устройства…</Card>
+        <Card className="p-6 text-sm text-muted-foreground">Загрузка настроек устройства…</Card>
       ) : loadError ? (
         <Card className="border-border p-6">
           <p className="text-sm font-medium text-foreground">Не удалось получить настройки</p>
@@ -379,7 +379,7 @@ export function DeviceConfigForm({ deviceId, deviceName, initialProfiles }: Prop
           <Card className="p-5">
             <h2 className="text-sm font-semibold text-foreground">Калибровка датчиков</h2>
             <p className="mt-1 text-xs text-muted-foreground">
-              2-точечная калибровка каждого датчика: итог = измерение × масштаб + смещение.
+              Калибровка по двум точкам: показание × коэффициент + поправка.
             </p>
             <div className="mt-4 space-y-3">
               {Array.from({ length: SENSOR_COUNT }).map((_, i) => {
@@ -435,7 +435,7 @@ export function DeviceConfigForm({ deviceId, deviceName, initialProfiles }: Prop
             ) : null}
             {saveOk ? (
               <span role="status" className="text-sm text-success">
-                Настройки сохранены. Показаны значения, принятые устройством с учётом допустимых ограничений. Они вступят в силу после перезагрузки.
+                Настройки сохранены и вступят в силу после перезагрузки. Показаны значения, которые приняло устройство.
               </span>
             ) : null}
             {saveError ? <span role="alert" className="text-sm text-destructive">{saveError}</span> : null}

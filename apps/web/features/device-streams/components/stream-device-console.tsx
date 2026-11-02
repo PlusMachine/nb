@@ -324,7 +324,7 @@ export function StreamDeviceConsole({
         ) : celebrated && latest ? (
           <div className="rounded-xl border border-success/30 bg-success-subtle p-4">
             <p className="text-sm font-semibold text-success-subtle-foreground">
-              ✅ Данные пошли: {formatReadingSummary(latest, preferredGravityUnit)}
+              ✅ Получены показания: {formatReadingSummary(latest, preferredGravityUnit)}
             </p>
           </div>
         ) : latest ? (
@@ -476,7 +476,7 @@ export function StreamDeviceConsole({
       <ConfirmActionDialog
         open={rotateOpen}
         title="Создать новый адрес подключения?"
-        description="Старый URL перестанет работать сразу — устройство с этим адресом в настройках не сможет присылать данные, пока вы не укажете новый адрес."
+        description="Старый адрес сразу перестанет работать. Чтобы продолжить получать показания, укажите новый адрес в настройках устройства."
         confirmLabel="Создать адрес"
         pendingLabel="Создаём адрес…"
         tone="danger"

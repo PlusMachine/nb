@@ -16,7 +16,7 @@ import {
 export const inventoryUnitDimensions = ["weight", "volume", "count"] as const;
 export type InventoryUnitDimension = (typeof inventoryUnitDimensions)[number];
 
-export const inventoryWeightUnits = ["g", "kg", "oz", "lb"] as const;
+export const inventoryWeightUnits = ["mg", "g", "kg", "oz", "lb"] as const;
 export const inventoryVolumeUnits = ["ml", "l", "gal"] as const;
 export const inventoryCountUnits = ["item", "pack"] as const;
 export const inventoryUnits = [...inventoryWeightUnits, ...inventoryVolumeUnits, ...inventoryCountUnits] as const;
@@ -53,6 +53,7 @@ type InventoryUnitProfileInput = {
 };
 
 export const inventoryUnitLabels: Record<InventoryUnit, string> = {
+  mg: "мг",
   g: "г",
   kg: "кг",
   oz: "унц.",
@@ -65,6 +66,7 @@ export const inventoryUnitLabels: Record<InventoryUnit, string> = {
 };
 
 export const inventoryUnitShortLabels: Record<InventoryUnit, string> = {
+  mg: "мг",
   g: "г",
   kg: "кг",
   oz: "унц.",
@@ -77,6 +79,7 @@ export const inventoryUnitShortLabels: Record<InventoryUnit, string> = {
 };
 
 const unitDimensionByUnit: Record<InventoryUnit, InventoryUnitDimension> = {
+  mg: "weight",
   g: "weight",
   kg: "weight",
   oz: "weight",
@@ -160,6 +163,8 @@ export const getInventoryUnitDimension = (unit: InventoryUnit): InventoryUnitDim
 
 export const getInventoryUnitQuantityPrecision = (unit: InventoryUnit): number => {
   switch (unit) {
+    case "mg":
+      return 0;
     case "g":
     case "ml":
       return 1;
@@ -194,7 +199,7 @@ const normalizeMeasurementDimension = (value?: string | null): InventoryUnitDime
   value === "weight" || value === "volume" || value === "count" ? value : null
 );
 
-const normalizeInventoryAllowedUnits = (units: readonly InventoryUnit[]) => [...new Set(units)];
+const normalizeInventoryAllowedUnits = (units: readonly InventoryUnit[]) => [...new Set(units.includes("g") || units.includes("kg") ? [...units,"mg" as const] : units)];
 
 const resolveQuantityDefaultsProfile = (
   quantityDefaults?: Record<string, unknown> | null
@@ -311,7 +316,7 @@ export const resolveInventoryUnitProfile = ({
   if (explicitDefaultUnit && explicitAllowedUnits.length && explicitAllowedUnits.includes(explicitDefaultUnit)) {
     return {
       defaultUnit: explicitDefaultUnit,
-      allowedUnits: explicitAllowedUnits,
+      allowedUnits: normalizeInventoryAllowedUnits(explicitAllowedUnits),
       measurementDimension: explicitMeasurementDimension ?? getInventoryUnitDimension(explicitDefaultUnit)
     };
   }
@@ -429,11 +434,19 @@ export const normalizeInventoryMeasurementForProfile = (
   }
 
   const enteredUnit = normalizedEnteredUnit;
-  const roundedEnteredQuantity = roundInventoryQuantity(enteredQuantity);
+  if (!Number.isFinite(enteredQuantity) || enteredQuantity < 0) throw new Error("INVALID_QUANTITY");
+  if (enteredUnit === "mg" && !Number.isInteger(enteredQuantity)) throw new Error("INVALID_QUANTITY_PRECISION");
+  const roundedEnteredQuantity = enteredQuantity;
   const unitDimension = getInventoryUnitDimension(enteredUnit);
 
   if (unitDimension === "weight") {
     const weightUnit = enteredUnit as InventoryWeightUnit;
+    const quantity = convertWeight({ value: enteredQuantity, unit: weightUnit }, "g").value;
+    if (enteredQuantity > 0 && quantity === 0) throw new Error("INVALID_QUANTITY_PRECISION");
+    if (["mg", "g", "kg"].includes(enteredUnit)) {
+      const precise = convertWeight({ value: enteredQuantity, unit: weightUnit }, "g", 12).value;
+      if (Math.abs(precise - quantity) > 1e-9) throw new Error("INVALID_QUANTITY_PRECISION");
+    }
     return {
       enteredQuantity: roundedEnteredQuantity,
       enteredUnit,

@@ -347,10 +347,10 @@ export function KegCarbonationBlock({
             </label>
           </div>
           <div className="sm:text-right">
-            <span className="text-[11px] font-medium uppercase tracking-[0.06em] text-muted-foreground">давление</span>
+            <span className="text-[11px] font-medium uppercase tracking-[0.06em] text-muted-foreground">избыточное давление</span>
             {resultUnreachable ? (
               <p className="max-w-xs text-sm leading-5 text-muted-foreground">
-                При такой температуре цель достигается почти без избыточного давления.
+                При такой температуре для выбранной карбонизации почти не нужно избыточное давление.
               </p>
             ) : resultValue != null ? (
               <div>

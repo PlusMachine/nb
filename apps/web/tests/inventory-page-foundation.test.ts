@@ -188,7 +188,7 @@ describe("inventory page foundation", () => {
     expect(grouped.map((group) => group.key)).toEqual(["fermentable", "hop"]);
     expect(grouped.find((group) => group.key === "fermentable")?.items.map((item) => item.id)).toEqual(["inv-1", "inv-2"]);
     expect(grouped.find((group) => group.key === "hop")?.items.map((item) => item.id)).toEqual(["inv-3", "inv-4"]);
-    expect(html).toContain("Сбраживаемые");
+    expect(html).toContain("Солод и другое сырьё");
     expect(html).toContain("Хмель");
     expect(html).not.toContain("Закончившиеся");
     expect(html).toContain("Пилснер солод");
@@ -224,7 +224,7 @@ describe("inventory page foundation", () => {
     expect(html).toContain("Всего позиций");
     expect(html).toContain("В наличии");
     expect(html).toContain("Закончились");
-    expect(html).toContain("Сбраживаемые");
+    expect(html).toContain("Солод и другое сырьё");
     expect(html).toContain("Хмель");
   });
 

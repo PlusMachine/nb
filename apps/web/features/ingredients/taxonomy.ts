@@ -45,7 +45,7 @@ const waterTreatmentSubtypes = [
 const ingredientMatchPolicies = ["exact_only", "family_compatible"] as const;
 const ingredientCompletenessLevels = ["minimum", "recommended", "full"] as const;
 const ingredientMeasurementDimensions = ["weight", "volume", "count"] as const;
-const ingredientDisplayUnits = ["g", "kg", "oz", "lb", "ml", "l", "gal", "item", "pack"] as const;
+const ingredientDisplayUnits = ["mg", "g", "kg", "oz", "lb", "ml", "l", "gal", "item", "pack"] as const;
 
 type IngredientCategory = (typeof ingredientCategories)[number];
 type LegacyIngredientType = (typeof legacyIngredientTypes)[number];
@@ -88,7 +88,7 @@ export const ingredientCategorySubtypes = {
   water_treatment: waterTreatmentSubtypes
 } as const satisfies Record<IngredientCategory, readonly IngredientSubtype[]>;
 
-const WEIGHT_UNITS: IngredientDisplayUnit[] = ["g", "kg", "oz", "lb"];
+const WEIGHT_UNITS: IngredientDisplayUnit[] = ["mg", "g", "kg", "oz", "lb"];
 const VOLUME_UNITS: IngredientDisplayUnit[] = ["ml", "l", "gal"];
 const COUNT_UNITS: IngredientDisplayUnit[] = ["item", "pack"];
 const fermentableNonMaltTokens = [

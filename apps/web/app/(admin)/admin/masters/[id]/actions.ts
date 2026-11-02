@@ -16,7 +16,7 @@ import { requireRole } from "@/lib/auth";
 // отправляя всю витрину мастера обратно на модерацию. Форма результата и
 // маппинг ошибок — как в соседнем ../actions.ts.
 
-const firstZodMessage = (error: ZodError): string => error.issues[0]?.message ?? "Проверьте корректность данных.";
+const firstZodMessage = (error: ZodError): string => error.issues[0]?.message ?? "Проверьте введённые данные.";
 
 const ERROR_MESSAGES: Record<string, string> = {
   NOT_FOUND: "Не найдено — возможно, страницу нужно обновить.",

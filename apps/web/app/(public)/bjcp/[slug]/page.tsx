@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!article) {
     return {
       title: "Стиль не найден",
-      description: "Запрошенная BJCP-страница недоступна."
+      description: "Эта страница справочника BJCP недоступна."
     };
   }
 

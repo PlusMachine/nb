@@ -50,6 +50,11 @@ const columns: AdminDataTableColumn<AdminUserListItem>[] = [
     )
   },
   {
+    key: "lastSeenAt",
+    header: "Последний визит",
+    cell: user => <span className="text-sm text-muted-foreground">{user.lastSeenAt ? formatDate(user.lastSeenAt) : "Нет данных"}</span>
+  },
+  {
     key: "createdAt",
     header: "Регистрация",
     headerClassName: "w-32",
@@ -66,7 +71,7 @@ export function UsersTable({ items }: { items: AdminUserListItem[] }) {
       getRowLabel={(user) => user.displayName}
       empty={
         <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-          Никого не нашлось.
+          Пользователи не найдены.
         </p>
       }
     />

@@ -339,7 +339,7 @@ const waterWarningLabels: Record<string, string> = {
   water_split_below_batch_volume:
     "Сумма заторной и промывочной воды меньше объёма партии.",
   mash_water_volume_zero:
-    "Заторная вода 0 л — задайте объём затора или добавьте засыпь.",
+    "Объём заторной воды равен нулю. Укажите объём или добавьте засыпь.",
   source_profile_missing_or_zero:
     "Выберите исходную воду или введите профиль вручную.",
   target_profile_missing_or_zero: "Выберите целевой профиль воды.",
@@ -1027,11 +1027,11 @@ const buildWaterSetupSummary = ({
   mashPhEnabled: boolean;
 }): string => {
   if (!waterPlanMeta.setupEnabled) {
-    return "источник, цель, объёмы и pH";
+    return "Не настроена";
   }
 
   const hasTarget = Boolean(effectiveWaterPlanMeta.targetProfile);
-  const arrow = hasTarget ? `${sourceName} \u2192 ${targetName ?? "цель не выбрана"}` : sourceName;
+  const arrow = hasTarget ? `${sourceName} \u2192 ${targetName ?? "целевой профиль не выбран"}` : sourceName;
   const volumes = isSplitVolume
     ? `${waterPlanResult.waterVolumes.mashWaterL.toFixed(1)} \u002B ${waterPlanResult.waterVolumes.spargeWaterL.toFixed(1)} \u043b`
     : `${waterPlanResult.waterVolumes.totalWaterL.toFixed(1)} \u043b`;
@@ -1886,7 +1886,7 @@ export function WaterSetupWizard({
     !hasActiveWaterSetup
       ? "Исходная вода"
       : effectiveWaterPlanMeta.sourceProfileMode === "manual"
-      ? "Ручной профиль"
+      ? "Свой профиль"
       : effectiveWaterPlanMeta.sourceProfileMode === "saved"
         ? effectiveWaterPlanMeta.sourceProfileName ??
           selectedSavedSourceProfile?.name ??
@@ -1900,7 +1900,7 @@ export function WaterSetupWizard({
     !hasActiveWaterSetup
       ? "Целевой профиль"
       : effectiveWaterPlanMeta.targetProfileMode === "manual"
-      ? "Ручной целевой профиль"
+      ? "Свой целевой профиль"
       : effectiveWaterPlanMeta.targetProfileMode === "saved"
         ? effectiveWaterPlanMeta.targetProfileName ??
           selectedSavedTargetProfile?.name ??
@@ -2194,7 +2194,7 @@ export function WaterSetupWizard({
       <ConfirmActionDialog
         open={resetConfirmOpen}
         title="Сбросить настройку воды?"
-        description="Сбросятся источник, цель, объёмы и pH. Действие нельзя отменить."
+        description="Сбросятся выбранные профили воды, объёмы и pH. Действие нельзя отменить."
         confirmLabel="Сбросить"
         cancelLabel="Отмена"
         onConfirm={() => {

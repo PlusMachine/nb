@@ -36,7 +36,7 @@ import { bindBatchFermenterSchema } from "@/features/devices/contracts";
 import { BATCH_INVENTORY_SNAPSHOT_MESSAGE } from "@/features/brew-batches/inventory-snapshot";
 
 export type BrewActionResult = { ok: boolean; message: string };
-export type BrewDayProgressResult = BrewActionResult & { progress?: BrewDayProgress };
+export type BrewDayProgressResult = BrewActionResult & { progress?: BrewDayProgress; retryable?: boolean };
 export type BrewInventoryResult = BrewActionResult & {
   view?: BrewBatchInventoryView;
   /** Строки, оставшиеся без точного совпадения, но с кандидатами на замену (Ф2). */
@@ -50,7 +50,7 @@ const revalidateBatch = (brewBatchId: string) => {
 };
 
 const firstZodMessage = (error: ZodError): string =>
-  error.issues[0]?.message ?? "Проверьте корректность данных.";
+  error.issues[0]?.message ?? "Проверьте введённые данные.";
 
 export const setBrewBatchStatusAction = async (
   brewBatchId: string,
@@ -67,7 +67,7 @@ export const setBrewBatchStatusAction = async (
     return { ok: true, message: "Статус обновлён." };
   } catch (error) {
     if (error instanceof Error && error.message === "NOT_FOUND") {
-      return { ok: false, message: "Варка не найдена." };
+      return { ok: false, message: "Партия не найдена." };
     }
     return { ok: false, message: "Не удалось обновить статус." };
   }
@@ -89,7 +89,7 @@ export const deleteBrewBatchAction = async (
     return { ok: true, message: "Партия удалена." };
   } catch (error) {
     if (error instanceof Error && error.message === "NOT_FOUND") {
-      return { ok: false, message: "Варка не найдена или уже удалена." };
+      return { ok: false, message: "Партия не найдена или уже удалена." };
     }
     return { ok: false, message: "Не удалось удалить партию." };
   }
@@ -120,13 +120,13 @@ export const addBrewMeasurementAction = async (
       return { ok: false, message: firstZodMessage(error) };
     }
     if (error instanceof Error && error.message === "NOT_FOUND") {
-      return { ok: false, message: "Варка не найдена." };
+      return { ok: false, message: "Партия не найдена." };
     }
     if (error instanceof Error && error.message === "RATE_LIMITED") {
       return { ok: false, message: "Слишком часто. Подождите немного и попробуйте снова." };
     }
     if (error instanceof Error && error.message === "BREW_MEASUREMENT_QUOTA_REACHED") {
-      return { ok: false, message: "Достигнут предел числа замеров для этой партии (300)." };
+      return { ok: false, message: "Для одной партии можно сохранить не больше 300 замеров." };
     }
     return { ok: false, message: "Не удалось добавить замер." };
   }
@@ -178,7 +178,7 @@ export const updateBrewBatchNotesAction = async (
     return { ok: true, message: "Заметки сохранены." };
   } catch (error) {
     if (error instanceof Error && error.message === "NOT_FOUND") {
-      return { ok: false, message: "Варка не найдена." };
+      return { ok: false, message: "Партия не найдена." };
     }
     return { ok: false, message: "Не удалось сохранить заметки." };
   }
@@ -192,12 +192,12 @@ export const updateBrewBatchTastingNotesAction = async (
     const user = await requireUser();
     await updateBrewBatchTastingNotes(user.id, brewBatchId, tastingNotes);
     revalidateBatch(brewBatchId);
-    return { ok: true, message: "Дегустация сохранена." };
+    return { ok: true, message: "Заметки о дегустации сохранены." };
   } catch (error) {
     if (error instanceof Error && error.message === "NOT_FOUND") {
-      return { ok: false, message: "Варка не найдена." };
+      return { ok: false, message: "Партия не найдена." };
     }
-    return { ok: false, message: "Не удалось сохранить дегустацию." };
+    return { ok: false, message: "Не удалось сохранить заметки о дегустации." };
   }
 };
 
@@ -220,7 +220,7 @@ export const setBrewBatchPlannedForAction = async (
     return { ok: true, message: parsed.data ? "Дата варки обновлена." : "Дата варки сброшена." };
   } catch (error) {
     if (error instanceof Error && error.message === "NOT_FOUND") {
-      return { ok: false, message: "Варка не найдена." };
+      return { ok: false, message: "Партия не найдена." };
     }
     if (error instanceof Error && error.message === "INVALID_STATUS") {
       return { ok: false, message: "Дату можно менять только у запланированной варки." };
@@ -234,7 +234,7 @@ export const setBrewBatchPlannedForAction = async (
 export const setBrewDayStepStateAction = async (
   brewBatchId: string,
   stepId: string,
-  patch: { done?: boolean; timerStartedAt?: string | null }
+  patch: import("@/features/brew-batches/contracts").BrewDayStepStatePatch
 ): Promise<BrewDayProgressResult> => {
   try {
     const user = await requireUser();
@@ -249,7 +249,7 @@ export const setBrewDayStepStateAction = async (
     if (error instanceof Error && (error.message === "NOT_FOUND" || error.message === "UNKNOWN_STEP")) {
       return { ok: false, message: "Шаг варки не найден." };
     }
-    return { ok: false, message: "Не удалось обновить шаг." };
+    return { ok: false, message: "Не удалось обновить шаг.", retryable: true };
   }
 };
 
@@ -264,7 +264,7 @@ export const previewBrewBatchInventoryAction = async (
     const user = await requireUser();
     const plan = await previewBrewBatchConsumption(user.id, brewBatchId);
     if (!plan) {
-      return { ok: false, message: "Варка не найдена." };
+      return { ok: false, message: "Партия не найдена." };
     }
     return { ok: true, message: "", plan };
   } catch (error) {
@@ -351,13 +351,13 @@ export const consumeBrewBatchInventoryAction = async (
       return { ok: false, message: BATCH_INVENTORY_SNAPSHOT_MESSAGE };
     }
     if (error instanceof Error && error.message === "INSUFFICIENT_STOCK") {
-      return { ok: false, message: "Недостаточно остатков на складе для списания." };
+      return { ok: false, message: "На складе не хватает ингредиентов." };
     }
     if (error instanceof Error && error.message === "INVALID_SUBSTITUTION") {
-      return { ok: false, message: "Одна из выбранных замен больше недоступна — обновите предпросмотр." };
+      return { ok: false, message: "Одна из выбранных замен больше недоступна. Закройте окно списания и откройте его снова." };
     }
     if (error instanceof Error && error.message === "NOT_FOUND") {
-      return { ok: false, message: "Варка не найдена." };
+      return { ok: false, message: "Партия не найдена." };
     }
     return { ok: false, message: "Не удалось списать ингредиенты." };
   }
@@ -385,7 +385,7 @@ export const bindBatchFermenterAction = async (
       return { ok: false, message: firstZodMessage(error) };
     }
     if (error instanceof Error && error.message === "BREW_BATCH_NOT_FOUND") {
-      return { ok: false, message: "Варка не найдена." };
+      return { ok: false, message: "Партия не найдена." };
     }
     if (error instanceof Error && error.message === "BATCH_NOT_FERMENTING") {
       return { ok: false, message: "Привязать прибор можно только во время брожения." };
@@ -411,7 +411,7 @@ export const restoreBrewBatchInventoryAction = async (
     };
   } catch (error) {
     if (error instanceof Error && error.message === "NOT_FOUND") {
-      return { ok: false, message: "Варка не найдена." };
+      return { ok: false, message: "Партия не найдена." };
     }
     return { ok: false, message: "Не удалось вернуть ингредиенты." };
   }

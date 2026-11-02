@@ -4,7 +4,7 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { listBrewBatchesForUser } from "@/features/brew-batches/service";
 import type { BrewBatchStatus } from "@/features/brew-batches/contracts";
-import { BrewBatchListRow } from "@/features/brew-batches/components/brew-batch-list-row";
+import { BatchList } from "@/features/brew-batches/components/batch-list";
 import { NewBrewButton } from "@/components/recipes/new-brew-button";
 
 export const metadata = {
@@ -44,11 +44,7 @@ export default async function BrewBatchesPage() {
           <NewBrewButton />
         </section>
       ) : (
-        <ul className="space-y-2">
-          {sorted.map((batch) => (
-            <BrewBatchListRow key={batch.id} batch={batch} />
-          ))}
-        </ul>
+        <BatchList batches={sorted} />
       )}
     </main>
   );

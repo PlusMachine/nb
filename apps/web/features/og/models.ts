@@ -3,6 +3,7 @@ import type { BeerStyle } from "@nb/brewing-core";
 import { srmToHex } from "@/features/recipes/beer-color";
 import type { RecipeOgData } from "@/features/recipes/contracts";
 import { formatAbvShort, formatBatchVolume, formatIbuShort } from "@/features/recipes/format";
+import { defaultPreferredGravityUnit, formatGravity } from "@/features/system/gravity-units";
 import { pluralize } from "@/lib/pluralize";
 
 import { OG_COLORS, resolveTitleFontSize, stripUnsupportedGlyphs, truncateForCard } from "./theme";
@@ -112,9 +113,6 @@ const resolveBjcpCode = (style: BeerStyle | null): string | null => {
   return code;
 };
 
-/** Плотность как «1.048» (точка, 3 знака) — единый стиль gravity в проекте. */
-const formatGravity = (value: number): string => value.toFixed(3);
-
 // Фирменная полоса цвета лежит на тёмном холсте (#09090b). Показываем истинный
 // цвет пива по SRM, НО с полом яркости: иначе стаут/портер (near-black) сливается
 // со стеной и теряет и цветовой сигнал, и брендовую роль полосы. Домешиваем белый
@@ -222,7 +220,7 @@ export const buildRecipeOgView = (
     stats.push({ label: "IBU", value: formatIbuShort(recipe.ibu) });
   }
   if (recipe.og != null) {
-    stats.push({ label: "OG", value: formatGravity(recipe.og) });
+    stats.push({ label: "OG", value: formatGravity(recipe.og, defaultPreferredGravityUnit) });
   }
   if (recipe.batchSizeNormalizedUnit === "ml") {
     stats.push({ label: "Объём", value: formatBatchVolume(recipe.batchSizeNormalizedQuantity / 1000) });

@@ -86,8 +86,8 @@ export function BatchCompletedSessionPrompt({ brewBatchId }: { brewBatchId: stri
 
   const single = sessions.length === 1;
   const description = single
-    ? `«${sessions[0]!.deviceName}» всё ещё пишет данные по этой партии. Завершить сеанс, чтобы освободить устройство для следующей варки?`
-    : `${sessions.length} устройства всё ещё пишут данные по этой партии. Завершить сеансы, чтобы освободить их для следующей варки?`;
+    ? `«${sessions[0]!.deviceName}» всё ещё записывает показания для этой партии. Завершить сеанс для следующей варки?`
+    : `${sessions.length} устройства всё ещё записывают показания для этой партии. Завершить сеансы для следующей варки?`;
 
   return (
     <Dialog open={open} onOpenChange={(next) => !next && !pending && dismiss()} title="Завершить сеанс ареометра?" size="sm">

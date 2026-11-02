@@ -231,9 +231,9 @@ export function RaptConnectScreen({ preferredGravityUnit, onBack, onDone, onInte
               <ol className="mt-2 list-decimal space-y-1 pl-4 text-sm leading-6 text-muted-foreground">
                 <li>На RAPT-портале откройте Integrations → Web Hooks → New.</li>
                 <li>Метод запроса — POST.</li>
-                <li>Вставьте URL вебхука (выше) в адрес.</li>
+                <li>Вставьте адрес подключения в поле URL.</li>
                 <li>Вставьте шаблон данных (выше) в тело запроса.</li>
-                <li>Сохраните — RAPT Pill, камера ферментации или BrewZilla появятся здесь автоматически при первом пакете.</li>
+                <li>После сохранения RAPT Pill, камера брожения или BrewZilla появятся здесь, когда поступят первые показания.</li>
               </ol>
             ) : null}
           </div>
@@ -274,7 +274,7 @@ export function RaptConnectScreen({ preferredGravityUnit, onBack, onDone, onInte
       <ConfirmActionDialog
         open={rotateOpen}
         title="Создать новый адрес подключения?"
-        description="Старый URL перестанет работать сразу — вебхук на RAPT-портале, использующий его, перестанет присылать данные, пока вы не пропишете новый."
+        description="Старый адрес сразу перестанет работать. Чтобы продолжить получать показания, укажите новый адрес в вебхуке на портале RAPT."
         confirmLabel="Создать адрес"
         pendingLabel="Создаём адрес…"
         tone="danger"

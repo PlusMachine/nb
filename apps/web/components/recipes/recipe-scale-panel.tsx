@@ -25,7 +25,7 @@ const sectionOrder = ["fermentable", "hop", "yeast", "water_treatment", "consuma
 type SectionCategory = (typeof sectionOrder)[number];
 
 const sectionLabels: Record<SectionCategory, string> = {
-  fermentable: "Сбраживаемое",
+  fermentable: "Солод и другое сырьё",
   hop: "Хмель",
   yeast: "Дрожжи",
   water_treatment: "Водоподготовка",
@@ -248,7 +248,7 @@ function RecipeScaleDialog({
             <div>
               <h3 className="text-base font-semibold text-foreground">Пересчитать под свои параметры</h3>
               <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                Не меняет оригинал; чтобы сохранить — скопируйте рецепт себе.
+                Чтобы сохранить пересчитанный рецепт, скопируйте его себе.
                 {profileHint ? (
                   <> Подставлено из профиля «{profileHint}».</>
                 ) : null}

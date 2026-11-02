@@ -145,13 +145,13 @@ export function RecipeMatchPanelView({ match, onChanged }: { match: RecipeMatchD
                 </Link>
               </>
             ) : null}
-            {match.scaledToInventory ? ` · расчёт под ${numberFormatter.format(match.targetBatchVolumeL)} л` : ""}
+            {match.scaledToInventory ? ` · расчёт на ${numberFormatter.format(match.targetBatchVolumeL)} л` : ""}
           </p>
           {match.hasEquipmentProfile === false ? (
             <p className="mt-1 text-xs text-muted-foreground">
-              Расчёт под объём рецепта {numberFormatter.format(match.recipeBatchVolumeL)} л.{" "}
+              Расчёт на объём рецепта {numberFormatter.format(match.recipeBatchVolumeL)} л.{" "}
               <Link href="/app/equipment" className="underline decoration-dotted underline-offset-2 hover:text-foreground">
-                Задайте оборудование, чтобы пересчитать под свой котёл
+                Выберите оборудование для пересчёта на ваш объём варки
               </Link>
             </p>
           ) : null}

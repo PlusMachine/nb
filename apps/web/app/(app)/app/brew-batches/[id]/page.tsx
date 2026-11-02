@@ -1,4 +1,10 @@
 import { Suspense } from "react";
+import { z } from "zod";
+import { listBatchTasks } from "@/features/brew-batches/records-service";
+import { batchVolumeTargets } from "@/features/brew-batches/records";
+import { getEquipmentProfile } from "@/features/equipment-profiles/service";
+import { BatchVolumes, BatchCalibration, type CalibrationProfile } from "@/features/brew-batches/components/batch-volumes";
+import { BatchTasks } from "@/features/brew-batches/components/batch-tasks";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
@@ -14,6 +20,7 @@ import {
   summarizeBrewDayPlan
 } from "@/features/brew-batches/brew-day";
 import { resolveBrewNudge } from "@/features/brew-batches/dashboard";
+import { buildManualBrewSteps } from "@/features/brew-batches/manual-brew";
 import { resolveBrewCompletionRatingSlug } from "@/features/brew-batches/completion";
 import {
   brewBatchStatusBadgeClass,
@@ -83,6 +90,20 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
   }
 
   const { batch, measurements, summary } = detail;
+  const tasks = await listBatchTasks(user.id, batch.id);
+  const volumes = batch.volumeMeasurements ?? {};
+  const volumeTargets = batchVolumeTargets(batch.brewPlanSnapshot);
+  let calibrationProfile: CalibrationProfile | null = null;
+  const profileId = batch.equipmentProfileSnapshot?.id;
+  if (z.string().uuid().safeParse(profileId).success) {
+    try {
+      const profile = await getEquipmentProfile(user.id, profileId as string);
+      calibrationProfile = { id: profile.id, name: profile.name, evaporationRateLPerHr: profile.evaporationRateLPerHr, trubChillerLossL: profile.trubChillerLossL, coolingShrinkagePct: profile.coolingShrinkagePct, updatedAt: profile.updatedAt.toISOString() };
+    } catch (error) { if (!(error instanceof Error) || error.message !== "NOT_FOUND") throw error; }
+  }
+  const calibration = { profile: calibrationProfile, boilMinutes: batch.brewPlanSnapshot.boilPlan.boilTimeMinutes };
+  const volumePanel = <BatchVolumes key={batch.id} brewBatchId={batch.id} volumes={volumes} stage={batch.status === "brewing" ? "brew" : "bottling"} calibration={batch.deviceId || batch.status !== "brewing" ? calibration : undefined} />;
+  const taskPanel = <BatchTasks key={batch.id} brewBatchId={batch.id} tasks={tasks} />;
   const hasDevice = Boolean(batch.deviceId);
   const act = brewDayActForStatus(batch.status);
   // Подсказка в поле плотности зависит от акта: OG в варочный день, FG на брожении,
@@ -137,7 +158,9 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
   // (паритет автомат/ручной, §8.4) — batch.deviceId там может быть варочным
   // контроллером (openSession не чистит его после варки) или прибором-ферментером,
   // FermentationBoard не подменяется device-дашбордом ни в одном из этих случаев.
-  const brewDaySteps = hasDevice && act !== "fermentation" ? [] : buildBrewDaySteps(batch.brewPlanSnapshot);
+  const brewDaySteps = hasDevice && act !== "fermentation" ? []
+    : !hasDevice && (act !== "done" && act !== "archived" || batch.brewDayProgress.steps["brew:transfer"])
+      ? buildManualBrewSteps(batch.brewPlanSnapshot) : buildBrewDaySteps(batch.brewPlanSnapshot);
   const planSummary = summarizeBrewDayPlan(brewDaySteps);
 
   const target = summary.target;
@@ -336,6 +359,8 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
                 batchVolumeL={batch.brewPlanSnapshot.recipe.batchSizeL}
                 ratingTarget={ratingTarget}
                 labelsHref={labelsHref}
+                volumes={volumes}
+                volumeTargets={volumeTargets}
               />
               <BatchFermentBlock
                 userId={user.id}
@@ -356,6 +381,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
               initialHistory={initialHistory}
             />
           </div>
+          {volumePanel}
           <BrewJournal
             brewBatchId={batch.id}
             measurements={measurements}
@@ -364,6 +390,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
             measurementKind={measurementKind}
             hideStats={act === "done"}
           />
+          {taskPanel}
           {inventoryView ? (
             <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} stockCoverage={stockCoverage} />
           ) : null}
@@ -378,7 +405,10 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
             ogTargetLabel={ogTargetLabel}
             equipmentWarnings={batch.brewPlanSnapshot.equipmentWarnings}
             plannedForIso={batch.plannedFor ? batch.plannedFor.toISOString() : null}
+            groups={brewDaySteps}
+            snapshot={batch.brewPlanSnapshot}
           />
+          {taskPanel}
           {inventoryView ? (
             <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} stockCoverage={stockCoverage} />
           ) : null}
@@ -386,18 +416,16 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
         </>
       ) : act === "brewday" ? (
         <>
-          <BrewDayBoard brewBatchId={batch.id} groups={brewDaySteps} initialProgress={batch.brewDayProgress} hasOg={hasOg} />
-          <BrewJournal
-            brewBatchId={batch.id}
-            measurements={measurements}
-            summary={summary}
-            preferredGravityUnit={user.preferredGravityUnit}
-            measurementKind={measurementKind}
-            title="Начальная плотность (OG)"
+          <BrewDayBoard
+            brewBatchId={batch.id} ownerId={user.id} groups={brewDaySteps} initialProgress={batch.brewDayProgress} hasOg={hasOg}
+            preferredGravityUnit={user.preferredGravityUnit} targetOgSg={target?.og ?? null} initialFermenterL={volumes.fermenterL ?? null}
+            fermentationLabel={[targetTempLabel ? `Брожение при ${targetTempLabel}` : "Брожение", plannedFermentDays ? `${plannedFermentDays} ${pluralize(plannedFermentDays, ["день", "дня", "дней"])}` : null].filter(Boolean).join(" · ")}
+            calibration={<BatchCalibration key={batch.id} brewBatchId={batch.id} volumes={volumes} {...calibration} />}
+            records={<>{volumePanel}<BrewJournal brewBatchId={batch.id} measurements={measurements} summary={summary} preferredGravityUnit={user.preferredGravityUnit} measurementKind={measurementKind} title="Начальная плотность" /></>}
+            notes={<BrewNotes brewBatchId={batch.id} kind="brew" notes={batch.notes} />}
           />
+          {taskPanel}
           {inventoryView ? <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} stockCoverage={stockCoverage} /> : null}
-          <BrewNotes brewBatchId={batch.id} kind="brew" notes={batch.notes} />
-          <BrewQuickDock />
         </>
       ) : act === "fermentation" ? (
         <>
@@ -406,6 +434,8 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
           </Suspense>
           <FermentationBoard
             brewBatchId={batch.id}
+            ownerId={user.id}
+            manual={!hasDevice}
             groups={brewDaySteps}
             initialProgress={batch.brewDayProgress}
             dayLabel={dayLabel}
@@ -439,6 +469,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
             gravityUnit={user.preferredGravityUnit}
             variant="active"
           />
+          {volumePanel}
           <BrewJournal
             brewBatchId={batch.id}
             measurements={measurements}
@@ -447,6 +478,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
             measurementKind={measurementKind}
             title="Конечная плотность (FG)"
           />
+          {taskPanel}
           {inventoryView ? <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} stockCoverage={stockCoverage} /> : null}
           <BrewNotes brewBatchId={batch.id} kind="brew" notes={batch.notes} />
           <BrewQuickDock />
@@ -465,6 +497,8 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
                 batchVolumeL={batch.brewPlanSnapshot.recipe.batchSizeL}
                 ratingTarget={ratingTarget}
                 labelsHref={labelsHref}
+                volumes={volumes}
+                volumeTargets={volumeTargets}
               />
               <BatchFermentBlock
                 userId={user.id}
@@ -476,10 +510,11 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
             </>
           ) : (
             <p className="rounded-2xl border border-border bg-muted p-4 text-sm text-muted-foreground">
-              Варка отменена. Вернуть её в план можно через меню в шапке.
+              Партия отменена. Вернуть её в план можно через меню ⋯.
             </p>
           )}
           <BrewHistoryGuide brewBatchId={batch.id} groups={brewDaySteps} initialProgress={batch.brewDayProgress} />
+          {volumePanel}
           <BrewJournal
             brewBatchId={batch.id}
             measurements={measurements}
@@ -488,6 +523,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
             measurementKind={measurementKind}
             hideStats={act === "done"}
           />
+          {taskPanel}
           {/* Склад завершённой партии — что списано, история движений и возврат (тот
               же блок, что на device-пути: он уже completed-aware и прячет «Списать»).
               Раньше в этой ветке его просто не было, и после завершения варки склад

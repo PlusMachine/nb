@@ -54,7 +54,7 @@ describe("catalog seed data", () => {
 
     // 125 расходники/добавки (не менялось) + 248 хмелей * 2 фасовки + 83 брендованных сухих дрожжей
     // (Fermentis 28 * 11.5 г, Lallemand 27 * 11 г, Mangrove Jack's 28 * 10 г).
-    expect(withPackageVariants.flatMap((item) => item.packageVariants)).toHaveLength(125 + 248 * 2 + 83);
+    expect(withPackageVariants.flatMap((item) => item.packageVariants)).toHaveLength(125 + 248 * 2 + 83 + 2);
     expect(consumableVariants).toHaveLength(125);
     expect(withoutConsumablesHopsYeasts).toHaveLength(0);
 
@@ -75,6 +75,12 @@ describe("catalog seed data", () => {
     };
     const brandedCounts: Record<string, number> = { Fermentis: 0, Lallemand: 0, "Mangrove Jack's": 0 };
     for (const yeast of brandedDryYeastItems) {
+      if (yeast.ingredient.id === "fermentis-la-01") {
+        brandedCounts.Fermentis += 1;
+        expect(yeast.packageVariants.map(variant=>variant.stockContentAmount)).toEqual([11.5,500,10000]);
+        expect(yeast.packageVariants.every(variant=>!variant.isDefaultForStock)).toBe(true);
+        continue;
+      }
       expect(yeast.packageVariants).toHaveLength(1);
       const brand = yeast.ingredient.brand as string;
       expect(gramsByBrand).toHaveProperty(brand);
@@ -98,8 +104,8 @@ describe("catalog seed data", () => {
     expect(attributes).toMatchObject({
       family_key: "acid_no_rinse_sanitizer",
       picker_group: "sanitizer",
-      picker_function_ru: "Кислотный no-rinse санитайзер",
-      picker_usage_ru: "Финальная дезинфекция без смывания",
+      picker_function_ru: "Кислотное дезинфицирующее средство",
+      picker_usage_ru: "Дезинфекция тары и оборудования по инструкции производителя",
       brand_family_mode: "matched_variant_brand"
     });
     expect(Array.isArray(attributes.market_names_en) ? attributes.market_names_en : []).toContain("Star San");
@@ -155,6 +161,93 @@ describe("catalog seed data", () => {
 
     expect(phillySour?.ingredient.countryName).toBe("Canada");
     expect(phillySour?.ingredient.countryCode).toBe("CA");
+  });
+
+  it("preserves the published yeast specifications and reference URLs for every source entry", () => {
+    const fileName = "yeasts_catalog_minimal_v2.json";
+    const rawItems = loadCatalogSeedItems(fileName) as Array<Record<string, unknown>>;
+    const prepared = prepareCatalogSeedFile({ fileName, type: "yeast" });
+    const byId = new Map(prepared.map((item) => [item.ingredient.id, item]));
+    const fields = [
+      "attenuation_pct_min", "attenuation_pct_max", "attenuation_pct_typical",
+      "alcohol_tolerance_abv_min", "alcohol_tolerance_abv_max", "alcohol_tolerance_abv_typical",
+      "species", "pof", "sedimentation", "analog_reference", "notes"
+    ];
+
+    for (const raw of rawItems) {
+      const item = byId.get(raw.id as string)!;
+      for (const field of fields) {
+        if (raw[field] != null) {
+          expect(item.ingredient.attributes?.[field], `${raw.id}.${field}`).toEqual(raw[field]);
+        }
+      }
+      const urls = (raw.source_urls ?? []) as string[];
+      expect(item.sources.map((source) => source.url), `${raw.id}.source_urls`).toEqual([...new Set(urls)]);
+      expect(item.sources.every((source) => source.sourceBasis === raw.source_basis)).toBe(true);
+    }
+
+    expect(prepared.filter((item) => item.ingredient.attributes?.attenuation_pct_min != null)).toHaveLength(292);
+    expect(prepared.filter((item) => item.sources.length > 0)).toHaveLength(122);
+  });
+
+  it("retains reference characteristics from the other catalogs without changing calculation or stock fields", () => {
+    const referenceFields: Record<string, string[]> = {
+      hop: ["oil_value_unit_warning"],
+      malt: [],
+      fermentable: ["color_ebc_exact", "protein_pct", "normalization_review_flags"],
+      consumable: ["typical_use_ru", "storage_notes_ru", "capacity_per_piece", "closure_standard"],
+      water_treatment: ["storage_notes_ru", "typical_dose_reference", "ion_contributions_ppm_per_g_per_l", "ion_contributions_ppm_per_g_per_gal"]
+    };
+    for (const spec of catalogSeedManifest.filter((item) => item.type !== "yeast")) {
+      const rawItems = loadCatalogSeedItems(spec.fileName) as Array<Record<string, unknown>>;
+      const prepared = prepareCatalogSeedFile(spec);
+      for (let index = 0; index < rawItems.length; index++) {
+        const raw = rawItems[index];
+        const item = prepared[index];
+        for (const key of referenceFields[spec.type]) {
+          if (raw[key] != null) expect(item.ingredient.attributes?.[key], `${raw.id}.${key}`).toEqual(raw[key]);
+        }
+        if (spec.type === "fermentable") {
+          expect(item.ingredient.attributes?.color_lovibond).toBe(raw.color_lovibond ?? undefined);
+          expect(item.ingredient.attributes).not.toHaveProperty("color_ebc_min");
+          expect(item.ingredient.attributes).not.toHaveProperty("color_ebc_max");
+        }
+        const sources = (raw.sources ?? []) as Array<Record<string, unknown>>;
+        for (const source of sources) {
+          for (const key of ["confidence", "page"]) {
+            if (source[key] != null) {
+              expect(item.ingredient.attributes?.source_metadata).toContainEqual(expect.objectContaining({
+                position: sources.indexOf(source),
+                ...(source.url ? { url: source.url } : {}),
+                [key]: source[key]
+              }));
+            }
+          }
+        }
+        const variants = (raw.package_variants ?? []) as Array<Record<string, unknown>>;
+        for (const variant of variants) {
+          for (const key of ["content_per_piece", "content_per_package"]) {
+            if (variant[key] != null) {
+              expect(item.ingredient.attributes?.package_content_details).toContainEqual(expect.objectContaining({ package_variant_id: variant.id, [key]: variant[key] }));
+            }
+          }
+        }
+      }
+    }
+  });
+
+  it("keeps tablet stock in pieces while retaining the tablet weight separately", () => {
+    const prepared = prepareCatalogSeedFile({ fileName: "consumables_v1.json", type: "consumable" });
+    const tablets = prepared.find((item) => item.ingredient.id === "pbw-tablets-large")!;
+    expect(tablets.packageVariants.find((variant) => variant.id === "pbw-tablets-10g-x12")).toMatchObject({
+      stockContentAmount: 12,
+      stockContentUnit: "item"
+    });
+    expect(tablets.ingredient.attributes?.package_content_details).toContainEqual({
+      package_variant_id: "pbw-tablets-10g-x12",
+      content_per_piece: { amount: 10, unit: "g_each" },
+      content_per_package: { amount: 120, unit: "g" }
+    });
   });
 
   it("derives fermentable country codes from country names used in the catalog", () => {

@@ -109,8 +109,9 @@ vi.mock("@nb/db", () => {
         mockState.deleted.push({ table: table.name, where });
       }
     }),
-    select: (shape: Record<string, unknown>) => ({
-      from: (_table: unknown) => {
+    select: (shape: Record<string, unknown> = {}) => ({
+      from: (_table: any) => {
+        if (_table?.name === "ingredient_package_variants" || Object.keys(shape).length === 0) return {where:async()=>[]};
         const joined = {
           leftJoin: (_a: unknown, _b: unknown) => joined,
           where: async (_w: unknown) => mockState.selectRows
@@ -1294,13 +1295,13 @@ describe("inventory service", () => {
       priceInputMode: "per_display_unit",
       priceInputAmountMinor: 12000,
       priceInputCurrency: "RUB",
-      purchasePriceMinor: 3000000,
+      purchasePriceMinor: 3000,
       purchaseCurrency: "RUB",
       purchaseQuantity: 250,
       purchaseQuantityUnit: "g",
       purchaseQuantityNormalized: 250,
       purchaseQuantityNormalizedUnit: "g",
-      normalizedUnitCostMinorRub: 12000
+      normalizedUnitCostMinorRub: 12
     });
   });
 

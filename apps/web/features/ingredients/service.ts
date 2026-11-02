@@ -11,9 +11,14 @@ import {
   ingredients,
   ingredientSources,
   inArray,
+  markCatalogEditorialOverrides,
   proposedIngredients,
   recipeIngredients,
+  shoppingManualItems,
   sql,
+  userCustomIngredients,
+  userIngredientPreferences,
+  userIngredientPurchaseLinks,
   userIngredients
 } from "@nb/db";
 import { z } from "zod";
@@ -268,6 +273,7 @@ const toSuggestionItem = (
   dto: IngredientCatalogItemDto,
   extras?: Partial<Pick<IngredientSuggestionItem, "matchType" | "matchedAlias" | "matchedPackageVariantId" | "matchedPackageVariantName" | "score">>
 ): IngredientSuggestionItem => ({
+  inventoryEnabled: dto.inventoryEnabled,
   id: dto.id,
   type: dto.type,
   category: dto.category,
@@ -540,13 +546,12 @@ const toStatusFacets = (items: IngredientCatalogItemDto[]) => {
 };
 
 const upsertIngredientRelations = async (
-  tx: Pick<typeof db, "delete" | "insert">,
+  tx: Pick<typeof db, "delete" | "insert" | "select" | "update">,
   ingredientId: string,
   payload: z.infer<typeof ingredientUpsertSchema>
 ) => {
   await tx.delete(ingredientAliases).where(eq(ingredientAliases.ingredientId, ingredientId));
   await tx.delete(ingredientSources).where(eq(ingredientSources.ingredientId, ingredientId));
-  await tx.delete(ingredientPackageVariants).where(eq(ingredientPackageVariants.ingredientId, ingredientId));
 
   const dedupedAliases = new Map<string, z.infer<typeof ingredientUpsertSchema>["aliases"][number]>();
   for (const alias of payload.aliases) {
@@ -582,23 +587,31 @@ const upsertIngredientRelations = async (
     })));
   }
 
-  if (payload.type === "consumable" && payload.packageVariants.length) {
-    await tx.insert(ingredientPackageVariants).values(payload.packageVariants.map((variant, index) => ({
-      id: variant.id,
-      ingredientId,
-      brand: variant.brand,
-      productNameEn: variant.productNameEn,
-      productNameRu: variant.productNameRu,
-      countryNameRu: variant.countryNameRu,
-      packageAmount: variant.packageAmount ?? null,
-      packageUnit: variant.packageUnit,
-      stockContentAmount: variant.stockContentAmount ?? null,
-      stockContentUnit: variant.stockContentUnit,
-      sourceGroup: variant.sourceGroup,
-      sourceUrl: variant.sourceUrl,
-      isDefaultForStock: variant.isDefaultForStock,
-      position: variant.position ?? index
-    })));
+  const currentVariants = await tx.select().from(ingredientPackageVariants).where(eq(ingredientPackageVariants.ingredientId, ingredientId));
+  const requestedIds = payload.packageVariants.map((variant) => variant.id);
+  if (requestedIds.length) {
+    const referenced = await tx.select().from(ingredientPackageVariants).where(inArray(ingredientPackageVariants.id, requestedIds));
+    if (referenced.some((variant) => variant.ingredientId !== ingredientId)) throw new Error("PACKAGE_VARIANT_OWNERSHIP");
+  }
+  for (const previous of currentVariants) {
+    const next = payload.packageVariants.find((variant) => variant.id === previous.id);
+    if (next && next.stockContentAmount === previous.stockContentAmount && next.stockContentUnit === previous.stockContentUnit) continue;
+    const stock = await tx.select().from(userIngredients).where(eq(userIngredients.packageVariantId, previous.id));
+    if (!next && stock.length) throw new Error("PACKAGE_VARIANT_IN_USE");
+    for (const row of stock) {
+      if (!Object.prototype.hasOwnProperty.call(row.properties, "_package_content_snapshot")) {
+        await tx.update(userIngredients).set({ properties: { ...row.properties, _package_content_snapshot: {
+          packageVariantId: previous.id, stockContentAmount: previous.stockContentAmount, stockContentUnit: previous.stockContentUnit
+        } } }).where(eq(userIngredients.id,row.id));
+      }
+    }
+    if (!next) await tx.delete(ingredientPackageVariants).where(eq(ingredientPackageVariants.id, previous.id));
+  }
+  for (const [index, variant] of payload.packageVariants.entries()) {
+    const values = { ...variant, ingredientId, position: variant.position ?? index };
+    await tx.insert(ingredientPackageVariants).values(values).onConflictDoUpdate({
+      target: [ingredientPackageVariants.id], set: { ...values, updatedAt: new Date() }
+    });
   }
 };
 
@@ -623,7 +636,7 @@ const buildIngredientValues = (payload: z.infer<typeof ingredientUpsertSchema>) 
   itemKind: payload.itemKind,
   presentOnBirrf: payload.presentOnBirrf ?? null,
   inventoryEnabled: payload.inventoryEnabled,
-  attributes: payload.attributes,
+  attributes: { ...payload.attributes, package_variant_count: payload.packageVariants.length },
   quantityDefaults: payload.quantityDefaults
 });
 
@@ -817,9 +830,20 @@ export const updateIngredient = async (id: string, input: unknown, _actorId: str
     packageVariants: patch.packageVariants ?? toUpsertPayload(current).packageVariants
   });
 
+  const editorialAttributes = markCatalogEditorialOverrides({ ...current, category: current.sourceCategory } as unknown as Record<string, unknown>, buildIngredientValues(merged));
+  if (patch.packageVariants !== undefined) {
+    const keys = ["packageAmount","packageUnit","stockContentAmount","stockContentUnit","brand","productNameEn","productNameRu","countryNameRu","sourceGroup","sourceUrl","isDefaultForStock","position"] as const;
+    const changed = new Set(Array.isArray(current.attributes._seed_package_overrides) ? current.attributes._seed_package_overrides as string[] : []);
+    for (const id of new Set([...current.packageVariants.map(v=>v.id),...merged.packageVariants.map(v=>v.id)])) {
+      const before=current.packageVariants.find(v=>v.id===id),after=merged.packageVariants.find(v=>v.id===id);
+      if (!before || !after || keys.some(key=>(before[key] ?? null)!==(after[key] ?? null))) changed.add(id);
+    }
+    editorialAttributes._seed_package_overrides=[...changed];
+  }
   await db.transaction(async (tx) => {
     await tx.update(ingredients).set({
       ...buildIngredientValues(merged),
+      attributes: editorialAttributes,
       updatedAt: new Date()
     }).where(eq(ingredients.id, id));
 
@@ -975,9 +999,14 @@ export const mergeDuplicateIngredients = async (
   }
 
   await db.transaction(async (tx) => {
+    // Package IDs and existing stock measurements remain stable through a merge.
+    await tx.update(ingredientPackageVariants).set({
+      ingredientId: targetIngredientId,
+      updatedAt: new Date()
+    }).where(eq(ingredientPackageVariants.ingredientId, sourceIngredientId));
+
     await tx.update(userIngredients).set({
       ingredientCatalogItemId: targetIngredientId,
-      packageVariantId: null,
       updatedAt: new Date()
     }).where(eq(userIngredients.ingredientCatalogItemId, sourceIngredientId));
 
@@ -985,6 +1014,50 @@ export const mergeDuplicateIngredients = async (
       ingredientCatalogItemId: targetIngredientId,
       updatedAt: new Date()
     }).where(eq(recipeIngredients.ingredientCatalogItemId, sourceIngredientId));
+
+    await tx.update(shoppingManualItems).set({
+      ingredientCatalogItemId: targetIngredientId,
+      updatedAt: new Date()
+    }).where(eq(shoppingManualItems.ingredientCatalogItemId, sourceIngredientId));
+
+    await tx.update(userCustomIngredients).set({
+      properties: sql`jsonb_set(${userCustomIngredients.properties}, '{derivedFromIngredientId}', to_jsonb(${targetIngredientId}::text))`,
+      updatedAt: new Date()
+    }).where(sql`${userCustomIngredients.properties}->>'derivedFromIngredientId' = ${sourceIngredientId}`);
+
+    const preferences = await tx.query.userIngredientPreferences.findMany({
+      where: eq(userIngredientPreferences.ingredientCatalogItemId, sourceIngredientId)
+    });
+    for (const preference of preferences) {
+      await tx.insert(userIngredientPreferences).values({
+        userId: preference.userId,
+        ingredientCatalogItemId: targetIngredientId,
+        isFavorite: preference.isFavorite
+      }).onConflictDoUpdate({
+        target: [userIngredientPreferences.userId, userIngredientPreferences.ingredientCatalogItemId],
+        set: { isFavorite: sql`${userIngredientPreferences.isFavorite} or ${preference.isFavorite}`, updatedAt: new Date() }
+      });
+    }
+    await tx.delete(userIngredientPreferences).where(eq(userIngredientPreferences.ingredientCatalogItemId, sourceIngredientId));
+
+    const purchaseLinks = await tx.query.userIngredientPurchaseLinks.findMany({
+      where: eq(userIngredientPurchaseLinks.ingredientCatalogItemId, sourceIngredientId)
+    });
+    for (const link of purchaseLinks) {
+      const duplicate = await tx.query.userIngredientPurchaseLinks.findFirst({
+        where: and(
+          eq(userIngredientPurchaseLinks.userId, link.userId),
+          eq(userIngredientPurchaseLinks.ingredientCatalogItemId, targetIngredientId),
+          eq(userIngredientPurchaseLinks.normalizedUrl, link.normalizedUrl)
+        )
+      });
+      if (duplicate) {
+        await tx.delete(userIngredientPurchaseLinks).where(eq(userIngredientPurchaseLinks.id, link.id));
+      } else {
+        await tx.update(userIngredientPurchaseLinks).set({ ingredientCatalogItemId: targetIngredientId, updatedAt: new Date() })
+          .where(eq(userIngredientPurchaseLinks.id, link.id));
+      }
+    }
 
     const sourceAliasCandidates = [
       source.nameRu,
@@ -1003,7 +1076,12 @@ export const mergeDuplicateIngredients = async (
         aliasNormalized: normalizeAlias(alias)
       }))
       .filter((alias) => alias.aliasNormalized.length > 0)
-      .filter((alias) => !existingNormalized.has(`${alias.locale}:${alias.aliasNormalized}`))
+      .filter((alias) => {
+        const key = `${alias.locale}:${alias.aliasNormalized}`;
+        if (existingNormalized.has(key)) return false;
+        existingNormalized.add(key);
+        return true;
+      })
       .map((alias) => ({
         ingredientId: targetIngredientId,
         locale: alias.locale,
@@ -1016,6 +1094,23 @@ export const mergeDuplicateIngredients = async (
     if (additionalAliasValues.length) {
       await tx.insert(ingredientAliases).values(additionalAliasValues);
     }
+
+    const targetSources = new Set(target.sources.map((entry) => `${entry.url}:${entry.label}`));
+    const extraSources = source.sources.filter((entry) => !targetSources.has(`${entry.url}:${entry.label}`));
+    if (extraSources.length) await tx.insert(ingredientSources).values(extraSources.map(({ id: _id, ...entry }) => ({
+      ...entry, ingredientId: targetIngredientId
+    })));
+
+    await tx.update(ingredients).set({
+      attributes: {
+        ...target.attributes,
+        _merged_source_ids: [...new Set([
+          ...(Array.isArray(target.attributes._merged_source_ids) ? target.attributes._merged_source_ids : []),
+          sourceIngredientId
+        ])]
+      },
+      updatedAt: new Date()
+    }).where(eq(ingredients.id, targetIngredientId));
 
     await tx.update(ingredients).set({
       isActive: false,

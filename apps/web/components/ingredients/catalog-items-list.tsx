@@ -1,3 +1,5 @@
+import { groupConfirmedHopSuppliers } from "@/features/ingredients/catalog-browse";
+import { formatCatalogColorEbc } from "@/features/ingredients/catalog-display";
 import React from "react";
 import Link from "next/link";
 import { Boxes, Pencil } from "lucide-react";
@@ -20,6 +22,7 @@ import {
   formatIngredientSubtypeLabel,
   resolveHopFormBadgeLabel,
   resolveIngredientCountry,
+  resolveIngredientBrandLabel,
   resolveIngredientUnitLabel,
   resolveYeastFlocculationLabelRu,
   resolveYeastFormLabelRu
@@ -41,7 +44,7 @@ const buildDetailHref = (item: UserCatalogIngredientDto) => (
     : `/catalog/system/${item.id}`
 );
 
-const AddToInventoryAction = ({ item }: { item: UserCatalogIngredientDto }) => (
+const AddToInventoryAction = ({ item }: { item: UserCatalogIngredientDto }) => item.inventoryEnabled === false ? null : (
   <Link
     href={buildIngredientCatalogActionHref("/app/ingredients", item.source, item.id)}
     // before:-inset-2.5 расширяет тач-таргет до ~44px без увеличения самой иконки.
@@ -56,6 +59,8 @@ const formatValue = (value: number) => value % 1 === 0 ? String(value) : value.t
 
 const formatColorBadge = (item: UserCatalogIngredientDto) => {
   const technicalData = item.technicalData;
+  const rangeLabel = formatCatalogColorEbc(technicalData);
+  if (rangeLabel) return rangeLabel;
   if (technicalData && (technicalData.type === "malt" || technicalData.type === "fermentable")) {
     const range = resolveIngredientTechnicalDataColorRangeEbc(technicalData);
     if (range && technicalData.type === "malt" && (technicalData.colorEbcMin != null || technicalData.colorEbcMax != null)) {
@@ -85,6 +90,9 @@ type KeyStatBadge = {
 
 const buildKeyStats = (item: UserCatalogIngredientDto): KeyStatBadge[] => {
   const technicalData = item.technicalData;
+  if (technicalData?.type === "fermentable" && technicalData.functionalRole === "process_only") {
+    return [{ key: "process", label: "Для фильтрации затора" }];
+  }
 
   if (item.category === "hop") {
     const hopFormLabel = formatHopFormLabel(item.hopForm);
@@ -96,7 +104,7 @@ const buildKeyStats = (item: UserCatalogIngredientDto): KeyStatBadge[] => {
           label: formatHopAlphaAcidStatLabel(item.hopAlphaAcidPct, { userOverride: userAlphaOverride })
         }
         : null,
-      item.hopBetaAcidPct != null ? { key: "beta", label: `Бета ${formatValue(item.hopBetaAcidPct)}%` } : null,
+      item.hopBetaAcidPct != null ? { key: "beta", label: `Бета-кислоты ${formatValue(item.hopBetaAcidPct)}%` } : null,
       hopFormLabel ? { key: "form", label: hopFormLabel } : null,
       item.properties && typeof item.properties.harvestYear === "number" ? { key: "harvest", label: `Урожай ${item.properties.harvestYear}` } : null
     ].filter((value): value is KeyStatBadge => Boolean(value)).slice(0, 4);
@@ -120,7 +128,7 @@ const buildKeyStats = (item: UserCatalogIngredientDto): KeyStatBadge[] => {
         : null
     );
     return [
-      item.yeastAttenuationPct != null ? { key: "attenuation", label: `Аттенюация ${formatValue(item.yeastAttenuationPct)}%` } : null,
+      item.yeastAttenuationPct != null ? { key: "attenuation", label: `Степень сбраживания ${formatValue(item.yeastAttenuationPct)}%` } : null,
       item.yeastMinFermentationTempC != null && item.yeastMaxFermentationTempC != null
         ? { key: "temp", label: `${formatValue(item.yeastMinFermentationTempC)}-${formatValue(item.yeastMaxFermentationTempC)}°C` }
         : null,
@@ -194,7 +202,7 @@ const buildSecondaryMeta = (item: UserCatalogIngredientDto): SecondaryMetaItem[]
     });
   };
 
-  pushText(item.brand ?? item.producer ?? null);
+  pushText(resolveIngredientBrandLabel(item));
   pushCountry();
   pushText(item.derivedFromDisplayName ? `На основе ${item.derivedFromDisplayName}` : null);
 
@@ -210,7 +218,7 @@ const resolveSubtypeBadgeLabel = (item: UserCatalogIngredientDto): string | null
       return "Солод";
     }
     if (item.subtype === "fermentable") {
-      return "Сбраживаемое";
+      return "Сбраживаемое сырьё";
     }
     return null;
   }
@@ -287,6 +295,7 @@ const IngredientSecondaryMetaLine = ({ item, leadingLabel }: { item: UserCatalog
 };
 
 type CatalogItemsListProps = {
+  groupSuppliers?: boolean;
   items: UserCatalogIngredientDto[];
   hideSubtypeBadge: boolean;
   canManage: boolean;
@@ -294,7 +303,7 @@ type CatalogItemsListProps = {
 
 // Переиспользуемый рендер строк каталога (desktop-таблица + mobile-карточки,
 // переключение через CSS) — общий для хаба `/catalog` и категорийных лендингов.
-export const CatalogItemsList = ({ items, hideSubtypeBadge, canManage }: CatalogItemsListProps) => (
+const UngroupedCatalogItemsList = ({ items, hideSubtypeBadge, canManage }: CatalogItemsListProps) => (
   <>
     <section className="catalog-search-dim hidden overflow-hidden rounded-[28px] border border-border bg-card shadow-sm lg:block">
       <table className="w-full table-fixed text-sm">
@@ -458,3 +467,23 @@ export const CatalogItemsList = ({ items, hideSubtypeBadge, canManage }: Catalog
     </section>
   </>
 );
+
+export const CatalogItemsList = (props: CatalogItemsListProps) => {
+  if (!props.groupSuppliers) return <UngroupedCatalogItemsList {...props} />;
+  const groups = groupConfirmedHopSuppliers(props.items);
+  if (!groups.some((group) => group.variants.length > 1)) return <UngroupedCatalogItemsList {...props} />;
+  const blocks: Array<{key:string;items:UserCatalogIngredientDto[];grouped:boolean}> = [];
+  let singles: UserCatalogIngredientDto[] = [];
+  const flush = () => { if (singles.length) { blocks.push({key:singles[0].id,items:singles,grouped:false}); singles=[]; } };
+  for (const group of groups) {
+    if (group.variants.length === 1) singles.push(group.variants[0]);
+    else { flush(); blocks.push({key:group.key,items:group.variants,grouped:true}); }
+  }
+  flush();
+  return <div className="space-y-4">{blocks.map(block=>block.grouped ? (
+    <section key={block.key} className="space-y-3 rounded-[28px] border border-border bg-muted/40 p-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-2"><h2 className="font-semibold">{block.items[0].primaryLabelRu} · {block.items[0].countryCode} · {formatHopFormLabel(block.items[0].hopForm)}</h2><span className="text-sm text-muted-foreground">Предложения поставщиков: {block.items.length}</span></div>
+      <UngroupedCatalogItemsList {...props} items={block.items} />
+    </section>
+  ) : <UngroupedCatalogItemsList key={block.key} {...props} items={block.items} />)}</div>;
+};

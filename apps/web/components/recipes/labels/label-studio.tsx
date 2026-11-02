@@ -26,6 +26,7 @@ import {
 import { printLabel } from "@/features/labels/print";
 import {
   appendBatchIdParam,
+  convertLabelGravityFields,
   parseLabelStudioQuery,
   readBatchIdParam,
   serializeLabelStudioState,
@@ -41,9 +42,7 @@ import {
   type LabelRecipeFields
 } from "@/features/labels/recipe-fields";
 import {
-  convertGravityFieldValue,
   gravityUnitLabels,
-  toCalculatorGravityUnit,
   type PreferredGravityUnit
 } from "@/features/system/gravity-units";
 
@@ -65,6 +64,7 @@ const TEMPLATE_LABELS: Record<LabelTemplateId, string> = {
  * в °P.
  */
 const LABEL_GRAVITY_UNITS = ["plato", "sg"] as const satisfies readonly PreferredGravityUnit[];
+const LABEL_GRAVITY_STORAGE_KEY = "hmelo.labels.gravityUnit";
 
 const resolveLabelGravityUnit = (unit: PreferredGravityUnit): (typeof LABEL_GRAVITY_UNITS)[number] =>
   unit === "sg" ? "sg" : "plato";
@@ -209,12 +209,32 @@ export function LabelStudio(props: LabelStudioProps) {
   // и разойтись с железом здесь нельзя — драйвер пересчитает картинку с некратным
   // множителем и дизеринг пойдёт муаром. У A4-листа выбора нет: обычный принтер — 300.
   const [thermalDpi, setThermalDpi] = useState<LabelDpi>(() => initialQuery.dpi ?? LABEL_DPI_THERMAL);
-  const [gravityUnit, setGravityUnit] = useState<(typeof LABEL_GRAVITY_UNITS)[number]>(() =>
-    resolveLabelGravityUnit(initialQuery.gravityUnit ?? props.gravityUnit)
-  );
+  const initialGravityUnit = resolveLabelGravityUnit(initialQuery.gravityUnit ?? props.gravityUnit);
+  const [gravityUnit, setGravityUnit] = useState(initialGravityUnit);
+  const gravityPreferenceRestored = useRef(false);
   const initialDateRef = useRef(todayIsoDate());
   const [bottlingDate, setBottlingDate] = useState<string>(() => initialQuery.bottlingDate ?? initialDateRef.current);
-  const [fields, setFields] = useState<LabelFields>(() => ({ ...defaults, ...initialQuery.fields }));
+  const [fields, setFields] = useState<LabelFields>(() => ({
+    ...convertLabelGravityFields(defaults, props.gravityUnit, initialGravityUnit),
+    ...initialQuery.fields
+  }));
+  useEffect(() => {
+    if (gravityPreferenceRestored.current) return;
+    gravityPreferenceRestored.current = true;
+    try {
+      if (initialQuery.gravityUnit != null) {
+        window.localStorage.setItem(LABEL_GRAVITY_STORAGE_KEY, initialGravityUnit);
+        return;
+      }
+      const saved = window.localStorage.getItem(LABEL_GRAVITY_STORAGE_KEY);
+      if ((saved === "plato" || saved === "sg") && saved !== initialGravityUnit) {
+        setFields(current => convertLabelGravityFields(current, initialGravityUnit, saved));
+        setGravityUnit(saved);
+      }
+    } catch {
+      // Шкалу по-прежнему можно выбрать и сохранить в ссылке без localStorage.
+    }
+  }, [initialQuery.gravityUnit, initialGravityUnit]);
   const [withQr, setWithQr] = useState<boolean>(() => initialQuery.withQr ?? true);
   const [withLogo, setWithLogo] = useState<boolean>(() => initialQuery.withLogo ?? true);
   const [withIbuScale, setWithIbuScale] = useState<boolean>(() => initialQuery.withIbuScale ?? true);
@@ -248,22 +268,23 @@ export function LabelStudio(props: LabelStudioProps) {
   // молча уехало бы на наклейку как 12.0 SG. Пересчёт — общесистемный, тот же,
   // что у переключателей в калькуляторах.
   const changeGravityUnit = (next: (typeof LABEL_GRAVITY_UNITS)[number]) => {
+    gravityPreferenceRestored.current = true;
+    try { window.localStorage.setItem(LABEL_GRAVITY_STORAGE_KEY, next); } catch { /* Хранилище недоступно. */ }
     if (next === gravityUnit) {
       return;
     }
-    const from = toCalculatorGravityUnit(gravityUnit);
-    const to = toCalculatorGravityUnit(next);
-    setFields((prev) => ({
-      ...prev,
-      og: prev.og ? convertGravityFieldValue(prev.og, from, to) : prev.og,
-      fg: prev.fg ? convertGravityFieldValue(prev.fg, from, to) : prev.fg
-    }));
+    const nextFields = convertLabelGravityFields(fields, gravityUnit, next);
+    setFields(nextFields);
     setGravityUnit(next);
+    const nextState = { ...latestStateRef.current, fields: nextFields, gravityUnit: next };
+    latestStateRef.current = nextState;
+    syncUrl(nextState);
   };
 
   // Сброс возвращает и шкалу: поля рецепта посчитаны в ней, и оставить
   // переключатель в другой единице значит напечатать «1.048 °P».
   const resetFields = () => {
+    try { window.localStorage.removeItem(LABEL_GRAVITY_STORAGE_KEY); } catch { /* Хранилище недоступно. */ }
     setFields(defaults);
     setGravityUnit(resolveLabelGravityUnit(props.gravityUnit));
   };
@@ -653,7 +674,7 @@ export function LabelStudio(props: LabelStudioProps) {
             </div>
             {isSheet ? (
               <div className="flex flex-wrap items-center gap-2 text-sm">
-                <span className="text-muted-foreground">Наклейка на листе:</span>
+                <span className="text-muted-foreground">Этикетка на листе:</span>
                 {LABEL_PRESET_IDS.map((id) => (
                   <button key={id} type="button" onClick={() => setSheetPreset(id)} className={chipClass(sheetPreset === id)}>
                     {LABEL_PRESETS[id].sizeLabel}
@@ -949,15 +970,13 @@ export function LabelStudio(props: LabelStudioProps) {
                 пересчитывает уже введённые числа. */}
             <div className="flex items-center justify-between gap-2 sm:col-span-2">
               <span className="text-xs font-medium text-muted-foreground">Плотность</span>
-              <div className="flex gap-1">
+              <div className="flex gap-1" role="group" aria-label="Шкала плотности этикетки">
                 {LABEL_GRAVITY_UNITS.map((unit) => (
                   <button
                     key={unit}
                     type="button"
-                    onClick={() => {
-                      changeGravityUnit(unit);
-                      flushSync();
-                    }}
+                    aria-pressed={gravityUnit === unit}
+                    onClick={() => changeGravityUnit(unit)}
                     className={`rounded-md border px-2 py-1 text-xs transition-colors ${
                       gravityUnit === unit
                         ? "border-primary bg-primary/5 text-foreground"
@@ -1023,7 +1042,7 @@ export function LabelStudio(props: LabelStudioProps) {
             </div>
           </div>
 
-          <p className="text-xs text-muted-foreground">Пустое поле — блок не печатается.</p>
+          <p className="text-xs text-muted-foreground">Если поле пустое, этот блок не появится на этикетке.</p>
 
           <div className="space-y-2">
             {/* Эмблема есть только в «Крафте» на большой наклейке, шкала IBU —
@@ -1085,7 +1104,7 @@ export function LabelStudio(props: LabelStudioProps) {
             ) : null}
             {qrDropped ? (
               <p className="rounded-md border border-warning/30 bg-warning-subtle px-2 py-1.5 text-xs text-warning-subtle-foreground">
-                QR не поместился на наклейку и не напечатан.
+                QR не поместился на этикетку и не напечатан.
               </p>
             ) : null}
           </div>

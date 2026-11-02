@@ -22,9 +22,13 @@
     "**/*.tsx",
     ".next-2/types/**/*.ts",
     ".next-admin-check/types/**/*.ts",
+    ".next-catalog-approval/types/**/*.ts",
+    ".next-catalog-implementation/types/**/*.ts",
     ".next-loadtest/types/**/*.ts",
+    ".next-manual-brew/types/**/*.ts",
     ".next-qa/types/**/*.ts",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    ".next-proofread/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

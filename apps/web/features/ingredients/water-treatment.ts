@@ -69,9 +69,9 @@ export const resolveWaterTreatmentFormulaLabel = (
   }
 
   return readTrimmedWaterTreatmentText(
+    technicalData.calculationFormula,
     technicalData.displayFormula,
     technicalData.formula,
-    technicalData.calculationFormula,
   );
 };
 
@@ -184,4 +184,16 @@ export const waterTreatmentConcentrationsEqual = (
   }
 
   return Math.abs(normalizedLeft - normalizedRight) < 0.01;
+};
+
+/** Equivalent ion dose for the two confirmed solid CaCl2 forms, with explicit purity. */
+export const convertCalciumChlorideHydrationDose = (input: {
+  massG: number; fromFormula: string; toFormula: string; fromPurityPct: number; toPurityPct: number;
+}): number | null => {
+  const molarMass: Record<string, number> = { CaCl2: 110.98, "CaCl2·2H2O": 147.014 };
+  const from = molarMass[input.fromFormula], to = molarMass[input.toFormula];
+  if (!from || !to || !Number.isFinite(input.massG) || input.massG <= 0
+    || !Number.isFinite(input.fromPurityPct) || !Number.isFinite(input.toPurityPct)
+    || input.fromPurityPct <= 0 || input.fromPurityPct > 100 || input.toPurityPct <= 0 || input.toPurityPct > 100) return null;
+  return Number((input.massG * to / from * input.fromPurityPct / input.toPurityPct).toFixed(3));
 };

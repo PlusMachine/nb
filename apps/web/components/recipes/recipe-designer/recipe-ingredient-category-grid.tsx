@@ -19,7 +19,7 @@ const recipeIngredientCategoryOptions: Array<{
   icon: React.ComponentType<{ className?: string }>;
   iconClassName: string;
 }> = [
-    { value: "fermentable", label: "Сбраживаемое", icon: Wheat, iconClassName: "text-amber-600 dark:text-amber-400" },
+    { value: "fermentable", label: "Солод и другое сырьё", icon: Wheat, iconClassName: "text-amber-600 dark:text-amber-400" },
     { value: "hop", label: "Хмель", icon: Hop, iconClassName: "text-emerald-600 dark:text-emerald-400" },
     { value: "yeast", label: "Дрожжи", icon: FlaskConical, iconClassName: "text-violet-600 dark:text-violet-400" },
     { value: "water_treatment", label: "Водоподготовка", icon: Droplets, iconClassName: "text-sky-600 dark:text-sky-400" },

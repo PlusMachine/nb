@@ -53,7 +53,7 @@ export function HomeBrewPreview({ recipe }: { recipe: RecipeDetailDto }) {
       const saved = localStorage.getItem(`nb-home-note:${recipe.id}`);
       if (saved != null) {
         setNote(saved);
-        setNoteStatus("Сохранено в примере на этом устройстве");
+        setNoteStatus("Заметка сохранена в браузере");
       }
     } catch { /* The example remains editable when browser storage is unavailable. */ }
     setNoteReady(true);
@@ -92,7 +92,7 @@ export function HomeBrewPreview({ recipe }: { recipe: RecipeDetailDto }) {
   function saveNote() {
     try {
       localStorage.setItem(`nb-home-note:${recipe.id}`, note);
-      setNoteStatus("Сохранено в примере на этом устройстве");
+      setNoteStatus("Заметка сохранена в браузере");
     } catch {
       setNoteStatus("Не удалось сохранить заметку. Скопируйте текст перед закрытием страницы.");
     }
@@ -116,7 +116,7 @@ export function HomeBrewPreview({ recipe }: { recipe: RecipeDetailDto }) {
             <h3>{stepTitle}{step.temperatureC != null && <span> · {homeNumber(step.temperatureC)} °C</span>}</h3>
             {step.detail && step.kind !== "timer" && <p className="home-brew-detail">{step.detail}</p>}
             {duration > 0 ? <>
-              <p className="home-brew-clock" role="timer" aria-label="Осталось на шаге">{fmtClock(remaining)}</p>
+              <p className="home-brew-clock" role="timer" aria-label="До конца шага">{fmtClock(remaining)}</p>
               <div className="home-brew-controls">
                 <button type="button" className="home-button home-primary" onClick={toggleTimer}>{runningSince != null ? <Pause aria-hidden /> : <Play aria-hidden />}{runningSince != null ? "Пауза" : remaining <= 0 ? "Запустить заново" : elapsedSeconds > 0 ? "Продолжить" : "Запустить таймер"}</button>
                 <button type="button" className="home-button" aria-label="Сбросить таймер примера" onClick={resetTimer}><RotateCcw aria-hidden /></button>
@@ -132,7 +132,7 @@ export function HomeBrewPreview({ recipe }: { recipe: RecipeDetailDto }) {
             <div><dt>Начальная плотность</dt><dd>{recipe.og != null ? formatGravity(recipe.og, "plato").replace(".", ",") : "—"}</dd></div>
             <div><dt>Конечная плотность</dt><dd>{recipe.fg != null ? formatGravity(recipe.fg, "plato").replace(".", ",") : "—"}</dd></div>
           </dl>
-          <p className="home-brew-note">Для примера — плотности из рецепта.</p>
+          <p className="home-brew-note">В примере показана плотность по рецепту.</p>
           <label className="home-brew-journal-note">Что учесть в следующей варке<textarea rows={2} maxLength={1000} value={note} disabled={!noteReady} onChange={event => { setNote(event.target.value); setNoteStatus("Изменения в примере не сохранены"); }} /></label>
           <div className="home-brew-note-footer"><span role="status">{noteStatus}</span><button type="button" disabled={!noteReady} onClick={saveNote}>Сохранить в примере</button></div>
         </div>
@@ -152,7 +152,7 @@ export function HomeBrewPreview({ recipe }: { recipe: RecipeDetailDto }) {
             </div>
             <div>
               <table className="home-brew-stock-table">
-                <caption className="sr-only">{consumed ? "Остатки после списания в примере партии" : "Расход и ожидаемые остатки в примере партии"}</caption>
+                <caption className="sr-only">{consumed ? "Остатки после списания" : "Расход и остатки"}</caption>
                 <thead><tr><th scope="col">Ингредиент</th><th scope="col">Было</th><th scope="col">На варку</th><th scope="col">Остаток</th></tr></thead>
                 <tbody>{(stockExpanded ? requirements : requirements.slice(0, 3)).map(line => {
                   const before = stock.find(item => item.key === line.key)?.quantity ?? 0;
@@ -162,7 +162,7 @@ export function HomeBrewPreview({ recipe }: { recipe: RecipeDetailDto }) {
               {requirements.length > 3 && <button type="button" className="home-stock-more" aria-expanded={stockExpanded} onClick={() => setStockExpanded(value => !value)}>{stockExpanded ? "Свернуть состав" : "Показать весь состав"}</button>}
             </div>
           </div>
-          <ConfirmActionDialog open={confirmOpen} title="Списать ингредиенты в примере?" description="Списываем количество для этой партии. Ингредиенты можно будет вернуть в запасы примера." confirmLabel="Подтвердить списание" tone="primary" onClose={() => setConfirmOpen(false)} onConfirm={() => { setConsumed(true); setConfirmOpen(false); setStockMessage("Ингредиенты списаны в примере партии."); }} />
+          <ConfirmActionDialog open={confirmOpen} title="Списать ингредиенты в примере?" description="Ингредиенты спишутся только в этом примере. Списание можно отменить." confirmLabel="Подтвердить списание" tone="primary" onClose={() => setConfirmOpen(false)} onConfirm={() => { setConsumed(true); setConfirmOpen(false); setStockMessage("Ингредиенты списаны в примере партии."); }} />
         </> : <p className="home-panel-empty">В этом рецепте ингредиенты пока не указаны.</p>}
       </details>
     </div>

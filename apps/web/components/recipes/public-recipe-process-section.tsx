@@ -44,7 +44,7 @@ const joinValues = (parts: Array<string | null>): string =>
 // но импорт (BeerXML) может нести осмысленное имя — показываем его, если оно не
 // генерик, иначе «Шаг N».
 const stepLabel = (name: string | null | undefined, index: number): string => {
-  const generic = `Шаг ${index + 1}`;
+  const generic = `Пауза ${index + 1}`;
   const trimmed = name?.trim();
   if (!trimmed || trimmed === "Инфузия" || /^Шаг\s*\d+$/.test(trimmed)) {
     return generic;
@@ -110,7 +110,7 @@ export function PublicRecipeMashSection({
         icon={<Thermometer className="h-3.5 w-3.5 text-orange-600 dark:text-orange-400" />}
         iconClassName="bg-orange-50 dark:bg-orange-500/15"
         title="Затирание"
-        meta={`${steps.length} ${steps.length === 1 ? "шаг" : steps.length < 5 ? "шага" : "шагов"}${totalMinutes > 0 ? ` · ${totalMinutes} мин` : ""}`}
+        meta={`${steps.length} ${steps.length === 1 ? "пауза" : steps.length < 5 ? "паузы" : "пауз"}${totalMinutes > 0 ? ` · ${totalMinutes} мин` : ""}`}
       />
       <ul className="space-y-2">
         {steps.map((step, index) => (

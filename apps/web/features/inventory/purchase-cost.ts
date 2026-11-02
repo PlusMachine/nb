@@ -1,5 +1,7 @@
 import type { SystemCurrency, SystemCurrencyRateMap } from "../system/currency";
 import { convertCurrencyMinorToRubMinor } from "../system/currency";
+import { normalizeInventoryMeasurementWithPack, convertInventoryNormalizedToUnit, type InventoryPackEquivalent } from "./pack";
+import { convertCurrencyMinor } from "../system/money";
 
 import {
   normalizeInventoryMeasurementForProfile,
@@ -35,6 +37,8 @@ export type InventoryPurchaseContext = {
 };
 
 export type InventoryPurchaseDerivationOptions = {
+  packEquivalent?: InventoryPackEquivalent | null;
+  previousPurchase?: InventoryPurchaseContext | null;
   defaultCurrency?: SystemCurrency | null;
   fallbackMeasurement?: {
     quantity: number;
@@ -117,6 +121,17 @@ export const normalizeInventoryPurchaseContext = (
 ): InventoryPurchaseContext => {
   const priceComputation = resolveInventoryPriceComputation(input, options);
   const purchasePriceMinor = priceComputation.purchasePriceMinor;
+  const previous = options.previousPurchase;
+  if (previous?.purchasePriceMinor != null && previous.purchaseCurrency
+    && previous.priceInputMode === priceComputation.priceInputMode && priceComputation.priceInputCurrency) {
+    const previousTotal = convertCurrencyMinor(previous.purchasePriceMinor,previous.purchaseCurrency,priceComputation.priceInputCurrency,rates);
+    const priceUnit = options.displayMeasurement?.unit ?? priceComputation.priceDisplayUnit;
+    const originalQuantityInPriceUnit = priceUnit && previous.purchaseQuantityNormalized != null && previous.purchaseQuantityNormalizedUnit
+      ? convertInventoryNormalizedToUnit(previous.purchaseQuantityNormalized,previous.purchaseQuantityNormalizedUnit,priceUnit,options.packEquivalent) : null;
+    const expected = previous.priceInputMode === "total" ? previousTotal
+      : originalQuantityInPriceUnit && originalQuantityInPriceUnit > 0 ? Math.round(previousTotal / originalQuantityInPriceUnit) : null;
+    if (expected != null && expected === priceComputation.priceInputAmountMinor) return previous;
+  }
   const fallbackQuantity = purchasePriceMinor != null ? options.fallbackMeasurement?.quantity ?? null : null;
   const fallbackQuantityUnit = purchasePriceMinor != null && options.fallbackMeasurement?.unit
     ? parseInventoryUnit(String(options.fallbackMeasurement.unit))
@@ -132,7 +147,7 @@ export const normalizeInventoryPurchaseContext = (
   }
 
   const normalizedPurchaseMeasurement = purchaseQuantity != null && purchaseQuantityUnit
-    ? normalizeInventoryMeasurementForProfile(profile, purchaseQuantity, purchaseQuantityUnit)
+    ? normalizeInventoryMeasurementWithPack(profile, purchaseQuantity, purchaseQuantityUnit, options.packEquivalent)
     : null;
 
   const normalizedUnitCostMinorRub = purchasePriceMinor != null

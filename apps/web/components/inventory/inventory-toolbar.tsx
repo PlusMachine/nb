@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo, useTransition } from "react";
+import React, { useCallback, useMemo, useState, useTransition } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   ArrowUpDown,
@@ -12,10 +12,11 @@ import {
   Hop,
   Package,
   RotateCcw,
+  SlidersHorizontal,
   Wheat
 } from "lucide-react";
 
-import { DropdownMenu, type DropdownMenuItem } from "@nb/ui";
+import { Button, Dialog, DialogCloseButton, DialogFooter, DialogHeader, DropdownMenu, type DropdownMenuItem } from "@nb/ui";
 import type { IngredientCategory } from "@/features/ingredients/contracts";
 import {
   consumableInventoryAdditiveGroups,
@@ -65,7 +66,7 @@ type PrimaryButtonKey =
   | "consumable_additive";
 
 const searchDebounceMs = 250;
-export const inventorySearchVisibilityThreshold = 12;
+export const inventorySearchVisibilityThreshold = 0;
 
 export const shouldShowInventorySearchInput = ({
   search,
@@ -73,7 +74,7 @@ export const shouldShowInventorySearchInput = ({
 }: {
   search: string;
   visibleItemCount: number;
-}) => Boolean(search.trim()) || visibleItemCount > inventorySearchVisibilityThreshold;
+}) => true;
 
 const categoryMeta: Record<PrimaryButtonKey, {
   icon: React.ComponentType<{ className?: string }>;
@@ -156,6 +157,9 @@ export function InventoryToolbar({
   const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [draftSort, setDraftSort] = useState(sort);
+  const [draftShowFinished, setDraftShowFinished] = useState(showFinished);
 
   const currentHref = useMemo(() => buildInventoryToolbarHref(pathname, {
     search,
@@ -331,7 +335,142 @@ export function InventoryToolbar({
 
   return (
     <section className="space-y-3" aria-label="Фильтры по запасам">
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+      <div className="flex items-center gap-2">
+        {showSearchInput ? (
+          <div className="min-w-0 flex-1">
+            <InventorySearchInput
+              value={searchValue}
+              onValueChange={setSearchValue}
+            />
+          </div>
+        ) : null}
+
+        <button
+          type="button"
+          aria-label="Фильтры склада"
+          aria-expanded={filtersOpen}
+          onClick={() => { setDraftSort(sort); setDraftShowFinished(showFinished); setFiltersOpen(true); }}
+          className="flex h-11 shrink-0 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm sm:hidden"
+        >
+          <SlidersHorizontal className="h-4 w-4" />
+          {showFinished || sort !== defaultInventorySortOption ? <span className="h-2 w-2 rounded-full bg-primary" /> : null}
+        </button>
+        <div className={`hidden shrink-0 items-center gap-1.5 sm:flex ${showSearchInput ? "" : "ml-auto"}`}>
+          {hasFinishedItems ? (
+            <button
+              type="button"
+              onClick={() => {
+                replaceHref(buildInventoryToolbarHref(pathname, {
+                  search: searchValue,
+                  category,
+                  subtype,
+                  group,
+                  showFinished: !showFinished,
+                  sort
+                }));
+              }}
+              aria-label={showFinished ? "Скрыть закончившиеся" : "Показать закончившиеся"}
+              title={showFinished ? "Скрыть закончившиеся" : "Показать закончившиеся"}
+              className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-all duration-150 ${
+                showFinished
+                  ? "border-warning/30 bg-warning-subtle text-warning-subtle-foreground shadow-sm"
+                  : "border-border bg-card text-muted-foreground hover:border-border hover:bg-accent"
+              }`}
+            >
+              {showFinished ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+              <span className="hidden sm:inline">{showFinished ? "Скрыть закончившиеся" : "Показать закончившиеся"}</span>
+            </button>
+          ) : null}
+
+          <DropdownMenu
+            trigger={
+              <button
+                type="button"
+                aria-label="Сортировка"
+                title="Сортировка"
+                className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-all duration-150 ${
+                  sort !== defaultInventorySortOption
+                    ? "border-primary/30 bg-accent text-primary shadow-sm"
+                    : "border-border bg-card text-muted-foreground hover:border-border hover:bg-accent"
+                }`}
+              >
+                <ArrowUpDown className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">{inventorySortLabels[sort]}</span>
+              </button>
+            }
+            items={Object.entries(inventorySortLabels).map(([value, label]): DropdownMenuItem => ({
+              key: value,
+              label,
+              icon: value === sort ? <Check className="h-4 w-4 text-primary" /> : undefined,
+              onSelect: () => replaceHref(buildInventoryToolbarHref(pathname, {
+                search: searchValue,
+                category,
+                subtype,
+                group,
+                showFinished,
+                sort: value as InventorySortOption
+              }))
+            }))}
+            align="end"
+            aria-label="Сортировка"
+          />
+
+          {hasFilters ? (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchValue("");
+                replaceHref(buildInventoryToolbarHref(pathname, {
+                  search: "",
+                  category: "all",
+                  subtype: null,
+                  group: null,
+                  showFinished: defaultInventoryShowFinished,
+                  sort: defaultInventorySortOption
+                }));
+              }}
+              aria-label="Сбросить фильтры"
+              title="Сбросить фильтры"
+              className="flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground transition-all duration-150 hover:border-border hover:bg-accent"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Сбросить</span>
+            </button>
+          ) : null}
+        </div>
+      </div>
+
+      <Dialog open={filtersOpen} onOpenChange={setFiltersOpen} title="Фильтры склада" hideTitle>
+        <DialogHeader><h2 className="text-base font-semibold">Фильтры склада</h2><DialogCloseButton /></DialogHeader>
+        <div className="space-y-5 p-5">
+          <label className="block space-y-2 text-sm font-medium">Сортировка
+            <select
+              className="mt-2 min-h-11 w-full rounded-lg border border-border bg-card px-3 text-base"
+              value={draftSort}
+              onChange={(event) => setDraftSort(event.target.value as InventorySortOption)}
+            >
+              {Object.entries(inventorySortLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+            </select>
+          </label>
+          <label className="flex min-h-11 items-center justify-between gap-3 text-sm">
+            Показывать закончившиеся
+            <input type="checkbox" className="h-5 w-5" checked={draftShowFinished} disabled={!hasFinishedItems}
+              onChange={(event) => setDraftShowFinished(event.target.checked)} />
+          </label>
+          {hasFilters ? <Button variant="outline" onClick={() => {
+            setSearchValue("");
+            setDraftSort(defaultInventorySortOption);
+            setDraftShowFinished(defaultInventoryShowFinished);
+            replaceHref(buildInventoryToolbarHref(pathname, { search: "", category: "all", subtype: null, group: null, showFinished: defaultInventoryShowFinished, sort: defaultInventorySortOption }));
+          }}>Сбросить фильтры</Button> : null}
+        </div>
+        <DialogFooter><Button onClick={() => {
+          replaceHref(buildInventoryToolbarHref(pathname, { search: searchValue, category, subtype, group, showFinished: draftShowFinished, sort: draftSort }));
+          setFiltersOpen(false);
+        }}>Показать запасы</Button></DialogFooter>
+      </Dialog>
+
+      <div className="flex gap-1.5 overflow-x-auto pb-1 sm:grid sm:grid-cols-3">
         {primaryButtons.map((button) => {
           const meta = categoryMeta[button.key];
           const Icon = meta.icon;
@@ -343,7 +482,7 @@ export function InventoryToolbar({
               type="button"
               disabled={isDisabled}
               onClick={() => handlePrimaryFilterClick(button.key)}
-              className={`grid grid-cols-[1fr_auto] items-center justify-items-center gap-x-1.5 gap-y-1 rounded-xl border px-2 py-2.5 text-xs font-medium transition-all duration-150 sm:flex sm:justify-center sm:gap-2 sm:px-3 sm:text-[13px] ${
+              className={`flex min-h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-medium transition-all duration-150 sm:gap-2 sm:text-[13px] ${
                 isDisabled
                   ? "cursor-not-allowed border-border bg-muted text-muted-foreground"
                   : button.active
@@ -351,10 +490,10 @@ export function InventoryToolbar({
                     : "border-border bg-card text-muted-foreground hover:border-border hover:bg-accent active:scale-[0.97]"
               }`}
             >
-              <Icon className={`col-start-1 row-start-1 h-4 w-4 shrink-0 justify-self-start ${isDisabled ? "text-muted-foreground" : button.active ? "text-current" : ""}`} />
-              <span className="col-span-2 row-start-2 min-w-0 whitespace-nowrap leading-snug">{button.label}</span>
+              <Icon className={`h-4 w-4 shrink-0 ${isDisabled ? "text-muted-foreground" : button.active ? "text-current" : ""}`} />
+              <span className="min-w-0 whitespace-nowrap leading-snug">{button.label}</span>
               {showCategoryCounts ? (
-                <span className={`col-start-2 row-start-1 shrink-0 rounded-full px-1.5 py-0.5 text-center text-[11px] font-semibold leading-none ${
+                <span className={`shrink-0 rounded-full px-1.5 py-0.5 text-center text-[11px] font-semibold leading-none ${
                   isDisabled
                     ? "bg-muted text-muted-foreground"
                     : button.active
@@ -411,97 +550,6 @@ export function InventoryToolbar({
         </div>
       ) : null}
 
-      <div className="flex items-center gap-2">
-        {showSearchInput ? (
-          <div className="min-w-0 flex-1">
-            <InventorySearchInput
-              value={searchValue}
-              onValueChange={setSearchValue}
-            />
-          </div>
-        ) : null}
-
-        <div className={`flex shrink-0 items-center gap-1.5 ${showSearchInput ? "" : "ml-auto"}`}>
-          {hasFinishedItems ? (
-            <button
-              type="button"
-              onClick={() => {
-                replaceHref(buildInventoryToolbarHref(pathname, {
-                  search: searchValue,
-                  category,
-                  subtype,
-                  group,
-                  showFinished: !showFinished,
-                  sort
-                }));
-              }}
-              title={showFinished ? "Скрыть закончившиеся" : "Показать закончившиеся"}
-              className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-all duration-150 ${
-                showFinished
-                  ? "border-warning/30 bg-warning-subtle text-warning-subtle-foreground shadow-sm"
-                  : "border-border bg-card text-muted-foreground hover:border-border hover:bg-accent"
-              }`}
-            >
-              {showFinished ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-              <span className="hidden sm:inline">{showFinished ? "Скрыть закончившиеся" : "Показать закончившиеся"}</span>
-            </button>
-          ) : null}
-
-          <DropdownMenu
-            trigger={
-              <button
-                type="button"
-                title="Сортировка"
-                className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-all duration-150 ${
-                  sort !== defaultInventorySortOption
-                    ? "border-primary/30 bg-accent text-primary shadow-sm"
-                    : "border-border bg-card text-muted-foreground hover:border-border hover:bg-accent"
-                }`}
-              >
-                <ArrowUpDown className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">{inventorySortLabels[sort]}</span>
-              </button>
-            }
-            items={Object.entries(inventorySortLabels).map(([value, label]): DropdownMenuItem => ({
-              key: value,
-              label,
-              icon: value === sort ? <Check className="h-4 w-4 text-primary" /> : undefined,
-              onSelect: () => replaceHref(buildInventoryToolbarHref(pathname, {
-                search: searchValue,
-                category,
-                subtype,
-                group,
-                showFinished,
-                sort: value as InventorySortOption
-              }))
-            }))}
-            align="end"
-            aria-label="Сортировка"
-          />
-
-          {hasFilters ? (
-            <button
-              type="button"
-              onClick={() => {
-                setSearchValue("");
-                replaceHref(buildInventoryToolbarHref(pathname, {
-                  search: "",
-                  category: "all",
-                  subtype: null,
-                  group: null,
-                  showFinished: defaultInventoryShowFinished,
-                  sort: defaultInventorySortOption
-                }));
-              }}
-              title="Сбросить фильтры"
-              className="flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground transition-all duration-150 hover:border-border hover:bg-accent"
-            >
-              <RotateCcw className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Сбросить</span>
-            </button>
-          ) : null}
-        </div>
-      </div>
 
       {isPending || isSearchPending ? (
         <div className="flex items-center gap-2 text-xs text-muted-foreground">

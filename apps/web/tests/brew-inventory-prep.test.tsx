@@ -100,7 +100,7 @@ describe("BrewInventory — Ф5: коверидж склада у кнопки �
     expect(html).not.toContain('href="/app/shopping"');
   });
 
-  it("полное покрытие: заметный призыв «Все ингредиенты есть на складе — списать?»", () => {
+  it("полное покрытие: заметный призыв «Всех ингредиентов хватает.»", () => {
     const html = renderToStaticMarkup(
       <BrewInventory
         brewBatchId="bb-1"
@@ -111,7 +111,7 @@ describe("BrewInventory — Ф5: коверидж склада у кнопки �
     );
 
     expect(html).toContain("Списать со склада");
-    expect(html).toContain("Все ингредиенты есть на складе — списать?");
+    expect(html).toContain("Всех ингредиентов хватает.");
     expect(html).not.toContain("На складе 4 из 4");
   });
 
@@ -203,7 +203,7 @@ describe("BrewInventory — завершённая партия (акт «Ито
     expect(html).toContain("Склад");
     expect(html).toContain("Списано");
     expect(html).toContain("Пильзнер");
-    expect(html).toContain("История запасов");
+    expect(html).toContain("История операций");
     expect(html).not.toContain("Списать со склада");
   });
 
@@ -242,7 +242,7 @@ describe("BrewInventory — правда про списание этой пар
     // Текст обещает ровно то, что делает движок: состав рецепта в объёме ЭТОЙ варки.
     // Прежняя формулировка «по точному совпадению ингредиента и единицы» врала —
     // единицы конвертируются (пачка дрожжей → граммы склада).
-    expect(html).toContain("Спишем со склада ингредиенты рецепта — в объёме этой варки");
+    expect(html).toContain("Количество ингредиентов рассчитано на объём этой партии");
     expect(html).not.toContain("точному совпадению");
   });
 
@@ -278,7 +278,7 @@ describe("BrewInventory — правда про списание этой пар
     );
 
     expect(html).toContain("Списать со склада");
-    expect(html).toContain("ингредиенты рецепта");
+    expect(html).toContain("Количество ингредиентов рассчитано на объём этой партии");
   });
 });
 

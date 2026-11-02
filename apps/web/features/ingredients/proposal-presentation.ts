@@ -47,7 +47,7 @@ const proposalFieldLabels: Record<string, string> = {
   colorEbc: "Цвет, EBC",
   extractYieldPct: "Экстрактивность, %",
   alphaAcidPct: "Альфа-кислоты, %",
-  attenuationPct: "Аттенюация, %",
+  attenuationPct: "Степень сбраживания, %",
   url: "Ссылка",
   link: "Ссылка",
   note: "Комментарий",

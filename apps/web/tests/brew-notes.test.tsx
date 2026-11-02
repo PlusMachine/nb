@@ -49,7 +49,7 @@ describe("BrewNotes — заметки о варке и дегустация (A4
     const brewHtml = renderToStaticMarkup(<BrewNotes brewBatchId="bb-1" kind="brew" notes={null} />);
     const tastingHtml = renderToStaticMarkup(<BrewNotes brewBatchId="bb-1" kind="tasting" notes={null} />);
 
-    expect(brewHtml).toContain("Как прошла варка");
+    expect(brewHtml).toContain("Что учесть при следующей варке");
     expect(tastingHtml).toContain("Аромат, вкус, тело");
   });
 });

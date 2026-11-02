@@ -16,7 +16,7 @@ export function BjcpEmptyState({ query = "", hasFilters = false, onReset }: Prop
     ? "Попробуйте код BJCP, английское название или снимите часть фильтров."
     : hasFilters
     ? "Измените запрос или снимите часть фильтров."
-    : "Выберите семейство, раскройте BJCP-категорию или начните поиск по названию и коду.";
+    : "Выберите группу стилей или категорию BJCP. Также можно найти стиль по названию или коду.";
   const Icon = query ? Search : SlidersHorizontal;
 
   return (

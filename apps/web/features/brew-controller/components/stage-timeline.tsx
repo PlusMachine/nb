@@ -60,8 +60,8 @@ const OVERLAY_BANNER: Record<
   },
   manual: {
     label: {
-      brew: "Ручной режим — прямое управление контуром",
-      distill: "Ручной режим — прямое управление контуром",
+      brew: "Ручной режим управления",
+      distill: "Ручной режим управления",
     },
     cls: "bg-indigo-100 text-indigo-800 dark:bg-indigo-500/20 dark:text-indigo-300",
     Icon: Hand,

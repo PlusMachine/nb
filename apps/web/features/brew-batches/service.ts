@@ -6,7 +6,10 @@ import { resolveBrewBatchRecipe } from "./brew-setup";
 import { buildBrewPlanSnapshot } from "./brew-plan";
 import { buildBrewInventorySnapshot } from "./inventory-snapshot";
 import { applyBrewDayStepPatch, buildBrewDaySteps, normalizeBrewDayProgress } from "./brew-day";
+import { buildManualBrewSteps } from "./manual-brew";
+import { manualTransferInputSchema, type ManualTransferInput } from "./manual-transfer";
 import { summarizeBrewMeasurements } from "./measurements";
+import { readVolumeMeasurements } from "./records";
 import {
   activeBrewBatchStatuses,
   brewPlanSnapshotSchema,
@@ -57,6 +60,7 @@ export const mapBrewBatchDto = (row: typeof brewBatches.$inferSelect): BrewBatch
   deviceHints: (row.deviceHints as Record<string, unknown>[] | null | undefined) ?? [],
   notes: row.notes,
   tastingNotes: row.tastingNotes,
+  volumeMeasurements: readVolumeMeasurements(row.volumeMeasurements),
   plannedFor: row.plannedFor,
   startedAt: row.startedAt,
   completedAt: row.completedAt,
@@ -404,6 +408,18 @@ export const updateBrewBatchStatus = async (
   status: typeof brewBatches.$inferSelect.status
 ) => {
   const now = new Date();
+  if (status === "fermenting") {
+    return db.transaction(async tx => {
+      const [batch] = await tx.select().from(brewBatches).where(and(eq(brewBatches.id, brewBatchId), eq(brewBatches.userId, userId))).for("update");
+      if (!batch) throw new Error("NOT_FOUND");
+      const progress = normalizeBrewDayProgress(batch.brewDayProgress);
+      const [updated] = await tx.update(brewBatches).set({ status, updatedAt: now,
+        ...(!batch.deviceId ? { brewDayProgress: applyBrewDayStepPatch(progress, "brew:pitch", { done: true, completedAt: now.toISOString() }, now.toISOString()) as unknown as Record<string, unknown> } : {})
+      }).where(eq(brewBatches.id, brewBatchId)).returning();
+      if (!updated) throw new Error("NOT_FOUND");
+      return mapBrewBatchDto(updated);
+    });
+  }
   const [updated] = await db.update(brewBatches).set({
     status,
     startedAt: status === "brewing" ? now : undefined,
@@ -596,7 +612,7 @@ export const setBrewDayStepState = async (
 
     const snapshot = brewPlanSnapshotSchema.parse(row.brewPlanSnapshot);
     const stepIds = new Set(
-      buildBrewDaySteps(snapshot).flatMap((group) => group.steps.map((step) => step.id))
+      buildManualBrewSteps(snapshot).flatMap((group) => group.steps.map((step) => step.id))
     );
     if (!stepIds.has(stepId)) {
       throw new Error("UNKNOWN_STEP");
@@ -615,6 +631,33 @@ export const setBrewDayStepState = async (
     }
 
     return normalizeBrewDayProgress(updated.brewDayProgress);
+  });
+};
+
+/** OG, fermenter volume and the transfer step commit together; retries keep the original measurement. */
+export const saveManualBrewTransfer = async (userId: string, batchId: string, input: ManualTransferInput): Promise<BrewDayProgress> => {
+  const parsed = manualTransferInputSchema.parse(input);
+  return db.transaction(async tx => {
+    const [batch] = await tx.select().from(brewBatches).where(and(eq(brewBatches.id, batchId), eq(brewBatches.userId, userId))).for("update");
+    if (!batch) throw new Error("NOT_FOUND");
+    const progress = normalizeBrewDayProgress(batch.brewDayProgress);
+    if (progress.steps["brew:transfer"]?.measurementOperationId === parsed.operationId) return progress;
+    if (batch.status !== "brewing" || batch.deviceId) throw new Error("INVALID_STAGE");
+    if (parsed.gravitySg !== null) {
+      const [existing] = await tx.select({ id: brewMeasurements.id }).from(brewMeasurements).where(eq(brewMeasurements.id, parsed.operationId));
+      if (existing) throw new Error("INVALID_STAGE");
+      await assertRateLimit(userId, "brew_measurement_create", BREW_MEASUREMENT_RATE_LIMIT, BREW_MEASUREMENT_RATE_WINDOW_SECONDS);
+      const [quota] = await tx.select({ value: count() }).from(brewMeasurements).where(eq(brewMeasurements.brewBatchId, batchId));
+      if ((quota?.value ?? 0) >= BREW_MEASUREMENT_MAX_COUNT_PER_BATCH) throw new Error("BREW_MEASUREMENT_QUOTA_REACHED");
+      await tx.insert(brewMeasurements).values({ id: parsed.operationId, userId, brewBatchId: batchId, gravitySg: parsed.gravitySg, takenAt: new Date(parsed.takenAt), isFinal: false });
+    }
+    const next = applyBrewDayStepPatch(progress, "brew:transfer", { done: true, completedAt: parsed.takenAt, measurementOperationId: parsed.operationId, ...(parsed.gravitySg !== null ? { gravitySg: parsed.gravitySg } : {}) }, new Date().toISOString());
+    await tx.update(brewBatches).set({
+      brewDayProgress: next as unknown as Record<string, unknown>,
+      ...(parsed.fermenterL !== null ? { volumeMeasurements: { ...batch.volumeMeasurements, fermenterL: parsed.fermenterL } } : {}),
+      updatedAt: new Date()
+    }).where(eq(brewBatches.id, batchId));
+    return next;
   });
 };
 

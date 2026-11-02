@@ -33,7 +33,7 @@ export function AdminSidebarNav({ role, onNavigate }: AdminSidebarNavProps) {
 
   return (
     <div className="flex h-full flex-col">
-      <nav className="flex flex-1 flex-col gap-1" aria-label="Навигация админки">
+      <nav className="flex flex-1 flex-col gap-1" aria-label="Навигация панели управления">
         <Link
           href="/admin"
           onClick={() => onNavigate?.()}

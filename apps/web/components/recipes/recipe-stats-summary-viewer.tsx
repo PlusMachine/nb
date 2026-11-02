@@ -8,7 +8,7 @@ import { useViewerGravityUnit } from "@/features/system/use-viewer-gravity-unit"
 import { RecipeStatsSummary } from "./recipe-stats-summary";
 
 type RecipeStatsSource = Pick<RecipeListItemDto | RecipeDetailDto, "og" | "fg" | "abv" | "ibu" | "color" | "styleId">
-  & Partial<Pick<RecipeDetailDto, "fgEstimateMode" | "fgEstimateDetails">>;
+  & Partial<Pick<RecipeDetailDto, "fgEstimateMode" | "fgEstimateDetails" | "bitternessEstimate">>;
 
 /**
  * Обёртка для страниц, которые намеренно не читают сессию на сервере (ISR/SSG для

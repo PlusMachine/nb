@@ -1,7 +1,9 @@
+import { formatCatalogColorEbc, visibleCatalogAliases, translateHopAroma } from "@/features/ingredients/catalog-display";
+import { formatConsumablePackageLabel } from "@/features/ingredients/consumables";
 import React, { cache } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 
 import { FeedbackReportLink } from "@/components/feedback/feedback-report-link";
 import { DeleteCustomCatalogIngredientButton } from "@/components/ingredients/delete-custom-catalog-ingredient-button";
@@ -16,9 +18,16 @@ import {
 import {
   getUserCatalogIngredientByRef,
   listAnalogCatalogIngredients,
-  listSameBrandCatalogIngredients
+  listSameBrandCatalogIngredients,
+  searchUserCatalogIngredients
 } from "@/features/ingredients/catalog-service";
 import { buildIngredientCatalogActionHref } from "@/features/ingredients/catalog-links";
+import {
+  buildCatalogPackageContentRows,
+  buildCatalogReferenceRows,
+  buildCatalogReferenceSections,
+  resolveCatalogSourcePageLabel
+} from "@/features/ingredients/catalog-reference-details";
 import {
   formatHopAlphaAcidDetailValue,
   isHopWithUserAlphaOverride
@@ -67,6 +76,28 @@ const loadIngredientDetail = cache(async (resolvedSource: "catalog" | "custom", 
 
 const formatValue = (value: number) => value % 1 === 0 ? String(value) : value.toFixed(1).replace(/\.0$/, "");
 
+const formatRange = (min: number | null | undefined, max: number | null | undefined, unit: string) => {
+  if (min != null && max != null) {
+    return min === max
+      ? `${formatValue(min)}${unit}`
+      : `${formatValue(Math.min(min, max))}–${formatValue(Math.max(min, max))}${unit}`;
+  }
+  if (min != null) return `от ${formatValue(min)}${unit}`;
+  if (max != null) return `до ${formatValue(max)}${unit}`;
+  return null;
+};
+
+const yeastPofLabels: Record<string, string> = {
+  positive: "POF+ (фенольные)",
+  negative: "POF− (нефенольные)"
+};
+
+const yeastSedimentationLabels: Record<string, string> = {
+  slow: "Медленное",
+  medium: "Среднее",
+  fast: "Быстрое"
+};
+
 const splitDescriptionParagraphs = (value: string) => value
   .split(/\n{2,}/)
   .map((paragraph) => paragraph.trim())
@@ -74,6 +105,8 @@ const splitDescriptionParagraphs = (value: string) => value
 
 const resolveFermentableColor = (item: UserCatalogIngredientDto) => {
   const technicalData = item.technicalData;
+  const verifiedRangeLabel = formatCatalogColorEbc(technicalData);
+  if (verifiedRangeLabel) return verifiedRangeLabel;
   if (technicalData && (technicalData.type === "malt" || technicalData.type === "fermentable")) {
     const range = resolveIngredientTechnicalDataColorRangeEbc(technicalData);
     if (range && technicalData.type === "malt" && (technicalData.colorEbcMin != null || technicalData.colorEbcMax != null)) {
@@ -134,48 +167,52 @@ const renderTechnicalRows = (item: UserCatalogIngredientDto) => {
   const color = resolveFermentableColor(item);
   const technicalData = item.technicalData;
   const brandLabel = resolveIngredientBrandLabel(item);
+  const processOnly = technicalData?.type === "fermentable" && technicalData.functionalRole === "process_only";
+  if (processOnly) rows.push({ label: "Назначение", kind: "text", value: "Фильтрация затора. Не участвует в расчётах плотности и цвета пива." });
 
-  if (item.hopAlphaAcidPct != null) {
-    rows.push({
-      label: "Альфа-кислота",
-      kind: "text",
-      value: formatHopAlphaAcidDetailValue(item.hopAlphaAcidPct, {
-        userOverride: isHopWithUserAlphaOverride(item)
-      })
-    });
-  }
-  if (item.hopBetaAcidPct != null) {
-    rows.push({ label: "Бета-кислота", kind: "text", value: `${formatValue(item.hopBetaAcidPct)}%` });
-  }
   const hopTechnicalData = technicalData?.type === "hop"
-    ? technicalData as Extract<IngredientTechnicalData, { type: "hop" }>
-    : null;
+    ? technicalData as Extract<IngredientTechnicalData, {type:"hop"}> : null;
+  if (hopTechnicalData) {
+    const override = isHopWithUserAlphaOverride(item);
+    const alphaRange = formatRange(hopTechnicalData.alphaAcidPctMin, hopTechnicalData.alphaAcidPctMax, "%");
+    rows.push({label:"Альфа-кислоты",kind:"text",value:alphaRange ?? (item.hopAlphaAcidPct != null ? `${formatValue(item.hopAlphaAcidPct)}%` : "Нет данных")});
+    if (item.hopAlphaAcidPct != null && (alphaRange || override)) rows.push({label:override ? "Альфа вашей партии" : "Альфа для расчёта",kind:"text",value:`${formatValue(item.hopAlphaAcidPct)}%`});
+    const beta = formatRange(hopTechnicalData.betaAcidPctMin,hopTechnicalData.betaAcidPctMax,"%");
+    if (beta || item.hopBetaAcidPct != null) rows.push({label:"Бета-кислоты",kind:"text",value:beta ?? `${formatValue(item.hopBetaAcidPct!)}%`});
+    const oils = formatRange(hopTechnicalData.oilMl100gMin,hopTechnicalData.oilMl100gMax," мл/100 г");
+    if (!hopTechnicalData.oilValueUnitWarning && (oils || hopTechnicalData.oilMl100gTypical != null)) rows.push({label:"Общие масла",kind:"text",value:oils ?? `${formatValue(hopTechnicalData.oilMl100gTypical!)} мл/100 г`});
+  }
   const hopFormLabel = formatHopFormLabel(item.hopForm ?? hopTechnicalData?.hopForm ?? null);
   if (hopFormLabel) {
     rows.push({ label: "Форма", kind: "text", value: hopFormLabel });
   }
-  if (color) {
+  if (color && !processOnly) {
     rows.push({ label: "Цвет", kind: "text", value: color });
+    if (technicalData?.type === "malt" && typeof technicalData.colorEbcForCalculation === "number") rows.push({label:"Для расчёта цвета",kind:"text",value:`${formatValue(technicalData.colorEbcForCalculation)} EBC (верхняя граница)`});
   }
+  if (technicalData?.type === "malt" && technicalData.proteinPct == null && technicalData.dataReview) rows.push({label:"Белок",kind:"text",value:"Нет подтверждённых данных"});
   if (technicalData?.type === "water_treatment") {
     const record = technicalData as Record<string, unknown>;
     // Приоритет у химической формулы: displayFormula в данных иногда хранит
     // концентрацию («88%»), а не формулу.
-    const formula = [record.formula, record.displayFormula]
+    const formula = [record.calculationFormula, record.displayFormula, record.formula]
       .find((value): value is string => typeof value === "string" && Boolean(value.trim()));
     if (formula) {
       rows.push({ label: "Формула", kind: "formula", value: formula.trim() });
     }
   }
-  if (item.fermentableExtractYieldPct != null) {
+  if (technicalData?.type === "fermentable" && (technicalData.hoppingState === "hopped" || technicalData.isHoppedProduct === true)) {
+    rows.push({label:"Горечь",kind:"text",value:technicalData.hoppedBitterness ? "По спецификации производителя" : "Не указана — для расчёта IBU нужны данные производителя"});
+  }
+  if (item.fermentableExtractYieldPct != null && !processOnly) {
     rows.push({ label: "Экстрактивность", kind: "text", value: `${formatValue(item.fermentableExtractYieldPct)}%` });
   }
   if (item.yeastAttenuationPct != null) {
-    rows.push({ label: "Аттенюация", kind: "text", value: `${formatValue(item.yeastAttenuationPct)}%` });
+    rows.push({ label: "Степень сбраживания", kind: "text", value: `${formatValue(item.yeastAttenuationPct)}%` });
   }
   if (item.yeastMinFermentationTempC != null || item.yeastMaxFermentationTempC != null) {
     rows.push({
-      label: "Температура",
+      label: "Температура брожения",
       kind: "text",
       value: `${item.yeastMinFermentationTempC ?? "?"}-${item.yeastMaxFermentationTempC ?? "?"} °C`
     });
@@ -188,6 +225,27 @@ const renderTechnicalRows = (item: UserCatalogIngredientDto) => {
     : null;
   if (yeastFormLabel) {
     rows.push({ label: "Форма", kind: "text", value: yeastFormLabel });
+  }
+  if (yeastTechnicalData) {
+    const attenuationRange = formatRange(yeastTechnicalData.attenuationPctMin, yeastTechnicalData.attenuationPctMax, "%");
+    if (attenuationRange) {
+      rows.push({ label: "Диапазон степени сбраживания", kind: "text", value: attenuationRange });
+    }
+    if (yeastTechnicalData.fermentationTempCOptimum != null) {
+      rows.push({ label: "Оптимальная температура брожения", kind: "text", value: `${formatValue(yeastTechnicalData.fermentationTempCOptimum)} °C` });
+    }
+    if (yeastTechnicalData.species) {
+      rows.push({ label: "Вид культуры", kind: "text", value: yeastTechnicalData.species });
+    }
+    if (yeastTechnicalData.pof) {
+      rows.push({ label: "Образование фенолов (POF)", kind: "text", value: yeastPofLabels[yeastTechnicalData.pof] ?? yeastTechnicalData.pof });
+    }
+    if (yeastTechnicalData.sedimentation) {
+      rows.push({ label: "Скорость оседания дрожжей", kind: "text", value: yeastSedimentationLabels[yeastTechnicalData.sedimentation] ?? yeastTechnicalData.sedimentation });
+    }
+    if (yeastTechnicalData.analogReference) {
+      rows.push({ label: "Справочный аналог", kind: "text", value: yeastTechnicalData.analogReference });
+    }
   }
   if (brandLabel) {
     rows.push({ label: "Бренд", kind: "text", value: brandLabel });
@@ -207,6 +265,12 @@ const renderTechnicalRows = (item: UserCatalogIngredientDto) => {
     const yeast = technicalData as Extract<IngredientTechnicalData, { type: "yeast" }>;
     rows.push({ label: "Устойчивость к алкоголю", kind: "text", value: `${formatValue(yeast.alcoholToleranceAbvTypical ?? 0)}% ABV` });
   }
+  if (yeastTechnicalData) {
+    const alcoholRange = formatRange(yeastTechnicalData.alcoholToleranceAbvMin, yeastTechnicalData.alcoholToleranceAbvMax, "% ABV");
+    if (alcoholRange) {
+      rows.push({ label: "Диапазон устойчивости", kind: "text", value: alcoholRange });
+    }
+  }
   if (technicalData && technicalData.type === "yeast" && technicalData.flocculation) {
     const yeast = technicalData as Extract<IngredientTechnicalData, { type: "yeast" }>;
     const flocculationLabel = resolveYeastFlocculationLabelRu(yeast.flocculation);
@@ -215,7 +279,12 @@ const renderTechnicalRows = (item: UserCatalogIngredientDto) => {
     }
   }
 
-  return rows;
+  const existingLabels = new Set(rows.map((row) => row.label));
+  const referenceRows = buildCatalogReferenceRows(technicalData).filter((row) => (
+    !existingLabels.has(row.label)
+    && !(technicalData?.type === "hop" && (row.label === "Масла" || row.label === "Аромат"))
+  ));
+  return [...rows, ...referenceRows.map((row) => ({ ...row, kind: "text" as const }))];
 };
 
 // Один ключевой параметр для строк перелинковки («Похожие ингредиенты»,
@@ -231,7 +300,7 @@ const resolveIngredientKeyMetricLabel = (candidate: UserCatalogIngredientDto): s
   }
 
   if (candidate.category === "yeast" && candidate.yeastAttenuationPct != null) {
-    return `аттенюация ${formatValue(candidate.yeastAttenuationPct)}%`;
+    return `степень сбраживания ${formatValue(candidate.yeastAttenuationPct)}%`;
   }
 
   return null;
@@ -276,7 +345,7 @@ const renderIngredientLinkRows = (items: UserCatalogIngredientDto[], options?: {
         <Link
           key={`${candidate.source}-${candidate.id}`}
           href={buildCatalogHref(candidate)}
-          className="flex items-center justify-between gap-3 rounded-2xl bg-muted px-4 py-3 text-sm transition-colors hover:bg-accent"
+          className="flex min-w-0 items-center justify-between gap-3 rounded-2xl bg-muted px-4 py-3 text-sm transition-colors hover:bg-accent"
         >
           <span className="min-w-0">
             <span className="block truncate font-medium text-foreground">{candidate.primaryLabelRu}</span>
@@ -350,10 +419,15 @@ export default async function IngredientDetailPage({
     ])
     : [[] as UserCatalogIngredientDto[], [] as UserCatalogIngredientDto[], { total: 0, items: [] }];
 
+  if (item.source === "catalog" && item.id !== id) permanentRedirect(`/catalog/system/${item.id}`);
+
   const technicalRows = renderTechnicalRows(item);
   const packageVariants = item.packageVariants ?? [];
+  const isMethod = item.itemKind === "method" || (item.technicalData?.type === "water_treatment" && item.technicalData.calculationSupport === "not_an_additive");
+  const isAcidReference = item.id === "acidulated-malt";
+  const acidulatedProducts = isAcidReference ? (await searchUserCatalogIngredients(user?.id ?? null, { q: "acidulated", category: "fermentable", subtype: "malt", limit: 100, includeCustom: false })).items : [];
   const subtypeLabel = formatIngredientSubtypeLabel(item.category, item.subtype);
-  const typeLabel = item.category === "fermentable"
+  const typeLabel = isMethod ? "Метод водоподготовки" : isAcidReference ? "Солод" : item.category === "fermentable"
     ? (item.subtype === "malt" ? "Солод" : resolveIngredientFermentableKindLabel(item) ?? "Сбраживаемое сырьё")
     // Подтип «другое» ничего не сообщает — показываем группу. У consumable это
     // broad group («Специи и добавки» / «Расходники»), а не категория целиком:
@@ -369,8 +443,7 @@ export default async function IngredientDetailPage({
       .filter((value): value is string => Boolean(value))
       .map((value) => value.trim().toLowerCase())
   );
-  const subtleAliases = Array.from(new Set(item.aliases.map((alias) => alias.alias).filter(Boolean)))
-    .filter((alias) => !headerNames.has(alias.trim().toLowerCase()));
+  const subtleAliases = visibleCatalogAliases(item);
   const brandLabel = resolveIngredientBrandLabel(item);
   const country = resolveIngredientCountry(item);
   const loginHref = `/login?next=${encodeURIComponent(`/catalog/${source}/${id}`)}`;
@@ -388,10 +461,33 @@ export default async function IngredientDetailPage({
   const showUsageSection = canManage && (item.inventoryUsageCount > 0 || item.recipeUsageCount > 0);
   const hasRightColumn = analogItems.length > 0 || recipesResult.items.length > 0 || brandItems.length > 0 || canManage;
 
-  const descriptionParagraphs = item.descriptionRu ? splitDescriptionParagraphs(item.descriptionRu) : [];
+  const descriptionParagraphs = isAcidReference ? ["Снижает pH затора. Добавляют вместе с остальным солодом."]
+    : isMethod && item.technicalData?.type === "water_treatment"
+      ? [item.technicalData.typicalUseRu,item.technicalData.cautionsRu].filter((value): value is string => typeof value === "string" && Boolean(value))
+      : item.descriptionRu ? splitDescriptionParagraphs(item.descriptionRu) : [];
+  const referenceSections = buildCatalogReferenceSections(item.technicalData);
+  const sources = (item.sources ?? []).flatMap<{ id?: string; url: string | null; label: string; pageLabel: string | null }>((source) => {
+    const pageLabel = resolveCatalogSourcePageLabel(item.technicalData, source.url, source.position);
+    if (!source.url) {
+      const label = source.label?.trim();
+      return label ? [{ id: source.id, url: null, label, pageLabel }] : [];
+    }
+    try {
+      const url = new URL(source.url);
+      if (url.protocol !== "https:" && url.protocol !== "http:") return [];
+      return [{
+        ...source,
+        url: url.href,
+        label: source.label?.trim() || url.hostname,
+        pageLabel
+      }];
+    } catch {
+      return [];
+    }
+  });
 
   const leftColumn = (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6" id="application">
       {descriptionParagraphs.length ? (
         <section className="rounded-[28px] border border-border bg-card p-6 shadow-sm">
           <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">Описание</h2>
@@ -403,13 +499,30 @@ export default async function IngredientDetailPage({
         </section>
       ) : null}
 
+      {isAcidReference ? (
+        <section className="rounded-[28px] border border-border bg-card p-6">
+          <h2 className="font-semibold">Выберите производителя</h2>
+          <div className="mt-4 grid gap-2 sm:grid-cols-2">
+            {acidulatedProducts.map((product) => <Link key={product.id} href={`/catalog/system/${product.id}`} className="rounded-xl border border-border p-3 text-sm hover:bg-muted">{resolveIngredientBrandLabel(product) ?? product.primaryLabelRu}</Link>)}
+            <Link href="/catalog/new?category=fermentable&subtype=malt" className="rounded-xl border border-border p-3 text-sm hover:bg-muted">Другой производитель</Link>
+          </div>
+        </section>
+      ) : null}
+      {item.technicalData?.type === "hop" && Array.isArray(item.technicalData.aromaDescriptorsEn) && item.technicalData.aromaDescriptorsEn.length ? (
+        <section className="rounded-[28px] border border-border bg-card p-6">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Аромат</h2>
+          <div className="mt-4 flex flex-wrap gap-2">{item.technicalData.aromaDescriptorsEn.map((value) => <span key={value} className="rounded-full bg-muted px-3 py-1 text-sm">{translateHopAroma(value)}</span>)}</div>
+          <details className="mt-3 text-sm text-muted-foreground"><summary className="cursor-pointer">Оригинальные термины</summary><p className="mt-2">{item.technicalData.aromaDescriptorsEn.join(", ")}</p></details>
+          {sources.find((entry) => entry.url) ? <a href={sources.find((entry) => entry.url)!.url!} target="_blank" rel="noreferrer" className="mt-3 inline-block text-sm text-link underline">Источник аромата</a> : null}
+        </section>
+      ) : null}
       {technicalRows.length ? (
         <section className="rounded-[28px] border border-border bg-card p-6 shadow-sm">
           <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">Параметры</h2>
           <div className="mt-4 space-y-3">
             {technicalRows.map((row) => (
-              <div key={row.label} className="flex items-center justify-between gap-3 rounded-2xl bg-muted px-4 py-3">
-                <span className="text-sm text-muted-foreground">{row.label}</span>
+              <div key={row.label} className="flex min-w-0 items-center justify-between gap-3 rounded-2xl bg-muted px-4 py-3">
+                <span className="min-w-0 break-words text-sm text-muted-foreground">{row.label}</span>
                 {row.kind === "country" ? (
                   <CountryFlagLabel
                     countryCode={row.country.code}
@@ -422,7 +535,7 @@ export default async function IngredientDetailPage({
                     {renderChemicalFormula(row.value)}
                   </span>
                 ) : (
-                  <span className="text-sm font-medium text-foreground">{row.value}</span>
+                  <span className="min-w-0 max-w-[60%] break-words text-right text-sm font-medium text-foreground">{row.value}</span>
                 )}
               </div>
             ))}
@@ -430,27 +543,35 @@ export default async function IngredientDetailPage({
         </section>
       ) : null}
 
+      {referenceSections.map((section) => (
+        <section key={section.label} className="rounded-[28px] border border-border bg-card p-6 shadow-sm">
+          <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">{section.label}</h2>
+          <div className="mt-4 space-y-3 text-sm leading-6 text-foreground">
+            {splitDescriptionParagraphs(section.value).map((paragraph, index) => <p key={index}>{paragraph}</p>)}
+          </div>
+        </section>
+      ))}
+
       {packageVariants.length ? (
         <section className="rounded-[28px] border border-border bg-card p-6 shadow-sm">
           <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">Фасовки</h2>
           <div className="mt-4 space-y-2">
             {packageVariants.map((variant) => {
               const name = variant.productNameRu ?? variant.productNameEn ?? variant.brand ?? "Фасовка";
-              const amountLabel = variant.packageAmount != null && variant.packageUnit
-                ? `${formatValue(variant.packageAmount)} ${variant.packageUnit}`
-                : variant.stockContentAmount != null && variant.stockContentUnit
-                  ? `${formatValue(variant.stockContentAmount)} ${variant.stockContentUnit}`
-                  : null;
+              const amountLabel = formatConsumablePackageLabel(variant);
 
               return (
-                <div key={variant.id} className="flex items-center justify-between gap-3 rounded-2xl bg-muted px-4 py-3">
+                <div key={variant.id} className="flex min-w-0 items-center justify-between gap-3 rounded-2xl bg-muted px-4 py-3">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-foreground">{name}</p>
                     {variant.brand && variant.brand !== name ? (
                       <p className="text-xs text-muted-foreground">{variant.brand}</p>
                     ) : null}
+                    {buildCatalogPackageContentRows(item.technicalData, variant.id).map((row) => (
+                      <p key={row.label} className="text-xs text-muted-foreground">{row.label}: {row.value}</p>
+                    ))}
                   </div>
-                  {amountLabel ? <span className="shrink-0 text-sm text-muted-foreground">{amountLabel}</span> : null}
+                  {amountLabel ? <span className="shrink-0 text-sm text-muted-foreground">{variant.packageUnit === "fl oz (US)" && amountLabel?.includes(" · ") ? <><span>{amountLabel.split(" · ")[0]}</span><span className="mt-1 block text-xs font-normal text-muted-foreground">{amountLabel.split(" · ")[1]}</span></> : amountLabel}</span> : null}
                 </div>
               );
             })}
@@ -468,6 +589,22 @@ export default async function IngredientDetailPage({
               </span>
             ))}
           </div>
+        </section>
+      ) : null}
+
+      {sources.length ? (
+        <section className="rounded-[28px] border border-border bg-card p-6 shadow-sm">
+          <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">Источники</h2>
+          <ul className="mt-4 space-y-3 text-sm">
+            {sources.map((source) => (
+              <li key={source.id ?? source.url ?? source.label} className="min-w-0">
+                {source.url ? <a href={source.url} target="_blank" rel="noopener noreferrer" className="break-words text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground">
+                  {source.label}
+                </a> : <span className="text-foreground">{source.label}</span>}
+                {source.pageLabel ? <p className="mt-1 text-xs text-muted-foreground">{source.pageLabel}</p> : null}
+              </li>
+            ))}
+          </ul>
         </section>
       ) : null}
     </div>
@@ -562,7 +699,7 @@ export default async function IngredientDetailPage({
             ) : null}
           </div>
 
-          {canManage ? (
+          {isMethod ? (<Link href="#application" className="inline-flex h-11 items-center justify-center rounded-xl bg-foreground px-5 text-sm font-medium text-background">Как применять</Link>) : isAcidReference ? null : canManage ? (
             <div className="grid gap-2 sm:grid-cols-2 xl:w-[360px]">
               <Link href={buildIngredientCatalogActionHref("/app/ingredients", item.source, item.id)} className="inline-flex h-11 items-center justify-center rounded-xl bg-foreground px-4 text-sm font-medium text-background sm:col-span-2">
                 Добавить на склад
@@ -597,10 +734,10 @@ export default async function IngredientDetailPage({
       </section>
 
       {hasRightColumn ? (
-        <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
           {leftColumn}
 
-          <div className="space-y-6">
+          <div className="min-w-0 space-y-6">
             {brandItems.length ? (
               <section className="rounded-[28px] border border-border bg-card p-6 shadow-sm">
                 <h2 className="flex flex-wrap items-center gap-1.5 text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">

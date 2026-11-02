@@ -1,5 +1,6 @@
 "use client";
 
+import { formatCatalogColorEbc } from "@/features/ingredients/catalog-display";
 import React from "react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
@@ -241,12 +242,12 @@ export const resolveIngredientPickerLoadingLabel = ({
   searchOnEmptyQuery?: boolean;
 }) => (
   normalizeSearchText(query).length > 0
-    ? "Ищем совпадения..."
+    ? "Ищем совпадения…"
     : hasSearchScope
-      ? "Подбираем варианты по выбранным фильтрам..."
+      ? "Ищем по выбранным фильтрам…"
       : searchOnEmptyQuery
-        ? "Подбираем варианты..."
-      : "Ищем ингредиенты..."
+        ? "Подбираем варианты…"
+      : "Ищем ингредиенты…"
 );
 
 export const IngredientPickerLoadingState = ({
@@ -470,6 +471,12 @@ export type IngredientPickerResultRow =
 // family/match-group ключи (resolveIngredientMatchKey) — те семейные и утащат
 // «Экстра Пэйл Эль» в группу «Пэйл Эль».
 export const resolveIngredientPickerGroupKey = (item: IngredientSuggestionItem) => {
+  if (item.category === "hop") {
+    const data=item.technicalData;
+    if (data?.type === "hop" && typeof data.varietyKey === "string" && data.varietyKey && item.countryCode
+      && typeof data.hopForm === "string" && data.hopForm && data.isBlend === false) return `hop:${data.varietyKey}:${item.countryCode}:${data.hopForm}`;
+    return `hop:${item.id}`;
+  }
   const { primaryName } = resolveIngredientPickerRowContent(item);
   return `${normalizeSearchText(primaryName)}::${item.category ?? ""}::${item.subtype ?? ""}`;
 };
@@ -627,6 +634,7 @@ export const buildIngredientSearchParams = ({
   favoritesOnly = false,
   customOnly = false,
   includeCustom = true,
+  inventoryOnly = false,
   limit
 }: {
   q: string;
@@ -639,9 +647,11 @@ export const buildIngredientSearchParams = ({
   favoritesOnly?: boolean;
   customOnly?: boolean;
   includeCustom?: boolean;
+  inventoryOnly?: boolean;
   limit: number;
 }) => {
   const params = new URLSearchParams({ q: q.trim(), limit: String(limit) });
+  if (inventoryOnly) params.set("inventoryOnly", "true");
   if (type) {
     params.set("type", type);
   }
@@ -830,6 +840,8 @@ const formatColorBadge = (item: Pick<IngredientSuggestionItem, "technicalData">)
     return null;
   }
 
+  const boundLabel = formatCatalogColorEbc(technicalData);
+  if (boundLabel) return boundLabel;
   const range = resolveIngredientTechnicalDataColorRangeEbc(technicalData);
   if (!range) {
     return null;
@@ -848,6 +860,9 @@ export const buildIngredientPickerTechnicalBadges = (item: IngredientSuggestionI
   const technicalData = item.technicalData;
   if (!technicalData) {
     return [];
+  }
+  if (technicalData.type === "fermentable" && technicalData.functionalRole === "process_only") {
+    return [{ key: "process", label: "Для фильтрации затора" }];
   }
 
   const badges: IngredientPickerTechnicalBadge[] = [];
@@ -887,7 +902,7 @@ export const buildIngredientPickerTechnicalBadges = (item: IngredientSuggestionI
   } else if (technicalData.type === "malt" || technicalData.type === "fermentable") {
     const fermentable = technicalData as Extract<NonNullable<typeof technicalData>, { type: "malt" | "fermentable" }>;
     pushBadge(formatColorBadge(item), resolveColorBadgeAccent(item));
-    pushBadge(fermentable.extractPctDryBasis != null ? `Экст-ть ${formatBadgeValue(fermentable.extractPctDryBasis)}%` : null);
+    pushBadge(fermentable.extractPctDryBasis != null ? `Экстрактивность ${formatBadgeValue(fermentable.extractPctDryBasis)}%` : null);
     pushBadge(
       fermentable.type === "malt" && fermentable.maxUsagePct != null
         ? `до ${formatBadgeValue(fermentable.maxUsagePct)} % засыпи`
@@ -898,7 +913,7 @@ export const buildIngredientPickerTechnicalBadges = (item: IngredientSuggestionI
   } else if (technicalData.type === "yeast") {
     const yeast = technicalData as Extract<NonNullable<typeof technicalData>, { type: "yeast" }>;
     pushBadge(resolveYeastFormLabelRu(yeast.form));
-    pushBadge(yeast.attenuationPctTypical != null ? `Атт. ${formatBadgeValue(yeast.attenuationPctTypical)}%` : null);
+    pushBadge(yeast.attenuationPctTypical != null ? `Сбраживание ${formatBadgeValue(yeast.attenuationPctTypical)}%` : null);
     pushBadge(
       yeast.fermentationTempCMin != null && yeast.fermentationTempCMax != null
         ? `${formatBadgeValue(yeast.fermentationTempCMin)}-${formatBadgeValue(yeast.fermentationTempCMax)}°C`
@@ -1155,8 +1170,10 @@ export const resolveIngredientPickerRowContent = (item: IngredientSuggestionItem
       ?? (item.matchType === "package" ? matchedVariantName : null)
       ?? basePrimaryName;
     const canonicalName = item.primaryLabelRu?.trim() || basePrimaryName;
-    const secondaryName = consumableTechnicalData.pickerFunctionRu?.trim()
+    const secondaryCandidate = consumableTechnicalData.pickerFunctionRu?.trim()
       || (normalizeSearchText(canonicalName) === normalizeSearchText(primaryName) ? baseSecondaryName : canonicalName);
+    const secondaryName = secondaryCandidate && normalizeSearchText(secondaryCandidate) !== normalizeSearchText(primaryName)
+      ? secondaryCandidate : undefined;
     const subtitle = buildDedupedSubtitle([
       formatConsumablePickerBrandLabel(matchedVariant?.brand),
       formatConsumablePackageLabel(matchedVariant),
@@ -1556,7 +1573,7 @@ export const IngredientPickerFavoritesChip = ({
 }) => (
   <IngredientPickerScopePill
     label="Избранные"
-    removeLabel="Убрать фильтр Избранные"
+    removeLabel="Убрать фильтр «Избранные»"
     onRemove={onRemove}
     testId="ingredient-picker-favorites-chip"
   />
@@ -1605,7 +1622,7 @@ export const IngredientPickerCustomOnlyChip = ({
 }) => (
   <IngredientPickerScopePill
     label="Только свои"
-    removeLabel="Убрать фильтр Только свои"
+    removeLabel="Убрать фильтр «Только свои»"
     onRemove={onRemove}
     testId="ingredient-picker-custom-only-chip"
   />
@@ -1857,7 +1874,7 @@ export const IngredientPickerQuickStartPanel = ({
                   className="text-xs font-medium text-foreground"
                   data-testid="ingredient-picker-quick-start-recent-loading"
                 >
-                  Загружаем недавние...
+                  Загружаем недавние…
                 </span>
               </div>
             ) : resolvedRecentState === "empty" ? (
@@ -2019,6 +2036,7 @@ export const defaultSearchIngredients = async ({
   favoritesOnly,
   customOnly,
   includeCustom,
+  inventoryOnly,
   limit,
   signal
 }: {
@@ -2032,10 +2050,11 @@ export const defaultSearchIngredients = async ({
   favoritesOnly?: boolean;
   customOnly?: boolean;
   includeCustom?: boolean;
+  inventoryOnly?: boolean;
   limit: number;
   signal: AbortSignal;
 }) => {
-  const params = buildIngredientSearchParams({ q, type, category, subtype, family, group, manufacturer, favoritesOnly, customOnly, includeCustom, limit });
+  const params = buildIngredientSearchParams({ q, type, category, subtype, family, group, manufacturer, favoritesOnly, customOnly, includeCustom, inventoryOnly, limit });
   const response = await fetch(`/api/ingredients/search?${params.toString()}`, { signal });
   if (!response.ok) {
     throw new IngredientSearchRequestError(response.status);

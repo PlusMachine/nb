@@ -10,6 +10,8 @@ import { Input, Select } from "@nb/ui";
 import { useDebouncedUrlSearch } from "@/components/shared/use-debounced-url-search";
 import {
   adminUserSortLabels,
+  adminUserSegmentLabels,
+  type AdminUserSegment,
   adminUserSortOptions,
   adminUserStatusLabels,
   adminUserStatuses,
@@ -28,9 +30,10 @@ type Props = {
   status: AdminUserStatus | undefined;
   sort: AdminUserSortOption;
   pageSize: number;
+  segment?: AdminUserSegment;
 };
 
-export function UsersToolbar({ basePath, q, role, status, sort, pageSize }: Props) {
+export function UsersToolbar({ basePath, q, role, status, sort, pageSize, segment }: Props) {
   const router = useRouter();
   const [isNavigating, startTransition] = useTransition();
 
@@ -40,15 +43,17 @@ export function UsersToolbar({ basePath, q, role, status, sort, pageSize }: Prop
       role?: UserRole | "all";
       status?: AdminUserStatus | "all";
       sort?: AdminUserSortOption;
+      segment?: AdminUserSegment | "all";
     }) =>
       buildAdminUsersHref(basePath, {
         q: next.q ?? q,
         role: next.role ?? role ?? "all",
         status: next.status ?? status ?? "all",
         sort: next.sort ?? sort,
-        pageSize
+        pageSize,
+        segment: next.segment ?? segment ?? "all"
       }),
-    [basePath, pageSize, q, role, sort, status]
+    [basePath, pageSize, q, role, sort, status, segment]
   );
 
   const buildSearchHref = useCallback((nextQ: string) => buildHref({ q: nextQ }), [buildHref]);
@@ -66,10 +71,10 @@ export function UsersToolbar({ basePath, q, role, status, sort, pageSize }: Prop
 
   const isPending = isSearchPending || isNavigating;
   const hasFilters =
-    Boolean(inputValue.trim()) || role !== undefined || status !== undefined || sort !== defaultAdminUserSortOption;
+    Boolean(inputValue.trim()) || role !== undefined || status !== undefined || segment !== undefined || sort !== defaultAdminUserSortOption;
 
   return (
-    <div className="grid gap-3 lg:grid-cols-[minmax(0,2fr)_repeat(3,minmax(0,1fr))_auto] lg:items-end">
+    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 xl:items-end">
       <div className="grid gap-1.5">
         <label htmlFor="admin-users-search" className="text-sm font-medium text-foreground">
           Поиск
@@ -129,6 +134,11 @@ export function UsersToolbar({ basePath, q, role, status, sort, pageSize }: Prop
             {adminUserSortLabels[item]}
           </option>
         ))}
+      </Select>
+
+      <Select label="Сегмент" value={segment ?? "all"} onChange={event => navigate(buildHref({ segment: event.target.value as AdminUserSegment | "all" }))}>
+        <option value="all">Все пользователи</option>
+        {Object.entries(adminUserSegmentLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
       </Select>
 
       <Link

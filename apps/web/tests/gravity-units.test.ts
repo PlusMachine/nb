@@ -81,6 +81,15 @@ describe("secondary gravity layer", () => {
 });
 
 describe("convertGravityFieldValue", () => {
+  it("пересчитывает источник GP в конвертере и сохраняет ноль и отрицательные значения", () => {
+    expect(convertGravityFieldValue("50", "points", "SG")).toBe("1.050");
+    expect(convertGravityFieldValue("50", "points", "Plato")).toBe("12.4");
+    expect(convertGravityFieldValue("1.050", "SG", "points")).toBe("50.0");
+    expect(convertGravityFieldValue("0", "points", "Plato")).toBe("0.0");
+    expect(convertGravityFieldValue("-2", "points", "SG")).toBe("0.998");
+    expect(convertGravityFieldValue("", "points", "SG")).toBe("");
+  });
+
   it("converts field values between units", () => {
     expect(convertGravityFieldValue("1.050", "SG", "Plato")).toBe("12.4");
     expect(convertGravityFieldValue("12.4", "Plato", "SG")).toBe("1.050");

@@ -93,7 +93,7 @@ describe("buildIngredientOgView", () => {
       OPTS
     );
     expect(view.eyebrow).toBe("Дрожжи");
-    expect(view.factsLine).toContain("Аттенюация 78–82 %");
+    expect(view.factsLine).toContain("Степень сбраживания 78–82 %");
     expect(view.factsLine).toContain("15–24 °C");
     expect(view.factsLine).toContain("сухие");
   });
@@ -136,13 +136,27 @@ const article = (overrides: Partial<ContentArticle> = {}): ContentArticle =>
 const withNbsp = (fact: string): string => fact.replace(/ /g, " ");
 
 describe("buildBjcpStyleOgView", () => {
+  it.each(["1.044-1.052", "1.044 — 1.052 SG", "1.044 – 1.052"])("диапазон %s переводится в °P", (og) => {
+    const source = article();
+    const view = buildBjcpStyleOgView(article({ vitalStatistics: { ...source.vitalStatistics, og } }), OPTS);
+    expect(view.factsLine).toContain(withNbsp("OG 11.0–12.9 °P"));
+    expect(view.factsLine).not.toContain("1.044");
+  });
+
+  it("сохраняет пояснения у нескольких диапазонов и переводит одиночное SG-значение", () => {
+    const source = article();
+    const og = "1.040 SG (table); 1.048 – 1.065 (standard)";
+    const view = buildBjcpStyleOgView(article({ vitalStatistics: { ...source.vitalStatistics, og } }), OPTS);
+    expect(view.factsLine).toContain(withNbsp("OG 10.0 °P (table); 11.9–15.9 °P (standard)"));
+  });
+
   it("eyebrow с кодом, vitals нормализованы, titleEn в subtitle, градиент цвета", () => {
     const view = buildBjcpStyleOgView(article(), OPTS);
     expect(view.eyebrow).toBe("Стиль BJCP · 3B");
     expect(view.title).toBe("Чешский премиум пилснер");
     expect(view.subtitle).toBe("Czech Premium Pale Lager");
     expect(view.factsLine).toBe(
-      [withNbsp("OG 1.044–1.052"), withNbsp("IBU 30–45"), withNbsp("ABV 4.2–5.8%")].join(" · ")
+      [withNbsp("OG 11.0–12.9 °P"), withNbsp("IBU 30–45"), withNbsp("ABV 4.2–5.8%")].join(" · ")
     );
     expect(view.strip.kind).toBe("gradient");
   });
@@ -179,9 +193,9 @@ describe("buildBjcpStyleOgView", () => {
   // features/og/bjcp.ts:resolveFactsLineFontSize подобраны живым Satori-рендером
   // всех 128 стилей BJCP: реальные длины строк — 39–43 (106 стилей), 99 (сезон,
   // составной ABV с 3 диапазонами) и 133 (категория 33, описательные vitals).
-  it("Ф5: с иллюстрацией — кегль factsLine капается по длине строки (типичная строка, 41 симв.)", () => {
+  it("Ф5: с иллюстрацией — кегль factsLine капается по длине строки (типичная строка в °P)", () => {
     const view = buildBjcpStyleOgView(article(), { ...OPTS, photo: FAKE_PHOTO });
-    expect(view.factsLine).toHaveLength(41);
+    expect(view.factsLine).toHaveLength(42);
     expect(view.factsLineFontSize).toBe(28);
   });
 
@@ -217,7 +231,7 @@ describe("buildBjcpStyleOgView", () => {
     expect(view.factsLineFontSize).toBe(17);
   });
 
-  it("Ф5: составная строка ABV из 3 диапазонов (сезон/25B, 99 симв.) — средняя ступень кегля", () => {
+  it("Ф5: составная строка ABV из 3 диапазонов (сезон/25B) сохраняет пояснение OG и среднюю ступень кегля", () => {
     const view = buildBjcpStyleOgView(
       article({
         vitalStatistics: {
@@ -234,7 +248,8 @@ describe("buildBjcpStyleOgView", () => {
       }),
       { ...OPTS, photo: FAKE_PHOTO }
     );
-    expect(view.factsLine).toHaveLength(99);
+    expect(view.factsLine).toContain(withNbsp("OG 11.9–15.9 °P (standard)"));
+    expect(view.factsLine).toHaveLength(100);
     expect(view.factsLineFontSize).toBe(20);
   });
 });

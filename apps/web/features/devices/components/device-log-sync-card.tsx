@@ -59,10 +59,9 @@ export function DeviceLogSyncCard({ deviceId }: { deviceId: string }) {
     <Card className="p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-sm font-semibold text-foreground">Офлайн-журнал варки</p>
+          <p className="text-sm font-semibold text-foreground">Журнал варок без интернета</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Устройство сохраняет журнал варки даже без сети. Синхронизируйте
-            его сюда, чтобы офлайн-варки тоже появились в истории.
+            Устройство записывает ход варки и без интернета. Синхронизируйте журнал, чтобы эти записи появились на сайте.
           </p>
         </div>
         <Button variant="outline" onClick={() => void runSync()} disabled={syncing}>

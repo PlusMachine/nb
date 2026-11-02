@@ -1,5 +1,7 @@
 import type { ContentArticle } from "@nb/content";
 
+import { defaultPreferredGravityUnit, formatGravity, formatGravityRange } from "@/features/system/gravity-units";
+
 import { joinFacts, normalizeRangeText } from "./format";
 import { resolveStripColor, type OgCardView, type OgPhoto, type OgStrip } from "./models";
 import { OG_COLORS, resolveTitleFontSize, stripUnsupportedGlyphs, truncateForCard } from "./theme";
@@ -30,7 +32,7 @@ const preventInternalWrap = (fact: string): string => fact.replace(/ /g, NBSP);
  * (theme.ts), но только для карточки С фото-врезкой (Ф5): контентная колонка
  * там ~640px вместо обычных ~1040 (1200 − 16 полоса − 2×72 паддинги − 400
  * врезка), и дефолтный кегль 34 не помещает даже типичную строку вида «OG
- * 1.044–1.053 · IBU 8–15 · ABV 4.3–5.6%» (40 симв.) в одну строку. Ступени
+ * 11.0–13.1 °P · IBU 8–15 · ABV 4.3–5.6%» в одну строку. Ступени
  * подобраны живым Satori-рендером всех 128 стилей BJCP (реальные длины 39–133
  * симв., подавляющее большинство — 39–43): обычная строка помещается в одну
  * строку, самые длинные (описательные vitals категории 33 «varies with base
@@ -68,8 +70,15 @@ const buildStrip = (article: ContentArticle): OgStrip => {
 
 const buildFactsLine = (article: ContentArticle): string | null => {
   const vitals = article.vitalStatistics;
+  // Меняем только SG-значения и диапазоны, сохраняя пояснения и составные диапазоны BJCP.
+  const og = vitals.og?.replace(
+    /\b([01]\.\d{3,})(?:\s*[-‐-―]\s*([01]\.\d{3,}))?(?:\s*SG\b)?/g,
+    (_match, min: string, max: string | undefined) => max
+      ? formatGravityRange(Number(min), Number(max), defaultPreferredGravityUnit)!
+      : formatGravity(Number(min), defaultPreferredGravityUnit)
+  );
   return joinFacts([
-    vitals.og ? preventInternalWrap(`OG ${normalizeRangeText(vitals.og)}`) : null,
+    og ? preventInternalWrap(`OG ${normalizeRangeText(og)}`) : null,
     vitals.ibu ? preventInternalWrap(`IBU ${normalizeRangeText(vitals.ibu)}`) : null,
     vitals.abv ? preventInternalWrap(`ABV ${normalizeRangeText(vitals.abv)}`) : null
   ]);
