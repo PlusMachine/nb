@@ -188,7 +188,7 @@ export function RecipeStatsSummary({
           {evaluated.length > 0 ? (
             <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${compact ? "col-start-2 row-start-1 justify-self-end" : ""} ${overallFit ? "bg-success-subtle text-success-subtle-foreground ring-1 ring-success/30" : "bg-warning-subtle text-warning-subtle-foreground ring-1 ring-warning/30"}`}>
               {overallFit ? <CircleCheck className="h-3.5 w-3.5" /> : <CircleAlert className="h-3.5 w-3.5" />}
-              {overallFit ? "В стиле" : "Есть отклонения"}
+              {recipe.bitternessEstimate?.missing.length ? "Не хватает данных" : overallFit ? "В стиле" : "Есть отклонения"}
             </span>
           ) : null}
         </div>

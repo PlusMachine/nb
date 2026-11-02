@@ -91,6 +91,23 @@ test("a rejected queued change remains recoverable and an explicit retry clears 
   await expect(page.getByRole("alert")).toHaveCount(0);
 });
 
+test("a temporary server failure retries automatically with the original event time", async ({ page }) => {
+  await page.clock.install();
+  await page.route("http://brew-progress.test/**", route => route.fulfill({ body: "<div></div>", contentType: "text/html" }));
+  await page.goto("http://brew-progress.test/");
+  await mountBrewDayProgress(page, "owner");
+  await page.getByRole("button", { name: "a", exact: true }).click();
+  await page.evaluate(() => (window as any).progressHarness.settle(0, { ok: false, message: "Сервер недоступен", retryable: true }));
+  await expect(page.getByTestId("queued")).toHaveText("1");
+  await page.clock.fastForward(15000);
+  await expect.poll(() => page.evaluate(() => (window as any).progressHarness.calls.length)).toBe(2);
+  const calls = await page.evaluate(() => (window as any).progressHarness.calls);
+  expect(calls[1].patch.completedAt).toBe(calls[0].patch.completedAt);
+  await settle(page, 1, { a: done });
+  await expect(page.getByTestId("queued")).toHaveText("0");
+  await expect(page.getByRole("alert")).toHaveCount(0);
+});
+
 test("validation failure rolls back its own step without erasing a pending neighbour", async ({ page }) => {
   await mountBrewDayProgress(page);
   await page.getByRole("button", { name: "a", exact: true }).click();

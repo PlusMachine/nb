@@ -1,10 +1,13 @@
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { RecipeStyleStatsBlock } from "../components/recipes/recipe-designer/recipe-style-stats-block";
 import { describe, expect, it } from "vitest";
 import { reconcileCatalogSeed, markCatalogEditorialOverrides } from "@nb/db";
 import { defaultSystemCurrencyRates } from "../features/system/currency";
 import { convertWeight } from "@nb/brewing-core";
 import { catalogSeedManifest, prepareCatalogSeedFile } from "../../../packages/db/scripts/catalog-seed";
 import { buildCatalogIngredientLinkage } from "../features/ingredients/source-linkage";
-import { extractIngredientTechnicalData, getIngredientColorLovibond } from "../features/ingredients/technical-fields";
+import { extractIngredientTechnicalData, getIngredientColorLovibond, getIngredientPotentialPpg } from "../features/ingredients/technical-fields";
 import { formatCatalogColorEbc, visibleCatalogAliases, canonicalManufacturerLabel, translateHopAroma } from "../features/ingredients/catalog-display";
 import { buildMaltBrowseOptions, groupConfirmedHopSuppliers, matchesMaltBrowseFilters } from "../features/ingredients/catalog-browse";
 import { resolveIngredientMatchKey } from "../features/ingredients/match-group";
@@ -13,9 +16,9 @@ import { createIngredientRanker } from "../features/ingredients/ranking";
 import { calculateRecipeDetailStats } from "../features/recipes/service";
 import { calculateRecipeFgEstimate } from "../features/recipes/fg-estimate";
 import { calculateVerifiedExtractIbu } from "../features/recipes/bitterness-completeness";
-import { resolveHumanFacingInventoryUnitProfile, normalizeInventoryMeasurement } from "../features/inventory/units";
-import { formatInventoryQuantityInputValue, formatInventoryQuantityForDisplay } from "../features/inventory/display";
-import { normalizeInventoryMeasurementWithPack, resolveInventoryItemPackEquivalent } from "../features/inventory/pack";
+import { resolveHumanFacingInventoryUnitProfile, normalizeInventoryMeasurement, getInventoryUnitInputStep } from "../features/inventory/units";
+import { formatInventoryQuantityInputValue, formatInventoryQuantityForDisplay, resolveInventoryMeasurementForDisplay } from "../features/inventory/display";
+import { normalizeInventoryMeasurementWithPack, resolveInventoryItemPackEquivalent, convertInventoryNormalizedToUnit } from "../features/inventory/pack";
 import { normalizeInventoryPurchaseContext } from "../features/inventory/purchase-cost";
 import { buildCatalogIngredientPayload } from "../components/inventory/catalog-ingredient-form";
 import { calculatorDefinitionBySlug } from "../features/calculators/definitions";
@@ -87,6 +90,8 @@ describe("recipe calculations with corrected catalog values", () => {
     const initial = buildInitialPreview({ og: 1.05, fg: 1.01, abv: 5, ibu: null, color: 5, styleId: "18B", calculationMeta: { bitternessEstimate: estimate } } as any);
     expect(initial?.bitternessEstimate).toEqual(estimate);
     expect(initial?.styleFit).toBeNull();
+    const html = renderToStaticMarkup(React.createElement(RecipeStyleStatsBlock, { preview: initial, recalculating: false, previewError: null, preferredGravityUnit: "plato" }));
+    expect(html).toContain("Не хватает данных");
   });
   it("uses confirmed malt colour ranges while preserving independent gravity", () => {
     const result=recipeStats([malt()]);
@@ -96,6 +101,9 @@ describe("recipe calculations with corrected catalog values", () => {
   it("does not count rice hulls as extract, colour, or fermentable sugars", () => {
     expect(recipeStats([malt(),line("rice-hulls-nesolozhenka",500,"fermentable")])).toEqual(recipeStats([malt()]));
     expect(recipeStats([malt(),line("rice-hulls-nesolozhenka",0.04,"fermentable")])).toEqual(recipeStats([malt()]));
+    const hulls = { technicalData: card("rice-hulls-nesolozhenka").technicalData };
+    expect(getIngredientPotentialPpg(hulls)).toBe(0);
+    expect(getIngredientColorLovibond(hulls)).toBe(0);
   });
   it("respects low attenuation, manual overrides, and the specialty strain's sugar model", () => {
     const input={og:1.04,fermentables:[{name:"Pale",weightKg:5,potentialPpg:37,technicalData:{type:"malt" as const}}],yeasts:[{name:"LA-01",technicalData:extractIngredientTechnicalData(ingredient("fermentis-la-01"))}]};
@@ -222,5 +230,25 @@ describe("standalone IBU calculator with missing alpha", () => {
       expect(result.primary.value).toBe("0");
       expect(result.primary.label).toBe("IBU всего");
     }
+  });
+});
+
+
+describe("exact mass in inventory editors", () => {
+  it("preserves 40 mg when switching through grams and kilograms", () => {
+    const grams = convertInventoryNormalizedToUnit(40, "mg", "g")!;
+    const kilograms = convertInventoryNormalizedToUnit(grams, "g", "kg")!;
+    expect(grams).toBe(0.04);
+    expect(kilograms).toBe(0.00004);
+    expect(convertInventoryNormalizedToUnit(kilograms, "kg", "mg")).toBe(40);
+    expect(getInventoryUnitInputStep("kg")).toBe(0.000001);
+  });
+  it("keeps the exact display measurement available to an editor", () => {
+    const display = resolveInventoryMeasurementForDisplay({ type: "malt", category: "fermentable", subtype: "malt", enteredQuantity: 0.9255, enteredUnit: "kg", normalizedQuantity: 925.5, normalizedUnit: "g" });
+    expect(display).toMatchObject({ quantity: 0.9255, unit: "kg" });
+    expect(formatInventoryQuantityInputValue(display.quantity, display.unit)).toBe("0.9255");
+  });
+  it("does not infer a weight from an unspecified dry yeast package", () => {
+    expect(resolveInventoryItemPackEquivalent({ technicalData: { type: "yeast", form: "dry" } })).toBeNull();
   });
 });

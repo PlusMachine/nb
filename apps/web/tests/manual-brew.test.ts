@@ -117,6 +117,15 @@ describe("manual brew recipe and scheduling", () => {
     const item = buildManualBrewSteps(snapshot({ whirlpoolPlan: [hop("plain", "whirlpool")] })).flatMap(group => group.steps).find(step => step.id === "whirlpool:plain");
     expect(item).toMatchObject({ kind: "addition", durationSeconds: null });
   });
+  it("keeps hops without a scheduled stage visible without inventing a late addition time", () => {
+    const items = phases(snapshot({ otherAdditions: [hop("unscheduled", "other", { stageLabel: "По своему плану" })] }));
+    expect(items.find(item => item.id === "other")?.unordered).toBe(true);
+    const progress = ready(items, "finish");
+    expect(resolveManualBrewFocus(items, progress, at).current?.id).toBe("brew:transfer");
+    delete progress.steps["brew:other:unscheduled"];
+    expect(resolveManualBrewFocus(items, progress, at).current?.id).toBe("brew:transfer");
+    expect(resolveManualBrewFocus(items, done(progress, "brew:other:unscheduled"), at).current?.id).toBe("brew:transfer");
+  });
   it("persists corrected timers, pH, explicit skips and actual completion time", () => {
     const value = { done: true, timerStartedAt: new Date(at).toISOString(), timerDurationSeconds: 4200, measurementValue: 5.4, completedAt: new Date(at).toISOString(), skipped: false };
     const progress = normalizeBrewDayProgress({ steps: { rest: value } });
@@ -125,11 +134,12 @@ describe("manual brew recipe and scheduling", () => {
     expect(applyBrewDayStepPatch(progress, "rest", { done: false }, new Date(at).toISOString()).steps.rest.timerDurationSeconds).toBe(4200);
   });
   it("classifies every hop exactly once when a recipe's use type differs from its legacy stage", () => {
-    const ingredients = [hop("dip", "fermentation", { useType: "dip_hop" }), hop("dry", "boil", { useType: "dry_hop" }), hop("fwh", "mash", { useType: "first_wort_hop" }), hop("other", "other", { useType: "other" })].map(raw => ({ persistentKey: raw.linePersistentKey, ingredientCategory: "hop", ingredientDisplayName: raw.name, stage: raw.stage, stepMeta: raw.stepMeta, amountEnteredQuantity: 25, amountEnteredUnit: "g", amountNormalizedQuantity: 25, amountNormalizedUnit: "g" }));
+    const ingredients = [hop("dip", "fermentation", { useType: "dip_hop" }), hop("dry", "boil", { useType: "dry_hop" }), hop("dry-from-pack", "packaging", { useType: "dry_hop" }), hop("fwh", "mash", { useType: "first_wort_hop" }), hop("other", "other", { useType: "other" }), hop("unmatched", "other", { useType: "other" })].map(raw => ({ persistentKey: raw.linePersistentKey, ingredientCategory: raw.linePersistentKey === "unmatched" ? null : "hop", ingredientDisplayName: raw.name, stage: raw.stage, stepMeta: raw.stepMeta, amountEnteredQuantity: 25, amountEnteredUnit: "g", amountNormalizedQuantity: 25, amountNormalizedUnit: "g" }));
     const plan = buildBrewPlanSnapshot({ id: "recipe", title: "IPA", versionNumber: 1, batchSizeNormalizedQuantity: 20000, batchSizeNormalizedUnit: "ml", efficiency: 70, equipmentProfileSnapshot: null, waterPlanMeta: null, processMeta: { mashProfile: { steps: [] }, fermentationProfile: {} }, boilTimeMinutes: 60, ingredients } as unknown as RecipeDetailDto);
     expect(plan.boilPlan.timedAdditions.map(item => item.linePersistentKey)).toEqual(["fwh"]);
     expect(plan.whirlpoolPlan.map(item => item.linePersistentKey)).toEqual(["dip"]);
-    expect(plan.dryHopPlan.map(item => item.linePersistentKey)).toEqual(["dry"]);
-    expect(plan.otherAdditions?.map(item => item.linePersistentKey)).toEqual(["other"]);
+    expect(plan.dryHopPlan.map(item => item.linePersistentKey)).toEqual(["dry", "dry-from-pack"]);
+    expect(plan.packagingAdditions).toHaveLength(0);
+    expect(plan.otherAdditions?.map(item => item.linePersistentKey)).toEqual(["other", "unmatched"]);
   });
 });

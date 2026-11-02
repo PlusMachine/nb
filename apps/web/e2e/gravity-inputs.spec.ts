@@ -54,7 +54,7 @@ test("ареометр: вместе с показанием пересчиты�
   await scale(page).getByRole("button", { name: "SG", exact: true }).click();
   await expect(offset).toHaveValue("0.0019");
   await scale(page).getByRole("button", { name: "°P", exact: true }).click();
-  await expect(offset).toHaveValue("0.49");
+  await expect(offset).toHaveValue("0.5");
 });
 
 test("ареометр: отрицательные °P сухого пива сохраняются при переходе в SG", async ({ page }) => {
@@ -120,18 +120,18 @@ for (const unit of ["plato", "brix", "sg"] as const) {
   test(`наклейки: поля и подписи учитывают профиль ${unit}`, async ({ page }) => {
     await mountGravityCalculator(page, { view: "labels", unit });
     await expect(page.getByLabel("Начальная плотность", { exact: true })).toHaveValue(unit === "sg" ? "1.050" : "12.4");
-    await expect(page.getByRole("group", { name: "Шкала плотности наклейки" }).getByRole("button", { name: unit === "sg" ? "SG" : "°P", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("group", { name: "Шкала плотности этикетки" }).getByRole("button", { name: unit === "sg" ? "SG" : "°P", exact: true })).toHaveAttribute("aria-pressed", "true");
   });
 }
 
 test("наклейки: выбор пересчитывает поля и восстанавливается при новом открытии", async ({ page }) => {
   await mountGravityCalculator(page, { view: "labels" });
-  await page.getByRole("group", { name: "Шкала плотности наклейки" }).getByRole("button", { name: "SG", exact: true }).click();
+  await page.getByRole("group", { name: "Шкала плотности этикетки" }).getByRole("button", { name: "SG", exact: true }).click();
   await expect(page.getByLabel("Начальная плотность", { exact: true })).toHaveValue("1.050");
   await expect(page.getByLabel("Конечная плотность", { exact: true })).toHaveValue("1.012");
   await mountGravityCalculator(page, { view: "labels" });
   await expect(page.getByLabel("Начальная плотность", { exact: true })).toHaveValue("1.050");
-  await expect(page.getByRole("group", { name: "Шкала плотности наклейки" }).getByRole("button", { name: "SG", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("group", { name: "Шкала плотности этикетки" }).getByRole("button", { name: "SG", exact: true })).toHaveAttribute("aria-pressed", "true");
 });
 
 test("наклейки: шкала из ссылки переводит дефолты, оставляя явные значения в их шкале", async ({ page }) => {

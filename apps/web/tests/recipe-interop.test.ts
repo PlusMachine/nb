@@ -208,6 +208,13 @@ const sampleRecipe = {
 } satisfies RecipeDetailDto;
 
 describe("recipe interop and brew plan foundation", () => {
+  it("exports milligrams as a weight in kilograms and restores the original unit", () => {
+    const ingredient = { ...sampleRecipe.ingredients[0], type: "water_treatment" as const, ingredientCategory: "water_treatment" as const, ingredientTechnicalData: { type: "water_treatment" as const }, amountEnteredQuantity: 40, amountEnteredUnit: "mg" as const, amountNormalizedQuantity: 0.04, amountNormalizedUnit: "g" as const };
+    const xml = exportRecipeToBeerXml({ ...sampleRecipe, waterPlanMeta: null, ingredients: [ingredient] });
+    expect(xml).toContain("<AMOUNT>0.00004</AMOUNT>");
+    expect(xml).toContain("<AMOUNT_IS_WEIGHT>TRUE</AMOUNT_IS_WEIGHT>");
+    expect(importBeerXmlToCanonicalRecipe(xml).ingredients[0]).toMatchObject({ amount: 40, unit: "mg" });
+  });
   it("omits incomplete IBU from BeerXML instead of substituting a source value", () => {
     const bitternessEstimate = { status: "unavailable" as const, knownIbu: null, missing: [{ ingredientId: "hop", name: "Willamette", reason: "hop_alpha" as const }] };
     const beerXml = exportRecipeToBeerXml({ ...sampleRecipe, ibu: null, bitternessEstimate, importMeta: { importedStats: { ibu: 40 } }, calculationMeta: { ...sampleRecipe.calculationMeta, bitternessEstimate } });

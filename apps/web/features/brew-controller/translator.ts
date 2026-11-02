@@ -39,7 +39,7 @@ const DEFAULT_PID_DURING_DOUGH_IN = true;
 const WHIRLPOOL_HOT_MIN_C = 80;
 
 // Весовые единицы, нормализуемые в граммы (bf_hop_t.amount_g).
-const WEIGHT_UNITS: readonly WeightUnit[] = ["g", "kg", "oz", "lb"];
+const WEIGHT_UNITS: readonly WeightUnit[] = ["mg", "g", "kg", "oz", "lb"];
 const isWeightUnit = (unit: string): unit is WeightUnit =>
   (WEIGHT_UNITS as readonly string[]).includes(unit);
 

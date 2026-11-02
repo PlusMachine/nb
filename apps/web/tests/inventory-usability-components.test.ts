@@ -948,8 +948,8 @@ describe("inventory usability components", () => {
           fermentationTempCMax: 24,
           flocculation: null,
           alcoholToleranceAbvTypical: null,
-          packageSize: null,
-          packageUnit: null
+          packageSize: 11,
+          packageUnit: "g"
         }
       }
     };
@@ -1150,11 +1150,11 @@ describe("inventory usability components", () => {
     expect(getInventoryUnitQuantityPrecision("ml")).toBe(1);
     expect(getInventoryUnitInputStep("ml")).toBe(0.1);
     expect(getInventoryUnitQuantityPrecision("g")).toBe(1);
-    expect(getInventoryUnitInputStep("g")).toBe(0.1);
+    expect(getInventoryUnitInputStep("g")).toBe(0.001);
     expect(getInventoryUnitQuantityPrecision("l")).toBe(2);
     expect(getInventoryUnitInputStep("l")).toBe(0.01);
     expect(getInventoryUnitQuantityPrecision("kg")).toBe(2);
-    expect(getInventoryUnitInputStep("kg")).toBe(0.01);
+    expect(getInventoryUnitInputStep("kg")).toBe(0.000001);
     expect(getInventoryUnitQuantityPrecision("pack")).toBe(0);
     expect(getInventoryUnitInputStep("pack")).toBe(1);
   });

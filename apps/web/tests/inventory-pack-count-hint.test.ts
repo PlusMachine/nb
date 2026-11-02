@@ -63,8 +63,8 @@ describe("formatQuantityWithPackHintFromTechnicalData — обёртка над 
   const dryYeast: IngredientTechnicalData = { type: "yeast", form: "dry" };
   const liquidYeastNoPackaging: IngredientTechnicalData = { type: "yeast", form: "liquid" };
 
-  it("сухие дрожжи без явной граммовки — фолбэк 11 г", () => {
-    expect(formatQuantityWithPackHintFromTechnicalData(8.1, "g", dryYeast)).toBe("8.1 г (1 пачка)");
+  it("не выводит число пачек сухих дрожжей без известной граммовки", () => {
+    expect(formatQuantityWithPackHintFromTechnicalData(8.1, "g", dryYeast)).toBe("8.1 г");
   });
 
   it("жидкие дрожжи без фасовки — эквивалента нет, голое количество", () => {

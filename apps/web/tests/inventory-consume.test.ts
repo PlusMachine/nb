@@ -60,7 +60,7 @@ const makeDryYeastItem = (normalizedQuantity: number): InventoryListItemDto => (
     secondaryLabelRu: "Safale US-05",
     displayName: "US-05",
     normalizedName: "us-05",
-    technicalData: { type: "yeast", form: "dry" } as TechnicalData
+    technicalData: { type: "yeast", form: "dry", packageSize: 11, packageUnit: "g" } as TechnicalData
   }
 });
 

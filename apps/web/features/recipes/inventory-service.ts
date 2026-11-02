@@ -1,3 +1,4 @@
+import { applyLegacyInventoryPackSnapshot } from "../inventory/pack";
 import { isPhysicalIngredient, derivedCatalogIngredientId } from "../ingredients/material-policy";
 import {
   and,
@@ -419,7 +420,7 @@ export const loadInventoryItemPackEquivalent = async (
 
   return resolveInventoryItemPackEquivalent({
     packageVariant: applyInventoryPackageSnapshot(packageVariant ?? null,item.properties),
-    technicalData
+    technicalData: applyLegacyInventoryPackSnapshot(technicalData, item.properties)
   });
 };
 
@@ -1144,7 +1145,8 @@ export const consumeRecipeInventoryAllocations = async (
           enteredUnit: userIngredients.enteredUnit,
           packageVariantId: userIngredients.packageVariantId,
           ingredientCatalogItemId: userIngredients.ingredientCatalogItemId,
-          userCustomIngredientId: userIngredients.userCustomIngredientId
+          userCustomIngredientId: userIngredients.userCustomIngredientId,
+          properties: userIngredients.properties
         })
         .from(userIngredients)
         .where(and(

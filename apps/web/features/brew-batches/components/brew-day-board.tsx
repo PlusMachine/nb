@@ -80,6 +80,7 @@ export function BrewDayBoard({ brewBatchId, ownerId, groups, initialProgress, ha
   const busySync = controller.queuedCount > 0;
   const nextHolding = focus.next?.stage === "whirlpool" && progress.steps[focus.next.id]?.timerStartedAt;
   const sanitationShownEarlier = phases.some(phase => phase.id === "dip" && phase.steps.some(item => progress.steps[item.id]?.done || progress.steps[item.id]?.timerStartedAt));
+  const unscheduled = phases.filter(phase => phase.unordered).flatMap(phase => phase.steps).filter(item => !progress.steps[item.id]?.done);
 
   return <section className="space-y-4" aria-label="Мастер ручной варки">
     <BrewProcessPlan phases={phases} progress={progress} current={step} phaseIndex={focus.phaseIndex} now={now}
@@ -102,12 +103,13 @@ export function BrewDayBoard({ brewBatchId, ownerId, groups, initialProgress, ha
         {progress.steps[preview.id]?.done ? <p className="flex items-center gap-2 text-sm text-success"><Check className="h-4 w-4" aria-hidden />{progress.steps[preview.id]?.skipped ? "Пропущено" : "Выполнено"}</p> : null}
         <Button type="button" variant="primary" className="w-full" onClick={() => setPreview(null)}>Вернуться к варке</Button>
         {progress.steps[preview.id]?.done ? <Button type="button" variant="ghost" onClick={async () => { await patchStep(preview.id, { done: false, skipped: false }); setPreview(null); }}>Вернуть шаг</Button> : null}
-        {!progress.steps[preview.id]?.done && preview.boilSecondsBeforeEnd != null && focus.phase?.id === "boil" && boilRunning ? <Button type="button" variant="ghost" onClick={() => setEarlyHop(preview)}>Отметить внесение сейчас</Button> : null}
+        {!progress.steps[preview.id]?.done && (preview.id.startsWith("brew:other:") || preview.boilSecondsBeforeEnd != null && focus.phase?.id === "boil" && boilRunning) ? <Button type="button" variant="ghost" onClick={() => setEarlyHop(preview)}>Отметить внесение сейчас</Button> : null}
       </> : showPitch ? <>
         <h2 className="text-xl font-semibold">Внесите дрожжи</h2>
         <p className="text-sm">Внесите дрожжи по рецепту, закройте ферментер и установите гидрозатвор.</p>
         {!ogRecorded && !transfer?.skipped ? <div className="rounded-lg bg-warning-subtle p-3 text-sm text-warning-subtle-foreground"><p>Начальная плотность не записана</p><Button type="button" variant="ghost" size="sm" onClick={() => setPanel("measure")}>Записать</Button></div> : null}
-        <BrewTransitionButton brewBatchId={brewBatchId} to="fermenting" label="Поставить на брожение" variant="primary" size="md" className="[&_button]:w-full" disabled={busySync} icon={<ArrowRight className="h-4 w-4" aria-hidden />} appendQueryOnSuccess="just-fermenting=1" />
+        {unscheduled.length ? <div className="rounded-lg bg-warning-subtle p-3 text-sm text-warning-subtle-foreground"><p>В плане остались внесения хмеля без отметки.</p><Button type="button" variant="ghost" size="sm" onClick={() => setPreview(unscheduled[0])}>Проверить</Button></div> : null}
+        <BrewTransitionButton brewBatchId={brewBatchId} to="fermenting" label="Поставить на брожение" variant="primary" size="md" className="[&_button]:w-full" disabled={busySync} icon={<ArrowRight className="h-4 w-4" aria-hidden />} appendQueryOnSuccess="just-fermenting=1" confirm={unscheduled.length ? { title: "Поставить на брожение?", description: "Некоторые внесения хмеля не отмечены. Перейти к брожению?" } : null} />
         {busySync ? <p className="text-xs text-muted-foreground">Перед переходом дождитесь отправки сохранённых шагов.</p> : null}
         {fermentationLabel ? <p className="border-t border-border pt-3 text-sm text-muted-foreground">{fermentationLabel}</p> : null}
         {calibration ? <div className="pt-2">{calibration}</div> : null}
@@ -117,7 +119,7 @@ export function BrewDayBoard({ brewBatchId, ownerId, groups, initialProgress, ha
       </> : step ? <>
         {step.boilSecondsBeforeEnd != null && focus.boilRemaining != null ? <p className="text-sm text-success">{focus.boilRemaining < step.boilSecondsBeforeEnd - 5 ? `По плану — ${fmtClock(step.boilSecondsBeforeEnd - focus.boilRemaining)} назад` : "Пора внести"}</p> : null}
         <ManualBrewStep key={brewBatchId} step={step} companions={focus.companions} controller={controller} onInteract={unlockAudio} showSanitationReminder={!sanitationShownEarlier} />
-        {focus.next ? <div className="space-y-1 border-t border-border pt-3"><p className="text-xs text-muted-foreground">Далее</p><p className="text-sm">{nextHolding ? focus.next.useType === "dip_hop" ? "Выдержка хмеля в ферментере" : "Выдержка на вирпуле" : `${focus.next.title}${focus.next.ingredientName && focus.next.amountLabel ? ` · ${focus.next.amountLabel}` : ""}`}</p>{focus.next.boilSecondsBeforeEnd != null && focus.boilRemaining != null ? <p className="text-xs tabular-nums text-muted-foreground">{focus.boilRemaining > focus.next.boilSecondsBeforeEnd ? `Через ${fmtClock(focus.boilRemaining - focus.next.boilSecondsBeforeEnd)}` : "Пора внести"}</p> : focus.nextUntilSeconds != null ? <p className="text-xs tabular-nums text-muted-foreground">{focus.nextUntilSeconds > 0 ? `Через ${fmtClock(focus.nextUntilSeconds)}` : "Пора внести"}</p> : null}</div> : null}
+        {focus.next ? <div className="space-y-1 border-t border-border pt-3"><p className="text-xs text-muted-foreground">Далее</p><p className="text-sm">{nextHolding ? focus.next.useType === "dip_hop" ? "Выдержка хмеля в ферментере" : "Выдержка на вирпуле" : `${focus.next.title}${focus.next.ingredientName && focus.next.amountLabel ? ` · ${focus.next.amountLabel}` : ""}`}</p>{focus.next.boilSecondsBeforeEnd != null && focus.boilRemaining != null ? <p className="text-xs tabular-nums text-muted-foreground">{!progress.steps["boil:timer"]?.done && focus.boilRemaining > focus.next.boilSecondsBeforeEnd ? `Через ${fmtClock(focus.boilRemaining - focus.next.boilSecondsBeforeEnd)}` : "Пора внести"}</p> : focus.nextUntilSeconds != null ? <p className="text-xs tabular-nums text-muted-foreground">{focus.nextUntilSeconds > 0 ? `Через ${fmtClock(focus.nextUntilSeconds)}` : "Пора внести"}</p> : null}</div> : null}
       </> : null}
     </div>
 
@@ -134,6 +136,6 @@ export function BrewDayBoard({ brewBatchId, ownerId, groups, initialProgress, ha
       <DialogHeader><h2 className="text-base font-semibold">{panel === "measure" ? "Замеры" : "Заметки о варке"}</h2><DialogCloseButton /></DialogHeader>
       <div className="space-y-4 p-4">{runningBar}{panel === "measure" ? records ?? <p className="text-sm">Журнал замеров доступен ниже на странице.</p> : notes ?? <p className="text-sm">Заметки доступны ниже на странице.</p>}</div>
     </Dialog>
-    <ConfirmActionDialog open={earlyHop !== null} title="Отметить внесение раньше?" description="Будет записано фактическое время внесения. Таймер кипячения продолжит идти." confirmLabel="Хмель внесён" tone="primary" onClose={() => setEarlyHop(null)} onConfirm={async () => { if (!earlyHop) return; await patchStep(earlyHop.id, { done: true }); setEarlyHop(null); setPreview(null); }} />
+    <ConfirmActionDialog open={earlyHop !== null} title={earlyHop?.id.startsWith("brew:other:") ? "Отметить внесение?" : "Отметить внесение раньше?"} description="Будет записано фактическое время внесения. Текущие таймеры продолжат идти." confirmLabel="Хмель внесён" tone="primary" onClose={() => setEarlyHop(null)} onConfirm={async () => { if (!earlyHop) return; await patchStep(earlyHop.id, { done: true }); setEarlyHop(null); setPreview(null); }} />
   </section>;
 }

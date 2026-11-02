@@ -881,13 +881,13 @@ describe("convertNormalizedQuantityToEnteredUnit — чистая конверс
 
   it("вес g → kg/oz/lb", () => {
     expect(convertNormalizedQuantityToEnteredUnit(1000, "g", "kg")).toBe(1);
-    expect(convertNormalizedQuantityToEnteredUnit(1000, "g", "oz")).toBe(35.274);
-    expect(convertNormalizedQuantityToEnteredUnit(1000, "g", "lb")).toBe(2.205);
+    expect(convertNormalizedQuantityToEnteredUnit(1000, "g", "oz")).toBeCloseTo(35.27396194958, 10);
+    expect(convertNormalizedQuantityToEnteredUnit(1000, "g", "lb")).toBeCloseTo(2.204622621849, 10);
   });
 
   it("объём ml → l/gal", () => {
     expect(convertNormalizedQuantityToEnteredUnit(1000, "ml", "l")).toBe(1);
-    expect(convertNormalizedQuantityToEnteredUnit(1000, "ml", "gal")).toBe(0.264);
+    expect(convertNormalizedQuantityToEnteredUnit(1000, "ml", "gal")).toBeCloseTo(0.264172052358, 10);
   });
 
   it("конверсия между измерениями невозможна → null", () => {

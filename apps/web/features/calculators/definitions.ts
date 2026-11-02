@@ -53,6 +53,8 @@ import {
 } from "./catalog";
 
 import { parseDecimalInput } from "@/features/forms/numeric-validation";
+import { calculatorGravityInputs, calculatorGravityOffsetSg, calculatorGravitySg, invalidateCalculatorGravityInputs, readCalculatorGravityInput, restoreCalculatorGravityInputs } from "./gravity-inputs";
+export { convertRefractometerOgFieldValue } from "./gravity-inputs";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
 import type { IngredientCategory, IngredientSuggestionItem } from "@/features/ingredients/contracts";
 import { fermentableAppliesMashEfficiency, getIngredientAlphaAcidPercent, getIngredientColorLovibond, getIngredientPotentialPpg } from "@/features/ingredients/technical-fields";
@@ -521,17 +523,11 @@ const resolveGravityUnit = (state: CalculatorState, key = "gravityUnit"): Calcul
   return raw === "Plato" || raw === "Brix" ? raw : "SG";
 };
 
-// Сегментированный переключатель шкалы плотности: пересчитывает связанное числовое поле
-// через общий convertGravityFieldValue и помечает выбор как ручной (gravityUnitTouched) —
-// иначе следующая догрузка предпочтения из профиля переписала бы выбор пользователя (см.
-// GRAVITY_PREFERENCE_CONFIG в calculator-page-client.tsx).
-const gravityScaleField = (unitFieldName: string, valueFieldName: string): ScalarCalculatorField => (
+// Перевод значений и сохранение исходных замеров выполняются одним обновлением
+// updateCalculatorInput, общим для специализированных и generic-форм.
+const gravityScaleField = (unitFieldName: string): ScalarCalculatorField => (
   selectField(unitFieldName, "Шкала плотности", gravityScaleOptions, {
-    variant: "segmented",
-    transformOnChange: (nextUnit, state) => [
-      [valueFieldName, convertGravityFieldValue(state[valueFieldName], resolveGravityUnit(state, unitFieldName), nextUnit as CalculatorGravityUnit)],
-      ["gravityUnitTouched", true]
-    ]
+    variant: "segmented"
   })
 );
 
@@ -802,61 +798,23 @@ export const readRefractometerInput = (state: CalculatorState): {
   const wortCorrectionFactor = n(state.wortCorrectionFactor, 1.04);
   const formula = s(state.formula, "novotny") as RefractometerFormula;
   const originalUnit = s(state.originalUnit, "Brix") as CalculatorGravityUnit;
-  const originalValue = n(state.originalValue, refractometerOgDefault(originalUnit));
+  const source = readCalculatorGravityInput(state, "originalValue", originalUnit);
+  const sourceUnit = source.unit === "points" ? "SG" : source.unit;
+  const originalValue = n(source.value, refractometerOgDefault(sourceUnit));
 
   const input: RefractometerInput = { mode, currentBrix, wortCorrectionFactor, formula };
 
   let ogSg: number;
-  if (originalUnit === "Brix") {
+  if (sourceUnit === "Brix") {
     input.originalBrix = originalValue;
     ogSg = brixToSg(originalValue / wortCorrectionFactor);
   } else {
-    const trueSg = gravityToSg(originalValue, originalUnit);
+    const trueSg = gravityToSg(originalValue, sourceUnit);
     input.originalGravity = trueSg;
     ogSg = trueSg;
   }
 
   return { input, originalUnit, originalValue, ogSg };
-};
-
-// Пересчёт значения OG при смене шкалы. Обычной конверсии плотности недостаточно:
-// Brix — сырое показание рефрактометра (завышено в WCF раз), SG/°P — истинная плотность,
-// поэтому пересечение границы Brix ↔ SG/°P делит/умножает на WCF. Плоская конверсия
-// молча сдвигала бы физический смысл OG (и ABV на ~0.3%) при каждом переключении —
-// как ручном, так и автоматическом (предпочтение плотности из профиля, «Сбросить»).
-export const convertRefractometerOgFieldValue = (
-  state: CalculatorState,
-  rawValue: unknown,
-  fromUnit: CalculatorGravityUnit,
-  toUnit: CalculatorGravityUnit
-): string => {
-  if (fromUnit === toUnit) {
-    return String(rawValue ?? "");
-  }
-  // SG ↔ °P — обе шкалы истинные, WCF не участвует.
-  if (fromUnit !== "Brix" && toUnit !== "Brix") {
-    return convertGravityFieldValue(rawValue, fromUnit, toUnit);
-  }
-
-  const wcf = n(state.wortCorrectionFactor, 1.04);
-  const factor = wcf > 0 ? wcf : 1.04;
-  // parseDecimalInput вместо голого Number — по тем же причинам, что в convertGravityFieldValue
-  // («12,4» посреди набора). Мусорный ввод возвращаем как есть, чтобы не мешать набору.
-  const value = typeof rawValue === "number" ? rawValue : parseDecimalInput(String(rawValue ?? "")) ?? Number.NaN;
-  if (!Number.isFinite(value) || (fromUnit === "SG" && value <= 0)) {
-    return String(rawValue ?? "");
-  }
-
-  if (fromUnit === "Brix") {
-    // Сырое показание → истинный Brix → целевая истинная шкала.
-    return convertGravityFieldValue(value / factor, "Brix", toUnit);
-  }
-
-  // Истинная шкала → истинный Brix → сырое показание рефрактометра.
-  const rawReading = sgToBrix(gravityToSg(value, fromUnit)) * factor;
-  const text = rawReading.toFixed(1);
-  // «−0.0» после округления — артефакт полинома у нулевой плотности.
-  return Number(text) === 0 ? (0).toFixed(1) : text;
 };
 
 export type RefractometerView = {
@@ -926,8 +884,8 @@ export const computeAbvView = (state: CalculatorState): AbvView => {
       : null;
   // Значения примера задаются defaults. Очищенный замер не заменяем примером:
   // до заполнения полей расчёт не запускается, в результатах показываются прочерки.
-  const ogSg = missingOg ? 0 : gravityToSg(og!, unit);
-  const fgSg = missingFg ? 0 : gravityToSg(fg!, unit);
+  const ogSg = missingOg ? 0 : calculatorGravitySg(state, "og", unit);
+  const fgSg = missingFg ? 0 : calculatorGravitySg(state, "fg", unit);
   const servingSizeMl = n(state.servingSizeMl, 100);
   const fgAboveOg = inputError == null && fgSg > ogSg;
   // OG ≤ 1.000 — сусла нет: деление на (OG − 1) в сбраживании даёт NaN/Infinity,
@@ -990,10 +948,10 @@ export const computeHydrometerView = (state: CalculatorState): HydrometerView =>
   // Поправка прибора хранится в шкале показания, ядро ждёт SG-дельту. Якорь конвертации —
   // вода: «0.5 °P в дистилляте» = platoToSg(0.5) − 1.000 (см. convertGravityOffsetValue).
   const offsetInUnit = n(state.offset, 0);
-  const offsetSg = unit === "SG" || offsetInUnit === 0 ? offsetInUnit : gravityToSg(offsetInUnit, unit) - 1;
+  const offsetSg = calculatorGravityOffsetSg(state, "offset", unit);
   const result = correctHydrometer({
-    reading,
-    readingUnit: unit,
+    reading: calculatorGravitySg(state, "reading", unit, gravityToSg(reading, unit)),
+    readingUnit: "SG",
     sampleTemperatureC,
     calibrationTemperatureC,
     instrumentOffset: offsetSg
@@ -1056,10 +1014,10 @@ export const computeDilutionView = (state: CalculatorState): DilutionView => {
     currentVolumeL: n(state.currentVolumeL, 20),
     // Фолбэки пустых полей — в текущей шкале (ср. computeAbvView): 1.06/1.05, прочитанные
     // как °P, дали бы почти воду вместо эквивалентов дефолтных 1.060/1.050 SG.
-    currentGravity: gravityToSg(n(state.currentGravity, unit === "SG" ? 1.06 : 14.7), unit),
+    currentGravity: calculatorGravitySg(state, "currentGravity", unit, gravityToSg(unit === "SG" ? 1.06 : 14.7, unit)),
     // «Целевая плотность» скрыта вне DILUTION_GRAVITY_TARGET_MODES — не даём скрытому
     // (возможно устаревшему) значению тайно подставляться как фолбэк для объёма.
-    targetGravity: DILUTION_GRAVITY_TARGET_MODES.has(mode) ? gravityToSg(n(state.targetGravity, unit === "SG" ? 1.05 : 12.4), unit) : undefined,
+    targetGravity: DILUTION_GRAVITY_TARGET_MODES.has(mode) ? calculatorGravitySg(state, "targetGravity", unit, gravityToSg(unit === "SG" ? 1.05 : 12.4, unit)) : undefined,
     targetVolumeL: n(state.targetVolumeL, 0),
     boilOffRateLPerHour: n(state.boilOffRateLPerHour, 0),
     additionType: s(state.additionType, "dme") as Parameters<typeof calculateDilutionBoiloff>[0]["additionType"],
@@ -1736,7 +1694,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         dynamicUnit: (state) => gravityScaleUnitLabel(resolveGravityUnit(state)),
         dynamicStep: (state) => gravityScaleStep(resolveGravityUnit(state)),
       }),
-      gravityScaleField("gravityUnit", "wortGravity"),
+      gravityScaleField("gravityUnit"),
       numberField("boilTimeMinutes", "Время кипячения", "мин", { min: 0, step: 5 }),
       selectField("formula", "Формула", [
         { value: "tinseth_whirlpool_v2", label: "Tinseth + вирпул" },
@@ -1857,7 +1815,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         formula,
         // Фолбэк пустого поля — в текущей шкале (ср. computeAbvView): 1.05, прочитанный
         // как °P, молча завышал бы IBU почти на 15%.
-        og: gravityToSg(n(state.wortGravity, gravityUnit === "SG" ? 1.05 : 12.4), gravityUnit),
+        og: calculatorGravitySg(state, "wortGravity", gravityUnit, gravityToSg(gravityUnit === "SG" ? 1.05 : 12.4, gravityUnit)),
         batchVolumeL: n(state.postBoilVolumeL, 20),
         postBoilVolumeL: n(state.postBoilVolumeL, 20),
         boilTimeMinutes: n(state.boilTimeMinutes, 60),
@@ -2287,7 +2245,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         dynamicUnit: (state) => gravityScaleUnitLabel(resolveGravityUnit(state)),
         dynamicStep: (state) => gravityScaleStep(resolveGravityUnit(state))
       }),
-      gravityScaleField("gravityUnit", "gravity"),
+      gravityScaleField("gravityUnit"),
       selectField("fermentationType", "Норма засева", [
         { value: "ale", label: "Для эля" },
         { value: "lager", label: "Для лагера" },
@@ -2347,7 +2305,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         wortVolumeL: n(state.wortVolumeL, 20),
         // Фолбэк пустого поля — в текущей шкале (ср. computeAbvView): 1.05, прочитанный
         // как °P (дефолтная шкала калькулятора), давал бы вчетверо заниженную потребность в клетках.
-        gravity: gravityToSg(n(state.gravity, resolveGravityUnit(state) === "SG" ? 1.05 : 12.4), resolveGravityUnit(state)),
+        gravity: calculatorGravitySg(state, "gravity", resolveGravityUnit(state), gravityToSg(resolveGravityUnit(state) === "SG" ? 1.05 : 12.4, resolveGravityUnit(state))),
         fermentationType: s(state.fermentationType, "ale") as "ale" | "lager" | "hybrid",
         yeastType,
         packsCount: n(state.packsCount, 1),
@@ -3041,9 +2999,9 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         visibleWhen: (state) => s(state.mode, "measure") === "measure"
       }),
       // Видим в обоих режимах: в predict шкала задаёт единицу вывода прогноза, а не только
-      // ввода замера — но transformOnChange всё равно конвертирует скрытую measuredOg, чтобы
+      // ввода замера — при смене шкалы всё равно конвертируется скрытая measuredOg, чтобы
       // при возврате в "Узнать эффективность" значение осталось согласованным с выбором.
-      gravityScaleField("gravityUnit", "measuredOg"),
+      gravityScaleField("gravityUnit"),
       numberField("brewhouseEfficiencyPercent", "Эффективность", "%", {
         min: 0,
         step: 1,
@@ -3097,7 +3055,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
 
       // Фолбэк пустого поля — в текущей шкале (ср. computeAbvView): 1.05, прочитанный
       // как °P, давал бы «эффективность ~0%» + ложное предупреждение.
-      const measuredOgSg = gravityToSg(n(state.measuredOg, unit === "SG" ? 1.05 : 12.4), unit);
+      const measuredOgSg = calculatorGravitySg(state, "measuredOg", unit, gravityToSg(unit === "SG" ? 1.05 : 12.4, unit));
       const result = estimateBrewhouseEfficiency({ fermentables, batchVolumeL, measuredOg: measuredOgSg });
       const ogAt100 = predictOgAtEfficiency({ fermentables, batchVolumeL, brewhouseEfficiencyPercent: 100 });
       const efficiencyTone: CalculatorResultStat["tone"] = result.efficiencyPercent >= 60 && result.efficiencyPercent <= 85 ? "good" : "warning";
@@ -3284,7 +3242,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         dynamicUnit: (state) => gravityScaleUnitLabel(resolveGravityUnit(state)),
         dynamicStep: (state) => gravityScaleStep(resolveGravityUnit(state))
       }),
-      gravityScaleField("gravityUnit", "speiseGravity"),
+      gravityScaleField("gravityUnit"),
       numberField("temperatureC", "Температура пива", "°C", {
         step: 0.5,
         helper: "Обычно — наибольшая температура в конце активного брожения или после него, до охлаждения"
@@ -3304,7 +3262,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         residualCo2: nOrUndefined(state.residualCo2),
         // Фолбэк пустого поля — в текущей шкале (ср. computeAbvView): 1.05, прочитанный
         // как °P (дефолтная шкала калькулятора), давал бы «19.71 л сусла» на 20 л вместо ~1.6 л.
-        speiseGravity: gravityToSg(n(state.speiseGravity, resolveGravityUnit(state) === "SG" ? 1.05 : 12.4), resolveGravityUnit(state)),
+        speiseGravity: calculatorGravitySg(state, "speiseGravity", resolveGravityUnit(state), gravityToSg(resolveGravityUnit(state) === "SG" ? 1.05 : 12.4, resolveGravityUnit(state))),
         temperatureC: n(state.temperatureC, 20)
       });
       const residualCo2IsManual = nOrUndefined(state.residualCo2) != null;
@@ -3595,8 +3553,19 @@ export const initialCalculatorStateFromQuery = (
     definition.fields.flatMap((field) => field.kind === "array" ? [] : [field.name])
   );
   const arrayFields = definition.fields.filter((field): field is ArrayCalculatorField => field.kind === "array");
-  const knownFieldNames = new Set([...scalarFieldNames, ...arrayFields.map((field) => field.name)]);
-  const next: CalculatorState = { ...baseState };
+  const knownFieldNames = new Set([...scalarFieldNames, ...arrayFields.map((field) => field.name), "_gravity"]);
+  let next: CalculatorState = { ...baseState };
+  const config = calculatorGravityInputs[definition.catalog.slug];
+  if (config) {
+    const keys = Object.keys(query);
+    if (keys.some(key => [config.unitField, "originalBrix", "originalGravity", "instrumentOffset"].includes(key))) {
+      next = invalidateCalculatorGravityInputs(next);
+    } else {
+      const replaced = [...config.valueFields, ...(config.offsetFields ?? [])].filter(field => keys.includes(field));
+      if (replaced.length) next = invalidateCalculatorGravityInputs(next, replaced);
+    }
+  }
+  const restoreSources = (state: CalculatorState) => restoreCalculatorGravityInputs(definition.catalog.slug, state, query._gravity);
 
   for (const [key, value] of Object.entries(query)) {
     if (scalarFieldNames.has(key)) {
@@ -3625,7 +3594,7 @@ export const initialCalculatorStateFromQuery = (
     if (process.env.NODE_ENV !== "production") {
       warnUnhandledQueryKeys(definition, query, knownFieldNames, new Set());
     }
-    return next;
+    return restoreSources(next);
   }
 
   if (process.env.NODE_ENV !== "production") {
@@ -3642,10 +3611,10 @@ export const initialCalculatorStateFromQuery = (
     });
     const result = definition.applyQuery(next, queryProxy);
     warnUnhandledQueryKeys(definition, query, knownFieldNames, accessedKeys);
-    return result;
+    return restoreSources(result);
   }
 
-  return definition.applyQuery(next, query);
+  return restoreSources(definition.applyQuery(next, query));
 };
 
 export const serializeCalculatorStateToQuery = (
@@ -3690,6 +3659,9 @@ export const serializeCalculatorStateToQuery = (
     params.set(field.name, String(value));
   }
 
+  if (state._gravityInputs) {
+    params.set("_gravity", JSON.stringify(state._gravityInputs));
+  }
   return params;
 };
 

@@ -1,0 +1,28 @@
+{
+  "web": {
+    "passed": 4404,
+    "log": "/home/dopefish/projects/nb/notes/ingredient-catalog-implementation-2026-11-02/validation/all-web-tests.log"
+  },
+  "brewingCore": {
+    "passed": 151,
+    "log": "/home/dopefish/projects/nb/notes/ingredient-catalog-implementation-2026-11-02/validation/core-tests.log"
+  },
+  "catalogData": {
+    "passed": 14,
+    "log": "/home/dopefish/projects/nb/notes/ingredient-catalog-implementation-2026-11-02/validation/db-tests.log"
+  },
+  "postgres": {
+    "passed": 10,
+    "log": "/home/dopefish/projects/nb/notes/ingredient-catalog-implementation-2026-11-02/validation/integration-final.log"
+  },
+  "browser": {
+    "passed": 62,
+    "errors": 0
+  },
+  "typecheck": {
+    "web": "passed",
+    "db": "passed",
+    "brewingCore": "passed"
+  },
+  "totalTestsPassed": 4579
+}

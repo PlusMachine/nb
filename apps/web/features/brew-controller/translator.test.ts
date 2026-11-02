@@ -72,13 +72,14 @@ describe("brewPlanV1ToDeviceRecipe", () => {
     expect(recipe.cooling.targetC).toBe(19);
   });
 
-  it("нормализует количества хмеля (g/kg/oz) в граммы", () => {
+  it("нормализует количества хмеля (mg/g/kg/oz) в граммы", () => {
     const recipe = brewPlanV1ToDeviceRecipe(
       makeSnapshot({
         boilPlan: {
           boilTimeMinutes: 60,
           timedAdditions: [
             addition({ name: "G", amount: { quantity: 50, unit: "g" } }),
+            addition({ name: "MG", amount: { quantity: 5000, unit: "mg" } }),
             addition({ name: "KG", amount: { quantity: 1, unit: "kg" } }),
             addition({ name: "OZ", amount: { quantity: 1, unit: "oz" } }),
           ],
@@ -88,6 +89,7 @@ describe("brewPlanV1ToDeviceRecipe", () => {
 
     const byName = Object.fromEntries(recipe.boil.hops.map((hop) => [hop.name, hop.amountG]));
     expect(byName.G).toBe(50);
+    expect(byName.MG).toBe(5);
     expect(byName.KG).toBe(1000);
     expect(byName.OZ).toBe(28.3); // 28.349523125 г → округление до 0.1
   });

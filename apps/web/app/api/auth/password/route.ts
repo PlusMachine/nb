@@ -41,10 +41,11 @@ export async function POST(request: Request) {
         }
         await passwordSignup(body.email, body.password ?? "", true);
         return NextResponse.json({ ok: true });
-      case "request-reset":
+      case "request-reset": {
         await assertIpRateLimit(request, "auth_send", 15, 60 * 60);
-        await requestPasswordReset(body.email);
-        return NextResponse.json({ ok: true });
+        const delivery = await requestPasswordReset(body.email);
+        return NextResponse.json({ ok: true, delivery });
+      }
       case "reset":
         await assertIpRateLimit(request, "auth_attempt", 30, 10 * 60);
         await resetPassword(body.email, body.token ?? "", body.password ?? "");
@@ -53,6 +54,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "invalid_action" }, { status: 400 });
     }
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "unknown_error" }, { status: 400 });
+    const code = error instanceof Error ? error.message : "unknown_error";
+    return NextResponse.json({ error: code }, { status: code === "EMAIL_SEND_FAILED" || code === "EMAIL_NOT_CONFIGURED" ? 503 : 400 });
   }
 }

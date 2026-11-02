@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("next/headers", () => ({ cookies: async () => mocks.cookies, headers: async () => new Headers() }));
 vi.mock("@/lib/env", () => ({ getServerEnv: () => ({ APP_URL: "https://example.test" }) }));
 vi.mock("@/lib/sms", () => ({ sendSms: vi.fn() }));
+vi.mock("@/lib/auth-email", () => ({ assertAuthEmailAvailable: vi.fn(), sendAuthEmail: vi.fn(async () => "smtp") }));
 vi.mock("@nb/auth", () => ({
   assertRateLimit: async (key: string, action: string, limit: number) => {
     const name = `${key}:${action}`;

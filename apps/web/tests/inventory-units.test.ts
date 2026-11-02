@@ -149,8 +149,8 @@ describe("inventory unit normalization", () => {
         fermentationTempCMax: null,
         flocculation: null,
         alcoholToleranceAbvTypical: null,
-        packageSize: null,
-        packageUnit: null
+        packageSize: 11,
+        packageUnit: "g"
       }
     })).toBe("2 пачки (22 г)");
   });

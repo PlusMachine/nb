@@ -42,12 +42,12 @@ export function RecipeProfiles({
             );
             return (
             <div key={step.id} className="rounded-lg border-l-[3px] border-l-orange-300 bg-card px-3 py-2.5 shadow-sm ring-1 ring-border transition-shadow hover:shadow-md dark:border-l-orange-500/30">
-              <div className="flex flex-wrap items-center gap-3 sm:flex-nowrap">
-                <div className="flex min-w-0 flex-1 items-center gap-2">
+              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 sm:flex sm:flex-nowrap">
+                <div className="flex min-w-fit flex-1 items-center gap-2">
                   <div className="flex h-8 w-7 items-center justify-center rounded-md bg-orange-100 text-xs font-bold text-orange-600 dark:bg-orange-500/20 dark:text-orange-400">{index + 1}</div>
-                  <span className="text-sm font-medium text-foreground">Пауза {index + 1}</span>
+                  <span className="whitespace-nowrap text-sm font-medium text-foreground">Пауза {index + 1}</span>
                 </div>
-                <div className="ml-auto flex shrink-0 items-end gap-2">
+                <div className="col-span-2 row-start-2 flex items-end justify-end gap-2 sm:ml-auto sm:shrink-0">
                   <label className="space-y-0.5 text-right">
                     <span className="block text-[10px] text-muted-foreground">°C</span>
                     <NumericInput
@@ -92,7 +92,7 @@ export function RecipeProfiles({
                       steps: processMeta.mashProfile.steps.filter((candidate) => candidate.id !== step.id)
                     }
                   })}
-                  className="relative rounded-md p-2 text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive before:absolute before:-inset-2 before:content-['']"
+                  className="relative col-start-2 row-start-1 rounded-md p-2 text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive before:absolute before:-inset-2 before:content-['']"
                   aria-label="Удалить паузу"
                 >
                   <X className="h-4 w-4" />

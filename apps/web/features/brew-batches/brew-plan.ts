@@ -115,6 +115,9 @@ const readHopUseType = (ingredient: RecipeDetailDto["ingredients"][number]) => {
   return "other";
 };
 
+const isHopIngredient = (ingredient: RecipeDetailDto["ingredients"][number]) => ingredient.ingredientCategory === "hop"
+  || ingredient.ingredientCategory == null && isRecord(ingredient.stepMeta) && typeof ingredient.stepMeta.useType === "string";
+
 const buildTimedAddition = (ingredient: RecipeDetailDto["ingredients"][number]) => ({
   linePersistentKey: ingredient.persistentKey,
   name: ingredient.ingredientDisplayName ?? ingredient.ingredientDisplayNameSnapshot ?? "Ингредиент",
@@ -147,7 +150,7 @@ export const buildBrewPlanSnapshot = (
     durationMinutes: step.durationMinutes
   }));
   const destination = (ingredient: RecipeDetailDto["ingredients"][number]) => {
-    if (ingredient.ingredientCategory === "hop") {
+    if (isHopIngredient(ingredient)) {
       const use = readHopUseType(ingredient);
       if (use === "whirlpool" || use === "dip_hop") return "whirlpool";
       if (use === "dry_hop") return "fermentation";
@@ -171,7 +174,7 @@ export const buildBrewPlanSnapshot = (
   // Позиции рецепта на розливе (прайминг-сахар и т.п.) — раньше вообще не попадали
   // в снапшот варки (только настройки packagingPlan, не строки состава). См. #6c.
   const packagingAdditions = recipe.ingredients
-    .filter((ingredient) => ingredient.stage === "packaging")
+    .filter((ingredient) => destination(ingredient) === "packaging")
     .map(buildTimedAddition);
 
   // Суммарная засыпь солода (для шага гида «Засыпьте солод») — только mash-солод
@@ -214,7 +217,7 @@ export const buildBrewPlanSnapshot = (
       timedAdditions
     },
     whirlpoolPlan,
-    otherAdditions: recipe.ingredients.filter(ingredient => ingredient.ingredientCategory === "hop" && destination(ingredient) === "other").map(buildTimedAddition),
+    otherAdditions: recipe.ingredients.filter(ingredient => isHopIngredient(ingredient) && destination(ingredient) === "other").map(buildTimedAddition),
     dryHopPlan,
     fermentationPlan: recipe.processMeta.fermentationProfile as unknown as Record<string, unknown>,
     packagingPlan: recipe.brewPlanMeta?.packagingPlan && isRecord(recipe.brewPlanMeta.packagingPlan)

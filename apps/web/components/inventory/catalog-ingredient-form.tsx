@@ -1061,7 +1061,7 @@ export function CatalogIngredientForm({
     const variants = selected?.packageVariants ?? [];
     const matched = variants.find((variant) => variant.id === selected?.matchedPackageVariantId);
     const defaultVariant = variants.find((variant) => variant.isDefaultForStock && variant.sourceGroup !== "unverified_package");
-    setPackageVariantId(matched?.id ?? defaultVariant?.id ?? (variants.length === 1 ? variants[0].id : ""));
+    setPackageVariantId(matched?.id ?? defaultVariant?.id ?? (variants.length === 1 && variants[0].sourceGroup !== "unverified_package" ? variants[0].id : ""));
     if (variants.length && !initialQuantity) setFields((current) => ({ ...current, enteredUnit: "pack" }));
   }, [selected?.id, selected?.matchedPackageVariantId, initialQuantity]);
 

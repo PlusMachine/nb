@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 
 import { getSessionUser } from "@/lib/auth";
 import { getServerEnv } from "@/lib/env";
+import { getAuthEmailAvailability } from "@/lib/auth-email";
 
 import { LoginForm } from "./login-form";
 
@@ -36,6 +37,7 @@ export default async function LoginPage() {
 
   return (
     <LoginForm
+      emailDelivery={getAuthEmailAvailability()}
       oauth={{
         vk: isProviderConfigured("vk"),
         yandex: isProviderConfigured("yandex")

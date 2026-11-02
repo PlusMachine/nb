@@ -862,7 +862,7 @@ describe("inventory service", () => {
     });
   });
 
-  it("normalizes dry yeast packs into gram stock by default", async () => {
+  it("does not guess package mass from dry form or manufacturer", async () => {
     mockState.catalogFindFirst.mockResolvedValueOnce({
       id: "cat-yeast-1",
       isActive: true,
@@ -905,9 +905,9 @@ describe("inventory service", () => {
       ingredientMeasurementDimension: "count",
       enteredQuantity: 2,
       enteredUnit: "pack",
-      normalizedQuantity: 22,
-      normalizedUnit: "g",
-      unitDimension: "weight"
+      normalizedQuantity: 2,
+      normalizedUnit: "pack",
+      unitDimension: "count"
     });
   });
 

@@ -163,8 +163,8 @@ export const buildCustomIngredientTechnicalData = ({
       fermentationTempCMin: yeastMinFermentationTempC ?? null,
       fermentationTempCMax: yeastMaxFermentationTempC ?? null,
       alcoholToleranceAbvTypical: alcoholToleranceAbvTypical ?? null,
-      packageSize: yeastForm === "dry" ? 11 : null,
-      packageUnit: yeastForm === "dry" ? "g" : null
+      packageSize: null,
+      packageUnit: null
     };
   }
 

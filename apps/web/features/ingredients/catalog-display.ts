@@ -13,6 +13,7 @@ export const visibleCatalogAliases = (item: Pick<UserCatalogIngredientDto, "alia
     data?.type === "consumable" ? data.pickerGroup : null,
     data?.type === "consumable" ? data.familyKey : null].filter((value): value is string => typeof value === "string").map((value) => value.toLowerCase()));
   return item.aliases.flatMap((entry) => {
+    if (entry.isEnabled === false) return [];
     const alias = entry.alias.trim(), normalized = alias.toLowerCase();
     const seed = entry.source?.startsWith("seed");
     if (!alias || seen.has(normalized) || (seed && (entry.source === "seed_priority_term" || technical.has(normalized) || alias.includes("_")))) return [];

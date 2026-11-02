@@ -861,7 +861,7 @@ export function InventoryItemDetailsEditor({
                           pickerValue: displayNames.primaryName,
                           selectedDisplayName: displayNames.primaryName,
                           ingredientCatalogItemId: selected.source === "catalog" ? selected.id : null,
-                          packageVariantId: selected.matchedPackageVariantId ?? selected.packageVariants?.find(variant=>variant.isDefaultForStock)?.id ?? null,
+                          packageVariantId: selected.matchedPackageVariantId ?? selected.packageVariants?.find(variant=>variant.isDefaultForStock && variant.sourceGroup !== "unverified_package")?.id ?? null,
                           userCustomIngredientId: selected.source === "custom" ? selected.id : null,
                           waterTreatmentConcentrationPct: formatConcentrationInputValue(
                             readWaterTreatmentConcentrationPct(selected.technicalData)

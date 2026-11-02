@@ -461,8 +461,8 @@ const fromAttributes = (
   if (type === "yeast") {
     const form = readString(attributes.form);
     const packageSelectionRequired = attributes.package_selection_required === true;
-    const packageSize = packageSelectionRequired ? null : readNumber(attributes.package_size) ?? (form === "dry" ? 11 : null);
-    const packageUnit = readString(attributes.package_unit) ?? (form === "dry" ? "g" : null);
+    const packageSize = packageSelectionRequired ? null : readNumber(attributes.package_size);
+    const packageUnit = readString(attributes.package_unit);
 
     return {
       type,
@@ -652,7 +652,7 @@ export const extractIngredientTechnicalData = (source: IngredientTechnicalSource
       form,
       fermentationTempCMin: readNumber(source.yeastMinFermentationTempC),
       fermentationTempCMax: readNumber(source.yeastMaxFermentationTempC),
-      packageSize: form === "dry" ? 11 : packageSize,
+      packageSize,
       packageUnit
     } as Extract<IngredientTechnicalData, { type: "yeast" }>;
   }
@@ -730,6 +730,8 @@ export const syncIngredientPropertiesWithTechnicalFields = (source: IngredientTe
 };
 
 export const getIngredientPotentialPpg = (source: IngredientTechnicalSource, fallback = 36) => {
+  const data = extractIngredientTechnicalData(source);
+  if (data?.type === "fermentable" && data.functionalRole === "process_only") return 0;
   const fields = extractIngredientTechnicalFields(source);
   if (fields.fermentableExtractYieldPct == null) {
     return fallback;
@@ -764,6 +766,8 @@ export const fermentableAppliesMashEfficiency = (
 };
 
 export const getIngredientColorLovibond = (source: IngredientTechnicalSource, fallback = 2) => {
+  const data = extractIngredientTechnicalData(source);
+  if (data?.type === "fermentable" && data.functionalRole === "process_only") return 0;
   const fields = extractIngredientTechnicalFields(source);
   return fields.fermentableColorLovibond ?? fallback;
 };

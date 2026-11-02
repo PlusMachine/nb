@@ -1,0 +1,293 @@
+{
+  "checks": [
+    {
+      "id": "stock_edit_unit_preserves_1000_pieces",
+      "passed": true
+    },
+    {
+      "id": "stock_edit_keeps_piece_cost",
+      "passed": true
+    },
+    {
+      "id": "stock_40mg_to_kg_exact",
+      "passed": true
+    },
+    {
+      "id": "stock_kg_back_to_40mg",
+      "passed": true
+    },
+    {
+      "id": "stock_40mg_after_save",
+      "passed": true
+    },
+    {
+      "id": "la01_no_11g_guess",
+      "passed": true
+    },
+    {
+      "id": "la01_500g_stock_preview",
+      "passed": true
+    },
+    {
+      "id": "method_direct_stock_link_blocked",
+      "passed": true
+    },
+    {
+      "id": "recipe_saved_packet_alpha",
+      "passed": true
+    },
+    {
+      "id": "responsive_320_bestmalz-best-heidelberg-malt",
+      "passed": true,
+      "width": 320
+    },
+    {
+      "id": "heading_fits_320_bestmalz-best-heidelberg-malt",
+      "passed": true,
+      "width": 320
+    },
+    {
+      "id": "responsive_320_viking-malt-caramel-250-fi-special",
+      "passed": true,
+      "width": 320
+    },
+    {
+      "id": "heading_fits_320_viking-malt-caramel-250-fi-special",
+      "passed": true,
+      "width": 320
+    },
+    {
+      "id": "responsive_320_gb-challenger-standard",
+      "passed": true,
+      "width": 320
+    },
+    {
+      "id": "heading_fits_320_gb-challenger-standard",
+      "passed": true,
+      "width": 320
+    },
+    {
+      "id": "hop_ranges_effective_alpha",
+      "passed": true
+    },
+    {
+      "id": "responsive_320_fermentis-la-01",
+      "passed": true,
+      "width": 320
+    },
+    {
+      "id": "heading_fits_320_fermentis-la-01",
+      "passed": true,
+      "width": 320
+    },
+    {
+      "id": "la01_verified_packages",
+      "passed": true
+    },
+    {
+      "id": "responsive_320_iodophor-sanitizer",
+      "passed": true,
+      "width": 320
+    },
+    {
+      "id": "heading_fits_320_iodophor-sanitizer",
+      "passed": true,
+      "width": 320
+    },
+    {
+      "id": "iodophor_nominal_ml",
+      "passed": true
+    },
+    {
+      "id": "responsive_320_calcium-chloride-dihydrate",
+      "passed": true,
+      "width": 320
+    },
+    {
+      "id": "heading_fits_320_calcium-chloride-dihydrate",
+      "passed": true,
+      "width": 320
+    },
+    {
+      "id": "responsive_320_acidulated-malt",
+      "passed": true,
+      "width": 320
+    },
+    {
+      "id": "heading_fits_320_acidulated-malt",
+      "passed": true,
+      "width": 320
+    },
+    {
+      "id": "acidulated_reference_choice",
+      "passed": true
+    },
+    {
+      "id": "responsive_320_aeration-dechlorination",
+      "passed": true,
+      "width": 320
+    },
+    {
+      "id": "heading_fits_320_aeration-dechlorination",
+      "passed": true,
+      "width": 320
+    },
+    {
+      "id": "method_reference_actions",
+      "passed": true
+    },
+    {
+      "id": "responsive_320_rice-hulls-nesolozhenka",
+      "passed": true,
+      "width": 320
+    },
+    {
+      "id": "heading_fits_320_rice-hulls-nesolozhenka",
+      "passed": true,
+      "width": 320
+    },
+    {
+      "id": "hulls_no_fake_extraction",
+      "passed": true
+    },
+    {
+      "id": "responsive_320_muntons-premium-pilsner-ekstrakty-kontsentraty",
+      "passed": true,
+      "width": 320
+    },
+    {
+      "id": "heading_fits_320_muntons-premium-pilsner-ekstrakty-kontsentraty",
+      "passed": true,
+      "width": 320
+    },
+    {
+      "id": "responsive_390_bestmalz-best-heidelberg-malt",
+      "passed": true,
+      "width": 390
+    },
+    {
+      "id": "heading_fits_390_bestmalz-best-heidelberg-malt",
+      "passed": true,
+      "width": 390
+    },
+    {
+      "id": "responsive_390_viking-malt-caramel-250-fi-special",
+      "passed": true,
+      "width": 390
+    },
+    {
+      "id": "heading_fits_390_viking-malt-caramel-250-fi-special",
+      "passed": true,
+      "width": 390
+    },
+    {
+      "id": "responsive_390_gb-challenger-standard",
+      "passed": true,
+      "width": 390
+    },
+    {
+      "id": "heading_fits_390_gb-challenger-standard",
+      "passed": true,
+      "width": 390
+    },
+    {
+      "id": "responsive_390_fermentis-la-01",
+      "passed": true,
+      "width": 390
+    },
+    {
+      "id": "heading_fits_390_fermentis-la-01",
+      "passed": true,
+      "width": 390
+    },
+    {
+      "id": "responsive_390_iodophor-sanitizer",
+      "passed": true,
+      "width": 390
+    },
+    {
+      "id": "heading_fits_390_iodophor-sanitizer",
+      "passed": true,
+      "width": 390
+    },
+    {
+      "id": "responsive_390_calcium-chloride-dihydrate",
+      "passed": true,
+      "width": 390
+    },
+    {
+      "id": "heading_fits_390_calcium-chloride-dihydrate",
+      "passed": true,
+      "width": 390
+    },
+    {
+      "id": "responsive_390_acidulated-malt",
+      "passed": true,
+      "width": 390
+    },
+    {
+      "id": "heading_fits_390_acidulated-malt",
+      "passed": true,
+      "width": 390
+    },
+    {
+      "id": "responsive_390_aeration-dechlorination",
+      "passed": true,
+      "width": 390
+    },
+    {
+      "id": "heading_fits_390_aeration-dechlorination",
+      "passed": true,
+      "width": 390
+    },
+    {
+      "id": "responsive_390_rice-hulls-nesolozhenka",
+      "passed": true,
+      "width": 390
+    },
+    {
+      "id": "heading_fits_390_rice-hulls-nesolozhenka",
+      "passed": true,
+      "width": 390
+    },
+    {
+      "id": "responsive_390_muntons-premium-pilsner-ekstrakty-kontsentraty",
+      "passed": true,
+      "width": 390
+    },
+    {
+      "id": "heading_fits_390_muntons-premium-pilsner-ekstrakty-kontsentraty",
+      "passed": true,
+      "width": 390
+    },
+    {
+      "id": "merged_wheat_redirect",
+      "passed": true
+    },
+    {
+      "id": "combined_malt_filters",
+      "passed": true
+    },
+    {
+      "id": "filter_reset_keeps_query",
+      "passed": true
+    },
+    {
+      "id": "specific_malt_ranks_first",
+      "passed": true
+    },
+    {
+      "id": "manufacturer_empty_search",
+      "passed": true
+    },
+    {
+      "id": "manufacturer_full_list_select",
+      "passed": true
+    },
+    {
+      "id": "hop_supplier_ids_remain_selectable",
+      "passed": true
+    }
+  ],
+  "errors": []
+}

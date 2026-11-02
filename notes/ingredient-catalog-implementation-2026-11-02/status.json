@@ -1,144 +1,228 @@
 {
-  "status": "in_progress",
+  "status": "complete",
   "authorizedOn": "2026-11-02",
   "existingRecipesMayBeUpdated": true,
   "items": [
     {
       "item": "malt-01-heidelberg-colour",
       "title": "BEST Heidelberg: верхний предел цветности",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 1,
+      "result": "BEST Heidelberg: верхняя граница 2,9 EBC и явное значение для расчёта; неверный обратный диапазон отклоняется при импорте."
     },
     {
       "item": "malt-02-specific-search-ranking",
       "title": "Поиск солода: точный бренд, название и номер продукта",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 2,
+      "result": "Точное сочетание производителя, названия и числового обозначения получает приоритет в поиске."
     },
     {
       "item": "malt-03-unverified-protein",
       "title": "Viking Caramel 250: неподтверждённый белок 75%",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 3,
+      "result": "Неподтверждённые 75% белка у Viking Caramel 250 убраны из числовых характеристик; исходное значение и источник сохранены."
     },
     {
       "item": "malt-04-weyermann-duplicates",
       "title": "Две карточки тёмного пшеничного Weyermann",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 4,
+      "result": "Дубликат Dark Wheat объединён с Wheat Malt Dark. Перенесены рецептурные и складские ссылки, избранное, ссылки на покупку и связи пользовательских вариантов; старый адрес перенаправляется."
     },
     {
       "item": "malt-05-browse-filters",
       "title": "Фильтры каталога солода: тип, производитель и диапазон EBC",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 5,
+      "result": "Добавлены полные списки производителей и видов с поиском, знакомые быстрые чипы и фильтр EBC. Сочетания фильтров сохраняются в URL и применяются ко всему каталогу."
     },
     {
       "item": "hop-06-aroma-profile",
       "title": "Показывать известный аромат хмеля в карточке",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 6,
+      "result": "Ароматы хмеля переведены на русский; доступны оригинальные термины и ссылка на источник."
     },
     {
       "item": "hop-07-supplier-variants",
       "title": "Группировать варианты одного сорта, страны и формы хмеля для сравнения поставщиков",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 7,
+      "result": "Подтверждённые поставщики одного сорта сгруппированы с сохранением отдельных карточек, значений и выбора поставщика; Cryo различается по форме."
     },
     {
       "item": "hop-08-missing-alpha-fallback",
       "title": "Явно показывать отсутствие альфы и убрать молчаливую подстановку 5% в расчёте горечи",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 8,
+      "result": "Неизвестная альфа больше не получает скрытое числовое значение. Мастер объясняет неполный IBU, сохраняет черновик и принимает значение с упаковки; известная часть учитывается отдельно."
     },
     {
       "item": "hop-09-characteristic-ranges",
       "title": "Показывать диапазоны характеристик хмеля и отдельно альфу, используемую для расчёта",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 9,
+      "result": "Показаны диапазоны альфа- и бета-кислот и масел. Эффективная альфа для расчёта указана отдельно."
     },
     {
       "item": "yeast-10-low-attenuation-calculation",
       "title": "Не повышать низкую аттенюацию специальных дрожжей до 50% в расчёте FG",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 10,
+      "result": "Снят нижний предел сбраживания 50%. LA-01 и LoNa используют низкие значения; сохранена обработка обычных штаммов и ручных значений."
     },
     {
       "item": "yeast-11-product-specific-packages",
       "title": "Проверять фасовки конкретного продукта и показывать их происхождение",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 11,
+      "result": "LA-01: 500 г и 10 кг из подтверждённого источника. Старые 11,5 г сохранены с отметкой; выбор фасовки явный."
     },
     {
       "item": "fermentable-12-rice-hulls-process-role",
       "title": "Учитывать рисовую лузгу как техническую добавку без прямого вклада в экстракт и цвет",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 12,
+      "result": "Рисовая лузга обозначена как добавка для фильтрации. Исключён прямой вклад в плотность, состав для оценки КП и цвет; физическая масса остаётся на складе."
     },
     {
       "item": "fermentable-13-hopped-extract-bitterness",
       "title": "Учитывать охмелённые экстракты в полноте расчёта IBU",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 13,
+      "result": "Неизвестная горечь охмелённого экстракта делает IBU неполным. Числовой вклад допускается только по явной спецификации конкретного продукта."
     },
     {
       "item": "water-14-calcium-chloride-hydration",
       "title": "Различать безводный хлорид кальция и дигидрат в карточке, расчёте и подборе замены",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 14,
+      "result": "Различаются безводный хлорид кальция и дигидрат. Явный пересчёт дозы учитывает введённую чистоту обеих солей; формулы показаны полностью."
     },
     {
       "item": "water-15-methods-without-inventory",
       "title": "Оставить методы водоподготовки в справочнике, исключив складской учёт в граммах",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 15,
+      "result": "Методы водоподготовки доступны как справочная информация. Сервер отклоняет их складской учёт и дозирование, включая пользовательские копии и прямые обращения."
     },
     {
       "item": "additive-16-spice-substitution-identity",
       "title": "Не считать разные специи аналогами по одному общему типу",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 16,
+      "result": "Специи сопоставляются по подтверждённому продукту и форме; общая категория не делает корицу заменой кориандру."
     },
     {
       "item": "consumable-17-closure-compatibility",
       "title": "Учитывать размер и стандарт укупорки при подборе расходников",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 17,
+      "result": "Упаковка сопоставляется с учётом роли, укупорки, размера и вместимости; крышки 26 и 29 мм различаются."
     },
     {
       "item": "cross-18-preserve-packages-on-save",
       "title": "Сохранять фасовки и складские привязки при редактировании карточки",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 18,
+      "result": "Административное сохранение сохраняет ID фасовок хмеля, дрожжей и расходников. Проверяется владелец ID; удаление используемой фасовки блокируется."
     },
     {
       "item": "cross-19-sync-preserve-editorial-decisions",
       "title": "Сохранять редакторские решения при синхронизации каталога из файлов",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 19,
+      "result": "Синхронизация сохраняет редакторские поля, архивирование, объединения, ручные источники и отключённые алиасы. Конфликты выводятся в отчёт; ссылки фасовок и коэффициенты старых остатков сохраняются."
     },
     {
       "item": "cross-20-responsive-detail-layout",
       "title": "Помещать параметры карточки в ширину мобильного экрана",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 20,
+      "result": "Исправлены сетки, перенос длинных названий и границы блоков. Проверены десять карточек на 320 и 390 px, включая границы текста заголовков."
     },
     {
       "item": "cross-21-self-contained-catalog-sources",
       "title": "Хранить все записи добавок и расходников в действующих исходных файлах",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 21,
+      "result": "Активные JSON расходников и добавок содержат полные данные; загрузка семи источников воспроизводится без отсутствующего старого файла."
     },
     {
       "item": "water-22-acidulated-malt-grain-role",
       "title": "Кислый солод: понятное назначение и выбор производителя",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 22,
+      "result": "Общая карточка кислого солода объясняет назначение и предлагает выбрать производителя либо создать конкретный вариант; складской учёт справочной карточки отключён."
     },
     {
       "item": "cross-23-small-quantity-precision",
       "title": "Показывать и редактировать малые остатки без округления до нуля",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 23,
+      "result": "Миллиграммы поддерживаются в вводе, редактировании, резерве, списании и сопоставлении. Смена мг/г/кг и сохранение точной массы не теряют значимые цифры. BeerXML сохраняет вес и исходную единицу."
     },
     {
       "item": "consumable-24-iodophor-package-volume",
       "title": "Показывать объём бутылок йодофора в миллилитрах",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 24,
+      "result": "Йодофор: номинальные объёмы 118,3 / 473 / 946 мл; 4 / 16 / 32 fl oz показаны дополнительно. Исторические остатки сохранены."
     },
     {
       "item": "cross-25-minor-display-batch",
       "title": "Пакет мелких правок отображения каталога",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 25,
+      "result": "Локализованы единицы, скрыты служебные и отключённые алиасы при сохранении поиска, очищены пустые бренды. Swaen и The Swaen отображаются единообразно."
     },
     {
       "item": "cross-26-select-package-for-stock",
       "title": "Выбирать фасовку при добавлении на склад и согласованно считать количество и цену",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 26,
+      "result": "Выбранная фасовка передаётся через форму и сервер. Количество, цена, резерв и расход используют один коэффициент. Неизвестная пачка не получает условные 11 г; прежние коэффициенты сохранены для 18 существующих записей."
     },
     {
       "item": "malt-27-verified-colour-ranges",
       "title": "Цвет солода: подтверждённые диапазоны производителя",
-      "status": "implemented_pending_final_verification"
+      "status": "implemented_and_verified",
+      "number": 27,
+      "result": "Подтверждены диапазоны Viking Pale Ale 4–7 EBC и The Swaen Pilsner 3–4,5 EBC; для расчёта используются средние 5,5 и 3,75 EBC. Источники и прежние значения сохранены."
     }
   ],
   "checks": [],
-  "databaseApplied": true
+  "databaseApplied": true,
+  "completedOn": "2026-11-02",
+  "validation": {
+    "web": {
+      "passed": 4404,
+      "log": "/home/dopefish/projects/nb/notes/ingredient-catalog-implementation-2026-11-02/validation/all-web-tests.log"
+    },
+    "brewingCore": {
+      "passed": 151,
+      "log": "/home/dopefish/projects/nb/notes/ingredient-catalog-implementation-2026-11-02/validation/core-tests.log"
+    },
+    "catalogData": {
+      "passed": 14,
+      "log": "/home/dopefish/projects/nb/notes/ingredient-catalog-implementation-2026-11-02/validation/db-tests.log"
+    },
+    "postgres": {
+      "passed": 10,
+      "log": "/home/dopefish/projects/nb/notes/ingredient-catalog-implementation-2026-11-02/validation/integration-final.log"
+    },
+    "browser": {
+      "passed": 62,
+      "errors": 0
+    },
+    "typecheck": {
+      "web": "passed",
+      "db": "passed",
+      "brewingCore": "passed"
+    },
+    "totalTestsPassed": 4579
+  },
+  "databaseVerification": "/home/dopefish/projects/nb/notes/ingredient-catalog-implementation-2026-11-02/final-database-verification.json"
 }

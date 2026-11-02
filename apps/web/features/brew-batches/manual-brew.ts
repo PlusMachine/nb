@@ -2,7 +2,7 @@ import { buildBrewDaySteps, formatBrewAdditionAmount, groupsForAct } from "./bre
 import { brewDayStages, brewDayStageLabels, type BrewDayProgress, type BrewDayStageGroup, type BrewDayStep, type BrewPlanSnapshot } from "./contracts";
 import { stepRemainingSeconds } from "./components/brew-day-timer";
 
-export type ManualBrewPhase = { id: string; label: string; steps: BrewDayStep[] };
+export type ManualBrewPhase = { id: string; label: string; steps: BrewDayStep[]; unordered?: boolean };
 const record = (raw: unknown): Record<string, unknown> => raw && typeof raw === "object" && !Array.isArray(raw) ? raw as Record<string, unknown> : {};
 const key = (raw: Record<string, unknown>, index: number) => String(raw.linePersistentKey ?? raw.id ?? `idx-${index}`);
 
@@ -121,7 +121,7 @@ export function manualBrewPhases(groups: BrewDayStageGroup[]): ManualBrewPhase[]
     { id: "whirlpool", label: "Вирпул", steps: orderStands(steps.filter(step => step.stage === "whirlpool" && step.useType !== "dip_hop")) },
     { id: "dip", label: "Дип-хоппинг", steps: orderStands(steps.filter(step => step.useType === "dip_hop")) },
     { id: "chill", label: "Охлаждение", steps: steps.filter(step => step.id === "chill:target") },
-    { id: "other", label: "Другие внесения хмеля", steps: steps.filter(step => step.id.startsWith("brew:other:")) },
+    { id: "other", label: "Внесения без указанного этапа", unordered: true, steps: steps.filter(step => step.id.startsWith("brew:other:")) },
     { id: "finish", label: "Перелив и дрожжи", steps: steps.filter(step => step.id === "brew:transfer" || step.id === "brew:pitch") }
   ];
   return phases.filter(phase => phase.steps.length > 0);
@@ -131,7 +131,7 @@ export function resolveManualBrewFocus(phases: ManualBrewPhase[], progress: Brew
   const boil = phases.flatMap(p => p.steps).find(step => step.id === "boil:timer") ?? null;
   const boilState = boil ? progress.steps[boil.id] : undefined;
   const boilRemaining = boil && now != null ? stepRemainingSeconds(boil, boilState, now) : null;
-  let phaseIndex = phases.findIndex(phase => phase.steps.some(step => !progress.steps[step.id]?.done));
+  let phaseIndex = phases.findIndex(phase => !phase.unordered && phase.steps.some(step => !progress.steps[step.id]?.done));
   if (boilState?.timerStartedAt && !boilState.done && boilRemaining != null) {
     const duePhase = phases.findIndex(phase => phase.id === "boil" && phase.steps.some(step => !progress.steps[step.id]?.done && step.boilSecondsBeforeEnd != null && boilRemaining <= step.boilSecondsBeforeEnd));
     if (duePhase >= 0) phaseIndex = duePhase;
@@ -182,7 +182,7 @@ export function resolveManualBrewFocus(phases: ManualBrewPhase[], progress: Brew
   const candidates = phase?.id === "boil" ? [...phase.steps.filter(step => step.id !== "boil:timer"), ...phase.steps.filter(step => step.id === "boil:timer")]
     : holdBlock ? [...holdBlock.filter(step => !progress.steps[step.id]?.timerStartedAt), ...holdBlock.filter(step => progress.steps[step.id]?.timerStartedAt), ...phase!.steps.filter(step => !holdBlock!.includes(step))] : phase?.steps;
   const next = candidates?.find(step => step.id !== current?.id && !companions.some(peer => peer.id === step.id) && !progress.steps[step.id]?.done)
-    ?? phases.slice(phaseIndex + 1).flatMap(p => p.steps).find(step => !progress.steps[step.id]?.done) ?? null;
+    ?? phases.slice(phaseIndex + 1).filter(phase => !phase.unordered).flatMap(p => p.steps).find(step => !progress.steps[step.id]?.done) ?? null;
   const nextUntilSeconds = next?.stage === "whirlpool" && !progress.steps[next.id]?.timerStartedAt && holdBlock?.includes(next) && holdOrigin !== null && now !== null && phase
     ? (holdOrigin + (Math.max(0, ...phase.steps.filter(item => item.temperatureC === next.temperatureC).map(item => item.durationSeconds ?? 0)) - (next.durationSeconds ?? 0)) * 1000 - now) / 1000
     : null;

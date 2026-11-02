@@ -183,6 +183,8 @@ export const getInventoryUnitQuantityPrecision = (unit: InventoryUnit): number =
 };
 
 export const getInventoryUnitInputStep = (unit: InventoryUnit): number => {
+  if (unit === "g") return 0.001;
+  if (unit === "kg") return 0.000001;
   const precision = getInventoryUnitQuantityPrecision(unit);
   return precision <= 0 ? 1 : 1 / (10 ** precision);
 };

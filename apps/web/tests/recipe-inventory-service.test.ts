@@ -669,7 +669,7 @@ describe("recipe inventory allocation service", () => {
       ...overrides
     });
 
-    const dryYeastCatalogItem = (attributes: Record<string, unknown> = { form: "dry" }) => ({
+    const dryYeastCatalogItem = (attributes: Record<string, unknown> = { form: "dry", package_size: 11, package_unit: "g" }) => ({
       id: "fermentis-us-05",
       type: "yeast",
       attributes
@@ -781,7 +781,7 @@ describe("recipe inventory allocation service", () => {
       expect(mockState.inventory[0]).toMatchObject({ normalizedQuantity: 6, enteredQuantity: 1 });
     });
 
-    it("кастомные дрожжи пользователя тоже раскрываются (фолбэк 11 г)", async () => {
+    it("кастомные дрожжи раскрываются по сохранённой массе упаковки", async () => {
       mockState.lines = [yeastLine({
         ingredientCatalogItemId: null,
         userCustomIngredientId: uuid(51)
@@ -791,7 +791,7 @@ describe("recipe inventory allocation service", () => {
         userCustomIngredientId: uuid(51)
       })];
       mockState.catalogItems = [];
-      mockState.customIngredients = [{ id: uuid(51), type: "yeast", yeastForm: "dry", properties: {} }];
+      mockState.customIngredients = [{ id: uuid(51), type: "yeast", yeastForm: "dry", properties: { technicalData: { type: "yeast", form: "dry", packageSize: 11, packageUnit: "g" } } }];
 
       await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1));
 

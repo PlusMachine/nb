@@ -1127,13 +1127,19 @@ const prepareSeedIngredient = (
     : prepareWaterTreatment(item);
   const source = isRecord(item) ? item : {};
   if (source.is_active === false) prepared.ingredient.isActive = false;
+  const defaultPackage = prepared.packageVariants.find((variant) => variant.isDefaultForStock && variant.sourceGroup !== "unverified_package");
   prepared.ingredient.attributes = {
     ...prepared.ingredient.attributes,
     ...(spec.type === "malt" && source.color_ebc_min === null ? { color_ebc_min: null } : {}),
     ...(spec.type === "malt" && source.color_ebc_max === null ? { color_ebc_max: null } : {}),
+    _package_model_version: 2,
     package_variant_count: prepared.packageVariants.length,
-    package_selection_required: prepared.packageVariants.length > 1
-      && !prepared.packageVariants.some((variant) => variant.isDefaultForStock && variant.sourceGroup !== "unverified_package"),
+    ...(spec.type === "yeast" ? {
+      package_size: defaultPackage?.stockContentAmount ?? readNumber(source.package_size),
+      package_unit: defaultPackage?.stockContentUnit ?? readString(source.package_unit)
+    } : {}),
+    package_selection_required: !defaultPackage && (prepared.packageVariants.length > 1
+      || (spec.type === "yeast" && source.form === "dry" && readNumber(source.package_size) == null)),
     ...(isRecord(source.seed_baseline) ? { _seed_previous: source.seed_baseline } : {}),
     ...(isRecord(source.data_review) ? { data_review: source.data_review } : {}),
     ...(source.catalog_status ? { _catalog_status: source.catalog_status } : {}),
@@ -1184,6 +1190,15 @@ const seedCatalogFile = async (spec: CatalogSeedFileSpec) => {
     // Freeze the old package coefficient on existing stock before updating its source.
     const stock = await tx.select().from(userIngredients).where(inArray(userIngredients.ingredientCatalogItemId, ingredientIds));
     for (const row of stock) {
+      const priorSource = row.ingredientCatalogItemId ? existing.get(row.ingredientCatalogItemId) : null;
+      if (!row.packageVariantId && row.enteredUnit === "pack" && row.normalizedUnit === "g"
+        && priorSource?.type === "yeast" && priorSource.attributes.form === "dry"
+        && priorSource.attributes._package_model_version !== 2 && !row.properties._legacy_pack_content_snapshot) {
+        await tx.update(userIngredients).set({ properties: { ...row.properties, _legacy_pack_content_snapshot: {
+          stockContentAmount: typeof priorSource.attributes.package_size === "number" ? priorSource.attributes.package_size : 11,
+          stockContentUnit: typeof priorSource.attributes.package_unit === "string" ? priorSource.attributes.package_unit : "g"
+        } } }).where(eq(userIngredients.id, row.id));
+      }
       const variant = row.packageVariantId ? previousById.get(row.packageVariantId) : null;
       if (variant && !Object.prototype.hasOwnProperty.call(row.properties, "_package_content_snapshot")) {
         await tx.update(userIngredients).set({ properties: { ...row.properties, _package_content_snapshot: {

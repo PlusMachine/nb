@@ -2,6 +2,7 @@ import { getServerEnv } from "./env";
 import { assertRussianEmailDomain } from "./email-policy";
 import { LEGAL_DOC_VERSION } from "./legal-meta";
 import { sendSms } from "./sms";
+import { assertAuthEmailAvailable, sendAuthEmail } from "./auth-email";
 import { normalizeEmail } from "@nb/shared";
 
 import {
@@ -108,18 +109,6 @@ const resolveActiveDevEmail = (chosen: string | undefined) => {
   return match ?? devAuthEmail;
 };
 
-/**
- * Логирование секретов аутентификации (OTP-код, magic-link, ссылка сброса пароля)
- * допустимо ТОЛЬКО вне production: в dev это единственный канал доставки (реальная
- * отправка письма для этих flow не подключена). В production сырой токен в логах —
- * это риск захвата аккаунта, поэтому здесь no-op.
- */
-const logAuthSecret = (label: string, payload: unknown) => {
-  if (process.env.NODE_ENV !== "production") {
-    console.info(label, payload);
-  }
-};
-
 export const getSessionUser = async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
@@ -214,9 +203,10 @@ export const requireRole = async (role: UserRole) => {
 
 export const startEmailOtp = async (email: string) => {
   assertRussianEmailDomain(email);
+  assertAuthEmailAvailable();
   await assertRateLimit(normalizeEmail(email), "otp", 5, 10 * 60);
   const verification = await issueVerification({ email, type: "otp" });
-  logAuthSecret("[auth] OTP token", verification);
+  return sendAuthEmail({ to: verification.email, type: "otp", code: verification.rawToken, expiresInMinutes: verification.expiresInMinutes });
 };
 
 export const startPhoneOtp = async (phone: string) => {
@@ -244,11 +234,12 @@ export const verifyEmailOtp = async (email: string, code: string, consent?: bool
 
 export const startMagicLink = async (email: string) => {
   assertRussianEmailDomain(email);
+  assertAuthEmailAvailable();
   await assertRateLimit(normalizeEmail(email), "magic_link", 5, 10 * 60);
   const env = getServerEnv();
   const verification = await issueVerification({ email, type: "magic_link" });
   const link = `${env.APP_URL}/api/auth/magic?email=${encodeURIComponent(verification.email)}&token=${verification.rawToken}`;
-  logAuthSecret("[auth] Magic link", { ...verification, link });
+  return sendAuthEmail({ to: verification.email, type: "magic_link", url: link, expiresInMinutes: verification.expiresInMinutes });
 };
 
 export const consumeMagicLink = async (email: string, token: string) => {
@@ -326,11 +317,12 @@ export const passwordSignup = async (email: string, password: string, consent?: 
 };
 
 export const requestPasswordReset = async (email: string) => {
+  assertAuthEmailAvailable();
   await assertRateLimit(normalizeEmail(email), "password_reset", 3, 10 * 60);
   const env = getServerEnv();
   const verification = await issueVerification({ email, type: "password_reset" });
   const link = `${env.APP_URL}/login?email=${encodeURIComponent(verification.email)}&flow=reset&token=${verification.rawToken}`;
-  logAuthSecret("[auth] Password reset", { ...verification, link });
+  return sendAuthEmail({ to: verification.email, type: "password_reset", url: link, expiresInMinutes: verification.expiresInMinutes });
 };
 
 export const resetPassword = async (email: string, token: string, password: string) => {

@@ -74,7 +74,7 @@ export function ManualBrewStep({ step, companions, controller, onInteract, showS
 
   return <>
     <div className="space-y-4">
-      {isAddition && isStand && !running ? <p className="text-sm text-muted-foreground">{step.useType === "dip_hop" ? "Дип-хоппинг" : "Вирпул"}</p> : null}
+      {isAddition && step.stage === "whirlpool" && !running ? <p className="text-sm text-muted-foreground">{step.useType === "dip_hop" ? "Дип-хоппинг" : "Вирпул"}</p> : null}
       <h2 className="break-words text-xl font-semibold">{isStand && running ? step.useType === "dip_hop" ? "Выдержка хмеля в ферментере" : "Выдержка на вирпуле" : items.length ? step.id === "mash:sparge-water" ? step.title : waterTitle : peers.length > 1 ? peers.every(peer => peer.ingredientCategory === "hop") ? "Внесите хмель" : "Внесите добавки" : step.title}</h2>
       {isAddition && !running ? <div className="space-y-3">
         {peers.map(peer => <div key={peer.id} className="space-y-1">

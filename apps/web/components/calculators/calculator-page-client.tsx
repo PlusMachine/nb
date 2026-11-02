@@ -39,7 +39,6 @@ import {
   computeDilutionView,
   computeHydrometerView,
   computeRefractometerView,
-  convertRefractometerOgFieldValue,
   dilutionFindOptions,
   dilutionOperationOptions,
   dilutionOperationOfMode,
@@ -48,7 +47,6 @@ import {
   DILUTION_VOLUME_TARGET_MODES,
   initialCalculatorStateFromQuery,
   parseCalculatorQuery,
-  refractometerOgDefault,
   refractometerOgUnitOptions,
   serializeCalculatorStateToQuery,
   REFRACTOMETER_FORMULA_OPTIONS,
@@ -69,7 +67,6 @@ import {
 import { loadViewerPreferredGravityUnit } from "@/features/system/gravity-unit-actions";
 import {
   convertGravityFieldValue,
-  convertGravityOffsetValue,
   formatGravity,
   formatGravityNumber,
   formatGravitySecondary,
@@ -80,6 +77,7 @@ import {
   type PreferredGravityUnit
 } from "@/features/system/gravity-units";
 import { useViewerGravityUnit } from "@/features/system/use-viewer-gravity-unit";
+import { calculatorGravityInputs, readCalculatorGravityInput, switchCalculatorGravityUnit, updateCalculatorInput } from "@/features/calculators/gravity-inputs";
 
 const cloneState = (state: CalculatorState): CalculatorState => JSON.parse(JSON.stringify(state)) as CalculatorState;
 
@@ -501,8 +499,9 @@ function ConverterGroupCard({
   // соседние ячейки в этом случае пустые, а не «конверсия нуля» (у плотности это −616 °P).
   const parsed = Number(rawValue.replace(",", "."));
   const hasValue = rawValue.trim() !== "" && Number.isFinite(parsed);
+  const source = group.id === "gravity" ? readCalculatorGravityInput(state, "gravityValue", from as CalculatorGravityUnit) : null;
   const converted = hasValue
-    ? convertBrewingUnitGroup(group.id as Parameters<typeof convertBrewingUnitGroup>[0], parsed, from) as Record<string, number>
+    ? convertBrewingUnitGroup(group.id as Parameters<typeof convertBrewingUnitGroup>[0], source ? Number(source.value.replace(",", ".")) : parsed, source?.unit ?? from) as Record<string, number>
     : null;
 
   return (
@@ -547,7 +546,6 @@ function ConverterGroupCard({
                   onChange("gravityUnitTouched", true);
                   if (!active) {
                     onChange("gravityFrom", unit);
-                    onChange("gravityValue", display);
                   }
                 }}
                 onChange={(event) => {
@@ -942,13 +940,13 @@ function WcfCalibrator({
   const hydroReading = convertGravityFieldValue(reading.value, reading.unit, hydroUnit);
 
   const refracto = Number(refractoBrix);
-  const hydro = Number(hydroReading);
+  const hydro = Number(reading.value.replace(",", "."));
   const hasInputs = refractoBrix.trim() !== "" && hydroReading.trim() !== ""
     && Number.isFinite(refracto) && refracto > 0 && Number.isFinite(hydro) && hydro > 0;
 
-  const trueBrix = hasInputs ? (hydroUnit === "SG" ? sgToBrix(hydro) : hydro) : null;
+  const trueBrix = hasInputs ? (reading.unit === "SG" ? sgToBrix(hydro) : hydro) : null;
   const wcf = hasInputs && trueBrix != null && trueBrix > 0
-    ? calibrateWcf({ refractometerBrix: refracto, hydrometerReading: hydro, hydrometerUnit: hydroUnit })
+    ? calibrateWcf({ refractometerBrix: refracto, hydrometerReading: hydro, hydrometerUnit: reading.unit })
     : null;
 
   return (
@@ -966,7 +964,11 @@ function WcfCalibrator({
           unit={hydroUnit === "SG" ? "SG" : "°P"}
           value={hydroReading}
           step={hydroUnit === "SG" ? 0.001 : 0.1}
-          onChange={(value) => setReading({ value, unit: hydroUnit })}
+          onChange={(value) => setReading(current => {
+            const display = convertGravityFieldValue(current.value, current.unit, hydroUnit);
+            if (current.unit !== hydroUnit && Number(value.replace(",", ".")) === Number(display.replace(",", "."))) return current;
+            return { value, unit: hydroUnit };
+          })}
         />
       </div>
 
@@ -1117,10 +1119,7 @@ function RefractometerFieldsBlock({
                     options={refractometerOgUnitOptions}
                     value={originalUnit}
                     onChange={(nextUnit) => {
-                      const converted = convertRefractometerOgFieldValue(state, state.originalValue, originalUnit as CalculatorGravityUnit, nextUnit as CalculatorGravityUnit);
-                      onChange("originalValue", converted !== "" ? converted : String(refractometerOgDefault(nextUnit)));
                       onChange("originalUnit", nextUnit);
-                      onChange("gravityUnitTouched", true);
                     }}
                   />
                 </div>
@@ -1296,10 +1295,7 @@ function AbvFieldsBlock({
                 options={ABV_UNIT_OPTIONS}
                 value={unit}
                 onChange={(nextUnit) => {
-                  onChange("og", convertGravityFieldValue(state.og, unit as CalculatorGravityUnit, nextUnit as CalculatorGravityUnit));
-                  onChange("fg", convertGravityFieldValue(state.fg, unit as CalculatorGravityUnit, nextUnit as CalculatorGravityUnit));
                   onChange("gravityUnit", nextUnit);
-                  onChange("gravityUnitTouched", true);
                 }}
               />
             </div>
@@ -1504,11 +1500,7 @@ function HydrometerFieldsBlock({
                 options={HYDROMETER_UNIT_OPTIONS}
                 value={unit}
                 onChange={(nextUnit) => {
-                  onChange("reading", convertGravityFieldValue(state.reading, unit as CalculatorGravityUnit, nextUnit as CalculatorGravityUnit));
-                  // Поправка прибора — дельта в шкале показания: конвертируется вместе с ним.
-                  onChange("offset", convertGravityOffsetValue(state.offset, unit as CalculatorGravityUnit, nextUnit as CalculatorGravityUnit));
                   onChange("readingUnit", nextUnit);
-                  onChange("gravityUnitTouched", true);
                 }}
               />
             </div>
@@ -1666,10 +1658,7 @@ function DilutionFieldsBlock({
   };
 
   const changeUnit = (nextUnit: string) => {
-    onChange("currentGravity", convertGravityFieldValue(state.currentGravity, unit as CalculatorGravityUnit, nextUnit as CalculatorGravityUnit));
-    onChange("targetGravity", convertGravityFieldValue(state.targetGravity, unit as CalculatorGravityUnit, nextUnit as CalculatorGravityUnit));
     onChange("gravityUnit", nextUnit);
-    onChange("gravityUnitTouched", true);
   };
 
   const showTargetGravity = DILUTION_GRAVITY_TARGET_MODES.has(mode);
@@ -1935,68 +1924,25 @@ function DilutionResultPanel({ state }: { state: CalculatorState }) {
   );
 }
 
-// A1: единый механизм подхвата предпочтения плотности пользователя — slug калькулятора →
-// какое поле хранит единицу, какие поля хранят значения в этой единице, и как смэппить
-// PreferredGravityUnit профиля в CalculatorGravityUnit самого калькулятора (ABV не знает
-// Brix, остальные — SG/Plato/Brix как есть). При загрузке профиля переводятся
-// значения, введённые в первоначальной шкале; явный выбор имеет приоритет.
-type GravityPreferenceConfig = {
-  unitField: string;
-  valueFields: string[];
-  // Дельта-поля (поправка прибора у ареометра): конвертируются с якорем на воде
-  // (convertGravityOffsetValue), а не как абсолютная плотность.
-  offsetFields?: string[];
-  mapPref: (unit: PreferredGravityUnit) => CalculatorGravityUnit;
-  // Значение поля — не всегда «чистая» плотность: у рефрактометра Brix — показание без поправки
-  // прибора, а SG/°P — истинная плотность, и конверсия между ними обязана видеть state
-  // (WCF). Без хука — обычная convertGravityFieldValue.
-  convertValue?: (state: CalculatorState, rawValue: unknown, fromUnit: CalculatorGravityUnit, toUnit: CalculatorGravityUnit) => string;
-};
-
-const GRAVITY_PREFERENCE_CONFIG: Partial<Record<CalculatorSlug, GravityPreferenceConfig>> = {
-  "abv-attenuation": { unitField: "gravityUnit", valueFields: ["og", "fg"], mapPref: toAbvGravityUnit },
-  "dilution-boiloff": { unitField: "gravityUnit", valueFields: ["currentGravity", "targetGravity"], mapPref: toCalculatorGravityUnit },
-  "hydrometer-correction": { unitField: "readingUnit", valueFields: ["reading"], offsetFields: ["offset"], mapPref: toCalculatorGravityUnit },
-  "refractometer-correction": {
-    unitField: "originalUnit",
-    valueFields: ["originalValue"],
-    mapPref: toCalculatorGravityUnit,
-    convertValue: convertRefractometerOgFieldValue
-  },
-  ibu: { unitField: "gravityUnit", valueFields: ["wortGravity"], mapPref: toCalculatorGravityUnit },
-  "yeast-starter": { unitField: "gravityUnit", valueFields: ["gravity"], mapPref: toCalculatorGravityUnit },
-  "speise-krausen": { unitField: "gravityUnit", valueFields: ["speiseGravity"], mapPref: toCalculatorGravityUnit },
-  "brewhouse-efficiency": { unitField: "gravityUnit", valueFields: ["measuredOg"], mapPref: toCalculatorGravityUnit },
-  "unit-converter": { unitField: "gravityFrom", valueFields: ["gravityValue"], mapPref: toCalculatorGravityUnit }
-};
-
 // Переводит состояние калькулятора на единицу предпочтения: переключает unitField и
 // пересчитывает значения из их текущей единицы. Ручной выбор (gravityUnitTouched) не
 // перетирает — важно и при догрузке предпочтения (пользователь мог успеть переключить
 // шкалу, пока летел запрос), и при сбросе. Возвращает исходный объект, если менять нечего.
 const applyGravityPreference = (
   state: CalculatorState,
-  gravityConfig: GravityPreferenceConfig,
+  slug: CalculatorSlug,
   unit: PreferredGravityUnit
 ): CalculatorState => {
   if (state.gravityUnitTouched === true) {
     return state;
   }
-  const nextUnit = gravityConfig.mapPref(unit);
-  const currentUnit = String(state[gravityConfig.unitField] ?? nextUnit) as CalculatorGravityUnit;
-  if (currentUnit === nextUnit) {
+  const gravityConfig = calculatorGravityInputs[slug];
+  if (!gravityConfig) return state;
+  const nextUnit = slug === "abv-attenuation" ? toAbvGravityUnit(unit) : toCalculatorGravityUnit(unit);
+  if (state[gravityConfig.unitField] === nextUnit) {
     return state;
   }
-  const next: CalculatorState = { ...state, [gravityConfig.unitField]: nextUnit };
-  for (const field of gravityConfig.valueFields) {
-    next[field] = gravityConfig.convertValue
-      ? gravityConfig.convertValue(state, state[field], currentUnit, nextUnit)
-      : convertGravityFieldValue(state[field], currentUnit, nextUnit);
-  }
-  for (const field of gravityConfig.offsetFields ?? []) {
-    next[field] = convertGravityOffsetValue(state[field], currentUnit, nextUnit);
-  }
-  return next;
+  return switchCalculatorGravityUnit(slug, state, nextUnit, false);
 };
 
 export function CalculatorPageClient({
@@ -2053,7 +1999,7 @@ export function CalculatorPageClient({
     // вернуться в единице пользователя, а не в SG. Сам флаг проверяется внутри
     // applyGravityPreference по СВЕЖЕМУ состоянию: пользователь мог переключить шкалу
     // руками, пока летел запрос.
-    const gravityConfig = GRAVITY_PREFERENCE_CONFIG[definition.catalog.slug];
+    const gravityConfig = calculatorGravityInputs[definition.catalog.slug];
     if (gravityConfig) {
       loadViewerPreferredGravityUnit()
         .then((unit) => {
@@ -2061,7 +2007,7 @@ export function CalculatorPageClient({
             return;
           }
           viewerGravityUnitRef.current = unit;
-          setState((current) => applyGravityPreference(current, gravityConfig, unit));
+          setState((current) => applyGravityPreference(current, definition.catalog.slug, unit));
         })
         .catch(() => {
           // Сеть/сессия недоступны — остаёмся на текущей единице.
@@ -2114,7 +2060,7 @@ export function CalculatorPageClient({
   const showAdvanced = visibleAdvancedFields.length > 0 && !isRefractometer && !isAbv && !isHydrometer && !isDilution;
 
   const handleFieldChange = (name: string, value: unknown) => {
-    setState((current) => ({ ...current, [name]: value }));
+    setState((current) => updateCalculatorInput(definition.catalog.slug, current, name, value));
   };
 
   // Сброс возвращает дефолты в единице пользователя (если предпочтение уже догружено),
@@ -2124,9 +2070,9 @@ export function CalculatorPageClient({
     setState((current) => {
       let next = cloneState(definition.defaults);
       const preferred = viewerGravityUnitRef.current;
-      const gravityConfig = GRAVITY_PREFERENCE_CONFIG[definition.catalog.slug];
+      const gravityConfig = calculatorGravityInputs[definition.catalog.slug];
       if (preferred && gravityConfig) {
-        next = applyGravityPreference(next, gravityConfig, preferred);
+        next = applyGravityPreference(next, definition.catalog.slug, preferred);
       }
       if (definition.catalog.slug === "unit-converter") {
         // Сброс возвращает значения, но не телепортирует на первую вкладку —

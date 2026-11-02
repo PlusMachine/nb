@@ -14,6 +14,8 @@ const serverEnvSchema = z.object({
   APP_URL: z.string().url().default("http://localhost:3000"),
   AUTH_SECRET: z.string().min(32).default("dev-only-auth-secret-change-me-123456"),
   AUTH_FROM_EMAIL: z.string().email().default("no-reply@localhost.dev"),
+  // log — только явно включённая локальная разработка; в production не доставляет письма.
+  EMAIL_PROVIDER: z.enum(["smtp", "log"]).default("smtp"),
   // Реквизиты оператора персональных данных (152-ФЗ) — для правовых страниц и футера.
   // Заполняются перед публикацией; в dev пустые значения допустимы (страницы покажут
   // явные плейсхолдеры вместо реальных данных). Для физлица достаточно OPERATOR_NAME
@@ -43,7 +45,10 @@ const serverEnvSchema = z.object({
   SMTP_PORT: z.preprocess(emptyStringToUndefined, z.coerce.number().int().positive().optional()),
   SMTP_USER: z.preprocess(emptyStringToUndefined, z.string().optional()),
   SMTP_PASSWORD: z.preprocess(emptyStringToUndefined, z.string().optional()),
-  SMTP_SECURE: z.coerce.boolean().default(false),
+  SMTP_SECURE: z.preprocess(
+    (value) => value === "true" ? true : value === "false" || value === "" ? false : value,
+    z.boolean().default(false)
+  ),
   // SMS-авторизация (рос. номер + код). По умолчанию провайдер "log" — код пишется в
   // консоль, реальный шлюз не нужен (dev). В production задайте провайдера и реквизиты.
   SMS_PROVIDER: z.enum(["log", "smsc", "smsru"]).default("log"),

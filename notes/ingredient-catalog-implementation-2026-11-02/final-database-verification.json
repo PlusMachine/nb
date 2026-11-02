@@ -1,0 +1,13 @@
+{
+  "testAccountRemoved": true,
+  "originalStockChecked": 103,
+  "originalQuantitiesPackagesAndCostsUnchanged": true,
+  "currentStock": 103,
+  "catalog": 1403,
+  "activeCatalog": 1402,
+  "packages": 706,
+  "recipes": 126,
+  "oldWheatStockReferences": 0,
+  "oldWheatRecipeReferences": 0,
+  "legacyNonmaterialStockCount": 0
+}

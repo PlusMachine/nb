@@ -1,3 +1,4 @@
+import { applyLegacyInventoryPackSnapshot } from "./pack";
 import { isPhysicalIngredient, derivedCatalogIngredientId } from "../ingredients/material-policy";
 import { resolveInventoryMeasurementForDisplay } from "./display";
 import { assertRateLimit } from "@nb/auth";
@@ -181,6 +182,7 @@ const applyInventoryPropertiesToSource = (
   source: InventorySourceDto,
   properties: Record<string, unknown>,
 ): InventorySourceDto => {
+  source = { ...source, technicalData: applyLegacyInventoryPackSnapshot(source.technicalData, properties) ?? null };
   const concentrationPct = readInventoryWaterTreatmentConcentrationPct(properties);
   if (concentrationPct == null || !isWaterTreatmentAcidLike(source)) {
     return source;
@@ -760,10 +762,13 @@ const ensureCatalogIngredientExists = async (
 const ensureCatalogPackageVariant = async (
   ingredientId: string,
   packageVariantId?: string | null,
-  client: InventoryDbClient = db
+  client: InventoryDbClient = db,
+  selectSingleVerified = false
 ) => {
   if (!packageVariantId) {
-    return null;
+    if (!selectSingleVerified) return null;
+    const variants = await client.query.ingredientPackageVariants.findMany({ where: eq(ingredientPackageVariants.ingredientId, ingredientId) });
+    return variants.length === 1 && variants[0].sourceGroup !== "unverified_package" ? variants[0] : null;
   }
 
   const variant = await client.query.ingredientPackageVariants.findFirst({
@@ -1621,7 +1626,8 @@ export const addCatalogIngredientToInventory = async (
     // самодедлочит (см. комментарий в features/system/currency-rates.ts).
     listSystemCurrencyRates(client)
   ]);
-  const packageVariant = await ensureCatalogPackageVariant(catalogItem.id, parsed.packageVariantId ?? null, client);
+  const packageVariant = await ensureCatalogPackageVariant(catalogItem.id, parsed.packageVariantId ?? null, client,
+    parsed.enteredUnit === "pack" && Number(catalogItem.attributes?.package_variant_count ?? 0) === 1);
   if (parsed.enteredUnit === "pack" && !packageVariant && Number(catalogItem.attributes?.package_variant_count ?? 0) > 1) throw new Error("PACKAGE_VARIANT_REQUIRED");
   const linkage = buildCatalogIngredientLinkage(catalogItem);
   const { profile, category, subtype } = buildCatalogProfile(catalogItem);
@@ -1974,6 +1980,8 @@ export const updateInventoryItem = async (
       ? applyInventoryPackageSnapshot(packageVariant, current.properties) : packageVariant;
     const { profile, category, subtype } = buildCatalogProfile(catalogItem);
     const linkage = buildCatalogIngredientLinkage(catalogItem);
+    const sameSource = catalogItem.id === current.ingredientCatalogItemId;
+    if (sameSource && !packageVariant) linkage.technicalData = applyLegacyInventoryPackSnapshot(linkage.technicalData, current.properties) ?? null;
     const properties = buildWaterTreatmentConcentrationInventoryProperties({
       currentProperties: normalizeInventoryProperties(current.properties),
       concentrationPct: parsed.waterTreatmentConcentrationPct ?? null,
@@ -1989,6 +1997,10 @@ export const updateInventoryItem = async (
         technicalData: linkage.technicalData,
       },
     });
+    if (!sameSource || (packageVariant?.id ?? null) !== (current.packageVariantId ?? null)) delete properties._legacy_pack_content_snapshot;
+    if (packageVariant && packageVariant.id !== current.packageVariantId) {
+      properties._package_content_snapshot = { packageVariantId: packageVariant.id, stockContentAmount: packageVariant.stockContentAmount, stockContentUnit: packageVariant.stockContentUnit };
+    } else if (!packageVariant) delete properties._package_content_snapshot;
     const amount = normalizeMeasurementWithPackageVariant(
       profile,
       parsed.enteredQuantity,
@@ -2046,6 +2058,7 @@ export const updateInventoryItem = async (
     listSystemCurrencyRates()
   ]);
   const linkage = buildCustomIngredientLinkage(customIngredient);
+  if (customIngredient.id === current.userCustomIngredientId) linkage.technicalData = applyLegacyInventoryPackSnapshot(linkage.technicalData, current.properties) ?? null;
   const properties = buildWaterTreatmentConcentrationInventoryProperties({
     currentProperties: normalizeInventoryProperties(current.properties),
     concentrationPct: parsed.waterTreatmentConcentrationPct ?? null,
@@ -2059,6 +2072,8 @@ export const updateInventoryItem = async (
       technicalData: linkage.technicalData,
     },
   });
+  if (customIngredient.id !== current.userCustomIngredientId) delete properties._legacy_pack_content_snapshot;
+  delete properties._package_content_snapshot;
   const profile = resolveHumanFacingInventoryUnitProfile({
     type: linkage.type,
     category: linkage.category,

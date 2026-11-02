@@ -100,7 +100,8 @@ export function RecipeStyleStatsBlock({
   ];
 
   const comparableItems = items.filter((item) => item.actualValue != null && item.styleRange);
-  const overallFit = comparableItems.length > 0 &&
+  const incompleteBitterness = Boolean(preview?.bitternessEstimate?.missing.length);
+  const overallFit = !incompleteBitterness && comparableItems.length > 0 &&
     comparableItems.every((item) => item.status === "in_range");
 
   return (
@@ -114,7 +115,7 @@ export function RecipeStyleStatsBlock({
             {comparableItems.length > 0 ? (
               <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${overallFit ? "bg-success-subtle text-success-subtle-foreground ring-1 ring-inset ring-success/30" : "bg-muted text-muted-foreground ring-1 ring-inset ring-border"}`}>
                 {overallFit ? <CircleCheck className="h-3 w-3" /> : <CircleAlert className="h-3 w-3" />}
-                {overallFit ? "В стиле" : "Отклонения"}
+                {incompleteBitterness ? "Не хватает данных" : overallFit ? "В стиле" : "Отклонения"}
               </span>
             ) : null}
             {hasSelectedStyle && hasCalculatedMetrics && !hasAnyStyleMetric ? (

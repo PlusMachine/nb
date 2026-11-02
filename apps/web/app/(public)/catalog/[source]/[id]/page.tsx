@@ -630,7 +630,7 @@ export default async function IngredientDetailPage({
         <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
           <div className="min-w-0 flex-1 space-y-4">
             <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-              <h1 className="min-w-0 text-3xl font-semibold tracking-tight text-foreground">
+              <h1 className="min-w-0 max-w-full break-words text-2xl font-semibold tracking-tight text-foreground sm:text-3xl [overflow-wrap:anywhere]">
                 {item.primaryLabelRu}
                 {brandLabel ? (
                   <span className="font-medium text-muted-foreground"> · {brandLabel}</span>

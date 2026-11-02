@@ -40,6 +40,6 @@ export async function mountBrewDayProgress(page: Page, ownerId: string | null = 
         controller.error ? React.createElement('p', {role:'alert'}, controller.error) : null
       );
     }
-    ReactDOM.flushSync(() => ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App)));
+    ReactDOM.flushSync(() => ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(React.StrictMode, null, React.createElement(App))));
   ` });
 }

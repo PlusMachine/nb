@@ -174,4 +174,28 @@ describe("approved ingredient changes in PostgreSQL",()=>{
     }
   });
 
+  it("keeps an unknown dry yeast package as a package and resolves a single declared package by its ID", async () => {
+    const userId = await account();
+    const unknown = await catalog("yeast", { form: "dry", attenuation_pct_typical: 75 });
+    const stock = await addCatalogIngredientToInventory(userId, { ingredientCatalogItemId: unknown.id, enteredQuantity: 1, enteredUnit: "pack" }, { skipCreationGate: true });
+    expect(stock).toMatchObject({ enteredQuantity: 1, enteredUnit: "pack", normalizedQuantity: 1, normalizedUnit: "pack" });
+    const packageId = `qa-pack-${randomUUID()}`;
+    const declared = await catalog("yeast", { form: "dry" }, { packageVariants: [{ id: packageId, packageAmount: 11.5, packageUnit: "g", stockContentAmount: 11.5, stockContentUnit: "g", isDefaultForStock: true }] });
+    const known = await addCatalogIngredientToInventory(userId, { ingredientCatalogItemId: declared.id, enteredQuantity: 1, enteredUnit: "pack" }, { skipCreationGate: true });
+    expect(known).toMatchObject({ packageVariantId: packageId, normalizedQuantity: 11.5, normalizedUnit: "g" });
+  });
+
+  it("preserves an old unlinked package coefficient when the current source has a different size", async () => {
+    const userId = await account();
+    const yeast = await catalog("yeast", { form: "dry", package_size: 12, package_unit: "g" });
+    const stock = await addCatalogIngredientToInventory(userId, { ingredientCatalogItemId: yeast.id, enteredQuantity: 11, enteredUnit: "g" }, { skipCreationGate: true });
+    await db.update(userIngredients).set({ enteredQuantity: 1, enteredUnit: "pack", properties: { _legacy_pack_content_snapshot: { stockContentAmount: 11, stockContentUnit: "g" } } }).where(eq(userIngredients.id, stock.id));
+    const listed = (await listInventoryForUser(userId)).find(row => row.id === stock.id)!;
+    expect(listed.source.technicalData).toMatchObject({ packageSize: 11, packageUnit: "g" });
+    await updateInventoryQuantity(userId, stock.id, { enteredQuantity: 0.5, enteredUnit: "pack" });
+    expect((await db.query.userIngredients.findFirst({ where: eq(userIngredients.id, stock.id) }))?.normalizedQuantity).toBe(5.5);
+    const edited = await updateInventoryItem(userId, stock.id, { ingredientCatalogItemId: yeast.id, enteredQuantity: 0.5, enteredUnit: "pack", notes: "Историческая фасовка сохранена" });
+    expect(edited).toMatchObject({ normalizedQuantity: 5.5, normalizedUnit: "g", enteredQuantity: 0.5, enteredUnit: "pack" });
+  });
+
 });

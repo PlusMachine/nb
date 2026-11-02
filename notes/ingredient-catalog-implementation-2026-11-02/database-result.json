@@ -12,7 +12,8 @@
   },
   "stock": {
     "checked": 103,
-    "quantitiesPackagesAndCostsUnchanged": true
+    "quantitiesPackagesAndCostsUnchanged": true,
+    "legacyUnlinkedPackageCoefficientsFrozen": 18
   },
   "recipes": {
     "recomputed": 126,
@@ -826,5 +827,17 @@
       "protein": 12,
       "packageSelectionRequired": false
     }
-  }
+  },
+  "packageModelBackupDir": "/home/dopefish/projects/nb/notes/ingredient-catalog-implementation-2026-11-02/private/before-package-model",
+  "packageModelSync": {
+    "processed": 1403,
+    "conflicts": [],
+    "repeatConflicts": [],
+    "stockChecked": 104,
+    "quantitiesPackagesAndCostsUnchanged": true,
+    "recipesRecomputed": 127,
+    "recipeStatsChanged": 0,
+    "failed": []
+  },
+  "initialBackupAvailable": false
 }

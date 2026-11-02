@@ -1,0 +1,10 @@
+import {writeFileSync} from 'node:fs';
+import {db,pool,users,recipes,eq} from '../../../packages/db/src/index';
+import {createSession} from '../../../packages/auth/src/index';
+const recipe=await db.query.recipes.findFirst({where:eq(recipes.id,'e093ccb3-541d-4ad8-8aee-56ac45211f91')});
+if(!recipe)throw new Error('QA_RECIPE_NOT_FOUND');
+const user=await db.query.users.findFirst({where:eq(users.id,recipe.authorId)});
+if(!user?.email?.startsWith('qa.catalog.browser.'))throw new Error('QA_ACCOUNT_REQUIRED');
+const session=await createSession({userId:user.id,userAgent:'Ingredient catalog final verification'});
+writeFileSync('/home/dopefish/projects/nb/notes/ingredient-catalog-implementation-2026-11-02/private/browser-auth.json',JSON.stringify({userId:user.id,recipeId:recipe.id,token:session.rawToken}),{mode:0o600});
+console.log('QA browser session ready');await pool.end();

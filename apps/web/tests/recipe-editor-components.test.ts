@@ -214,7 +214,7 @@ describe("recipe editor components", () => {
 
     expect(html).toContain("Ингредиент");
     expect(html).toContain("Новый ингредиент");
-    expect(html).toContain('step="0.1"');
+    expect(html).toContain('step="0.001"');
   });
 
   it("ingredient validation requires selected ingredient and quantity", () => {

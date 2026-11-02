@@ -8,6 +8,7 @@ import { useSmartCaptcha } from "@/components/auth/use-smart-captcha";
 import { resolveSafeNextPath } from "@/lib/auth-links";
 import { LEGAL_DOC_VERSION } from "@/lib/legal-meta";
 import { SIGNUP_CONSENT_COOKIE, SIGNUP_CONSENT_MAX_AGE_SECONDS } from "@/lib/oauth-consent";
+import type { AuthEmailAvailability } from "@/lib/auth-email";
 
 const isDev = process.env.NODE_ENV !== "production";
 
@@ -45,6 +46,8 @@ const AUTH_ERROR_MESSAGES: Record<string, string> = {
   USER_NOT_FOUND: "Пользователь не найден.",
   SMS_SEND_FAILED: "Не получилось отправить SMS. Попробуйте ещё раз.",
   SMS_NOT_CONFIGURED: "Отправка SMS сейчас недоступна.",
+  EMAIL_SEND_FAILED: "Не удалось отправить письмо. Попробуйте ещё раз или войдите по паролю.",
+  EMAIL_NOT_CONFIGURED: "Отправка писем сейчас недоступна. Войдите по паролю или выберите другой способ.",
   oauth_vk: "Вход через VK ID сейчас недоступен. Попробуйте другой способ.",
   oauth_yandex: "Вход через Яндекс ID сейчас недоступен. Попробуйте другой способ."
 };
@@ -86,7 +89,7 @@ const StatusLine = ({ status }: { status: StatusMessage | null }) => {
   }
   return (
     <div className="space-y-1">
-      <p className={`text-sm ${status.kind === "error" ? "text-destructive" : "text-muted-foreground"}`}>{status.text}</p>
+      <p role={status.kind === "error" ? "alert" : "status"} className={`text-sm ${status.kind === "error" ? "text-destructive" : "text-muted-foreground"}`}>{status.text}</p>
       {status.devHint && isDev ? (
         <p className="text-xs text-muted-foreground">В dev-режиме код и ссылки выводятся в логи сервера.</p>
       ) : null}
@@ -95,6 +98,7 @@ const StatusLine = ({ status }: { status: StatusMessage | null }) => {
 };
 
 type LoginFormProps = {
+  emailDelivery?: AuthEmailAvailability;
   // Доступность соц-входа считает сервер (page.tsx) по наличию client id/secret
   // в env — так кнопка не ведёт на нерабочий редирект, пока ключи не заведены.
   oauth: { vk: boolean; yandex: boolean };
@@ -109,6 +113,7 @@ type LoginFormProps = {
 
 export function LoginForm({
   oauth,
+  emailDelivery = "disabled",
   initialMethod = "phone",
   initialSmsRequested = false,
   initialEmailCodeRequested = false
@@ -144,7 +149,7 @@ export function LoginForm({
   const [emailCodeRequested, setEmailCodeRequested] = useState(initialEmailCodeRequested);
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [emailFlow, setEmailFlow] = useState<"otp" | "magic" | "password">("otp");
+  const [emailFlow, setEmailFlow] = useState<"otp" | "magic" | "password">(emailDelivery === "disabled" ? "password" : "otp");
   const [resetToken, setResetToken] = useState<string | null>(null);
 
   const [status, setStatus] = useState<StatusMessage | null>(null);
@@ -199,8 +204,11 @@ export function LoginForm({
 
   const runAction = async (action: () => Promise<void>) => {
     setPending(true);
+    setStatus(null);
     try {
       await action();
+    } catch {
+      setStatus({ kind: "error", text: "Не удалось связаться с сервером. Проверьте соединение и попробуйте ещё раз." });
     } finally {
       setPending(false);
     }
@@ -241,7 +249,7 @@ export function LoginForm({
       const result = await postAuth("/api/auth/otp", { action: "request", email, consent });
       if (result.ok) {
         setEmailCodeRequested(true);
-        setStatus({ kind: "success", text: "Код отправлен на почту", devHint: true });
+        setStatus({ kind: "success", text: result.delivery === "log" ? "Код записан в журнал сервера для разработки. Письмо не отправлялось." : "Код отправлен на почту" });
         return;
       }
       setStatus({ kind: "error", text: humanizeAuthError(result.error) });
@@ -269,7 +277,7 @@ export function LoginForm({
       const result = await postAuth("/api/auth/magic", { email, consent });
       setStatus(
         result.ok
-          ? { kind: "success", text: "Ссылка для входа отправлена на почту", devHint: true }
+          ? { kind: "success", text: result.delivery === "log" ? "Ссылка для входа записана в журнал сервера для разработки. Письмо не отправлялось." : "Ссылка для входа отправлена на почту" }
           : { kind: "error", text: humanizeAuthError(result.error) }
       );
     });
@@ -299,7 +307,7 @@ export function LoginForm({
       const result = await postAuth("/api/auth/password", { action: "request-reset", email });
       setStatus(
         result.ok
-          ? { kind: "success", text: "Ссылка для сброса пароля отправлена на почту", devHint: true }
+          ? { kind: "success", text: result.delivery === "log" ? "Ссылка для сброса пароля записана в журнал сервера для разработки. Письмо не отправлялось." : "Ссылка для сброса пароля отправлена на почту" }
           : { kind: "error", text: humanizeAuthError(result.error) }
       );
     });
@@ -487,7 +495,7 @@ export function LoginForm({
                 <button
                   type="button"
                   className="text-sm text-muted-foreground underline decoration-dotted underline-offset-4 hover:text-foreground disabled:opacity-40"
-                  disabled={pending}
+                  disabled={pending || emailDelivery === "disabled"}
                   onClick={requestPasswordReset}
                 >
                   Запросить новую ссылку
@@ -503,13 +511,21 @@ export function LoginForm({
             </div>
           ) : (
             <>
+              {emailDelivery === "disabled" ? (
+                <p className="text-sm text-muted-foreground">Отправка писем сейчас недоступна. Вы можете войти по паролю.</p>
+              ) : null}
+              {emailDelivery === "log" ? (
+                <p className="text-sm text-muted-foreground">Режим разработки: коды и ссылки записываются в журнал сервера.</p>
+              ) : null}
               <div className="flex gap-2">
+                {emailDelivery !== "disabled" ? <>
                 <Button
                   type="button"
                   size="sm"
                   variant={emailFlow === "otp" ? "default" : "outline"}
                   className="flex-1"
-                  onClick={() => setEmailFlow("otp")}
+                  disabled={pending}
+                  onClick={() => { setEmailFlow("otp"); setStatus(null); }}
                 >
                   Код на почту
                 </Button>
@@ -518,16 +534,19 @@ export function LoginForm({
                   size="sm"
                   variant={emailFlow === "magic" ? "default" : "outline"}
                   className="flex-1"
-                  onClick={() => setEmailFlow("magic")}
+                  disabled={pending}
+                  onClick={() => { setEmailFlow("magic"); setStatus(null); }}
                 >
                   Ссылка на почту
                 </Button>
+                </> : null}
                 <Button
                   type="button"
                   size="sm"
                   variant={emailFlow === "password" ? "default" : "outline"}
                   className="flex-1"
-                  onClick={() => setEmailFlow("password")}
+                  disabled={pending}
+                  onClick={() => { setEmailFlow("password"); setStatus(null); }}
                 >
                   Пароль
                 </Button>
@@ -561,7 +580,7 @@ export function LoginForm({
                   ) : (
                     <div className="space-y-2">
                       <p className="text-sm text-muted-foreground">
-                        Код отправлен на <span className="font-medium text-foreground">{email}</span>
+                        {emailDelivery === "log" ? "Код для" : "Код отправлен на"} <span className="font-medium text-foreground">{email}</span>
                       </p>
                       <form
                         className="flex gap-2"
@@ -673,14 +692,14 @@ export function LoginForm({
                       </Button>
                     </div>
                   </form>
-                  <button
+                  {emailDelivery !== "disabled" ? <button
                     type="button"
                     className="text-sm text-muted-foreground underline decoration-dotted underline-offset-4 hover:text-foreground disabled:opacity-40"
                     disabled={!canContinueEmail || pending}
                     onClick={requestPasswordReset}
                   >
                     Забыли пароль?
-                  </button>
+                  </button> : null}
                 </div>
               )}
             </>

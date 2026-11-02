@@ -62,7 +62,7 @@ export function BrewPrepCard({
 
       {hasPlan ? (
         <>
-          {phases ? <details open className="group"><summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 text-sm font-medium"><ChevronRight className="h-4 w-4 transition group-open:rotate-90" aria-hidden />План варки</summary><ol className="ml-6 space-y-2 text-sm">{phases.map(phase => <li key={phase.id}>{phase.label}</li>)}</ol></details> : <ol className="flex flex-wrap items-center gap-x-1 gap-y-2 text-sm">
+          {phases ? <details open className="group"><summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 text-sm font-medium"><ChevronRight className="h-4 w-4 transition group-open:rotate-90" aria-hidden />План варки</summary><ol className="ml-6 space-y-2 text-sm">{phases.map(phase => <li key={phase.id}>{phase.label}{phase.unordered ? <ul className="mt-1 space-y-1 text-xs text-muted-foreground">{phase.steps.map(step => <li key={step.id}>{step.title}{step.amountLabel ? ` · ${step.amountLabel}` : ""}{step.instructions ? ` — ${step.instructions}` : ""}</li>)}</ul> : null}</li>)}</ol></details> : <ol className="flex flex-wrap items-center gap-x-1 gap-y-2 text-sm">
             {planSummary.stages.map((stage, index) => (
               <li key={stage.stage} className="flex items-center gap-1">
                 <span className="rounded-lg bg-muted px-2.5 py-1 text-foreground ring-1 ring-border">

@@ -85,6 +85,8 @@ const toBeerXmlWeightKg = (amount: number, unit: CanonicalRecipeIngredient["unit
       return amount;
     case "g":
       return amount / 1000;
+    case "mg":
+      return amount / 1_000_000;
     case "lb":
       return amount * 0.45359237;
     case "oz":

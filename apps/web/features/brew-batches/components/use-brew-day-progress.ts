@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { setBrewDayStepStateAction } from "@/app/(app)/app/brew-batches/[id]/actions";
 import { saveManualBrewTransferAction } from "@/app/(app)/app/brew-batches/[id]/manual-actions";
@@ -9,6 +9,7 @@ import { normalizeBrewDayProgress } from "../brew-day";
 import { brewDayStepStatePatchSchema, emptyBrewDayProgress, type BrewDayProgress, type BrewDayStepStatePatch } from "@/features/brew-batches/contracts";
 
 export type BrewDayStepPatch = BrewDayStepStatePatch & { transfer?: ManualTransferInput };
+const useClientInitialization = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 export type BrewDayProgressController = {
   progress: BrewDayProgress;
@@ -23,9 +24,9 @@ export type BrewDayProgressController = {
 };
 
 /**
- * Общий контроллер прогресса гида варочного дня: оптимистичные отметки/таймеры
- * шагов с откатом на ошибке + секундный тик для обратного отсчёта. Используется
- * и варочным днём, и брожением — единый источник состояния прогресса на странице.
+ * Общий контроллер отметок, таймеров и очереди ручной варки. При ownerId очередь
+ * сохраняется для конкретного аккаунта и партии; повторы сохраняют время факта.
+ * Инициализация завершается до первого клика, включая повторный mount StrictMode.
  */
 export function useBrewDayProgress(
   brewBatchId: string,
@@ -39,6 +40,7 @@ export function useBrewDayProgress(
   const confirmed = useRef<BrewDayProgress>(initialProgress ?? emptyBrewDayProgress);
   const patches = useRef(new Map<string, BrewDayStepPatch>());
   const generation = useRef(0);
+  const initializedKey = useRef<string | null>(null);
   const [queuedCount, setQueuedCount] = useState(0);
   const [offline, setOffline] = useState(false);
   const cacheKey = ownerId ? `nb:brew-progress:v1:${ownerId}:${brewBatchId}` : null;
@@ -49,7 +51,10 @@ export function useBrewDayProgress(
     setQueuedCount(patches.current.size);
   };
 
-  useEffect(() => {
+  useClientInitialization(() => {
+    const identity = `${ownerId ?? ""}:${brewBatchId}`;
+    if (initializedKey.current === identity) return;
+    initializedKey.current = identity;
     generation.current += 1;
     confirmed.current = initialProgress ?? emptyBrewDayProgress;
     patches.current.clear();

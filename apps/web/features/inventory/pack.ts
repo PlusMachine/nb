@@ -18,11 +18,6 @@ export type InventoryPackEquivalent = {
   normalizedQuantity: number;
 };
 
-const fallbackDryYeastPack: InventoryPackEquivalent = {
-  normalizedUnit: "g",
-  normalizedQuantity: 11
-};
-
 const normalizePositiveNumber = (value: unknown) => (
   typeof value === "number" && Number.isFinite(value) && value > 0
     ? value
@@ -64,7 +59,21 @@ export const resolveInventoryPackEquivalent = (
     }
   }
 
-  return technicalData.form === "dry" ? fallbackDryYeastPack : null;
+  return null;
+};
+
+/** Coefficient recorded for an existing lot under the old package convention. */
+export const applyLegacyInventoryPackSnapshot = (
+  technicalData: IngredientTechnicalData | null | undefined,
+  properties?: Record<string, unknown>
+): IngredientTechnicalData | null | undefined => {
+  const raw = properties?._legacy_pack_content_snapshot;
+  if (technicalData?.type !== "yeast" || !raw || typeof raw !== "object" || Array.isArray(raw)) return technicalData;
+  const snapshot = raw as Record<string, unknown>;
+  const size = normalizePositiveNumber(snapshot.stockContentAmount);
+  const unit = typeof snapshot.stockContentUnit === "string" ? parseInventoryUnit(snapshot.stockContentUnit) : null;
+  if (size == null || !unit || (!isWeightUnit(unit) && !isVolumeUnit(unit))) return technicalData;
+  return { ...technicalData, packageSize: size, packageUnit: unit, packageSelectionRequired: false };
 };
 
 export type InventoryItemPackSource = {
@@ -79,7 +88,7 @@ export type InventoryItemPackSource = {
  * «1 пачка = N г/мл/шт» для КОНКРЕТНОЙ складской позиции — зеркало того, как
  * склад раскрывает пачку при записи (normalizeMeasurementWithPackageVariant,
  * features/inventory/service.ts): сначала содержимое выбранного варианта
- * фасовки, иначе технические поля ингредиента (для сухих дрожжей — фолбэк 11 г).
+ * фасовки, иначе технические поля ингредиента (только подтверждённый размер либо сохранённый коэффициент партии).
  * Единственный мост pack↔г/мл в проекте: рецепт хранит строку в «пачках», склад —
  * в граммах, и подбор/списание обязаны считать по одному и тому же курсу.
  */
@@ -138,11 +147,11 @@ export const convertWithinDimension = (
   toUnit: InventoryUnit
 ): number | null => {
   if (isWeightUnit(fromUnit) && isWeightUnit(toUnit)) {
-    return convertWeight({ value: quantity, unit: fromUnit }, toUnit).value;
+    return convertWeight({ value: quantity, unit: fromUnit }, toUnit, 12).value;
   }
 
   if (isVolumeUnit(fromUnit) && isVolumeUnit(toUnit)) {
-    return convertVolume({ value: quantity, unit: fromUnit }, toUnit).value;
+    return convertVolume({ value: quantity, unit: fromUnit }, toUnit, 12).value;
   }
 
   return null;

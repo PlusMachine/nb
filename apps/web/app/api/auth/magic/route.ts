@@ -17,10 +17,11 @@ export async function POST(request: Request) {
     if (body.consent !== true) {
       return NextResponse.json({ error: "consent_required" }, { status: 400 });
     }
-    await startMagicLink(String(body.email ?? ""));
-    return NextResponse.json({ ok: true });
+    const delivery = await startMagicLink(String(body.email ?? ""));
+    return NextResponse.json({ ok: true, delivery });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "unknown_error" }, { status: 400 });
+    const code = error instanceof Error ? error.message : "unknown_error";
+    return NextResponse.json({ error: code }, { status: code === "EMAIL_SEND_FAILED" || code === "EMAIL_NOT_CONFIGURED" ? 503 : 400 });
   }
 }
 

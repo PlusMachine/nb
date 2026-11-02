@@ -4,7 +4,7 @@ import { defaultRecipeProcessMeta, type RecipeDetailDto } from "../features/reci
 import type { IngredientTechnicalData } from "../features/ingredients/contracts";
 import { scaleRecipeDetailForBrew, scaleRecipeToParams, scaleRecipeToVolume } from "../features/recipes/scale";
 
-const dryYeastTechnicalData: IngredientTechnicalData = { type: "yeast", form: "dry" };
+const dryYeastTechnicalData: IngredientTechnicalData = { type: "yeast", form: "dry", packageSize: 11, packageUnit: "g" };
 const liquidYeastTechnicalData: IngredientTechnicalData = { type: "yeast", form: "liquid" };
 
 const buildRecipe = (overrides: Partial<RecipeDetailDto> = {}): RecipeDetailDto => ({

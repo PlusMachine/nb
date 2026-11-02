@@ -9,7 +9,21 @@ type RenderProps = React.ComponentProps<typeof LoginForm>;
 const defaultOAuth = { vk: true, yandex: true };
 
 const renderLogin = (props: Partial<RenderProps> = {}) =>
-  renderToStaticMarkup(<LoginForm oauth={defaultOAuth} {...props} />);
+  renderToStaticMarkup(<LoginForm oauth={defaultOAuth} emailDelivery="smtp" {...props} />);
+
+describe("LoginForm — доступность почтовой доставки", () => {
+  it("без SMTP доступны пароль и другие способы, почтовые действия скрыты", () => {
+    const html = renderLogin({ initialMethod: "email", emailDelivery: "disabled" });
+    expect(html).toContain('autoComplete="current-password"');
+    expect(html).toContain("VK ID");
+    expect(html).not.toContain("Код на почту");
+    expect(html).not.toContain("Ссылка на почту");
+    expect(html).not.toContain("Забыли пароль?");
+  });
+  it("явный log-режим обозначен как разработка", () => {
+    expect(renderLogin({ initialMethod: "email", emailDelivery: "log" })).toContain("Режим разработки");
+  });
+});
 
 // Окружение тестов без DOM/событий (vitest environment: "node", без jsdom) не
 // может провести реальный клик + сетевой раунд-трип requestSmsCode/requestEmailOtp.

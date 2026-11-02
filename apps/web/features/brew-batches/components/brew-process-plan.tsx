@@ -13,6 +13,9 @@ export function BrewProcessPlan({ phases, progress, current, phaseIndex, now, st
 }) {
   const [open, setOpen] = useState(false);
   const [restored, setRestored] = useState(false);
+  const ordered = phases.filter(phase => !phase.unordered);
+  const activePhase = phases[phaseIndex];
+  const ordinal = ordered.findIndex(phase => phase.id === activePhase?.id);
   useEffect(() => {
     try { setOpen(localStorage.getItem(storageKey) === "open"); } catch { /* Plan disclosure still works without storage. */ }
     setRestored(true);
@@ -24,23 +27,23 @@ export function BrewProcessPlan({ phases, progress, current, phaseIndex, now, st
   return <details open={open} onToggle={event => changeOpen(event.currentTarget.open)} className="group/plan" data-testid="brew-process-plan">
     <summary aria-label="План варки" className="list-none cursor-pointer rounded-lg py-2 [&::-webkit-details-marker]:hidden">
       <span className="flex items-center justify-between gap-3 text-sm">
-        <span>{phaseIndex < 0 ? "Все шаги выполнены" : `Этап ${phaseIndex + 1} из ${phases.length}`}</span>
+        <span>{phaseIndex < 0 ? "Все шаги выполнены" : `Этап ${ordinal + 1} из ${ordered.length}`}</span>
         <span className="inline-flex items-center gap-1 text-muted-foreground">План<ChevronDown className="h-4 w-4 transition group-open/plan:rotate-180" aria-hidden /></span>
       </span>
       <span className="mt-2 flex gap-1.5" aria-hidden>
-        {phases.map((phase, index) => {
+        {ordered.map((phase) => {
           const done = phase.steps.filter(step => progress.steps[step.id]?.done).length;
-          return <span key={phase.id} className={`h-1 flex-1 overflow-hidden rounded-full ${index === phaseIndex ? "bg-success/25" : "bg-border"}`}>
+          return <span key={phase.id} className={`h-1 flex-1 overflow-hidden rounded-full ${phase.id === activePhase?.id ? "bg-success/25" : "bg-border"}`}>
             <span className="block h-full bg-success" style={{ width: `${100 * done / phase.steps.length}%` }} />
           </span>;
         })}
       </span>
     </summary>
     <ol className="mt-2 space-y-1">
-      {phases.map((phase, index) => {
+      {[...ordered, ...phases.filter(phase => phase.unordered)].map((phase) => {
         const done = phase.steps.filter(step => progress.steps[step.id]?.done).length;
         const finished = done === phase.steps.length;
-        const active = index === phaseIndex;
+        const active = phase.id === activePhase?.id;
         const Icon = finished ? Check : active ? ArrowRight : Circle;
         return <li key={phase.id}>
           <button type="button" onClick={() => onPreview(phase.steps.find(step => !progress.steps[step.id]?.done) ?? phase.steps[0])}
@@ -48,9 +51,9 @@ export function BrewProcessPlan({ phases, progress, current, phaseIndex, now, st
             aria-label={`Посмотреть этап: ${phase.label}`} aria-current={active ? "step" : undefined}>
             <Icon className={`h-4 w-4 shrink-0 ${active || finished ? "text-success" : "text-muted-foreground"}`} aria-hidden />
             <span className="min-w-0 flex-1 font-medium">{phase.label}</span>
-            <span className="text-xs tabular-nums text-muted-foreground">{finished ? "Завершён" : active ? `${done}/${phase.steps.length}` : ""}</span>
+            <span className="text-xs tabular-nums text-muted-foreground">{finished ? "Завершён" : active || phase.unordered ? `${done}/${phase.steps.length}` : ""}</span>
           </button>
-          {active ? <ol className="ml-6 space-y-0.5 py-1">
+          {active || phase.unordered ? <ol className="ml-6 space-y-0.5 py-1">
             {phase.steps.map(step => {
               const state = progress.steps[step.id];
               const stepActive = step.id === current?.id;

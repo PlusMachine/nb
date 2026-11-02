@@ -71,31 +71,26 @@ export function BjcpStyleCard({ style }: Props) {
             <p className="text-sm leading-6 text-muted-foreground" style={clampStyle}>{style.description}</p>
           </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
+          <dl className="mt-4 divide-y divide-border text-sm">
             {stats.map((stat) => (
               <div
                 key={stat.label}
-                className={`rounded-xl border border-border px-3 py-2.5 text-foreground ${stat.accent
-                  ? "relative overflow-hidden bg-[linear-gradient(180deg,rgba(250,250,250,0.98),rgba(244,244,245,0.92))]"
-                  : "bg-muted"
-                }`}
+                className="flex items-center justify-between gap-3 py-2.5 text-foreground"
               >
-                {stat.accent ? (
-                  <span
-                    aria-hidden="true"
-                    className="absolute inset-y-0 left-0 w-[4px]"
-                    style={{
-                      backgroundImage: `linear-gradient(180deg, ${stat.accent.startHex} 0%, ${stat.accent.averageHex} 52%, ${stat.accent.endHex} 100%)`
-                    }}
-                  />
-                ) : null}
-                <span className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">{stat.label}</span>
-                <span className={`mt-1 block break-words text-foreground ${stat.isFallback ? "text-[13px] font-medium leading-4" : "text-sm font-medium"}`}>
-                  {stat.value}
-                </span>
+                <dt className="shrink-0 text-xs font-medium text-muted-foreground">{stat.label}</dt>
+                <dd className={`m-0 flex min-w-0 items-center justify-end gap-2 text-right text-foreground ${stat.isFallback ? "text-[13px] font-medium leading-4" : "text-sm font-medium"}`}>
+                  {stat.accent && !stat.isFallback ? (
+                    <span
+                      aria-hidden="true"
+                      className="h-3.5 w-3.5 shrink-0 rounded-full ring-1 ring-inset ring-foreground/15"
+                      style={{ backgroundImage: `linear-gradient(135deg, ${stat.accent.startHex}, ${stat.accent.averageHex}, ${stat.accent.endHex})` }}
+                    />
+                  ) : null}
+                  <span className="break-words">{stat.value}</span>
+                </dd>
               </div>
             ))}
-          </div>
+          </dl>
 
           <div className="mt-4 flex flex-wrap gap-2">
             {style.badgesRu.slice(0, 3).map((badge: string) => (

@@ -12,11 +12,11 @@ const dryYeast: IngredientTechnicalData = { type: "yeast", form: "dry" };
 const liquidYeast: IngredientTechnicalData = { type: "yeast", form: "liquid" };
 
 describe("эквивалент пачки складской позиции", () => {
-  it("сухие дрожжи без package_size в каталоге — фолбэк 11 г", () => {
-    expect(resolveInventoryPackEquivalent(dryYeast)).toEqual({ normalizedUnit: "g", normalizedQuantity: 11 });
+  it("сухие дрожжи без package_size не получают выдуманный вес", () => {
+    expect(resolveInventoryPackEquivalent(dryYeast)).toBeNull();
   });
 
-  it("package_size из каталога бьёт фолбэк", () => {
+  it("использует явно указанную массу из каталога", () => {
     expect(resolveInventoryPackEquivalent({ type: "yeast", form: "dry", packageSize: 15, packageUnit: "g" }))
       .toEqual({ normalizedUnit: "g", normalizedQuantity: 15 });
   });
@@ -51,7 +51,7 @@ describe("эквивалент пачки складской позиции", ()
   it("вариант без содержимого — фолбэк на технические поля", () => {
     expect(resolveInventoryItemPackEquivalent({
       packageVariant: { stockContentAmount: null, stockContentUnit: null },
-      technicalData: dryYeast
+      technicalData: { ...dryYeast, packageSize: 11, packageUnit: "g" }
     })).toEqual({ normalizedUnit: "g", normalizedQuantity: 11 });
   });
 

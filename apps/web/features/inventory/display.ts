@@ -54,11 +54,11 @@ const convertNormalizedQuantityToDisplayUnit = (
   }
 
   if (normalizedUnit === "g" && ["mg", "g", "kg", "oz", "lb"].includes(displayUnit)) {
-    return convertWeight({ value: normalizedQuantity, unit: "g" }, displayUnit as "mg" | "g" | "kg" | "oz" | "lb").value;
+    return convertWeight({ value: normalizedQuantity, unit: "g" }, displayUnit as "mg" | "g" | "kg" | "oz" | "lb", 12).value;
   }
 
   if (normalizedUnit === "ml" && ["ml", "l", "gal"].includes(displayUnit)) {
-    return convertVolume({ value: normalizedQuantity, unit: "ml" }, displayUnit as "ml" | "l" | "gal").value;
+    return convertVolume({ value: normalizedQuantity, unit: "ml" }, displayUnit as "ml" | "l" | "gal", 12).value;
   }
 
   if (displayUnit === "pack") {
@@ -112,7 +112,7 @@ export const resolveInventoryMeasurementForDisplay = (input: InventoryDisplayInp
   }
 
   return {
-    quantity: roundTo(displayQuantity, 3),
+    quantity: displayQuantity,
     unit: displayUnit,
     converted: displayUnit !== input.enteredUnit
       || roundTo(displayQuantity, 3) !== roundTo(input.enteredQuantity, 3)
