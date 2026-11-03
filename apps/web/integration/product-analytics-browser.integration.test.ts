@@ -2,10 +2,13 @@ import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { afterAll, beforeAll, expect as unitExpect, it } from "vitest";
-import { chromium, expect, type Browser } from "@playwright/test";
+import { chromium, expect as rawExpect, type Browser } from "@playwright/test";
 import { db, pool, users, inArray, productActivityDaily, eq } from "@nb/db";
 import { createSession } from "@nb/auth";
 import { analyticsDay, shiftDay } from "../features/product-analytics/contracts";
+
+// Dev routes may compile on first navigation; keep assertions bounded but allow that startup.
+const expect = rawExpect.configure({ timeout: 15000 });
 
 // QA inventory: date presets/custom range/audience; expandable daily table;
 // report download; all segment links; list filters/reset/sort/export; profile;

@@ -1,0 +1,7 @@
+[
+  {
+    "type": "pageerror",
+    "url": "http://127.0.0.1:3000/app/brew-batches/f26fa4b6-4c27-48dd-bc8d-6e8a224adf25",
+    "message": "Failed to fetch"
+  }
+]

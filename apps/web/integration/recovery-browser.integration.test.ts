@@ -25,6 +25,15 @@ const abortVolume = async (route: Route) => {
   if (request.headers()["next-action"] && request.postData() === JSON.stringify([recipeId])) await route.abort("failed");
   else await route.continue();
 };
+const gotoBatch = async (target: Page = page) => {
+  await target.goto(`${base}/app/brew-batches/${batchId}`, { waitUntil: "domcontentloaded" });
+  await target.waitForFunction(() => Array.from(document.querySelectorAll("button")).some(button => button.getAttribute("aria-label") === "Действия с партией" && Object.keys(button).some(key => key.startsWith("__reactProps$"))));
+};
+const stockTotal = async () => (await db.query.userIngredients.findMany({ where: inArray(userIngredients.id, lotIds) })).reduce((sum, row) => sum + row.normalizedQuantity, 0);
+const openCancelDialog = async () => {
+  await page.getByRole("button", { name: "Действия с партией", exact: true }).click();
+  await page.getByRole("menuitem", { name: "Отменить партию", exact: true }).click();
+};
 
 beforeAll(async () => {
   if (process.env.NODE_ENV === "production" || !["localhost", "127.0.0.1", "postgres"].includes(new URL(process.env.DATABASE_URL!).hostname)) throw new Error("LOCAL_TEST_DATABASE_REQUIRED");
@@ -45,7 +54,11 @@ beforeEach(async () => {
   lotIds = [];
   for (const quantity of [12, 10]) lotIds.push((await addCatalogIngredientToInventory(userId, { ingredientCatalogItemId: "us-cascade-beervingem-standard", enteredQuantity: quantity, enteredUnit: "g" })).id);
   context = await browser.newContext({ viewport: { width: 390, height: 844 }, locale: "ru-RU", timezoneId: "Europe/Moscow" });
-  await context.addCookies([{ name: "nb_session", value: session.rawToken, url: base }]);
+  await context.addCookies([
+    { name: "nb_session", value: session.rawToken, url: base },
+    { name: "nb_cookie_consent", value: "1:necessary", url: base },
+    { name: "nb_age_ok", value: "1", url: base }
+  ]);
   page = await context.newPage();
   page.setDefaultTimeout(20000);
 });
@@ -64,7 +77,7 @@ describe("live Chromium: recovery and consistency", () => {
     await page.route("**/app/recipes/**", abortVolume);
     await page.getByRole("button", { name: "Сварить", exact: true }).click();
     try {
-      await expect(page.getByRole("dialog").getByText(/Не удалось загрузить объём и оборудование/)).toBeVisible();
+      await expect(page.getByRole("dialog").getByRole("alert")).toContainText("Не удалось загрузить объёмы и параметры оборудования");
     } catch (error) {
       console.error("Equipment recovery diagnostic", { url: page.url(), text: await page.locator("body").innerText(), requests });
       throw error;
@@ -109,12 +122,12 @@ describe("live Chromium: recovery and consistency", () => {
     await page.route("**/app/recipes/**", abortCalculation);
     await page.getByRole("button", { name: "Сварить", exact: true }).click();
     await page.getByRole("dialog").getByRole("button", { name: /Моё оборудование/ }).click();
-    await expect(page.getByRole("dialog").getByText(/Не удалось рассчитать подготовку/)).toBeVisible();
+    await expect(page.getByRole("dialog").getByRole("alert")).toContainText("Не удалось рассчитать параметры варки");
     await expect(page.getByRole("button", { name: "Начать варку", exact: true })).toBeDisabled();
     await page.unroute("**/app/recipes/**", abortCalculation);
     await page.getByRole("button", { name: "Повторить расчёт", exact: true }).click();
     await expect(page.getByRole("button", { name: "Начать варку", exact: true })).toBeEnabled();
-    await expect(page.getByRole("dialog").getByText(/пересчитаны на 10 л/)).toBeVisible();
+    await expect(page.getByRole("dialog").getByText(/пересчитано на 10 л/)).toBeVisible();
   });
 
   it("consumption preview recovers after network failure and consumes both exact lots", async () => {
@@ -125,7 +138,7 @@ describe("live Chromium: recovery and consistency", () => {
     await expect(page.getByRole("dialog").getByText(/Не удалось загрузить остатки/)).toBeVisible();
     await page.unroute("**/app/brew-batches/**", abort);
     await page.getByRole("button", { name: "Повторить загрузку", exact: true }).click();
-    await expect(page.getByRole("dialog").getByText(/Запас в 2 лотах/)).toBeVisible();
+    await expect(page.getByRole("dialog").getByText(/Запас в 2 партиях закупки/)).toBeVisible();
     await page.getByRole("button", { name: "Списать 1 позицию", exact: true }).click();
     await expect(page.getByRole("dialog")).toHaveCount(0);
     await expect(page.getByText("Ингредиенты списаны со склада.", { exact: true })).toBeVisible();
@@ -169,16 +182,117 @@ describe("live Chromium: recovery and consistency", () => {
   it("manual inventory adjustment preserves input and recovers from a network failure", async () => {
     await page.goto(`${base}/app/ingredients`);
     await page.getByRole("button", { name: "Списать или пополнить", exact: true }).first().click();
-    await page.getByRole("dialog").getByLabel("Количество использованного", { exact: true }).fill("1");
+    await page.getByRole("dialog").getByLabel("Сколько использовали", { exact: true }).fill("1");
     const abort = async (route: Route) => route.request().headers()["next-action"] ? route.abort("failed") : route.continue();
     await page.route("**/app/ingredients**", abort);
     await page.getByRole("dialog").getByRole("button", { name: "Списать", exact: true }).click();
     await expect(page.getByRole("dialog").getByText(/Не удалось сохранить количество/)).toBeVisible();
-    await expect(page.getByRole("dialog").getByLabel("Количество использованного", { exact: true })).toHaveValue("1");
+    await expect(page.getByRole("dialog").getByLabel("Сколько использовали", { exact: true })).toHaveValue("1");
     await page.unroute("**/app/ingredients**", abort);
     await page.getByRole("dialog").getByRole("button", { name: "Списать", exact: true }).click();
     await expect(page.getByRole("dialog")).toHaveCount(0);
     const lots = await db.query.userIngredients.findMany({ where: inArray(userIngredients.id, lotIds) });
     expect(lots.reduce((sum, lot) => sum + lot.normalizedQuantity, 0)).toBe(21);
+  });
+
+  it("recovers the consumed state after a lost response without another debit", async () => {
+    await gotoBatch();
+    await page.getByRole("button", { name: "Списать со склада", exact: true }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "Списать 1 позицию", exact: true }).waitFor();
+    let dropped = false;
+    await page.route("**/app/brew-batches/**", async route => {
+      if (!dropped && route.request().headers()["next-action"] && route.request().postData()?.includes("allowPartial")) {
+        dropped = true;
+        await route.fetch();
+        await route.abort("failed");
+      } else await route.continue();
+    });
+    await page.getByRole("dialog").getByRole("button", { name: "Списать 1 позицию", exact: true }).click();
+    await expect(page.getByRole("dialog").getByText("Не удалось списать ингредиенты.", { exact: true })).toBeVisible();
+    expect(dropped).toBe(true);
+    expect(await stockTotal()).toBe(2);
+    await page.unroute("**/app/brew-batches/**");
+    await page.getByRole("dialog").getByRole("button", { name: "Списать 1 позицию", exact: true }).click();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Вернуть на склад", exact: true })).toBeVisible();
+    expect(await stockTotal()).toBe(2);
+    await page.getByRole("button", { name: "Вернуть на склад", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Списать со склада", exact: true })).toBeVisible();
+    expect(await stockTotal()).toBe(22);
+  });
+
+  it("reconciles two consuming tabs and serializes their returns", async () => {
+    const other = await context.newPage();
+    await gotoBatch();
+    await gotoBatch(other);
+    for (const tab of [page, other]) {
+      await tab.getByRole("button", { name: "Списать со склада", exact: true }).click();
+      await tab.getByRole("dialog").getByRole("button", { name: "Списать 1 позицию", exact: true }).waitFor();
+    }
+    await Promise.all([page, other].map(tab => tab.getByRole("dialog").getByRole("button", { name: "Списать 1 позицию", exact: true }).click()));
+    for (const tab of [page, other]) {
+      await expect(tab.getByRole("dialog")).toHaveCount(0);
+      await expect(tab.getByRole("button", { name: "Вернуть на склад", exact: true })).toBeVisible();
+    }
+    expect(await stockTotal()).toBe(2);
+    await Promise.all([page, other].map(tab => tab.getByRole("button", { name: "Вернуть на склад", exact: true }).click()));
+    for (const tab of [page, other]) await expect(tab.getByRole("button", { name: "Списать со склада", exact: true })).toBeVisible();
+    expect(await stockTotal()).toBe(22);
+  });
+
+  it("shows an offline cancellation error and succeeds on an explicit retry", async () => {
+    await gotoBatch();
+    const errors: string[] = [];
+    page.on("pageerror", error => errors.push(error.message));
+    await openCancelDialog();
+    await context.setOffline(true);
+    await page.getByRole("dialog").getByRole("button", { name: "Отменить партию", exact: true }).click();
+    await expect(page.getByRole("dialog").getByRole("alert")).toContainText("Проверьте соединение");
+    expect(errors).toEqual([]);
+    expect((await db.query.brewBatches.findFirst({ where: (table, { eq }) => eq(table.id, batchId) }))?.status).toBe("planned");
+    await context.setOffline(false);
+    await page.getByRole("dialog").getByRole("button", { name: "Отменить партию", exact: true }).click();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(page.getByText("Отменена", { exact: true })).toBeVisible();
+    expect(await stockTotal()).toBe(22);
+  });
+
+  it("reconciles cancellation when only the committed response was lost", async () => {
+    await gotoBatch();
+    await openCancelDialog();
+    let dropped = false;
+    await page.route("**/app/brew-batches/**", async route => {
+      if (!dropped && route.request().headers()["next-action"] && route.request().postData()?.includes("cancelled")) {
+        dropped = true;
+        await route.fetch();
+        await route.abort("failed");
+      } else await route.continue();
+    });
+    await page.getByRole("dialog").getByRole("button", { name: "Отменить партию", exact: true }).click();
+    await expect(page.getByRole("dialog").getByRole("alert")).toContainText("Проверьте соединение");
+    expect(dropped).toBe(true);
+    expect((await db.query.brewBatches.findFirst({ where: (table, { eq }) => eq(table.id, batchId) }))?.status).toBe("cancelled");
+    await page.unroute("**/app/brew-batches/**");
+    await page.getByRole("dialog").getByRole("button", { name: "Отменить партию", exact: true }).click();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(page.getByText("Отменена", { exact: true })).toBeVisible();
+    expect(await stockTotal()).toBe(22);
+  });
+
+  it("keeps failed offline deletion actionable without an unhandled rejection", async () => {
+    await gotoBatch();
+    const errors: string[] = [];
+    page.on("pageerror", error => errors.push(error.message));
+    await page.getByRole("button", { name: "Действия с партией", exact: true }).click();
+    await page.getByRole("menuitem", { name: "Удалить", exact: true }).click();
+    await context.setOffline(true);
+    await page.getByRole("dialog").getByRole("button", { name: "Удалить партию", exact: true }).click();
+    await expect(page.getByRole("dialog").getByRole("alert")).toContainText("Проверьте соединение");
+    expect(errors).toEqual([]);
+    expect(await db.query.brewBatches.findFirst({ where: (table, { eq }) => eq(table.id, batchId) })).toBeTruthy();
+    await context.setOffline(false);
+    await page.getByRole("dialog").getByRole("button", { name: "Удалить партию", exact: true }).click();
+    await expect(page).toHaveURL(`${base}/app/brew-batches`);
+    expect(await db.query.brewBatches.findFirst({ where: (table, { eq }) => eq(table.id, batchId) })).toBeUndefined();
   });
 });

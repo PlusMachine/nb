@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   restore: vi.fn(),
   preview: vi.fn(),
   consume: vi.fn(),
+  view: vi.fn(),
   revalidate: vi.fn()
 }));
 
@@ -16,7 +17,7 @@ vi.mock("@/features/brew-batches/service", () => ({
   updateBrewBatchStatus: mocks.update,
   deleteBrewBatch: mocks.remove
 }));
-vi.mock("@/features/brew-batches/inventory", () => ({ restoreBrewBatchInventory: mocks.restore, previewBrewBatchConsumption: mocks.preview, consumeBrewBatchInventory: mocks.consume }));
+vi.mock("@/features/brew-batches/inventory", () => ({ restoreBrewBatchInventory: mocks.restore, previewBrewBatchConsumption: mocks.preview, consumeBrewBatchInventory: mocks.consume, getBrewBatchInventoryView: mocks.view }));
 vi.mock("@/features/devices/fermenter-binding", () => ({ bindBatchFermenter: vi.fn() }));
 
 import {
@@ -79,6 +80,31 @@ describe("batch lifecycle preserves physical stock", () => {
       expect(result.message).toContain("вручную на складе");
     }
     expect(mocks.revalidate).not.toHaveBeenCalled();
+  });
+
+  it("reconciles an already committed consumption using the owner's current view", async () => {
+    mocks.consume.mockRejectedValue(new Error("ALREADY_CONSUMED"));
+    const view = { hasConsumed: true, canRestore: true, batchAlreadyConsumed: true };
+    mocks.view.mockResolvedValue(view);
+    expect(await consumeBrewBatchInventoryAction("batch")).toEqual({
+      ok: true, message: "Ингредиенты уже списаны со склада.", view
+    });
+    expect(mocks.view).toHaveBeenCalledExactlyOnceWith("owner", "batch");
+    expect(mocks.consume).toHaveBeenCalledTimes(1);
+    expect(mocks.revalidate).toHaveBeenCalledWith("/app/brew-batches/batch");
+  });
+
+  it("does not confirm consumption when it has already been returned", async () => {
+    mocks.consume.mockRejectedValue(new Error("ALREADY_CONSUMED"));
+    mocks.view.mockResolvedValue({ hasConsumed: false });
+    expect((await consumeBrewBatchInventoryAction("batch")).ok).toBe(false);
+    expect(mocks.revalidate).not.toHaveBeenCalled();
+  });
+
+  it("does not read another owner's view when consumption access is denied", async () => {
+    mocks.consume.mockRejectedValue(new Error("NOT_FOUND"));
+    expect((await consumeBrewBatchInventoryAction("foreign-batch")).ok).toBe(false);
+    expect(mocks.view).not.toHaveBeenCalled();
   });
 
 });

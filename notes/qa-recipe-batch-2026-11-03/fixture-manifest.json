@@ -1,0 +1,32 @@
+{
+  "userId": "cde6d0bf-e130-459f-9ee9-a86cc520dbc1",
+  "strangerId": "45b46e15-1100-45f0-9a3b-9054260994a8",
+  "recipeId": "b02c0c36-a353-43ba-99f9-a5c95f77d2b8",
+  "equipmentId": "f638dc66-875c-4c3c-9688-a34f93375177",
+  "stocks": [
+    {
+      "id": "8d328a03-f0de-4414-aeaa-48fa79a4207b",
+      "catalog": "bestmalz-best-pale-ale-malt",
+      "entered": 5,
+      "unit": "kg"
+    },
+    {
+      "id": "0e337c9a-540e-409f-bcb9-3e009a3aa751",
+      "catalog": "us-cascade-beervingem-standard",
+      "entered": 12,
+      "unit": "g"
+    },
+    {
+      "id": "8e23f796-37e1-4e3e-bda7-ab4549f1490d",
+      "catalog": "us-cascade-beervingem-standard",
+      "entered": 10,
+      "unit": "g"
+    },
+    {
+      "id": "6363df89-e332-4312-adff-d5eada56746a",
+      "catalog": "fermentis-us-05",
+      "entered": 2,
+      "unit": "pack"
+    }
+  ]
+}

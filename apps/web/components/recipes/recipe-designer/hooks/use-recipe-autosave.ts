@@ -20,6 +20,10 @@ import {
 
 export type RecipeSaveStatus = "saved" | "saving" | "error" | "draft";
 
+const recipeRevision = (date: Date | string | undefined) => date == null
+  ? undefined
+  : new Date(date instanceof Date ? date.getTime() : date).toISOString();
+
 // Автосейв: persistRecipe (create/update, дедупликация field-error блокировкой,
 // ретраибельные сетевые сбои), pendingSave/saveResult/isDirty/beforeunload, и
 // «личность» рецепта (activeRecipeId/slug/версия), которую персист-цикл же и
@@ -60,6 +64,18 @@ export function useRecipeAutosave({
   const [blockedSignature, setBlockedSignature] = useState<string | null>(null);
   const [saveResultSignature, setSaveResultSignature] = useState<string | null>(null);
   const pendingSaveRef = useRef(false);
+  const savedRevisionRef = useRef(recipeRevision(initialRecipe?.editorUpdatedAt ?? initialRecipe?.updatedAt));
+  const updateAttemptRef = useRef<{
+    key: string;
+    revision?: string;
+    payload: RecipeEditorPayload;
+    signaturePayload: RecipeEditorPayload;
+  } | null>(null);
+  const creationAttemptRef = useRef<{
+    key: string;
+    payload: RecipeEditorPayload;
+    signaturePayload: RecipeEditorPayload;
+  } | null>(null);
   const setPendingSave = React.useCallback((pending: boolean) => {
     // Блокируем второй запрос сразу, в том числе до следующего React-render.
     pendingSaveRef.current = pending;
@@ -169,12 +185,29 @@ export function useRecipeAutosave({
       return null;
     }
 
+    // A lost response may hide a successful creation. Retry the same identity
+    // and payload first; newer local edits will then be saved as an update.
+    const creationAttempt = persistMode === "create"
+      ? (creationAttemptRef.current ??= {
+        key: crypto.randomUUID(),
+        payload: nextPayload,
+        signaturePayload: { ...payload, publicationState: nextPublicationState }
+      })
+      : null;
+    const updateAttempt = persistMode === "edit"
+      ? (updateAttemptRef.current ??= {
+        key: crypto.randomUUID(),
+        revision: savedRevisionRef.current,
+        payload: nextPayload,
+        signaturePayload: { ...payload, publicationState: nextPublicationState }
+      })
+      : null;
     setPendingSave(true);
     let result: RecipeEditorResult;
     try {
       result = persistMode === "create"
-        ? await createRecipeAction(nextPayload)
-        : await updateRecipeAction(activeRecipeId!, nextPayload);
+        ? await createRecipeAction(creationAttempt!.payload, creationAttempt!.key)
+        : await updateRecipeAction(activeRecipeId!, updateAttempt!.payload, updateAttempt!.revision, updateAttempt!.key);
     } catch {
       // Сетевой/серверный сбой: не оставляем pendingSave залипшим (иначе все
       // будущие автосейвы заглушены) и показываем ретраибельную ошибку (P0-1).
@@ -191,6 +224,8 @@ export function useRecipeAutosave({
     }
 
     if (!result.ok && result.fieldErrors && Object.keys(result.fieldErrors).length) {
+      creationAttemptRef.current = null;
+      updateAttemptRef.current = null;
       setBlockedSignature(nextSignature);
     } else {
       setBlockedSignature(null);
@@ -198,11 +233,14 @@ export function useRecipeAutosave({
 
     if (result.ok && result.recipe) {
       const savedRecipe = result.recipe;
+      savedRevisionRef.current = recipeRevision(savedRecipe.editorUpdatedAt ?? savedRecipe.updatedAt);
       const normalizedState = normalizeEditorPublicationState(savedRecipe.publicationState);
       const completedSignature = JSON.stringify({
-        ...payload,
+        ...(creationAttempt?.signaturePayload ?? updateAttempt?.signaturePayload ?? payload),
         publicationState: normalizedState
       });
+      creationAttemptRef.current = null;
+      updateAttemptRef.current = null;
 
       setPublicationState(normalizedState);
       setSavedPublicationState(normalizedState);

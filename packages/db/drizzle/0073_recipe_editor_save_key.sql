@@ -1,0 +1,1 @@
+ALTER TABLE "recipes" ADD COLUMN "editor_save_key" uuid;

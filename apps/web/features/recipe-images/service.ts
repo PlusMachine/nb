@@ -706,14 +706,11 @@ export const getRecipeImageAsset = async ({
     throw new Error("NOT_FOUND");
   }
 
-  const isPublished = isRecipePubliclyVisible(image.recipe);
-
   return {
     body: object.body,
     contentType: object.contentType ?? (variant === "original" ? image.mimeType : "image/webp"),
-    cacheControl: isPublished
-      ? "public, max-age=31536000, immutable"
-      : "private, max-age=3600"
+    // Visibility and ownership can change while the URL remains the same.
+    cacheControl: "private, no-store"
   };
 };
 

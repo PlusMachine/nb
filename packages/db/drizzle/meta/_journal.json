@@ -473,6 +473,20 @@
       "when": 1793397426549,
       "tag": "0071_product_analytics",
       "breakpoints": true
+    },
+    {
+      "idx": 72,
+      "version": "7",
+      "when": 1793706316935,
+      "tag": "0072_recipe_editor_revision",
+      "breakpoints": true
+    },
+    {
+      "idx": 73,
+      "version": "7",
+      "when": 1793736042537,
+      "tag": "0073_recipe_editor_save_key",
+      "breakpoints": true
     }
   ]
 }

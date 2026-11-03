@@ -1,3 +1,4 @@
+import { buildRecipeImageVariantUrl } from "../recipe-images/contracts";
 import { isPhysicalIngredient, derivedCatalogIngredientId } from "../ingredients/material-policy";
 import { isHopUseIncludedInBitternessFormula } from "@nb/brewing-core";
 import { calculateVerifiedExtractIbu, type RecipeBitternessIssue, type RecipeBitternessEstimate } from "./bitterness-completeness";
@@ -44,6 +45,7 @@ import { normalizeSearchText, swapKeyboardLayout } from "@nb/search";
 import { normalizedSearchMatch } from "@/lib/search-sql";
 import {
   createRecipePayloadSchema,
+  recipeCreationKeySchema,
   defaultRecipeProcessMeta,
   listAuthorRecipesQuerySchema,
   RECIPE_CREATE_RATE_LIMIT,
@@ -578,67 +580,21 @@ export const saveUserWaterProfiles = async (
 
 const hasOwn = (value: Record<string, unknown>, key: string) => Object.prototype.hasOwnProperty.call(value, key);
 
-const coerceFiniteNumber = (value: unknown) => {
-  if (typeof value === "number" && Number.isFinite(value)) {
-    return value;
-  }
-
-  if (typeof value === "string" && value.trim()) {
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : null;
-  }
-
-  return null;
-};
-
-const coercePositiveNumber = (value: unknown) => {
-  const parsed = coerceFiniteNumber(value);
-  return parsed != null && parsed > 0 ? parsed : null;
-};
-
-const coercePositiveInteger = (value: unknown) => {
-  const parsed = coerceFiniteNumber(value);
-  return parsed != null && Number.isInteger(parsed) && parsed > 0 ? parsed : null;
-};
-
 const normalizeCreateRecipePayloadDefaults = (payload: unknown) => {
-  if (!isRecord(payload)) {
-    return payload;
-  }
-
+  if (!isRecord(payload)) return payload;
+  // Defaults fill omitted draft fields; explicit invalid input must reach validation.
   return {
     ...payload,
-    batchSizeEnteredQuantity: coercePositiveNumber(payload.batchSizeEnteredQuantity) ?? DEFAULT_BATCH_SIZE_ENTERED_QUANTITY,
-    batchSizeEnteredUnit: typeof payload.batchSizeEnteredUnit === "string" && payload.batchSizeEnteredUnit.trim()
-      ? payload.batchSizeEnteredUnit
-      : DEFAULT_BATCH_SIZE_ENTERED_UNIT,
-    boilTimeMinutes: coercePositiveInteger(payload.boilTimeMinutes) ?? DEFAULT_BOIL_TIME_MINUTES
+    batchSizeEnteredQuantity: payload.batchSizeEnteredQuantity === undefined
+      ? DEFAULT_BATCH_SIZE_ENTERED_QUANTITY : payload.batchSizeEnteredQuantity,
+    batchSizeEnteredUnit: payload.batchSizeEnteredUnit === undefined
+      ? DEFAULT_BATCH_SIZE_ENTERED_UNIT : payload.batchSizeEnteredUnit,
+    boilTimeMinutes: payload.boilTimeMinutes === undefined
+      ? DEFAULT_BOIL_TIME_MINUTES : payload.boilTimeMinutes
   };
 };
 
-const normalizeUpdateRecipePayloadDefaults = (payload: unknown) => {
-  if (!isRecord(payload)) {
-    return payload;
-  }
-
-  const normalized: Record<string, unknown> = { ...payload };
-
-  if (hasOwn(payload, "batchSizeEnteredQuantity")) {
-    normalized.batchSizeEnteredQuantity = coercePositiveNumber(payload.batchSizeEnteredQuantity) ?? DEFAULT_BATCH_SIZE_ENTERED_QUANTITY;
-  }
-
-  if (hasOwn(payload, "batchSizeEnteredUnit")) {
-    normalized.batchSizeEnteredUnit = typeof payload.batchSizeEnteredUnit === "string" && payload.batchSizeEnteredUnit.trim()
-      ? payload.batchSizeEnteredUnit
-      : DEFAULT_BATCH_SIZE_ENTERED_UNIT;
-  }
-
-  if (hasOwn(payload, "boilTimeMinutes")) {
-    normalized.boilTimeMinutes = coercePositiveInteger(payload.boilTimeMinutes) ?? DEFAULT_BOIL_TIME_MINUTES;
-  }
-
-  return normalized;
-};
+const normalizeUpdateRecipePayloadDefaults = (payload: unknown) => payload;
 
 const readStringMeta = (stepMeta: Record<string, unknown> | null | undefined, key: string) => (
   isRecord(stepMeta) && typeof stepMeta[key] === "string" ? stepMeta[key] as string : null
@@ -1301,6 +1257,7 @@ const mapRecipeDetailDto = async (
 
   return {
     ...mapRecipeListDto(recipe),
+    editorUpdatedAt: recipe.editorUpdatedAt ?? recipe.updatedAt,
     description: recipe.description,
     authorNotes: recipe.authorNotes,
     authorDisplayName: await resolveAuthorDisplayName(recipe.authorId),
@@ -1693,7 +1650,7 @@ export const recomputeRecipeStats = async (authorId: string, recipeId: string, c
     ibu: stats.ibu,
     color: stats.color,
     calculationMeta: nextCalculationMeta,
-    updatedAt: new Date()
+    updatedAt: new Date(Math.max(Date.now(), recipe.updatedAt.getTime() + 1))
   }).where(eq(recipes.id, recipeId)).returning();
 
   if (!updated) {
@@ -1720,9 +1677,22 @@ const assertRecipeCreationAllowed = async (authorId: string, requestedCount = 1)
 export const createRecipes = async (
   authorId: string,
   payloads: unknown[],
-  options?: { recipeFamilyId?: string; versionNumber?: number; clonedFromRecipeId?: string | null }
+  options?: { recipeFamilyId?: string; versionNumber?: number; clonedFromRecipeId?: string | null; idempotencyKey?: string }
 ) => {
   if (!payloads.length || payloads.length > 100) throw new Error("IMPORT_TOO_MANY_RECIPES");
+  // The editor supplies a stable UUID for one creation attempt. Its primary key
+  // makes retries atomic without a second deduplication record or migration.
+  const creationId = options?.idempotencyKey === undefined
+    ? undefined
+    : recipeCreationKeySchema.parse(options.idempotencyKey);
+  if (creationId) {
+    if (payloads.length !== 1) throw new Error("INVALID_CREATION_KEY");
+    const existing = await db.query.recipes.findFirst({ where: eq(recipes.id, creationId) });
+    if (existing) {
+      if (existing.authorId !== authorId) throw new Error("NOT_FOUND");
+      return [await getRecipeById(authorId, existing.id)];
+    }
+  }
   await assertRecipeCreationAllowed(authorId, payloads.length);
   // Prepare the entire collection before the first write; the transaction rolls
   // back every recipe if any insert, ingredient or calculation fails.
@@ -1760,7 +1730,8 @@ export const createRecipes = async (
     const createdRecipes = [];
     for (const { parsed, preparedIngredients, nextProcessMeta, nextCalculationMeta, nextWaterPlanMeta, batchSize } of prepared) {
       const slug = await resolveUniqueRecipeSlug(parsed.title, undefined, tx);
-      const [created] = await tx.insert(recipes).values({
+      const insert = tx.insert(recipes).values({
+        id: creationId,
         authorId,
         recipeFamilyId: options?.recipeFamilyId ?? crypto.randomUUID(),
         versionNumber: options?.versionNumber ?? 1,
@@ -1786,7 +1757,16 @@ export const createRecipes = async (
         brewPlanMeta: parsed.brewPlanMeta ?? null,
         heroImageId: parsed.heroImageId ?? null,
         clonedFromRecipeId: options?.clonedFromRecipeId ?? null
-      }).returning();
+      });
+      const [created] = creationId
+        ? await insert.onConflictDoNothing({ target: recipes.id }).returning()
+        : await insert.returning();
+      if (!created && creationId) {
+        // A concurrent retry may have committed after the initial lookup.
+        // Read only our own row, and never replay ingredients over saved edits.
+        createdRecipes.push(await ensureOwnedRecipe(authorId, creationId, tx));
+        continue;
+      }
       if (!created) throw new Error("CREATE_FAILED");
       await syncRecipeIngredients(tx, created.id, preparedIngredients);
       await recomputeRecipeStats(authorId, created.id, tx);
@@ -1800,15 +1780,27 @@ export const createRecipes = async (
 export const createRecipe = async (
   authorId: string,
   payload: unknown,
-  options?: { recipeFamilyId?: string; versionNumber?: number; clonedFromRecipeId?: string | null }
+  options?: { recipeFamilyId?: string; versionNumber?: number; clonedFromRecipeId?: string | null; idempotencyKey?: string }
 ) => (await createRecipes(authorId, [payload], options))[0]!;
 
 export const updateRecipe = async (authorId: string, recipeId: string, payload: unknown) => {
   const parsed = updateRecipePayloadSchema.parse(normalizeUpdateRecipePayloadDefaults(payload));
-  await withRecipeWriteTransaction(async (tx) => {
+  const saved = await withRecipeWriteTransaction(async (tx) => {
     await tx.select({ id: recipes.id }).from(recipes)
       .where(and(eq(recipes.id, recipeId), eq(recipes.authorId, authorId))).for("update");
     const current = await ensureOwnedRecipe(authorId, recipeId, tx);
+    const snapshot = async () => {
+      const row = await tx.query.recipes.findFirst({ where: eq(recipes.id, recipeId), with: { ingredients: true } });
+      if (!row) throw new Error("NOT_FOUND");
+      return row;
+    };
+    // Only the most recent operation can be acknowledged again. Any subsequent
+    // editor write clears/replaces its key, so an old retry still conflicts.
+    if (parsed.saveKey && parsed.saveKey === current.editorSaveKey) return snapshot();
+    if (parsed.expectedUpdatedAt !== undefined
+      && new Date(parsed.expectedUpdatedAt).getTime() !== (current.editorUpdatedAt ?? current.updatedAt).getTime()) {
+      throw new Error("RECIPE_CONFLICT");
+    }
     const nextBoilTimeMinutes = parsed.boilTimeMinutes ?? current.boilTimeMinutes ?? DEFAULT_BOIL_TIME_MINUTES;
     const nextIngredientsPayload = parsed.ingredients ?? (await Promise.all((await tx.query.recipeIngredients.findMany({
       where: eq(recipeIngredients.recipeId, recipeId)
@@ -1891,7 +1883,9 @@ export const updateRecipe = async (authorId: string, recipeId: string, payload: 
         : current.waterPlanMeta,
       brewPlanMeta: parsed.brewPlanMeta !== undefined ? parsed.brewPlanMeta : current.brewPlanMeta,
       heroImageId: parsed.heroImageId !== undefined ? parsed.heroImageId : current.heroImageId,
-      updatedAt: new Date()
+      updatedAt: new Date(Math.max(Date.now(), current.updatedAt.getTime() + 1)),
+      editorUpdatedAt: new Date(Math.max(Date.now(), (current.editorUpdatedAt ?? current.updatedAt).getTime() + 1)),
+      editorSaveKey: parsed.saveKey ?? null
     }).where(eq(recipes.id, recipeId)).returning();
 
     if (!updated) {
@@ -1905,9 +1899,10 @@ export const updateRecipe = async (authorId: string, recipeId: string, payload: 
     if (parsed.recomputeStats) {
       await recomputeRecipeStats(authorId, recipeId, tx);
     }
+    return snapshot();
   });
 
-  return getRecipeById(authorId, recipeId);
+  return mapRecipeDetailDto(saved, saved.ingredients);
 };
 
 /**
@@ -2392,7 +2387,7 @@ export const listAuthorRecipeCards = async (authorId: string): Promise<OwnerReci
     const style = getBeerStyleById(row.styleId);
     const heroImage =
       row.heroImageId && row.heroThumbKey
-        ? { thumbUrl: `/api/recipe-images/${row.heroImageId}/thumb`, blurDataUrl: row.heroBlurDataUrl ?? null }
+        ? { thumbUrl: buildRecipeImageVariantUrl(row.heroImageId, "thumb"), blurDataUrl: row.heroBlurDataUrl ?? null }
         : null;
     // Фото BJCP-стиля показываем только когда у рецепта нет своего фото.
     const styleImageUrl = !heroImage && style ? styleHeroImageByBjcpId.get(style.bjcpId) ?? null : null;
@@ -2565,7 +2560,7 @@ const mapPublicRecipeListItem = (
   const colorSrm = row.color;
   const heroImage =
     row.heroImageId && row.heroThumbKey
-      ? { thumbUrl: `/api/recipe-images/${row.heroImageId}/thumb`, blurDataUrl: row.heroBlurDataUrl ?? null }
+      ? { thumbUrl: buildRecipeImageVariantUrl(row.heroImageId, "thumb"), blurDataUrl: row.heroBlurDataUrl ?? null }
       : null;
   // Фото BJCP-стиля показываем только когда у рецепта нет своего фото.
   const styleImageUrl = !heroImage && style ? styleHeroImageByBjcpId.get(style.bjcpId) ?? null : null;
@@ -3388,7 +3383,7 @@ export const listOwnRecipeRefs = async (authorId: string): Promise<OwnRecipeRefs
     const style = getBeerStyleById(row.styleId);
     const heroImage =
       row.heroImageId && row.heroThumbKey
-        ? { thumbUrl: `/api/recipe-images/${row.heroImageId}/thumb`, blurDataUrl: row.heroBlurDataUrl ?? null }
+        ? { thumbUrl: buildRecipeImageVariantUrl(row.heroImageId, "thumb"), blurDataUrl: row.heroBlurDataUrl ?? null }
         : null;
     // Фото BJCP-стиля показываем только когда у рецепта нет своего фото.
     const styleImageUrl = !heroImage && style ? styleHeroImageByBjcpId.get(style.bjcpId) ?? null : null;

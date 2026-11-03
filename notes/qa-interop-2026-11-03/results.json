@@ -1,0 +1,84 @@
+{
+  "date": "2026-11-03",
+  "timezone": "Europe/Moscow",
+  "status": "pass_complete",
+  "bugs": [
+    {
+      "id": "B10",
+      "priority": "P2",
+      "status": "fixed"
+    },
+    {
+      "id": "B11",
+      "priority": "P1",
+      "status": "fixed"
+    },
+    {
+      "id": "B12",
+      "priority": "P2",
+      "status": "fixed"
+    },
+    {
+      "id": "B13",
+      "priority": "P2",
+      "status": "fixed"
+    }
+  ],
+  "checks": {
+    "webUnit": {
+      "passed": 4420,
+      "files": 320
+    },
+    "integration": {
+      "passed": 103,
+      "files": 13,
+      "addedSincePriorPass": 24
+    },
+    "autosaveHooks": {
+      "passed": 8
+    },
+    "matchServiceAfterTypeRefinement": {
+      "passed": 66
+    },
+    "typecheck": {
+      "webExit": 0,
+      "dbExit": 0,
+      "generatedConfigRestored": true
+    },
+    "gitDiffCheckExit": 0
+  },
+  "fullPlanComplete": false,
+  "completedAt": "2026-11-03T20:12:01.939894+00:00",
+  "migration": {
+    "name": "0073_recipe_editor_save_key",
+    "appliedTo": [
+      "temporary QA Docker database",
+      "normal local Docker nb database"
+    ],
+    "backupReadable": true,
+    "existingDataUnchanged": true,
+    "receipt": "local-docker-update.json"
+  },
+  "cleanup": {
+    "removedAt": "2026-11-03T20:10:00.700806+00:00",
+    "qaContainer": "nb-qa-next-20261103",
+    "qaContainerRemoved": true,
+    "qaDataStorage": "tmpfs",
+    "qaDataRemoved": true,
+    "qaLocalStorageRemoved": true,
+    "mainContainer": "nb-postgres",
+    "mainContainerPreserved": true,
+    "mainVolumesPreserved": true,
+    "generatedNextConfigRestored": true,
+    "qaServerStopped": true
+  },
+  "remaining": [
+    "production/PWA and personal caches",
+    "full publication/version matrix",
+    "arbitrary imports, full libraries and label printing",
+    "other browser engines and physical phones",
+    "S3/CDN",
+    "BrewForge hardware and sensors",
+    "load and full database restore"
+  ]
+}

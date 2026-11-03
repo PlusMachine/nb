@@ -1,4 +1,4 @@
-import { convertVolume, convertWeight, roundTo } from "@nb/brewing-core";
+import { convertVolume, roundTo } from "@nb/brewing-core";
 
 import type {
   IngredientCategory,
@@ -7,20 +7,15 @@ import type {
   IngredientSubtype
 } from "../ingredients/contracts";
 import {
-  getInventoryUnitDimension,
-  inventoryCountUnits,
   inventoryUnits,
   normalizeInventoryMeasurementForProfile,
   inventoryVolumeUnits,
-  inventoryWeightUnits,
   parseInventoryUnit,
   resolveInventoryUnitProfile,
   type InventoryUnitProfile,
-  type InventoryCountUnit,
   type InventoryUnit,
   type InventoryUnitDimension,
-  type InventoryVolumeUnit,
-  type InventoryWeightUnit
+  type InventoryVolumeUnit
 } from "../inventory/units";
 
 export type NormalizedRecipeBatchSize = {
@@ -50,11 +45,14 @@ export const normalizeRecipeBatchSize = (enteredQuantity: number, enteredUnitInp
 
   const volumeUnit = enteredUnit as InventoryVolumeUnit;
   const roundedEnteredQuantity = roundRecipeQuantity(enteredQuantity);
-
+  const normalizedQuantity = convertVolume({ value: roundedEnteredQuantity, unit: volumeUnit }, "ml").value;
+  if (!Number.isFinite(normalizedQuantity) || roundedEnteredQuantity <= 0 || normalizedQuantity <= 0) {
+    throw new Error("INVALID_BATCH_SIZE_PRECISION");
+  }
   return {
     enteredQuantity: roundedEnteredQuantity,
     enteredUnit: volumeUnit,
-    normalizedQuantity: convertVolume({ value: roundedEnteredQuantity, unit: volumeUnit }, "ml").value,
+    normalizedQuantity,
     normalizedUnit: "ml"
   };
 };
@@ -97,44 +95,9 @@ export const normalizeRecipeIngredientAmountWithProfile = (
     throw new Error("INVALID_UNIT");
   }
 
-  const normalizedMeasurement = normalizeInventoryMeasurementForProfile(profile, enteredQuantity, enteredUnit);
-  const roundedEnteredQuantity = roundRecipeQuantity(normalizedMeasurement.enteredQuantity);
-  const unitDimension = getInventoryUnitDimension(normalizedMeasurement.enteredUnit);
-
-  if ((inventoryWeightUnits as readonly string[]).includes(enteredUnit)) {
-    const weightUnit = normalizedMeasurement.enteredUnit as InventoryWeightUnit;
-    return {
-      enteredQuantity: roundedEnteredQuantity,
-      enteredUnit: normalizedMeasurement.enteredUnit,
-      normalizedQuantity: convertWeight({ value: roundedEnteredQuantity, unit: weightUnit }, "g").value,
-      normalizedUnit: "g",
-      unitDimension
-    };
-  }
-
-  if ((inventoryVolumeUnits as readonly string[]).includes(enteredUnit)) {
-    const volumeUnit = normalizedMeasurement.enteredUnit as InventoryVolumeUnit;
-    return {
-      enteredQuantity: roundedEnteredQuantity,
-      enteredUnit: normalizedMeasurement.enteredUnit,
-      normalizedQuantity: convertVolume({ value: roundedEnteredQuantity, unit: volumeUnit }, "ml").value,
-      normalizedUnit: "ml",
-      unitDimension
-    };
-  }
-
-  const countUnit = normalizedMeasurement.enteredUnit as InventoryCountUnit;
-  if (!(inventoryCountUnits as readonly string[]).includes(countUnit)) {
-    throw new Error("INVALID_UNIT");
-  }
-
-  return {
-    enteredQuantity: roundedEnteredQuantity,
-    enteredUnit: normalizedMeasurement.enteredUnit,
-    normalizedQuantity: roundedEnteredQuantity,
-    normalizedUnit: normalizedMeasurement.enteredUnit,
-    unitDimension
-  };
+  // Inventory normalization already validates dimensions and canonical precision.
+  // Rounding the entered kg a second time would turn valid milligrams into zero.
+  return normalizeInventoryMeasurementForProfile(profile, enteredQuantity, enteredUnit);
 };
 
 export const toBatchVolumeLiters = (normalizedQuantity: number, normalizedUnit: string): number => {

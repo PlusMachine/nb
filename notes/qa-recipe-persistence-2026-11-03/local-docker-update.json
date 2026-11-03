@@ -1,0 +1,34 @@
+{
+  "database": "nb",
+  "container": "nb-postgres",
+  "host": "localhost",
+  "port": 5432,
+  "migration": "0072_recipe_editor_revision",
+  "migrationExit": 0,
+  "rowCountsBefore": {
+    "users": 32,
+    "recipes": 126,
+    "batches": 36,
+    "inventory": 103,
+    "catalog": 1403
+  },
+  "rowCountsAfter": {
+    "users": 32,
+    "recipes": 126,
+    "batches": 36,
+    "inventory": 103,
+    "catalog": 1403
+  },
+  "allExistingEditorRevisionsBackfilled": true,
+  "backup": "D:/CodexQA/nb-2026-11-03-01a1a0a2/db-backups/nb-local-before-0072-20261103T115841Z.dump",
+  "backupReadable": true,
+  "backupSha256": "dbbba7139cc94f581582c6c0e654d4f4e2925be02b8b2fc74715b657b2845849",
+  "runtimeLayout": {
+    "docker": [
+      "postgres",
+      "mailpit",
+      "mosquitto"
+    ],
+    "web": "Next.js via Node/WSL per current docker-compose.yml and README"
+  }
+}

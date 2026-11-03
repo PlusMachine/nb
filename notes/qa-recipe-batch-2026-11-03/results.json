@@ -1,0 +1,55 @@
+{
+  "date": "2026-11-03",
+  "timezone": "Europe/Moscow",
+  "commit": "21831fa",
+  "scope": "recipe → scale → batch → consume → cancel/return, network failures, two tabs",
+  "coverage": {
+    "total": 25,
+    "passed": 22,
+    "failed": 3
+  },
+  "productDefects": [
+    {
+      "id": "B01",
+      "priority": "P2",
+      "status": "open"
+    },
+    {
+      "id": "B02",
+      "priority": "P2",
+      "status": "open"
+    }
+  ],
+  "testDefects": [
+    {
+      "id": "T01",
+      "priority": "P2",
+      "status": "open"
+    }
+  ],
+  "runs": {
+    "unit": {
+      "passed": 256,
+      "files": 11
+    },
+    "postgres": {
+      "passed": 20
+    },
+    "originalBrowser": {
+      "passed": 3,
+      "failed": 4
+    },
+    "browserWithCurrentLabels": {
+      "passed": 7
+    }
+  },
+  "independentDefectReproduction": "both confirmed",
+  "balance": "passed, zero net delta for each stock",
+  "cleanup": {
+    "browserClosed": true,
+    "webServerStopped": true,
+    "qaAccountsRemoved": true,
+    "postgresStopped": true,
+    "sessionFileRemoved": true
+  }
+}

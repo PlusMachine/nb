@@ -1,0 +1,13 @@
+{
+  "qaWebServerStopped": true,
+  "qaContainerStopped": "nb-qa-20261103",
+  "containerRetained": false,
+  "generatedNextConfigRestored": true,
+  "usersRemaining": 4,
+  "targetedTemporaryUsersRemaining": 0,
+  "recipesRemaining": 0,
+  "batchesRemaining": 0,
+  "mainDatabaseTouched": false,
+  "qaContainerRemoved": true,
+  "qaDataVolumesRemoved": true
+}

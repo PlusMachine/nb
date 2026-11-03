@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import { buildRecipeImageVariantUrl } from "@/features/recipe-images/contracts";
 
 /**
  * Обложка рецепта на публичной детальной странице. Реальное фото отдаётся по
@@ -20,7 +21,7 @@ export function RecipePhotoHero({ imageId, title }: { imageId: string; title: st
     <section className="overflow-hidden rounded-2xl border border-border bg-muted shadow-sm">
       <div className="relative aspect-[16/9] w-full">
         <Image
-          src={`/api/recipe-images/${imageId}/large`}
+          src={buildRecipeImageVariantUrl(imageId, "large")}
           alt={`Фото рецепта «${title}»`}
           fill
           unoptimized

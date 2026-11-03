@@ -1,0 +1,82 @@
+import { randomUUID } from "node:crypto";
+import { createRequire } from "node:module";
+import { writeFile } from "node:fs/promises";
+import { db, pool, users, userIngredients, brewBatches, eq } from "../../../packages/db/src/index.ts";
+import { completeEmailSignIn, createSession } from "../../../packages/auth/src/index.ts";
+import { createRecipe } from "../../../apps/web/features/recipes/service";
+import { addCatalogIngredientToInventory } from "../../../apps/web/features/inventory/service";
+import { createBrewBatchFromRecipe } from "../../../apps/web/features/brew-batches/service";
+const { chromium, expect: rawExpect } = createRequire(new URL("../../../apps/web/package.json",import.meta.url))("@playwright/test");
+const expect=rawExpect.configure({timeout:15000});
+const url=new URL(process.env.DATABASE_URL??"");
+if(url.hostname!=="127.0.0.1"||url.port!=="55434"||url.pathname!=="/nb_qa_20261103")throw new Error("ISOLATED_QA_DB_REQUIRED");
+const out=new URL("../",import.meta.url);
+const results:any[]=[];
+const browser=await chromium.launch({headless:true});
+let userId:string|undefined;
+try {
+  const user=await completeEmailSignIn({email:`qa.reproduce.${randomUUID()}@localhost`});userId=user.id;
+  const session=await createSession({userId:user.id,userAgent:"QA defect reproduction"});
+  const recipe=await createRecipe(user.id,{title:"QA воспроизведение сетевого отказа",publicationState:"private",batchSizeEnteredQuantity:10,batchSizeEnteredUnit:"l",efficiency:70,boilTimeMinutes:60,ingredients:[{persistentKey:randomUUID(),ingredientCatalogItemId:"us-cascade-beervingem-standard",type:"hop",amountEnteredQuantity:6,amountEnteredUnit:"g",stage:"boil",timeOffset:60}]});
+  const stock=await addCatalogIngredientToInventory(user.id,{ingredientCatalogItemId:"us-cascade-beervingem-standard",enteredQuantity:10,enteredUnit:"g"});
+  const context=await browser.newContext({viewport:{width:1280,height:900},locale:"ru-RU",timezoneId:"Europe/Moscow"});
+  await context.addCookies([{name:"nb_session",value:session.rawToken,url:process.env.APP_URL!},{name:"nb_cookie_consent",value:"1:necessary",url:process.env.APP_URL!},{name:"nb_age_ok",value:"1",url:process.env.APP_URL!}]);
+  const page=await context.newPage();
+  const pageErrors:string[]=[];page.on("pageerror",e=>pageErrors.push(e.message));
+  const screenshot=async(name:string)=>{
+    await page.screenshot({path:new URL(`screenshots/${name}.png`,out).pathname,scale:"css"});
+    await writeFile(new URL(`${name}.txt`,out),await page.locator("body").innerText());
+  };
+  const hydrated=async(label:string)=>page.waitForFunction(text=>[...document.querySelectorAll("button")].some(b=>b.textContent?.trim()===text&&Object.keys(b).some(k=>k.startsWith("__reactProps$"))),label);
+  const quantity=async()=>(await db.query.userIngredients.findFirst({where:eq(userIngredients.id,stock.id)}))!.normalizedQuantity;
+  const first=await createBrewBatchFromRecipe(user.id,recipe.id);
+  await page.goto(`${process.env.APP_URL}/app/brew-batches/${first.id}`,{waitUntil:"domcontentloaded",timeout:45000});
+  await hydrated("Списать со склада");
+  await page.getByRole("button",{name:"Списать со склада",exact:true}).click();
+  await page.getByRole("dialog").getByRole("button",{name:"Списать 1 позицию",exact:true}).waitFor();
+  let dropped=false;
+  await page.route("**/app/brew-batches/**",async route=>{
+    if(!dropped&&route.request().headers()["next-action"]&&route.request().postData()?.includes("allowPartial")){
+      dropped=true;await route.fetch();await route.abort("failed");
+    }else await route.continue();
+  });
+  await page.getByRole("dialog").getByRole("button",{name:"Списать 1 позицию",exact:true}).click();
+  await expect(page.getByRole("dialog").getByText("Не удалось списать ингредиенты.",{exact:true})).toBeVisible();
+  const afterLostResponse=await quantity();
+  await page.unroute("**/app/brew-batches/**");
+  await page.getByRole("dialog").getByRole("button",{name:"Списать 1 позицию",exact:true}).click();
+  await expect(page.getByRole("dialog").getByText("По этой партии ингредиенты уже списаны со склада.",{exact:true})).toBeVisible();
+  const afterRetry=await quantity();
+  await screenshot("B01-independent-reproduction");
+  await page.getByRole("dialog").getByRole("button",{name:"Отмена",exact:true}).click();
+  const staleConsumeButton=await page.getByRole("button",{name:"Списать со склада",exact:true}).isVisible();
+  const returnButtons=await page.getByRole("button",{name:"Вернуть на склад",exact:true}).count();
+  results.push({id:"B01",requirement:"После потерянного ответа повтор восстанавливает подтверждённое состояние партии",status:"failed",reproduced:dropped&&afterLostResponse===4&&afterRetry===4&&staleConsumeButton&&returnButtons===0,afterLostResponse,afterRetry,staleConsumeButton,returnButtons});
+
+  const second=await createBrewBatchFromRecipe(user.id,recipe.id);
+  await page.goto(`${process.env.APP_URL}/app/brew-batches/${second.id}`,{waitUntil:"domcontentloaded"});
+  await page.waitForFunction(()=>[...document.querySelectorAll("button")].some(b=>b.getAttribute("aria-label")==="Действия с партией"&&Object.keys(b).some(k=>k.startsWith("__reactProps$"))));
+  await page.getByRole("button",{name:"Действия с партией",exact:true}).click();
+  await page.getByRole("menuitem",{name:"Отменить партию",exact:true}).click();
+  let failedRequests=0;page.on("requestfailed",request=>{if(request.method()==="POST")failedRequests++;});
+  const errorsBefore=pageErrors.length;
+  await context.setOffline(true);
+  await page.getByRole("dialog").getByRole("button",{name:"Отменить партию",exact:true}).click();
+  await expect.poll(()=>failedRequests).toBeGreaterThan(0);
+  await expect(page.getByRole("dialog").getByRole("button",{name:"Отменить партию",exact:true})).toBeEnabled();
+  await expect.poll(()=>pageErrors.length).toBeGreaterThan(errorsBefore);
+  const alerts=await page.getByRole("dialog").getByRole("alert").count();
+  const batchStatus=(await db.query.brewBatches.findFirst({where:eq(brewBatches.id,second.id)}))!.status;
+  await screenshot("B02-independent-reproduction");
+  const newErrors=pageErrors.slice(errorsBefore);
+  results.push({id:"B02",requirement:"Сетевой отказ отмены партии показан внутри диалога",status:"failed",reproduced:alerts===0&&newErrors.some(message=>message.includes("Failed to fetch"))&&batchStatus==="planned",alerts,pageErrors:newErrors,batchStatus});
+  await context.setOffline(false);
+  await context.close();
+  await writeFile(new URL("defect-reproduction.json",out),JSON.stringify(results,null,2));
+  console.log(JSON.stringify(results,null,2));
+  if(results.some(result=>!result.reproduced))process.exitCode=1;
+} finally {
+  await browser.close();
+  if(userId)await db.delete(users).where(eq(users.id,userId));
+  await pool.end();
+}

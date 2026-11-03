@@ -608,7 +608,11 @@ export const recipes = pgTable("recipes", {
   hiddenReason: text("hidden_reason"),
   hiddenByUserId: uuid("hidden_by_user_id").references(() => users.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  // Revision of editor-owned content; image/aggregate updates keep this token.
+  editorUpdatedAt: timestamp("editor_updated_at", { withTimezone: true }).defaultNow().notNull(),
+  // Last committed editor operation, for safe retries after a lost response.
+  editorSaveKey: uuid("editor_save_key")
 }, (table) => ({
   authorIdIdx: index("recipes_author_id_idx").on(table.authorId),
   familyIdIdx: index("recipes_family_id_idx").on(table.recipeFamilyId),

@@ -1,3 +1,4 @@
+import { buildRecipeImageVariantUrl } from "../recipe-images/contracts";
 import { getBeerStyleById, getBeerStyleTaglineRu, getBjcpArticleHrefByStyleId } from "@nb/brewing-core";
 import { listArticles } from "@nb/content";
 import { db, eq, recipeImages, recipes, users } from "@nb/db";
@@ -72,7 +73,7 @@ export const getBeerPresentationBySlug = async (
     : null;
   const heroPhotoUrl =
     heroImage && heroImage.status === "ready"
-      ? `/api/recipe-images/${heroImage.id}/large${isPublished ? "" : `?k=${buildBeerShareKey(recipe.id)}`}`
+      ? `${buildRecipeImageVariantUrl(heroImage.id, "large")}${isPublished ? "" : `&k=${buildBeerShareKey(recipe.id)}`}`
       : null;
 
   return {

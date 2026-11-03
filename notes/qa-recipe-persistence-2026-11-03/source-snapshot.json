@@ -1,0 +1,116 @@
+{
+  "baseCommit": "21831fa",
+  "date": "2026-11-03",
+  "files": [
+    {
+      "path": "apps/web/app/(app)/app/brew-batches/[id]/actions.ts",
+      "sha256": "5754875660d6f8da4a0b56b4bcd37e377a259a416fb3ab646332dee886c36c01",
+      "bytes": 19405
+    },
+    {
+      "path": "apps/web/app/(app)/app/brew-batches/[id]/page.tsx",
+      "sha256": "98e3dfb4a2e268d1073de57cd7f302926b09389b5ac5b7d9ccf172727a30f145",
+      "bytes": 32972
+    },
+    {
+      "path": "apps/web/app/(app)/app/recipes/actions.ts",
+      "sha256": "5f3391e123ea2cebb255d9181305c8200306053cfc2175ee2f888fd513b4a0f3",
+      "bytes": 36106
+    },
+    {
+      "path": "apps/web/components/recipes/recipe-designer/hooks/use-recipe-autosave.ts",
+      "sha256": "f70922231a83d79691a923ef1c64e0ae05a8b24fdb1d3d4a48d24aec13b78de2",
+      "bytes": 14017
+    },
+    {
+      "path": "apps/web/e2e/fixtures/recipe-autosave-harness.ts",
+      "sha256": "9fbf64658101b2907c977288a875ec36b27aa661447935ec455a45b72732aa2e",
+      "bytes": 4661
+    },
+    {
+      "path": "apps/web/features/brew-batches/components/batch-menu.tsx",
+      "sha256": "fcf9df547ed5504c95b4542c50114ef05c3739bf082e022188fb5f6540ba1c29",
+      "bytes": 9548
+    },
+    {
+      "path": "apps/web/features/brew-batches/components/batch-volumes.tsx",
+      "sha256": "543470affd595a288bfb8381f8f06c05bcc601f81b1c05db5635fff3b2904af2",
+      "bytes": 8971
+    },
+    {
+      "path": "apps/web/features/recipes/contracts.ts",
+      "sha256": "042ddf9078840b56ca2b8fdb09737bbfe644a7af3d8ccfe0fc502e241b851e08",
+      "bytes": 51545
+    },
+    {
+      "path": "apps/web/features/recipes/service.ts",
+      "sha256": "e183a109d424e826b8a24989c7d6ab2a13067cec477c32b3601b39dc291a15d9",
+      "bytes": 151191
+    },
+    {
+      "path": "apps/web/features/recipes/units.ts",
+      "sha256": "745191c873ce3d9f128ea445bc546748bed16b32cd2544560e0fe4a7bd6f4c76",
+      "bytes": 3657
+    },
+    {
+      "path": "apps/web/integration/batch-records-browser.integration.test.ts",
+      "sha256": "c97539f51be43c3798329f663c5549b9354fdda0e047ddc0b297bb078d8c155b",
+      "bytes": 15061
+    },
+    {
+      "path": "apps/web/integration/product-analytics-browser.integration.test.ts",
+      "sha256": "a3971181a5d79e20da30c5a49b729449ed5238df0f85da5ae5f87e68938f4c0e",
+      "bytes": 11495
+    },
+    {
+      "path": "apps/web/integration/recipe-persistence-browser.integration.test.ts",
+      "sha256": "3d8940556ecfe761007af685eb493a4c3632979050901ed457fea64ab8627e38",
+      "bytes": 11372
+    },
+    {
+      "path": "apps/web/integration/recipe-persistence.integration.test.ts",
+      "sha256": "489d187d3ff17c61178e947f79ee0acaa6473cbe40506d64908bd7d5c7189b3f",
+      "bytes": 8944
+    },
+    {
+      "path": "apps/web/integration/recovery-browser.integration.test.ts",
+      "sha256": "3057a5f86addecdc279c49c03edd4a4efd13b3ccdd3af1eedd803b39fffa2109",
+      "bytes": 19494
+    },
+    {
+      "path": "apps/web/tests/brew-batch-lifecycle-actions.test.ts",
+      "sha256": "644f1088a0777844010362e883b55ca05e88e8ba2f8c3dc5c06f83513479eca9",
+      "bytes": 5038
+    },
+    {
+      "path": "apps/web/tests/recipe-image-upload-route.test.ts",
+      "sha256": "75763582a57cdce645bb64e73a0560a5a7eeff46cfbdfc17ed1dfa165602b14f",
+      "bytes": 2934
+    },
+    {
+      "path": "apps/web/tests/recipe-units.test.ts",
+      "sha256": "703932ee8401aed028f74f67d8a834e3abdd5061093db0e51126a725999fd7b1",
+      "bytes": 2103
+    },
+    {
+      "path": "packages/db/drizzle/0072_recipe_editor_revision.sql",
+      "sha256": "aad1d74d16761e042c0642817c453830a598705f67c69ab6a454082f4c6f4e00",
+      "bytes": 184
+    },
+    {
+      "path": "packages/db/drizzle/meta/0072_snapshot.json",
+      "sha256": "e6109f7127aefaa532ea0da8fa9f7a4fbb01b9400fc6a8030be8f1cd4685d7b3",
+      "bytes": 263125
+    },
+    {
+      "path": "packages/db/drizzle/meta/_journal.json",
+      "sha256": "f3ce7bf6843cea63b6d5c078ca6d3b2fcfe7ff02fa4b76fe30242053776aebd1",
+      "bytes": 10260
+    },
+    {
+      "path": "packages/db/src/schema.ts",
+      "sha256": "ef3bf08d120dd3f93a5dd7431a985061cf72bb4bf48e978499b30e0e019306fd",
+      "bytes": 112486
+    }
+  ]
+}

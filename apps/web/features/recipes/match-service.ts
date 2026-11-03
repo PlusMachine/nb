@@ -1,3 +1,4 @@
+import { buildRecipeImageVariantUrl } from "../recipe-images/contracts";
 import { resolveInventoryItemPackEquivalent, convertInventoryNormalizedToUnit, convertQuantityToInventoryNormalizedUnit, type InventoryPackEquivalent } from "../inventory/pack";
 import { and, db, eq, inArray, ingredients, recipeImages, recipeIngredients, recipes, userCustomIngredients } from "@nb/db";
 import { getBeerStyleById, getBjcpArticleHrefByStyleId, roundTo } from "@nb/brewing-core";
@@ -996,7 +997,7 @@ const toBrewableRecipeDtos = async (
     const heroRow = recipe.heroImageId ? heroById.get(recipe.heroImageId) : undefined;
     const heroImage =
       heroRow?.thumbKey
-        ? { thumbUrl: `/api/recipe-images/${recipe.heroImageId}/thumb`, blurDataUrl: heroRow.blurDataUrl ?? null }
+        ? { thumbUrl: buildRecipeImageVariantUrl(heroRow.id, "thumb"), blurDataUrl: heroRow.blurDataUrl ?? null }
         : null;
     // Фото BJCP-стиля показываем только когда у рецепта нет своего фото.
     const styleImageUrl = !heroImage && style ? styleHeroImageByBjcpId.get(style.bjcpId) ?? null : null;

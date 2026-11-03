@@ -131,6 +131,13 @@ const mapRecipeEditorError = (error: unknown): RecipeEditorResult => {
     if (error.message === "NOT_FOUND") {
       return { ok: false, message: "Рецепт не найден или недоступен для редактирования." };
     }
+    if (error.message === "RECIPE_CONFLICT") {
+      const message = "Рецепт изменён в другой вкладке. Скопируйте свои правки и обновите страницу перед сохранением.";
+      return { ok: false, message, fieldErrors: { form: message } };
+    }
+    if (error.message === "INVALID_BATCH_SIZE_PRECISION") {
+      return { ok: false, message: "Объём слишком мал или велик для сохранения. Проверьте значение и единицу.", fieldErrors: { batchSizeEnteredQuantity: "Укажите объём в поддерживаемом диапазоне." } };
+    }
 
     if (["INVALID_UNIT", "INCOMPATIBLE_UNIT", "INVALID_BATCH_SIZE_UNIT"].includes(error.message)) {
       return { ok: false, message: "Проверьте единицы измерения ингредиентов." };
@@ -253,10 +260,12 @@ const isRecipeImagesSchemaMissing = (error: unknown) => (
   error instanceof Error && error.message === "RECIPE_IMAGES_SCHEMA_MISSING"
 );
 
-export const createRecipeAction = async (payload: RecipeEditorPayload): Promise<RecipeEditorResult> => {
+export const createRecipeAction = async (payload: RecipeEditorPayload, idempotencyKey?: string): Promise<RecipeEditorResult> => {
   try {
     const user = await requireUser();
-    const recipe = await createRecipe(user.id, payload);
+    const recipe = idempotencyKey === undefined
+      ? await createRecipe(user.id, payload)
+      : await createRecipe(user.id, payload, { idempotencyKey });
 
     revalidatePath("/app/recipes");
     revalidatePath(`/app/recipes/${recipe.id}`);
@@ -272,11 +281,13 @@ export const createRecipeAction = async (payload: RecipeEditorPayload): Promise<
   }
 };
 
-export const updateRecipeAction = async (recipeId: string, payload: RecipeEditorPayload): Promise<RecipeEditorResult> => {
+export const updateRecipeAction = async (recipeId: string, payload: RecipeEditorPayload, expectedUpdatedAt?: string, saveKey?: string): Promise<RecipeEditorResult> => {
   try {
     const user = await requireUser();
     const recipe = await updateRecipe(user.id, recipeId, {
       ...payload,
+      ...(expectedUpdatedAt !== undefined ? { expectedUpdatedAt } : {}),
+      ...(saveKey !== undefined ? { saveKey } : {}),
       recomputeStats: true
     });
 

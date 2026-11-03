@@ -37,7 +37,8 @@ export type RecipeImageDto = {
   originalUrl: string | null;
 };
 
+// Bump the URL once to bypass image responses cached under the old immutable policy.
 export const buildRecipeImageVariantUrl = (
   imageId: string,
   variant: RecipeImageVariant
-) => `/api/recipe-images/${imageId}/${variant}`;
+) => `/api/recipe-images/${imageId}/${variant}?v=2`;

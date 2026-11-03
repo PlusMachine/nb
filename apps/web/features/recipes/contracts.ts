@@ -67,7 +67,7 @@ export const recipePublicationStateLabels: Record<RecipePublicationState, string
 const numberField = () => z.coerce.number({
   invalid_type_error: "Введите число.",
   required_error: "Укажите значение."
-});
+}).finite("Введите конечное число.");
 
 const mashStepSchema = z.object({
   id: z.string().trim().min(1).max(64),
@@ -477,12 +477,27 @@ const baseRecipePayloadSchema = z.object({
   heroImageId: z.string().uuid().optional().nullable()
 });
 
+const recipeIngredientsPayloadSchema = z.array(recipeIngredientPayloadSchema).max(200).superRefine((lines, ctx) => {
+  const keys = new Set<string>();
+  lines.forEach((line, index) => {
+    if (!line.persistentKey) return;
+    if (keys.has(line.persistentKey)) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: [index, "persistentKey"], message: "У каждого внесения должен быть свой идентификатор." });
+    }
+    keys.add(line.persistentKey);
+  });
+});
+
+export const recipeCreationKeySchema = z.string().uuid();
+
 export const createRecipePayloadSchema = baseRecipePayloadSchema.extend({
-  ingredients: z.array(recipeIngredientPayloadSchema).max(200).default([])
+  ingredients: recipeIngredientsPayloadSchema.default([])
 });
 
 export const updateRecipePayloadSchema = baseRecipePayloadSchema.partial().extend({
-  ingredients: z.array(recipeIngredientPayloadSchema).max(200).optional(),
+  ingredients: recipeIngredientsPayloadSchema.optional(),
+  expectedUpdatedAt: z.string().datetime({ offset: true }).optional(),
+  saveKey: z.string().uuid().optional(),
   recomputeStats: z.coerce.boolean().default(true)
 });
 
@@ -840,6 +855,7 @@ export type RecipeCloneActionResult =
   | { ok: false; code: "AUTH" | "NOT_FOUND" | "ERROR"; message: string };
 
 export type RecipeDetailDto = RecipeListItemDto & {
+  editorUpdatedAt?: Date;
   bitternessEstimate?: z.infer<typeof recipeBitternessEstimateSchema> | null;
   description: string | null;
   authorNotes: string | null;

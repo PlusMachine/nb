@@ -1,0 +1,30 @@
+{
+  "database": "nb",
+  "container": "nb-postgres",
+  "migration": "0073_recipe_editor_save_key",
+  "backup": "/mnt/d/CodexQA/nb-2026-11-03-01a1a0a2/db-backups/nb-local-before-0073-20261103T200511Z.dump",
+  "backupReadable": true,
+  "backupSha256": "1edd649b4cb41e70ec86a78094286864806d258b13b79e97d9b39a1cd1e9ba5e",
+  "before": {
+    "users": {
+      "count": 32,
+      "digest": "6865558504f61a74a45968a957b42ca3"
+    },
+    "recipes": {
+      "count": 126,
+      "digest": "8f0188c5112cae63758f816e4c935cc4"
+    },
+    "brew_batches": {
+      "count": 36,
+      "digest": "a6f9e3743d89a2c8d122f41e3c9bb658"
+    },
+    "user_ingredients": {
+      "count": 103,
+      "digest": "aa7b13e6544f42409f865c67c3e951e4"
+    },
+    "ingredients": {
+      "count": 1403,
+      "digest": "41429d32f41b17dc0d03c1ba8961fb34"
+    }
+  }
+}

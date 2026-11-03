@@ -182,7 +182,7 @@ const resolveBeerXmlTime = (ingredient: CanonicalRecipeIngredient) => {
 
 const renderIngredientExtension = (ingredient: CanonicalRecipeIngredient) => [
   xmlTag("DISPLAY_AMOUNT", `${ingredient.amount} ${ingredient.unit}`, "        ").trimEnd(),
-  xmlTag("NB_INGREDIENT", JSON.stringify({ amount: ingredient.amount, unit: ingredient.unit, stage: ingredient.stage, stepMeta: ingredient.stepMeta ?? null, hopForm: ingredient.hopForm ?? null, yeastForm: ingredient.yeastForm ?? null }), "        ").trimEnd(),
+  xmlTag("NB_INGREDIENT", JSON.stringify({ amount: ingredient.amount, unit: ingredient.unit, stage: ingredient.stage, timeOffset: ingredient.timeOffset ?? null, stepMeta: ingredient.stepMeta ?? null, hopForm: ingredient.hopForm ?? null, yeastForm: ingredient.yeastForm ?? null }), "        ").trimEnd(),
   xmlTag("TEMPERATURE", readMetaNumber(ingredient.stepMeta, "temperatureC"), "        ").trimEnd(),
 ].filter(Boolean).join("\n");
 
@@ -480,7 +480,10 @@ const restoreIngredient = (node: XmlNode, ingredient: CanonicalRecipeIngredient)
     const unit = readUnit(data.unit, ingredient.unit);
     const stage = ["mash", "boil", "whirlpool", "fermentation", "packaging", "other"].includes(String(data.stage))
       ? data.stage as CanonicalRecipeIngredient["stage"] : ingredient.stage;
-    return { ...ingredient, amount: data.amount, unit, stage,
+    const timeOffset = data.timeOffset === null ? null
+      : typeof data.timeOffset === "number" && Number.isFinite(data.timeOffset) && data.timeOffset >= 0
+        ? data.timeOffset : ingredient.timeOffset;
+    return { ...ingredient, amount: data.amount, unit, stage, timeOffset,
       hopForm: ["pellet", "whole_cone", "cryo", "lupulin", "standard"].includes(String(data.hopForm)) ? data.hopForm as CustomHopForm : ingredient.hopForm,
       yeastForm: ["dry", "liquid", "slurry", "culture"].includes(String(data.yeastForm)) ? data.yeastForm as CustomYeastForm : ingredient.yeastForm,
       stepMeta: isRecord(data.stepMeta) ? data.stepMeta : ingredient.stepMeta };

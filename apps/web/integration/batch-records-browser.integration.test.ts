@@ -10,6 +10,7 @@ import { createBrewBatchFromRecipe, updateBrewBatchStatus, setBrewDayStepState, 
 import { buildBrewDaySteps } from "../features/brew-batches/brew-day";
 import { createEquipmentProfile } from "../features/equipment-profiles/service";
 import { starterEquipmentProfileDefaults } from "../features/equipment-profiles/contracts";
+import { listBatchTasks, saveBatchVolumes } from "../features/brew-batches/records-service";
 
 let browser: Browser;
 const owned: string[] = [], base = process.env.E2E_BASE_URL ?? "http://127.0.0.1:3000";
@@ -30,18 +31,31 @@ it("records volumes, reviews equipment settings, manages tasks, compares through
   await updateBrewBatchStatus(user.id, batch.id, "brewing");
   for (const group of buildBrewDaySteps(batch.brewPlanSnapshot)) if (["mash", "boil", "whirlpool", "chill"].includes(group.stage)) for (const step of group.steps) await setBrewDayStepState(user.id, batch.id, step.id, { done: true });
   const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, locale: "ru-RU", timezoneId: "Europe/Moscow" });
-  await context.addCookies([{ name: "nb_session", value: session.rawToken, url: base }]);
+  await context.addCookies([
+    { name: "nb_session", value: session.rawToken, url: base },
+    { name: "nb_cookie_consent", value: "1:necessary", url: base },
+    { name: "nb_age_ok", value: "1", url: base }
+  ]);
   const page = await context.newPage(), errors: string[] = []; page.on("pageerror", error => errors.push(error.message)); page.setDefaultTimeout(20000);
   try {
     await page.goto(`${base}/app/brew-batches/${batch.id}`);
     const consent = page.getByRole("button", { name: "Только необходимые", exact: true });
     if (await consent.isVisible()) await consent.click();
+    // Manual brewing now keeps records in the Measure dialog. Complete the
+    // transfer through the current UI before reviewing equipment calibration.
+    await page.waitForFunction(() => Array.from(document.querySelectorAll("button")).some(button => button.textContent?.trim() === "Сохранить и продолжить" && Object.keys(button).some(key => key.startsWith("__reactProps$"))));
+    await page.getByLabel("Начальная плотность, °P", { exact: true }).fill("13,8");
+    await page.getByLabel("Объём в ферментере, л", { exact: true }).fill("20");
+    await page.getByRole("button", { name: "Сохранить и продолжить", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Внесите дрожжи", exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "Замер", exact: true }).click();
     const volumes = page.locator("#batch-volumes");
     await volumes.getByLabel("До кипячения, л", { exact: true }).fill("26,76");
     await volumes.getByLabel("После кипячения, л", { exact: true }).fill("21");
     await volumes.getByLabel("В ферментере, л", { exact: true }).fill("20");
     await volumes.getByRole("button", { name: "Сохранить объёмы" }).click();
     await expect(volumes.getByText("Сохранено", { exact: true })).toBeVisible();
+    await page.getByRole("dialog").getByRole("button", { name: "Закрыть", exact: true }).click();
     await page.getByRole("button", { name: "Обновить настройки пивоварни", exact: true }).click();
     const dialog = page.getByRole("dialog");
     await expect(dialog.getByRole("button", { name: "Сохранить настройки" })).toBeDisabled();
@@ -57,15 +71,22 @@ it("records volumes, reviews equipment settings, manages tasks, compares through
     await tasks.getByLabel("Время", { exact: true }).fill("18:00");
     await tasks.getByRole("button", { name: "Добавить", exact: true }).click();
     await expect(tasks.getByText("Измерить плотность", { exact: true })).toBeVisible();
-    await page.reload(); await expect(volumes.getByLabel("До кипячения, л", { exact: true })).toHaveValue("26,76");
+    await page.reload();
+    await page.getByRole("button", { name: "Замер", exact: true }).click();
+    await expect(volumes.getByLabel("До кипячения, л", { exact: true })).toHaveValue("26,76");
+    await page.getByRole("dialog").getByRole("button", { name: "Закрыть", exact: true }).click();
     await expect(tasks.getByText("Измерить плотность", { exact: true })).toBeVisible();
     await page.goto(`${base}/app`);
     await expect(page.locator("#today-tasks").getByRole("link", { name: "Измерить плотность" })).toBeVisible();
     await page.locator("#today-tasks").getByRole("checkbox").check();
     await expect(page.locator("#today-tasks").getByRole("checkbox")).toBeChecked();
+    await expect.poll(async () => Boolean((await listBatchTasks(user.id, batch.id))[0]?.completedAt)).toBe(true);
     await page.locator("#today-tasks").getByRole("checkbox").uncheck();
+    await expect.poll(async () => Boolean((await listBatchTasks(user.id, batch.id))[0]?.completedAt)).toBe(false);
+    await expect(page.locator("#today-tasks").getByRole("checkbox")).not.toBeChecked();
     await page.locator("#today-tasks").getByRole("link", { name: "Измерить плотность" }).click();
     await expect(tasks).toBeVisible();
+    await page.waitForFunction(() => Array.from(document.querySelectorAll("#batch-tasks button")).some(button => Object.keys(button).some(key => key.startsWith("__reactProps$"))));
     await tasks.getByRole("button", { name: "Изменить: Измерить плотность" }).click();
     await tasks.getByLabel("Что сделать").fill("Проверить плотность");
     await tasks.getByRole("button", { name: "Сохранить", exact: true }).click();
@@ -98,5 +119,59 @@ it("records volumes, reviews equipment settings, manages tasks, compares through
     await page.setViewportSize({ width: 1280, height: 900 }); await page.screenshot({ path: resolve(output, "completed.png"), fullPage: true, animations: "disabled" });
     unitExpect((await getBrewBatchDetail(user.id, batch.id))?.batch.volumeMeasurements?.bottledL).toBe(18.5);
     unitExpect(errors).toEqual([]);
+  } catch (error) {
+    await page.screenshot({ path: resolve(output, "failed-batch-records.png"), fullPage: true }).catch(() => {});
+    throw error;
   } finally { await context.close(); }
 }, 180000);
+
+async function volumeFixture() {
+  const user = await completeEmailSignIn({ email: "qa.volume-browser." + randomUUID() + "@localhost" }); owned.push(user.id);
+  const session = await createSession({ userId: user.id, userAgent: "Volume form concurrency QA" });
+  const recipe = await createRecipe(user.id, { title: "Volume concurrency", batchSizeEnteredQuantity: 20, batchSizeEnteredUnit: "l", ingredients: [] });
+  const batch = await createBrewBatchFromRecipe(user.id, recipe.id);
+  await updateBrewBatchStatus(user.id, batch.id, "fermenting");
+  await saveBatchVolumes(user.id, batch.id, { preBoilL: 24 });
+  const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, locale: "ru-RU", timezoneId: "Europe/Moscow" });
+  await context.addCookies([
+    { name: "nb_session", value: session.rawToken, url: base },
+    { name: "nb_cookie_consent", value: "1:necessary", url: base },
+    { name: "nb_age_ok", value: "1", url: base }
+  ]);
+  const page = await context.newPage();
+  await page.goto(base + "/app/brew-batches/" + batch.id);
+  await page.waitForFunction(() => Array.from(document.querySelectorAll("#batch-volumes button")).some(button => Object.keys(button).some(key => key.startsWith("__reactProps$"))));
+  return { user, batch, context, page, volumes: page.locator("#batch-volumes").filter({ visible: true }) };
+}
+
+it("keeps dirty volume input when an independent record refreshes server values", async () => {
+  const { user, batch, context, page, volumes } = await volumeFixture();
+  try {
+    await volumes.getByLabel("Разлито, л", { exact: true }).fill("18");
+    await saveBatchVolumes(user.id, batch.id, { preBoilL: 26 });
+    const tasks = page.locator("#batch-tasks");
+    await tasks.getByRole("button", { name: "Добавить задачу", exact: true }).click();
+    await tasks.getByLabel("Что сделать").fill("Refresh independent record");
+    await tasks.getByRole("button", { name: "Добавить", exact: true }).click();
+    await expect(tasks.getByText("Refresh independent record", { exact: true })).toBeVisible();
+    await page.screenshot({ path: resolve(output, "volume-form-after-task-refresh.png"), fullPage: true });
+    await expect(volumes).toHaveCount(1);
+    await volumes.getByText("Замеры при варке", { exact: true }).filter({ visible: true }).click();
+    await expect(volumes.getByLabel("До кипячения, л", { exact: true })).toHaveValue("26");
+    await page.screenshot({ path: resolve(output, "volume-input-after-refresh.png"), fullPage: true });
+    await expect(volumes.getByLabel("Разлито, л", { exact: true })).toHaveValue("18");
+  } finally { await context.close(); }
+});
+
+it("saves one edited volume without overwriting a separate volume changed in another tab", async () => {
+  const { user, batch, context, page, volumes } = await volumeFixture();
+  try {
+    await volumes.getByLabel("Разлито, л", { exact: true }).fill("18");
+    await saveBatchVolumes(user.id, batch.id, { preBoilL: 28 });
+    await volumes.getByRole("button", { name: "Сохранить объёмы", exact: true }).click();
+    await expect(volumes.getByText("Сохранено", { exact: true })).toBeVisible();
+    const saved = (await getBrewBatchDetail(user.id, batch.id))!.batch.volumeMeasurements;
+    await page.screenshot({ path: resolve(output, "volume-concurrent-save.png"), fullPage: true });
+    unitExpect(saved).toMatchObject({ bottledL: 18, preBoilL: 28 });
+  } finally { await context.close(); }
+});

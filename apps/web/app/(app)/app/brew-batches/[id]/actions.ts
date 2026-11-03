@@ -18,6 +18,7 @@ import {
 } from "@/features/brew-batches/service";
 import {
   consumeBrewBatchInventory,
+  getBrewBatchInventoryView,
   previewBrewBatchConsumption,
   restoreBrewBatchInventory
 } from "@/features/brew-batches/inventory";
@@ -282,10 +283,21 @@ export const consumeBrewBatchInventoryAction = async (
 ): Promise<BrewInventoryResult> => {
   try {
     const user = await requireUser();
-    const result = await consumeBrewBatchInventory(user.id, brewBatchId, {
-      substitutions,
-      allowPartial: opts?.allowPartial
-    });
+    let result: Awaited<ReturnType<typeof consumeBrewBatchInventory>>;
+    try {
+      result = await consumeBrewBatchInventory(user.id, brewBatchId, {
+        substitutions,
+        allowPartial: opts?.allowPartial
+      });
+    } catch (error) {
+      if (!(error instanceof Error) || error.message !== "ALREADY_CONSUMED") throw error;
+      // A retry can follow a committed write whose response never reached this
+      // tab. Read the owner's current state instead of leaving the old preview.
+      const view = await getBrewBatchInventoryView(user.id, brewBatchId);
+      if (!view?.hasConsumed) throw error;
+      revalidateBatch(brewBatchId);
+      return { ok: true, message: "Ингредиенты уже списаны со склада.", view };
+    }
     revalidateBatch(brewBatchId);
     if (!result.hasConsumed) {
       return {

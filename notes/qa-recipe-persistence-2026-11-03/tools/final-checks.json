@@ -1,0 +1,9 @@
+{
+  "unitExit": 0,
+  "coreExit": 0,
+  "integrationExit": 0,
+  "typecheckExit": 0,
+  "autosaveHooksExit": 0,
+  "dbTypecheckExit": 0,
+  "restoredConfigTypecheckExit": 0
+}

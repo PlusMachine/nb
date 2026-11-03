@@ -88,7 +88,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, message: "Слишком много загрузок подряд. Попробуйте позже." }, { status: 429 });
   }
 
-  const formData = await request.formData();
+  let formData: FormData;
+  try {
+    formData = await request.formData();
+  } catch {
+    return NextResponse.json({ ok: false, message: "Не удалось прочитать файл. Повторите загрузку." }, { status: 400 });
+  }
   const file = formData.get("file");
   const rawRecipeId = String(formData.get("recipeId") ?? "").trim();
   const rawImageId = String(formData.get("imageId") ?? "").trim();

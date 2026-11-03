@@ -56,18 +56,25 @@ export function BatchVolumes({ brewBatchId, volumes, stage, calibration }: {
   const router = useRouter();
   const [values, setValues] = useState<Record<string, string>>(() => Object.fromEntries(Object.entries(volumes).map(([key, value]) => [key, value == null ? "" : String(value).replace(".", ",")])) ), [busy, setBusy] = useState(false), [message, setMessage] = useState(""), [error, setError] = useState("");
   const inFlight = useRef(false);
+  const dirtyFields = useRef(new Set<keyof VolumeMeasurements>());
   const snapshotKey = JSON.stringify(volumes);
-  useEffect(() => { setValues(Object.fromEntries(Object.entries(volumes).map(([key, value]) => [key, value == null ? "" : String(value).replace(".", ",")]))); }, [snapshotKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const incoming = Object.fromEntries(Object.entries(volumes).map(([key, value]) => [key, value == null ? "" : String(value).replace(".", ",")]));
+    // Other records can refresh the page while this form is being edited.
+    // Merge untouched fields from the server and retain the user's local input.
+    setValues(current => ({ ...incoming, ...Object.fromEntries([...dirtyFields.current].map(key => [key, current[key] ?? ""])) }));
+  }, [snapshotKey]); // eslint-disable-line react-hooks/exhaustive-deps
   const keys = stage === "brew" ? ["preBoilL", "postBoilL", "fermenterL"] as const : ["bottledL", "preBoilL", "postBoilL", "fermenterL"] as const;
-  const input = (key: keyof VolumeMeasurements) => <label key={key} className="block min-w-0 text-xs text-muted-foreground">{volumeLabels[key]}, л<input className={fieldClass} inputMode="decimal" value={values[key] ?? ""} onChange={e => { setValues(old => ({ ...old, [key]: e.target.value })); setMessage(""); setError(""); }} disabled={busy} aria-label={`${volumeLabels[key]}, л`} /></label>;
+  const input = (key: keyof VolumeMeasurements) => <label key={key} className="block min-w-0 text-xs text-muted-foreground">{volumeLabels[key]}, л<input className={fieldClass} inputMode="decimal" value={values[key] ?? ""} onChange={e => { dirtyFields.current.add(key); setValues(old => ({ ...old, [key]: e.target.value })); setMessage(""); setError(""); }} disabled={busy} aria-label={`${volumeLabels[key]}, л`} /></label>;
   return <section id="batch-volumes" className="space-y-3 rounded-2xl border border-border bg-card p-4 shadow-sm">
     <h2 className="text-base font-semibold">Объёмы</h2>
     <p className="text-xs text-muted-foreground">Записывайте объёмы, приведённые к 20 °C.</p>
     <form className="space-y-3" onSubmit={async event => {
       event.preventDefault(); if (inFlight.current) return;
-      const patch = Object.fromEntries(keys.map(key => [key, values[key]?.trim() ? Number(values[key]!.trim().replace(",", ".")) : null]));
+      const editedKeys = keys.filter(key => dirtyFields.current.has(key));
+      const patch = Object.fromEntries(editedKeys.map(key => [key, values[key]?.trim() ? Number(values[key]!.trim().replace(",", ".")) : null]));
       inFlight.current = true; setBusy(true); setError(""); setMessage("");
-      try { const result = await saveBatchVolumesAction(brewBatchId, patch); if (!result.ok) setError(result.message); else { setMessage("Сохранено"); router.refresh(); } }
+      try { const result = await saveBatchVolumesAction(brewBatchId, patch); if (!result.ok) setError(result.message); else { editedKeys.forEach(key => dirtyFields.current.delete(key)); setMessage("Сохранено"); router.refresh(); } }
       catch { setError("Не удалось сохранить объёмы."); } finally { inFlight.current = false; setBusy(false); }
     }}>
       {stage === "brew" ? <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">{keys.map(input)}</div> : <>

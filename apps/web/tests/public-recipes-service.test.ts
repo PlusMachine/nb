@@ -185,7 +185,7 @@ describe("searchPublicRecipes", () => {
     expect(item.cloneCount).toBe(7); // «Скопировали N раз» — из recipes.clone_count, а не заглушка
     expect(item.rating).toBeNull();
     expect(item.heroImage).toEqual({
-      thumbUrl: "/api/recipe-images/img-1/thumb",
+      thumbUrl: "/api/recipe-images/img-1/thumb?v=2",
       blurDataUrl: "data:image/png;base64,blur"
     });
     expect(item.publishedAt).toBe("2026-02-01T00:00:00.000Z");

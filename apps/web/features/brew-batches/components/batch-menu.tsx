@@ -64,6 +64,9 @@ export function BatchMenu({
         router.refresh();
       }
       return true;
+    } catch {
+      setError("Не удалось обновить статус. Проверьте соединение и повторите попытку.");
+      return false;
     } finally {
       inFlight.current = false;
       setBusy(false);
@@ -89,6 +92,9 @@ export function BatchMenu({
         router.refresh();
       }
       return true;
+    } catch {
+      setError("Не удалось удалить партию. Проверьте соединение и повторите попытку.");
+      return false;
     } finally {
       inFlight.current = false;
       setBusy(false);

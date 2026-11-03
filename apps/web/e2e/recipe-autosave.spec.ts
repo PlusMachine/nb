@@ -65,6 +65,15 @@ for (const outcome of ["network", "validation"] as const) {
     await debounce(page);
     await expect.poll(() => calls(page)).toHaveLength(2);
     await page.evaluate(() => window.autosaveHarness.settle(1));
+    if (outcome === "network") {
+      // A response may be lost after commit: reconcile the frozen attempt first.
+      await expect.poll(() => state(page)).toMatchObject({ dirty: true, pending: false });
+      expect((await calls(page))[1].title).toBe("B");
+      await debounce(page);
+      await expect.poll(() => calls(page)).toHaveLength(3);
+      expect((await calls(page))[2].title).toBe("C");
+      await page.evaluate(() => window.autosaveHarness.settle(2));
+    }
     await expect.poll(() => state(page)).toMatchObject({ status: "saved", dirty: false });
   });
 }
@@ -80,7 +89,14 @@ test("a failed older request does not block a newer valid edit", async ({ page }
   await expect.poll(() => state(page)).toMatchObject({ pending: false });
   await debounce(page);
   await expect.poll(() => calls(page)).toHaveLength(2);
-  expect((await calls(page))[1].title).toBe("C");
+  expect((await calls(page))[1].title).toBe("B");
+  await page.evaluate(() => window.autosaveHarness.settle(1));
+  await expect.poll(() => state(page)).toMatchObject({ pending: false, dirty: true });
+  await debounce(page);
+  await expect.poll(() => calls(page)).toHaveLength(3);
+  expect((await calls(page))[2].title).toBe("C");
+  await page.evaluate(() => window.autosaveHarness.settle(2));
+  await expect.poll(() => state(page)).toMatchObject({ title: "C", status: "saved", dirty: false });
 });
 
 test("deletion cancels the queued edit after the in-flight save completes", async ({ page }) => {

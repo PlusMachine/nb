@@ -102,8 +102,8 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
     } catch (error) { if (!(error instanceof Error) || error.message !== "NOT_FOUND") throw error; }
   }
   const calibration = { profile: calibrationProfile, boilMinutes: batch.brewPlanSnapshot.boilPlan.boilTimeMinutes };
-  const volumePanel = <BatchVolumes key={batch.id} brewBatchId={batch.id} volumes={volumes} stage={batch.status === "brewing" ? "brew" : "bottling"} calibration={batch.deviceId || batch.status !== "brewing" ? calibration : undefined} />;
-  const taskPanel = <BatchTasks key={batch.id} brewBatchId={batch.id} tasks={tasks} />;
+  const volumePanel = <BatchVolumes key={"volumes:" + batch.id} brewBatchId={batch.id} volumes={volumes} stage={batch.status === "brewing" ? "brew" : "bottling"} calibration={batch.deviceId || batch.status !== "brewing" ? calibration : undefined} />;
+  const taskPanel = <BatchTasks key={"tasks:" + batch.id} brewBatchId={batch.id} tasks={tasks} />;
   const hasDevice = Boolean(batch.deviceId);
   const act = brewDayActForStatus(batch.status);
   // Подсказка в поле плотности зависит от акта: OG в варочный день, FG на брожении,

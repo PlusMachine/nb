@@ -1,0 +1,57 @@
+[
+  {
+    "id": "N01",
+    "status": "failed",
+    "error": "Error: operation unexpectedly accepted"
+  },
+  {
+    "id": "N02",
+    "status": "failed",
+    "error": "Error: operation unexpectedly accepted"
+  },
+  {
+    "id": "N03",
+    "status": "failed",
+    "error": "Error: {\"entered\":0,\"normalized\":0}"
+  },
+  {
+    "id": "N04",
+    "status": "passed"
+  },
+  {
+    "id": "N05",
+    "status": "passed",
+    "evidence": {
+      "normalizedGrams": 0.04
+    }
+  },
+  {
+    "id": "N06",
+    "status": "passed"
+  },
+  {
+    "id": "N07",
+    "status": "failed",
+    "error": "Error: {\"accepted\":true,\"amounts\":[7]}"
+  },
+  {
+    "id": "A01",
+    "status": "passed"
+  },
+  {
+    "id": "A02",
+    "status": "passed"
+  },
+  {
+    "id": "A03",
+    "status": "passed"
+  },
+  {
+    "id": "A04",
+    "status": "passed"
+  },
+  {
+    "id": "A06",
+    "status": "passed"
+  }
+]

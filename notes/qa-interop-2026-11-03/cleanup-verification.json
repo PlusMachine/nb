@@ -1,0 +1,13 @@
+{
+  "removedAt": "2026-11-03T20:10:00.700806+00:00",
+  "qaContainer": "nb-qa-next-20261103",
+  "qaContainerRemoved": true,
+  "qaDataStorage": "tmpfs",
+  "qaDataRemoved": true,
+  "qaLocalStorageRemoved": true,
+  "mainContainer": "nb-postgres",
+  "mainContainerPreserved": true,
+  "mainVolumesPreserved": true,
+  "generatedNextConfigRestored": true,
+  "qaServerStopped": true
+}

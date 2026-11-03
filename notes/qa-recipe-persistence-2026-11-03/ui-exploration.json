@@ -1,0 +1,25 @@
+[
+  {
+    "id": "P01",
+    "status": "passed",
+    "evidence": "Последняя правка C сохранена после задержанного запроса B"
+  },
+  {
+    "id": "P02",
+    "status": "passed",
+    "evidence": "Ввод сохранён после сетевого отказа и явного повтора"
+  },
+  {
+    "id": "P04",
+    "status": "passed",
+    "evidence": "После reload сохранённое название восстановлено"
+  },
+  {
+    "id": "P05",
+    "status": "failed",
+    "evidence": {
+      "title": "QA retry update",
+      "volume": 21
+    }
+  }
+]

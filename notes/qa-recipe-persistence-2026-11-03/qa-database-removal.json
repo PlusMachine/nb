@@ -1,0 +1,13 @@
+{
+  "container": "nb-qa-20261103",
+  "database": "nb_qa_20261103",
+  "containerRemoved": true,
+  "dataVolumesRemoved": [
+    "f0b4ed9b69f5d0a59805bf2909dae5bd06df5eda804f377da21ab62e3a770bd0"
+  ],
+  "projectContainer": "nb-postgres",
+  "projectContainerRunning": true,
+  "projectDataVolumeUnchanged": true,
+  "removedAtUtc": "2026-11-03T12:20:22.722074+00:00",
+  "reportsRetained": true
+}

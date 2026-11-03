@@ -1,0 +1,9 @@
+{
+  "migration": "0072_recipe_editor_revision",
+  "legacyTimestampBackfilled": true,
+  "legacyContentPreserved": true,
+  "secondMigrationRunExit": 0,
+  "fixtureCleaned": true,
+  "database": "nb_qa_20261103",
+  "journalAndSnapshotConsistent": true
+}

@@ -1,3 +1,4 @@
+import { buildRecipeImageVariantUrl } from "../recipe-images/contracts";
 import type { Metadata } from "next";
 import type { BeerStyle } from "@nb/brewing-core";
 
@@ -44,7 +45,7 @@ const resolveStyleName = (style: BeerStyle | null): string | null => (
 );
 
 const resolveHeroImagePath = (heroImageId: string | null): string | null => (
-  heroImageId ? `/api/recipe-images/${heroImageId}/large` : null
+  heroImageId ? buildRecipeImageVariantUrl(heroImageId, "large") : null
 );
 
 // --- UGC-гейтинг индексации (§12 SEO-плейбука: «публикация ≠ индексация») ----

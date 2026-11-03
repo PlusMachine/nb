@@ -174,7 +174,7 @@ describe("features/recipes/seo — публичная деталка рецеп�
     expect(jsonLd["@type"]).toBe("Recipe");
     expect(jsonLd.name).toBe("Hazy IPA");
     expect(jsonLd.url).toBe("http://localhost:3000/recipes/hazy-ipa");
-    expect(jsonLd.image).toBe("http://localhost:3000/api/recipe-images/img-42/large");
+    expect(jsonLd.image).toBe("http://localhost:3000/api/recipe-images/img-42/large?v=2");
     expect(jsonLd.author).toEqual({ "@type": "Person", name: "Иван Пивовар" });
     expect(jsonLd.datePublished).toBe("2026-01-01T00:00:00.000Z");
     expect(jsonLd.dateModified).toBe("2026-01-05T00:00:00.000Z");

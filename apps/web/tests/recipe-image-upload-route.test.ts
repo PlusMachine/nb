@@ -27,6 +27,10 @@ describe("recipe photo upload across Node runtimes", () => {
     data.set("recipeId", "recipe-1");
     data.set("file", new Blob(["png"], { type: "image/png" }) as unknown as globalThis.Blob, "photo.png");
     const request = new Request("http://localhost/api/recipe-images/upload", { method: "POST", body: data });
+    // Parse real multipart data before hiding File: Node 24's parser itself
+    // depends on that global, while this regression exercises our route's guard.
+    const parsed = await request.formData();
+    vi.spyOn(request, "formData").mockResolvedValue(parsed);
     vi.stubGlobal("File", undefined);
     const response = await POST(request);
     expect(response.status).toBe(200);

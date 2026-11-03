@@ -24,8 +24,13 @@ declare global {
 }
 
 export async function mountRecipeAutosave(page: Page, mode: "create" | "edit" = "edit") {
+  // Match the editor's secure localhost context so Web Crypto is available.
+  await page.route("http://localhost/qa-autosave-harness", route => route.fulfill({
+    contentType: "text/html",
+    body: '<div id="root"></div>'
+  }));
+  await page.goto("http://localhost/qa-autosave-harness");
   await page.clock.install();
-  await page.setContent('<div id="root"></div>');
   await page.addScriptTag({ path: join(dirname(require.resolve("react")), "umd/react.development.js") });
   await page.addScriptTag({ path: join(dirname(require.resolve("react-dom")), "umd/react-dom.development.js") });
   await page.addScriptTag({ content: `

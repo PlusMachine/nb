@@ -1,0 +1,127 @@
+{
+  "date": "2026-11-03",
+  "timezone": "Europe/Moscow",
+  "baseCommit": "21831fa",
+  "workingTree": "uncommitted",
+  "environment": {
+    "node": "24.13.1",
+    "database": "isolated Docker PostgreSQL 16",
+    "frontend": "Next.js development, separate QA dist",
+    "browser": "Chromium"
+  },
+  "defects": [
+    {
+      "id": "B01",
+      "priority": "P2",
+      "status": "fixed_and_retested"
+    },
+    {
+      "id": "B02",
+      "priority": "P2",
+      "status": "fixed_and_retested"
+    },
+    {
+      "id": "B03",
+      "priority": "P2",
+      "status": "fixed_and_retested"
+    },
+    {
+      "id": "B04",
+      "priority": "P2",
+      "status": "fixed_and_retested"
+    },
+    {
+      "id": "B05",
+      "priority": "P2",
+      "status": "fixed_and_retested"
+    },
+    {
+      "id": "B06",
+      "priority": "P1",
+      "status": "fixed_and_retested"
+    },
+    {
+      "id": "B07",
+      "priority": "P2",
+      "status": "fixed_and_retested"
+    },
+    {
+      "id": "B08",
+      "priority": "P2",
+      "status": "fixed_and_retested"
+    },
+    {
+      "id": "B09",
+      "priority": "P1",
+      "status": "fixed_and_retested"
+    }
+  ],
+  "checks": {
+    "webUnit": {
+      "passed": 4420,
+      "files": 320
+    },
+    "brewingCore": {
+      "passed": 151,
+      "files": 12
+    },
+    "integration": {
+      "passed": 79,
+      "files": 10
+    },
+    "autosaveHooks": {
+      "passed": 8
+    },
+    "webTypecheck": {
+      "exitCode": 0,
+      "originalConfigRestored": true
+    },
+    "dbTypecheck": {
+      "exitCode": 0
+    },
+    "diffWhitespace": {
+      "exitCode": 0
+    }
+  },
+  "coverage": {
+    "recipeNumbersAndAccess": 20,
+    "batchRecordsAndAnalytics": 18,
+    "originalChainCases": 25,
+    "note": "Scenario matrices overlap existing test cases; repeat runs are not added as unique tests."
+  },
+  "migration": {
+    "file": "packages/db/drizzle/0072_recipe_editor_revision.sql",
+    "requiredBeforeAppStart": true,
+    "appliedTo": "QA database nb_qa_20261103, then regular local Docker database nb",
+    "backfillAndReplayVerified": true
+  },
+  "fullPlanComplete": false,
+  "remaining": [
+    "Existing-recipe update response lost after commit, browser scenario",
+    "Import/export and full publication/version matrix",
+    "Production/PWA and cache tests",
+    "Non-Chromium engines and physical phones",
+    "BrewForge hardware/telemetry end to end",
+    "Load and full historical database restore"
+  ],
+  "cleanup": {
+    "qaWebServerStopped": true,
+    "qaContainerStopped": "nb-qa-20261103",
+    "containerRetained": false,
+    "generatedNextConfigRestored": true,
+    "usersRemaining": 4,
+    "targetedTemporaryUsersRemaining": 0,
+    "recipesRemaining": 0,
+    "batchesRemaining": 0,
+    "mainDatabaseTouched": false,
+    "scope": "QA stage before the later local Docker database update",
+    "qaContainerRemoved": true,
+    "qaDataVolumesRemoved": true
+  },
+  "backup": {
+    "directory": "D:/CodexQA/nb-2026-11-03-01a1a0a2",
+    "changedSourceFilesVerified": 22
+  },
+  "localDockerUpdate": "local-docker-update.json",
+  "qaDatabaseRemoval": "qa-database-removal.json"
+}

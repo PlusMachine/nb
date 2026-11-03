@@ -1,0 +1,23 @@
+[
+  {
+    "id": "B01",
+    "requirement": "После потерянного ответа повтор восстанавливает подтверждённое состояние партии",
+    "status": "failed",
+    "reproduced": true,
+    "afterLostResponse": 4,
+    "afterRetry": 4,
+    "staleConsumeButton": true,
+    "returnButtons": 0
+  },
+  {
+    "id": "B02",
+    "requirement": "Сетевой отказ отмены партии показан внутри диалога",
+    "status": "failed",
+    "reproduced": true,
+    "alerts": 0,
+    "pageErrors": [
+      "Failed to fetch"
+    ],
+    "batchStatus": "planned"
+  }
+]

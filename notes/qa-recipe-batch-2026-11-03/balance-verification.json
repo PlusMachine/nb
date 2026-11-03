@@ -1,0 +1,49 @@
+{
+  "stockBalance": "passed",
+  "netDeltaByStock": {
+    "8d328a03-f0de-4414-aeaa-48fa79a4207b": 0,
+    "0e337c9a-540e-409f-bcb9-3e009a3aa751": 0,
+    "8e23f796-37e1-4e3e-bda7-ab4549f1490d": 0,
+    "6363df89-e332-4312-adff-d5eada56746a": 0.0
+  },
+  "finalNormalizedGrams": {
+    "8d328a03-f0de-4414-aeaa-48fa79a4207b": 5000,
+    "0e337c9a-540e-409f-bcb9-3e009a3aa751": 12,
+    "8e23f796-37e1-4e3e-bda7-ab4549f1490d": 10,
+    "6363df89-e332-4312-adff-d5eada56746a": 23
+  },
+  "snapshots": [
+    {
+      "volumeL": 10,
+      "normalizedGrams": [
+        2000,
+        10,
+        10,
+        5.75
+      ]
+    },
+    {
+      "volumeL": 10,
+      "normalizedGrams": [
+        2000,
+        10,
+        10,
+        5.75
+      ]
+    },
+    {
+      "volumeL": 20,
+      "normalizedGrams": [
+        4000,
+        20,
+        20,
+        11.5
+      ]
+    }
+  ],
+  "sourceVolumeL": 20,
+  "sourceTargetsUnchanged": true,
+  "batches": 3,
+  "transactions": 36,
+  "allBatchesCancelled": true
+}

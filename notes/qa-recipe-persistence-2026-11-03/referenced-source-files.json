@@ -1,0 +1,12 @@
+[
+  "apps/web/app/(app)/app/brew-batches/[id]/actions.ts",
+  "apps/web/features/brew-batches/components/batch-menu.tsx",
+  "apps/web/features/brew-batches/components/batch-volumes.tsx",
+  "apps/web/features/brew-batches/components/consume-preview-dialog.tsx",
+  "apps/web/integration/batch-records-browser.integration.test.ts",
+  "apps/web/integration/recipe-persistence-browser.integration.test.ts",
+  "apps/web/integration/recipe-persistence.integration.test.ts",
+  "apps/web/integration/recovery-browser.integration.test.ts",
+  "apps/web/tests/recipe-units.test.ts",
+  "packages/db/drizzle/0072_recipe_editor_revision.sql"
+]
