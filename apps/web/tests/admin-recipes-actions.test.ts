@@ -71,7 +71,7 @@ describe("hideRecipesAction", () => {
     // Лента и счётчики главной — процессный слот мимо Next-кэша.
     expect(mocks.invalidateHomeDataCache).toHaveBeenCalledTimes(1);
 
-    for (const path of ["/admin/recipes", "/recipes", "/", "/sitemap.xml", "/recipes/hidden-ipa", "/beer/hidden-ipa"]) {
+    for (const path of ["/admin/recipes", "/recipes", "/", "/recipes/hidden-ipa", "/beer/hidden-ipa"]) {
       expect(mocks.revalidatePath).toHaveBeenCalledWith(path);
     }
   });

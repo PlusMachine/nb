@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Montserrat, Onest, Rubik, Unbounded } from "next/font/google";
+import localFont from "next/font/local";
 import { cookies } from "next/headers";
 
 import "./globals.css";
@@ -15,33 +15,41 @@ import {
   themeInitScript
 } from "@/features/theme/theme";
 
-const bodyFont = Rubik({
-  subsets: ["latin", "cyrillic"],
+const bodyFont = localFont({
+  src: "./fonts/Rubik-Variable.woff2",
+  display: "optional",
+  fallback: ["Arial", "sans-serif"],
   variable: "--font-sans",
-  weight: ["400", "500", "600", "700"]
+  weight: "400 700"
 });
 
-const displayFont = Montserrat({
-  subsets: ["latin", "cyrillic"],
+const displayFont = localFont({
+  src: "./fonts/Montserrat-Variable.woff2",
+  display: "optional",
+  fallback: ["Arial", "sans-serif"],
   variable: "--font-display",
-  weight: ["600", "700", "800"]
+  weight: "600 800"
 });
 
 // Шрифты скина «hop»: переменные подменяются в globals.css под html.skin-hop,
 // компоненты продолжают ссылаться на --font-sans / --font-display.
 // preload:false — скин hop опционален (дефолт classic); незачем преложать его
 // шрифты всем. Браузер догрузит их лениво, когда появится класс skin-hop.
-const hopBodyFont = Onest({
-  subsets: ["latin", "cyrillic"],
+const hopBodyFont = localFont({
+  src: "./fonts/Onest-Variable.woff2",
+  display: "swap",
+  fallback: ["Arial", "sans-serif"],
   variable: "--font-sans-hop",
-  weight: ["400", "500", "600", "700"],
+  weight: "400 700",
   preload: false
 });
 
-const hopDisplayFont = Unbounded({
-  subsets: ["latin", "cyrillic"],
+const hopDisplayFont = localFont({
+  src: "./fonts/Unbounded-Variable.woff2",
+  display: "swap",
+  fallback: ["Arial", "sans-serif"],
   variable: "--font-display-hop",
-  weight: ["500", "600", "700"],
+  weight: "500 700",
   preload: false
 });
 

@@ -50,14 +50,15 @@ describe("real image processing, HTTP delivery and permissions", () => {
     await tab.locator('input[type="file"][accept="image/jpeg,image/png,image/webp"]').setInputFiles({ name: "qa-ui.png", mimeType: "image/png", buffer: await png() });
     await browserExpect.poll(async () => (await listRecipeImages(recipeId, owner)).filter(image => image.status === "ready").length, { timeout: 15000 }).toBe(1);
     const images = await listRecipeImages(recipeId, owner);
-    await browserExpect(tab.locator(`img[src="${images[0].thumbUrl}"]`)).toBeVisible();
-    const titleInput = tab.getByPlaceholder("Например, NEIPA с тропическим ароматом");
+    const thumbnail = tab.locator(`img[src="${images[0].thumbUrl}"]`).filter({ visible: true });
+    await browserExpect(thumbnail).toBeVisible();
+    const titleInput = tab.getByPlaceholder("Например, NEIPA с тропическим ароматом").filter({ visible: true });
     await titleInput.fill("QA text after photo");
     await browserExpect(tab.getByText("Сохранено", { exact: true })).toBeVisible({ timeout: 15000 });
     expect((await db.query.recipes.findFirst({ where: eq(recipes.id, recipeId) }))?.title).toBe("QA text after photo");
     await tab.reload({ waitUntil: "domcontentloaded" });
     await browserExpect(titleInput).toHaveValue("QA text after photo");
-    await browserExpect(tab.locator(`img[src="${images[0].thumbUrl}"]`)).toBeVisible();
+    await browserExpect(thumbnail).toBeVisible();
   });
   it("rotates EXIF JPEG, strips metadata and supplies valid derivatives without resizing up", async () => {
     const input = await sharp(await png()).jpeg().withMetadata({ orientation: 6 }).toBuffer();

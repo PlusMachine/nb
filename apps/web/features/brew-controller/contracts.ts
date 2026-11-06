@@ -8,6 +8,7 @@ import type {
   Telemetry,
 } from "@nb/brewforge-protocol";
 import type { DeviceRecipeSlot } from "./transport";
+import type { DeviceChannel } from "./telemetry-source";
 import type { BrewPlanSnapshot } from "../brew-batches/contracts";
 
 /** id встроенного провайдера BrewForge (LAN/облако — реальное железо/симулятор). */
@@ -108,7 +109,8 @@ export type StartOtaInput = { userId: string; deviceId: string; url: string };
 // --- Сигнатуры методов ------------------------------------------------------
 
 export type PushRecipeFn = (input: PushRecipeInput) => Promise<PushRecipeResult>;
-export type ReadTelemetryFn = (input: ReadTelemetryInput) => Promise<Telemetry | null>;
+export type LiveDeviceFrame = { telemetry: Telemetry; channel: DeviceChannel };
+export type ReadTelemetryFn = (input: ReadTelemetryInput) => Promise<LiveDeviceFrame | null>;
 export type SendCommandFn = (input: SendCommandInput) => Promise<Ack>;
 export type OpenSessionFn = (input: SessionInput) => Promise<void>;
 export type CloseSessionFn = (input: SessionInput) => Promise<void>;

@@ -46,9 +46,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const style = getBeerStyleById(recipe.styleId);
     return buildPublicRecipeMetadata(recipe, style);
   } catch (error) {
-    // notFound()/rethrow именно здесь, в generateMetadata — иначе стриминг тела
-    // успеет отдать 200 (через loading.tsx) до того, как решится статус страницы
-    // для снятого с публикации/удалённого рецепта.
+    // Для снятого с публикации рецепта возвращаем 404 и в метаданных, и в теле.
     if (error instanceof Error && ["NOT_FOUND", "FORBIDDEN"].includes(error.message)) {
       notFound();
     }

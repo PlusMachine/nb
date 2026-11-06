@@ -487,6 +487,13 @@
       "when": 1793736042537,
       "tag": "0073_recipe_editor_save_key",
       "breakpoints": true
+    },
+    {
+      "idx": 74,
+      "version": "7",
+      "when": 1794004340150,
+      "tag": "0074_brewforge_mqtt_telemetry",
+      "breakpoints": true
     }
   ]
 }

@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { readFileSync, mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, it, expect as check } from "vitest";
 import { chromium, expect, type Browser, type BrowserContext, type Page } from "@playwright/test";
 import { db, pool, users, recipes, eq, inArray } from "@nb/db";
@@ -8,10 +9,10 @@ import { completeEmailSignIn, createSession } from "@nb/auth";
 import { getRecipeById } from "../features/recipes/service";
 import { importBeerXmlToCanonicalRecipe } from "../features/recipes/interop/beerxml";
 const base = process.env.E2E_BASE_URL ?? "http://127.0.0.1:3000";
-const artifactDir = fileURLToPath(new URL("../../../notes/qa-interop-2026-11-03/screenshots/", import.meta.url));
+const artifactDir = process.env.QA_ARTIFACT_DIR ?? fileURLToPath(new URL("../../../notes/qa-interop-2026-11-03/screenshots/", import.meta.url));
 let browser: Browser, context: BrowserContext, page: Page, owner: string;
 const owners: string[] = [];
-const title = () => page.getByPlaceholder("Например, NEIPA с тропическим ароматом");
+const title = () => page.getByPlaceholder("Например, NEIPA с тропическим ароматом").filter({ visible: true });
 const hydrated = () => page.waitForFunction(() => Array.from(document.querySelectorAll("button")).some(button => button.textContent?.trim() === "Сварить" && Object.keys(button).some(key => key.startsWith("__reactProps$"))));
 beforeAll(async () => {
   if (new URL(process.env.DATABASE_URL!).pathname !== "/nb_qa_20261103") throw new Error("ISOLATED_QA_DATABASE_REQUIRED");
@@ -54,7 +55,7 @@ describe("browser import, editing and BeerXML download", () => {
     const path = await download.path(); check(path).toBeTruthy();
     const exported = importBeerXmlToCanonicalRecipe(readFileSync(path!, "utf8"));
     check(exported.title).toBe("QA imported and edited " + format); check(exported.ingredients.length).toBeGreaterThan(0);
-    await page.screenshot({ path: artifactDir + `transfer-${format}.png`, scale: "css", animations: "disabled" });
+    await page.screenshot({ path: join(artifactDir, `transfer-${format}.png`), scale: "css", animations: "disabled" });
     await page.reload({ waitUntil: "domcontentloaded" }); await hydrated();
     await expect(title()).toHaveValue(exported.title);
     check(await db.query.recipes.findMany({ where: eq(recipes.authorId, owner) })).toHaveLength(1);

@@ -11,6 +11,7 @@ import {
 import { ingestStreamPacket } from "@/features/device-streams/ingest";
 import { findDeviceByToken } from "@/features/devices/service";
 import { clientIpFrom } from "@/lib/anti-abuse";
+import { readLimitedText } from "@/lib/read-limited-text";
 
 // =============================================================================
 //  /api/ingest/[token] — generic-приём телеметрии сторонних устройств ферментации
@@ -64,16 +65,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ tok
   const { token } = await params;
 
   try {
-    // Лимит тела (§8.5): сперва дешёвая проверка заявленного Content-Length —
-    // избегаем чтения заведомо огромного тела в память.
-    const declaredLength = Number(request.headers.get("content-length") ?? "");
-    if (Number.isFinite(declaredLength) && declaredLength > INGEST_BODY_MAX_BYTES) {
-      return NextResponse.json({ ok: false, error: "too_large" }, { status: 413 });
-    }
-
-    const text = await request.text();
-    // Content-Length мог соврать (или отсутствовать) — считаем по факту прочитанного.
-    if (Buffer.byteLength(text, "utf8") > INGEST_BODY_MAX_BYTES) {
+    const text = await readLimitedText(request, INGEST_BODY_MAX_BYTES);
+    if (text === null) {
       return NextResponse.json({ ok: false, error: "too_large" }, { status: 413 });
     }
 

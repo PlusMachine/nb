@@ -9,7 +9,7 @@ import { createRecipe, getRecipeById } from "../features/recipes/service";
 
 const base = process.env.E2E_BASE_URL ?? "http://127.0.0.1:3000";
 const expect = rawExpect.configure({ timeout: 15000 });
-const artifactDir = fileURLToPath(new URL("../../../notes/qa-recipe-persistence-2026-11-03/screenshots/", import.meta.url));
+const artifactDir = process.env.QA_ARTIFACT_DIR ?? fileURLToPath(new URL("../../../notes/qa-recipe-persistence-2026-11-03/screenshots/", import.meta.url));
 const owners: string[] = [];
 let browser: Browser, context: BrowserContext, page: Page;
 let owner: string, recipeId: string;
@@ -20,7 +20,11 @@ const cookies = (token: string) => [
   { name: "nb_cookie_consent", value: "1:necessary", url: base },
   { name: "nb_age_ok", value: "1", url: base }
 ];
-const hydrated = async (tab: Page) => tab.waitForFunction(() => Array.from(document.querySelectorAll("button")).some(button => button.textContent?.trim() === "Сварить" && Object.keys(button).some(key => key.startsWith("__reactProps$"))));
+const hydrated = async (tab: Page) => {
+  await tab.waitForFunction(() => Array.from(document.querySelectorAll("button")).some(button => button.textContent?.trim() === "Сварить" && Object.keys(button).some(key => key.startsWith("__reactProps$"))));
+  // Production streaming can briefly retain a hidden tree during reload.
+  await expect(titleInput(tab)).toHaveCount(1);
+};
 const gotoEditor = async (tab: Page = page) => {
   await tab.goto(base + "/app/recipes/" + recipeId + "/edit", { waitUntil: "domcontentloaded" });
   await hydrated(tab);

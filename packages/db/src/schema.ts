@@ -921,6 +921,8 @@ export const brewDevices = pgTable("brew_devices", {
   // rapt-brewzilla | other. NULL у BrewForge-контроллеров. Влияет только на UI (иконка/инструкция).
   hardwareKind: text("hardware_kind"),
   lastSeenAt: timestamp("last_seen_at", { withTimezone: true }),
+  mqttTelemetry: jsonb("mqtt_telemetry").$type<Record<string, unknown>>(),
+  mqttTelemetryAt: timestamp("mqtt_telemetry_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
 }, (table) => ({

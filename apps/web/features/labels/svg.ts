@@ -170,13 +170,15 @@ export const hopMarkPath = (): string => {
   const scale = (HOP_MARK_INNER_R * 2 * HOP_MARK_FIT) / Math.max(HOP_MARK_WIDTH, HOP_MARK_HEIGHT);
   const x = 12 - (HOP_MARK_WIDTH * scale) / 2;
   const y = 12 - (HOP_MARK_HEIGHT * scale) / 2;
-  return (
-    `<circle cx="12" cy="12" r="11.5" fill="none" stroke="black" stroke-width="0.45"/>` +
-    `<circle cx="12" cy="12" r="${HOP_MARK_INNER_R}" fill="none" stroke="black" stroke-width="0.25"/>` +
-    `<g transform="translate(${x.toFixed(3)} ${y.toFixed(3)}) scale(${scale.toFixed(6)})">` +
-    `<path d="${HOP_MARK_D}" fill="black" fill-rule="evenodd"/>` +
+  // Keep the fragments separate: production constant folding of the chained
+  // template literals discarded attribute suffixes in this large SVG.
+  return [
+    `<circle cx="12" cy="12" r="11.5" fill="none" stroke="black" stroke-width="0.45"/>`,
+    `<circle cx="12" cy="12" r="${HOP_MARK_INNER_R}" fill="none" stroke="black" stroke-width="0.25"/>`,
+    `<g transform="translate(${x.toFixed(3)} ${y.toFixed(3)}) scale(${scale.toFixed(6)})">`,
+    `<path d="${HOP_MARK_D}" fill="black" fill-rule="evenodd"/>`,
     `</g>`
-  );
+  ].join("");
 };
 
 export const yeastIconPath = (strokeWidth: number): string =>

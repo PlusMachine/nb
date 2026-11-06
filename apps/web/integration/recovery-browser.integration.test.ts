@@ -9,7 +9,7 @@ import { createBrewBatchFromRecipe } from "../features/brew-batches/service";
 import { createEquipmentProfile } from "../features/equipment-profiles/service";
 import { buildStarterEquipmentProfileDefaults } from "../features/equipment/defaults";
 
-const base = "http://127.0.0.1:3000";
+const base = process.env.E2E_BASE_URL ?? "http://127.0.0.1:3000";
 const expect = baseExpect.configure({ timeout: 15000 });
 const accountIds: string[] = [];
 let browser: Browser, context: BrowserContext, page: Page;

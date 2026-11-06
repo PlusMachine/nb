@@ -20,7 +20,7 @@ LAN/симуляторный путь (`features/brew-controller` → `lanTransp
 # 1) Поднять брокер (и Postgres) через docker-compose из корня репо:
 docker compose up -d mosquitto postgres
 
-# 2) Применить миграции БД (если ещё не применены) — нужен Postgres:
+# 2) Применить миграции перед запуском обновлённых web и bridge:
 npm run db:migrate
 
 # 3) Запустить мост (dev, авто-перезапуск через tsx watch):
@@ -52,8 +52,8 @@ npm run dev -w @nb/device-sim
 
 | Топик                       | Валидация       | Действие в БД                                                                                                                |
 | --------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `brewforge/+/telemetry`     | `TelemetrySchema` | Резолв устройства по `hardwareId`. Upsert `brew_devices.{lastSeenAt=now, status="online", fw}`. INSERT lean-строки `brew_telemetry` (`deviceId, ts, seq, stage, primaryC, setpointC, heatDutyPct, payload=полный снимок`); если есть активная партия (`brew_batches.deviceId` в статусе `brewing/fermenting`) — проставляется `brewBatchId`. Фан-аут владельцам по WS. |
-| `brewforge/+/status`        | мягкая (строка/объект) | UPDATE `brew_devices.status` → `online`/`offline`/`unknown` (+ `lastSeenAt`/`fw` если online).                              |
+| `brewforge/+/telemetry`     | `TelemetrySchema` | Последний кадр и время его приёма обновляются в `brew_devices`. История в `brew_telemetry` записывается с прореживанием и привязкой к активной партии. Фан-аут владельцам по WS. |
+| `brewforge/+/status`        | мягкая (строка/объект) | Обновляет статус устройства. При `offline` очищает текущий кадр. |
 | `brewforge/+/cmd/ack`       | `AckSchema`     | UPDATE `device_commands` по `id == ack.ackOf`: `status = acked|failed`, `reason`, `ackedAt=now`. Фан-аут ack по WS.          |
 | `brewforge/+/log`           | минимальная (`type`) | INSERT `brew_log_events` (`deviceId, ts, type, payload`) + `brewBatchId` активной партии.                                   |
 

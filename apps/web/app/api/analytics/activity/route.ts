@@ -6,6 +6,7 @@ import { getServerEnv } from "@/lib/env";
 import { COOKIE_CONSENT_COOKIE, parseCookieConsent } from "@/lib/consent";
 import { parseActivityInput } from "@/features/product-analytics/contracts";
 import { recordProductActivity } from "@/features/product-analytics/service";
+import { readLimitedText } from "@/lib/read-limited-text";
 
 export async function POST(request: Request) {
   const origin = request.headers.get("origin");
@@ -19,8 +20,8 @@ export async function POST(request: Request) {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
   if (!request.headers.get("content-type")?.startsWith("application/json")) return NextResponse.json({ error: "INVALID_INPUT" }, { status: 400 });
-  const body = await request.text();
-  if (body.length > 512) return NextResponse.json({ error: "TOO_LARGE" }, { status: 413 });
+  const body = await readLimitedText(request, 512);
+  if (body === null) return NextResponse.json({ error: "TOO_LARGE" }, { status: 413 });
   let input;
   try { input = parseActivityInput(JSON.parse(body)); } catch { input = null; }
   if (!input) return NextResponse.json({ error: "INVALID_INPUT" }, { status: 400 });

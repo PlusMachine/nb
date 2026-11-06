@@ -37,7 +37,7 @@ let labelCache: {
   key: string;
   images: [string, string];
 } | null = null;
-export async function getHomeLabelImages(recipe: PublicRecipeDetailDto): Promise<[string, string]> {
+export async function getHomeLabelImages(recipe: PublicRecipeDetailDto): Promise<[string, string] | null> {
   const key = `${recipe.id}:${recipe.updatedAt.toISOString()}`;
   if (labelCache?.key === key) return labelCache.images;
   const slots = buildLabelSlots({
@@ -45,18 +45,22 @@ export async function getHomeLabelImages(recipe: PublicRecipeDetailDto): Promise
     baseUrl: getServerEnv().APP_URL
   });
   slots.authorName = homeAuthorName(slots.authorName);
-  const images = (await Promise.all((["typographic", "craft"] as const).map(async template => {
-    const png = await renderLabelPreviewPng({
-      template,
-      preset: "LW",
-      dpi: 203,
-      slots
-    });
-    return `data:image/png;base64,${png.toString("base64")}`;
-  }))) as [string, string];
-  labelCache = {
-    key,
-    images
-  };
-  return images;
+  try {
+    const images = (await Promise.all((["typographic", "craft"] as const).map(async template => {
+      const png = await renderLabelPreviewPng({
+        template,
+        preset: "LW",
+        dpi: 203,
+        slots
+      });
+      return `data:image/png;base64,${png.toString("base64")}`;
+    }))) as [string, string];
+    labelCache = { key, images };
+    return images;
+  } catch (error) {
+    // A decorative preview must not make the public homepage unavailable.
+    // Do not cache a failed render: the next visit can retry it.
+    console.error("Home label preview failed", error);
+    return null;
+  }
 }

@@ -1,11 +1,10 @@
 import { assertRateLimit } from "@nb/auth";
-import { and, brewDevices, count, db, desc, eq, fermentReadings, fermentSessions, inArray, isNull } from "@nb/db";
+import { and, brewDevices, count, db, eq, inArray } from "@nb/db";
 
 import { STREAM_PROVIDER_ID } from "@/features/brew-controller/contracts";
 import { RAPT_PROVIDER_ID } from "@/features/brew-controller/rapt-cloud-provider";
 
 import {
-  INGEST_PERSIST_GATE_SECONDS,
   MAX_STREAM_DEVICES_PER_USER,
   RAPT_INGEST_RATE_LIMIT,
   RAPT_INGEST_RATE_WINDOW_SECONDS,
@@ -16,6 +15,7 @@ import { normalizeStreamPacket } from "./normalize-core";
 import type { ParsedStreamPacket } from "./parse-core";
 import { processIngestAlerts } from "./alerts";
 import { track } from "./analytics";
+import { persistStreamReading, resolveStreamReadingTs } from "./persist-reading";
 
 // =============================================================================
 //  features/device-streams — ingest-rapt.ts
@@ -25,17 +25,7 @@ import { track } from "./analytics";
 //  подключение кормит любое число устройств пользователя (Pill + камера +
 //  BrewZilla одним вебхуком, автообнаружение по @device_id, §5 F1-RAPT).
 //
-//  Владелец этого файла (жёсткое разделение с параллельным исполнителем):
-//  не трогает ingest.ts/service.ts/sessions.ts/corrections.ts/series.ts —
-//  паттерны персист-гейта/дедупа/денормализации сеанса СКОПИРОВАНЫ из ingest.ts
-//  (тот файл приватных хелперов наружу не отдаёт), а не импортированы.
 // =============================================================================
-
-/** Персист-гейт (§8.5): 1 точка/5 мин на устройство — тот же порог, что у generic ingest. */
-const PERSIST_GATE_MS = INGEST_PERSIST_GATE_SECONDS * 1000;
-
-/** Окно правдоподобия для `ts` (@created_date) — тот же принцип, что SOURCE_TS_WINDOW_MS в ingest.ts. */
-const RAPT_TS_WINDOW_MS = 48 * 60 * 60 * 1000;
 
 export type IngestRaptResult =
   | { kind: "stored"; created: boolean }
@@ -155,39 +145,6 @@ const mapDeviceTypeToHardwareKind = (deviceType: string | null): StreamHardwareK
 
 const buildRaptHardwareId = (deviceId: string): string => `rapt-${deviceId}`;
 
-/** Время точки: sourceTs (@created_date), если в разумном окне вокруг receivedAt; иначе — время приёма. */
-const resolveReadingTs = (sourceTs: Date | null, receivedAt: Date): Date => {
-  if (!sourceTs) return receivedAt;
-  const driftMs = Math.abs(sourceTs.getTime() - receivedAt.getTime());
-  return driftMs <= RAPT_TS_WINDOW_MS ? sourceTs : receivedAt;
-};
-
-const touchDeviceOnline = async (deviceId: string, at: Date): Promise<void> => {
-  await db
-    .update(brewDevices)
-    .set({ lastSeenAt: at, status: "online", updatedAt: new Date() })
-    .where(eq(brewDevices.id, deviceId));
-};
-
-const findActiveSessionId = async (deviceId: string): Promise<string | null> => {
-  const [row] = await db
-    .select({ id: fermentSessions.id })
-    .from(fermentSessions)
-    .where(and(eq(fermentSessions.deviceId, deviceId), isNull(fermentSessions.endedAt)))
-    .limit(1);
-  return row?.id ?? null;
-};
-
-const findLatestReadingTs = async (deviceId: string): Promise<Date | null> => {
-  const [row] = await db
-    .select({ ts: fermentReadings.ts })
-    .from(fermentReadings)
-    .where(eq(fermentReadings.deviceId, deviceId))
-    .orderBy(desc(fermentReadings.ts))
-    .limit(1);
-  return row?.ts ?? null;
-};
-
 /**
  * Найти существующее RAPT-устройство пользователя (hardwareId=`rapt-<device_id>`
  * И userId владельца интеграции) либо создать новое (автообнаружение, §5 F1-RAPT
@@ -296,39 +253,16 @@ export const ingestRaptWebhook = async (input: IngestRaptWebhookInput): Promise<
     track("first_packet", { provider: RAPT_PROVIDER_ID });
   }
 
-  const normalized = normalizeStreamPacket(toNormalizeInput(parsed));
-  const ts = resolveReadingTs(parsed.sourceTs, receivedAt);
+  const result = await persistStreamReading({
+    deviceId,
+    receivedAt,
+    ts: resolveStreamReadingTs(parsed.sourceTs, receivedAt),
+    reading: normalizeStreamPacket(toNormalizeInput(parsed)),
+    payload: input.body as Record<string, unknown>
+  });
+  if (result.kind !== "stored") return { kind: result.kind };
 
-  const latestTs = await findLatestReadingTs(deviceId);
-  if (latestTs && ts.getTime() - latestTs.getTime() < PERSIST_GATE_MS) {
-    await touchDeviceOnline(deviceId, receivedAt);
-    return { kind: "throttled" };
-  }
-
-  const sessionId = await findActiveSessionId(deviceId);
-
-  await db
-    .insert(fermentReadings)
-    .values({
-      deviceId,
-      sessionId,
-      ts,
-      gravitySg: normalized.gravitySg,
-      tempC: normalized.tempC,
-      pressureKpa: normalized.pressureKpa,
-      batteryV: normalized.batteryV,
-      batteryPct: normalized.batteryPct,
-      rssi: normalized.rssi,
-      payload: input.body as Record<string, unknown>
-    })
-    // Дедуп ретраев вебхука (§8.5): точное совпадение (deviceId, ts) — не более 1 строки.
-    .onConflictDoNothing({ target: [fermentReadings.deviceId, fermentReadings.ts] });
-
-  await touchDeviceOnline(deviceId, receivedAt);
-
-  // F6 (M5-A): те же алерты на ingest, что и generic-стрим (ingest.ts) — см. комментарий
-  // там про await vs fire-and-forget.
-  await processIngestAlerts({ deviceId, sessionId, receivedAt });
+  await processIngestAlerts({ deviceId, sessionId: result.sessionId, receivedAt });
 
   return { kind: "stored", created };
 };

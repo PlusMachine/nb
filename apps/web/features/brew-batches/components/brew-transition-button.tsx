@@ -71,6 +71,8 @@ export function BrewTransitionButton({
         setConfirmOpen(false);
         if (appendQueryOnSuccess) {
           router.replace(`${pathname}?${appendQueryOnSuccess}`, { scroll: false });
+        } else {
+          router.refresh();
         }
       }
     } catch {

@@ -25,7 +25,8 @@ import { ArrowLeftRight, Check, Loader2, X } from "lucide-react";
 import { Button, Checkbox, Dialog, DialogCloseButton, DialogFooter, DialogHeader, Select } from "@nb/ui";
 import {
   consumeBrewBatchInventoryAction,
-  previewBrewBatchInventoryAction
+  previewBrewBatchInventoryAction,
+  type BrewInventoryResult
 } from "@/app/(app)/app/brew-batches/[id]/actions";
 import type {
   BrewBatchConsumePlan,
@@ -36,8 +37,6 @@ import { pluralize } from "@/lib/pluralize";
 import { formatInventoryQuantityInputValue } from "@/features/inventory/display";
 import { formatInventoryUnitLabel } from "@/features/inventory/units";
 import { planInventoryLotUse } from "@/features/inventory/lot-plan";
-
-export type ConsumeDialogResult = { ok: boolean; message: string };
 
 export type SubstitutionSelection = { checked: boolean; inventoryItemId: string };
 export type SubstitutionSelections = Record<string, SubstitutionSelection>;
@@ -161,7 +160,7 @@ export function ConsumeInventoryDialog({
   open: boolean;
   brewBatchId: string;
   onOpenChange: (open: boolean) => void;
-  onConsumed: (result: ConsumeDialogResult) => void;
+  onConsumed: (result: BrewInventoryResult) => void;
 }) {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);

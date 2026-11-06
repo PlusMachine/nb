@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { requireUser } from "@/lib/auth";
 import { getBrewBatchById } from "@/features/brew-batches/service";
-import { subscribeDeviceTelemetry, type TelemetryFrame } from "@/features/brew-controller/device-telemetry-cache";
+import { telemetryEventResponse } from "@/features/brew-controller/telemetry-event-response";
 
 // SSE-стрим телеметрии партии варки (зона A). Резолвим партию (ownership) → её
 // устройство (brew_batches.deviceId) и подписываемся на ОБЩИЙ поллер устройства
@@ -31,54 +31,5 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   if (!batch.deviceId) {
     return NextResponse.json({ error: "BREW_BATCH_NO_DEVICE" }, { status: 409 });
   }
-  const userId = user.id;
-  const deviceId = batch.deviceId;
-
-  const encoder = new TextEncoder();
-  const stream = new ReadableStream<Uint8Array>({
-    start(controller) {
-      let closed = false;
-      let unsubscribe: (() => void) | null = null;
-
-      const close = () => {
-        if (closed) return;
-        closed = true;
-        if (unsubscribe) unsubscribe();
-        try {
-          controller.close();
-        } catch {
-          // контроллер уже закрыт — игнорируем
-        }
-      };
-
-      const send = (frame: string) => {
-        if (closed) return;
-        try {
-          controller.enqueue(encoder.encode(frame));
-        } catch {
-          close();
-        }
-      };
-
-      request.signal.addEventListener("abort", close);
-
-      unsubscribe = subscribeDeviceTelemetry({ userId, deviceId }, (frame: TelemetryFrame) => {
-        if (frame.type === "telemetry") {
-          send(`data: ${JSON.stringify(frame.data)}\n\n`);
-        } else if (frame.type === "offline") {
-          send(`event: offline\ndata: {}\n\n`);
-        } else {
-          send(`event: error\ndata: {"error":"${frame.error}"}\n\n`);
-        }
-      });
-    },
-  });
-
-  return new Response(stream, {
-    headers: {
-      "content-type": "text/event-stream; charset=utf-8",
-      "cache-control": "no-cache, no-transform",
-      connection: "keep-alive",
-    },
-  });
+  return telemetryEventResponse(request.signal, { userId: user.id, deviceId: batch.deviceId });
 }

@@ -1674,12 +1674,15 @@ const assertRecipeCreationAllowed = async (authorId: string, requestedCount = 1)
   }
 };
 
+type RecipeCreationOptions = { recipeFamilyId?: string; clonedFromRecipeId?: string | null; idempotencyKey?: string };
+
 export const createRecipes = async (
   authorId: string,
   payloads: unknown[],
-  options?: { recipeFamilyId?: string; versionNumber?: number; clonedFromRecipeId?: string | null; idempotencyKey?: string }
+  options?: RecipeCreationOptions
 ) => {
   if (!payloads.length || payloads.length > 100) throw new Error("IMPORT_TOO_MANY_RECIPES");
+  const familyId = options?.recipeFamilyId;
   // The editor supplies a stable UUID for one creation attempt. Its primary key
   // makes retries atomic without a second deduplication record or migration.
   const creationId = options?.idempotencyKey === undefined
@@ -1689,7 +1692,7 @@ export const createRecipes = async (
     if (payloads.length !== 1) throw new Error("INVALID_CREATION_KEY");
     const existing = await db.query.recipes.findFirst({ where: eq(recipes.id, creationId) });
     if (existing) {
-      if (existing.authorId !== authorId) throw new Error("NOT_FOUND");
+      if (existing.authorId !== authorId || (familyId && existing.recipeFamilyId !== familyId)) throw new Error("NOT_FOUND");
       return [await getRecipeById(authorId, existing.id)];
     }
   }
@@ -1728,13 +1731,25 @@ export const createRecipes = async (
   }
   const created = await withRecipeWriteTransaction(async (tx) => {
     const createdRecipes = [];
+    let nextVersionNumber = 1;
+    if (familyId) {
+      // Different source versions still share the same sequence.
+      await tx.execute(sql`select pg_advisory_xact_lock(hashtextextended(${`recipe-family:${familyId}`}, 0))`);
+      const versions = await tx.query.recipes.findMany({
+        where: and(eq(recipes.authorId, authorId), eq(recipes.recipeFamilyId, familyId)),
+        columns: { versionNumber: true },
+        orderBy: [desc(recipes.versionNumber)],
+        limit: 1
+      });
+      nextVersionNumber = (versions[0]?.versionNumber ?? 0) + 1;
+    }
     for (const { parsed, preparedIngredients, nextProcessMeta, nextCalculationMeta, nextWaterPlanMeta, batchSize } of prepared) {
       const slug = await resolveUniqueRecipeSlug(parsed.title, undefined, tx);
       const insert = tx.insert(recipes).values({
         id: creationId,
         authorId,
-        recipeFamilyId: options?.recipeFamilyId ?? crypto.randomUUID(),
-        versionNumber: options?.versionNumber ?? 1,
+        recipeFamilyId: familyId ?? crypto.randomUUID(),
+        versionNumber: familyId ? nextVersionNumber++ : 1,
         publicationState: parsed.publicationState,
         title: parsed.title,
         slug,
@@ -1764,7 +1779,9 @@ export const createRecipes = async (
       if (!created && creationId) {
         // A concurrent retry may have committed after the initial lookup.
         // Read only our own row, and never replay ingredients over saved edits.
-        createdRecipes.push(await ensureOwnedRecipe(authorId, creationId, tx));
+        const existing = await ensureOwnedRecipe(authorId, creationId, tx);
+        if (familyId && existing.recipeFamilyId !== familyId) throw new Error("NOT_FOUND");
+        createdRecipes.push(existing);
         continue;
       }
       if (!created) throw new Error("CREATE_FAILED");
@@ -1780,10 +1797,10 @@ export const createRecipes = async (
 export const createRecipe = async (
   authorId: string,
   payload: unknown,
-  options?: { recipeFamilyId?: string; versionNumber?: number; clonedFromRecipeId?: string | null; idempotencyKey?: string }
+  options?: RecipeCreationOptions
 ) => (await createRecipes(authorId, [payload], options))[0]!;
 
-export const updateRecipe = async (authorId: string, recipeId: string, payload: unknown) => {
+export const updateRecipeWithPrevious = async (authorId: string, recipeId: string, payload: unknown) => {
   const parsed = updateRecipePayloadSchema.parse(normalizeUpdateRecipePayloadDefaults(payload));
   const saved = await withRecipeWriteTransaction(async (tx) => {
     await tx.select({ id: recipes.id }).from(recipes)
@@ -1792,7 +1809,10 @@ export const updateRecipe = async (authorId: string, recipeId: string, payload: 
     const snapshot = async () => {
       const row = await tx.query.recipes.findFirst({ where: eq(recipes.id, recipeId), with: { ingredients: true } });
       if (!row) throw new Error("NOT_FOUND");
-      return row;
+      return {
+        row,
+        previous: { slug: current.slug, styleId: current.styleId, publicationState: current.publicationState, hiddenAt: current.hiddenAt }
+      };
     };
     // Only the most recent operation can be acknowledged again. Any subsequent
     // editor write clears/replaces its key, so an old retry still conflicts.
@@ -1902,8 +1922,11 @@ export const updateRecipe = async (authorId: string, recipeId: string, payload: 
     return snapshot();
   });
 
-  return mapRecipeDetailDto(saved, saved.ingredients);
+  return { recipe: await mapRecipeDetailDto(saved.row, saved.row.ingredients), previous: saved.previous };
 };
+
+export const updateRecipe = async (authorId: string, recipeId: string, payload: unknown) =>
+  (await updateRecipeWithPrevious(authorId, recipeId, payload)).recipe;
 
 /**
  * Сколько партий пользователя сварено по этому рецепту. Нужно подтверждению
@@ -2224,50 +2247,14 @@ export const cloneRecipeFromPublic = async (
   return clone;
 };
 
-export const createRecipeVersion = async (authorId: string, recipeId: string) => {
-  const currentRecipe = await ensureOwnedRecipe(authorId, recipeId);
+export const createRecipeVersion = async (authorId: string, recipeId: string, idempotencyKey?: string) => {
   const recipe = await getOwnedRecipeById(authorId, recipeId);
-  const familyVersions = await db.query.recipes.findMany({
-    where: and(eq(recipes.authorId, authorId), eq(recipes.recipeFamilyId, currentRecipe.recipeFamilyId))
-  });
-  const nextVersionNumber = familyVersions.reduce((maxVersion, item) => (
-    item.versionNumber > maxVersion ? item.versionNumber : maxVersion
-  ), 0) + 1;
-
-  return createRecipe(authorId, {
+  return createRecipe(authorId, buildRecipeClonePayload(recipe, {
     title: recipe.title,
-    publicationState: "private",
-    styleId: recipe.styleId,
-    batchSizeEnteredQuantity: recipe.batchSizeEnteredQuantity,
-    batchSizeEnteredUnit: recipe.batchSizeEnteredUnit,
-    efficiency: recipe.efficiency,
-    boilTimeMinutes: recipe.boilTimeMinutes,
-    description: recipe.description,
-    authorNotes: recipe.authorNotes,
-    processMeta: recipe.processMeta,
-    calculationMeta: recipe.calculationMeta ?? null,
-    equipmentProfileId: recipe.equipmentProfileId ?? null,
-    equipmentProfileSnapshot: recipe.equipmentProfileSnapshot ?? null,
-    waterPlanMeta: recipe.waterPlanMeta ?? null,
-    ingredients: recipe.ingredients.map((ingredient) => ({
-      ingredientCatalogItemId: ingredient.ingredientCatalogItemId,
-      userCustomIngredientId: ingredient.userCustomIngredientId,
-      type: ingredient.type,
-      category: ingredient.ingredientCategory ?? undefined,
-      subtype: ingredient.ingredientSubtype ?? null,
-      familyId: ingredient.ingredientFamilyId ?? null,
-      amountEnteredQuantity: ingredient.amountEnteredQuantity,
-      amountEnteredUnit: ingredient.amountEnteredUnit,
-      stage: ingredient.stage,
-      timeOffset: ingredient.timeOffset,
-      stepMeta: ingredient.stepMeta,
-      inventoryIntentMode: ingredient.inventoryIntentMode ?? null,
-      inventorySelectionMeta: ingredient.inventorySelectionMeta ?? null,
-      externalImportMeta: ingredient.externalImportMeta ?? null
-    }))
-  }, {
-    recipeFamilyId: currentRecipe.recipeFamilyId,
-    versionNumber: nextVersionNumber
+    remapPrivateCustomToImported: false
+  }), {
+    recipeFamilyId: recipe.recipeFamilyId,
+    idempotencyKey
   });
 };
 
@@ -2465,6 +2452,13 @@ export const getOwnedRecipeById = async (authorId: string, recipeId: string): Pr
 export const getPublicRecipeById = async (recipeId: string): Promise<PublicRecipeDetailDto> => {
   const recipe = await ensurePublicRecipe(recipeId);
   return toPublicRecipeDetail(await mapRecipeDetailDto(recipe, recipe.ingredients));
+};
+
+export const listVisibleRecipeIds = async (ids: string[]): Promise<Set<string>> => {
+  if (ids.length === 0) return new Set();
+  const rows = await db.select({ id: recipes.id }).from(recipes)
+    .where(and(inArray(recipes.id, ids), ...publiclyVisibleRecipeConditions()));
+  return new Set(rows.map(row => row.id));
 };
 
 export const getPublicRecipeBySlug = async (slug: string): Promise<PublicRecipeDetailDto> => {

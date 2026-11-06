@@ -166,6 +166,7 @@ vi.mock("@nb/db", () => {
   };
 
   const db: any = {
+    execute: async () => {},
     transaction: async (work: (tx: any) => Promise<unknown>) => {
       const recipes = structuredClone(mockState.recipesById);
       const ingredients = structuredClone(mockState.ingredientsByRecipeId);

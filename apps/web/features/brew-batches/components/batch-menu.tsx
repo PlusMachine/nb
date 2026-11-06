@@ -60,9 +60,7 @@ export function BatchMenu({
         setError(result.message);
         return false;
       }
-      if (variant === "compact") {
-        router.refresh();
-      }
+      router.refresh();
       return true;
     } catch {
       setError("Не удалось обновить статус. Проверьте соединение и повторите попытку.");

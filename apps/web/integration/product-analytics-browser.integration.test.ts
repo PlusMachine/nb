@@ -16,7 +16,7 @@ const expect = rawExpect.configure({ timeout: 15000 });
 // Off-path: no consent must mean no write; non-admin must not export contacts.
 let browser: Browser;
 const ids: string[] = [], base = process.env.E2E_BASE_URL ?? "http://127.0.0.1:3000";
-const output = resolve(process.cwd(), "../../.local-artifacts/product-analytics");
+const output = process.env.QA_ARTIFACT_DIR ?? resolve(process.cwd(), "../../.local-artifacts/product-analytics");
 const account = async (role: "admin" | "user") => {
   const id = randomUUID(); ids.push(id);
   await db.insert(users).values({ id, email: `qa.analytics.browser.${id}@localhost`, displayName: `QA аналитики ${role}`, role });
@@ -34,6 +34,7 @@ it("uses report controls, segments, exports and profiles on desktop and mobile",
   await context.addCookies([{ name: "nb_session", value: admin.rawToken, url: base }, { name: "nb_cookie_consent", value: "1:necessary", url: base }]);
   const page = await context.newPage(), errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));
+  const field = (name: string) => page.getByLabel(name, { exact: true }).filter({ visible: true });
   try {
     await page.goto(`${base}/admin/analytics`, { waitUntil: "domcontentloaded" });
     await expect(page.getByRole("heading", { name: "Продуктовая аналитика", exact: true })).toBeVisible();
@@ -43,18 +44,19 @@ it("uses report controls, segments, exports and profiles on desktop and mobile",
       await expect(page).toHaveURL(new RegExp(`days=${days}`));
       await expect(page.getByRole("heading", { name: "Продуктовая аналитика", exact: true })).toBeVisible();
       const today = analyticsDay(new Date());
-      await expect(page.getByLabel("С", { exact: true })).toHaveValue(shiftDay(today, 1-days));
-      await expect(page.getByLabel("По", { exact: true })).toHaveValue(today);
+      await expect(field("С")).toHaveValue(shiftDay(today, 1-days));
+      await expect(field("По")).toHaveValue(today);
     }
-    await page.getByLabel("Аудитория", { exact: true }).selectOption("all");
-    await page.getByLabel("С", { exact: true }).fill("2026-10-25");
-    await page.getByLabel("По", { exact: true }).fill("2026-10-30");
+    await field("Аудитория").selectOption("all");
+    await field("С").fill("2026-10-25");
+    await field("По").fill("2026-10-30");
     await page.getByRole("button", { name: "Применить", exact: true }).click();
     await expect(page).toHaveURL(/audience=all/);
-    await expect(page.getByLabel("С", { exact: true })).toHaveValue("2026-10-25");
-    await page.getByText("Данные по дням", { exact: true }).click();
+    await expect(field("С")).toHaveValue("2026-10-25");
+    const dailyData = page.getByText("Данные по дням", { exact: true }).filter({ visible: true });
+    await dailyData.click();
     await expect(page.getByRole("columnheader", { name: "Регистрации", exact: true })).toBeVisible();
-    await page.getByText("Данные по дням", { exact: true }).click();
+    await dailyData.click();
     const downloadPromise = page.waitForEvent("download");
     await page.getByRole("link", { name: "Скачать отчёт CSV", exact: true }).click();
     const download = await downloadPromise;
@@ -67,16 +69,17 @@ it("uses report controls, segments, exports and profiles on desktop and mobile",
     await page.getByRole("heading", { name: "Источники переходов", exact: true }).scrollIntoViewIfNeeded();
     await page.screenshot({ path: resolve(output, "desktop-distributions.png"), animations: "disabled" });
     for (const segment of ["new", "active", "dormant", "unactivated", "no_batches", "brewers"]) {
-      await page.locator(`a[href^="/admin/users?segment=${segment}"]`).click();
-      await expect(page.getByLabel("Сегмент", { exact: true })).toHaveValue(segment);
+      await page.locator(`a[href^="/admin/users?segment=${segment}"]`).filter({ visible: true }).click();
+      await expect(field("Сегмент")).toHaveValue(segment);
       await page.goBack();
+      await expect(page).toHaveURL(/\/admin\/analytics\?/);
       await expect(page.getByRole("heading", { name: "Продуктовая аналитика", exact: true })).toBeVisible();
     }
     await page.getByRole("link", { name: "30 дн.", exact: true }).click();
-    await expect(page.getByLabel("По", { exact: true })).toHaveValue(analyticsDay(new Date()));
-    await page.getByLabel("Аудитория", { exact: true }).selectOption("customers");
+    await expect(field("По")).toHaveValue(analyticsDay(new Date()));
+    await field("Аудитория").selectOption("customers");
     await page.getByRole("button", { name: "Применить", exact: true }).click();
-    await expect(page.getByLabel("Аудитория", { exact: true })).toHaveValue("customers");
+    await expect(field("Аудитория")).toHaveValue("customers");
     await page.setViewportSize({ width: 360, height: 800 });
     await page.getByRole("heading", { name: "Продуктовая аналитика", exact: true }).scrollIntoViewIfNeeded();
     await page.screenshot({ path: resolve(output, "mobile-overview.png"), animations: "disabled" });
@@ -84,11 +87,11 @@ it("uses report controls, segments, exports and profiles on desktop and mobile",
     await page.getByRole("heading", { name: "Обратная связь", exact: true }).scrollIntoViewIfNeeded();
     await page.screenshot({ path: resolve(output, "mobile-feedback.png"), animations: "disabled" });
     await page.goto(`${base}/admin/users?segment=new&role=user`);
-    await page.getByLabel("Поиск", { exact: true }).fill("qa.analytics.browser.");
+    await field("Поиск").fill("qa.analytics.browser.");
     await expect(page).toHaveURL(/q=qa.analytics.browser/);
-    await page.getByLabel("Сортировка", { exact: true }).selectOption("last_seen");
+    await field("Сортировка").selectOption("last_seen");
     await expect(page).toHaveURL(/sort=last_seen/);
-    await expect(page.getByLabel("Сегмент", { exact: true })).toHaveValue("new");
+    await expect(field("Сегмент")).toHaveValue("new");
     const usersDownload = page.waitForEvent("download");
     await page.getByRole("link", { name: "Скачать CSV", exact: true }).click();
     await (await usersDownload).saveAs(resolve(output, "users.csv"));
@@ -97,12 +100,14 @@ it("uses report controls, segments, exports and profiles on desktop and mobile",
     await expect(page).toHaveURL(new RegExp(target.id));
     await expect(page.getByRole("heading", { name: "Использование продукта", exact: true })).toBeVisible();
     await page.getByRole("link", { name: "К пользователям", exact: true }).click();
-    await page.getByLabel("Статус", { exact: true }).selectOption("blocked");
-    await expect(page.getByText("Пользователи не найдены.", { exact: true })).toBeVisible();
+    await expect(page).toHaveURL(`${base}/admin/users`);
+    await field("Статус").selectOption("blocked");
+    await expect(page.getByText("Пользователи не найдены.", { exact: true }).filter({ visible: true })).toBeVisible();
     await page.getByRole("link", { name: "Сбросить", exact: true }).click();
-    await expect(page.getByLabel("Статус", { exact: true })).toHaveValue("all");
-    await page.getByLabel("Роль", { exact: true }).selectOption("admin");
-    await expect(page.getByLabel("Роль", { exact: true })).toHaveValue("admin");
+    await expect(page).toHaveURL(`${base}/admin/users`);
+    await expect(field("Статус")).toHaveValue("all");
+    await field("Роль").selectOption("admin");
+    await expect(field("Роль")).toHaveValue("admin");
     unitExpect(errors).toEqual([]);
   } catch (error) {
     await page.screenshot({ path: resolve(output, "failed-admin.png"), fullPage: true }).catch(() => {});

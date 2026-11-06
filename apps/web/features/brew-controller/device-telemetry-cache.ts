@@ -28,7 +28,7 @@ import { and, brewBatches, brewTelemetry, db, desc, eq, inArray } from "@nb/db";
 import type { Telemetry } from "@nb/brewforge-protocol";
 
 import { getProvider } from "./index";
-import { BREWFORGE_PROVIDER_ID } from "./contracts";
+import { BREWFORGE_PROVIDER_ID, type LiveDeviceFrame } from "./contracts";
 
 /** Кадр фан-аута: снимок телеметрии, «офлайн» (нет валидной телеметрии) или ошибка. */
 export type TelemetryFrame =
@@ -60,7 +60,7 @@ interface Hub {
   listeners: Set<Listener>;
   timer: ReturnType<typeof setInterval> | null;
   lingerTimer: ReturnType<typeof setTimeout> | null;
-  lastFrame: Telemetry | null;
+  lastFrame: LiveDeviceFrame | null;
   lastFrameAt: number; // wall-clock сервера, мс (когда получен lastFrame)
   polling: boolean; // защита от наложения тиков при медленном readTelemetry
   lastPersistAt: number;
@@ -143,22 +143,24 @@ async function pollOnce(hub: Hub): Promise<void> {
   try {
     const provider = getProvider(hub.providerId);
     if (!provider?.readTelemetry) {
+      hub.lastFrame = null;
       fanout(hub, { type: "error", error: "PROVIDER_UNAVAILABLE" });
       return;
     }
-    const telemetry = await provider.readTelemetry({
+    const frame = await provider.readTelemetry({
       userId: hub.ownerUserId,
       deviceId: hub.deviceId,
     });
-    if (telemetry) {
-      hub.lastFrame = telemetry;
+    hub.lastFrame = frame;
+    if (frame) {
       hub.lastFrameAt = Date.now();
-      fanout(hub, { type: "telemetry", data: telemetry });
-      void persistDownsampled(hub, telemetry);
+      fanout(hub, { type: "telemetry", data: frame.telemetry });
+      if (frame.channel !== "cloud") void persistDownsampled(hub, frame.telemetry);
     } else {
       fanout(hub, { type: "offline" });
     }
   } catch (error) {
+    hub.lastFrame = null;
     // Наружу — стабильный код; реальную причину логируем на сервере.
     console.error("[device-telemetry-cache] сбой чтения телеметрии:", error);
     fanout(hub, { type: "error", error: "TELEMETRY_READ_FAILED" });
@@ -229,10 +231,10 @@ export function subscribeDeviceTelemetry(
   }
 
   hub.listeners.add(listener);
-  // Тёплый старт: сразу отдаём последний кадр, если он свежий.
-  if (hub.lastFrame && Date.now() - hub.lastFrameAt < FRESH_MS) {
+  // Для облака очередной опрос проверит время кадра и статус в БД.
+  if (hub.lastFrame && hub.lastFrame.channel !== "cloud" && Date.now() - hub.lastFrameAt < FRESH_MS) {
     try {
-      listener({ type: "telemetry", data: hub.lastFrame });
+      listener({ type: "telemetry", data: hub.lastFrame.telemetry });
     } catch {
       // игнорируем сбой немедленной доставки
     }
@@ -266,23 +268,20 @@ export async function readFreshTelemetry(params: {
   providerId?: string;
 }): Promise<Telemetry | null> {
   const hub = hubs.get(params.deviceId);
-  if (hub?.lastFrame && Date.now() - hub.lastFrameAt < FRESH_MS) {
-    return hub.lastFrame;
+  // Cloud freshness is bounded by the bridge timestamp. A recent DB read
+  // cannot extend it, or authorize a command after an offline status.
+  if (hub?.ownerUserId === params.userId && hub.lastFrame && hub.lastFrame.channel !== "cloud"
+    && Date.now() - hub.lastFrameAt < FRESH_MS) {
+    return hub.lastFrame.telemetry;
   }
   const provider = getProvider(params.providerId ?? hub?.providerId ?? BREWFORGE_PROVIDER_ID);
   if (!provider?.readTelemetry) return null;
   // Транспортная ошибка (устройство недостижимо / ECONNREFUSED) для freshness-гейта
   // = «не свежо»: не можем подтвердить связь → возвращаем null, роут отклонит опасную
   // команду чётким 409 DEVICE_STALE (а не общим 400). Fail-safe: сомнение → блок.
-  let telemetry: Telemetry | null;
   try {
-    telemetry = await provider.readTelemetry(params);
+    return (await provider.readTelemetry(params))?.telemetry ?? null;
   } catch {
     return null;
   }
-  if (hub && telemetry) {
-    hub.lastFrame = telemetry;
-    hub.lastFrameAt = Date.now();
-  }
-  return telemetry;
 }

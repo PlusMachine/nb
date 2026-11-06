@@ -8,7 +8,9 @@ import type { EquipmentProfileSnapshot } from "@/features/equipment-profiles/con
 import { RECIPE_IMPORT_MAX_INPUT_BYTES, RECIPE_MAX_COUNT_PER_USER } from "@/features/recipes/contracts";
 import type { RecipeCalculationMeta, RecipeDetailDto, RecipeInventoryIntentMode, RecipeInventorySelectionMeta, RecipeWaterPlanMeta } from "@/features/recipes/contracts";
 import type { RecipeDraftPreviewDto } from "@/features/recipes/contracts";
-import { cloneRecipe, createRecipe, createRecipeVersion, deleteRecipe, getOwnedRecipeById, previewRecipeDraft, updateRecipe } from "@/features/recipes/service";
+import { cloneRecipe, createRecipe, createRecipeVersion, deleteRecipe, getOwnedRecipeById, previewRecipeDraft, updateRecipeWithPrevious } from "@/features/recipes/service";
+import { revalidatePublicRecipePages } from "@/features/recipes/revalidate-public-pages";
+import { isRecipePubliclyVisible } from "@/features/recipes/visibility";
 import { createBrewBatchFromRecipe } from "@/features/brew-batches/service";
 import type { RecipeImageDto } from "@/features/recipe-images/contracts";
 import {
@@ -270,6 +272,7 @@ export const createRecipeAction = async (payload: RecipeEditorPayload, idempoten
     revalidatePath("/app/recipes");
     revalidatePath(`/app/recipes/${recipe.id}`);
     revalidatePath(`/app/recipes/${recipe.id}/edit`);
+    if (isRecipePubliclyVisible(recipe)) await revalidatePublicRecipePages([recipe]);
 
     return {
       ok: true,
@@ -284,7 +287,7 @@ export const createRecipeAction = async (payload: RecipeEditorPayload, idempoten
 export const updateRecipeAction = async (recipeId: string, payload: RecipeEditorPayload, expectedUpdatedAt?: string, saveKey?: string): Promise<RecipeEditorResult> => {
   try {
     const user = await requireUser();
-    const recipe = await updateRecipe(user.id, recipeId, {
+    const { recipe, previous } = await updateRecipeWithPrevious(user.id, recipeId, {
       ...payload,
       ...(expectedUpdatedAt !== undefined ? { expectedUpdatedAt } : {}),
       ...(saveKey !== undefined ? { saveKey } : {}),
@@ -294,6 +297,7 @@ export const updateRecipeAction = async (recipeId: string, payload: RecipeEditor
     revalidatePath("/app/recipes");
     revalidatePath(`/app/recipes/${recipe.id}`);
     revalidatePath(`/app/recipes/${recipe.id}/edit`);
+    await revalidatePublicRecipePages([previous, recipe].filter(isRecipePubliclyVisible));
 
     return {
       ok: true,
@@ -313,10 +317,7 @@ export const deleteRecipeAction = async (recipeId: string): Promise<{ ok: boolea
     revalidatePath("/app/recipes");
     revalidatePath(`/app/recipes/${recipe.id}`);
     revalidatePath(`/app/recipes/${recipe.id}/edit`);
-    revalidatePath("/recipes");
-    if (recipe.slug) {
-      revalidatePath(`/recipes/${recipe.slug}`);
-    }
+    if (isRecipePubliclyVisible(recipe)) await revalidatePublicRecipePages([recipe]);
 
     return { ok: true, message: "Рецепт удалён." };
   } catch (error) {
@@ -347,10 +348,10 @@ export const cloneRecipeAction = async (recipeId: string): Promise<RecipeEditorR
   }
 };
 
-export const createRecipeVersionAction = async (recipeId: string): Promise<RecipeEditorResult> => {
+export const createRecipeVersionAction = async (recipeId: string, idempotencyKey?: string): Promise<RecipeEditorResult> => {
   try {
     const user = await requireUser();
-    const recipe = await createRecipeVersion(user.id, recipeId);
+    const recipe = await createRecipeVersion(user.id, recipeId, idempotencyKey);
 
     revalidatePath("/app/recipes");
     revalidatePath(`/app/recipes/${recipe.id}`);

@@ -10,9 +10,8 @@ import { listMasterSitemapEntries } from "@/features/masters/service";
 import { listRecipeSitemapEntries } from "@/features/recipes/service";
 import { getServerEnv } from "@/lib/env";
 
-// Каталог/статьи меняются вне билда — перечитываем из БД раз в час, а не
-// только на билде (иначе новые рецепты/статьи не попадают в sitemap до деплоя).
-export const revalidate = 3600;
+// Видимость рецептов в sitemap проверяется при каждом запросе.
+export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { APP_URL } = getServerEnv();

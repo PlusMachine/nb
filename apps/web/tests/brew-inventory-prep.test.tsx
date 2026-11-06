@@ -2,6 +2,8 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
+vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
+
 // Экшены списания/возврата не участвуют в этом тесте — мокаем, чтобы импорт
 // клиентского компонента не тянул за собой server actions (db-слой).
 vi.mock("@/app/(app)/app/brew-batches/[id]/actions", () => ({

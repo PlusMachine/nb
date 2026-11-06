@@ -19,6 +19,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 type Cond =
   | { kind: "eq"; col: string; value: unknown }
+  | { kind: "lte"; col: string; value: Date }
   | { kind: "and"; conds: Cond[] }
   | { kind: "isNull"; col: string };
 
@@ -37,6 +38,7 @@ vi.mock("@nb/db", () => {
     if (!cond) return true;
     if (cond.kind === "and") return cond.conds.every((inner) => matches(row, inner));
     if (cond.kind === "isNull") return row[cond.col] === null || row[cond.col] === undefined;
+    if (cond.kind === "lte") return (row[cond.col] as Date).getTime() <= cond.value.getTime();
     return row[cond.col] === cond.value;
   };
 
@@ -61,7 +63,7 @@ vi.mock("@nb/db", () => {
     "payload",
     "createdAt"
   ]);
-  const fermentSessionsTable = makeTable(() => store.sessions, ["id", "deviceId", "endedAt"]);
+  const fermentSessionsTable = makeTable(() => store.sessions, ["id", "deviceId", "startedAt", "endedAt"]);
   const brewDevicesTable = makeTable(() => store.devices, ["id", "lastSeenAt", "status", "updatedAt"]);
 
   // Мини-реализация select().from().where().orderBy(desc(col)).limit(n) — фильтрует
@@ -99,36 +101,38 @@ vi.mock("@nb/db", () => {
     return chain;
   };
 
-  const db = {
+  const queryClient = {
     select: (_projection?: unknown) => ({
       from: (table: TableTag) => makeSelectChain(table.__rows)
     }),
     insert: (table: TableTag) => ({
       values: (values: Record<string, unknown>) => ({
-        onConflictDoNothing: async () => {
+        onConflictDoNothing: () => ({ returning: async () => {
           const rows = table.__rows();
           const dup = rows.some(
             (row) =>
               row.deviceId === values.deviceId && (row.ts as Date).getTime() === (values.ts as Date).getTime()
           );
-          if (!dup) {
-            rows.push({ id: rows.length + 1, createdAt: new Date(), excluded: false, sessionId: null, ...values });
-          }
-        }
+          if (dup) return [];
+          const record = { id: rows.length + 1, createdAt: new Date(), excluded: false, sessionId: null, ...values };
+          rows.push(record);
+          return [record];
+        } })
       })
     }),
     update: (table: TableTag) => ({
       set: (setValues: Record<string, unknown>) => ({
-        where: async (cond: Cond) => {
-          for (const row of table.__rows()) {
-            if (matches(row, cond)) {
-              Object.assign(row, setValues);
-            }
-          }
-        }
+        where: (cond: Cond) => ({
+          returning: async () => table.__rows().filter(row => matches(row, cond)).map(row => {
+            const seenAt = Math.max((row.lastSeenAt as Date | null)?.getTime() ?? 0, (setValues.lastSeenAt as Date).getTime());
+            return Object.assign(row, setValues, { lastSeenAt: new Date(seenAt) });
+          })
+        })
       })
     })
   };
+
+  const db = { ...queryClient, transaction: (run: (tx: typeof queryClient) => Promise<unknown>) => run(queryClient) };
 
   return {
     db,
@@ -137,6 +141,8 @@ vi.mock("@nb/db", () => {
     brewDevices: brewDevicesTable,
     eq: (col: string, value: unknown): Cond => ({ kind: "eq", col, value }),
     and: (...conds: Cond[]): Cond => ({ kind: "and", conds }),
+    lte: (col: string, value: Date): Cond => ({ kind: "lte", col, value }),
+    sql: (_strings: TemplateStringsArray, _col: string, value: string) => new Date(value),
     isNull: (col: string): Cond => ({ kind: "isNull", col }),
     desc: (col: string) => ({ __desc: col })
   };
@@ -395,7 +401,7 @@ describe("ingestStreamPacket — денормализация сеанса", () 
   it("активный сеанс устройства денормализуется в sessionId показания", async () => {
     mocks.findDeviceByToken.mockResolvedValue(streamDevice());
     seedDevice();
-    store.sessions.push({ id: "session-1", deviceId: DEVICE_ID, endedAt: null });
+    store.sessions.push({ id: "session-1", startedAt: new Date(0), deviceId: DEVICE_ID, endedAt: null });
 
     await ingestStreamPacket({ rawToken: TOKEN, body: ISPINDEL_PACKET, clientIp: null });
 
@@ -417,7 +423,7 @@ describe("ingestStreamPacket — вызов processIngestAlerts (F6/M5-A)", () =
   it("вызывается ПОСЛЕ успешной записи, с sessionId активного сеанса", async () => {
     mocks.findDeviceByToken.mockResolvedValue(streamDevice());
     seedDevice();
-    store.sessions.push({ id: "session-1", deviceId: DEVICE_ID, endedAt: null });
+    store.sessions.push({ id: "session-1", startedAt: new Date(0), deviceId: DEVICE_ID, endedAt: null });
     const receivedAt = new Date("2026-07-14T12:00:00Z");
 
     const result = await ingestStreamPacket({ rawToken: TOKEN, body: ISPINDEL_PACKET, clientIp: null, receivedAt });

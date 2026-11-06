@@ -14,6 +14,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 type Cond =
   | { kind: "eq"; col: string; value: unknown }
+  | { kind: "lte"; col: string; value: Date }
   | { kind: "and"; conds: Cond[] }
   | { kind: "isNull"; col: string }
   | { kind: "inArray"; col: string; values: unknown[] };
@@ -34,6 +35,7 @@ vi.mock("@nb/db", () => {
     if (cond.kind === "and") return cond.conds.every((inner) => matches(row, inner));
     if (cond.kind === "isNull") return row[cond.col] === null || row[cond.col] === undefined;
     if (cond.kind === "inArray") return cond.values.includes(row[cond.col]);
+    if (cond.kind === "lte") return (row[cond.col] as Date).getTime() <= cond.value.getTime();
     return row[cond.col] === cond.value;
   };
 
@@ -47,7 +49,7 @@ vi.mock("@nb/db", () => {
     "id", "deviceId", "sessionId", "ts", "gravitySg", "tempC", "pressureKpa",
     "batteryV", "batteryPct", "rssi", "excluded", "payload", "createdAt"
   ]);
-  const fermentSessionsTable = makeTable(() => store.sessions, ["id", "deviceId", "endedAt"]);
+  const fermentSessionsTable = makeTable(() => store.sessions, ["id", "deviceId", "startedAt", "endedAt"]);
   const brewDevicesTable = makeTable(() => store.devices, [
     "id", "userId", "providerId", "name", "hardwareId", "hardwareKind",
     "tokenHash", "tokenEncrypted", "capabilities", "status", "lastSeenAt", "updatedAt", "createdAt"
@@ -94,7 +96,7 @@ vi.mock("@nb/db", () => {
     return chain;
   };
 
-  const db = {
+  const queryClient = {
     select: (projection?: Record<string, unknown>) => ({
       from: (table: TableTag) => makeSelectChain(table.__rows, projection)
     }),
@@ -110,14 +112,16 @@ vi.mock("@nb/db", () => {
           ...values
         };
         return {
-          onConflictDoNothing: async () => {
+          onConflictDoNothing: () => ({ returning: async () => {
             const rows = table.__rows();
             const dup = rows.some(
               (row) =>
                 row.deviceId === values.deviceId && (row.ts as Date)?.getTime?.() === (values.ts as Date)?.getTime?.()
             );
-            if (!dup) rows.push(record);
-          },
+            if (dup) return [];
+            rows.push(record);
+            return [record];
+          } }),
           returning: async () => {
             table.__rows().push(record);
             return [record];
@@ -127,16 +131,17 @@ vi.mock("@nb/db", () => {
     }),
     update: (table: TableTag) => ({
       set: (setValues: Record<string, unknown>) => ({
-        where: async (cond: Cond) => {
-          for (const row of table.__rows()) {
-            if (matches(row, cond)) {
-              Object.assign(row, setValues);
-            }
-          }
-        }
+        where: (cond: Cond) => ({
+          returning: async () => table.__rows().filter(row => matches(row, cond)).map(row => {
+            const seenAt = Math.max((row.lastSeenAt as Date | null)?.getTime() ?? 0, (setValues.lastSeenAt as Date).getTime());
+            return Object.assign(row, setValues, { lastSeenAt: new Date(seenAt) });
+          })
+        })
       })
     })
   };
+
+  const db = { ...queryClient, transaction: (run: (tx: typeof queryClient) => Promise<unknown>) => run(queryClient) };
 
   return {
     db,
@@ -145,6 +150,8 @@ vi.mock("@nb/db", () => {
     brewDevices: brewDevicesTable,
     eq: (col: string, value: unknown): Cond => ({ kind: "eq", col, value }),
     and: (...conds: Cond[]): Cond => ({ kind: "and", conds }),
+    lte: (col: string, value: Date): Cond => ({ kind: "lte", col, value }),
+    sql: (_strings: TemplateStringsArray, _col: string, value: string) => new Date(value),
     isNull: (col: string): Cond => ({ kind: "isNull", col }),
     inArray: (col: string, values: unknown[]): Cond => ({ kind: "inArray", col, values }),
     desc: (col: string) => ({ __desc: col }),
@@ -452,7 +459,7 @@ describe("ingestRaptWebhook — денормализация сеанса", () =
     });
     expect(first).toMatchObject({ kind: "stored" });
     const deviceId = store.devices[0]!.id as string;
-    store.sessions.push({ id: "session-1", deviceId, endedAt: null });
+    store.sessions.push({ id: "session-1", startedAt: new Date(0), deviceId, endedAt: null });
 
     await ingestRaptWebhook({
       rawToken: TOKEN,
@@ -479,7 +486,7 @@ describe("ingestRaptWebhook — вызов processIngestAlerts (F6/M5-A)", () =>
     });
     expect(first).toMatchObject({ kind: "stored" });
     const deviceId = store.devices[0]!.id as string;
-    store.sessions.push({ id: "session-1", deviceId, endedAt: null });
+    store.sessions.push({ id: "session-1", startedAt: new Date(0), deviceId, endedAt: null });
     const receivedAt = new Date("2026-07-14T12:10:00Z");
 
     await ingestRaptWebhook({

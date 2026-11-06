@@ -198,7 +198,8 @@ const pushRecipeToDevice: PushRecipeToDeviceFn = async ({
 
 const readTelemetry: ReadTelemetryFn = async ({ userId, deviceId }) => {
   const device = await loadDevice(userId, deviceId);
-  return transportForDevice(device).getTelemetry();
+  const telemetry = await transportForDevice(device).getTelemetry();
+  return telemetry ? { telemetry, channel: deviceChannel(device) } : null;
 };
 
 const sendCommand: SendCommandFn = async ({ userId, deviceId, brewBatchId, sessionId, command }) => {

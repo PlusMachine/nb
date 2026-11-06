@@ -25,7 +25,7 @@ vi.mock("@nb/db", () => {
   };
   return {
     db: chain,
-    brewTelemetry: { payload: "payload", ts: "ts", deviceId: "deviceId", id: "id" },
+    brewDevices: { mqttTelemetry: "payload", mqttTelemetryAt: "receivedAt", status: "status", id: "id" },
     brewLogEvents: { payload: "payload", createdAt: "createdAt", deviceId: "deviceId", type: "type" },
     desc: (x: unknown) => x,
     eq: (a: unknown, b: unknown) => ({ a, b }),
@@ -86,8 +86,8 @@ describe("cloudTransport.getTelemetry", () => {
     h.rowsRef.rows = [];
   });
 
-  it("парсит payload свежей строки brew_telemetry", async () => {
-    h.rowsRef.rows = [{ payload: telemetry({ seq: 7 }), ts: new Date() }];
+  it("парсит payload свежего MQTT-кадра", async () => {
+    h.rowsRef.rows = [{ payload: telemetry({ seq: 7 }), receivedAt: new Date(), status: "online" }];
     const result = await cloudTransport(DEVICE).getTelemetry();
     expect(result).not.toBeNull();
     expect(result?.seq).toBe(7);
@@ -95,17 +95,17 @@ describe("cloudTransport.getTelemetry", () => {
   });
 
   it("возвращает null, если строка устарела (офлайн)", async () => {
-    h.rowsRef.rows = [{ payload: telemetry(), ts: new Date(Date.now() - 60_000) }];
+    h.rowsRef.rows = [{ payload: telemetry(), receivedAt: new Date(Date.now() - 60_000), status: "online" }];
     expect(await cloudTransport(DEVICE).getTelemetry()).toBeNull();
   });
 
   it("дата из будущего не превращает старую телеметрию в постоянно свежую", async () => {
-    h.rowsRef.rows = [{ payload: telemetry(), ts: new Date(Date.now() + 60_000) }];
+    h.rowsRef.rows = [{ payload: telemetry({ ts: Math.floor(Date.now() / 1000) + 60 }), receivedAt: new Date(), status: "online" }];
     expect(await cloudTransport(DEVICE).getTelemetry()).toBeNull();
   });
 
   it("невалидная дата не подтверждает свежесть", async () => {
-    h.rowsRef.rows = [{ payload: telemetry(), ts: "invalid-date" }];
+    h.rowsRef.rows = [{ payload: telemetry(), receivedAt: new Date("invalid-date"), status: "online" }];
     expect(await cloudTransport(DEVICE).getTelemetry()).toBeNull();
   });
 
@@ -115,7 +115,7 @@ describe("cloudTransport.getTelemetry", () => {
   });
 
   it("возвращает null при невалидном payload (не роняет стрим)", async () => {
-    h.rowsRef.rows = [{ payload: { not: "telemetry" }, ts: new Date() }];
+    h.rowsRef.rows = [{ payload: { not: "telemetry" }, receivedAt: new Date(), status: "online" }];
     expect(await cloudTransport(DEVICE).getTelemetry()).toBeNull();
   });
 });

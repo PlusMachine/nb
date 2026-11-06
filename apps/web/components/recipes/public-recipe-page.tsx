@@ -67,7 +67,7 @@ export function PublicRecipePage({
             <li aria-hidden="true">/</li>
             <li><Link href="/recipes" className="transition hover:text-foreground">Рецепты</Link></li>
             <li aria-hidden="true">/</li>
-            <li className="text-foreground">{recipe.title}</li>
+            <li aria-current="page" className="min-w-0 break-words text-foreground">{recipe.title}</li>
           </ol>
         </nav>
 

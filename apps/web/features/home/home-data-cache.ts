@@ -2,28 +2,9 @@ import { pickHomeRecipes } from "./landing-model";
 import { listFeaturedContentArticles } from "@/features/content-articles/service";
 import type { ContentArticleListItem } from "@/features/content-articles/contracts";
 import { parsePublicRecipeFilters } from "@/features/recipes/public-recipe-query";
-import { getPublicRecipeById, getPublicRecipeFamilyCounts, searchPublicRecipes } from "@/features/recipes/service";
+import { getPublicRecipeById, getPublicRecipeFamilyCounts, listVisibleRecipeIds, searchPublicRecipes } from "@/features/recipes/service";
 import type { PublicRecipeDetailDto, PublicRecipeListResult } from "@/features/recipes/contracts";
 
-/**
- * Процессный in-memory TTL-кэш горячих выборок анонимной главной
- * (app/(public)/page.tsx): счётчики семейств рецептов, лента «новых»
- * публичных рецептов и подборка featured-статей. Все три запроса выполняются
- * заново на КАЖДЫЙ анонимный хит одним и тем же кодом (без персонализации —
- * залогиненных редиректит в /app раньше), поэтому короткий TTL безопасен.
- *
- * Паттерн — как у catalogCache в features/ingredients/service.ts:340 (та же
- * причина отказа от unstable_cache: сериализация не нужна, Date остаются
- * Date). Сами сервисы (features/recipes/service.ts,
- * features/content-articles/service.ts) НЕ трогаем — они общие с другими
- * зонами (рецепты, админка статей); кэш — только внешняя обёртка для вызовов
- * главной.
- *
- * Кэш процессный: invalidateHomeDataCache() чистит слоты только текущего
- * процесса — при нескольких Node-инстансах остальные держат старые данные до
- * истечения TTL. Для витринных счётчиков/ленты это приемлемо, строгой
- * межпроцессной консистентности здесь нет.
- */
 const HOME_CACHE_TTL_MS = 90 * 1000;
 
 // Vitest мокает db на каждый тест независимо — процессный кэш пережил бы мок
@@ -36,16 +17,25 @@ type CacheSlot<T> = { value: T; loadedAt: number } | null;
 const isFresh = (slot: CacheSlot<unknown>): slot is NonNullable<CacheSlot<unknown>> =>
   slot !== null && Date.now() - slot.loadedAt < HOME_CACHE_TTL_MS;
 
-let familyCountsSlot: CacheSlot<Record<string, number>> = null;
+const createCache = () => ({
+  familyCounts: null as CacheSlot<Record<string, number>>,
+  latestRecipes: null as CacheSlot<PublicRecipeListResult>,
+  featuredArticles: new Map<number, CacheSlot<ContentArticleListItem[]>>(),
+  recipeDetails: new Map<string, CacheSlot<PublicRecipeDetailDto>>()
+});
+
+// Next bundles the homepage and the Server Actions as separate entry points.
+// Sharing the process cache lets both entries see the same invalidation.
+const runtime = globalThis as typeof globalThis & { __nbHomeDataCache?: ReturnType<typeof createCache> };
+const getCache = () => bypassCache ? createCache() : (runtime.__nbHomeDataCache ??= createCache());
 
 export const getHomePublicRecipeFamilyCounts = async (): Promise<Record<string, number>> => {
-  if (!bypassCache && isFresh(familyCountsSlot)) {
-    return { ...familyCountsSlot.value };
+  const cache = getCache();
+  if (isFresh(cache.familyCounts)) {
+    return { ...cache.familyCounts.value };
   }
   const value = await getPublicRecipeFamilyCounts();
-  if (!bypassCache) {
-    familyCountsSlot = { value, loadedAt: Date.now() };
-  }
+  cache.familyCounts = { value, loadedAt: Date.now() };
   return { ...value };
 };
 
@@ -59,8 +49,6 @@ const LATEST_RECIPES_FILTERS = {
   pageSize: 12
 };
 
-let latestRecipesSlot: CacheSlot<PublicRecipeListResult> = null;
-
 // Защитная копия (как у соседних обёрток): мутация items вызывающим кодом не
 // должна отравлять кэш для следующих посетителей до истечения TTL.
 const copyRecipeListResult = (value: PublicRecipeListResult): PublicRecipeListResult => ({
@@ -69,36 +57,32 @@ const copyRecipeListResult = (value: PublicRecipeListResult): PublicRecipeListRe
 });
 
 export const getHomeLatestPublicRecipes = async (): Promise<PublicRecipeListResult> => {
-  if (!bypassCache && isFresh(latestRecipesSlot)) {
-    return copyRecipeListResult(latestRecipesSlot.value);
+  const cache = getCache();
+  if (isFresh(cache.latestRecipes)) {
+    return copyRecipeListResult(cache.latestRecipes.value);
   }
   const result = await searchPublicRecipes(LATEST_RECIPES_FILTERS);
   const value = { ...result, pageSize: 3, items: pickHomeRecipes(result.items) };
-  if (!bypassCache) {
-    latestRecipesSlot = { value, loadedAt: Date.now() };
-  }
+  cache.latestRecipes = { value, loadedAt: Date.now() };
   return copyRecipeListResult(value);
 };
 
-// Ключ по limit (не только 3) — на случай, если функцию позже переиспользуют
-// с другим лимитом; отдельная главная всегда зовёт с одним и тем же значением.
-const featuredArticlesSlots = new Map<number, CacheSlot<ContentArticleListItem[]>>();
-const recipeDetailSlots = new Map<string, CacheSlot<PublicRecipeDetailDto>>();
-
 export const getHomePublicRecipeDetails = async (ids: string[]): Promise<PublicRecipeDetailDto[]> => {
-  const values = await Promise.all(ids.slice(0, 3).map(async (id) => {
-    const cached = recipeDetailSlots.get(id) ?? null;
-    if (!bypassCache && isFresh(cached)) return cached.value;
+  const { recipeDetails } = getCache();
+  const candidates = ids.slice(0, 3);
+  // A different instance can hide a recipe while this process holds its details.
+  const visible = await listVisibleRecipeIds(candidates);
+  const values = await Promise.all(candidates.filter(id => visible.has(id)).map(async (id) => {
+    const cached = recipeDetails.get(id) ?? null;
+    if (isFresh(cached)) return cached.value;
     try {
       // Only the public projection: no author notes, drafts or private versions.
       const value = await getPublicRecipeById(id);
-      if (!bypassCache) {
-        if (recipeDetailSlots.size >= 3) recipeDetailSlots.clear();
-        recipeDetailSlots.set(id, { value, loadedAt: Date.now() });
-      }
+      if (recipeDetails.size >= 3) recipeDetails.clear();
+      recipeDetails.set(id, { value, loadedAt: Date.now() });
       return value;
     } catch (error) {
-      if (error instanceof Error && error.message === "NOT_FOUND") return null;
+      if (error instanceof Error && ["NOT_FOUND", "FORBIDDEN"].includes(error.message)) return null;
       throw error;
     }
   }));
@@ -106,26 +90,17 @@ export const getHomePublicRecipeDetails = async (ids: string[]): Promise<PublicR
 };
 
 export const getHomeFeaturedContentArticles = async (limit = 3): Promise<ContentArticleListItem[]> => {
-  const cached = featuredArticlesSlots.get(limit) ?? null;
-  if (!bypassCache && isFresh(cached)) {
+  const { featuredArticles } = getCache();
+  const cached = featuredArticles.get(limit) ?? null;
+  if (isFresh(cached)) {
     return cached.value.slice();
   }
   const value = await listFeaturedContentArticles(limit);
-  if (!bypassCache) {
-    featuredArticlesSlots.set(limit, { value, loadedAt: Date.now() });
-  }
+  featuredArticles.set(limit, { value, loadedAt: Date.now() });
   return value.slice();
 };
 
-/**
- * Сброс слотов после модерации (скрытие/возврат/удаление рецепта, «Выбор
- * редакции»). Обязателен: слоты живут в памяти процесса, и `revalidatePath("/")`
- * их не видит — без явного сброса скрытый рецепт остаётся в ленте и счётчиках
- * главной до истечения TTL.
- */
 export const invalidateHomeDataCache = () => {
-  familyCountsSlot = null;
-  latestRecipesSlot = null;
-  featuredArticlesSlots.clear();
-  recipeDetailSlots.clear();
+  // Requests already in flight retain the old slots until they finish.
+  runtime.__nbHomeDataCache = undefined;
 };

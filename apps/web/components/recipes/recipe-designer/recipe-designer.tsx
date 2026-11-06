@@ -72,6 +72,7 @@ import { buildRecipePublicationChecklist } from "@/features/recipes/publication-
 import type { RecipeImageDto } from "@/features/recipe-images/contracts";
 import { buildRecipeWaterPlanResult } from "@/features/recipes/water-plan";
 import { scaleRecipeToVolume, scaleRecipeWaterPlan } from "@/features/recipes/scale";
+import { newIdempotencyKey } from "@/lib/idempotency-key";
 
 import {
   buildRecipeEditHref,
@@ -1045,19 +1046,23 @@ export function RecipeDesigner({
     });
   };
 
+  const versionRequestRef = useRef<{ sourceId: string; key: string; pending: boolean } | null>(null);
   const handleCreateVersion = async () => {
-    if (!activeRecipeId || pendingSave) {
+    if (!activeRecipeId || pendingSave || versionRequestRef.current?.pending) {
       return;
     }
 
-    const saveBeforeVersionResult = await persistRecipe({ surfaceInlineResult: true, force: true });
-    if (saveBeforeVersionResult && !saveBeforeVersionResult.ok) {
-      return;
-    }
-
-    setPendingSave(true);
+    const request = versionRequestRef.current?.sourceId === activeRecipeId
+      ? versionRequestRef.current
+      : { sourceId: activeRecipeId, key: newIdempotencyKey(), pending: false };
+    versionRequestRef.current = request;
+    request.pending = true;
     try {
-      const result = await createRecipeVersionAction(activeRecipeId);
+      const saved = await persistRecipe({ surfaceInlineResult: true, force: true });
+      if (saved && !saved.ok) return;
+
+      setPendingSave(true);
+      const result = await createRecipeVersionAction(activeRecipeId, request.key);
 
       if (!result.ok || !result.recipe) {
         setSaveResult(result);
@@ -1073,6 +1078,7 @@ export function RecipeDesigner({
       setSaveResult({ ok: false, message: "Не удалось создать версию — проверьте соединение." });
       setSaveResultSignature(currentSignature);
     } finally {
+      request.pending = false;
       setPendingSave(false);
     }
   };

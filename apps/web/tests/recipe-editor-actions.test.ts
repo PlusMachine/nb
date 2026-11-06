@@ -14,7 +14,7 @@ vi.mock("next/cache", () => ({ revalidatePath: mocks.revalidatePath }));
 vi.mock("../lib/auth", () => ({ requireUser: mocks.requireUser }));
 vi.mock("../features/recipes/service", () => ({
   createRecipe: mocks.createRecipe,
-  updateRecipe: mocks.updateRecipe,
+  updateRecipeWithPrevious: mocks.updateRecipe,
   cloneRecipe: mocks.cloneRecipe,
   previewRecipeDraft: mocks.previewRecipeDraft,
   deleteRecipe: mocks.deleteRecipe
@@ -40,7 +40,10 @@ describe("recipe editor actions", () => {
   });
 
   it("update action uses service layer", async () => {
-    mocks.updateRecipe.mockResolvedValueOnce({ id: "r-2", og: 1.06, fg: 1.012, abv: 6, ibu: 40, color: 12, batchSizeEnteredQuantity: 22, batchSizeEnteredUnit: "l", ingredients: [] });
+    mocks.updateRecipe.mockResolvedValueOnce({
+      previous: { slug: "ipa2", publicationState: "private", hiddenAt: null },
+      recipe: { id: "r-2", publicationState: "private", og: 1.06, fg: 1.012, abv: 6, ibu: 40, color: 12, batchSizeEnteredQuantity: 22, batchSizeEnteredUnit: "l", ingredients: [] }
+    });
     const { updateRecipeAction } = await import("../app/(app)/app/recipes/actions");
 
     const result = await updateRecipeAction("r-2", {
@@ -74,7 +77,7 @@ describe("recipe editor actions", () => {
   });
 
   it("delete action removes recipe and revalidates related pages", async () => {
-    mocks.deleteRecipe.mockResolvedValueOnce({ id: "r-3", slug: "ipa-to-delete" });
+    mocks.deleteRecipe.mockResolvedValueOnce({ id: "r-3", slug: "ipa-to-delete", publicationState: "published", hiddenAt: null });
     const { deleteRecipeAction } = await import("../app/(app)/app/recipes/actions");
 
     const result = await deleteRecipeAction("r-3");

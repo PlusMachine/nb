@@ -31,6 +31,7 @@ import {
   db,
   deviceCommands,
   eq,
+  lte,
   resolveActiveBatchId,
   resolveDeviceByHardwareId,
 } from "./db.js";
@@ -132,9 +133,11 @@ export function startMqtt(opts: { url?: string; hooks?: MqttHooks }): MqttBridge
   // Контекст обработчиков: хуки фан-аута + publish (нужен cloud-плечу dead-man).
   const ctx: HandlerCtx = { hooks, publish: publishCommand, publishUpdate };
 
-  client.on("message", (topic, raw) => {
+  client.on("message", (topic, raw, packet) => {
+    // Retained telemetry is a replay after subscribe, not proof of live contact.
+    if (packet.retain && topic.endsWith("/telemetry")) return;
     // Никогда не даём обработчику уронить процесс.
-    handleMessage(topic, raw, ctx).catch((err: unknown) => {
+    handleMessage(topic, raw, ctx, new Date()).catch((err: unknown) => {
       const msg = err instanceof Error ? err.message : String(err);
       console.error(`[mqtt] сбой обработки ${topic}:`, msg);
     });
@@ -151,7 +154,7 @@ export function startMqtt(opts: { url?: string; hooks?: MqttHooks }): MqttBridge
   };
 }
 
-async function handleMessage(topic: string, raw: Buffer, ctx: HandlerCtx): Promise<void> {
+async function handleMessage(topic: string, raw: Buffer, ctx: HandlerCtx, receivedAt: Date): Promise<void> {
   const parsed = parseTopic(topic);
   if (!parsed) return;
   const { deviceId, suffix } = parsed;
@@ -172,9 +175,9 @@ async function handleMessage(topic: string, raw: Buffer, ctx: HandlerCtx): Promi
 
   switch (suffix) {
     case "telemetry":
-      return handleTelemetry(deviceId, json, ctx);
+      return handleTelemetry(deviceId, json, ctx, receivedAt);
     case "status":
-      return handleStatus(deviceId, json, ctx);
+      return handleStatus(deviceId, json, ctx, receivedAt);
     case "cmd/ack":
       return handleAck(deviceId, json, ctx.hooks);
     case "log":
@@ -184,7 +187,7 @@ async function handleMessage(topic: string, raw: Buffer, ctx: HandlerCtx): Promi
   }
 }
 
-async function handleTelemetry(deviceId: string, json: unknown, ctx: HandlerCtx): Promise<void> {
+async function handleTelemetry(deviceId: string, json: unknown, ctx: HandlerCtx, now: Date): Promise<void> {
   const result = TelemetrySchema.safeParse(json);
   if (!result.success) {
     console.warn(`[mqtt] невалидная телеметрия ${deviceId}: ${result.error.issues[0]?.message}`);
@@ -195,13 +198,20 @@ async function handleTelemetry(deviceId: string, json: unknown, ctx: HandlerCtx)
   const device = await resolveDeviceByHardwareId(deviceId);
   if (!device) return; // непривязанное устройство — тихо игнорируем
 
-  const now = new Date();
-
-  // Upsert «живости» устройства: lastSeenAt/status/fw.
-  await db
+  // The current MQTT frame is independent of the downsampled history.
+  const [updated] = await db
     .update(brewDevices)
-    .set({ lastSeenAt: now, status: "online", fw: t.fw, updatedAt: now })
-    .where(eq(brewDevices.id, device.id));
+    .set({
+      lastSeenAt: now,
+      status: "online",
+      fw: t.fw,
+      updatedAt: now,
+      mqttTelemetry: t as unknown as Record<string, unknown>,
+      mqttTelemetryAt: now,
+    })
+    .where(and(eq(brewDevices.id, device.id), lte(brewDevices.updatedAt, now)))
+    .returning({ id: brewDevices.id });
+  if (!updated) return;
 
   const brewBatchId = await resolveActiveBatchId(device.id);
 
@@ -246,7 +256,7 @@ async function handleTelemetry(deviceId: string, json: unknown, ctx: HandlerCtx)
   ctx.hooks.onTelemetry?.(deviceId, t);
 }
 
-async function handleStatus(deviceId: string, json: unknown, ctx: HandlerCtx): Promise<void> {
+async function handleStatus(deviceId: string, json: unknown, ctx: HandlerCtx, now: Date): Promise<void> {
   // Принимаем как { status:"online"|"offline", fw?, ip? }, так и голую строку.
   let statusRaw: string | undefined;
   let fw: string | undefined;
@@ -265,20 +275,21 @@ async function handleStatus(deviceId: string, json: unknown, ctx: HandlerCtx): P
   const device = await resolveDeviceByHardwareId(deviceId);
   if (!device) return;
 
-  const now = new Date();
-  await db
+  const [updated] = await db
     .update(brewDevices)
     .set({
       status,
       updatedAt: now,
       ...(status === "online" ? { lastSeenAt: now } : {}),
+      ...(status === "offline" ? { mqttTelemetry: null, mqttTelemetryAt: null } : {}),
       ...(fw ? { fw } : {}),
     })
-    .where(eq(brewDevices.id, device.id));
+    .where(and(eq(brewDevices.id, device.id), lte(brewDevices.updatedAt, now)))
+    .returning({ id: brewDevices.id });
 
   // Retained status приходит сразу при коннекте устройства (раньше первой
   // телеметрии) — если fw известен, проверяем обновления уже здесь (F3).
-  if (status === "online" && fw) {
+  if (updated && status === "online" && fw) {
     await maintainFirmwareUpdate(device, fw, ctx.publishUpdate, now.getTime());
   }
 }

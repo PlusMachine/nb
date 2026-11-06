@@ -4,8 +4,8 @@
 //  недостижимых по LAN с сервера nb. Параллель LAN-реализации в transport.ts;
 //  провайдер выбирает реализацию в transportForDevice.
 //
-//  Телеметрия: ЧИТАЕМ последнюю строку brew_telemetry устройства — её пишет
-//  apps/bridge из brewforge/<id>/telemetry (~1 Гц). Если свежей строки нет
+//  Телеметрия: читаем последний MQTT-кадр устройства, сохранённый apps/bridge
+//  из brewforge/<id>/telemetry (~1 Гц). Если свежего кадра нет
 //  (устройство офлайн) — возвращаем null, и SSE-роут отдаёт «offline».
 //  Команды: ПУБЛИКУЕМ в брокер и коррелируем ack (mqtt-client).
 //
@@ -13,7 +13,7 @@
 //  облачная синхронизация конфига). Пока бросаем CLOUD_UNSUPPORTED: эти операции
 //  доступны по LAN, а облачный путь #1 — про ведение уже идущей варки откуда угодно.
 // =============================================================================
-import { and, brewLogEvents, brewTelemetry, db, desc, eq } from "@nb/db";
+import { and, brewDevices, brewLogEvents, db, desc, eq } from "@nb/db";
 import {
   TelemetrySchema,
   type Ack,
@@ -29,10 +29,12 @@ import { publishCommandAwaitAck, publishOta, publishRecipe } from "./mqtt-client
 
 // Кадр старше этого считаем «нет данных» (null): иначе дашборд показывал бы давнюю
 // строку как живую (он детектит онлайн по факту прихода кадров, не по их seq).
-// Мост пишет ~1 Гц; 8 с — терпит джиттер/краткий реконнект, но быстро ловит офлайн.
-// ts строки — стенные часы устройства (SNTP); при ts=0 мост ставит реальное now,
-// поэтому свежесть осмысленна и для несинхронизированных приборов.
 const TELEMETRY_FRESH_MS = 8000;
+
+function isFreshTimestamp(timestamp: number, now: number): boolean {
+  const ageMs = now - timestamp;
+  return ageMs >= -1000 && ageMs <= TELEMETRY_FRESH_MS;
+}
 
 // Сколько ждём подтверждения сохранения рецепта (событие recipe_saved в
 // brew_log_events, которое пишет мост из .../log устройства) для облачного putRecipe.
@@ -40,30 +42,26 @@ const RECIPE_SLOT_TIMEOUT_MS = 6000;
 
 const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
 
-/** Устройство для облачного транспорта: db-id (для brew_telemetry) + заводской
+/** Устройство для облачного транспорта: db-id + заводской
  *  hardwareId (для топиков brewforge/<hardwareId>/*). */
 export type CloudDeviceRef = { id: string; hardwareId: string };
 
 export function cloudTransport(device: CloudDeviceRef): DeviceTransport {
   return {
     async getTelemetry(): Promise<Telemetry | null> {
-      // Последняя строка по порядку вставки (bigserial id монотонен) — надёжнее ts,
-      // который зависит от часов устройства.
       const [row] = await db
-        .select({ payload: brewTelemetry.payload, ts: brewTelemetry.ts })
-        .from(brewTelemetry)
-        .where(eq(brewTelemetry.deviceId, device.id))
-        .orderBy(desc(brewTelemetry.id))
+        .select({ payload: brewDevices.mqttTelemetry, receivedAt: brewDevices.mqttTelemetryAt, status: brewDevices.status })
+        .from(brewDevices)
+        .where(eq(brewDevices.id, device.id))
         .limit(1);
-      if (!row) return null;
-
-      const ageMs = Date.now() - new Date(row.ts).getTime();
-      // Небольшой сдвиг часов терпим; дата далеко в будущем не должна оставлять
-      // последнюю строку «свежей» после отключения устройства.
-      if (!Number.isFinite(ageMs) || ageMs < -1000 || ageMs > TELEMETRY_FRESH_MS) return null;
+      const now = Date.now();
+      if (row?.status !== "online" || !row.receivedAt || !isFreshTimestamp(row.receivedAt.getTime(), now)) return null;
 
       const parsed = TelemetrySchema.safeParse(row.payload);
-      return parsed.success ? parsed.data : null;
+      if (!parsed.success) return null;
+      const frame = parsed.data;
+      // При ts=0 устройство ещё не синхронизировало часы.
+      return frame.ts === 0 || isFreshTimestamp(frame.ts * 1000, now) ? frame : null;
     },
 
     async sendCommand(command: Command): Promise<Ack> {

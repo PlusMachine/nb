@@ -1362,10 +1362,16 @@
 }
 
 .home-batch>svg {
+  flex-shrink: 0;
   width: 23px;
   height: 23px;
   color: var(--home-green);
   margin-top: 3px;
+}
+
+.home-batch>div {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .home-batch strong {

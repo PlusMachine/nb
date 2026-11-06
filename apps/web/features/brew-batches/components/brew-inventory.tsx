@@ -2,10 +2,11 @@
 
 import React, { useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ChevronRight, Loader2, PackageMinus, Undo2 } from "lucide-react";
 
 import { Button } from "@nb/ui";
-import { restoreBrewBatchInventoryAction } from "@/app/(app)/app/brew-batches/[id]/actions";
+import { restoreBrewBatchInventoryAction, type BrewInventoryResult } from "@/app/(app)/app/brew-batches/[id]/actions";
 import { BATCH_INVENTORY_SNAPSHOT_MESSAGE } from "../inventory-snapshot";
 import {
   type BrewBatchInventoryLogEntry,
@@ -13,7 +14,7 @@ import {
   type BrewBatchStatus
 } from "@/features/brew-batches/contracts";
 import { pluralize } from "@/lib/pluralize";
-import { ConsumeInventoryDialog, type ConsumeDialogResult } from "./consume-preview-dialog";
+import { ConsumeInventoryDialog } from "./consume-preview-dialog";
 
 // Человекочитаемое количество из нормализованного (g→kg, ml→l при больших значениях).
 // Точность — как её пишет пивовар, а не как хранит БД: варка в объёме, отличном от
@@ -44,7 +45,7 @@ const fmtLogDate = (value: Date) => logDateFmt.format(new Date(value));
 
 export function BrewInventory({
   brewBatchId,
-  view,
+  view: serverView,
   status,
   stockCoverage
 }: {
@@ -61,10 +62,18 @@ export function BrewInventory({
   // всё ещё «не хватает», presentCount её бы молча посчитал закрытой.
   stockCoverage?: { totalLines: number; presentCount: number; coveredCount: number; fullyCovered: boolean } | null;
 }) {
+  const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
+  const [confirmedView, setConfirmedView] = useState<BrewBatchInventoryView | null>(null);
   const [consumeDialogOpen, setConsumeDialogOpen] = useState(false);
   const inFlight = useRef(false);
+
+  // Списание и возврат дописывают журнал. Пока страница присылает старый
+  // журнал, показываем состояние из ответа на действие.
+  const view = confirmedView?.brewBatchId === brewBatchId && confirmedView.log.length > serverView.log.length
+    ? confirmedView
+    : serverView;
 
   // Списание — свойство ЭТОЙ партии: варка того же рецепта во второй раз (пока
   // первая ещё бродит) списывает свой склад заново. Гасим кнопку, только если эта
@@ -81,7 +90,15 @@ export function BrewInventory({
   const coverage = canConsume && stockCoverage && stockCoverage.totalLines > 0 ? stockCoverage : null;
   const coverageEmpty = coverage ? coverage.presentCount === 0 : false;
 
-  const run = async (action: () => Promise<{ ok: boolean; message: string }>) => {
+  const handleResult = (result: BrewInventoryResult) => {
+    setMessage({ ok: result.ok, text: result.message });
+    if (result.ok) {
+      if (result.view) setConfirmedView(result.view);
+      router.refresh();
+    }
+  };
+
+  const run = async (action: () => Promise<BrewInventoryResult>) => {
     if (inFlight.current) {
       return;
     }
@@ -89,8 +106,7 @@ export function BrewInventory({
     setBusy(true);
     setMessage(null);
     try {
-      const result = await action();
-      setMessage({ ok: result.ok, text: result.message });
+      handleResult(await action());
     } catch {
       setMessage({ ok: false, text: "Не удалось выполнить операцию." });
     } finally {
@@ -203,7 +219,7 @@ export function BrewInventory({
               open={consumeDialogOpen}
               brewBatchId={brewBatchId}
               onOpenChange={setConsumeDialogOpen}
-              onConsumed={(result: ConsumeDialogResult) => setMessage({ ok: result.ok, text: result.message })}
+              onConsumed={handleResult}
             />
           </>
         ) : null}

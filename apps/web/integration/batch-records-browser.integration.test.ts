@@ -14,7 +14,7 @@ import { listBatchTasks, saveBatchVolumes } from "../features/brew-batches/recor
 
 let browser: Browser;
 const owned: string[] = [], base = process.env.E2E_BASE_URL ?? "http://127.0.0.1:3000";
-const output = resolve(process.cwd(), "../../.local-artifacts/batch-improvements");
+const output = process.env.QA_ARTIFACT_DIR ?? resolve(process.cwd(), "../../.local-artifacts/batch-improvements");
 beforeAll(async () => {
   if (process.env.NODE_ENV === "production" || !["localhost", "127.0.0.1", "postgres"].includes(new URL(process.env.DATABASE_URL!).hostname)) throw new Error("LOCAL_TEST_DATABASE_REQUIRED");
   browser = await chromium.launch({ headless: true }); await mkdir(output, { recursive: true });
@@ -44,12 +44,12 @@ it("records volumes, reviews equipment settings, manages tasks, compares through
     // Manual brewing now keeps records in the Measure dialog. Complete the
     // transfer through the current UI before reviewing equipment calibration.
     await page.waitForFunction(() => Array.from(document.querySelectorAll("button")).some(button => button.textContent?.trim() === "Сохранить и продолжить" && Object.keys(button).some(key => key.startsWith("__reactProps$"))));
-    await page.getByLabel("Начальная плотность, °P", { exact: true }).fill("13,8");
-    await page.getByLabel("Объём в ферментере, л", { exact: true }).fill("20");
+    await page.getByRole("textbox", { name: "Начальная плотность, °P", exact: true }).fill("13,8");
+    await page.getByRole("textbox", { name: "Объём в ферментере, л", exact: true }).fill("20");
     await page.getByRole("button", { name: "Сохранить и продолжить", exact: true }).click();
     await expect(page.getByRole("heading", { name: "Внесите дрожжи", exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Замер", exact: true }).click();
-    const volumes = page.locator("#batch-volumes");
+    const volumes = page.locator("#batch-volumes").filter({ visible: true });
     await volumes.getByLabel("До кипячения, л", { exact: true }).fill("26,76");
     await volumes.getByLabel("После кипячения, л", { exact: true }).fill("21");
     await volumes.getByLabel("В ферментере, л", { exact: true }).fill("20");
@@ -63,7 +63,7 @@ it("records volumes, reviews equipment settings, manages tasks, compares through
     await expect(dialog.getByRole("button", { name: "Сохранить настройки" })).toBeEnabled();
     await page.screenshot({ path: resolve(output, "equipment-review.png"), fullPage: true, animations: "disabled" });
     await dialog.getByRole("button", { name: "Сохранить настройки" }).click(); await expect(dialog).not.toBeVisible();
-    const tasks = page.locator("#batch-tasks");
+    const tasks = page.locator("#batch-tasks").filter({ visible: true });
     await tasks.getByRole("button", { name: "Добавить задачу" }).click();
     await tasks.getByLabel("Что сделать").fill("Измерить плотность");
     const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Moscow" });
@@ -149,7 +149,7 @@ it("keeps dirty volume input when an independent record refreshes server values"
   try {
     await volumes.getByLabel("Разлито, л", { exact: true }).fill("18");
     await saveBatchVolumes(user.id, batch.id, { preBoilL: 26 });
-    const tasks = page.locator("#batch-tasks");
+    const tasks = page.locator("#batch-tasks").filter({ visible: true });
     await tasks.getByRole("button", { name: "Добавить задачу", exact: true }).click();
     await tasks.getByLabel("Что сделать").fill("Refresh independent record");
     await tasks.getByRole("button", { name: "Добавить", exact: true }).click();

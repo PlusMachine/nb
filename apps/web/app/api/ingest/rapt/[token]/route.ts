@@ -10,6 +10,7 @@ import {
 import { findRaptIntegrationByToken } from "@/features/device-streams/integrations";
 import { ingestRaptWebhook } from "@/features/device-streams/ingest-rapt";
 import { clientIpFrom } from "@/lib/anti-abuse";
+import { readLimitedText } from "@/lib/read-limited-text";
 
 // =============================================================================
 //  /api/ingest/rapt/[token] — вебхук RAPT Cloud (M4, §8.1/§8.4/§8.5).
@@ -57,14 +58,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ tok
   const { token } = await params;
 
   try {
-    // Лимит тела (§8.5): сперва дешёвая проверка заявленного Content-Length.
-    const declaredLength = Number(request.headers.get("content-length") ?? "");
-    if (Number.isFinite(declaredLength) && declaredLength > INGEST_BODY_MAX_BYTES) {
-      return NextResponse.json({ ok: false, error: "too_large" }, { status: 413 });
-    }
-
-    const text = await request.text();
-    if (Buffer.byteLength(text, "utf8") > INGEST_BODY_MAX_BYTES) {
+    const text = await readLimitedText(request, INGEST_BODY_MAX_BYTES);
+    if (text === null) {
       return NextResponse.json({ ok: false, error: "too_large" }, { status: 413 });
     }
 

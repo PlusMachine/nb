@@ -11,7 +11,7 @@ export function RecipeMetaSection({ recipe, showPrivateNotes = true }: { recipe:
   }
 
   return (
-    <section className={`grid gap-4 ${showPrivateNotes ? "sm:grid-cols-2" : ""}`}>
+    <section className={`grid grid-cols-1 gap-4 ${showPrivateNotes ? "sm:grid-cols-2" : ""}`}>
       {hasDescription || !showPrivateNotes ? (
         <div className={showPrivateNotes ? "rounded-2xl border border-border bg-card p-5 shadow-sm" : "space-y-3"}>
           <div className="mb-3 flex items-center gap-2">
@@ -20,7 +20,7 @@ export function RecipeMetaSection({ recipe, showPrivateNotes = true }: { recipe:
             </div>
             <h2 className={`${showPrivateNotes ? "text-sm" : "text-base"} font-semibold text-foreground`}>Описание</h2>
           </div>
-          <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">{recipe.description || "Описание не заполнено."}</p>
+          <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-muted-foreground">{recipe.description || "Описание не заполнено."}</p>
         </div>
       ) : null}
       {showPrivateNotes ? (
@@ -31,7 +31,7 @@ export function RecipeMetaSection({ recipe, showPrivateNotes = true }: { recipe:
             </div>
             <h2 className="text-sm font-semibold text-foreground">Личные заметки</h2>
           </div>
-          <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">{recipe.authorNotes || "Личных заметок пока нет."}</p>
+          <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-muted-foreground">{recipe.authorNotes || "Личных заметок пока нет."}</p>
         </div>
       ) : null}
     </section>

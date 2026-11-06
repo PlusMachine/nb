@@ -11,6 +11,7 @@ vi.mock("server-only", () => ({}));
 const mocks = vi.hoisted(() => ({
   searchPublicRecipes: vi.fn(),
   getPublicRecipeById: vi.fn(),
+  listVisibleRecipeIds: vi.fn(),
   getPublicRecipeFamilyCounts: vi.fn(),
   listFeaturedContentArticles: vi.fn()
 }));
@@ -18,6 +19,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@/features/recipes/service", () => ({
   searchPublicRecipes: mocks.searchPublicRecipes,
   getPublicRecipeById: mocks.getPublicRecipeById,
+  listVisibleRecipeIds: mocks.listVisibleRecipeIds,
   getPublicRecipeFamilyCounts: mocks.getPublicRecipeFamilyCounts
 }));
 
@@ -36,13 +38,16 @@ const recipeList = (title: string) => ({
 const loadHomeCache = async () => {
   vi.stubEnv("VITEST", "");
   vi.resetModules();
-  return await import("../features/home/home-data-cache");
+  const cache = await import("../features/home/home-data-cache");
+  cache.invalidateHomeDataCache();
+  return cache;
 };
 
 beforeEach(() => {
   Object.values(mocks).forEach((mock) => mock.mockReset());
   mocks.searchPublicRecipes.mockResolvedValue(recipeList("Скрытая IPA"));
   mocks.getPublicRecipeById.mockResolvedValue({ id: "r-1", title: "Public", authorNotes: null, draftState: null });
+  mocks.listVisibleRecipeIds.mockResolvedValue(new Set(["r-1"]));
   mocks.getPublicRecipeFamilyCounts.mockResolvedValue({ ipa: 3 });
   mocks.listFeaturedContentArticles.mockResolvedValue([{ id: "a-1", slug: "kak-svarit-pervoe-pivo" }]);
 });
@@ -67,6 +72,21 @@ describe("features/home/home-data-cache", () => {
     const cache = await loadHomeCache();
     mocks.getPublicRecipeById.mockRejectedValue(new Error("DATABASE_UNAVAILABLE"));
     await expect(cache.getHomePublicRecipeDetails(["r-1"])).rejects.toThrow("DATABASE_UNAVAILABLE");
+  });
+  it("filters a warmed recipe when another process makes it private", async () => {
+    const cache = await loadHomeCache();
+    expect(await cache.getHomePublicRecipeDetails(["r-1"])).toHaveLength(1);
+    mocks.listVisibleRecipeIds.mockResolvedValue(new Set());
+    expect(await cache.getHomePublicRecipeDetails(["r-1"])).toEqual([]);
+  });
+  it("shares invalidation between independently loaded route modules", async () => {
+    const page = await loadHomeCache();
+    expect((await page.getHomeLatestPublicRecipes()).items).toHaveLength(1);
+    vi.resetModules();
+    const action = await import("../features/home/home-data-cache");
+    mocks.searchPublicRecipes.mockResolvedValue({ ...recipeList("Скрытая IPA"), items: [], total: 0 });
+    action.invalidateHomeDataCache();
+    expect((await page.getHomeLatestPublicRecipes()).items).toHaveLength(0);
   });
   it("лента и счётчики берутся из слота, пока он свеж", async () => {
     const cache = await loadHomeCache();

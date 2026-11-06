@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { db, pool, users, recipes, eq, inArray } from "@nb/db";
 import { completeEmailSignIn } from "@nb/auth";
-import { createRecipe, getRecipeById, updateRecipe, deleteRecipe } from "../features/recipes/service";
+import { createRecipe, createRecipeVersion, getRecipeById, updateRecipe, deleteRecipe } from "../features/recipes/service";
 
 const owned: string[] = [];
 let owner: string;
@@ -21,6 +21,23 @@ beforeEach(async () => {
 afterAll(async () => { if (owned.length) await db.delete(users).where(inArray(users.id, owned)); await pool.end(); });
 
 describe("recipe persistence with real PostgreSQL", () => {
+  it("deduplicates retries and allocates separate version numbers for parallel requests", async () => {
+    const recipe = await createRecipe(owner, payload());
+    const key = randomUUID();
+    const [first, retry] = await Promise.all([
+      createRecipeVersion(owner, recipe.id, key),
+      createRecipeVersion(owner, recipe.id, key)
+    ]);
+    expect(first).toMatchObject({ id: key, recipeFamilyId: recipe.recipeFamilyId, versionNumber: 2, publicationState: "private" });
+    expect(retry.id).toBe(first.id);
+
+    const newVersions = await Promise.all([
+      createRecipeVersion(owner, recipe.id, randomUUID()),
+      createRecipeVersion(owner, first.id, randomUUID())
+    ]);
+    expect(newVersions.map(version => version.versionNumber).sort()).toEqual([3, 4]);
+    expect(await db.query.recipes.findMany({ where: eq(recipes.recipeFamilyId, recipe.recipeFamilyId) })).toHaveLength(4);
+  });
   it("rejects explicit invalid values without changing valid saved fields", async () => {
     const recipe = await createRecipe(owner, payload());
     for (const value of [0, -1, NaN, Infinity, -Infinity, 1e308]) {
