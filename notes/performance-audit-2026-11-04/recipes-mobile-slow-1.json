@@ -1,0 +1,776 @@
+{
+  "name": "recipes-mobile-slow-1",
+  "path": "/recipes",
+  "mobile": true,
+  "slow": true,
+  "warm": false,
+  "freshConsent": false,
+  "failure": "page.goto: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3016/recipes\", waiting until \"load\"\u001b[22m\n",
+  "url": "http://127.0.0.1:3016/recipes",
+  "ttfbMs": 27.199999999953434,
+  "fcpMs": 1332,
+  "lcpMs": 4292,
+  "cls": 0.3105318636725164,
+  "domContentLoadedMs": 2305.79999999993,
+  "loadMs": 0,
+  "htmlTransfer": 100218,
+  "htmlDecoded": 505686,
+  "resourceTransfer": 11335484,
+  "resourceDecoded": 21969886,
+  "jsDecoded": 1130805,
+  "domElements": 1674,
+  "incompleteImages": [
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/2A%20%E2%80%94%20International%20Pale%20Lager.png",
+      "top": 1518.800048828125
+    },
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/17C%20%E2%80%94%20Wee%20Heavy.png",
+      "top": 1878.800048828125
+    },
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/4A%20%E2%80%94%20Munich%20Helles.png",
+      "top": 2069.800048828125
+    },
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/20C%20%E2%80%94%20Imperial%20Stout.png",
+      "top": 2249.800048828125
+    },
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/25B%20%E2%80%94%20Saison.png",
+      "top": 2429.800048828125
+    },
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/19A%20%E2%80%94%20American%20Amber%20Ale.png",
+      "top": 2620.800048828125
+    },
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/21C%20%E2%80%94%20Hazy%20IPA.png",
+      "top": 2811.800048828125
+    },
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/11B%20%E2%80%94%20Best%20Bitter.png",
+      "top": 2991.800048828125
+    },
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/18B%20%E2%80%94%20American%20Pale%20Ale.png",
+      "top": 3171.800048828125
+    },
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/18B%20%E2%80%94%20American%20Pale%20Ale.png",
+      "top": 3351.800048828125
+    },
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/18B%20%E2%80%94%20American%20Pale%20Ale.png",
+      "top": 3509.800048828125
+    },
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/22A%20%E2%80%94%20Double%20IPA.png",
+      "top": 3667.800048828125
+    },
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/20C%20%E2%80%94%20Imperial%20Stout.png",
+      "top": 3836.800048828125
+    },
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/15B%20%E2%80%94%20Irish%20Stout.png",
+      "top": 4016.800048828125
+    },
+    {
+      "src": "http://127.0.0.1:3016/api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb?v=2",
+      "top": 4185.7998046875
+    },
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/5B%20%E2%80%94%20K%C3%B6lsch.png",
+      "top": 4343.7998046875
+    },
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/9C%20%E2%80%94%20Baltic%20Porter.png",
+      "top": 4523.7998046875
+    }
+  ],
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "scrollWidth": 390,
+    "scrollHeight": 5688
+  },
+  "totalLongTaskBlockingMs": 492,
+  "lcp": [
+    {
+      "start": 1332,
+      "size": 8232,
+      "url": "",
+      "tag": "H1",
+      "text": "Рецепты сообщества"
+    },
+    {
+      "start": 4292,
+      "size": 9184,
+      "url": "",
+      "tag": "H2",
+      "text": "Bohemian Pilsner «Nevermore» (Josh Weikert)"
+    }
+  ],
+  "shifts": [
+    {
+      "start": 3365.0999999999767,
+      "value": 0.1552132701421801,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "FOOTER",
+          "text": "NBРецепты, склад ингредиентов и расчёты для домашнего пивоварения.18+ · Материал",
+          "previous": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "current": {
+            "x": 0,
+            "y": 713,
+            "width": 390,
+            "height": 131,
+            "top": 713,
+            "right": 390,
+            "bottom": 844,
+            "left": 0
+          }
+        },
+        {
+          "tag": "OL",
+          "text": "",
+          "previous": {
+            "x": 12,
+            "y": 824,
+            "width": 366,
+            "height": 8,
+            "top": 824,
+            "right": 378,
+            "bottom": 832,
+            "left": 12
+          },
+          "current": {
+            "x": 12,
+            "y": 764,
+            "width": 366,
+            "height": 8,
+            "top": 764,
+            "right": 378,
+            "bottom": 772,
+            "left": 12
+          }
+        }
+      ]
+    },
+    {
+      "start": 3850.6999999999534,
+      "value": 0.00010532338815620861,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "DIV",
+          "text": "Войти",
+          "previous": {
+            "x": 233,
+            "y": 6,
+            "width": 133,
+            "height": 44,
+            "top": 6,
+            "right": 366,
+            "bottom": 50,
+            "left": 233
+          },
+          "current": {
+            "x": 238,
+            "y": 6,
+            "width": 128,
+            "height": 44,
+            "top": 6,
+            "right": 366,
+            "bottom": 50,
+            "left": 238
+          }
+        }
+      ]
+    },
+    {
+      "start": 4272.29999999993,
+      "value": 0.1552132701421801,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "FOOTER",
+          "text": "NBРецепты, склад ингредиентов и расчёты для домашнего пивоварения.18+ · Материал",
+          "previous": {
+            "x": 0,
+            "y": 713,
+            "width": 390,
+            "height": 131,
+            "top": 713,
+            "right": 390,
+            "bottom": 844,
+            "left": 0
+          },
+          "current": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          }
+        }
+      ]
+    }
+  ],
+  "longtasks": [
+    {
+      "start": 1047.2999999999302,
+      "duration": 242
+    },
+    {
+      "start": 2075.0999999999767,
+      "duration": 181
+    },
+    {
+      "start": 2320.6999999999534,
+      "duration": 101
+    },
+    {
+      "start": 3178.5,
+      "duration": 81
+    },
+    {
+      "start": 3305.5,
+      "duration": 51
+    },
+    {
+      "start": 3994.6999999999534,
+      "duration": 93
+    },
+    {
+      "start": 4194.099999999977,
+      "duration": 70
+    },
+    {
+      "start": 90007.59999999986,
+      "duration": 73
+    }
+  ],
+  "events": [],
+  "errors": [],
+  "resources": [
+    {
+      "name": "/_next/static/media/32425b6d39044b3c-s.p.ttf",
+      "type": "link",
+      "start": 170.79999999993015,
+      "duration": 3662.8000000000466,
+      "transfer": 149811,
+      "encoded": 149511,
+      "decoded": 359804
+    },
+    {
+      "name": "/_next/static/media/d703e6352f035923-s.p.ttf",
+      "type": "link",
+      "start": 172.09999999997672,
+      "duration": 8072.5,
+      "transfer": 300789,
+      "encoded": 300489,
+      "decoded": 744936
+    },
+    {
+      "name": "/_next/static/css/688dbf7110800d11.css",
+      "type": "link",
+      "start": 191,
+      "duration": 216.79999999993015,
+      "transfer": 2181,
+      "encoded": 1881,
+      "decoded": 7335
+    },
+    {
+      "name": "/_next/static/css/10d068b31dbc4d49.css",
+      "type": "link",
+      "start": 191.19999999995343,
+      "duration": 695.8000000000466,
+      "transfer": 20713,
+      "encoded": 20413,
+      "decoded": 115379
+    },
+    {
+      "name": "/_next/static/chunks/webpack-50b6521d18506e69.js",
+      "type": "link",
+      "start": 191.89999999990687,
+      "duration": 260.5,
+      "transfer": 2110,
+      "encoded": 1810,
+      "decoded": 3498
+    },
+    {
+      "name": "/_next/static/chunks/87c73c54-dd8d81ac9604067c.js",
+      "type": "script",
+      "start": 193,
+      "duration": 1871,
+      "transfer": 54664,
+      "encoded": 54364,
+      "decoded": 173023
+    },
+    {
+      "name": "/_next/static/chunks/18-94afe61f15789e06.js",
+      "type": "script",
+      "start": 193.59999999997672,
+      "duration": 1728.4000000000233,
+      "transfer": 47088,
+      "encoded": 46788,
+      "decoded": 174209
+    },
+    {
+      "name": "/_next/static/chunks/main-app-1b4249da1a5d893c.js",
+      "type": "script",
+      "start": 194.19999999995343,
+      "duration": 891,
+      "transfer": 870,
+      "encoded": 570,
+      "decoded": 570
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/recipes/error-ce8f980d58254598.js",
+      "type": "script",
+      "start": 194.29999999993015,
+      "duration": 1084.5,
+      "transfer": 1009,
+      "encoded": 709,
+      "decoded": 1345
+    },
+    {
+      "name": "/_next/static/chunks/7283-f1e1247528aca409.js",
+      "type": "script",
+      "start": 195,
+      "duration": 1366.1999999999534,
+      "transfer": 3701,
+      "encoded": 3401,
+      "decoded": 8555
+    },
+    {
+      "name": "/_next/static/chunks/612-9c360be286377cda.js",
+      "type": "script",
+      "start": 195.79999999993015,
+      "duration": 2978,
+      "transfer": 63319,
+      "encoded": 63019,
+      "decoded": 212253
+    },
+    {
+      "name": "/_next/static/chunks/9664-4bead6cd06a85437.js",
+      "type": "script",
+      "start": 195.89999999990687,
+      "duration": 1973.6000000000931,
+      "transfer": 3455,
+      "encoded": 3155,
+      "decoded": 8925
+    },
+    {
+      "name": "/_next/static/chunks/4159-4524a53eeeb992af.js",
+      "type": "script",
+      "start": 196.09999999997672,
+      "duration": 2160.5999999999767,
+      "transfer": 4445,
+      "encoded": 4145,
+      "decoded": 12883
+    },
+    {
+      "name": "/_next/static/chunks/922-36cb889d8a78c9e9.js",
+      "type": "script",
+      "start": 197.09999999997672,
+      "duration": 2144.0999999999767,
+      "transfer": 3775,
+      "encoded": 3475,
+      "decoded": 9436
+    },
+    {
+      "name": "/_next/static/chunks/1140-3282b57ff3d332fe.js",
+      "type": "script",
+      "start": 197.19999999995343,
+      "duration": 2257.1999999999534,
+      "transfer": 5548,
+      "encoded": 5248,
+      "decoded": 20277
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/layout-6a9b9b951f570000.js",
+      "type": "script",
+      "start": 198.19999999995343,
+      "duration": 2361.1999999999534,
+      "transfer": 2491,
+      "encoded": 2191,
+      "decoded": 6439
+    },
+    {
+      "name": "/_next/static/chunks/4737-b9435b98fbb3c365.js",
+      "type": "script",
+      "start": 198.89999999990687,
+      "duration": 2645.5,
+      "transfer": 13380,
+      "encoded": 13080,
+      "decoded": 57621
+    },
+    {
+      "name": "/_next/static/chunks/9461-25c487bb36994b55.js",
+      "type": "script",
+      "start": 199.59999999997672,
+      "duration": 2562.0999999999767,
+      "transfer": 5129,
+      "encoded": 4829,
+      "decoded": 12329
+    },
+    {
+      "name": "/_next/static/chunks/app/layout-a377c5f5ad22f81f.js",
+      "type": "script",
+      "start": 199.79999999993015,
+      "duration": 2734.20000000007,
+      "transfer": 7444,
+      "encoded": 7144,
+      "decoded": 18394
+    },
+    {
+      "name": "/_next/static/chunks/app/error-482cb912af31630e.js",
+      "type": "script",
+      "start": 199.79999999993015,
+      "duration": 2750.8000000000466,
+      "transfer": 953,
+      "encoded": 653,
+      "decoded": 1140
+    },
+    {
+      "name": "/_next/static/chunks/489-fc96c5688a515719.js",
+      "type": "script",
+      "start": 199.89999999990687,
+      "duration": 2914.3000000000466,
+      "transfer": 5524,
+      "encoded": 5224,
+      "decoded": 13661
+    },
+    {
+      "name": "/_next/static/chunks/8732-787a7f6fb004de98.js",
+      "type": "script",
+      "start": 200.5,
+      "duration": 2995.6999999999534,
+      "transfer": 3000,
+      "encoded": 2700,
+      "decoded": 7620
+    },
+    {
+      "name": "/_next/static/chunks/3671-7a65dbaeafe4c092.js",
+      "type": "script",
+      "start": 201.19999999995343,
+      "duration": 3595.1999999999534,
+      "transfer": 30297,
+      "encoded": 29997,
+      "decoded": 157102
+    },
+    {
+      "name": "/_next/static/chunks/6005-b648b00388e32889.js",
+      "type": "script",
+      "start": 201.39999999990687,
+      "duration": 3160.600000000093,
+      "transfer": 3664,
+      "encoded": 3364,
+      "decoded": 10087
+    },
+    {
+      "name": "/_next/static/chunks/6926-eaa04380686830b3.js",
+      "type": "script",
+      "start": 202,
+      "duration": 3444.1999999999534,
+      "transfer": 13028,
+      "encoded": 12728,
+      "decoded": 40407
+    },
+    {
+      "name": "/_next/static/chunks/3931-5e2f6415202a03df.js",
+      "type": "script",
+      "start": 202.79999999993015,
+      "duration": 3219,
+      "transfer": 2865,
+      "encoded": 2565,
+      "decoded": 11113
+    },
+    {
+      "name": "/_next/static/chunks/1639-5eecbdf20c5b9d47.js",
+      "type": "script",
+      "start": 204.5,
+      "duration": 3472.1999999999534,
+      "transfer": 5727,
+      "encoded": 5427,
+      "decoded": 19895
+    },
+    {
+      "name": "/_next/static/chunks/9424-e2fa84445238d854.js",
+      "type": "script",
+      "start": 204.59999999997672,
+      "duration": 3584.29999999993,
+      "transfer": 8258,
+      "encoded": 7958,
+      "decoded": 25215
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/recipes/page-0489e387ec99d690.js",
+      "type": "script",
+      "start": 205.59999999997672,
+      "duration": 3786.9000000000233,
+      "transfer": 10629,
+      "encoded": 10329,
+      "decoded": 30532
+    },
+    {
+      "name": "/images/bjcp/11C%20%E2%80%94%20Strong%20Bitter.png",
+      "type": "img",
+      "start": 2418,
+      "duration": 42755.69999999995,
+      "transfer": 1463417,
+      "encoded": 1463117,
+      "decoded": 1463117
+    },
+    {
+      "name": "/images/bjcp/3B%20%E2%80%94%20Czech%20Premium%20Pale%20Lager.png",
+      "type": "img",
+      "start": 2418.0999999999767,
+      "duration": 43167.99999999988,
+      "transfer": 1470028,
+      "encoded": 1469728,
+      "decoded": 1469728
+    },
+    {
+      "name": "/images/bjcp/7A%20%E2%80%94%20Vienna%20Lager.png",
+      "type": "img",
+      "start": 2418.1999999999534,
+      "duration": 45553.80000000005,
+      "transfer": 1550452,
+      "encoded": 1550152,
+      "decoded": 1550152
+    },
+    {
+      "name": "/images/bjcp/18A%20%E2%80%94%20Blonde%20Ale.png",
+      "type": "img",
+      "start": 2418.1999999999534,
+      "duration": 46288,
+      "transfer": 1577419,
+      "encoded": 1577119,
+      "decoded": 1577119
+    },
+    {
+      "name": "/images/bjcp/18B%20%E2%80%94%20American%20Pale%20Ale.png",
+      "type": "img",
+      "start": 2419.1999999999534,
+      "duration": 42590.39999999991,
+      "transfer": 1440821,
+      "encoded": 1440521,
+      "decoded": 1440521
+    },
+    {
+      "name": "/images/bjcp/16B%20%E2%80%94%20Oatmeal%20Stout.png",
+      "type": "img",
+      "start": 2419.29999999993,
+      "duration": 64061.90000000002,
+      "transfer": 1550420,
+      "encoded": 1550120,
+      "decoded": 1550120
+    },
+    {
+      "name": "/images/bjcp/17C%20%E2%80%94%20Wee%20Heavy.png",
+      "type": "img",
+      "start": 2420.399999999907,
+      "duration": 87537.5,
+      "transfer": 1500079,
+      "encoded": 1499779,
+      "decoded": 1499779
+    },
+    {
+      "name": "/?_rsc=IMBWGGNmJycfb8mu",
+      "type": "fetch",
+      "start": 3382.5,
+      "duration": 44785.59999999986,
+      "transfer": 427,
+      "encoded": 127,
+      "decoded": 132
+    },
+    {
+      "name": "/login?_rsc=IMBWGGNmJycfb8mu",
+      "type": "fetch",
+      "start": 3382.6999999999534,
+      "duration": 44980.10000000009,
+      "transfer": 441,
+      "encoded": 141,
+      "decoded": 152
+    },
+    {
+      "name": "/bjcp?_rsc=IMBWGGNmJycfb8mu",
+      "type": "fetch",
+      "start": 3384.1999999999534,
+      "duration": 45173.5,
+      "transfer": 440,
+      "encoded": 140,
+      "decoded": 150
+    },
+    {
+      "name": "/calculators?_rsc=IMBWGGNmJycfb8mu",
+      "type": "fetch",
+      "start": 3384.899999999907,
+      "duration": 45361.60000000009,
+      "transfer": 446,
+      "encoded": 146,
+      "decoded": 164
+    },
+    {
+      "name": "/recipes",
+      "type": "fetch",
+      "start": 4263.5,
+      "duration": 4176.79999999993,
+      "transfer": 374,
+      "encoded": 74,
+      "decoded": 54
+    },
+    {
+      "name": "/images/bjcp/11C%20%E2%80%94%20Strong%20Bitter.png",
+      "type": "img",
+      "start": 4284.699999999953,
+      "duration": 40889.30000000005,
+      "transfer": 300,
+      "encoded": 1463117,
+      "decoded": 1463117
+    },
+    {
+      "name": "/images/bjcp/3B%20%E2%80%94%20Czech%20Premium%20Pale%20Lager.png",
+      "type": "img",
+      "start": 4285.79999999993,
+      "duration": 41300.59999999998,
+      "transfer": 300,
+      "encoded": 1469728,
+      "decoded": 1469728
+    },
+    {
+      "name": "/images/bjcp/7A%20%E2%80%94%20Vienna%20Lager.png",
+      "type": "img",
+      "start": 4286.29999999993,
+      "duration": 43686.09999999998,
+      "transfer": 300,
+      "encoded": 1550152,
+      "decoded": 1550152
+    },
+    {
+      "name": "/images/bjcp/18A%20%E2%80%94%20Blonde%20Ale.png",
+      "type": "img",
+      "start": 4287.199999999953,
+      "duration": 44655,
+      "transfer": 300,
+      "encoded": 1577119,
+      "decoded": 1577119
+    },
+    {
+      "name": "/images/bjcp/18B%20%E2%80%94%20American%20Pale%20Ale.png",
+      "type": "img",
+      "start": 4287.29999999993,
+      "duration": 44827.70000000007,
+      "transfer": 300,
+      "encoded": 1440521,
+      "decoded": 1440521
+    },
+    {
+      "name": "/images/bjcp/16B%20%E2%80%94%20Oatmeal%20Stout.png",
+      "type": "img",
+      "start": 4288,
+      "duration": 62193.5,
+      "transfer": 300,
+      "encoded": 1550120,
+      "decoded": 1550120
+    },
+    {
+      "name": "/recipes/fuller-s-esb?_rsc=IMBWGGNmJycfb8mu",
+      "type": "fetch",
+      "start": 4299.599999999977,
+      "duration": 44625.49999999988,
+      "transfer": 2679,
+      "encoded": 2379,
+      "decoded": 6130
+    },
+    {
+      "name": "/recipes",
+      "type": "fetch",
+      "start": 8446.399999999907,
+      "duration": 781,
+      "transfer": 374,
+      "encoded": 74,
+      "decoded": 54
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/recipes/%5Bslug%5D/error-7cfcaa9844f65756.js",
+      "type": "script",
+      "start": 48928.39999999991,
+      "duration": 41038,
+      "transfer": 0,
+      "encoded": 1322,
+      "decoded": 1322
+    },
+    {
+      "name": "/_next/static/chunks/9439-93a957586341ba22.js",
+      "type": "script",
+      "start": 48929.80000000005,
+      "duration": 41052.69999999995,
+      "transfer": 0,
+      "encoded": 11208,
+      "decoded": 11208
+    },
+    {
+      "name": "/_next/static/chunks/1269-703da73ea98b41fe.js",
+      "type": "script",
+      "start": 48930.5,
+      "duration": 2.5999999998603016,
+      "transfer": 0,
+      "encoded": 6409,
+      "decoded": 6409
+    },
+    {
+      "name": "/_next/static/chunks/6973-56369b621a01f5bf.js",
+      "type": "script",
+      "start": 48932.09999999986,
+      "duration": 41058.40000000014,
+      "transfer": 0,
+      "encoded": 8656,
+      "decoded": 8656
+    },
+    {
+      "name": "/_next/static/chunks/6120-07b333e4541a8fe9.js",
+      "type": "script",
+      "start": 48933.5,
+      "duration": 41062.89999999991,
+      "transfer": 0,
+      "encoded": 28632,
+      "decoded": 28632
+    },
+    {
+      "name": "/_next/static/chunks/3787-2580d1338d3639bd.js",
+      "type": "script",
+      "start": 48934.5,
+      "duration": 2,
+      "transfer": 0,
+      "encoded": 4507,
+      "decoded": 4507
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/recipes/%5Bslug%5D/page-34536f431a3f2689.js",
+      "type": "script",
+      "start": 48936.30000000005,
+      "duration": 41068.299999999814,
+      "transfer": 0,
+      "encoded": 37040,
+      "decoded": 37040
+    }
+  ]
+}

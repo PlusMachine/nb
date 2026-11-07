@@ -1,0 +1,29 @@
+{
+  "temporaryContainerExists": false,
+  "portsStillListening": {
+    "3018": false,
+    "3019": false,
+    "55437": false
+  },
+  "temporaryBuildsExist": {
+    ".next-perf-fixes-20261104": false,
+    ".next-perf-fixes-final-20261104": false,
+    ".next-perf-verified-20261104": false,
+    ".next-perf-search-dev-20261104": false
+  },
+  "temporaryStorageExists": false,
+  "sessionTokenFileExists": false,
+  "ownGeneratedIncludesRemoved": true,
+  "nextEnvRestored": true,
+  "ownGeneratedEnvReferenceRemoved": true,
+  "sourceHashesMatchValidatedBuild": true,
+  "mainDbCounts": {
+    "recipes": 126,
+    "users": 32,
+    "ingredients": 1403,
+    "batches": 36,
+    "inventoryItems": 103
+  },
+  "browserClosed": true,
+  "otherMobileReviewIncludePresent": false
+}

@@ -4,6 +4,24 @@
 @tailwind components;
 @tailwind utilities;
 
+[data-nb-menu-pending="open"] > svg { visibility: hidden; }
+[data-nb-menu-pending="open"]::after {
+  content: "";
+  position: absolute;
+  top: calc(50% - 9px);
+  left: calc(50% - 9px);
+  width: 18px;
+  height: 18px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: nb-menu-wait 0.8s linear infinite;
+}
+@keyframes nb-menu-wait { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  [data-nb-menu-pending="open"]::after { animation: none; }
+}
+
 /*
   Семантические цветовые токены. Компоненты пишут `bg-card`, `text-foreground`,
   `border-border` и т.п. (маппинг в tailwind.config.ts), а не сырые `bg-white` /
@@ -32,7 +50,7 @@
   --popover-foreground: 240 10% 4%;
 
   --muted: 240 5% 96%;
-  --muted-foreground: 240 4% 46%;
+  --muted-foreground: 240 4% 41%;
 
   --accent: 240 5% 96%;
   --accent-foreground: 240 6% 10%;
@@ -64,7 +82,7 @@
 
   /* Рукописные SVG-чарты (телеметрия варки/брожения). */
   --chart-grid: 240 6% 90%;
-  --chart-label: 240 4% 46%;
+  --chart-label: 240 4% 41%;
   --chart-zebra: 240 5% 96%;
   --chart-temp: 175 77% 26%;
   --chart-setpoint: 32 95% 44%;

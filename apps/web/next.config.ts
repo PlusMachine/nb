@@ -1,8 +1,18 @@
 import type { NextConfig } from "next";
+import { existsSync } from "node:fs";
+import { createHmac } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../..");
+// Use the same root environment as @nb/db. A stable, purpose-separated key
+// keeps unchanged Server Action identifiers compatible between fresh builds.
+const rootEnvPath = join(repoRoot, ".env");
+if (existsSync(rootEnvPath)) process.loadEnvFile(rootEnvPath);
+if (!process.env.NEXT_SERVER_ACTIONS_ENCRYPTION_KEY && process.env.AUTH_SECRET) {
+  process.env.NEXT_SERVER_ACTIONS_ENCRYPTION_KEY = createHmac("sha256", process.env.AUTH_SECRET)
+    .update("nb:server-actions:v1").digest("base64");
+}
 
 const nextConfig: NextConfig = {
   experimental: { serverActions: { bodySizeLimit: "10mb" } },
@@ -20,6 +30,7 @@ const nextConfig: NextConfig = {
   // их не находит, без этого standalone-сборка останется без шрифтов. Нужно и
   // наклейкам, и OG-карточкам (features/og/fonts.ts берёт те же Rubik TTF).
   outputFileTracingIncludes: {
+    "/sw.js": ["./features/pwa/service-worker.js"],
     "/": ["./features/labels/fonts/**/*"],
     "/api/labels/[recipeId]": ["./features/labels/fonts/**/*"],
     "/api/og/recipes/[slug]": ["./features/labels/fonts/**/*"],

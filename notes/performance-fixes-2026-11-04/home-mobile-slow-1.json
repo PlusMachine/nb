@@ -1,0 +1,458 @@
+{
+  "name": "home-mobile-slow-1",
+  "path": "/",
+  "mobile": true,
+  "slow": true,
+  "warm": false,
+  "freshConsent": false,
+  "status": 200,
+  "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+  "url": "http://127.0.0.1:3018/",
+  "ttfbMs": 41.5999999998603,
+  "fcpMs": 1124,
+  "lcpMs": 1124,
+  "cls": 0.0012647445544280746,
+  "domContentLoadedMs": 4429,
+  "loadMs": 4431.299999999814,
+  "htmlTransfer": 253131,
+  "htmlDecoded": 498163,
+  "resourceTransfer": 564751,
+  "resourceDecoded": 1437519,
+  "jsDecoded": 1047791,
+  "domElements": 1001,
+  "incompleteImages": [
+    {
+      "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F7A%2520%25E2%2580%2594%2520Vienna%2520Lager.png&w=3840&q=75",
+      "top": 2119.34375
+    },
+    {
+      "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F11C%2520%25E2%2580%2594%2520Strong%2520Bitter.png&w=640&q=75",
+      "top": 0
+    },
+    {
+      "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F4A%2520%25E2%2580%2594%2520Munich%2520Helles.png&w=3840&q=75",
+      "top": 6138.6875
+    },
+    {
+      "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F21A%2520%25E2%2580%2594%2520American%2520IPA.png&w=3840&q=75",
+      "top": 6420.875
+    },
+    {
+      "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F15B%2520%25E2%2580%2594%2520Irish%2520Stout.png&w=3840&q=75",
+      "top": 6703.0625
+    }
+  ],
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "scrollWidth": 390,
+    "scrollHeight": 9207
+  },
+  "totalLongTaskBlockingMs": 420,
+  "lcp": [
+    {
+      "start": 1124,
+      "size": 22910,
+      "url": "",
+      "tag": "H1",
+      "text": "Что сварить из ваших запасов"
+    }
+  ],
+  "shifts": [
+    {
+      "start": 4667.59999999986,
+      "value": 0.0012647445544280746,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "OL",
+          "text": "",
+          "previous": {
+            "x": 12,
+            "y": 824,
+            "width": 366,
+            "height": 8,
+            "top": 824,
+            "right": 378,
+            "bottom": 832,
+            "left": 12
+          },
+          "current": {
+            "x": 12,
+            "y": 764,
+            "width": 366,
+            "height": 8,
+            "top": 764,
+            "right": 378,
+            "bottom": 772,
+            "left": 12
+          }
+        }
+      ]
+    }
+  ],
+  "longtasks": [
+    {
+      "start": 911.1999999999534,
+      "duration": 193
+    },
+    {
+      "start": 2159.6999999999534,
+      "duration": 179
+    },
+    {
+      "start": 2992,
+      "duration": 107
+    },
+    {
+      "start": 3905.5,
+      "duration": 101
+    },
+    {
+      "start": 4536.09999999986,
+      "duration": 75
+    },
+    {
+      "start": 4611.199999999953,
+      "duration": 65
+    }
+  ],
+  "events": [],
+  "errors": [],
+  "menuInteractiveAt": 3207.7999999998137,
+  "resources": [
+    {
+      "name": "/_next/static/media/b9eca90a0131f78f-s.p.woff2",
+      "type": "link",
+      "start": 173.5,
+      "duration": 1695.7999999998137,
+      "transfer": 59880,
+      "encoded": 59580,
+      "decoded": 59580
+    },
+    {
+      "name": "/_next/static/media/d8b2a445c537db1f-s.p.woff2",
+      "type": "link",
+      "start": 174.39999999990687,
+      "duration": 2887.600000000093,
+      "transfer": 107248,
+      "encoded": 106948,
+      "decoded": 106948
+    },
+    {
+      "name": "/_next/static/css/6d4618b30d970742.css",
+      "type": "link",
+      "start": 174.5,
+      "duration": 218.39999999990687,
+      "transfer": 2197,
+      "encoded": 1897,
+      "decoded": 7475
+    },
+    {
+      "name": "/_next/static/css/9a6ecbd4b42097db.css",
+      "type": "link",
+      "start": 174.69999999995343,
+      "duration": 629.5999999998603,
+      "transfer": 20911,
+      "encoded": 20611,
+      "decoded": 116459
+    },
+    {
+      "name": "/_next/static/css/5ab3fadd6c993cd7.css",
+      "type": "link",
+      "start": 174.79999999981374,
+      "duration": 181.60000000009313,
+      "transfer": 1046,
+      "encoded": 746,
+      "decoded": 4009
+    },
+    {
+      "name": "/_next/static/css/18c90ec0eb93f365.css",
+      "type": "link",
+      "start": 174.79999999981374,
+      "duration": 322.10000000009313,
+      "transfer": 6560,
+      "encoded": 6260,
+      "decoded": 33247
+    },
+    {
+      "name": "/_next/static/chunks/webpack-485d001cb867c360.js",
+      "type": "link",
+      "start": 192.39999999990687,
+      "duration": 425.60000000009313,
+      "transfer": 2177,
+      "encoded": 1877,
+      "decoded": 3603
+    },
+    {
+      "name": "/_next/static/chunks/87c73c54-dd8d81ac9604067c.js",
+      "type": "script",
+      "start": 192.5,
+      "duration": 1962.0999999998603,
+      "transfer": 54664,
+      "encoded": 54364,
+      "decoded": 173023
+    },
+    {
+      "name": "/_next/static/chunks/18-94afe61f15789e06.js",
+      "type": "script",
+      "start": 194.19999999995343,
+      "duration": 1893.1999999999534,
+      "transfer": 47088,
+      "encoded": 46788,
+      "decoded": 174209
+    },
+    {
+      "name": "/_next/static/chunks/main-app-1b4249da1a5d893c.js",
+      "type": "script",
+      "start": 194.29999999981374,
+      "duration": 807.2000000001863,
+      "transfer": 870,
+      "encoded": 570,
+      "decoded": 570
+    },
+    {
+      "name": "/_next/static/chunks/7283-f1e1247528aca409.js",
+      "type": "script",
+      "start": 195.0999999998603,
+      "duration": 1089.6000000000931,
+      "transfer": 3701,
+      "encoded": 3401,
+      "decoded": 8555
+    },
+    {
+      "name": "/_next/static/chunks/612-9c360be286377cda.js",
+      "type": "script",
+      "start": 195.5999999998603,
+      "duration": 2791.3000000000466,
+      "transfer": 63319,
+      "encoded": 63019,
+      "decoded": 212253
+    },
+    {
+      "name": "/_next/static/chunks/9664-4bead6cd06a85437.js",
+      "type": "script",
+      "start": 195.69999999995343,
+      "duration": 1950.8999999999069,
+      "transfer": 3455,
+      "encoded": 3155,
+      "decoded": 8925
+    },
+    {
+      "name": "/_next/static/chunks/4159-4524a53eeeb992af.js",
+      "type": "script",
+      "start": 196.5,
+      "duration": 2184,
+      "transfer": 4445,
+      "encoded": 4145,
+      "decoded": 12883
+    },
+    {
+      "name": "/_next/static/chunks/922-36cb889d8a78c9e9.js",
+      "type": "script",
+      "start": 197.0999999998603,
+      "duration": 2219.4000000001397,
+      "transfer": 3775,
+      "encoded": 3475,
+      "decoded": 9436
+    },
+    {
+      "name": "/_next/static/chunks/1140-9515ad38112779c8.js",
+      "type": "script",
+      "start": 197.5999999998603,
+      "duration": 2256.600000000093,
+      "transfer": 5797,
+      "encoded": 5497,
+      "decoded": 20943
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/layout-fe9dfbb4b0f0fab7.js",
+      "type": "script",
+      "start": 198.5,
+      "duration": 2391.399999999907,
+      "transfer": 2549,
+      "encoded": 2249,
+      "decoded": 6534
+    },
+    {
+      "name": "/_next/static/chunks/4737-b9435b98fbb3c365.js",
+      "type": "script",
+      "start": 198.5999999998603,
+      "duration": 2705.8000000000466,
+      "transfer": 13380,
+      "encoded": 13080,
+      "decoded": 57621
+    },
+    {
+      "name": "/_next/static/chunks/9461-25c487bb36994b55.js",
+      "type": "script",
+      "start": 198.69999999995343,
+      "duration": 2556.0999999998603,
+      "transfer": 5129,
+      "encoded": 4829,
+      "decoded": 12329
+    },
+    {
+      "name": "/_next/static/chunks/app/layout-bb7653f6407b165c.js",
+      "type": "script",
+      "start": 199.29999999981374,
+      "duration": 2735.3000000000466,
+      "transfer": 6859,
+      "encoded": 6559,
+      "decoded": 17083
+    },
+    {
+      "name": "/_next/static/chunks/app/error-482cb912af31630e.js",
+      "type": "script",
+      "start": 199.39999999990687,
+      "duration": 2743.600000000093,
+      "transfer": 953,
+      "encoded": 653,
+      "decoded": 1140
+    },
+    {
+      "name": "/_next/static/chunks/489-fc96c5688a515719.js",
+      "type": "script",
+      "start": 200.39999999990687,
+      "duration": 2944.600000000093,
+      "transfer": 5524,
+      "encoded": 5224,
+      "decoded": 13661
+    },
+    {
+      "name": "/_next/static/chunks/3671-7a65dbaeafe4c092.js",
+      "type": "script",
+      "start": 201.19999999995343,
+      "duration": 3409.3000000000466,
+      "transfer": 30297,
+      "encoded": 29997,
+      "decoded": 157102
+    },
+    {
+      "name": "/_next/static/chunks/6005-b648b00388e32889.js",
+      "type": "script",
+      "start": 201.79999999981374,
+      "duration": 2980.100000000093,
+      "transfer": 3664,
+      "encoded": 3364,
+      "decoded": 10087
+    },
+    {
+      "name": "/_next/static/chunks/461-cd8afebf08bfcd25.js",
+      "type": "script",
+      "start": 201.79999999981374,
+      "duration": 3047,
+      "transfer": 5071,
+      "encoded": 4771,
+      "decoded": 14939
+    },
+    {
+      "name": "/_next/static/chunks/6926-63a38ded9262209d.js",
+      "type": "script",
+      "start": 201.89999999990687,
+      "duration": 3182.6999999999534,
+      "transfer": 8786,
+      "encoded": 8486,
+      "decoded": 25547
+    },
+    {
+      "name": "/_next/static/chunks/3931-5e2f6415202a03df.js",
+      "type": "script",
+      "start": 202,
+      "duration": 3153.5999999998603,
+      "transfer": 2865,
+      "encoded": 2565,
+      "decoded": 11113
+    },
+    {
+      "name": "/_next/static/chunks/1269-703da73ea98b41fe.js",
+      "type": "script",
+      "start": 202.0999999998603,
+      "duration": 3198.3000000000466,
+      "transfer": 2706,
+      "encoded": 2406,
+      "decoded": 6409
+    },
+    {
+      "name": "/_next/static/chunks/3787-2580d1338d3639bd.js",
+      "type": "script",
+      "start": 202.0999999998603,
+      "duration": 3243.1999999999534,
+      "transfer": 1855,
+      "encoded": 1555,
+      "decoded": 4507
+    },
+    {
+      "name": "/_next/static/chunks/5023-1625f10f6620c8cd.js",
+      "type": "script",
+      "start": 202.39999999990687,
+      "duration": 3452.600000000093,
+      "transfer": 7265,
+      "encoded": 6965,
+      "decoded": 18411
+    },
+    {
+      "name": "/_next/static/chunks/2967-f48a79a00935b2d4.js",
+      "type": "script",
+      "start": 202.39999999990687,
+      "duration": 3481.5,
+      "transfer": 5050,
+      "encoded": 4750,
+      "decoded": 13542
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/page-6c48312efd8e6ff8.js",
+      "type": "script",
+      "start": 202.5999999998603,
+      "duration": 3698.8000000000466,
+      "transfer": 17537,
+      "encoded": 17237,
+      "decoded": 55624
+    },
+    {
+      "name": "/_next/image?url=%2Fimages%2Fbjcp%2F11C%2520%25E2%2580%2594%2520Strong%2520Bitter.png&w=640&q=75",
+      "type": "img",
+      "start": 1104.0999999998603,
+      "duration": 2999.6999999999534,
+      "transfer": 27914,
+      "encoded": 27614,
+      "decoded": 27614
+    },
+    {
+      "name": "/_next/image?url=%2Fimages%2Fbjcp%2F3B%2520%25E2%2580%2594%2520Czech%2520Premium%2520Pale%2520Lager.png&w=640&q=75",
+      "type": "img",
+      "start": 1104.3999999999069,
+      "duration": 3082.1999999999534,
+      "transfer": 26862,
+      "encoded": 26562,
+      "decoded": 26562
+    },
+    {
+      "name": "/login?_rsc=c9BZJ8X-vYiReVMz",
+      "type": "fetch",
+      "start": 4692.59999999986,
+      "duration": 157,
+      "transfer": 441,
+      "encoded": 141,
+      "decoded": 152
+    },
+    {
+      "name": "/recipes?_rsc=c9BZJ8X-vYiReVMz",
+      "type": "fetch",
+      "start": 4693.899999999907,
+      "duration": 168.80000000004657,
+      "transfer": 1902,
+      "encoded": 1602,
+      "decoded": 4079
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/recipes/error-ce8f980d58254598.js",
+      "type": "script",
+      "start": 4866,
+      "duration": 154.89999999990687,
+      "transfer": 1009,
+      "encoded": 709,
+      "decoded": 1345
+    }
+  ]
+}

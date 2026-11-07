@@ -12,7 +12,8 @@ import { ManualBrewStep } from "./manual-brew-step";
 import type { BrewDayStep } from "../contracts";
 import { Button } from "@nb/ui";
 import { BrewTransitionButton } from "./brew-transition-button";
-import { useBrewDayProgress } from "./use-brew-day-progress";
+import { useBrewProgress } from "../offline/use-brew-progress";
+import { useOfflineBrew } from "../offline/context";
 
 export type FermentationNudge = { tone: "action" | "warn" | "info"; text: string };
 
@@ -59,7 +60,8 @@ export function FermentationBoard({
   plannedDays,
   targetTempLabel,
   nudge,
-  manual = true
+  manual = true,
+  showCompletion = true
 }: {
   brewBatchId: string;
   ownerId?: string;
@@ -73,8 +75,10 @@ export function FermentationBoard({
   targetTempLabel: string | null;
   nudge: FermentationNudge | null;
   manual?: boolean;
+  showCompletion?: boolean;
 }) {
-  const controller = useBrewDayProgress(brewBatchId, initialProgress, ownerId);
+  const offline = useOfflineBrew(brewBatchId);
+  const controller = useBrewProgress(brewBatchId, initialProgress, ownerId);
   const [preview, setPreview] = useState<BrewDayStep | null>(null);
 
   const fermentGroups = groupsForAct(groups, "fermentation")
@@ -125,10 +129,10 @@ export function FermentationBoard({
           storageKey={`nb:ferment-plan:${ownerId ?? "local"}:${brewBatchId}`} onPreview={step => setPreview(step.id === cursor.current?.id ? null : step)} />
         {preview ? <div className="space-y-3 rounded-xl border border-border p-4"><p className="text-xs text-muted-foreground">Просмотр плана</p><h3 className="text-lg font-semibold">{preview.title}</h3><p className="text-sm">{preview.detail}</p>{preview.instructions ? <p className="text-sm">{preview.instructions}</p> : null}<Button type="button" onClick={() => setPreview(null)}>Вернуться к брожению</Button></div>
           : cursor.current ? <div className="rounded-xl border border-border p-4"><ManualBrewStep key={cursor.current.id} step={cursor.current} companions={[cursor.current]} controller={controller} onInteract={() => {}} /></div> : null}
-        {controller.queuedCount ? <p role="status" className="text-xs text-muted-foreground">Изменений в очереди: {controller.queuedCount}. {controller.offline ? "Шаги сохранены на устройстве." : "Отправляем."}</p> : null}
+        {!offline && controller.queuedCount ? <p role="status" className="text-xs text-muted-foreground">Изменений в очереди: {controller.queuedCount}. {controller.offline ? "Шаги сохранены на устройстве." : "Отправляем."}</p> : null}
       </> : fermentGroups.length > 0 ? <BrewStepList groups={fermentGroups} controller={controller} currentStage={cursor.current?.stage ?? null} /> : null}
 
-      <div className="border-t border-border pt-3">
+      {showCompletion ? <div className="border-t border-border pt-3">
         {/* Завершение раньше плана — не основной путь: кнопка остаётся outline,
             даже если все шаги отмечены (иначе на 1-м дне из 10 она зовёт нажать). */}
         <BrewTransitionButton
@@ -139,9 +143,9 @@ export function FermentationBoard({
           size="md"
           confirm={finishConfirm}
           appendQueryOnSuccess="just-completed=1"
-          disabled={controller.queuedCount > 0}
+          disabled={controller.queuedCount > 0 || Boolean(offline && offline.network !== "online")}
         />
-      </div>
+      </div> : null}
     </section>
   );
 }

@@ -1,0 +1,22 @@
+[
+  {
+    "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F11C%2520%25E2%2580%2594%2520Strong%2520Bitter.png&w=256&q=75",
+    "width": 90
+  },
+  {
+    "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F3B%2520%25E2%2580%2594%2520Czech%2520Premium%2520Pale%2520Lager.png&w=256&q=75",
+    "width": 90
+  },
+  {
+    "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F7A%2520%25E2%2580%2594%2520Vienna%2520Lager.png&w=256&q=75",
+    "width": 90
+  },
+  {
+    "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F18A%2520%25E2%2580%2594%2520Blonde%2520Ale.png&w=256&q=75",
+    "width": 90
+  },
+  {
+    "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F18B%2520%25E2%2580%2594%2520American%2520Pale%2520Ale.png&w=256&q=75",
+    "width": 90
+  }
+]

@@ -39,6 +39,16 @@ Node.js 18 is no longer supported by the image-processing dependency.
 - `npm run db:seed`
 - `npm run db:reset`
 
+## Production and PWA
+
+The web build reads the repository root `.env`, with explicit environment variables taking precedence. Set the deployment `APP_URL` and keep `AUTH_SECRET` stable across builds and running instances. An optional `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` (32 bytes encoded as base64) overrides the separate key derived from `AUTH_SECRET`; unchanged Server Actions then retain their identifiers across fresh builds. Secret rotation or a breaking action contract still requires refreshing old tabs.
+
+The service worker is served at `/sw.js` with the current Next `BUILD_ID`. It prepares an anonymous offline document and all required JS/CSS before activation. Required offline assets are kept outside the bounded static cache; one previous offline/static cache is retained for resources already cached by open tabs. Private pages, API responses and mutations are not cached by the worker.
+
+Confirmed logout clears private browser caches and refreshes the document. Other tabs hide their previous account's content until refreshed. The first upgraded load invalidates unattributed legacy device/water caches while retaining the current user's explicitly scoped brew queue; passive session expiry retains that queue for reauthentication by its owner, while confirmed logout clears it. Saved server data is unaffected.
+
+Production PWA checks use `apps/web/e2e/pwa-prod.config.ts` against an already running build. The isolated lifecycle/update checks additionally require `PWA_PRODUCTION_QA=1`, the documented QA database and proxy; see [the QA report](notes/qa-pwa-2026-11-04/README.md).
+
 ### DX-1 Dev/Test Access Utilities
 All commands below are **dev/test-only utilities**. They are intentionally implemented as CLI scripts only (no UI buttons, no public API endpoints).
 

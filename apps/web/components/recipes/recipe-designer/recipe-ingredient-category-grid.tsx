@@ -59,14 +59,14 @@ export function RecipeIngredientCategoryGrid({
 
                 onChange(option.value);
               }}
-              className={`min-h-11 rounded-md border px-3 py-2 text-xs transition ${value === option.value
+              className={`min-h-11 min-w-0 rounded-md border px-2 py-2 text-xs transition sm:px-3 ${value === option.value
                 ? "border-foreground bg-accent text-foreground"
                 : "border-border bg-card text-muted-foreground hover:border-border hover:bg-muted"
                 }`}
             >
-              <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+              <span className="flex min-w-0 items-center justify-center gap-1.5">
                 <Icon className={`h-3.5 w-3.5 shrink-0 ${value === option.value ? "text-current" : option.iconClassName}`} />
-                <span>{option.label}</span>
+                <span className="min-w-0 break-words text-left">{option.label}</span>
               </span>
             </button>
           );

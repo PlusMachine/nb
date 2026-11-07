@@ -1,0 +1,24 @@
+{
+  "criticalFlow": {
+    "created": true,
+    "ingredientAdded": "Пильзнер 4.5 кг",
+    "reloadedWithTitleAndIngredient": true,
+    "saveFailureVisible": true,
+    "retryPreservedTitle": true
+  },
+  "ui": {
+    "menuOpenedAndClosed": true,
+    "themeDarkAndSystemReturned": true,
+    "bjcpBackRetainedQuery": true,
+    "catalogFocusRetained": true,
+    "catalogNoResultsAndReset": true,
+    "inventoryDialogSearch": true,
+    "shoppingAndBatchesReached": true
+  },
+  "exploration": "Поиск и очистка склада после перехода из редактора, повторные переходы, модалки, покупки и партии; найден нестабильный сброс поиска.",
+  "limitations": [
+    "Password login and signup not exercised; temporary genuine sessions created in isolated DB",
+    "No commands sent to devices",
+    "Chromium Linux only; viewports emulate mobile, not actual iOS/Android"
+  ]
+}

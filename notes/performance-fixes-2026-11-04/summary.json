@@ -1,0 +1,176 @@
+{
+  "mobile": [
+    {
+      "name": "catalog",
+      "before": {
+        "path": "/catalog",
+        "samples": 3,
+        "fcpMs": 1220,
+        "lcpMs": 1220,
+        "cls": 0.24684764147601912,
+        "loadMs": 4547.900000000023,
+        "totalLongTaskBlockingMs": 561,
+        "jsDecoded": 961747,
+        "transferBytes": 845986,
+        "menuInteractiveMs": [
+          3292.0999999998603,
+          3312.6999999999534
+        ],
+        "errors": 0
+      },
+      "after": {
+        "path": "/catalog",
+        "samples": 3,
+        "fcpMs": 1228,
+        "lcpMs": 1228,
+        "cls": 0.0012647445544280746,
+        "loadMs": 3142.3000000000466,
+        "totalLongTaskBlockingMs": 512,
+        "jsDecoded": 962172,
+        "transferBytes": 563761,
+        "menuInteractiveMs": [
+          3052.1999999999534,
+          3156.3000000000466,
+          3143
+        ],
+        "errors": 0
+      }
+    },
+    {
+      "name": "calculator",
+      "before": {
+        "path": "/calculators/abv-attenuation",
+        "samples": 3,
+        "fcpMs": 1048,
+        "lcpMs": 1048,
+        "cls": 0.2098740352435238,
+        "loadMs": 4876.699999999953,
+        "totalLongTaskBlockingMs": 549,
+        "jsDecoded": 1692559,
+        "transferBytes": 898061,
+        "menuInteractiveMs": [
+          4022.8000000000466,
+          4166.200000000186
+        ],
+        "errors": 0
+      },
+      "after": {
+        "path": "/calculators/abv-attenuation",
+        "samples": 3,
+        "fcpMs": 1120,
+        "lcpMs": 1120,
+        "cls": 0.008208673060653026,
+        "loadMs": 3427.6999999999534,
+        "totalLongTaskBlockingMs": 471,
+        "jsDecoded": 1578774,
+        "transferBytes": 580747,
+        "menuInteractiveMs": [
+          3090.8000000000466,
+          3112.5999999998603,
+          3073.3000000000466
+        ],
+        "errors": 0
+      }
+    },
+    {
+      "name": "editor",
+      "before": {
+        "path": "/app/recipes/new",
+        "samples": 3,
+        "fcpMs": 1112,
+        "lcpMs": 1112,
+        "cls": 0.010204648454575456,
+        "loadMs": 5910.600000000093,
+        "totalLongTaskBlockingMs": 969,
+        "jsDecoded": 2177683,
+        "transferBytes": 1052419,
+        "menuInteractiveMs": [
+          3124.5999999998603,
+          2858.899999999907
+        ],
+        "errors": 0
+      },
+      "after": {
+        "path": "/app/recipes/new",
+        "samples": 3,
+        "fcpMs": 1116,
+        "lcpMs": 1116,
+        "cls": 0.0011804282507995364,
+        "loadMs": 4544.300000000047,
+        "totalLongTaskBlockingMs": 808,
+        "jsDecoded": 2177269,
+        "transferBytes": 772767,
+        "menuInteractiveMs": [
+          2852.100000000093,
+          2806.600000000093,
+          2853.600000000093
+        ],
+        "errors": 0
+      }
+    }
+  ],
+  "lighthouse": [
+    {
+      "name": "catalog",
+      "before": {
+        "scores": {
+          "performance": 0.78,
+          "accessibility": 0.96
+        },
+        "metrics": {
+          "first-contentful-paint": 1523.083,
+          "largest-contentful-paint": 5573.083,
+          "total-blocking-time": 131.99999999999955,
+          "cumulative-layout-shift": 0.01547676842076731,
+          "total-byte-weight": 851300
+        },
+        "contrastPass": false
+      },
+      "after": {
+        "scores": {
+          "performance": 0.83,
+          "accessibility": 1
+        },
+        "metrics": {
+          "first-contentful-paint": 1518.8519999999999,
+          "largest-contentful-paint": 4218.851999999999,
+          "total-blocking-time": 167.00000000000045,
+          "cumulative-layout-shift": 0.01547676842076731,
+          "total-byte-weight": 569530
+        },
+        "contrastPass": true
+      }
+    },
+    {
+      "name": "recipes",
+      "before": {
+        "scores": {
+          "performance": 0.64,
+          "accessibility": 0.96
+        },
+        "metrics": {
+          "first-contentful-paint": 1526.587,
+          "largest-contentful-paint": 5726.5869999999995,
+          "total-blocking-time": 551.5,
+          "cumulative-layout-shift": 0,
+          "total-byte-weight": 23888512
+        },
+        "contrastPass": false
+      },
+      "after": {
+        "scores": {
+          "performance": 0.74,
+          "accessibility": 1
+        },
+        "metrics": {
+          "first-contentful-paint": 1677.944,
+          "largest-contentful-paint": 4827.943999999999,
+          "total-blocking-time": 345.5559999999998,
+          "cumulative-layout-shift": 0.01547676842076731,
+          "total-byte-weight": 769556
+        },
+        "contrastPass": true
+      }
+    }
+  ]
+}

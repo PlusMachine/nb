@@ -1,0 +1,752 @@
+{
+  "name": "dashboard-desktop",
+  "path": "/app",
+  "mobile": false,
+  "slow": false,
+  "warm": false,
+  "freshConsent": false,
+  "status": 200,
+  "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+  "url": "http://127.0.0.1:3016/app",
+  "ttfbMs": 129.10000000009313,
+  "fcpMs": 248,
+  "lcpMs": 248,
+  "cls": 0.0002016460905349794,
+  "domContentLoadedMs": 162.10000000009313,
+  "loadMs": 332.10000000009313,
+  "htmlTransfer": 30275,
+  "htmlDecoded": 119747,
+  "resourceTransfer": 6825156,
+  "resourceDecoded": 8410237,
+  "jsDecoded": 1078636,
+  "domElements": 631,
+  "viewport": {
+    "width": 1440,
+    "height": 900,
+    "scrollWidth": 1440,
+    "scrollHeight": 1663
+  },
+  "totalLongTaskBlockingMs": 0,
+  "lcp": [
+    {
+      "start": 248,
+      "size": 6156,
+      "url": "",
+      "tag": "P",
+      "text": "Sample · American IPA (клон QA Admin) · партия №2"
+    }
+  ],
+  "shifts": [
+    {
+      "start": 380.10000000009313,
+      "value": 0.0002016460905349794,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "OL",
+          "text": "",
+          "previous": {
+            "x": 12,
+            "y": 880,
+            "width": 392,
+            "height": 8,
+            "top": 880,
+            "right": 404,
+            "bottom": 888,
+            "left": 12
+          },
+          "current": {
+            "x": 12,
+            "y": 820,
+            "width": 392,
+            "height": 8,
+            "top": 820,
+            "right": 404,
+            "bottom": 828,
+            "left": 12
+          }
+        }
+      ]
+    }
+  ],
+  "longtasks": [],
+  "events": [],
+  "errors": [],
+  "resources": [
+    {
+      "name": "/_next/static/media/32425b6d39044b3c-s.p.ttf",
+      "type": "link",
+      "start": 133.70000000006985,
+      "duration": 28.5,
+      "transfer": 149811,
+      "encoded": 149511,
+      "decoded": 359804
+    },
+    {
+      "name": "/_next/static/css/688dbf7110800d11.css",
+      "type": "link",
+      "start": 134,
+      "duration": 8.400000000023283,
+      "transfer": 2181,
+      "encoded": 1881,
+      "decoded": 7335
+    },
+    {
+      "name": "/_next/static/media/d703e6352f035923-s.p.ttf",
+      "type": "link",
+      "start": 134,
+      "duration": 51.20000000006985,
+      "transfer": 300789,
+      "encoded": 300489,
+      "decoded": 744936
+    },
+    {
+      "name": "/_next/static/css/10d068b31dbc4d49.css",
+      "type": "link",
+      "start": 134.10000000009313,
+      "duration": 16.399999999906868,
+      "transfer": 20713,
+      "encoded": 20413,
+      "decoded": 115379
+    },
+    {
+      "name": "/_next/static/chunks/webpack-50b6521d18506e69.js",
+      "type": "link",
+      "start": 135.60000000009313,
+      "duration": 23.5,
+      "transfer": 2110,
+      "encoded": 1810,
+      "decoded": 3498
+    },
+    {
+      "name": "/_next/static/chunks/87c73c54-dd8d81ac9604067c.js",
+      "type": "script",
+      "start": 135.60000000009313,
+      "duration": 53.79999999993015,
+      "transfer": 54664,
+      "encoded": 54364,
+      "decoded": 173023
+    },
+    {
+      "name": "/_next/static/chunks/18-94afe61f15789e06.js",
+      "type": "script",
+      "start": 135.70000000006985,
+      "duration": 53.5,
+      "transfer": 47088,
+      "encoded": 46788,
+      "decoded": 174209
+    },
+    {
+      "name": "/_next/static/chunks/main-app-1b4249da1a5d893c.js",
+      "type": "script",
+      "start": 135.80000000004657,
+      "duration": 49.699999999953434,
+      "transfer": 870,
+      "encoded": 570,
+      "decoded": 570
+    },
+    {
+      "name": "/_next/static/chunks/7283-f1e1247528aca409.js",
+      "type": "script",
+      "start": 135.80000000004657,
+      "duration": 50,
+      "transfer": 3701,
+      "encoded": 3401,
+      "decoded": 8555
+    },
+    {
+      "name": "/_next/static/chunks/612-9c360be286377cda.js",
+      "type": "script",
+      "start": 135.90000000002328,
+      "duration": 54.300000000046566,
+      "transfer": 63319,
+      "encoded": 63019,
+      "decoded": 212253
+    },
+    {
+      "name": "/_next/static/chunks/4159-4524a53eeeb992af.js",
+      "type": "script",
+      "start": 136.10000000009313,
+      "duration": 62.79999999993015,
+      "transfer": 4445,
+      "encoded": 4145,
+      "decoded": 12883
+    },
+    {
+      "name": "/_next/static/chunks/4737-b9435b98fbb3c365.js",
+      "type": "script",
+      "start": 136.10000000009313,
+      "duration": 61.59999999997672,
+      "transfer": 13380,
+      "encoded": 13080,
+      "decoded": 57621
+    },
+    {
+      "name": "/_next/static/chunks/9461-25c487bb36994b55.js",
+      "type": "script",
+      "start": 136.10000000009313,
+      "duration": 63.699999999953434,
+      "transfer": 5129,
+      "encoded": 4829,
+      "decoded": 12329
+    },
+    {
+      "name": "/_next/static/chunks/app/layout-a377c5f5ad22f81f.js",
+      "type": "script",
+      "start": 136.30000000004657,
+      "duration": 69.30000000004657,
+      "transfer": 7444,
+      "encoded": 7144,
+      "decoded": 18394
+    },
+    {
+      "name": "/_next/static/chunks/app/error-482cb912af31630e.js",
+      "type": "script",
+      "start": 136.40000000002328,
+      "duration": 68.59999999997672,
+      "transfer": 953,
+      "encoded": 653,
+      "decoded": 1140
+    },
+    {
+      "name": "/_next/static/chunks/9664-4bead6cd06a85437.js",
+      "type": "script",
+      "start": 136.40000000002328,
+      "duration": 68.70000000006985,
+      "transfer": 3455,
+      "encoded": 3155,
+      "decoded": 8925
+    },
+    {
+      "name": "/_next/static/chunks/922-36cb889d8a78c9e9.js",
+      "type": "script",
+      "start": 136.5,
+      "duration": 80.10000000009313,
+      "transfer": 3775,
+      "encoded": 3475,
+      "decoded": 9436
+    },
+    {
+      "name": "/_next/static/chunks/1140-3282b57ff3d332fe.js",
+      "type": "script",
+      "start": 136.5,
+      "duration": 84.40000000002328,
+      "transfer": 5548,
+      "encoded": 5248,
+      "decoded": 20277
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/layout-6a9b9b951f570000.js",
+      "type": "script",
+      "start": 136.60000000009313,
+      "duration": 83.09999999997672,
+      "transfer": 2491,
+      "encoded": 2191,
+      "decoded": 6439
+    },
+    {
+      "name": "/_next/static/chunks/5132-670c74aadff796fb.js",
+      "type": "script",
+      "start": 136.60000000009313,
+      "duration": 83.5,
+      "transfer": 2967,
+      "encoded": 2667,
+      "decoded": 7178
+    },
+    {
+      "name": "/_next/static/chunks/489-fc96c5688a515719.js",
+      "type": "script",
+      "start": 136.60000000009313,
+      "duration": 84.59999999997672,
+      "transfer": 5524,
+      "encoded": 5224,
+      "decoded": 13661
+    },
+    {
+      "name": "/_next/static/chunks/3671-7a65dbaeafe4c092.js",
+      "type": "script",
+      "start": 136.70000000006985,
+      "duration": 85.90000000002328,
+      "transfer": 30297,
+      "encoded": 29997,
+      "decoded": 157102
+    },
+    {
+      "name": "/_next/static/chunks/6005-b648b00388e32889.js",
+      "type": "script",
+      "start": 136.70000000006985,
+      "duration": 91.09999999997672,
+      "transfer": 3664,
+      "encoded": 3364,
+      "decoded": 10087
+    },
+    {
+      "name": "/_next/static/chunks/1639-5eecbdf20c5b9d47.js",
+      "type": "script",
+      "start": 136.70000000006985,
+      "duration": 99.40000000002328,
+      "transfer": 5727,
+      "encoded": 5427,
+      "decoded": 19895
+    },
+    {
+      "name": "/_next/static/chunks/6973-56369b621a01f5bf.js",
+      "type": "script",
+      "start": 136.70000000006985,
+      "duration": 99.59999999997672,
+      "transfer": 4065,
+      "encoded": 3765,
+      "decoded": 8656
+    },
+    {
+      "name": "/_next/static/chunks/6120-07b333e4541a8fe9.js",
+      "type": "script",
+      "start": 136.80000000004657,
+      "duration": 99.69999999995343,
+      "transfer": 8647,
+      "encoded": 8347,
+      "decoded": 28632
+    },
+    {
+      "name": "/_next/static/chunks/4258-e3283a4ddd5fcff4.js",
+      "type": "script",
+      "start": 136.90000000002328,
+      "duration": 98.90000000002328,
+      "transfer": 3237,
+      "encoded": 2937,
+      "decoded": 9107
+    },
+    {
+      "name": "/_next/static/chunks/8492-57e6f77fefcecfaa.js",
+      "type": "script",
+      "start": 136.90000000002328,
+      "duration": 100,
+      "transfer": 13129,
+      "encoded": 12829,
+      "decoded": 52172
+    },
+    {
+      "name": "/_next/static/chunks/1623-4bd7af5960049a45.js",
+      "type": "script",
+      "start": 137,
+      "duration": 102.10000000009313,
+      "transfer": 3938,
+      "encoded": 3638,
+      "decoded": 11086
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/page-9f8334c1db744cff.js",
+      "type": "script",
+      "start": 137,
+      "duration": 114.10000000009313,
+      "transfer": 4757,
+      "encoded": 4457,
+      "decoded": 11804
+    },
+    {
+      "name": "/_next/static/chunks/6273-f1f24032028dd111.js",
+      "type": "script",
+      "start": 137,
+      "duration": 114,
+      "transfer": 4666,
+      "encoded": 4366,
+      "decoded": 10855
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/layout-7999a595026f1b2e.js",
+      "type": "script",
+      "start": 137.10000000009313,
+      "duration": 113,
+      "transfer": 506,
+      "encoded": 206,
+      "decoded": 206
+    },
+    {
+      "name": "/images/bjcp/16B%20%E2%80%94%20Oatmeal%20Stout.png",
+      "type": "img",
+      "start": 203.30000000004657,
+      "duration": 77.40000000002328,
+      "transfer": 1550420,
+      "encoded": 1550120,
+      "decoded": 1550120
+    },
+    {
+      "name": "/images/bjcp/18B%20%E2%80%94%20American%20Pale%20Ale.png",
+      "type": "img",
+      "start": 203.40000000002328,
+      "duration": 74.09999999997672,
+      "transfer": 1440821,
+      "encoded": 1440521,
+      "decoded": 1440521
+    },
+    {
+      "name": "/images/bjcp/21C%20%E2%80%94%20Hazy%20IPA.png",
+      "type": "img",
+      "start": 203.40000000002328,
+      "duration": 75.20000000006985,
+      "transfer": 1465226,
+      "encoded": 1464926,
+      "decoded": 1464926
+    },
+    {
+      "name": "/images/bjcp/21A%20%E2%80%94%20American%20IPA.png",
+      "type": "img",
+      "start": 203.5,
+      "duration": 79.10000000009313,
+      "transfer": 1521995,
+      "encoded": 1521695,
+      "decoded": 1521695
+    },
+    {
+      "name": "/app/recipes?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 386.5,
+      "duration": 53.90000000002328,
+      "transfer": 1969,
+      "encoded": 1669,
+      "decoded": 4873
+    },
+    {
+      "name": "/app/ingredients?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 386.60000000009313,
+      "duration": 55,
+      "transfer": 2394,
+      "encoded": 2094,
+      "decoded": 7404
+    },
+    {
+      "name": "/app/brew-batches?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 386.70000000006985,
+      "duration": 55.5,
+      "transfer": 1959,
+      "encoded": 1659,
+      "decoded": 4531
+    },
+    {
+      "name": "/app/equipment?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 386.9000000000233,
+      "duration": 54.20000000006985,
+      "transfer": 2088,
+      "encoded": 1788,
+      "decoded": 7448
+    },
+    {
+      "name": "/app/devices?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 387.10000000009313,
+      "duration": 53.5,
+      "transfer": 1953,
+      "encoded": 1653,
+      "decoded": 4802
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/error-f2109ab5bea0953a.js",
+      "type": "script",
+      "start": 435.10000000009313,
+      "duration": 27,
+      "transfer": 998,
+      "encoded": 698,
+      "decoded": 1327
+    },
+    {
+      "name": "/catalog?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 435.80000000004657,
+      "duration": 23.5,
+      "transfer": 456,
+      "encoded": 156,
+      "decoded": 192
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/ingredients/error-cf62132f9ffaac08.js",
+      "type": "script",
+      "start": 436.10000000009313,
+      "duration": 31,
+      "transfer": 958,
+      "encoded": 658,
+      "decoded": 1134
+    },
+    {
+      "name": "/articles?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 436.5,
+      "duration": 23.900000000023283,
+      "transfer": 457,
+      "encoded": 157,
+      "decoded": 193
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/brew-batches/error-7638144f5a85e143.js",
+      "type": "script",
+      "start": 437,
+      "duration": 30.300000000046566,
+      "transfer": 960,
+      "encoded": 660,
+      "decoded": 1136
+    },
+    {
+      "name": "/bjcp?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 437.30000000004657,
+      "duration": 23.800000000046566,
+      "transfer": 454,
+      "encoded": 154,
+      "decoded": 189
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/equipment/error-9480ae60c9b68fd4.js",
+      "type": "script",
+      "start": 437.70000000006985,
+      "duration": 57.40000000002328,
+      "transfer": 961,
+      "encoded": 661,
+      "decoded": 1148
+    },
+    {
+      "name": "/calculators?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 438.20000000006985,
+      "duration": 57.59999999997672,
+      "transfer": 459,
+      "encoded": 159,
+      "decoded": 196
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/devices/error-c13d920ad6badca4.js",
+      "type": "script",
+      "start": 438.5,
+      "duration": 66.40000000002328,
+      "transfer": 958,
+      "encoded": 658,
+      "decoded": 1136
+    },
+    {
+      "name": "/market?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 438.9000000000233,
+      "duration": 58.20000000006985,
+      "transfer": 456,
+      "encoded": 156,
+      "decoded": 191
+    },
+    {
+      "name": "/admin?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 460,
+      "duration": 44.5,
+      "transfer": 2294,
+      "encoded": 1994,
+      "decoded": 5557
+    },
+    {
+      "name": "/profile?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 461.10000000009313,
+      "duration": 38.199999999953434,
+      "transfer": 440,
+      "encoded": 140,
+      "decoded": 153
+    },
+    {
+      "name": "/legal?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 461.80000000004657,
+      "duration": 72.69999999995343,
+      "transfer": 454,
+      "encoded": 154,
+      "decoded": 190
+    },
+    {
+      "name": "/app/brew-batches/81a037e1-9760-49d9-adb1-3c4149fd5b8d?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 494.70000000006985,
+      "duration": 46,
+      "transfer": 2002,
+      "encoded": 1702,
+      "decoded": 4887
+    },
+    {
+      "name": "/app/brew-batches/0208eef3-8aaa-44ca-a7b8-387c3099cb7d?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 497.9000000000233,
+      "duration": 42.20000000006985,
+      "transfer": 2000,
+      "encoded": 1700,
+      "decoded": 4887
+    },
+    {
+      "name": "/_next/static/chunks/app/(admin)/admin/error-1ec4f52587c3a00f.js",
+      "type": "script",
+      "start": 498.70000000006985,
+      "duration": 42.5,
+      "transfer": 969,
+      "encoded": 669,
+      "decoded": 1157
+    },
+    {
+      "name": "/app/brew-batches/b8c653fb-0425-40e6-865c-c15688779648?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 499.10000000009313,
+      "duration": 42.5,
+      "transfer": 2004,
+      "encoded": 1704,
+      "decoded": 4887
+    },
+    {
+      "name": "/_next/static/chunks/9513-2e8bb19c54ca81d3.js",
+      "type": "script",
+      "start": 499.60000000009313,
+      "duration": 41.699999999953434,
+      "transfer": 3330,
+      "encoded": 3030,
+      "decoded": 8602
+    },
+    {
+      "name": "/_next/static/chunks/app/(admin)/layout-9cb7fcfda0baf715.js",
+      "type": "script",
+      "start": 499.70000000006985,
+      "duration": 49.29999999993015,
+      "transfer": 2887,
+      "encoded": 2587,
+      "decoded": 6501
+    },
+    {
+      "name": "/app/brew-batches/b4c46f5c-b414-4984-b624-1be951ba2aa3?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 500.30000000004657,
+      "duration": 74.19999999995343,
+      "transfer": 2002,
+      "encoded": 1702,
+      "decoded": 4887
+    },
+    {
+      "name": "/app/brew-batches/44dc5c3b-6c1b-4061-88a2-a83ab22be31f?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 535.4000000000233,
+      "duration": 41.20000000006985,
+      "transfer": 2005,
+      "encoded": 1705,
+      "decoded": 4887
+    },
+    {
+      "name": "/app/brew-batches/2a9d77a8-408c-41c4-a525-afa8363ab472?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 536.4000000000233,
+      "duration": 41.59999999997672,
+      "transfer": 2002,
+      "encoded": 1702,
+      "decoded": 4887
+    },
+    {
+      "name": "/app/brew-batches/ab344abe-771a-4b64-bcc2-40fa556ba289?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 537.2000000000698,
+      "duration": 40.29999999993015,
+      "transfer": 2003,
+      "encoded": 1703,
+      "decoded": 4887
+    },
+    {
+      "name": "/app/brew-batches/5fe32585-f678-4d97-9d01-747d1b661dfc?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 537.7000000000698,
+      "duration": 40,
+      "transfer": 2004,
+      "encoded": 1704,
+      "decoded": 4887
+    },
+    {
+      "name": "/app/brew-batches/097b7e19-de42-4709-ab08-e3cc5a7ccd57?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 573,
+      "duration": 48.5,
+      "transfer": 2002,
+      "encoded": 1702,
+      "decoded": 4887
+    },
+    {
+      "name": "/app/brew-batches/54753ee8-8d37-4e28-b5f5-19fd2cb1a06b?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 573.6000000000931,
+      "duration": 46.89999999990687,
+      "transfer": 2002,
+      "encoded": 1702,
+      "decoded": 4887
+    },
+    {
+      "name": "/app/brew-batches/86974ae2-f83c-4ff6-a660-e6c52b3cf24f?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 574.4000000000233,
+      "duration": 41.300000000046566,
+      "transfer": 2002,
+      "encoded": 1702,
+      "decoded": 4887
+    },
+    {
+      "name": "/app/shopping?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 575.2000000000698,
+      "duration": 42.699999999953434,
+      "transfer": 1815,
+      "encoded": 1515,
+      "decoded": 4230
+    },
+    {
+      "name": "/app/devices/adf9fa45-cc8b-4ace-99ff-22b2a7398b89?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 575.7000000000698,
+      "duration": 44.59999999997672,
+      "transfer": 1989,
+      "encoded": 1689,
+      "decoded": 4867
+    },
+    {
+      "name": "/app/devices/f2856a78-ff6a-48d3-9357-1fc874359f87?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 611.5,
+      "duration": 56.20000000006985,
+      "transfer": 1992,
+      "encoded": 1692,
+      "decoded": 4867
+    },
+    {
+      "name": "/app/devices/a7f5b057-858f-4162-be81-fa5042dd45c2?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 613.9000000000233,
+      "duration": 54,
+      "transfer": 1992,
+      "encoded": 1692,
+      "decoded": 4867
+    },
+    {
+      "name": "/app/recipes/b60ec124-6a59-4634-842d-5c34f66ae200/edit?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 616.7000000000698,
+      "duration": 51.40000000002328,
+      "transfer": 2013,
+      "encoded": 1713,
+      "decoded": 4960
+    },
+    {
+      "name": "/app/recipes/3308de8f-468f-475e-a9b6-d64d92687287/edit?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 618.5,
+      "duration": 49.90000000002328,
+      "transfer": 2011,
+      "encoded": 1711,
+      "decoded": 4960
+    },
+    {
+      "name": "/app/recipes/3397e167-782f-496e-adc1-02a68fe348ad/edit?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 621,
+      "duration": 47.60000000009313,
+      "transfer": 2010,
+      "encoded": 1710,
+      "decoded": 4960
+    }
+  ]
+}

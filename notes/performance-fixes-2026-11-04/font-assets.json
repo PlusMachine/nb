@@ -1,0 +1,42 @@
+[
+  {
+    "family": "Rubik",
+    "weightRange": [
+      400,
+      700
+    ],
+    "originalBytes": 359804,
+    "woff2Bytes": 59580,
+    "sha256": "743c154ab39266c13652ede562a446f069f4c326a649cb20872764ef195f769d"
+  },
+  {
+    "family": "Montserrat",
+    "weightRange": [
+      600,
+      800
+    ],
+    "originalBytes": 744936,
+    "woff2Bytes": 106948,
+    "sha256": "57eaf9472f251cd203bf9caf9a774d76412de52d90ee5d818f281efba032fe57"
+  },
+  {
+    "family": "Onest",
+    "weightRange": [
+      400,
+      700
+    ],
+    "originalBytes": 193056,
+    "woff2Bytes": 45920,
+    "sha256": "58993dde8c5eddbbc140013e4c86ccea2432feec567c89c7c1a1b9418d7c05fe"
+  },
+  {
+    "family": "Unbounded",
+    "weightRange": [
+      500,
+      700
+    ],
+    "originalBytes": 778272,
+    "woff2Bytes": 123212,
+    "sha256": "907ce25cb2975b3527f357739c6c88f54726a134276987e064b55d227be44cf4"
+  }
+]

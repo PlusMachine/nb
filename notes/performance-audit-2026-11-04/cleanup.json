@@ -1,0 +1,28 @@
+{
+  "temporaryContainerExists": false,
+  "portsStillListening": {
+    "3016": false,
+    "3017": false,
+    "55436": false
+  },
+  "temporaryBuildExists": false,
+  "temporaryStorageExists": false,
+  "sessionTokenFileExists": false,
+  "tsconfigRestored": true,
+  "nextEnvRestored": true,
+  "sourceHashesMatchAuditSnapshot": true,
+  "trackedDiffPathsMatchBeforeReport": true,
+  "mainDbCounts": {
+    "recipes": 126,
+    "users": 32,
+    "ingredients": 1403,
+    "batches": 36,
+    "inventoryItems": 103
+  },
+  "remainingContainers": [
+    "nb-mosquitto Up 42 minutes",
+    "nb-postgres Up 42 minutes (healthy)",
+    "nb-mailpit Up 42 minutes (healthy)"
+  ],
+  "browserClosed": true
+}

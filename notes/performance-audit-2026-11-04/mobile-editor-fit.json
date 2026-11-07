@@ -1,0 +1,37 @@
+{
+  "viewport": {
+    "w": 390,
+    "h": 844,
+    "scrollWidth": 390
+  },
+  "fab": {
+    "x": 324,
+    "y": 728,
+    "width": 50,
+    "height": 44,
+    "top": 728,
+    "right": 374,
+    "bottom": 772,
+    "left": 324
+  },
+  "boil": {
+    "x": 253.40625,
+    "y": 716.5,
+    "width": 92,
+    "height": 36,
+    "top": 716.5,
+    "right": 345.40625,
+    "bottom": 752.5,
+    "left": 253.40625
+  },
+  "firstIngredient": {
+    "x": 29,
+    "y": 1359,
+    "width": 332,
+    "height": 70,
+    "top": 1359,
+    "right": 361,
+    "bottom": 1429,
+    "left": 29
+  }
+}

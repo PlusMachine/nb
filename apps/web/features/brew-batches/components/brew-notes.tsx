@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Check, Loader2 } from "lucide-react";
 
 import { Button } from "@nb/ui";
@@ -8,6 +8,7 @@ import {
   updateBrewBatchNotesAction,
   updateBrewBatchTastingNotesAction
 } from "@/app/(app)/app/brew-batches/[id]/actions";
+import { useOfflineBrew } from "../offline/context";
 
 /** Какое поле партии ведёт секция: заметки о варке или дегустация. */
 export type BrewNotesKind = "brew" | "tasting";
@@ -40,7 +41,7 @@ const NOTE_SECTIONS: Record<BrewNotesKind, {
 export function BrewNotes({
   brewBatchId,
   kind,
-  notes
+  notes: serverNotes
 }: {
   brewBatchId: string;
   kind: BrewNotesKind;
@@ -48,12 +49,20 @@ export function BrewNotes({
   notes: string | null;
 }) {
   const section = NOTE_SECTIONS[kind];
+  const store = useOfflineBrew(brewBatchId);
+  const offline = kind === "brew" ? store : null;
+  const notes = offline?.snapshot ? offline.snapshot.notes : serverNotes;
   const [value, setValue] = useState(notes ?? "");
   // React 18: useTransition.isPending не держится на await — явный busy + guard.
   const [busy, setBusy] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inFlight = useRef(false);
+  const edited = useRef(false);
+
+  useEffect(() => {
+    if (!edited.current) setValue(notes ?? "");
+  }, [notes]);
 
   const dirty = value.trim() !== (notes ?? "").trim();
 
@@ -66,12 +75,16 @@ export function BrewNotes({
     setError(null);
     setSaved(false);
     try {
-      const result = await section.save(brewBatchId, value.trim() || null);
+      const next = value.trim() || null;
+      const result = offline ? await offline.save({ kind: "notes", notes: next }) : await section.save(brewBatchId, next);
       if (!result.ok) {
         setError(result.message);
         return;
       }
+      edited.current = false;
       setSaved(true);
+    } catch {
+      setError("Не удалось сохранить заметку. Попробуйте ещё раз.");
     } finally {
       inFlight.current = false;
       setBusy(false);
@@ -83,7 +96,7 @@ export function BrewNotes({
       <h2 className="text-base font-semibold text-foreground">{section.title}</h2>
       <textarea
         value={value}
-        onChange={(event) => { setValue(event.target.value); setSaved(false); }}
+        onChange={(event) => { edited.current = true; setValue(event.target.value); setSaved(false); }}
         disabled={busy}
         rows={4}
         placeholder={section.placeholder}
@@ -96,7 +109,7 @@ export function BrewNotes({
         </Button>
         {saved && !dirty ? (
           <span className="inline-flex items-center gap-1 text-xs text-success">
-            <Check className="h-3.5 w-3.5" aria-hidden /> Сохранено
+            <Check className="h-3.5 w-3.5" aria-hidden /> {offline && offline.record?.queue.length ? "Сохранено на устройстве" : "Сохранено"}
           </span>
         ) : null}
         {error ? <span role="alert" className="text-xs text-destructive">{error}</span> : null}

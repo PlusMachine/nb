@@ -19,6 +19,7 @@ import {
   type LucideIcon
 } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 
 import { calibrateWcf, convertBrewingUnitGroup, HOT_WORT_COOLING_SHRINKAGE, sgToBrix, sgToPlato, type CalculatorGravityUnit } from "@nb/brewing-core";
 import { Button, Checkbox } from "@nb/ui";
@@ -26,7 +27,6 @@ import { Button, Checkbox } from "@nb/ui";
 import { CopyLinkButton } from "@/components/shared/copy-link-button";
 import { RelatedLinksSection } from "@/components/shared/related-links-section";
 import { NumericInput } from "@/components/shared/numeric-input";
-import { IngredientPicker } from "@/components/ingredients/ingredient-picker";
 import { KegCarbonationBlock } from "@/components/calculators/keg-carbonation-block";
 import type { IngredientSuggestionItem } from "@/features/ingredients/contracts";
 import { calculatorBySlug, type CalculatorSlug } from "@/features/calculators/catalog";
@@ -78,6 +78,8 @@ import {
 } from "@/features/system/gravity-units";
 import { useViewerGravityUnit } from "@/features/system/use-viewer-gravity-unit";
 import { calculatorGravityInputs, readCalculatorGravityInput, switchCalculatorGravityUnit, updateCalculatorInput } from "@/features/calculators/gravity-inputs";
+
+const IngredientPicker = dynamic(() => import("@/components/ingredients/ingredient-picker").then(module => module.IngredientPicker));
 
 const cloneState = (state: CalculatorState): CalculatorState => JSON.parse(JSON.stringify(state)) as CalculatorState;
 

@@ -1,0 +1,62 @@
+{
+  "errors": [],
+  "viewports": [
+    {
+      "width": 360,
+      "height": 800,
+      "scrollWidth": 360,
+      "firstIngredientAction": {
+        "x": 33,
+        "y": 683,
+        "width": 96,
+        "height": 32
+      }
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "firstIngredientAction": {
+        "x": 261,
+        "y": 647,
+        "width": 96,
+        "height": 32
+      }
+    },
+    {
+      "width": 834,
+      "height": 1112,
+      "scrollWidth": 834,
+      "firstIngredientAction": {
+        "x": 680,
+        "y": 498.5,
+        "width": 109,
+        "height": 36
+      }
+    }
+  ],
+  "stock": [
+    {
+      "query": "цитра",
+      "cleared": true
+    },
+    {
+      "query": "пильзнер",
+      "cleared": true
+    },
+    {
+      "category": "hop",
+      "toggledBack": true
+    }
+  ],
+  "themes": [
+    "dark persists after reload"
+  ],
+  "photos": [
+    {
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 14202
+    }
+  ]
+}

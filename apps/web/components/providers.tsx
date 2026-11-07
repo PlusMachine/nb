@@ -7,6 +7,7 @@ import { ProductActivityTracker } from "@/components/analytics/product-activity-
 import { FeedbackProvider } from "@/components/feedback/feedback-provider";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import type { SkinPreference, ThemePreference } from "@/features/theme/theme";
+import { AccountSessionBoundary } from "@/features/pwa/account-session-boundary";
 import { useServiceWorkerRegistration } from "@/features/pwa/use-service-worker";
 
 const shouldAutoSelectNumberInput = (target: EventTarget | null): target is HTMLInputElement => {
@@ -37,12 +38,14 @@ export function Providers({
   children,
   initialThemePreference,
   initialSkinPreference,
-  isAuthenticated
+  isAuthenticated,
+  userId
 }: {
   children: React.ReactNode;
   initialThemePreference: ThemePreference;
   initialSkinPreference: SkinPreference;
   isAuthenticated: boolean;
+  userId: string | null;
 }) {
   useServiceWorkerRegistration();
 
@@ -92,12 +95,14 @@ export function Providers({
 
   return (
     <ThemeProvider initialPreference={initialThemePreference} initialSkin={initialSkinPreference}>
+      <AccountSessionBoundary userId={userId}>
       <ToastProvider>
         <ConsentProvider>
           <ProductActivityTracker isAuthenticated={isAuthenticated} />
           <FeedbackProvider isAuthenticated={isAuthenticated}>{children}</FeedbackProvider>
         </ConsentProvider>
       </ToastProvider>
+      </AccountSessionBoundary>
     </ThemeProvider>
   );
 }

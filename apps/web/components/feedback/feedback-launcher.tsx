@@ -29,6 +29,7 @@ export function FeedbackLauncher() {
 
   const isAdmin = pathname?.startsWith("/admin");
   const isPresentation = pathname?.startsWith("/beer/");
+  const isRecipeEditor = /^\/app\/recipes\/(?:new|[^/]+\/edit)$/.test(pathname ?? "");
   const hidden = isKiosk || isAdmin;
 
   useEffect(() => {
@@ -47,7 +48,7 @@ export function FeedbackLauncher() {
       // контейнеров контента; сложить их здесь ещё раз значило бы посчитать дважды.
       document.documentElement.style.setProperty(
         FAB_HEIGHT_VAR,
-        `calc(${node.getBoundingClientRect().height}px + 1rem)`
+        node.getBoundingClientRect().height > 0 ? `calc(${node.getBoundingClientRect().height}px + 1rem)` : "0px"
       );
     };
 
@@ -73,7 +74,7 @@ export function FeedbackLauncher() {
       type="button"
       onClick={() => open()}
       aria-label="Обратная связь"
-      className={`fixed ${isPresentation ? "top-[calc(0.5rem+env(safe-area-inset-top))] h-11 w-11 justify-center" : "bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px)+var(--nb-sticky-bar-h,0px))] min-h-11 px-4 py-2.5"} right-4 z-40 inline-flex items-center gap-2 rounded-full border border-border bg-card/95 text-sm font-medium text-foreground shadow-lg backdrop-blur-sm transition-colors hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring`}
+      className={`fixed ${isPresentation ? "top-[calc(0.5rem+env(safe-area-inset-top))] h-11 w-11 justify-center" : "bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px)+var(--nb-sticky-bar-h,0px))] min-h-11 px-4 py-2.5"} right-4 z-40 ${isRecipeEditor ? "hidden lg:inline-flex" : "inline-flex"} items-center gap-2 rounded-full border border-border bg-card/95 text-sm font-medium text-foreground shadow-lg backdrop-blur-sm transition-colors hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring`}
     >
       <MessageSquarePlus className="h-4 w-4" aria-hidden />
       {!isPresentation ? <span className="hidden sm:inline [@media(max-height:450px)]:hidden">Обратная связь</span> : null}

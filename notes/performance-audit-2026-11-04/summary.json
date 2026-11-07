@@ -1,0 +1,97 @@
+{
+  "mobile": [
+    {
+      "route": "/catalog",
+      "samples": 3,
+      "fcpMs": 1220,
+      "lcpMs": 1220,
+      "cls": 0.24684764147601912,
+      "loadMs": 4547.900000000023,
+      "totalLongTaskBlockingMs": 561,
+      "resourceTransfer": 758086,
+      "jsDecoded": 961747,
+      "menuInteractiveMs": [
+        3292.0999999998603,
+        3312.6999999999534
+      ]
+    },
+    {
+      "route": "/calculators/abv-attenuation",
+      "samples": 3,
+      "fcpMs": 1048,
+      "lcpMs": 1048,
+      "cls": 0.2098740352435238,
+      "loadMs": 4876.699999999953,
+      "totalLongTaskBlockingMs": 549,
+      "resourceTransfer": 881417,
+      "jsDecoded": 1692559,
+      "menuInteractiveMs": [
+        4022.8000000000466,
+        4166.200000000186
+      ]
+    },
+    {
+      "route": "/app/recipes/new",
+      "samples": 3,
+      "fcpMs": 1112,
+      "lcpMs": 1112,
+      "cls": 0.010204648454575456,
+      "loadMs": 5910.600000000093,
+      "totalLongTaskBlockingMs": 969,
+      "resourceTransfer": 1031156,
+      "jsDecoded": 2177683,
+      "menuInteractiveMs": [
+        3124.5999999998603,
+        2858.899999999907
+      ]
+    }
+  ],
+  "lighthouse": [
+    {
+      "route": "http://127.0.0.1:3016/catalog",
+      "version": "13.6.0",
+      "scores": {
+        "performance": 0.78,
+        "accessibility": 0.96
+      },
+      "metrics": {
+        "first-contentful-paint": 1523.083,
+        "largest-contentful-paint": 5573.083,
+        "total-blocking-time": 131.99999999999955,
+        "cumulative-layout-shift": 0.01547676842076731,
+        "total-byte-weight": 851300
+      },
+      "settings": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      }
+    },
+    {
+      "route": "http://127.0.0.1:3016/recipes",
+      "version": "13.6.0",
+      "scores": {
+        "performance": 0.64,
+        "accessibility": 0.96
+      },
+      "metrics": {
+        "first-contentful-paint": 1526.587,
+        "largest-contentful-paint": 5726.5869999999995,
+        "total-blocking-time": 551.5,
+        "cumulative-layout-shift": 0,
+        "total-byte-weight": 23888512
+      },
+      "settings": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      }
+    }
+  ]
+}

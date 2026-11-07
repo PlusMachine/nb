@@ -24,9 +24,23 @@ export function useServiceWorkerRegistration(): void {
     const allowNonProd = process.env.NEXT_PUBLIC_ENABLE_SW === "1";
     if (process.env.NODE_ENV !== "production" && !allowNonProd) return;
 
-    navigator.serviceWorker.register("/sw.js").catch(() => {
-      // Ошибку регистрации глотаем молча — SW прогрессивное улучшение,
-      // приложение обязано остаться рабочим и без него.
-    });
+    let registration: ServiceWorkerRegistration | undefined;
+    const register = () => navigator.serviceWorker.register("/sw.js", { updateViaCache: "none" })
+      .then(value => { registration = value; })
+      .catch(() => { /* Progressive enhancement; retry on a later online/focus event. */ });
+    const update = () => {
+      if (document.visibilityState === "hidden" || !navigator.onLine) return;
+      if (registration) void registration.update().catch(() => {});
+      else void register();
+    };
+    void register();
+    window.addEventListener("online", update);
+    window.addEventListener("focus", update);
+    document.addEventListener("visibilitychange", update);
+    return () => {
+      window.removeEventListener("online", update);
+      window.removeEventListener("focus", update);
+      document.removeEventListener("visibilitychange", update);
+    };
   }, []);
 }

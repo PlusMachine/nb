@@ -1,0 +1,7 @@
+{
+  "manifestUrl": "http://127.0.0.1:3011/manifest.webmanifest",
+  "manifestErrors": [],
+  "installability": {
+    "installabilityErrors": []
+  }
+}

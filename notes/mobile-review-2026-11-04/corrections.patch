@@ -1,0 +1,319 @@
+--- a/apps/web/components/ingredients/custom-catalog-ingredient-form.tsx
++++ b/apps/web/components/ingredients/custom-catalog-ingredient-form.tsx
+@@ -313,7 +313,7 @@
+   compact?: boolean;
+ }) {
+   return (
+-    <div className={`grid gap-2 ${columnsClassName}`}>
++    <div className={`grid grid-cols-1 gap-2 ${columnsClassName}`}>
+       {options.map((option) => {
+         const active = option.value === value;
+ 
+@@ -508,7 +508,7 @@
+         <section className="rounded-3xl border border-border bg-muted/80 p-5">
+           <h2 className="text-lg font-semibold text-foreground">Тип ингредиента</h2>
+ 
+-          <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
++          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+             {userFacingIngredientKindOptions.map((option) => {
+               const Icon = option.icon;
+               const isActive = activeKind === option.value;
+@@ -548,7 +548,7 @@
+ 
+           {subtypeChoiceOptions.length ? (
+             <div className="mt-4 space-y-2">
+-              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
++              <div className="flex flex-wrap items-center gap-2 text-sm font-medium text-foreground">
+                 <span>{resolveSubtypeFieldLabel(category)}</span>
+                 <FieldBadge required={false} />
+               </div>
+@@ -567,9 +567,9 @@
+         </section>
+ 
+         <section className="rounded-3xl border border-border bg-card p-5">
+-          <div className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(220px,1fr)_minmax(180px,0.8fr)]">
++          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(220px,1fr)_minmax(180px,0.8fr)]">
+             <label className="block text-sm">
+-              <div className="flex items-center gap-2">
++              <div className="flex flex-wrap items-center gap-2">
+                 <span>Название ингредиента</span>
+                 <FieldBadge required />
+               </div>
+@@ -582,7 +582,7 @@
+               {fieldErrors.displayName ? <span className="mt-1 block text-xs text-destructive">{fieldErrors.displayName}</span> : null}
+             </label>
+             <label className="block text-sm">
+-              <div className="flex items-center gap-2">
++              <div className="flex flex-wrap items-center gap-2">
+                 <span>Бренд / производитель</span>
+                 <FieldBadge required={false} />
+               </div>
+@@ -594,7 +594,7 @@
+               />
+             </label>
+             <label className="block text-sm">
+-              <div className="flex items-center gap-2">
++              <div className="flex flex-wrap items-center gap-2">
+                 <span>Страна</span>
+                 <FieldBadge required={false} />
+               </div>
+@@ -610,9 +610,9 @@
+           <div className="mt-5 border-t border-border pt-5">
+             {category === "hop" ? (
+               <div className="space-y-4">
+-                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_220px]">
++                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_220px]">
+                   <label className="text-sm">
+-                    <div className="flex items-center gap-2">
++                    <div className="flex flex-wrap items-center gap-2">
+                       <span>Альфа-кислоты, %</span>
+                       <FieldBadge required />
+                     </div>
+@@ -620,14 +620,14 @@
+                     {fieldErrors.hopAlphaAcidPct ? <span className="mt-1 block text-xs text-destructive">{fieldErrors.hopAlphaAcidPct}</span> : null}
+                   </label>
+                   <label className="text-sm">
+-                    <div className="flex items-center gap-2">
++                    <div className="flex flex-wrap items-center gap-2">
+                       <span>Бета-кислоты, %</span>
+                       <FieldBadge required={false} />
+                     </div>
+                     <input type="number" min="0" max="100" step="0.1" value={hopBetaAcidPct} onChange={(event) => setHopBetaAcidPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base" />
+                   </label>
+                   <label className="text-sm">
+-                    <div className="flex items-center gap-2">
++                    <div className="flex flex-wrap items-center gap-2">
+                       <span>Год урожая</span>
+                       <FieldBadge required={false} />
+                     </div>
+@@ -640,7 +640,7 @@
+                   </label>
+                 </div>
+                 <div className="space-y-2">
+-                  <div className="flex items-center gap-2 text-sm font-medium text-foreground">
++                  <div className="flex flex-wrap items-center gap-2 text-sm font-medium text-foreground">
+                     <span>Форма хмеля</span>
+                     <FieldBadge required={false} />
+                   </div>
+@@ -657,9 +657,9 @@
+ 
+             {category === "fermentable" ? (
+               <div className="space-y-4">
+-                <div className={`grid gap-4 ${activeKind === "malt" ? "md:grid-cols-3" : "md:grid-cols-2"}`}>
++                <div className={`grid grid-cols-1 gap-4 ${activeKind === "malt" ? "md:grid-cols-3" : "md:grid-cols-2"}`}>
+                   <label className="text-sm">
+-                    <div className="flex items-center gap-2">
++                    <div className="flex flex-wrap items-center gap-2">
+                       <span>Цвет, EBC</span>
+                       <FieldBadge required />
+                     </div>
+@@ -667,7 +667,7 @@
+                     {fieldErrors.fermentableColorEbc ? <span className="mt-1 block text-xs text-destructive">{fieldErrors.fermentableColorEbc}</span> : null}
+                   </label>
+                   <label className="text-sm">
+-                    <div className="flex items-center gap-2">
++                    <div className="flex flex-wrap items-center gap-2">
+                       <span>Экстрактивность, %</span>
+                       <FieldBadge required />
+                     </div>
+@@ -676,7 +676,7 @@
+                   </label>
+                   {activeKind === "malt" ? (
+                     <label className="text-sm">
+-                      <div className="flex items-center gap-2">
++                      <div className="flex flex-wrap items-center gap-2">
+                         <span>Белок, %</span>
+                         <FieldBadge required={false} />
+                       </div>
+@@ -686,9 +686,9 @@
+                 </div>
+ 
+                 {activeKind === "malt" ? (
+-                  <div className="grid gap-4 xl:grid-cols-[minmax(0,420px)_minmax(0,220px)]">
++                  <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,420px)_minmax(0,220px)]">
+                     <div className="space-y-2">
+-                      <div className="flex items-center gap-2 text-sm font-medium text-foreground">
++                      <div className="flex flex-wrap items-center gap-2 text-sm font-medium text-foreground">
+                         <span>Тип солода</span>
+                         <FieldBadge required={false} />
+                       </div>
+@@ -701,7 +701,7 @@
+                       />
+                     </div>
+                     <label className="text-sm">
+-                      <div className="flex items-center gap-2">
++                      <div className="flex flex-wrap items-center gap-2">
+                         <span>Максимальная доля в засыпи, %</span>
+                         <FieldBadge required={false} />
+                       </div>
+@@ -715,7 +715,7 @@
+             {category === "yeast" ? (
+               <div className="space-y-4">
+                 <div className="space-y-2">
+-                  <div className="flex items-center gap-2 text-sm font-medium text-foreground">
++                  <div className="flex flex-wrap items-center gap-2 text-sm font-medium text-foreground">
+                     <span>Форма дрожжей</span>
+                     <FieldBadge required />
+                   </div>
+@@ -728,9 +728,9 @@
+                   />
+                   {fieldErrors.yeastForm ? <span className="block text-xs text-destructive">{fieldErrors.yeastForm}</span> : null}
+                 </div>
+-                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
++                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                   <label className="text-sm">
+-                    <div className="flex items-center gap-2">
++                    <div className="flex flex-wrap items-center gap-2">
+                       <span>Степень сбраживания, %</span>
+                       <FieldBadge required />
+                     </div>
+@@ -738,28 +738,28 @@
+                     {fieldErrors.yeastAttenuationPct ? <span className="mt-1 block text-xs text-destructive">{fieldErrors.yeastAttenuationPct}</span> : null}
+                   </label>
+                   <label className="text-sm">
+-                    <div className="flex items-center gap-2">
++                    <div className="flex flex-wrap items-center gap-2">
+                       <span>Флокуляция</span>
+                       <FieldBadge required={false} />
+                     </div>
+                     <input value={yeastFlocculation} onChange={(event) => setYeastFlocculation(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base" />
+                   </label>
+                   <label className="text-sm">
+-                    <div className="flex items-center gap-2">
++                    <div className="flex flex-wrap items-center gap-2">
+                       <span>Мин. температура, °C</span>
+                       <FieldBadge required={false} />
+                     </div>
+                     <input type="number" min="-20" max="60" step="0.1" value={yeastMinFermentationTempC} onChange={(event) => setYeastMinFermentationTempC(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base" />
+                   </label>
+                   <label className="text-sm">
+-                    <div className="flex items-center gap-2">
++                    <div className="flex flex-wrap items-center gap-2">
+                       <span>Макс. температура, °C</span>
+                       <FieldBadge required={false} />
+                     </div>
+                     <input type="number" min="-20" max="60" step="0.1" value={yeastMaxFermentationTempC} onChange={(event) => setYeastMaxFermentationTempC(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm [@media(pointer:coarse)]:text-base" />
+                   </label>
+                   <label className="text-sm">
+-                    <div className="flex items-center gap-2">
++                    <div className="flex flex-wrap items-center gap-2">
+                       <span>Устойчивость к алкоголю, % ABV</span>
+                       <FieldBadge required={false} />
+                     </div>
+@@ -770,9 +770,9 @@
+             ) : null}
+ 
+             {(category === "consumable" || category === "water_treatment") ? (
+-              <div className="grid gap-4 xl:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">
++              <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">
+                 <div className="space-y-2">
+-                  <div className="flex items-center gap-2 text-sm font-medium text-foreground">
++                  <div className="flex flex-wrap items-center gap-2 text-sm font-medium text-foreground">
+                     <span>Форма</span>
+                     <FieldBadge required={false} />
+                   </div>
+@@ -785,7 +785,7 @@
+                   />
+                 </div>
+                 <label className="text-sm">
+-                  <div className="flex items-center gap-2">
++                  <div className="flex flex-wrap items-center gap-2">
+                     <span>Концентрация / дозировка</span>
+                     <FieldBadge required={false} />
+                   </div>
+@@ -797,9 +797,9 @@
+         </section>
+ 
+         <section className="rounded-3xl border border-border bg-muted/80 p-5">
+-          <div className="grid gap-5 xl:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
++          <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
+             <div className="space-y-2">
+-              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
++              <div className="flex flex-wrap items-center gap-2 text-sm font-medium text-foreground">
+                 <span>Единица по умолчанию</span>
+                 <FieldBadge required={false} />
+               </div>
+@@ -813,14 +813,14 @@
+             </div>
+ 
+             <label className="block text-sm">
+-              <div className="flex items-center gap-2">
++              <div className="flex flex-wrap items-center gap-2">
+                 <span>Заметки</span>
+                 <FieldBadge required={false} />
+               </div>
+               <textarea
+                 value={notes}
+                 onChange={(event) => setNotes(event.target.value)}
+-                className="mt-1 min-h-28 w-full rounded-2xl border border-border bg-card px-3 py-3 text-sm"
++                className="mt-1 min-h-28 w-full rounded-2xl border border-border bg-card px-3 py-3 text-base sm:text-sm [@media(pointer:coarse)]:text-base"
+                 placeholder="Например, своя фасовка, партия, особенности использования"
+               />
+             </label>
+--- a/apps/web/components/recipes/recipe-designer/recipe-designer.tsx
++++ b/apps/web/components/recipes/recipe-designer/recipe-designer.tsx
+@@ -1759,14 +1759,14 @@
+             section.category !== "hop" && !isWaterTreatmentSection;
+           return (
+             <section key={section.category} className={`overflow-hidden rounded-2xl border ${hasError ? "border-destructive-border" : "border-border/70"} bg-card shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)]`}>
+-              <header className="flex items-center justify-between gap-3 border-b border-border bg-muted/40 px-4 py-3 sm:px-5">
+-                <div className="flex min-w-0 items-center gap-2.5">
++              <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-muted/40 px-4 py-3 sm:px-5">
++                <div className="flex min-w-0 flex-1 basis-48 items-center gap-2.5">
+                   <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${iconBg}`}>
+                     <IconComponent className="h-4 w-4" />
+                   </div>
+                   <div className="min-w-0">
+-                    <div className="flex items-baseline gap-2">
+-                      <h2 className="truncate text-base font-semibold text-foreground">{section.title}</h2>
++                    <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
++                      <h2 className="min-w-0 break-words text-base font-semibold text-foreground">{section.title}</h2>
+                       {section.subtitle ? <span className="text-sm tabular-nums text-muted-foreground">({section.subtitle})</span> : null}
+                     </div>
+                     {hasError ? <p className="mt-0.5 text-xs text-destructive">{sectionErrors[`ingredients.${section.category}`]}</p> : null}
+--- a/apps/web/components/recipes/recipe-designer/recipe-style-stats-block.tsx
++++ b/apps/web/components/recipes/recipe-designer/recipe-style-stats-block.tsx
+@@ -108,8 +108,8 @@
+     <section className="flex h-full flex-col overflow-hidden rounded-2xl border border-border/70 bg-card shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)]">
+       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-muted/40 px-4 py-3">
+         <div className="flex min-w-0 flex-col gap-0.5">
+-          <div className="flex min-w-0 items-center gap-2">
+-            <h2 className="truncate text-sm font-semibold text-foreground">
++          <div className="flex min-w-0 flex-wrap items-center gap-2">
++            <h2 className="min-w-0 break-words text-sm font-semibold text-foreground">
+               {hasSelectedStyle ? "Сравнение со стилем" : "Расчёт показателей"}
+             </h2>
+             {comparableItems.length > 0 ? (
+--- a/apps/web/components/recipes/recipe-designer/recipe-ingredient-category-grid.tsx
++++ b/apps/web/components/recipes/recipe-designer/recipe-ingredient-category-grid.tsx
+@@ -59,14 +59,14 @@
+ 
+                 onChange(option.value);
+               }}
+-              className={`min-h-11 rounded-md border px-3 py-2 text-xs transition ${value === option.value
++              className={`min-h-11 min-w-0 rounded-md border px-2 py-2 text-xs transition sm:px-3 ${value === option.value
+                 ? "border-foreground bg-accent text-foreground"
+                 : "border-border bg-card text-muted-foreground hover:border-border hover:bg-muted"
+                 }`}
+             >
+-              <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
++              <span className="flex min-w-0 items-center justify-center gap-1.5">
+                 <Icon className={`h-3.5 w-3.5 shrink-0 ${value === option.value ? "text-current" : option.iconClassName}`} />
+-                <span>{option.label}</span>
++                <span className="min-w-0 break-words text-left">{option.label}</span>
+               </span>
+             </button>
+           );
+--- a/apps/web/app/(public)/catalog/custom/[id]/edit/page.tsx
++++ b/apps/web/app/(public)/catalog/custom/[id]/edit/page.tsx
+@@ -28,8 +28,8 @@
+         mode="edit"
+         initial={buildCustomFormInitialValueFromCustomItem(item)}
+         submitLabel="Сохранить изменения"
+-        onSubmit={(payload) => updateCatalogCustomIngredientAction(id, payload)}
+-        onDelete={() => deleteCatalogCustomIngredientAction(id)}
++        onSubmit={updateCatalogCustomIngredientAction.bind(null, id)}
++        onDelete={deleteCatalogCustomIngredientAction.bind(null, id)}
+       />
+     </main>
+   );

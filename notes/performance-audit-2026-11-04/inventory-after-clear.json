@@ -1,0 +1,1897 @@
+{
+  "url": "http://127.0.0.1:3016/app/ingredients?search=%D1%86%D0%B8%D1%82%D1%80%D0%B0",
+  "ttfbMs": 36.9000000001397,
+  "fcpMs": 140,
+  "lcpMs": 736,
+  "cls": 0.05155855577229761,
+  "domContentLoadedMs": 71.10000000009313,
+  "loadMs": 248.30000000004657,
+  "htmlTransfer": 103066,
+  "htmlDecoded": 102766,
+  "resourceTransfer": 6175538,
+  "resourceDecoded": 9824190,
+  "jsDecoded": 2317901,
+  "domElements": 392,
+  "incompleteImages": [],
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "scrollWidth": 390,
+    "scrollHeight": 844
+  },
+  "totalLongTaskBlockingMs": 0,
+  "lcp": [
+    {
+      "start": 140,
+      "size": 814,
+      "url": "",
+      "tag": "A",
+      "text": "NB"
+    },
+    {
+      "start": 336,
+      "size": 2432,
+      "url": ""
+    },
+    {
+      "start": 736,
+      "size": 3886,
+      "url": "",
+      "tag": "DIV",
+      "text": "Добавьте сбраживаемые ингредиенты"
+    }
+  ],
+  "shifts": [
+    {
+      "start": 208.30000000004657,
+      "value": 0.006722555014372359,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "BUTTON",
+          "text": "Обратная связь",
+          "previous": {
+            "x": 304,
+            "y": 774,
+            "width": 86,
+            "height": 70,
+            "top": 774,
+            "right": 390,
+            "bottom": 844,
+            "left": 304
+          },
+          "current": {
+            "x": 304,
+            "y": 718,
+            "width": 86,
+            "height": 84,
+            "top": 718,
+            "right": 390,
+            "bottom": 802,
+            "left": 304
+          }
+        },
+        {
+          "tag": "OL",
+          "text": "",
+          "previous": {
+            "x": 12,
+            "y": 824,
+            "width": 366,
+            "height": 8,
+            "top": 824,
+            "right": 378,
+            "bottom": 832,
+            "left": 12
+          },
+          "current": {
+            "x": 12,
+            "y": 708,
+            "width": 366,
+            "height": 8,
+            "top": 708,
+            "right": 378,
+            "bottom": 716,
+            "left": 12
+          }
+        }
+      ]
+    },
+    {
+      "start": 725.9000000001397,
+      "value": 0.010204648454575456,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "DIV",
+          "text": "Объём, лЭффективность, %Кипячение, минОборудованиеGrainfather G30Ввести параметр",
+          "previous": {
+            "x": 13,
+            "y": 687,
+            "width": 364,
+            "height": 134,
+            "top": 687,
+            "right": 377,
+            "bottom": 821,
+            "left": 13
+          },
+          "current": {
+            "x": 13,
+            "y": 720,
+            "width": 364,
+            "height": 124,
+            "top": 720,
+            "right": 377,
+            "bottom": 844,
+            "left": 13
+          }
+        },
+        {
+          "tag": "DIV",
+          "text": "ABV—",
+          "previous": {
+            "x": 16,
+            "y": 604.5,
+            "width": 175,
+            "height": 66.5,
+            "top": 604.5,
+            "right": 191,
+            "bottom": 671,
+            "left": 16
+          },
+          "current": {
+            "x": 16,
+            "y": 637.5,
+            "width": 175,
+            "height": 66.5,
+            "top": 637.5,
+            "right": 191,
+            "bottom": 704,
+            "left": 16
+          }
+        },
+        {
+          "tag": "DIV",
+          "text": "СтильВне BJCP",
+          "previous": {
+            "x": 199,
+            "y": 604.5,
+            "width": 175,
+            "height": 66.5,
+            "top": 604.5,
+            "right": 374,
+            "bottom": 671,
+            "left": 199
+          },
+          "current": {
+            "x": 199,
+            "y": 637.5,
+            "width": 175,
+            "height": 66.5,
+            "top": 637.5,
+            "right": 374,
+            "bottom": 704,
+            "left": 199
+          }
+        },
+        {
+          "tag": "SECTION",
+          "text": "Расчёт показателейНПНет данных7.6 °P28.1 °P—КПНет данных0.5 °P10.0 °P—ABVНет дан",
+          "previous": {
+            "x": 11,
+            "y": 829,
+            "width": 368,
+            "height": 15,
+            "top": 829,
+            "right": 379,
+            "bottom": 844,
+            "left": 11
+          },
+          "current": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          }
+        }
+      ]
+    },
+    {
+      "start": 148842.30000000005,
+      "value": 0.01868971081926766,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "DIV",
+          "text": "Солод и другое сырьё4ДекстрозаDextrose1 EBCЭкстрактивность 91%до 100%добавить сс",
+          "previous": {
+            "x": 16,
+            "y": 334,
+            "width": 358,
+            "height": 510,
+            "top": 334,
+            "right": 374,
+            "bottom": 844,
+            "left": 16
+          },
+          "current": {
+            "x": 16,
+            "y": 362,
+            "width": 358,
+            "height": 482,
+            "top": 362,
+            "right": 374,
+            "bottom": 844,
+            "left": 16
+          }
+        },
+        {
+          "tag": "LI",
+          "text": "ДекстрозаDextrose1 EBCЭкстрактивность 91%до 100%добавить ссылку на покупкуСахар ",
+          "previous": {
+            "x": 13,
+            "y": 368,
+            "width": 364,
+            "height": 148.125,
+            "top": 368,
+            "right": 377,
+            "bottom": 516.125,
+            "left": 13
+          },
+          "current": {
+            "x": 13,
+            "y": 396,
+            "width": 364,
+            "height": 148.125,
+            "top": 396,
+            "right": 377,
+            "bottom": 544.125,
+            "left": 13
+          }
+        },
+        {
+          "tag": "LI",
+          "text": "ПильзнерWeyermannPilsner Malt2,5–4,5 EBCЭкстрактивность 80.5%добавить ссылку на ",
+          "previous": {
+            "x": 13,
+            "y": 518.125,
+            "width": 364,
+            "height": 148.125,
+            "top": 518.125,
+            "right": 377,
+            "bottom": 666.25,
+            "left": 13
+          },
+          "current": {
+            "x": 13,
+            "y": 546.125,
+            "width": 364,
+            "height": 148.125,
+            "top": 546.125,
+            "right": 377,
+            "bottom": 694.25,
+            "left": 13
+          }
+        },
+        {
+          "tag": "LI",
+          "text": "Пэйл ЭльViking MaltPale Ale4–7 EBCЭкстрактивность 81.5%до 100%добавить ссылку на",
+          "previous": {
+            "x": 13,
+            "y": 668.25,
+            "width": 364,
+            "height": 148.125,
+            "top": 668.25,
+            "right": 377,
+            "bottom": 816.375,
+            "left": 13
+          },
+          "current": {
+            "x": 13,
+            "y": 696.25,
+            "width": 364,
+            "height": 147.75,
+            "top": 696.25,
+            "right": 377,
+            "bottom": 844,
+            "left": 13
+          }
+        },
+        {
+          "tag": "LI",
+          "text": "Рисовая лузгаRice hullsДля фильтрации заторадобавить ссылку на покупкуПомощь при",
+          "previous": {
+            "x": 13,
+            "y": 818.375,
+            "width": 364,
+            "height": 25.625,
+            "top": 818.375,
+            "right": 377,
+            "bottom": 844,
+            "left": 13
+          },
+          "current": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          }
+        }
+      ]
+    },
+    {
+      "start": 149035.2000000002,
+      "value": 0.03286884495302995,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "DIV",
+          "text": "Хмель1ЦитраCitraBeervingemα 12.5%гранулы T-90добавить ссылку на покупкуАроматиче",
+          "previous": {
+            "x": 16,
+            "y": 362,
+            "width": 358,
+            "height": 482,
+            "top": 362,
+            "right": 374,
+            "bottom": 844,
+            "left": 16
+          },
+          "current": {
+            "x": 16,
+            "y": 334,
+            "width": 358,
+            "height": 170.125,
+            "top": 334,
+            "right": 374,
+            "bottom": 504.125,
+            "left": 16
+          }
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Хмель",
+          "previous": {
+            "x": 225,
+            "y": 266,
+            "width": 107,
+            "height": 44,
+            "top": 266,
+            "right": 332,
+            "bottom": 310,
+            "left": 225
+          },
+          "current": {
+            "x": 200,
+            "y": 266,
+            "width": 84,
+            "height": 44,
+            "top": 266,
+            "right": 284,
+            "bottom": 310,
+            "left": 200
+          }
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Дрожжи",
+          "previous": {
+            "x": 338,
+            "y": 266,
+            "width": 36,
+            "height": 44,
+            "top": 266,
+            "right": 374,
+            "bottom": 310,
+            "left": 338
+          },
+          "current": {
+            "x": 290,
+            "y": 266,
+            "width": 84,
+            "height": 44,
+            "top": 266,
+            "right": 374,
+            "bottom": 310,
+            "left": 290
+          }
+        }
+      ]
+    },
+    {
+      "start": 192284,
+      "value": 0.0073901742709720965,
+      "recentInput": true,
+      "sources": [
+        {
+          "tag": "DIV",
+          "text": "Хмель1ЦитраCitraBeervingemα 12.5%гранулы T-90добавить ссылку на покупкуАроматиче",
+          "previous": {
+            "x": 16,
+            "y": 334,
+            "width": 358,
+            "height": 170.125,
+            "top": 334,
+            "right": 374,
+            "bottom": 504.125,
+            "left": 16
+          },
+          "current": {
+            "x": 16,
+            "y": 362,
+            "width": 358,
+            "height": 170.125,
+            "top": 362,
+            "right": 374,
+            "bottom": 532.125,
+            "left": 16
+          }
+        },
+        {
+          "tag": "LI",
+          "text": "ЦитраCitraBeervingemα 12.5%гранулы T-90добавить ссылку на покупкуАроматические з",
+          "previous": {
+            "x": 13,
+            "y": 368,
+            "width": 364,
+            "height": 140.125,
+            "top": 368,
+            "right": 377,
+            "bottom": 508.125,
+            "left": 13
+          },
+          "current": {
+            "x": 13,
+            "y": 396,
+            "width": 364,
+            "height": 140.125,
+            "top": 396,
+            "right": 377,
+            "bottom": 536.125,
+            "left": 13
+          }
+        }
+      ]
+    }
+  ],
+  "longtasks": [],
+  "events": [
+    {
+      "name": "pointerover",
+      "start": 94.4000000001397,
+      "duration": 48,
+      "processing": 0.19999999995343387,
+      "delay": 0.30000000004656613,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 94.4000000001397,
+      "duration": 48,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 94.4000000001397,
+      "duration": 48,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 94.4000000001397,
+      "duration": 48,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 94.4000000001397,
+      "duration": 48,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 94.4000000001397,
+      "duration": 48,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 94.4000000001397,
+      "duration": 48,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 94.4000000001397,
+      "duration": 48,
+      "processing": 0.09999999986030161,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 94.4000000001397,
+      "duration": 48,
+      "processing": 0,
+      "delay": 0.5999999998603016,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 94.4000000001397,
+      "duration": 48,
+      "processing": 0,
+      "delay": 0.5999999998603016,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 94.4000000001397,
+      "duration": 48,
+      "processing": 0,
+      "delay": 0.5999999998603016,
+      "interactionId": 0
+    },
+    {
+      "name": "mouseover",
+      "start": 94.4000000001397,
+      "duration": 48,
+      "processing": 0,
+      "delay": 0.5999999998603016,
+      "interactionId": 0
+    },
+    {
+      "name": "mouseout",
+      "start": 17739,
+      "duration": 32,
+      "processing": 0.19999999995343387,
+      "delay": 7.300000000046566,
+      "interactionId": 0,
+      "tag": "DIV",
+      "text": "Не сохранёнСохранитьНП—КП—ABV—IBU—SRM—Импорт / экспортСваритьТолько мн"
+    },
+    {
+      "name": "mouseover",
+      "start": 17739,
+      "duration": 32,
+      "processing": 0.10000000009313226,
+      "delay": 7.5,
+      "interactionId": 0,
+      "tag": "svg",
+      "text": ""
+    },
+    {
+      "name": "mousedown",
+      "start": 17739,
+      "duration": 32,
+      "processing": 0.10000000009313226,
+      "delay": 7.800000000046566,
+      "interactionId": 0,
+      "tag": "svg",
+      "text": ""
+    },
+    {
+      "name": "mouseup",
+      "start": 17739,
+      "duration": 32,
+      "processing": 0.19999999995343387,
+      "delay": 8.100000000093132,
+      "interactionId": 0,
+      "tag": "svg",
+      "text": ""
+    },
+    {
+      "name": "click",
+      "start": 17739,
+      "duration": 32,
+      "processing": 7,
+      "delay": 8.300000000046566,
+      "interactionId": 8207,
+      "tag": "svg",
+      "text": ""
+    },
+    {
+      "name": "keydown",
+      "start": 17779.100000000093,
+      "duration": 16,
+      "processing": 0.19999999995343387,
+      "delay": 0.19999999995343387,
+      "interactionId": 8214,
+      "tag": "BUTTON",
+      "text": ""
+    },
+    {
+      "name": "keyup",
+      "start": 17780.200000000186,
+      "duration": 16,
+      "processing": 0.19999999995343387,
+      "delay": 0.19999999995343387,
+      "interactionId": 8214,
+      "tag": "BUTTON",
+      "text": ""
+    },
+    {
+      "name": "mouseout",
+      "start": 37586.30000000005,
+      "duration": 72,
+      "processing": 0.10000000009313226,
+      "delay": 10.199999999953434,
+      "interactionId": 0,
+      "tag": "DIV",
+      "text": "Не сохранёнСохранитьНП—КП—ABV—IBU—SRM—Импорт / экспортСваритьТолько мн"
+    },
+    {
+      "name": "mouseover",
+      "start": 37586.30000000005,
+      "duration": 72,
+      "processing": 0.10000000009313226,
+      "delay": 10.300000000046566,
+      "interactionId": 0,
+      "tag": "BUTTON",
+      "text": "Обратная связь"
+    },
+    {
+      "name": "mousedown",
+      "start": 37586.30000000005,
+      "duration": 72,
+      "processing": 0,
+      "delay": 10.400000000139698,
+      "interactionId": 0,
+      "tag": "BUTTON",
+      "text": "Обратная связь"
+    },
+    {
+      "name": "mouseup",
+      "start": 37586.30000000005,
+      "duration": 72,
+      "processing": 0.19999999995343387,
+      "delay": 11,
+      "interactionId": 0,
+      "tag": "BUTTON",
+      "text": "Обратная связь"
+    },
+    {
+      "name": "click",
+      "start": 37586.30000000005,
+      "duration": 72,
+      "processing": 22.800000000046566,
+      "delay": 11.199999999953434,
+      "interactionId": 8221,
+      "tag": "BUTTON",
+      "text": "Обратная связь"
+    },
+    {
+      "name": "pointerout",
+      "start": 37631.40000000014,
+      "duration": 24,
+      "processing": 0.30000000004656613,
+      "delay": 0.19999999995343387,
+      "interactionId": 0,
+      "tag": "DIV",
+      "text": "Не сохранёнСохранитьНП—КП—ABV—IBU—SRM—Импорт / экспортСваритьТолько мн"
+    },
+    {
+      "name": "pointerleave",
+      "start": 37631.40000000014,
+      "duration": 24,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 37631.40000000014,
+      "duration": 24,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 37631.40000000014,
+      "duration": 24,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 37631.40000000014,
+      "duration": 24,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 37631.40000000014,
+      "duration": 24,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 37631.40000000014,
+      "duration": 24,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 37631.40000000014,
+      "duration": 24,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerover",
+      "start": 37631.40000000014,
+      "duration": 24,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0,
+      "tag": "DIV",
+      "text": ""
+    },
+    {
+      "name": "pointerenter",
+      "start": 37631.40000000014,
+      "duration": 24,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "mouseout",
+      "start": 37631.40000000014,
+      "duration": 24,
+      "processing": 0,
+      "delay": 0.5999999998603016,
+      "interactionId": 0,
+      "tag": "BUTTON",
+      "text": "Обратная связь"
+    },
+    {
+      "name": "mouseover",
+      "start": 37631.40000000014,
+      "duration": 24,
+      "processing": 0,
+      "delay": 0.5999999998603016,
+      "interactionId": 0,
+      "tag": "DIV",
+      "text": ""
+    },
+    {
+      "name": "keydown",
+      "start": 86167.20000000019,
+      "duration": 32,
+      "processing": 4.099999999860302,
+      "delay": 0.19999999995343387,
+      "interactionId": 8228
+    },
+    {
+      "name": "keyup",
+      "start": 86172.1000000001,
+      "duration": 24,
+      "processing": 0.10000000009313226,
+      "delay": 10.699999999953434,
+      "interactionId": 8228,
+      "tag": "BODY",
+      "text": "(function(){try{var m=document.cookie.match(/(?:^|;\\s*)nb_theme=([^;]+"
+    },
+    {
+      "name": "pointerover",
+      "start": 86183,
+      "duration": 16,
+      "processing": 0.09999999986030161,
+      "delay": 0.7000000001862645,
+      "interactionId": 0,
+      "tag": "DIV",
+      "text": "Не сохранёнСохранитьНП—КП—ABV—IBU—SRM—Импорт / экспортСваритьТолько мн"
+    },
+    {
+      "name": "pointerenter",
+      "start": 86183,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.8000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 86183,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.8000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 86183,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.8000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 86183,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.8000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 86183,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.8000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 86183,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.8000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 86183,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.8000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 86183,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.8000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 86183,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.8000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 86183,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.8000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "mouseover",
+      "start": 86183,
+      "duration": 16,
+      "processing": 0.10000000009313226,
+      "delay": 0.8000000000465661,
+      "interactionId": 0,
+      "tag": "DIV",
+      "text": "Не сохранёнСохранитьНП—КП—ABV—IBU—SRM—Импорт / экспортСваритьТолько мн"
+    },
+    {
+      "name": "pointerout",
+      "start": 86225.6000000001,
+      "duration": 32,
+      "processing": 0.19999999995343387,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 86225.6000000001,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 86225.6000000001,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 86225.6000000001,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 86225.6000000001,
+      "duration": 32,
+      "processing": 0.10000000009313226,
+      "delay": 0.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerover",
+      "start": 86225.6000000001,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.8000000000465661,
+      "interactionId": 0,
+      "tag": "svg",
+      "text": ""
+    },
+    {
+      "name": "pointerenter",
+      "start": 86225.6000000001,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.8000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 86225.6000000001,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.8000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 86225.6000000001,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.8000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "mouseout",
+      "start": 86225.6000000001,
+      "duration": 32,
+      "processing": 0.5,
+      "delay": 0.8000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "mouseover",
+      "start": 86225.6000000001,
+      "duration": 32,
+      "processing": 0,
+      "delay": 1.3000000000465661,
+      "interactionId": 0,
+      "tag": "svg",
+      "text": ""
+    },
+    {
+      "name": "pointerdown",
+      "start": 86225.80000000005,
+      "duration": 32,
+      "processing": 0.5,
+      "delay": 1.3000000000465661,
+      "interactionId": 8235,
+      "tag": "svg",
+      "text": ""
+    },
+    {
+      "name": "mousedown",
+      "start": 86225.80000000005,
+      "duration": 32,
+      "processing": 0.10000000009313226,
+      "delay": 1.8000000000465661,
+      "interactionId": 0,
+      "tag": "svg",
+      "text": ""
+    },
+    {
+      "name": "pointerup",
+      "start": 86225.90000000014,
+      "duration": 32,
+      "processing": 0.10000000009313226,
+      "delay": 2.199999999953434,
+      "interactionId": 8235,
+      "tag": "svg",
+      "text": ""
+    },
+    {
+      "name": "mouseup",
+      "start": 86225.90000000014,
+      "duration": 32,
+      "processing": 0,
+      "delay": 2.300000000046566,
+      "interactionId": 0,
+      "tag": "svg",
+      "text": ""
+    },
+    {
+      "name": "click",
+      "start": 86225.90000000014,
+      "duration": 32,
+      "processing": 6.899999999906868,
+      "delay": 2.300000000046566,
+      "interactionId": 8235,
+      "tag": "svg",
+      "text": ""
+    },
+    {
+      "name": "pointerout",
+      "start": 192019.1000000001,
+      "duration": 16,
+      "processing": 0.39999999990686774,
+      "delay": 0.8000000000465661,
+      "interactionId": 0,
+      "tag": "svg",
+      "text": ""
+    },
+    {
+      "name": "pointerleave",
+      "start": 192019.1000000001,
+      "duration": 16,
+      "processing": 0,
+      "delay": 1.1999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 192019.1000000001,
+      "duration": 16,
+      "processing": 0,
+      "delay": 1.1999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 192019.1000000001,
+      "duration": 16,
+      "processing": 0,
+      "delay": 1.1999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerover",
+      "start": 192019.1000000001,
+      "duration": 16,
+      "processing": 0.10000000009313226,
+      "delay": 1.1999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 192019.1000000001,
+      "duration": 16,
+      "processing": 0,
+      "delay": 1.3000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 192019.1000000001,
+      "duration": 16,
+      "processing": 0,
+      "delay": 1.3000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 192019.1000000001,
+      "duration": 16,
+      "processing": 0,
+      "delay": 1.3000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 192019.1000000001,
+      "duration": 16,
+      "processing": 0,
+      "delay": 1.3000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 192019.1000000001,
+      "duration": 16,
+      "processing": 0,
+      "delay": 1.3000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 192019.1000000001,
+      "duration": 16,
+      "processing": 0,
+      "delay": 1.3000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 192019.1000000001,
+      "duration": 16,
+      "processing": 0,
+      "delay": 1.3000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 192019.1000000001,
+      "duration": 16,
+      "processing": 0,
+      "delay": 1.3000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 192019.1000000001,
+      "duration": 16,
+      "processing": 0,
+      "delay": 1.3000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 192019.1000000001,
+      "duration": 16,
+      "processing": 0,
+      "delay": 1.3000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "mouseout",
+      "start": 192019.1000000001,
+      "duration": 16,
+      "processing": 0.19999999995343387,
+      "delay": 1.3000000000465661,
+      "interactionId": 0,
+      "tag": "svg",
+      "text": ""
+    },
+    {
+      "name": "mouseover",
+      "start": 192019.1000000001,
+      "duration": 16,
+      "processing": 0,
+      "delay": 1.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerdown",
+      "start": 192019.2000000002,
+      "duration": 16,
+      "processing": 0.30000000004656613,
+      "delay": 1.6999999999534339,
+      "interactionId": 8242
+    },
+    {
+      "name": "mousedown",
+      "start": 192019.2000000002,
+      "duration": 16,
+      "processing": 0.09999999986030161,
+      "delay": 2,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerup",
+      "start": 192019.30000000005,
+      "duration": 16,
+      "processing": 0.19999999995343387,
+      "delay": 2.800000000046566,
+      "interactionId": 8242
+    },
+    {
+      "name": "mouseup",
+      "start": 192019.30000000005,
+      "duration": 16,
+      "processing": 0.10000000009313226,
+      "delay": 3,
+      "interactionId": 0
+    },
+    {
+      "name": "click",
+      "start": 192019.30000000005,
+      "duration": 16,
+      "processing": 4.599999999860302,
+      "delay": 3.1000000000931323,
+      "interactionId": 8242
+    }
+  ],
+  "errors": [],
+  "resources": [
+    {
+      "name": "/_next/static/media/32425b6d39044b3c-s.p.ttf",
+      "type": "link",
+      "start": 42.700000000186265,
+      "duration": 28.5999999998603,
+      "transfer": 0,
+      "encoded": 359804,
+      "decoded": 359804
+    },
+    {
+      "name": "/_next/static/media/d703e6352f035923-s.p.ttf",
+      "type": "link",
+      "start": 43,
+      "duration": 35.5,
+      "transfer": 0,
+      "encoded": 744936,
+      "decoded": 744936
+    },
+    {
+      "name": "/_next/static/css/10d068b31dbc4d49.css",
+      "type": "link",
+      "start": 43.200000000186265,
+      "duration": 7.199999999953434,
+      "transfer": 0,
+      "encoded": 115379,
+      "decoded": 115379
+    },
+    {
+      "name": "/_next/static/css/688dbf7110800d11.css",
+      "type": "link",
+      "start": 43.200000000186265,
+      "duration": 6.399999999906868,
+      "transfer": 0,
+      "encoded": 7335,
+      "decoded": 7335
+    },
+    {
+      "name": "/_next/static/chunks/webpack-50b6521d18506e69.js",
+      "type": "link",
+      "start": 46.10000000009313,
+      "duration": 10.5,
+      "transfer": 0,
+      "encoded": 3498,
+      "decoded": 3498
+    },
+    {
+      "name": "/_next/static/chunks/87c73c54-dd8d81ac9604067c.js",
+      "type": "script",
+      "start": 46.200000000186265,
+      "duration": 28.5,
+      "transfer": 0,
+      "encoded": 173023,
+      "decoded": 173023
+    },
+    {
+      "name": "/_next/static/chunks/18-94afe61f15789e06.js",
+      "type": "script",
+      "start": 46.700000000186265,
+      "duration": 29.0999999998603,
+      "transfer": 0,
+      "encoded": 174209,
+      "decoded": 174209
+    },
+    {
+      "name": "/_next/static/chunks/main-app-1b4249da1a5d893c.js",
+      "type": "script",
+      "start": 46.9000000001397,
+      "duration": 32.0999999998603,
+      "transfer": 0,
+      "encoded": 570,
+      "decoded": 570
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/error-f2109ab5bea0953a.js",
+      "type": "script",
+      "start": 46.9000000001397,
+      "duration": 48.800000000046566,
+      "transfer": 0,
+      "encoded": 1327,
+      "decoded": 1327
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/new/error-08fa6ef3d7e910aa.js",
+      "type": "script",
+      "start": 46.9000000001397,
+      "duration": 50.39999999990687,
+      "transfer": 0,
+      "encoded": 1245,
+      "decoded": 1245
+    },
+    {
+      "name": "/_next/static/chunks/7283-f1e1247528aca409.js",
+      "type": "script",
+      "start": 47.10000000009313,
+      "duration": 34.300000000046566,
+      "transfer": 0,
+      "encoded": 8555,
+      "decoded": 8555
+    },
+    {
+      "name": "/_next/static/chunks/612-9c360be286377cda.js",
+      "type": "script",
+      "start": 47.200000000186265,
+      "duration": 48.39999999990687,
+      "transfer": 0,
+      "encoded": 212253,
+      "decoded": 212253
+    },
+    {
+      "name": "/_next/static/chunks/4737-b9435b98fbb3c365.js",
+      "type": "script",
+      "start": 47.4000000001397,
+      "duration": 50.5,
+      "transfer": 0,
+      "encoded": 57621,
+      "decoded": 57621
+    },
+    {
+      "name": "/_next/static/chunks/4159-4524a53eeeb992af.js",
+      "type": "script",
+      "start": 47.5,
+      "duration": 50.60000000009313,
+      "transfer": 0,
+      "encoded": 12883,
+      "decoded": 12883
+    },
+    {
+      "name": "/_next/static/chunks/9461-25c487bb36994b55.js",
+      "type": "script",
+      "start": 47.60000000009313,
+      "duration": 52.10000000009313,
+      "transfer": 0,
+      "encoded": 12329,
+      "decoded": 12329
+    },
+    {
+      "name": "/_next/static/chunks/app/layout-a377c5f5ad22f81f.js",
+      "type": "script",
+      "start": 47.700000000186265,
+      "duration": 52.299999999813735,
+      "transfer": 0,
+      "encoded": 18394,
+      "decoded": 18394
+    },
+    {
+      "name": "/_next/static/chunks/app/error-482cb912af31630e.js",
+      "type": "script",
+      "start": 47.800000000046566,
+      "duration": 52.4000000001397,
+      "transfer": 0,
+      "encoded": 1140,
+      "decoded": 1140
+    },
+    {
+      "name": "/_next/static/chunks/9664-4bead6cd06a85437.js",
+      "type": "script",
+      "start": 47.9000000001397,
+      "duration": 52.39999999990687,
+      "transfer": 0,
+      "encoded": 8925,
+      "decoded": 8925
+    },
+    {
+      "name": "/_next/static/chunks/922-36cb889d8a78c9e9.js",
+      "type": "script",
+      "start": 48,
+      "duration": 52.300000000046566,
+      "transfer": 0,
+      "encoded": 9436,
+      "decoded": 9436
+    },
+    {
+      "name": "/_next/static/chunks/1140-3282b57ff3d332fe.js",
+      "type": "script",
+      "start": 48,
+      "duration": 52.5,
+      "transfer": 0,
+      "encoded": 20277,
+      "decoded": 20277
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/layout-7999a595026f1b2e.js",
+      "type": "script",
+      "start": 48.10000000009313,
+      "duration": 71.39999999990687,
+      "transfer": 0,
+      "encoded": 206,
+      "decoded": 206
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/layout-6a9b9b951f570000.js",
+      "type": "script",
+      "start": 60.200000000186265,
+      "duration": 67.69999999995343,
+      "transfer": 0,
+      "encoded": 6439,
+      "decoded": 6439
+    },
+    {
+      "name": "/_next/static/chunks/489-fc96c5688a515719.js",
+      "type": "script",
+      "start": 60.300000000046566,
+      "duration": 49.60000000009313,
+      "transfer": 0,
+      "encoded": 13661,
+      "decoded": 13661
+    },
+    {
+      "name": "/_next/static/chunks/8732-787a7f6fb004de98.js",
+      "type": "script",
+      "start": 60.60000000009313,
+      "duration": 67.80000000004657,
+      "transfer": 0,
+      "encoded": 7620,
+      "decoded": 7620
+    },
+    {
+      "name": "/_next/static/chunks/6005-b648b00388e32889.js",
+      "type": "script",
+      "start": 60.700000000186265,
+      "duration": 49.0999999998603,
+      "transfer": 0,
+      "encoded": 10087,
+      "decoded": 10087
+    },
+    {
+      "name": "/_next/static/chunks/3671-7a65dbaeafe4c092.js",
+      "type": "script",
+      "start": 60.700000000186265,
+      "duration": 49,
+      "transfer": 0,
+      "encoded": 157102,
+      "decoded": 157102
+    },
+    {
+      "name": "/_next/static/chunks/1639-5eecbdf20c5b9d47.js",
+      "type": "script",
+      "start": 60.800000000046566,
+      "duration": 68,
+      "transfer": 0,
+      "encoded": 19895,
+      "decoded": 19895
+    },
+    {
+      "name": "/_next/static/chunks/6973-56369b621a01f5bf.js",
+      "type": "script",
+      "start": 60.9000000001397,
+      "duration": 68.69999999995343,
+      "transfer": 0,
+      "encoded": 8656,
+      "decoded": 8656
+    },
+    {
+      "name": "/_next/static/chunks/6120-07b333e4541a8fe9.js",
+      "type": "script",
+      "start": 61.10000000009313,
+      "duration": 68.60000000009313,
+      "transfer": 0,
+      "encoded": 28632,
+      "decoded": 28632
+    },
+    {
+      "name": "/_next/static/chunks/4258-e3283a4ddd5fcff4.js",
+      "type": "script",
+      "start": 61.200000000186265,
+      "duration": 70.0999999998603,
+      "transfer": 0,
+      "encoded": 9107,
+      "decoded": 9107
+    },
+    {
+      "name": "/_next/static/chunks/1623-4bd7af5960049a45.js",
+      "type": "script",
+      "start": 61.800000000046566,
+      "duration": 75.60000000009313,
+      "transfer": 0,
+      "encoded": 11086,
+      "decoded": 11086
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/page-9d4bb3298e0e98f2.js",
+      "type": "script",
+      "start": 62,
+      "duration": 75.9000000001397,
+      "transfer": 0,
+      "encoded": 22018,
+      "decoded": 22018
+    },
+    {
+      "name": "/_next/static/chunks/9439-93a957586341ba22.js",
+      "type": "script",
+      "start": 64.4000000001397,
+      "duration": 74.0999999998603,
+      "transfer": 0,
+      "encoded": 11208,
+      "decoded": 11208
+    },
+    {
+      "name": "/_next/static/chunks/4139-a2bcd9cff08ba4b8.js",
+      "type": "script",
+      "start": 64.60000000009313,
+      "duration": 82.10000000009313,
+      "transfer": 0,
+      "encoded": 170375,
+      "decoded": 170375
+    },
+    {
+      "name": "/_next/static/chunks/6926-eaa04380686830b3.js",
+      "type": "script",
+      "start": 64.70000000018626,
+      "duration": 45.0999999998603,
+      "transfer": 0,
+      "encoded": 40407,
+      "decoded": 40407
+    },
+    {
+      "name": "/_next/static/chunks/3931-5e2f6415202a03df.js",
+      "type": "script",
+      "start": 64.9000000001397,
+      "duration": 45,
+      "transfer": 0,
+      "encoded": 11113,
+      "decoded": 11113
+    },
+    {
+      "name": "/_next/static/chunks/3594-995a965781e222a7.js",
+      "type": "script",
+      "start": 65,
+      "duration": 74.30000000004657,
+      "transfer": 0,
+      "encoded": 10378,
+      "decoded": 10378
+    },
+    {
+      "name": "/_next/static/chunks/7937-28c93b4ad94e37c4.js",
+      "type": "script",
+      "start": 65.20000000018626,
+      "duration": 76.5,
+      "transfer": 0,
+      "encoded": 61264,
+      "decoded": 61264
+    },
+    {
+      "name": "/_next/static/chunks/1269-703da73ea98b41fe.js",
+      "type": "script",
+      "start": 65.4000000001397,
+      "duration": 44.5,
+      "transfer": 0,
+      "encoded": 6409,
+      "decoded": 6409
+    },
+    {
+      "name": "/_next/static/chunks/6707-dfb5ad6fca8c13e5.js",
+      "type": "script",
+      "start": 65.5,
+      "duration": 88,
+      "transfer": 0,
+      "encoded": 11547,
+      "decoded": 11547
+    },
+    {
+      "name": "/_next/static/chunks/1520-73a8c1d586705037.js",
+      "type": "script",
+      "start": 65.70000000018626,
+      "duration": 91,
+      "transfer": 0,
+      "encoded": 14917,
+      "decoded": 14917
+    },
+    {
+      "name": "/_next/static/chunks/3490-9afb0f63887ccb10.js",
+      "type": "script",
+      "start": 65.70000000018626,
+      "duration": 106.19999999995343,
+      "transfer": 0,
+      "encoded": 463146,
+      "decoded": 463146
+    },
+    {
+      "name": "/_next/static/chunks/3787-2580d1338d3639bd.js",
+      "type": "script",
+      "start": 66,
+      "duration": 43.9000000001397,
+      "transfer": 0,
+      "encoded": 4507,
+      "decoded": 4507
+    },
+    {
+      "name": "/_next/static/chunks/7638-76017a88badfc52c.js",
+      "type": "script",
+      "start": 66.10000000009313,
+      "duration": 90.89999999990687,
+      "transfer": 0,
+      "encoded": 43829,
+      "decoded": 43829
+    },
+    {
+      "name": "/_next/static/chunks/5023-1625f10f6620c8cd.js",
+      "type": "script",
+      "start": 66.30000000004657,
+      "duration": 45,
+      "transfer": 0,
+      "encoded": 18411,
+      "decoded": 18411
+    },
+    {
+      "name": "/_next/static/chunks/5645-97906930e38c25dc.js",
+      "type": "script",
+      "start": 66.4000000001397,
+      "duration": 97.89999999990687,
+      "transfer": 0,
+      "encoded": 20695,
+      "decoded": 20695
+    },
+    {
+      "name": "/_next/static/chunks/4929-b1213b7624143ad9.js",
+      "type": "script",
+      "start": 66.60000000009313,
+      "duration": 105.69999999995343,
+      "transfer": 0,
+      "encoded": 280266,
+      "decoded": 280266
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/new/page-7154287afe5a5341.js",
+      "type": "script",
+      "start": 66.80000000004657,
+      "duration": 102.4000000001397,
+      "transfer": 0,
+      "encoded": 245,
+      "decoded": 245
+    },
+    {
+      "name": "/app?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 213.4000000001397,
+      "duration": 23.5,
+      "transfer": 429,
+      "encoded": 129,
+      "decoded": 146
+    },
+    {
+      "name": "/app/recipes?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 213.70000000018626,
+      "duration": 42.89999999990687,
+      "transfer": 438,
+      "encoded": 138,
+      "decoded": 167
+    },
+    {
+      "name": "/app/ingredients?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 214,
+      "duration": 45.700000000186265,
+      "transfer": 2391,
+      "encoded": 2091,
+      "decoded": 7404
+    },
+    {
+      "name": "/app/brew-batches?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 214.30000000004657,
+      "duration": 45.10000000009313,
+      "transfer": 1960,
+      "encoded": 1660,
+      "decoded": 4531
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/ingredients/error-cf62132f9ffaac08.js",
+      "type": "script",
+      "start": 261.80000000004657,
+      "duration": 12.600000000093132,
+      "transfer": 0,
+      "encoded": 1134,
+      "decoded": 1134
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/brew-batches/error-7638144f5a85e143.js",
+      "type": "script",
+      "start": 268.30000000004657,
+      "duration": 8,
+      "transfer": 0,
+      "encoded": 1136,
+      "decoded": 1136
+    },
+    {
+      "name": "/api/recipes/water-profiles",
+      "type": "fetch",
+      "start": 280.30000000004657,
+      "duration": 18.699999999953434,
+      "transfer": 351,
+      "encoded": 51,
+      "decoded": 51
+    },
+    {
+      "name": "/app/recipes/new",
+      "type": "fetch",
+      "start": 681.3000000000466,
+      "duration": 25.100000000093132,
+      "transfer": 579,
+      "encoded": 279,
+      "decoded": 428
+    },
+    {
+      "name": "/app/recipes/new",
+      "type": "fetch",
+      "start": 18155.5,
+      "duration": 27.600000000093132,
+      "transfer": 579,
+      "encoded": 279,
+      "decoded": 428
+    },
+    {
+      "name": "/app/ingredients?_rsc=1s2OyMzcItA6-hHg",
+      "type": "fetch",
+      "start": 86243.90000000014,
+      "duration": 148.5,
+      "transfer": 25157,
+      "encoded": 24857,
+      "decoded": 65589
+    },
+    {
+      "name": "/_next/static/chunks/6253-7f094e7d3be73d7e.js",
+      "type": "script",
+      "start": 86383.6000000001,
+      "duration": 22,
+      "transfer": 0,
+      "encoded": 11767,
+      "decoded": 11767
+    },
+    {
+      "name": "/_next/static/chunks/331-5733bca92425ac7b.js",
+      "type": "script",
+      "start": 86384.1000000001,
+      "duration": 22.5,
+      "transfer": 0,
+      "encoded": 12772,
+      "decoded": 12772
+    },
+    {
+      "name": "/_next/static/chunks/7588-dbda4ffde268c75c.js",
+      "type": "script",
+      "start": 86384.40000000014,
+      "duration": 23.399999999906868,
+      "transfer": 0,
+      "encoded": 60232,
+      "decoded": 60232
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/ingredients/page-c6a0bdf78a0ffb82.js",
+      "type": "script",
+      "start": 86384.70000000019,
+      "duration": 22.0999999998603,
+      "transfer": 0,
+      "encoded": 55447,
+      "decoded": 55447
+    },
+    {
+      "name": "/images/bjcp/5D%20%E2%80%94%20German%20Pils.png",
+      "type": "img",
+      "start": 86596.1000000001,
+      "duration": 53.800000000046566,
+      "transfer": 1566928,
+      "encoded": 1566628,
+      "decoded": 1566628
+    },
+    {
+      "name": "/images/bjcp/18B%20%E2%80%94%20American%20Pale%20Ale.png",
+      "type": "img",
+      "start": 86596.20000000019,
+      "duration": 71.29999999981374,
+      "transfer": 1440821,
+      "encoded": 1440521,
+      "decoded": 1440521
+    },
+    {
+      "name": "/images/bjcp/18A%20%E2%80%94%20Blonde%20Ale.png",
+      "type": "img",
+      "start": 86596.40000000014,
+      "duration": 76.39999999990687,
+      "transfer": 1577419,
+      "encoded": 1577119,
+      "decoded": 1577119
+    },
+    {
+      "name": "/images/bjcp/21A%20%E2%80%94%20American%20IPA.png",
+      "type": "img",
+      "start": 86596.6000000001,
+      "duration": 101.10000000009313,
+      "transfer": 1521995,
+      "encoded": 1521695,
+      "decoded": 1521695
+    },
+    {
+      "name": "/app/shopping?_rsc=Y_oY8w0H4DtxBg1k",
+      "type": "fetch",
+      "start": 86598,
+      "duration": 28.800000000046566,
+      "transfer": 1813,
+      "encoded": 1513,
+      "decoded": 4230
+    },
+    {
+      "name": "/catalog/system/dextrose-sahar?_rsc=Y_oY8w0H4DtxBg1k",
+      "type": "fetch",
+      "start": 86598.20000000019,
+      "duration": 30,
+      "transfer": 489,
+      "encoded": 189,
+      "decoded": 274
+    },
+    {
+      "name": "/catalog/system/weyermann--pilsner-malt?_rsc=Y_oY8w0H4DtxBg1k",
+      "type": "fetch",
+      "start": 86598.5,
+      "duration": 65.4000000001397,
+      "transfer": 499,
+      "encoded": 199,
+      "decoded": 283
+    },
+    {
+      "name": "/catalog/system/viking-malt-pale-ale-fi-base?_rsc=Y_oY8w0H4DtxBg1k",
+      "type": "fetch",
+      "start": 86598.5,
+      "duration": 66.5,
+      "transfer": 503,
+      "encoded": 203,
+      "decoded": 288
+    },
+    {
+      "name": "/catalog/system/rice-hulls-nesolozhenka?_rsc=Y_oY8w0H4DtxBg1k",
+      "type": "fetch",
+      "start": 86599.90000000014,
+      "duration": 87.5999999998603,
+      "transfer": 499,
+      "encoded": 199,
+      "decoded": 283
+    },
+    {
+      "name": "/catalog/system/us-citra-beervingem-standard?_rsc=Y_oY8w0H4DtxBg1k",
+      "type": "fetch",
+      "start": 86627.5,
+      "duration": 61.200000000186265,
+      "transfer": 501,
+      "encoded": 201,
+      "decoded": 288
+    },
+    {
+      "name": "/app/ingredients?search=%D1%86%D0%B8%D1%82%D1%80%D0%B0&_rsc=1s2OyMzcItA6-hHg",
+      "type": "fetch",
+      "start": 148854.90000000014,
+      "duration": 147.0999999998603,
+      "transfer": 7026,
+      "encoded": 6726,
+      "decoded": 19395
+    },
+    {
+      "name": "/app/ingredients?_rsc=1s2OyMzcItA6-hHg",
+      "type": "fetch",
+      "start": 192291.90000000014,
+      "duration": 178.5,
+      "transfer": 25161,
+      "encoded": 24861,
+      "decoded": 65589
+    }
+  ]
+}

@@ -1,0 +1,943 @@
+{
+  "url": "http://127.0.0.1:3016/app/recipes/new?recipeId=1a691f83-3b27-4e21-ab9e-c3377c9c8115",
+  "ttfbMs": 47.300000000046566,
+  "fcpMs": 272,
+  "lcpMs": 272,
+  "cls": 0,
+  "domContentLoadedMs": 123.5,
+  "loadMs": 447.30000000004657,
+  "htmlTransfer": 25167,
+  "htmlDecoded": 118739,
+  "resourceTransfer": 1049859,
+  "resourceDecoded": 3430235,
+  "jsDecoded": 2177683,
+  "domElements": 993,
+  "incompleteImages": [],
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "scrollWidth": 390,
+    "scrollHeight": 3790
+  },
+  "totalLongTaskBlockingMs": 70,
+  "lcp": [
+    {
+      "start": 272,
+      "size": 4978,
+      "url": ""
+    }
+  ],
+  "shifts": [
+    {
+      "start": 550.1999999999534,
+      "value": 0.006722555014372359,
+      "recentInput": true,
+      "sources": [
+        {
+          "tag": "BUTTON",
+          "text": "Обратная связь",
+          "previous": {
+            "x": 304,
+            "y": 774,
+            "width": 86,
+            "height": 70,
+            "top": 774,
+            "right": 390,
+            "bottom": 844,
+            "left": 304
+          },
+          "current": {
+            "x": 304,
+            "y": 718,
+            "width": 86,
+            "height": 84,
+            "top": 718,
+            "right": 390,
+            "bottom": 802,
+            "left": 304
+          }
+        },
+        {
+          "tag": "OL",
+          "text": "",
+          "previous": {
+            "x": 12,
+            "y": 824,
+            "width": 366,
+            "height": 8,
+            "top": 824,
+            "right": 378,
+            "bottom": 832,
+            "left": 12
+          },
+          "current": {
+            "x": 12,
+            "y": 708,
+            "width": 366,
+            "height": 8,
+            "top": 708,
+            "right": 378,
+            "bottom": 716,
+            "left": 12
+          }
+        }
+      ]
+    }
+  ],
+  "longtasks": [
+    {
+      "start": 364.60000000009313,
+      "duration": 77
+    },
+    {
+      "start": 448.5,
+      "duration": 86
+    },
+    {
+      "start": 34446,
+      "duration": 57
+    }
+  ],
+  "events": [
+    {
+      "name": "pointerover",
+      "start": 34442,
+      "duration": 96,
+      "processing": 0.6999999999534339,
+      "delay": 1,
+      "interactionId": 0,
+      "tag": "line",
+      "text": ""
+    },
+    {
+      "name": "pointerenter",
+      "start": 34442,
+      "duration": 96,
+      "processing": 0,
+      "delay": 1.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 34442,
+      "duration": 96,
+      "processing": 0,
+      "delay": 1.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 34442,
+      "duration": 96,
+      "processing": 0,
+      "delay": 1.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 34442,
+      "duration": 96,
+      "processing": 0,
+      "delay": 1.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 34442,
+      "duration": 96,
+      "processing": 0,
+      "delay": 1.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 34442,
+      "duration": 96,
+      "processing": 0,
+      "delay": 1.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 34442,
+      "duration": 96,
+      "processing": 0,
+      "delay": 1.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 34442,
+      "duration": 96,
+      "processing": 0,
+      "delay": 1.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 34442,
+      "duration": 96,
+      "processing": 0,
+      "delay": 1.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 34442,
+      "duration": 96,
+      "processing": 0,
+      "delay": 1.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 34442,
+      "duration": 96,
+      "processing": 0,
+      "delay": 1.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "mouseover",
+      "start": 34442,
+      "duration": 96,
+      "processing": 0.30000000004656613,
+      "delay": 1.6999999999534339,
+      "interactionId": 0,
+      "tag": "line",
+      "text": ""
+    },
+    {
+      "name": "pointerdown",
+      "start": 34442.19999999995,
+      "duration": 96,
+      "processing": 0.5999999998603016,
+      "delay": 2.4000000001396984,
+      "interactionId": 3902,
+      "tag": "line",
+      "text": ""
+    },
+    {
+      "name": "mousedown",
+      "start": 34442.19999999995,
+      "duration": 96,
+      "processing": 0,
+      "delay": 3,
+      "interactionId": 0,
+      "tag": "line",
+      "text": ""
+    },
+    {
+      "name": "pointerup",
+      "start": 34442.30000000005,
+      "duration": 96,
+      "processing": 0.30000000004656613,
+      "delay": 3.699999999953434,
+      "interactionId": 3902,
+      "tag": "line",
+      "text": ""
+    },
+    {
+      "name": "mouseup",
+      "start": 34442.30000000005,
+      "duration": 96,
+      "processing": 0.10000000009313226,
+      "delay": 4,
+      "interactionId": 0,
+      "tag": "line",
+      "text": ""
+    },
+    {
+      "name": "click",
+      "start": 34442.30000000005,
+      "duration": 96,
+      "processing": 53.89999999990687,
+      "delay": 4.100000000093132,
+      "interactionId": 3902,
+      "tag": "line",
+      "text": ""
+    },
+    {
+      "name": "pointerout",
+      "start": 34503.30000000005,
+      "duration": 32,
+      "processing": 0.19999999995343387,
+      "delay": 0.10000000009313226,
+      "interactionId": 0,
+      "tag": "line",
+      "text": ""
+    },
+    {
+      "name": "pointerleave",
+      "start": 34503.30000000005,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.30000000004656613,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 34503.30000000005,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.30000000004656613,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 34503.30000000005,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.30000000004656613,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 34503.30000000005,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.30000000004656613,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 34503.30000000005,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.30000000004656613,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 34503.30000000005,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.30000000004656613,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 34503.30000000005,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.30000000004656613,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 34503.30000000005,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.30000000004656613,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerover",
+      "start": 34503.30000000005,
+      "duration": 32,
+      "processing": 0.09999999986030161,
+      "delay": 0.30000000004656613,
+      "interactionId": 0,
+      "tag": "DIV",
+      "text": ""
+    },
+    {
+      "name": "pointerenter",
+      "start": 34503.30000000005,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.39999999990686774,
+      "interactionId": 0
+    },
+    {
+      "name": "mouseout",
+      "start": 34503.30000000005,
+      "duration": 32,
+      "processing": 0.20000000018626451,
+      "delay": 0.39999999990686774,
+      "interactionId": 0,
+      "tag": "line",
+      "text": ""
+    },
+    {
+      "name": "mouseover",
+      "start": 34503.30000000005,
+      "duration": 32,
+      "processing": 0.09999999986030161,
+      "delay": 0.6000000000931323,
+      "interactionId": 0,
+      "tag": "DIV",
+      "text": ""
+    }
+  ],
+  "errors": [],
+  "resources": [
+    {
+      "name": "/_next/static/media/32425b6d39044b3c-s.p.ttf",
+      "type": "link",
+      "start": 53.10000000009313,
+      "duration": 52.300000000046566,
+      "transfer": 149811,
+      "encoded": 149511,
+      "decoded": 359804
+    },
+    {
+      "name": "/_next/static/media/d703e6352f035923-s.p.ttf",
+      "type": "link",
+      "start": 53.300000000046566,
+      "duration": 85.39999999990687,
+      "transfer": 300789,
+      "encoded": 300489,
+      "decoded": 744936
+    },
+    {
+      "name": "/_next/static/css/688dbf7110800d11.css",
+      "type": "link",
+      "start": 55.300000000046566,
+      "duration": 12,
+      "transfer": 2181,
+      "encoded": 1881,
+      "decoded": 7335
+    },
+    {
+      "name": "/_next/static/css/10d068b31dbc4d49.css",
+      "type": "link",
+      "start": 55.4000000001397,
+      "duration": 18.699999999953434,
+      "transfer": 20713,
+      "encoded": 20413,
+      "decoded": 115379
+    },
+    {
+      "name": "/_next/static/chunks/webpack-50b6521d18506e69.js",
+      "type": "link",
+      "start": 60.699999999953434,
+      "duration": 44,
+      "transfer": 2110,
+      "encoded": 1810,
+      "decoded": 3498
+    },
+    {
+      "name": "/_next/static/chunks/18-94afe61f15789e06.js",
+      "type": "script",
+      "start": 60.9000000001397,
+      "duration": 50.39999999990687,
+      "transfer": 47088,
+      "encoded": 46788,
+      "decoded": 174209
+    },
+    {
+      "name": "/_next/static/chunks/87c73c54-dd8d81ac9604067c.js",
+      "type": "script",
+      "start": 60.9000000001397,
+      "duration": 51.199999999953434,
+      "transfer": 54664,
+      "encoded": 54364,
+      "decoded": 173023
+    },
+    {
+      "name": "/_next/static/chunks/main-app-1b4249da1a5d893c.js",
+      "type": "script",
+      "start": 61,
+      "duration": 61.699999999953434,
+      "transfer": 870,
+      "encoded": 570,
+      "decoded": 570
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/error-f2109ab5bea0953a.js",
+      "type": "script",
+      "start": 61.199999999953434,
+      "duration": 72.10000000009313,
+      "transfer": 998,
+      "encoded": 698,
+      "decoded": 1327
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/new/error-08fa6ef3d7e910aa.js",
+      "type": "script",
+      "start": 61.5,
+      "duration": 75.9000000001397,
+      "transfer": 942,
+      "encoded": 642,
+      "decoded": 1245
+    },
+    {
+      "name": "/_next/static/chunks/7283-f1e1247528aca409.js",
+      "type": "script",
+      "start": 61.5,
+      "duration": 76.5,
+      "transfer": 3701,
+      "encoded": 3401,
+      "decoded": 8555
+    },
+    {
+      "name": "/_next/static/chunks/612-9c360be286377cda.js",
+      "type": "script",
+      "start": 61.60000000009313,
+      "duration": 80.0999999998603,
+      "transfer": 63319,
+      "encoded": 63019,
+      "decoded": 212253
+    },
+    {
+      "name": "/_next/static/chunks/4737-b9435b98fbb3c365.js",
+      "type": "script",
+      "start": 61.800000000046566,
+      "duration": 99,
+      "transfer": 13380,
+      "encoded": 13080,
+      "decoded": 57621
+    },
+    {
+      "name": "/_next/static/chunks/4159-4524a53eeeb992af.js",
+      "type": "script",
+      "start": 62,
+      "duration": 92.30000000004657,
+      "transfer": 4445,
+      "encoded": 4145,
+      "decoded": 12883
+    },
+    {
+      "name": "/_next/static/chunks/9461-25c487bb36994b55.js",
+      "type": "script",
+      "start": 62.10000000009313,
+      "duration": 100.5999999998603,
+      "transfer": 5129,
+      "encoded": 4829,
+      "decoded": 12329
+    },
+    {
+      "name": "/_next/static/chunks/app/layout-a377c5f5ad22f81f.js",
+      "type": "script",
+      "start": 62.199999999953434,
+      "duration": 101.10000000009313,
+      "transfer": 7444,
+      "encoded": 7144,
+      "decoded": 18394
+    },
+    {
+      "name": "/_next/static/chunks/app/error-482cb912af31630e.js",
+      "type": "script",
+      "start": 62.300000000046566,
+      "duration": 98.10000000009313,
+      "transfer": 953,
+      "encoded": 653,
+      "decoded": 1140
+    },
+    {
+      "name": "/_next/static/chunks/9664-4bead6cd06a85437.js",
+      "type": "script",
+      "start": 62.5,
+      "duration": 98.10000000009313,
+      "transfer": 3455,
+      "encoded": 3155,
+      "decoded": 8925
+    },
+    {
+      "name": "/_next/static/chunks/922-36cb889d8a78c9e9.js",
+      "type": "script",
+      "start": 62.5,
+      "duration": 127.19999999995343,
+      "transfer": 3775,
+      "encoded": 3475,
+      "decoded": 9436
+    },
+    {
+      "name": "/_next/static/chunks/1140-3282b57ff3d332fe.js",
+      "type": "script",
+      "start": 62.60000000009313,
+      "duration": 128,
+      "transfer": 5548,
+      "encoded": 5248,
+      "decoded": 20277
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/layout-7999a595026f1b2e.js",
+      "type": "script",
+      "start": 62.699999999953434,
+      "duration": 126.80000000004657,
+      "transfer": 506,
+      "encoded": 206,
+      "decoded": 206
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/layout-6a9b9b951f570000.js",
+      "type": "script",
+      "start": 67.10000000009313,
+      "duration": 122.80000000004657,
+      "transfer": 2491,
+      "encoded": 2191,
+      "decoded": 6439
+    },
+    {
+      "name": "/_next/static/chunks/489-fc96c5688a515719.js",
+      "type": "script",
+      "start": 67.19999999995343,
+      "duration": 123.70000000018626,
+      "transfer": 5524,
+      "encoded": 5224,
+      "decoded": 13661
+    },
+    {
+      "name": "/_next/static/chunks/8732-787a7f6fb004de98.js",
+      "type": "script",
+      "start": 67.30000000004657,
+      "duration": 122.80000000004657,
+      "transfer": 3000,
+      "encoded": 2700,
+      "decoded": 7620
+    },
+    {
+      "name": "/_next/static/chunks/3671-7a65dbaeafe4c092.js",
+      "type": "script",
+      "start": 67.5,
+      "duration": 148.60000000009313,
+      "transfer": 30297,
+      "encoded": 29997,
+      "decoded": 157102
+    },
+    {
+      "name": "/_next/static/chunks/6005-b648b00388e32889.js",
+      "type": "script",
+      "start": 67.60000000009313,
+      "duration": 137,
+      "transfer": 3664,
+      "encoded": 3364,
+      "decoded": 10087
+    },
+    {
+      "name": "/_next/static/chunks/1639-5eecbdf20c5b9d47.js",
+      "type": "script",
+      "start": 67.69999999995343,
+      "duration": 146.4000000001397,
+      "transfer": 5727,
+      "encoded": 5427,
+      "decoded": 19895
+    },
+    {
+      "name": "/_next/static/chunks/6973-56369b621a01f5bf.js",
+      "type": "script",
+      "start": 68,
+      "duration": 147.10000000009313,
+      "transfer": 4065,
+      "encoded": 3765,
+      "decoded": 8656
+    },
+    {
+      "name": "/_next/static/chunks/6120-07b333e4541a8fe9.js",
+      "type": "script",
+      "start": 68,
+      "duration": 147.4000000001397,
+      "transfer": 8647,
+      "encoded": 8347,
+      "decoded": 28632
+    },
+    {
+      "name": "/_next/static/chunks/4258-e3283a4ddd5fcff4.js",
+      "type": "script",
+      "start": 68.19999999995343,
+      "duration": 146.5,
+      "transfer": 3237,
+      "encoded": 2937,
+      "decoded": 9107
+    },
+    {
+      "name": "/_next/static/chunks/1623-4bd7af5960049a45.js",
+      "type": "script",
+      "start": 68.4000000001397,
+      "duration": 164.29999999981374,
+      "transfer": 3938,
+      "encoded": 3638,
+      "decoded": 11086
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/page-9d4bb3298e0e98f2.js",
+      "type": "script",
+      "start": 68.60000000009313,
+      "duration": 165.30000000004657,
+      "transfer": 8601,
+      "encoded": 8301,
+      "decoded": 22018
+    },
+    {
+      "name": "/_next/static/chunks/9439-93a957586341ba22.js",
+      "type": "script",
+      "start": 96.69999999995343,
+      "duration": 144.80000000004657,
+      "transfer": 4362,
+      "encoded": 4062,
+      "decoded": 11208
+    },
+    {
+      "name": "/_next/static/chunks/6926-eaa04380686830b3.js",
+      "type": "script",
+      "start": 97,
+      "duration": 146.5,
+      "transfer": 13028,
+      "encoded": 12728,
+      "decoded": 40407
+    },
+    {
+      "name": "/_next/static/chunks/4139-a2bcd9cff08ba4b8.js",
+      "type": "script",
+      "start": 97,
+      "duration": 147.5,
+      "transfer": 56714,
+      "encoded": 56414,
+      "decoded": 170375
+    },
+    {
+      "name": "/_next/static/chunks/3931-5e2f6415202a03df.js",
+      "type": "script",
+      "start": 97.10000000009313,
+      "duration": 145.19999999995343,
+      "transfer": 2865,
+      "encoded": 2565,
+      "decoded": 11113
+    },
+    {
+      "name": "/_next/static/chunks/3594-995a965781e222a7.js",
+      "type": "script",
+      "start": 97.19999999995343,
+      "duration": 159.10000000009313,
+      "transfer": 4241,
+      "encoded": 3941,
+      "decoded": 10378
+    },
+    {
+      "name": "/_next/static/chunks/1269-703da73ea98b41fe.js",
+      "type": "script",
+      "start": 97.30000000004657,
+      "duration": 161.39999999990687,
+      "transfer": 2706,
+      "encoded": 2406,
+      "decoded": 6409
+    },
+    {
+      "name": "/_next/static/chunks/7937-28c93b4ad94e37c4.js",
+      "type": "script",
+      "start": 97.30000000004657,
+      "duration": 163,
+      "transfer": 17425,
+      "encoded": 17125,
+      "decoded": 61264
+    },
+    {
+      "name": "/_next/static/chunks/6707-dfb5ad6fca8c13e5.js",
+      "type": "script",
+      "start": 97.4000000001397,
+      "duration": 162.39999999990687,
+      "transfer": 4226,
+      "encoded": 3926,
+      "decoded": 11547
+    },
+    {
+      "name": "/_next/static/chunks/1520-73a8c1d586705037.js",
+      "type": "script",
+      "start": 97.60000000009313,
+      "duration": 163.0999999998603,
+      "transfer": 5419,
+      "encoded": 5119,
+      "decoded": 14917
+    },
+    {
+      "name": "/_next/static/chunks/3490-9afb0f63887ccb10.js",
+      "type": "script",
+      "start": 97.60000000009313,
+      "duration": 198.5,
+      "transfer": 54920,
+      "encoded": 54620,
+      "decoded": 463146
+    },
+    {
+      "name": "/_next/static/chunks/3787-2580d1338d3639bd.js",
+      "type": "script",
+      "start": 97.69999999995343,
+      "duration": 191,
+      "transfer": 1855,
+      "encoded": 1555,
+      "decoded": 4507
+    },
+    {
+      "name": "/_next/static/chunks/7638-76017a88badfc52c.js",
+      "type": "script",
+      "start": 97.80000000004657,
+      "duration": 196.89999999990687,
+      "transfer": 12996,
+      "encoded": 12696,
+      "decoded": 43829
+    },
+    {
+      "name": "/_next/static/chunks/5023-1625f10f6620c8cd.js",
+      "type": "script",
+      "start": 97.9000000001397,
+      "duration": 196.5999999998603,
+      "transfer": 7265,
+      "encoded": 6965,
+      "decoded": 18411
+    },
+    {
+      "name": "/_next/static/chunks/5645-97906930e38c25dc.js",
+      "type": "script",
+      "start": 98.10000000009313,
+      "duration": 196.80000000004657,
+      "transfer": 5869,
+      "encoded": 5569,
+      "decoded": 20695
+    },
+    {
+      "name": "/_next/static/chunks/4929-b1213b7624143ad9.js",
+      "type": "script",
+      "start": 98.10000000009313,
+      "duration": 199,
+      "transfer": 71385,
+      "encoded": 71085,
+      "decoded": 280266
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/new/page-7154287afe5a5341.js",
+      "type": "script",
+      "start": 98.30000000004657,
+      "duration": 209.5,
+      "transfer": 545,
+      "encoded": 245,
+      "decoded": 245
+    },
+    {
+      "name": "/api/recipes/water-profiles",
+      "type": "fetch",
+      "start": 525.1999999999534,
+      "duration": 12.300000000046566,
+      "transfer": 351,
+      "encoded": 51,
+      "decoded": 51
+    },
+    {
+      "name": "/app?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 567.8000000000466,
+      "duration": 37.699999999953434,
+      "transfer": 429,
+      "encoded": 129,
+      "decoded": 146
+    },
+    {
+      "name": "/app/recipes?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 568,
+      "duration": 38.699999999953434,
+      "transfer": 438,
+      "encoded": 138,
+      "decoded": 167
+    },
+    {
+      "name": "/app/ingredients?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 568.3000000000466,
+      "duration": 41.10000000009313,
+      "transfer": 2391,
+      "encoded": 2091,
+      "decoded": 7404
+    },
+    {
+      "name": "/app/brew-batches?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 568.4000000001397,
+      "duration": 40.799999999813735,
+      "transfer": 1960,
+      "encoded": 1660,
+      "decoded": 4531
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/ingredients/error-cf62132f9ffaac08.js",
+      "type": "script",
+      "start": 609.9000000001397,
+      "duration": 9.5,
+      "transfer": 958,
+      "encoded": 658,
+      "decoded": 1134
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/brew-batches/error-7638144f5a85e143.js",
+      "type": "script",
+      "start": 611.3000000000466,
+      "duration": 8.5,
+      "transfer": 960,
+      "encoded": 660,
+      "decoded": 1136
+    },
+    {
+      "name": "/app/recipes/new?recipeId=1a691f83-3b27-4e21-ab9e-c3377c9c8115",
+      "type": "fetch",
+      "start": 928.6000000000931,
+      "duration": 16.5999999998603,
+      "transfer": 725,
+      "encoded": 425,
+      "decoded": 724
+    },
+    {
+      "name": "/app/equipment?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 34508.80000000005,
+      "duration": 73.89999999990687,
+      "transfer": 2088,
+      "encoded": 1788,
+      "decoded": 7448
+    },
+    {
+      "name": "/app/master?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 34509.19999999995,
+      "duration": 69.80000000004657,
+      "transfer": 444,
+      "encoded": 144,
+      "decoded": 168
+    },
+    {
+      "name": "/catalog?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 34509.40000000014,
+      "duration": 72.79999999981374,
+      "transfer": 456,
+      "encoded": 156,
+      "decoded": 192
+    },
+    {
+      "name": "/articles?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 34509.60000000009,
+      "duration": 71.30000000004657,
+      "transfer": 457,
+      "encoded": 157,
+      "decoded": 193
+    },
+    {
+      "name": "/bjcp?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 34509.80000000005,
+      "duration": 72.19999999995343,
+      "transfer": 454,
+      "encoded": 154,
+      "decoded": 189
+    },
+    {
+      "name": "/calculators?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 34572,
+      "duration": 43,
+      "transfer": 459,
+      "encoded": 159,
+      "decoded": 196
+    },
+    {
+      "name": "/market?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 34583.30000000005,
+      "duration": 33.300000000046566,
+      "transfer": 456,
+      "encoded": 156,
+      "decoded": 191
+    }
+  ]
+}

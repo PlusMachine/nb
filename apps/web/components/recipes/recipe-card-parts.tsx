@@ -286,7 +286,6 @@ export function RecipeThumb({
           alt=""
           aria-hidden
           fill
-          unoptimized
           sizes={sizes}
           className={`scale-105 object-cover blur-[2px] transition duration-300 ${
             sharpenOnHover ? "[@media(hover:hover)]:group-hover:scale-100 [@media(hover:hover)]:group-hover:blur-0" : ""

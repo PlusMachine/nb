@@ -7,8 +7,9 @@ import { defineConfig, devices } from "@playwright/test";
 // вызывающая сторона (CI/скрипт), этот конфиг сервер сам не стартует.
 export default defineConfig({
   testDir: ".",
-  testMatch: "pwa.spec.ts",
-  fullyParallel: true,
+  testMatch: ["pwa.spec.ts", "pwa-lifecycle.spec.ts", "pwa-updates.spec.ts", "offline-brew.spec.ts"],
+  workers: 1,
+  fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: 0,
   reporter: "list",

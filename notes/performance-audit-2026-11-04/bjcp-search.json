@@ -1,0 +1,788 @@
+{
+  "url": "http://127.0.0.1:3016/bjcp?q=21A",
+  "ttfbMs": 64.60000000009313,
+  "fcpMs": 204,
+  "lcpMs": 13436,
+  "cls": 0.012559670781893004,
+  "domContentLoadedMs": 208.19999999995343,
+  "loadMs": 208.5,
+  "htmlTransfer": 1419755,
+  "htmlDecoded": 1419455,
+  "resourceTransfer": 302520,
+  "resourceDecoded": 2466143,
+  "jsDecoded": 936072,
+  "domElements": 701,
+  "incompleteImages": [],
+  "viewport": {
+    "width": 1440,
+    "height": 900,
+    "scrollWidth": 1440,
+    "scrollHeight": 4343
+  },
+  "totalLongTaskBlockingMs": 0,
+  "lcp": [
+    {
+      "start": 204,
+      "size": 25610,
+      "url": "",
+      "tag": "P",
+      "text": "Очень светлый, сильно газированный, лёгкий и хорошо выброженный лагер с нейтральным вкусом и низкой горечью. Хорошо охлаждённое пиво освежает и утоляе"
+    },
+    {
+      "start": 13436,
+      "size": 26065,
+      "url": "",
+      "tag": "P",
+      "text": "Светлый американский эль умеренно высокой крепости с выраженным хмелевым вкусом, ароматом и горечью. Нейтральный дрожжевой профиль и суховатое послевк"
+    }
+  ],
+  "shifts": [
+    {
+      "start": 138.19999999995343,
+      "value": 0.012358024691358025,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "SECTION",
+          "text": "Указатель стилей1. Стандартное американское пиво1A · Американский лёгкий лагер1B",
+          "previous": {
+            "x": 104,
+            "y": 887,
+            "width": 1232,
+            "height": 13,
+            "top": 887,
+            "right": 1336,
+            "bottom": 900,
+            "left": 104
+          },
+          "current": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          }
+        }
+      ]
+    },
+    {
+      "start": 277.9000000001397,
+      "value": 0.0002016460905349794,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "OL",
+          "text": "",
+          "previous": {
+            "x": 12,
+            "y": 880,
+            "width": 392,
+            "height": 8,
+            "top": 880,
+            "right": 404,
+            "bottom": 888,
+            "left": 12
+          },
+          "current": {
+            "x": 12,
+            "y": 820,
+            "width": 392,
+            "height": 8,
+            "top": 820,
+            "right": 404,
+            "bottom": 828,
+            "left": 12
+          }
+        }
+      ]
+    },
+    {
+      "start": 13387.40000000014,
+      "value": 0.00003907428840877915,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "SPAN",
+          "text": "1 стиль",
+          "previous": {
+            "x": 1235,
+            "y": 373,
+            "width": 101,
+            "height": 38,
+            "top": 373,
+            "right": 1336,
+            "bottom": 411,
+            "left": 1235
+          },
+          "current": {
+            "x": 1254,
+            "y": 373,
+            "width": 82,
+            "height": 38,
+            "top": 373,
+            "right": 1336,
+            "bottom": 411,
+            "left": 1254
+          }
+        }
+      ]
+    }
+  ],
+  "longtasks": [],
+  "events": [
+    {
+      "name": "pointerover",
+      "start": 118.4000000001397,
+      "duration": 80,
+      "processing": 0,
+      "delay": 1,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 118.4000000001397,
+      "duration": 80,
+      "processing": 0,
+      "delay": 1,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 118.4000000001397,
+      "duration": 80,
+      "processing": 0,
+      "delay": 1,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 118.4000000001397,
+      "duration": 80,
+      "processing": 0,
+      "delay": 1,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 118.4000000001397,
+      "duration": 80,
+      "processing": 0,
+      "delay": 1,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 118.4000000001397,
+      "duration": 80,
+      "processing": 0,
+      "delay": 1,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 118.4000000001397,
+      "duration": 80,
+      "processing": 0,
+      "delay": 1,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 118.4000000001397,
+      "duration": 80,
+      "processing": 0,
+      "delay": 1,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 118.4000000001397,
+      "duration": 80,
+      "processing": 0,
+      "delay": 1,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 118.4000000001397,
+      "duration": 80,
+      "processing": 0,
+      "delay": 1,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 118.4000000001397,
+      "duration": 80,
+      "processing": 0,
+      "delay": 1,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 118.4000000001397,
+      "duration": 80,
+      "processing": 0,
+      "delay": 1,
+      "interactionId": 0
+    },
+    {
+      "name": "mouseover",
+      "start": 118.4000000001397,
+      "duration": 80,
+      "processing": 0,
+      "delay": 1,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerover",
+      "start": 166.9000000001397,
+      "duration": 32,
+      "processing": 0.09999999986030161,
+      "delay": 0,
+      "interactionId": 0,
+      "tag": "DIV",
+      "text": "СветлоеТёмноеIPA и хмелевоеЛагерЛёгкоеКрепкоеКислое"
+    },
+    {
+      "name": "pointerenter",
+      "start": 166.9000000001397,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.09999999986030161,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 166.9000000001397,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.09999999986030161,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 166.9000000001397,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.09999999986030161,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 166.9000000001397,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.09999999986030161,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 166.9000000001397,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.09999999986030161,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 166.9000000001397,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.09999999986030161,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 166.9000000001397,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.09999999986030161,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 166.9000000001397,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.09999999986030161,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 166.9000000001397,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.09999999986030161,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 166.9000000001397,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.09999999986030161,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 166.9000000001397,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.09999999986030161,
+      "interactionId": 0
+    },
+    {
+      "name": "mouseover",
+      "start": 166.9000000001397,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.09999999986030161,
+      "interactionId": 0,
+      "tag": "DIV",
+      "text": "СветлоеТёмноеIPA и хмелевоеЛагерЛёгкоеКрепкоеКислое"
+    },
+    {
+      "name": "beforeinput",
+      "start": 13104.40000000014,
+      "duration": 96,
+      "processing": 0,
+      "delay": 0,
+      "interactionId": 0,
+      "tag": "INPUT",
+      "text": ""
+    },
+    {
+      "name": "input",
+      "start": 13105.300000000047,
+      "duration": 96,
+      "processing": 13.800000000046566,
+      "delay": 0.30000000004656613,
+      "interactionId": 0,
+      "tag": "INPUT",
+      "text": ""
+    },
+    {
+      "name": "keydown",
+      "start": 13446.40000000014,
+      "duration": 64,
+      "processing": 37.39999999990687,
+      "delay": 0.19999999995343387,
+      "interactionId": 9003,
+      "tag": "INPUT",
+      "text": ""
+    },
+    {
+      "name": "keyup",
+      "start": 13485,
+      "duration": 32,
+      "processing": 0.19999999995343387,
+      "delay": 1.5,
+      "interactionId": 9003,
+      "tag": "INPUT",
+      "text": ""
+    }
+  ],
+  "errors": [],
+  "resources": [
+    {
+      "name": "/_next/static/media/32425b6d39044b3c-s.p.ttf",
+      "type": "link",
+      "start": 69.5,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 359804,
+      "decoded": 359804
+    },
+    {
+      "name": "/_next/static/media/d703e6352f035923-s.p.ttf",
+      "type": "link",
+      "start": 69.69999999995343,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 744936,
+      "decoded": 744936
+    },
+    {
+      "name": "/_next/static/css/688dbf7110800d11.css",
+      "type": "link",
+      "start": 84.30000000004657,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 7335,
+      "decoded": 7335
+    },
+    {
+      "name": "/_next/static/css/10d068b31dbc4d49.css",
+      "type": "link",
+      "start": 84.5,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 115379,
+      "decoded": 115379
+    },
+    {
+      "name": "/_next/static/chunks/webpack-50b6521d18506e69.js",
+      "type": "link",
+      "start": 84.69999999995343,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 3498,
+      "decoded": 3498
+    },
+    {
+      "name": "/_next/static/chunks/87c73c54-dd8d81ac9604067c.js",
+      "type": "script",
+      "start": 84.9000000001397,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 173023,
+      "decoded": 173023
+    },
+    {
+      "name": "/_next/static/chunks/18-94afe61f15789e06.js",
+      "type": "script",
+      "start": 85.10000000009313,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 174209,
+      "decoded": 174209
+    },
+    {
+      "name": "/_next/static/chunks/main-app-1b4249da1a5d893c.js",
+      "type": "script",
+      "start": 85.10000000009313,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 570,
+      "decoded": 570
+    },
+    {
+      "name": "/_next/static/chunks/7283-f1e1247528aca409.js",
+      "type": "script",
+      "start": 85.30000000004657,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 8555,
+      "decoded": 8555
+    },
+    {
+      "name": "/_next/static/chunks/612-9c360be286377cda.js",
+      "type": "script",
+      "start": 85.4000000001397,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 212253,
+      "decoded": 212253
+    },
+    {
+      "name": "/_next/static/chunks/9664-4bead6cd06a85437.js",
+      "type": "script",
+      "start": 85.5,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 8925,
+      "decoded": 8925
+    },
+    {
+      "name": "/_next/static/chunks/4159-4524a53eeeb992af.js",
+      "type": "script",
+      "start": 85.60000000009313,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 12883,
+      "decoded": 12883
+    },
+    {
+      "name": "/_next/static/chunks/922-36cb889d8a78c9e9.js",
+      "type": "script",
+      "start": 85.69999999995343,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 9436,
+      "decoded": 9436
+    },
+    {
+      "name": "/_next/static/chunks/1140-3282b57ff3d332fe.js",
+      "type": "script",
+      "start": 85.80000000004657,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 20277,
+      "decoded": 20277
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/layout-6a9b9b951f570000.js",
+      "type": "script",
+      "start": 85.9000000001397,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 6439,
+      "decoded": 6439
+    },
+    {
+      "name": "/_next/static/chunks/4737-b9435b98fbb3c365.js",
+      "type": "script",
+      "start": 86,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 57621,
+      "decoded": 57621
+    },
+    {
+      "name": "/_next/static/chunks/9461-25c487bb36994b55.js",
+      "type": "script",
+      "start": 86.10000000009313,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 12329,
+      "decoded": 12329
+    },
+    {
+      "name": "/_next/static/chunks/app/layout-a377c5f5ad22f81f.js",
+      "type": "script",
+      "start": 86.10000000009313,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 18394,
+      "decoded": 18394
+    },
+    {
+      "name": "/_next/static/chunks/app/error-482cb912af31630e.js",
+      "type": "script",
+      "start": 86.30000000004657,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 1140,
+      "decoded": 1140
+    },
+    {
+      "name": "/_next/static/chunks/489-fc96c5688a515719.js",
+      "type": "script",
+      "start": 86.4000000001397,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 13661,
+      "decoded": 13661
+    },
+    {
+      "name": "/_next/static/chunks/3671-7a65dbaeafe4c092.js",
+      "type": "script",
+      "start": 86.5,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 157102,
+      "decoded": 157102
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/bjcp/page-cc7c46b687a2e2d5.js",
+      "type": "script",
+      "start": 86.60000000009313,
+      "duration": 10,
+      "transfer": 0,
+      "encoded": 47910,
+      "decoded": 47910
+    },
+    {
+      "name": "/_next/image?url=%2Fimages%2Fbjcp%2F2A%2520%25E2%2580%2594%2520International%2520Pale%2520Lager.png&w=640&q=75",
+      "type": "img",
+      "start": 142.10000000009313,
+      "duration": 12,
+      "transfer": 39680,
+      "encoded": 39380,
+      "decoded": 39380
+    },
+    {
+      "name": "/_next/image?url=%2Fimages%2Fbjcp%2F4A%2520%25E2%2580%2594%2520Munich%2520Helles.png&w=640&q=75",
+      "type": "img",
+      "start": 142.5,
+      "duration": 89.19999999995343,
+      "transfer": 37918,
+      "encoded": 37618,
+      "decoded": 37618
+    },
+    {
+      "name": "/_next/image?url=%2Fimages%2Fbjcp%2F4B%2520%25E2%2580%2594%2520Festbier.png&w=640&q=75",
+      "type": "img",
+      "start": 142.69999999995343,
+      "duration": 188.20000000018626,
+      "transfer": 42040,
+      "encoded": 41740,
+      "decoded": 41740
+    },
+    {
+      "name": "/_next/image?url=%2Fimages%2Fbjcp%2F5A%2520%25E2%2580%2594%2520German%2520Leichtbier.png&w=640&q=75",
+      "type": "img",
+      "start": 142.80000000004657,
+      "duration": 266.80000000004657,
+      "transfer": 36784,
+      "encoded": 36484,
+      "decoded": 36484
+    },
+    {
+      "name": "/_next/image?url=%2Fimages%2Fbjcp%2F5B%2520%25E2%2580%2594%2520K%25C3%25B6lsch.png&w=640&q=75",
+      "type": "img",
+      "start": 142.9000000001397,
+      "duration": 336.5,
+      "transfer": 25258,
+      "encoded": 24958,
+      "decoded": 24958
+    },
+    {
+      "name": "/_next/image?url=%2Fimages%2Fbjcp%2F5C%2520%25E2%2580%2594%2520German%2520Helles%2520Exportbier.png&w=640&q=75",
+      "type": "img",
+      "start": 143,
+      "duration": 418.4000000001397,
+      "transfer": 47206,
+      "encoded": 46906,
+      "decoded": 46906
+    },
+    {
+      "name": "/_next/image?url=%2Fimages%2Fbjcp%2F5D%2520%25E2%2580%2594%2520German%2520Pils.png&w=640&q=75",
+      "type": "img",
+      "start": 143.10000000009313,
+      "duration": 492.89999999990687,
+      "transfer": 36388,
+      "encoded": 36088,
+      "decoded": 36088
+    },
+    {
+      "name": "/?_rsc=Qn7QBUeE3N9TRtuX",
+      "type": "fetch",
+      "start": 285.60000000009313,
+      "duration": 356.5999999998603,
+      "transfer": 427,
+      "encoded": 127,
+      "decoded": 132
+    },
+    {
+      "name": "/recipes?_rsc=Qn7QBUeE3N9TRtuX",
+      "type": "fetch",
+      "start": 285.80000000004657,
+      "duration": 370.19999999995343,
+      "transfer": 1876,
+      "encoded": 1576,
+      "decoded": 4051
+    },
+    {
+      "name": "/calculators?_rsc=Qn7QBUeE3N9TRtuX",
+      "type": "fetch",
+      "start": 286,
+      "duration": 378,
+      "transfer": 446,
+      "encoded": 146,
+      "decoded": 164
+    },
+    {
+      "name": "/articles?_rsc=Qn7QBUeE3N9TRtuX",
+      "type": "fetch",
+      "start": 286.5,
+      "duration": 385.30000000004657,
+      "transfer": 443,
+      "encoded": 143,
+      "decoded": 158
+    },
+    {
+      "name": "/catalog?_rsc=Qn7QBUeE3N9TRtuX",
+      "type": "fetch",
+      "start": 286.60000000009313,
+      "duration": 391.89999999990687,
+      "transfer": 443,
+      "encoded": 143,
+      "decoded": 156
+    },
+    {
+      "name": "/market?_rsc=Qn7QBUeE3N9TRtuX",
+      "type": "fetch",
+      "start": 642.8000000000466,
+      "duration": 43,
+      "transfer": 443,
+      "encoded": 143,
+      "decoded": 154
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/recipes/error-ce8f980d58254598.js",
+      "type": "script",
+      "start": 655.5,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 1345,
+      "decoded": 1345
+    },
+    {
+      "name": "/brewforge?_rsc=Qn7QBUeE3N9TRtuX",
+      "type": "fetch",
+      "start": 656.5,
+      "duration": 35.800000000046566,
+      "transfer": 444,
+      "encoded": 144,
+      "decoded": 160
+    },
+    {
+      "name": "/login?_rsc=Qn7QBUeE3N9TRtuX",
+      "type": "fetch",
+      "start": 664.3000000000466,
+      "duration": 35.39999999990687,
+      "transfer": 441,
+      "encoded": 141,
+      "decoded": 152
+    },
+    {
+      "name": "/bjcp/bjcp-1a-american-light-lager?_rsc=Qn7QBUeE3N9TRtuX",
+      "type": "fetch",
+      "start": 672.5,
+      "duration": 35,
+      "transfer": 473,
+      "encoded": 173,
+      "decoded": 242
+    },
+    {
+      "name": "/bjcp/bjcp-1b-american-lager?_rsc=Qn7QBUeE3N9TRtuX",
+      "type": "fetch",
+      "start": 679.1999999999534,
+      "duration": 44.700000000186265,
+      "transfer": 468,
+      "encoded": 168,
+      "decoded": 230
+    },
+    {
+      "name": "/bjcp/bjcp-1d-american-wheat-beer?_rsc=Qn7QBUeE3N9TRtuX",
+      "type": "fetch",
+      "start": 687,
+      "duration": 44.9000000001397,
+      "transfer": 472,
+      "encoded": 172,
+      "decoded": 240
+    },
+    {
+      "name": "/bjcp/bjcp-2a-international-pale-lager?_rsc=Qn7QBUeE3N9TRtuX",
+      "type": "fetch",
+      "start": 692.9000000001397,
+      "duration": 45.0999999998603,
+      "transfer": 475,
+      "encoded": 175,
+      "decoded": 250
+    },
+    {
+      "name": "/_next/image?url=%2Fimages%2Fbjcp%2F21A%2520%25E2%2580%2594%2520American%2520IPA.png&w=640&q=75",
+      "type": "img",
+      "start": 13390.90000000014,
+      "duration": 97.29999999981374,
+      "transfer": 29928,
+      "encoded": 29628,
+      "decoded": 29628
+    },
+    {
+      "name": "/bjcp/bjcp-21a-american-ipa?_rsc=Qn7QBUeE3N9TRtuX",
+      "type": "fetch",
+      "start": 13402.600000000093,
+      "duration": 96.19999999995343,
+      "transfer": 467,
+      "encoded": 167,
+      "decoded": 228
+    }
+  ]
+}

@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useContext } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FileText, MoreHorizontal, Sticker, Timer, Trash2 } from "lucide-react";
+import { FileText, MessageSquarePlus, MoreHorizontal, Sticker, Timer, Trash2 } from "lucide-react";
 
 import { Button, buttonVariants, DropdownMenu, type DropdownMenuItem } from "@nb/ui";
+import { FeedbackContext } from "@/components/feedback/feedback-context";
 
 export function RecipeActionsMenu({
   pending,
@@ -28,15 +29,17 @@ export function RecipeActionsMenu({
   onDelete?: () => void;
 }) {
   const router = useRouter();
-  const items: DropdownMenuItem[] = onDelete
-    ? [{
+  const feedback = useContext(FeedbackContext);
+  const items: DropdownMenuItem[] = [
+    ...(feedback ? [{ key: "feedback", label: "Обратная связь", icon: <MessageSquarePlus className="h-4 w-4" aria-hidden />, onSelect: () => feedback.open() }] : []),
+    ...(onDelete ? [{
       key: "delete",
       label: "Удалить рецепт",
       icon: <Trash2 className="h-4 w-4" aria-hidden />,
-      tone: "danger",
+      tone: "danger" as const,
       onSelect: onDelete
-    }]
-    : [];
+    }] : [])
+  ];
   const secondaryMobileItems: DropdownMenuItem[] = [
     ...(labelsHref ? [{
       key: "labels",

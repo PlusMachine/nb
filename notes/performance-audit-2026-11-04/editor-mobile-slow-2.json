@@ -1,0 +1,745 @@
+{
+  "name": "editor-mobile-slow-2",
+  "path": "/app/recipes/new",
+  "mobile": true,
+  "slow": true,
+  "warm": false,
+  "freshConsent": false,
+  "status": 200,
+  "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+  "url": "http://127.0.0.1:3016/app/recipes/new",
+  "ttfbMs": 52.5999999998603,
+  "fcpMs": 1180,
+  "lcpMs": 1180,
+  "cls": 0.010204648454575456,
+  "domContentLoadedMs": 1154.6999999999534,
+  "loadMs": 6317.899999999907,
+  "htmlTransfer": 21324,
+  "htmlDecoded": 102339,
+  "resourceTransfer": 1033863,
+  "resourceDecoded": 3421362,
+  "jsDecoded": 2177683,
+  "domElements": 800,
+  "incompleteImages": [],
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "scrollWidth": 390,
+    "scrollHeight": 3569
+  },
+  "totalLongTaskBlockingMs": 969,
+  "lcp": [
+    {
+      "start": 1180,
+      "size": 6308,
+      "url": ""
+    }
+  ],
+  "shifts": [
+    {
+      "start": 3118.2999999998137,
+      "value": 0.006722555014372359,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "BUTTON",
+          "text": "Обратная связь",
+          "previous": {
+            "x": 304,
+            "y": 774,
+            "width": 86,
+            "height": 70,
+            "top": 774,
+            "right": 390,
+            "bottom": 844,
+            "left": 304
+          },
+          "current": {
+            "x": 304,
+            "y": 718,
+            "width": 86,
+            "height": 84,
+            "top": 718,
+            "right": 390,
+            "bottom": 802,
+            "left": 304
+          }
+        },
+        {
+          "tag": "OL",
+          "text": "",
+          "previous": {
+            "x": 12,
+            "y": 824,
+            "width": 366,
+            "height": 8,
+            "top": 824,
+            "right": 378,
+            "bottom": 832,
+            "left": 12
+          },
+          "current": {
+            "x": 12,
+            "y": 708,
+            "width": 366,
+            "height": 8,
+            "top": 708,
+            "right": 378,
+            "bottom": 716,
+            "left": 12
+          }
+        }
+      ]
+    },
+    {
+      "start": 7223.399999999907,
+      "value": 0.010204648454575456,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "DIV",
+          "text": "Объём, лЭффективность, %Кипячение, минОборудованиеGrainfather G30Ввести параметр",
+          "previous": {
+            "x": 13,
+            "y": 687,
+            "width": 364,
+            "height": 134,
+            "top": 687,
+            "right": 377,
+            "bottom": 821,
+            "left": 13
+          },
+          "current": {
+            "x": 13,
+            "y": 720,
+            "width": 364,
+            "height": 124,
+            "top": 720,
+            "right": 377,
+            "bottom": 844,
+            "left": 13
+          }
+        },
+        {
+          "tag": "DIV",
+          "text": "ABV—",
+          "previous": {
+            "x": 16,
+            "y": 604.5,
+            "width": 175,
+            "height": 66.5,
+            "top": 604.5,
+            "right": 191,
+            "bottom": 671,
+            "left": 16
+          },
+          "current": {
+            "x": 16,
+            "y": 637.5,
+            "width": 175,
+            "height": 66.5,
+            "top": 637.5,
+            "right": 191,
+            "bottom": 704,
+            "left": 16
+          }
+        },
+        {
+          "tag": "DIV",
+          "text": "СтильВне BJCP",
+          "previous": {
+            "x": 199,
+            "y": 604.5,
+            "width": 175,
+            "height": 66.5,
+            "top": 604.5,
+            "right": 374,
+            "bottom": 671,
+            "left": 199
+          },
+          "current": {
+            "x": 199,
+            "y": 637.5,
+            "width": 175,
+            "height": 66.5,
+            "top": 637.5,
+            "right": 374,
+            "bottom": 704,
+            "left": 199
+          }
+        },
+        {
+          "tag": "SECTION",
+          "text": "Расчёт показателейНПНет данных7.6 °P28.1 °P—КПНет данных0.5 °P10.0 °P—ABVНет дан",
+          "previous": {
+            "x": 11,
+            "y": 829,
+            "width": 368,
+            "height": 15,
+            "top": 829,
+            "right": 379,
+            "bottom": 844,
+            "left": 11
+          },
+          "current": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          }
+        }
+      ]
+    }
+  ],
+  "longtasks": [
+    {
+      "start": 825.5999999998603,
+      "duration": 68
+    },
+    {
+      "start": 950.6999999999534,
+      "duration": 203
+    },
+    {
+      "start": 1801.0999999998603,
+      "duration": 251
+    },
+    {
+      "start": 2650.899999999907,
+      "duration": 163
+    },
+    {
+      "start": 2929.6999999999534,
+      "duration": 172
+    },
+    {
+      "start": 5588.299999999814,
+      "duration": 166
+    },
+    {
+      "start": 6069,
+      "duration": 232
+    },
+    {
+      "start": 6538.399999999907,
+      "duration": 81
+    },
+    {
+      "start": 6620.299999999814,
+      "duration": 83
+    }
+  ],
+  "events": [],
+  "errors": [],
+  "menuInteractiveAt": 3124.5999999998603,
+  "resources": [
+    {
+      "name": "/_next/static/media/32425b6d39044b3c-s.p.ttf",
+      "type": "link",
+      "start": 175.5999999998603,
+      "duration": 4243.600000000093,
+      "transfer": 149811,
+      "encoded": 149511,
+      "decoded": 359804
+    },
+    {
+      "name": "/_next/static/media/d703e6352f035923-s.p.ttf",
+      "type": "link",
+      "start": 177.19999999995343,
+      "duration": 5924.5,
+      "transfer": 300789,
+      "encoded": 300489,
+      "decoded": 744936
+    },
+    {
+      "name": "/_next/static/css/688dbf7110800d11.css",
+      "type": "link",
+      "start": 177.5,
+      "duration": 195.79999999981374,
+      "transfer": 2181,
+      "encoded": 1881,
+      "decoded": 7335
+    },
+    {
+      "name": "/_next/static/css/10d068b31dbc4d49.css",
+      "type": "link",
+      "start": 179.5,
+      "duration": 635.1999999999534,
+      "transfer": 20713,
+      "encoded": 20413,
+      "decoded": 115379
+    },
+    {
+      "name": "/_next/static/chunks/webpack-50b6521d18506e69.js",
+      "type": "link",
+      "start": 199.5999999998603,
+      "duration": 232.30000000004657,
+      "transfer": 2110,
+      "encoded": 1810,
+      "decoded": 3498
+    },
+    {
+      "name": "/_next/static/chunks/87c73c54-dd8d81ac9604067c.js",
+      "type": "script",
+      "start": 200.5,
+      "duration": 1588.2999999998137,
+      "transfer": 54664,
+      "encoded": 54364,
+      "decoded": 173023
+    },
+    {
+      "name": "/_next/static/chunks/18-94afe61f15789e06.js",
+      "type": "script",
+      "start": 201.5999999998603,
+      "duration": 1534.5,
+      "transfer": 47088,
+      "encoded": 46788,
+      "decoded": 174209
+    },
+    {
+      "name": "/_next/static/chunks/main-app-1b4249da1a5d893c.js",
+      "type": "script",
+      "start": 201.79999999981374,
+      "duration": 426.80000000004657,
+      "transfer": 870,
+      "encoded": 570,
+      "decoded": 570
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/error-f2109ab5bea0953a.js",
+      "type": "script",
+      "start": 202,
+      "duration": 621.3999999999069,
+      "transfer": 998,
+      "encoded": 698,
+      "decoded": 1327
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/new/error-08fa6ef3d7e910aa.js",
+      "type": "script",
+      "start": 202.0999999998603,
+      "duration": 805.3000000000466,
+      "transfer": 942,
+      "encoded": 642,
+      "decoded": 1245
+    },
+    {
+      "name": "/_next/static/chunks/7283-f1e1247528aca409.js",
+      "type": "script",
+      "start": 202.29999999981374,
+      "duration": 889.3000000000466,
+      "transfer": 3701,
+      "encoded": 3401,
+      "decoded": 8555
+    },
+    {
+      "name": "/_next/static/chunks/612-9c360be286377cda.js",
+      "type": "script",
+      "start": 202.5,
+      "duration": 2441.7999999998137,
+      "transfer": 63319,
+      "encoded": 63019,
+      "decoded": 212253
+    },
+    {
+      "name": "/_next/static/chunks/4737-b9435b98fbb3c365.js",
+      "type": "script",
+      "start": 202.5999999998603,
+      "duration": 1443.8000000000466,
+      "transfer": 13380,
+      "encoded": 13080,
+      "decoded": 57621
+    },
+    {
+      "name": "/_next/static/chunks/4159-4524a53eeeb992af.js",
+      "type": "script",
+      "start": 202.69999999995343,
+      "duration": 1714.1999999999534,
+      "transfer": 4445,
+      "encoded": 4145,
+      "decoded": 12883
+    },
+    {
+      "name": "/_next/static/chunks/9461-25c487bb36994b55.js",
+      "type": "script",
+      "start": 202.79999999981374,
+      "duration": 1826,
+      "transfer": 5129,
+      "encoded": 4829,
+      "decoded": 12329
+    },
+    {
+      "name": "/_next/static/chunks/app/layout-a377c5f5ad22f81f.js",
+      "type": "script",
+      "start": 203,
+      "duration": 1946.5,
+      "transfer": 7444,
+      "encoded": 7144,
+      "decoded": 18394
+    },
+    {
+      "name": "/_next/static/chunks/app/error-482cb912af31630e.js",
+      "type": "script",
+      "start": 206.29999999981374,
+      "duration": 1899.1000000000931,
+      "transfer": 953,
+      "encoded": 653,
+      "decoded": 1140
+    },
+    {
+      "name": "/_next/static/chunks/9664-4bead6cd06a85437.js",
+      "type": "script",
+      "start": 207,
+      "duration": 2061.5,
+      "transfer": 3455,
+      "encoded": 3155,
+      "decoded": 8925
+    },
+    {
+      "name": "/_next/static/chunks/922-36cb889d8a78c9e9.js",
+      "type": "script",
+      "start": 207.19999999995343,
+      "duration": 2151.5999999998603,
+      "transfer": 3775,
+      "encoded": 3475,
+      "decoded": 9436
+    },
+    {
+      "name": "/_next/static/chunks/1140-3282b57ff3d332fe.js",
+      "type": "script",
+      "start": 207.29999999981374,
+      "duration": 2226.7000000001863,
+      "transfer": 5548,
+      "encoded": 5248,
+      "decoded": 20277
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/layout-7999a595026f1b2e.js",
+      "type": "script",
+      "start": 207.39999999990687,
+      "duration": 2251.1999999999534,
+      "transfer": 506,
+      "encoded": 206,
+      "decoded": 206
+    },
+    {
+      "name": "/_next/static/chunks/489-fc96c5688a515719.js",
+      "type": "script",
+      "start": 222.19999999995343,
+      "duration": 2414.8000000000466,
+      "transfer": 5524,
+      "encoded": 5224,
+      "decoded": 13661
+    },
+    {
+      "name": "/_next/static/chunks/9439-93a957586341ba22.js",
+      "type": "script",
+      "start": 222.39999999990687,
+      "duration": 2474.100000000093,
+      "transfer": 4362,
+      "encoded": 4062,
+      "decoded": 11208
+    },
+    {
+      "name": "/_next/static/chunks/4139-a2bcd9cff08ba4b8.js",
+      "type": "script",
+      "start": 222.5,
+      "duration": 4199.59999999986,
+      "transfer": 56714,
+      "encoded": 56414,
+      "decoded": 170375
+    },
+    {
+      "name": "/_next/static/chunks/3671-7a65dbaeafe4c092.js",
+      "type": "script",
+      "start": 222.5999999998603,
+      "duration": 3352.5,
+      "transfer": 30297,
+      "encoded": 29997,
+      "decoded": 157102
+    },
+    {
+      "name": "/_next/static/chunks/6005-b648b00388e32889.js",
+      "type": "script",
+      "start": 222.69999999995343,
+      "duration": 2737.3000000000466,
+      "transfer": 3664,
+      "encoded": 3364,
+      "decoded": 10087
+    },
+    {
+      "name": "/_next/static/chunks/6926-eaa04380686830b3.js",
+      "type": "script",
+      "start": 222.79999999981374,
+      "duration": 3006.9000000001397,
+      "transfer": 13028,
+      "encoded": 12728,
+      "decoded": 40407
+    },
+    {
+      "name": "/_next/static/chunks/3931-5e2f6415202a03df.js",
+      "type": "script",
+      "start": 222.89999999990687,
+      "duration": 2976.8000000000466,
+      "transfer": 2865,
+      "encoded": 2565,
+      "decoded": 11113
+    },
+    {
+      "name": "/_next/static/chunks/3594-995a965781e222a7.js",
+      "type": "script",
+      "start": 223.0999999998603,
+      "duration": 3260.4000000001397,
+      "transfer": 4241,
+      "encoded": 3941,
+      "decoded": 10378
+    },
+    {
+      "name": "/_next/static/chunks/7937-28c93b4ad94e37c4.js",
+      "type": "script",
+      "start": 223.29999999981374,
+      "duration": 4204.90000000014,
+      "transfer": 17425,
+      "encoded": 17125,
+      "decoded": 61264
+    },
+    {
+      "name": "/_next/static/chunks/1639-5eecbdf20c5b9d47.js",
+      "type": "script",
+      "start": 223.5,
+      "duration": 4194.899999999907,
+      "transfer": 5727,
+      "encoded": 5427,
+      "decoded": 19895
+    },
+    {
+      "name": "/_next/static/chunks/1269-703da73ea98b41fe.js",
+      "type": "script",
+      "start": 227.19999999995343,
+      "duration": 4193.899999999907,
+      "transfer": 2706,
+      "encoded": 2406,
+      "decoded": 6409
+    },
+    {
+      "name": "/_next/static/chunks/6973-56369b621a01f5bf.js",
+      "type": "script",
+      "start": 229.69999999995343,
+      "duration": 4440.59999999986,
+      "transfer": 4065,
+      "encoded": 3765,
+      "decoded": 8656
+    },
+    {
+      "name": "/_next/static/chunks/6120-07b333e4541a8fe9.js",
+      "type": "script",
+      "start": 230.29999999981374,
+      "duration": 4536.600000000093,
+      "transfer": 8647,
+      "encoded": 8347,
+      "decoded": 28632
+    },
+    {
+      "name": "/_next/static/chunks/6707-dfb5ad6fca8c13e5.js",
+      "type": "script",
+      "start": 231.0999999998603,
+      "duration": 4453.300000000047,
+      "transfer": 4226,
+      "encoded": 3926,
+      "decoded": 11547
+    },
+    {
+      "name": "/_next/static/chunks/3490-9afb0f63887ccb10.js",
+      "type": "script",
+      "start": 232.0999999998603,
+      "duration": 5449.600000000093,
+      "transfer": 54920,
+      "encoded": 54620,
+      "decoded": 463146
+    },
+    {
+      "name": "/_next/static/chunks/1520-73a8c1d586705037.js",
+      "type": "script",
+      "start": 232.79999999981374,
+      "duration": 4503.40000000014,
+      "transfer": 5419,
+      "encoded": 5119,
+      "decoded": 14917
+    },
+    {
+      "name": "/_next/static/chunks/3787-2580d1338d3639bd.js",
+      "type": "script",
+      "start": 234.19999999995343,
+      "duration": 4438,
+      "transfer": 0,
+      "encoded": 1555,
+      "decoded": 4507
+    },
+    {
+      "name": "/_next/static/chunks/7638-76017a88badfc52c.js",
+      "type": "script",
+      "start": 234.39999999990687,
+      "duration": 4870.199999999953,
+      "transfer": 12996,
+      "encoded": 12696,
+      "decoded": 43829
+    },
+    {
+      "name": "/_next/static/chunks/5023-1625f10f6620c8cd.js",
+      "type": "script",
+      "start": 235.39999999990687,
+      "duration": 4451.5,
+      "transfer": 0,
+      "encoded": 6965,
+      "decoded": 18411
+    },
+    {
+      "name": "/_next/static/chunks/5645-97906930e38c25dc.js",
+      "type": "script",
+      "start": 236.19999999995343,
+      "duration": 4741.59999999986,
+      "transfer": 5869,
+      "encoded": 5569,
+      "decoded": 20695
+    },
+    {
+      "name": "/_next/static/chunks/4929-b1213b7624143ad9.js",
+      "type": "script",
+      "start": 237.0999999998603,
+      "duration": 5822,
+      "transfer": 71385,
+      "encoded": 71085,
+      "decoded": 280266
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/new/page-7154287afe5a5341.js",
+      "type": "script",
+      "start": 237.69999999995343,
+      "duration": 4725.09999999986,
+      "transfer": 545,
+      "encoded": 245,
+      "decoded": 245
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/layout-6a9b9b951f570000.js",
+      "type": "script",
+      "start": 2041,
+      "duration": 3146.1999999999534,
+      "transfer": 2491,
+      "encoded": 2191,
+      "decoded": 6439
+    },
+    {
+      "name": "/_next/static/chunks/8732-787a7f6fb004de98.js",
+      "type": "script",
+      "start": 2042.8999999999069,
+      "duration": 3188.399999999907,
+      "transfer": 3000,
+      "encoded": 2700,
+      "decoded": 7620
+    },
+    {
+      "name": "/_next/static/chunks/4258-e3283a4ddd5fcff4.js",
+      "type": "script",
+      "start": 2043.8999999999069,
+      "duration": 3300.1999999999534,
+      "transfer": 3237,
+      "encoded": 2937,
+      "decoded": 9107
+    },
+    {
+      "name": "/_next/static/chunks/1623-4bd7af5960049a45.js",
+      "type": "script",
+      "start": 2044.8999999999069,
+      "duration": 3396.899999999907,
+      "transfer": 3938,
+      "encoded": 3638,
+      "decoded": 11086
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/page-9d4bb3298e0e98f2.js",
+      "type": "script",
+      "start": 2046.3999999999069,
+      "duration": 3538,
+      "transfer": 8601,
+      "encoded": 8301,
+      "decoded": 22018
+    },
+    {
+      "name": "/app?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 3131.6999999999534,
+      "duration": 2401.399999999907,
+      "transfer": 429,
+      "encoded": 129,
+      "decoded": 146
+    },
+    {
+      "name": "/app/recipes?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 3133.1999999999534,
+      "duration": 2490.0999999998603,
+      "transfer": 438,
+      "encoded": 138,
+      "decoded": 167
+    },
+    {
+      "name": "/app/ingredients?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 3133.2999999998137,
+      "duration": 2594.4000000001397,
+      "transfer": 2393,
+      "encoded": 2093,
+      "decoded": 7404
+    },
+    {
+      "name": "/app/brew-batches?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 3134.5,
+      "duration": 2645,
+      "transfer": 1960,
+      "encoded": 1660,
+      "decoded": 4531
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/ingredients/error-cf62132f9ffaac08.js",
+      "type": "script",
+      "start": 5764,
+      "duration": 11.299999999813735,
+      "transfer": 0,
+      "encoded": 1134,
+      "decoded": 1134
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/brew-batches/error-7638144f5a85e143.js",
+      "type": "script",
+      "start": 5781,
+      "duration": 11.899999999906868,
+      "transfer": 0,
+      "encoded": 1136,
+      "decoded": 1136
+    },
+    {
+      "name": "/api/recipes/water-profiles",
+      "type": "fetch",
+      "start": 6552.699999999953,
+      "duration": 157.80000000004657,
+      "transfer": 351,
+      "encoded": 51,
+      "decoded": 51
+    },
+    {
+      "name": "/app/recipes/new",
+      "type": "fetch",
+      "start": 6964.399999999907,
+      "duration": 188.39999999990687,
+      "transfer": 579,
+      "encoded": 279,
+      "decoded": 428
+    }
+  ]
+}

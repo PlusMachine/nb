@@ -1,0 +1,74 @@
+[
+  {
+    "name": "recipes-desktop",
+    "status": 200,
+    "ttfb": 17,
+    "fcp": 184,
+    "lcp": 3960,
+    "cls": 0.2078,
+    "longBlocking": 2067,
+    "transferKB": 27391,
+    "jsKB": 1021,
+    "errors": 0
+  },
+  {
+    "name": "bjcp-desktop",
+    "status": 200,
+    "ttfb": 58,
+    "fcp": 240,
+    "lcp": 240,
+    "cls": 0.0002,
+    "longBlocking": 0,
+    "transferKB": 965,
+    "jsKB": 913,
+    "errors": 0
+  },
+  {
+    "name": "calculator-desktop",
+    "status": 200,
+    "ttfb": 3308,
+    "fcp": 3404,
+    "lcp": 3404,
+    "cls": 0.0002,
+    "longBlocking": 0,
+    "transferKB": 883,
+    "jsKB": 1654,
+    "errors": 0
+  },
+  {
+    "name": "dashboard-desktop",
+    "status": 200,
+    "ttfb": 129,
+    "fcp": 248,
+    "lcp": 248,
+    "cls": 0.0002,
+    "longBlocking": 0,
+    "transferKB": 6695,
+    "jsKB": 1053,
+    "errors": 0
+  },
+  {
+    "name": "inventory-desktop",
+    "status": 200,
+    "ttfb": 69,
+    "fcp": 220,
+    "lcp": 464,
+    "cls": 0.0002,
+    "longBlocking": 0,
+    "transferKB": 5395,
+    "jsKB": 1245,
+    "errors": 0
+  },
+  {
+    "name": "editor-desktop",
+    "status": 200,
+    "ttfb": 20,
+    "fcp": 188,
+    "lcp": 188,
+    "cls": 0.0098,
+    "longBlocking": 17,
+    "transferKB": 1048,
+    "jsKB": 2128,
+    "errors": 0
+  }
+]

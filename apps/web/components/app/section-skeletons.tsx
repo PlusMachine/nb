@@ -124,7 +124,7 @@ export function IngredientsPageSkeleton() {
 
 export function RecipesPageSkeleton() {
   return (
-    <main className="space-y-4" aria-busy="true">
+    <main className="min-h-[calc(100dvh-3.5rem)] space-y-4" aria-busy="true">
       <section className="space-y-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="h-8 w-48 animate-pulse rounded bg-muted" />

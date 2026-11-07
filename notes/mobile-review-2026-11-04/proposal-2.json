@@ -1,0 +1,9 @@
+{
+  "status": "preview-only",
+  "description": "Put mobile sorting and a labelled Filters button in one row; keep full-width search",
+  "offsets": {
+    "before": 4926,
+    "after": 4870
+  },
+  "filterOpenCloseVerified": true
+}

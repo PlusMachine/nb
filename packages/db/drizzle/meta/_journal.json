@@ -494,6 +494,13 @@
       "when": 1794004340150,
       "tag": "0074_brewforge_mqtt_telemetry",
       "breakpoints": true
+    },
+    {
+      "idx": 75,
+      "version": "7",
+      "when": 1794029378482,
+      "tag": "0075_brew_offline_operations",
+      "breakpoints": true
     }
   ]
 }

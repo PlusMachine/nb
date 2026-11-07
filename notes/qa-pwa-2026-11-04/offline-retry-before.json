@@ -1,0 +1,18 @@
+{
+  "url": "http://127.0.0.1:3011/",
+  "controller": "http://127.0.0.1:3011/sw.js",
+  "htmlCached": true,
+  "headers": {
+    "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Tue, 03 Nov 2026 22:55:05 GMT",
+    "keep-alive": "timeout=5",
+    "link": "</_next/static/media/32425b6d39044b3c-s.p.ttf>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/ttf\", </_next/static/media/d703e6352f035923-s.p.ttf>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/ttf\"",
+    "transfer-encoding": "chunked",
+    "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+    "x-powered-by": "Next.js",
+    "x-qa-backend-port": "3014"
+  }
+}

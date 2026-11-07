@@ -7,6 +7,8 @@ type Props = {
   value: string;
   onValueChange: (value: string) => void;
   placeholder?: string;
+  onFocus?: () => void;
+  onBlur?: () => void;
 };
 
 /**
@@ -18,7 +20,9 @@ type Props = {
 export function InventorySearchInput({
   value,
   onValueChange,
-  placeholder = "Поиск ингредиентов…"
+  placeholder = "Поиск ингредиентов…",
+  onFocus,
+  onBlur
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -29,6 +33,9 @@ export function InventorySearchInput({
         ref={inputRef}
         type="text"
         value={value}
+        maxLength={180}
+        onFocus={onFocus}
+        onBlur={onBlur}
         onChange={(event) => onValueChange(event.target.value)}
         onKeyDown={(event) => {
           if (event.key === "Escape" && value) {

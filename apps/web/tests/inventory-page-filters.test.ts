@@ -25,6 +25,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("../lib/auth", () => ({ requireUser: mocks.requireUser }));
 vi.mock("next/navigation", () => ({
   usePathname: () => "/app/ingredients",
+  useSearchParams: () => null,
   useRouter: () => ({ replace: mocks.replace })
 }));
 vi.mock("../features/inventory/service", () => ({

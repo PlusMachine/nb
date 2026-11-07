@@ -1,0 +1,25 @@
+{
+  "completedAt": "2026-11-03T22:56:23.483570+00:00",
+  "qaContainerDeleted": "nb-qa-pwa-20261104",
+  "qaDataStorage": "tmpfs removed with container",
+  "qaPortsReleased": [
+    3011,
+    3012,
+    3013,
+    3014,
+    55435
+  ],
+  "ownBuildDirectoriesRemoved": [
+    "apps/web/.next-qa-pwa-fixed-f-20261104",
+    "apps/web/.next-qa-pwa-fixed-g-20261104"
+  ],
+  "privateMockStorage": [],
+  "mainContainerIdUnchanged": true,
+  "mainMountsUnchanged": true,
+  "mainDatabaseMigratedOrUsedForFixtures": false,
+  "mainPostgresHealthy": true,
+  "mailpitRunning": true,
+  "mosquittoRunning": true,
+  "nextGeneratedConfigsRestored": true,
+  "dbBackupsPreserved": true
+}

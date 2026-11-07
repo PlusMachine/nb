@@ -1,0 +1,74 @@
+[
+  {
+    "name": "catalog-mobile-slow-1",
+    "status": 200,
+    "ttfb": 48,
+    "fcp": 1084,
+    "lcp": 1084,
+    "cls": 0.2456,
+    "longBlocking": 211,
+    "transferKB": 826,
+    "jsKB": 939,
+    "errors": 0
+  },
+  {
+    "name": "calculator-mobile-slow-1",
+    "status": 200,
+    "ttfb": 15,
+    "fcp": 992,
+    "lcp": 992,
+    "cls": 0.2099,
+    "longBlocking": 261,
+    "transferKB": 877,
+    "jsKB": 1653,
+    "errors": 0
+  },
+  {
+    "name": "editor-mobile-slow-1",
+    "status": 200,
+    "ttfb": 44,
+    "fcp": 1024,
+    "lcp": 1024,
+    "cls": 0.0102,
+    "longBlocking": 417,
+    "transferKB": 1012,
+    "jsKB": 2127,
+    "errors": 0
+  },
+  {
+    "name": "recipes-mobile-slow-1",
+    "ttfb": 27,
+    "fcp": 1332,
+    "lcp": 4292,
+    "cls": 0.3105,
+    "longBlocking": 492,
+    "transferKB": 11168,
+    "jsKB": 1104,
+    "errors": 0,
+    "failure": "page.goto: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3016/recipes\", waiting until \"load\"\u001b[22m\n"
+  },
+  {
+    "name": "dashboard-mobile-slow-1",
+    "status": 200,
+    "ttfb": 248,
+    "fcp": 1260,
+    "lcp": 1260,
+    "cls": 0.0073,
+    "longBlocking": 411,
+    "transferKB": 814,
+    "jsKB": 1035,
+    "errors": 0
+  },
+  {
+    "name": "inventory-mobile-slow-1",
+    "status": 200,
+    "ttfb": 24,
+    "fcp": 1036,
+    "lcp": 1392,
+    "cls": 0.0067,
+    "longBlocking": 299,
+    "transferKB": 892,
+    "jsKB": 1226,
+    "errors": 0
+  }
+]

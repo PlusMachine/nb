@@ -1,0 +1,643 @@
+{
+  "name": "recipes-mobile-slow-1",
+  "path": "/recipes",
+  "mobile": true,
+  "slow": true,
+  "warm": false,
+  "freshConsent": false,
+  "status": 200,
+  "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+  "url": "http://127.0.0.1:3018/recipes",
+  "ttfbMs": 19.0999999998603,
+  "fcpMs": 1232,
+  "lcpMs": 1232,
+  "cls": 0.0012647445544280746,
+  "domContentLoadedMs": 2406,
+  "loadMs": 3573.3000000000466,
+  "htmlTransfer": 104614,
+  "htmlDecoded": 550963,
+  "resourceTransfer": 526185,
+  "resourceDecoded": 1468783,
+  "jsDecoded": 1131254,
+  "domElements": 1680,
+  "incompleteImages": [
+    {
+      "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F20C%2520%25E2%2580%2594%2520Imperial%2520Stout.png&w=3840&q=75",
+      "top": 2266.300048828125
+    },
+    {
+      "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F25B%2520%25E2%2580%2594%2520Saison.png&w=3840&q=75",
+      "top": 2446.300048828125
+    },
+    {
+      "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F19A%2520%25E2%2580%2594%2520American%2520Amber%2520Ale.png&w=3840&q=75",
+      "top": 2637.300048828125
+    },
+    {
+      "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F21C%2520%25E2%2580%2594%2520Hazy%2520IPA.png&w=3840&q=75",
+      "top": 2828.300048828125
+    },
+    {
+      "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F11B%2520%25E2%2580%2594%2520Best%2520Bitter.png&w=3840&q=75",
+      "top": 3008.300048828125
+    },
+    {
+      "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F22A%2520%25E2%2580%2594%2520Double%2520IPA.png&w=3840&q=75",
+      "top": 3706.300048828125
+    },
+    {
+      "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F20C%2520%25E2%2580%2594%2520Imperial%2520Stout.png&w=3840&q=75",
+      "top": 3886.300048828125
+    },
+    {
+      "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F15B%2520%25E2%2580%2594%2520Irish%2520Stout.png&w=3840&q=75",
+      "top": 4077.300048828125
+    },
+    {
+      "src": "http://127.0.0.1:3018/api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb?v=2",
+      "top": 4257.2998046875
+    },
+    {
+      "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F5B%2520%25E2%2580%2594%2520K%25C3%25B6lsch.png&w=3840&q=75",
+      "top": 4426.2998046875
+    },
+    {
+      "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F9C%2520%25E2%2580%2594%2520Baltic%2520Porter.png&w=3840&q=75",
+      "top": 4606.2998046875
+    }
+  ],
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "scrollWidth": 390,
+    "scrollHeight": 5771
+  },
+  "totalLongTaskBlockingMs": 700,
+  "lcp": [
+    {
+      "start": 1232,
+      "size": 8260,
+      "url": "",
+      "tag": "H1",
+      "text": "Рецепты сообщества"
+    }
+  ],
+  "shifts": [
+    {
+      "start": 3261.399999999907,
+      "value": 0.0012647445544280746,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "OL",
+          "text": "",
+          "previous": {
+            "x": 12,
+            "y": 824,
+            "width": 366,
+            "height": 8,
+            "top": 824,
+            "right": 378,
+            "bottom": 832,
+            "left": 12
+          },
+          "current": {
+            "x": 12,
+            "y": 764,
+            "width": 366,
+            "height": 8,
+            "top": 764,
+            "right": 378,
+            "bottom": 772,
+            "left": 12
+          }
+        }
+      ]
+    }
+  ],
+  "longtasks": [
+    {
+      "start": 996.1999999999534,
+      "duration": 177
+    },
+    {
+      "start": 2050.5999999998603,
+      "duration": 222
+    },
+    {
+      "start": 2446,
+      "duration": 139
+    },
+    {
+      "start": 2922.3000000000466,
+      "duration": 111
+    },
+    {
+      "start": 3164.1999999999534,
+      "duration": 80
+    },
+    {
+      "start": 3380,
+      "duration": 180
+    },
+    {
+      "start": 3758.8000000000466,
+      "duration": 133
+    },
+    {
+      "start": 4189.5,
+      "duration": 58
+    }
+  ],
+  "events": [],
+  "errors": [],
+  "menuInteractiveAt": 3155.6999999999534,
+  "resources": [
+    {
+      "name": "/_next/static/media/b9eca90a0131f78f-s.p.woff2",
+      "type": "link",
+      "start": 173.5999999998603,
+      "duration": 1718.9000000001397,
+      "transfer": 59880,
+      "encoded": 59580,
+      "decoded": 59580
+    },
+    {
+      "name": "/_next/static/media/d8b2a445c537db1f-s.p.woff2",
+      "type": "link",
+      "start": 174.19999999995343,
+      "duration": 2603.399999999907,
+      "transfer": 107248,
+      "encoded": 106948,
+      "decoded": 106948
+    },
+    {
+      "name": "/_next/static/css/6d4618b30d970742.css",
+      "type": "link",
+      "start": 188.80000000004657,
+      "duration": 228.29999999981374,
+      "transfer": 2197,
+      "encoded": 1897,
+      "decoded": 7475
+    },
+    {
+      "name": "/_next/static/css/9a6ecbd4b42097db.css",
+      "type": "link",
+      "start": 188.89999999990687,
+      "duration": 691.6000000000931,
+      "transfer": 20911,
+      "encoded": 20611,
+      "decoded": 116459
+    },
+    {
+      "name": "/_next/static/chunks/webpack-485d001cb867c360.js",
+      "type": "link",
+      "start": 189.0999999998603,
+      "duration": 264.10000000009313,
+      "transfer": 2177,
+      "encoded": 1877,
+      "decoded": 3603
+    },
+    {
+      "name": "/_next/static/chunks/87c73c54-dd8d81ac9604067c.js",
+      "type": "script",
+      "start": 192.5999999998603,
+      "duration": 1850.3000000000466,
+      "transfer": 54664,
+      "encoded": 54364,
+      "decoded": 173023
+    },
+    {
+      "name": "/_next/static/chunks/18-94afe61f15789e06.js",
+      "type": "script",
+      "start": 193.0999999998603,
+      "duration": 1729.7000000001863,
+      "transfer": 47088,
+      "encoded": 46788,
+      "decoded": 174209
+    },
+    {
+      "name": "/_next/static/chunks/main-app-1b4249da1a5d893c.js",
+      "type": "script",
+      "start": 193.19999999995343,
+      "duration": 883.5,
+      "transfer": 870,
+      "encoded": 570,
+      "decoded": 570
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/recipes/error-ce8f980d58254598.js",
+      "type": "script",
+      "start": 194.0999999998603,
+      "duration": 1078,
+      "transfer": 1009,
+      "encoded": 709,
+      "decoded": 1345
+    },
+    {
+      "name": "/_next/static/chunks/7283-f1e1247528aca409.js",
+      "type": "script",
+      "start": 194.39999999990687,
+      "duration": 1360.9000000001397,
+      "transfer": 3701,
+      "encoded": 3401,
+      "decoded": 8555
+    },
+    {
+      "name": "/_next/static/chunks/612-9c360be286377cda.js",
+      "type": "script",
+      "start": 194.89999999990687,
+      "duration": 2718.3000000000466,
+      "transfer": 63319,
+      "encoded": 63019,
+      "decoded": 212253
+    },
+    {
+      "name": "/_next/static/chunks/9664-4bead6cd06a85437.js",
+      "type": "script",
+      "start": 195,
+      "duration": 1946.5,
+      "transfer": 3455,
+      "encoded": 3155,
+      "decoded": 8925
+    },
+    {
+      "name": "/_next/static/chunks/4159-4524a53eeeb992af.js",
+      "type": "script",
+      "start": 195.69999999995343,
+      "duration": 1989.8000000000466,
+      "transfer": 4445,
+      "encoded": 4145,
+      "decoded": 12883
+    },
+    {
+      "name": "/_next/static/chunks/922-36cb889d8a78c9e9.js",
+      "type": "script",
+      "start": 195.69999999995343,
+      "duration": 2064.6999999999534,
+      "transfer": 3775,
+      "encoded": 3475,
+      "decoded": 9436
+    },
+    {
+      "name": "/_next/static/chunks/1140-9515ad38112779c8.js",
+      "type": "script",
+      "start": 196.5999999998603,
+      "duration": 2146.4000000001397,
+      "transfer": 5797,
+      "encoded": 5497,
+      "decoded": 20943
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/layout-fe9dfbb4b0f0fab7.js",
+      "type": "script",
+      "start": 196.69999999995343,
+      "duration": 2154.3000000000466,
+      "transfer": 2549,
+      "encoded": 2249,
+      "decoded": 6534
+    },
+    {
+      "name": "/_next/static/chunks/9461-25c487bb36994b55.js",
+      "type": "script",
+      "start": 197.5,
+      "duration": 2340.3000000000466,
+      "transfer": 5129,
+      "encoded": 4829,
+      "decoded": 12329
+    },
+    {
+      "name": "/_next/static/chunks/4737-b9435b98fbb3c365.js",
+      "type": "script",
+      "start": 197.5,
+      "duration": 2415.3000000000466,
+      "transfer": 13380,
+      "encoded": 13080,
+      "decoded": 57621
+    },
+    {
+      "name": "/_next/static/chunks/app/layout-bb7653f6407b165c.js",
+      "type": "script",
+      "start": 197.5999999998603,
+      "duration": 2460.600000000093,
+      "transfer": 6859,
+      "encoded": 6559,
+      "decoded": 17083
+    },
+    {
+      "name": "/_next/static/chunks/app/error-482cb912af31630e.js",
+      "type": "script",
+      "start": 198.39999999990687,
+      "duration": 2348.3000000000466,
+      "transfer": 953,
+      "encoded": 653,
+      "decoded": 1140
+    },
+    {
+      "name": "/_next/static/chunks/489-fc96c5688a515719.js",
+      "type": "script",
+      "start": 199.0999999998603,
+      "duration": 2608.600000000093,
+      "transfer": 5524,
+      "encoded": 5224,
+      "decoded": 13661
+    },
+    {
+      "name": "/_next/static/chunks/8732-787a7f6fb004de98.js",
+      "type": "script",
+      "start": 199.30000000004657,
+      "duration": 2586,
+      "transfer": 3000,
+      "encoded": 2700,
+      "decoded": 7620
+    },
+    {
+      "name": "/_next/static/chunks/3671-7a65dbaeafe4c092.js",
+      "type": "script",
+      "start": 199.39999999990687,
+      "duration": 2945.9000000001397,
+      "transfer": 30297,
+      "encoded": 29997,
+      "decoded": 157102
+    },
+    {
+      "name": "/_next/static/chunks/6005-b648b00388e32889.js",
+      "type": "script",
+      "start": 200.19999999995343,
+      "duration": 2674.8000000000466,
+      "transfer": 3664,
+      "encoded": 3364,
+      "decoded": 10087
+    },
+    {
+      "name": "/_next/static/chunks/461-cd8afebf08bfcd25.js",
+      "type": "script",
+      "start": 200.30000000004657,
+      "duration": 2825.2999999998137,
+      "transfer": 5071,
+      "encoded": 4771,
+      "decoded": 14939
+    },
+    {
+      "name": "/_next/static/chunks/6926-63a38ded9262209d.js",
+      "type": "script",
+      "start": 200.39999999990687,
+      "duration": 2885.100000000093,
+      "transfer": 8786,
+      "encoded": 8486,
+      "decoded": 25547
+    },
+    {
+      "name": "/_next/static/chunks/3931-5e2f6415202a03df.js",
+      "type": "script",
+      "start": 200.5,
+      "duration": 2975.1999999999534,
+      "transfer": 2865,
+      "encoded": 2565,
+      "decoded": 11113
+    },
+    {
+      "name": "/_next/static/chunks/1639-5eecbdf20c5b9d47.js",
+      "type": "script",
+      "start": 200.5999999998603,
+      "duration": 3005.2000000001863,
+      "transfer": 5727,
+      "encoded": 5427,
+      "decoded": 19895
+    },
+    {
+      "name": "/_next/static/chunks/4817-194b986bae19a48f.js",
+      "type": "script",
+      "start": 202,
+      "duration": 3093.5,
+      "transfer": 8296,
+      "encoded": 7996,
+      "decoded": 25288
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/recipes/page-6da02d0f4b27b273.js",
+      "type": "script",
+      "start": 202,
+      "duration": 3167.899999999907,
+      "transfer": 10865,
+      "encoded": 10565,
+      "decoded": 31373
+    },
+    {
+      "name": "/_next/image?url=%2Fimages%2Fbjcp%2F11C%2520%25E2%2580%2594%2520Strong%2520Bitter.png&w=96&q=75",
+      "type": "img",
+      "start": 2580.3000000000466,
+      "duration": 430.0999999998603,
+      "transfer": 2294,
+      "encoded": 1994,
+      "decoded": 1994
+    },
+    {
+      "name": "/_next/image?url=%2Fimages%2Fbjcp%2F3B%2520%25E2%2580%2594%2520Czech%2520Premium%2520Pale%2520Lager.png&w=96&q=75",
+      "type": "img",
+      "start": 2580.399999999907,
+      "duration": 489.69999999995343,
+      "transfer": 2066,
+      "encoded": 1766,
+      "decoded": 1766
+    },
+    {
+      "name": "/_next/image?url=%2Fimages%2Fbjcp%2F7A%2520%25E2%2580%2594%2520Vienna%2520Lager.png&w=96&q=75",
+      "type": "img",
+      "start": 2580.5,
+      "duration": 527.6999999999534,
+      "transfer": 2440,
+      "encoded": 2140,
+      "decoded": 2140
+    },
+    {
+      "name": "/_next/image?url=%2Fimages%2Fbjcp%2F18A%2520%25E2%2580%2594%2520Blonde%2520Ale.png&w=96&q=75",
+      "type": "img",
+      "start": 2580.6999999999534,
+      "duration": 722.8000000000466,
+      "transfer": 2334,
+      "encoded": 2034,
+      "decoded": 2034
+    },
+    {
+      "name": "/_next/image?url=%2Fimages%2Fbjcp%2F18B%2520%25E2%2580%2594%2520American%2520Pale%2520Ale.png&w=96&q=75",
+      "type": "img",
+      "start": 2580.8000000000466,
+      "duration": 751.8999999999069,
+      "transfer": 2222,
+      "encoded": 1922,
+      "decoded": 1922
+    },
+    {
+      "name": "/_next/image?url=%2Fimages%2Fbjcp%2F16B%2520%25E2%2580%2594%2520Oatmeal%2520Stout.png&w=96&q=75",
+      "type": "img",
+      "start": 2580.899999999907,
+      "duration": 774.4000000001397,
+      "transfer": 1936,
+      "encoded": 1636,
+      "decoded": 1636
+    },
+    {
+      "name": "/_next/image?url=%2Fimages%2Fbjcp%2F2A%2520%25E2%2580%2594%2520International%2520Pale%2520Lager.png&w=96&q=75",
+      "type": "img",
+      "start": 2583.5999999998603,
+      "duration": 803,
+      "transfer": 2498,
+      "encoded": 2198,
+      "decoded": 2198
+    },
+    {
+      "name": "/_next/image?url=%2Fimages%2Fbjcp%2F17C%2520%25E2%2580%2594%2520Wee%2520Heavy.png&w=96&q=75",
+      "type": "img",
+      "start": 2583.6999999999534,
+      "duration": 885.3000000000466,
+      "transfer": 1990,
+      "encoded": 1690,
+      "decoded": 1690
+    },
+    {
+      "name": "/_next/image?url=%2Fimages%2Fbjcp%2F4A%2520%25E2%2580%2594%2520Munich%2520Helles.png&w=96&q=75",
+      "type": "img",
+      "start": 2584.399999999907,
+      "duration": 894.9000000001397,
+      "transfer": 2400,
+      "encoded": 2100,
+      "decoded": 2100
+    },
+    {
+      "name": "/?_rsc=IMBWGGNmJycfb8mu",
+      "type": "fetch",
+      "start": 3295.899999999907,
+      "duration": 195.60000000009313,
+      "transfer": 427,
+      "encoded": 127,
+      "decoded": 132
+    },
+    {
+      "name": "/login?_rsc=IMBWGGNmJycfb8mu",
+      "type": "fetch",
+      "start": 3297.399999999907,
+      "duration": 216.69999999995343,
+      "transfer": 441,
+      "encoded": 141,
+      "decoded": 152
+    },
+    {
+      "name": "/recipes",
+      "type": "fetch",
+      "start": 3889.399999999907,
+      "duration": 165.9000000001397,
+      "transfer": 374,
+      "encoded": 74,
+      "decoded": 54
+    },
+    {
+      "name": "/recipes/fuller-s-esb?_rsc=IMBWGGNmJycfb8mu",
+      "type": "fetch",
+      "start": 3949.5,
+      "duration": 187.30000000004657,
+      "transfer": 2700,
+      "encoded": 2400,
+      "decoded": 6174
+    },
+    {
+      "name": "/recipes/bohemian-pilsner-nevermore-josh-weikert?_rsc=IMBWGGNmJycfb8mu",
+      "type": "fetch",
+      "start": 3950.899999999907,
+      "duration": 194.19999999995343,
+      "transfer": 2735,
+      "encoded": 2435,
+      "decoded": 6545
+    },
+    {
+      "name": "/recipes/venskiy-lager-po-motivam-zhigulevskogo?_rsc=IMBWGGNmJycfb8mu",
+      "type": "fetch",
+      "start": 3952.6999999999534,
+      "duration": 199.60000000009313,
+      "transfer": 2726,
+      "encoded": 2426,
+      "decoded": 6475
+    },
+    {
+      "name": "/recipes/ne-bolee-treh-litrov-v-odni-ruki-golfovod-bir-rf?_rsc=IMBWGGNmJycfb8mu",
+      "type": "fetch",
+      "start": 3953.6999999999534,
+      "duration": 216,
+      "transfer": 2727,
+      "encoded": 2427,
+      "decoded": 6398
+    },
+    {
+      "name": "/recipes",
+      "type": "fetch",
+      "start": 4061.1999999999534,
+      "duration": 173.10000000009313,
+      "transfer": 374,
+      "encoded": 74,
+      "decoded": 54
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/recipes/%5Bslug%5D/error-7cfcaa9844f65756.js",
+      "type": "script",
+      "start": 4141.59999999986,
+      "duration": 29.100000000093132,
+      "transfer": 0,
+      "encoded": 1322,
+      "decoded": 1322
+    },
+    {
+      "name": "/_next/static/chunks/1370-57fba8a850fc56bd.js",
+      "type": "script",
+      "start": 4146.699999999953,
+      "duration": 25.600000000093132,
+      "transfer": 0,
+      "encoded": 12234,
+      "decoded": 12234
+    },
+    {
+      "name": "/_next/static/chunks/1269-703da73ea98b41fe.js",
+      "type": "script",
+      "start": 4152.699999999953,
+      "duration": 3.199999999953434,
+      "transfer": 0,
+      "encoded": 6409,
+      "decoded": 6409
+    },
+    {
+      "name": "/_next/static/chunks/8449-0f44935e189a56f6.js",
+      "type": "script",
+      "start": 4153.699999999953,
+      "duration": 18.699999999953434,
+      "transfer": 0,
+      "encoded": 8656,
+      "decoded": 8656
+    },
+    {
+      "name": "/_next/static/chunks/705-d7d72abd4e09b409.js",
+      "type": "script",
+      "start": 4156.399999999907,
+      "duration": 16.9000000001397,
+      "transfer": 0,
+      "encoded": 30480,
+      "decoded": 30480
+    },
+    {
+      "name": "/_next/static/chunks/3787-2580d1338d3639bd.js",
+      "type": "script",
+      "start": 4157.800000000047,
+      "duration": 18.799999999813735,
+      "transfer": 0,
+      "encoded": 4507,
+      "decoded": 4507
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/recipes/%5Bslug%5D/page-1b3cb27e957fab58.js",
+      "type": "script",
+      "start": 4159.899999999907,
+      "duration": 24.800000000046566,
+      "transfer": 0,
+      "encoded": 34172,
+      "decoded": 34172
+    }
+  ]
+}

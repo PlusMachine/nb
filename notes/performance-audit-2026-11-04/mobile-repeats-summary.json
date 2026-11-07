@@ -1,0 +1,80 @@
+[
+  {
+    "name": "catalog-mobile-slow-2",
+    "status": 200,
+    "ttfb": 103,
+    "fcp": 1240,
+    "lcp": 1240,
+    "menuInteractiveAt": 3292,
+    "cls": 0.2468,
+    "longBlocking": 697,
+    "transferKB": 826,
+    "jsKB": 939,
+    "errors": 0
+  },
+  {
+    "name": "calculator-mobile-slow-2",
+    "status": 200,
+    "ttfb": 22,
+    "fcp": 1048,
+    "lcp": 1048,
+    "menuInteractiveAt": 4023,
+    "cls": 0.2099,
+    "longBlocking": 549,
+    "transferKB": 877,
+    "jsKB": 1653,
+    "errors": 0
+  },
+  {
+    "name": "editor-mobile-slow-2",
+    "status": 200,
+    "ttfb": 53,
+    "fcp": 1180,
+    "lcp": 1180,
+    "menuInteractiveAt": 3125,
+    "cls": 0.0102,
+    "longBlocking": 969,
+    "transferKB": 1030,
+    "jsKB": 2127,
+    "errors": 0
+  },
+  {
+    "name": "catalog-mobile-slow-3",
+    "status": 200,
+    "ttfb": 114,
+    "fcp": 1220,
+    "lcp": 1220,
+    "menuInteractiveAt": 3313,
+    "cls": 0.2468,
+    "longBlocking": 561,
+    "transferKB": 826,
+    "jsKB": 939,
+    "errors": 0
+  },
+  {
+    "name": "calculator-mobile-slow-3",
+    "status": 200,
+    "ttfb": 26,
+    "fcp": 1092,
+    "lcp": 1092,
+    "menuInteractiveAt": 4166,
+    "cls": 0.2099,
+    "longBlocking": 769,
+    "transferKB": 877,
+    "jsKB": 1653,
+    "errors": 0
+  },
+  {
+    "name": "editor-mobile-slow-3",
+    "status": 200,
+    "ttfb": 57,
+    "fcp": 1112,
+    "lcp": 1112,
+    "menuInteractiveAt": 2859,
+    "cls": 0.0102,
+    "longBlocking": 1236,
+    "transferKB": 1028,
+    "jsKB": 2127,
+    "errors": 0
+  }
+]

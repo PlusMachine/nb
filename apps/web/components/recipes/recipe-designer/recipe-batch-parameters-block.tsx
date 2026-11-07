@@ -46,6 +46,7 @@ export function RecipeBatchParametersBlock({
   canRescaleToVolume,
   onRescaleToVolume,
   onOpenBitternessSettings,
+  hasIngredients = true,
   preferredGravityUnit
 }: {
   batchSize: { quantity: string; unit: InventoryUnit };
@@ -72,6 +73,7 @@ export function RecipeBatchParametersBlock({
   canRescaleToVolume: boolean;
   onRescaleToVolume: () => void;
   onOpenBitternessSettings: () => void;
+  hasIngredients?: boolean;
   preferredGravityUnit: PreferredGravityUnit;
 }) {
   const colorSrmValue = preview?.color != null ? preview.color.toFixed(1) : null;
@@ -148,85 +150,90 @@ export function RecipeBatchParametersBlock({
       </div>
 
       <div className="flex flex-1 flex-col">
-        <dl
-          aria-busy={recalculating}
-          className={`mb-4 grid grid-cols-2 gap-2 transition-opacity xl:grid-cols-3 ${metricsStale ? "opacity-50" : ""}`}
-        >
-          {summaryItems.map((item) => {
-            const isColor = item.key === "color";
-            const isStyle = item.key === "style";
-            const isGravity = item.key === "og" || item.key === "fg";
+        <details open={hasIngredients || undefined} suppressHydrationWarning className="mb-4">
+          <summary className="mb-2 cursor-pointer text-sm font-medium text-muted-foreground marker:text-muted-foreground">
+            {hasIngredients ? "Показатели партии" : "Настройки и показатели"}
+          </summary>
+          <dl
+            aria-busy={recalculating}
+            className={`grid grid-cols-2 gap-2 transition-opacity xl:grid-cols-3 ${metricsStale ? "opacity-50" : ""}`}
+          >
+            {summaryItems.map((item) => {
+              const isColor = item.key === "color";
+              const isStyle = item.key === "style";
+              const isGravity = item.key === "og" || item.key === "fg";
 
-            return (
-              <div
-                key={item.key}
-                className="group relative min-w-0 rounded-xl border border-border bg-muted/80 px-3 py-2.5"
-              >
-                <dt className="flex items-center gap-1 text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
-                  <span className="truncate">{item.label}</span>
-                  {"settingsControl" in item && item.settingsControl ? (
-                    <span className="ml-auto shrink-0">{item.settingsControl}</span>
-                  ) : null}
-                </dt>
-                {isColor && item.value && typeof item.value === "object" ? (
-                  <dd className="mt-1 flex min-w-0 items-center gap-1.5">
-                    {colorInfo ? (
-                      <BeerGlassIcon color={colorInfo.hex} size={22} className="shrink-0 text-muted-foreground" />
+              return (
+                <div
+                  key={item.key}
+                  className="group relative min-w-0 rounded-xl border border-border bg-muted/80 px-3 py-2.5"
+                >
+                  <dt className="flex items-center gap-1 text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+                    <span className="truncate">{item.label}</span>
+                    {"settingsControl" in item && item.settingsControl ? (
+                      <span className="ml-auto shrink-0">{item.settingsControl}</span>
                     ) : null}
-                    <div className="min-w-0">
-                      <div className="text-sm font-semibold tabular-nums text-foreground">
-                        <span>{item.value.srm} <span className="text-xs font-medium text-muted-foreground">SRM</span></span>
-                        {" / "}
-                        <span>{item.value.ebc} <span className="text-xs font-medium text-muted-foreground">EBC</span></span>
-                      </div>
+                  </dt>
+                  {isColor && item.value && typeof item.value === "object" ? (
+                    <dd className="mt-1 flex min-w-0 items-center gap-1.5">
                       {colorInfo ? (
-                        <div className="truncate text-xs text-muted-foreground">{colorInfo.label}</div>
+                        <BeerGlassIcon color={colorInfo.hex} size={22} className="shrink-0 text-muted-foreground" />
                       ) : null}
-                    </div>
-                  </dd>
-                ) : isStyle ? (
-                  <dd className="mt-1 min-w-0" title={typeof item.value === "string" ? item.value : undefined}>
-                    <div>
-                      <div className="truncate text-sm font-semibold text-foreground">{typeof item.value === "string" ? item.value : "—"}</div>
-                      {selectedStyle?.bjcpId && selectedStyle.bjcpId !== "LEGACY" ? (
-                        <div className="truncate text-[11px] font-medium text-muted-foreground">
-                          BJCP {selectedStyle.bjcpId}
+                      <div className="min-w-0">
+                        <div className="text-sm font-semibold tabular-nums text-foreground">
+                          <span>{item.value.srm} <span className="text-xs font-medium text-muted-foreground">SRM</span></span>
+                          {" / "}
+                          <span>{item.value.ebc} <span className="text-xs font-medium text-muted-foreground">EBC</span></span>
                         </div>
+                        {colorInfo ? (
+                          <div className="truncate text-xs text-muted-foreground">{colorInfo.label}</div>
+                        ) : null}
+                      </div>
+                    </dd>
+                  ) : isStyle ? (
+                    <dd className="mt-1 min-w-0" title={typeof item.value === "string" ? item.value : undefined}>
+                      <div>
+                        <div className="truncate text-sm font-semibold text-foreground">{typeof item.value === "string" ? item.value : "—"}</div>
+                        {selectedStyle?.bjcpId && selectedStyle.bjcpId !== "LEGACY" ? (
+                          <div className="truncate text-[11px] font-medium text-muted-foreground">
+                            BJCP {selectedStyle.bjcpId}
+                          </div>
+                        ) : null}
+                      </div>
+                    </dd>
+                  ) : isGravity ? (
+                    <dd className="mt-1 min-w-0">
+                      <div className="text-sm font-semibold tabular-nums text-foreground">
+                        {typeof item.value === "string" ? item.value : "—"}
+                      </div>
+                      {"secondaryValue" in item && item.secondaryValue ? (
+                        <div className="text-[11px] tabular-nums text-muted-foreground">{item.secondaryValue}</div>
                       ) : null}
-                    </div>
-                  </dd>
-                ) : isGravity ? (
-                  <dd className="mt-1 min-w-0">
-                    <div className="text-sm font-semibold tabular-nums text-foreground">
-                      {typeof item.value === "string" ? item.value : "—"}
-                    </div>
-                    {"secondaryValue" in item && item.secondaryValue ? (
-                      <div className="text-[11px] tabular-nums text-muted-foreground">{item.secondaryValue}</div>
-                    ) : null}
-                    {"sourceLabel" in item && item.sourceLabel ? (
-                      <div className="mt-1 text-[11px] font-medium text-muted-foreground">{item.sourceLabel}</div>
-                    ) : null}
-                    {"helperText" in item && item.helperText ? (
-                      <div className="mt-1 text-[11px] text-muted-foreground">{item.helperText}</div>
-                    ) : null}
-                  </dd>
-                ) : (
-                  <dd className="mt-1">
-                    <div className="text-base font-semibold tabular-nums text-foreground">
-                      {typeof item.value === "string" ? item.value : "—"}
-                    </div>
-                    {"sourceLabel" in item && item.sourceLabel ? (
-                      <div className="mt-1 text-[11px] font-medium text-muted-foreground">{item.sourceLabel}</div>
-                    ) : null}
-                    {"helperText" in item && item.helperText ? (
-                      <div className="mt-1 text-[11px] text-muted-foreground">{item.helperText}</div>
-                    ) : null}
-                  </dd>
-                )}
-              </div>
-            );
-          })}
-        </dl>
+                      {"sourceLabel" in item && item.sourceLabel ? (
+                        <div className="mt-1 text-[11px] font-medium text-muted-foreground">{item.sourceLabel}</div>
+                      ) : null}
+                      {"helperText" in item && item.helperText ? (
+                        <div className="mt-1 text-[11px] text-muted-foreground">{item.helperText}</div>
+                      ) : null}
+                    </dd>
+                  ) : (
+                    <dd className="mt-1">
+                      <div className="text-base font-semibold tabular-nums text-foreground">
+                        {typeof item.value === "string" ? item.value : "—"}
+                      </div>
+                      {"sourceLabel" in item && item.sourceLabel ? (
+                        <div className="mt-1 text-[11px] font-medium text-muted-foreground">{item.sourceLabel}</div>
+                      ) : null}
+                      {"helperText" in item && item.helperText ? (
+                        <div className="mt-1 text-[11px] text-muted-foreground">{item.helperText}</div>
+                      ) : null}
+                    </dd>
+                  )}
+                </div>
+              );
+            })}
+          </dl>
+        </details>
 
         <div className="mt-auto space-y-2 border-t border-border pt-3">
           <div className="flex flex-wrap items-end gap-3">

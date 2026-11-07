@@ -1,0 +1,415 @@
+{
+  "name": "catalog-mobile-warm",
+  "path": "/catalog",
+  "mobile": true,
+  "slow": true,
+  "warm": true,
+  "freshConsent": false,
+  "status": 200,
+  "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+  "url": "http://127.0.0.1:3016/catalog",
+  "ttfbMs": 87.69999999995343,
+  "fcpMs": 348,
+  "lcpMs": 348,
+  "cls": 0.0012647445544280746,
+  "domContentLoadedMs": 533.8000000000466,
+  "loadMs": 536.1999999999534,
+  "htmlTransfer": 435671,
+  "htmlDecoded": 435371,
+  "resourceTransfer": 4714,
+  "resourceDecoded": 2194973,
+  "jsDecoded": 961747,
+  "domElements": 2207,
+  "incompleteImages": [],
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "scrollWidth": 390,
+    "scrollHeight": 6898
+  },
+  "totalLongTaskBlockingMs": 136,
+  "lcp": [
+    {
+      "start": 348,
+      "size": 14514,
+      "url": "",
+      "tag": "P",
+      "text": "Открытый справочник ингредиентов для домашних пивоваров: солод, хмель, дрожжи и не только."
+    }
+  ],
+  "shifts": [
+    {
+      "start": 870.3000000000466,
+      "value": 0.0012647445544280746,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "OL",
+          "text": "",
+          "previous": {
+            "x": 12,
+            "y": 824,
+            "width": 366,
+            "height": 8,
+            "top": 824,
+            "right": 378,
+            "bottom": 832,
+            "left": 12
+          },
+          "current": {
+            "x": 12,
+            "y": 764,
+            "width": 366,
+            "height": 8,
+            "top": 764,
+            "right": 378,
+            "bottom": 772,
+            "left": 12
+          }
+        }
+      ]
+    }
+  ],
+  "longtasks": [
+    {
+      "start": 90.9000000001397,
+      "duration": 69
+    },
+    {
+      "start": 277,
+      "duration": 56
+    },
+    {
+      "start": 357,
+      "duration": 79
+    },
+    {
+      "start": 438.30000000004657,
+      "duration": 91
+    },
+    {
+      "start": 788.8000000000466,
+      "duration": 91
+    }
+  ],
+  "events": [],
+  "errors": [],
+  "menuInteractiveAt": 593.3000000000466,
+  "resources": [
+    {
+      "name": "/_next/static/media/32425b6d39044b3c-s.p.ttf",
+      "type": "link",
+      "start": 110.69999999995343,
+      "duration": 25.5,
+      "transfer": 0,
+      "encoded": 359804,
+      "decoded": 359804
+    },
+    {
+      "name": "/_next/static/media/d703e6352f035923-s.p.ttf",
+      "type": "link",
+      "start": 113.4000000001397,
+      "duration": 25.299999999813735,
+      "transfer": 0,
+      "encoded": 744936,
+      "decoded": 744936
+    },
+    {
+      "name": "/_next/static/css/688dbf7110800d11.css",
+      "type": "link",
+      "start": 145.69999999995343,
+      "duration": 5.600000000093132,
+      "transfer": 0,
+      "encoded": 7335,
+      "decoded": 7335
+    },
+    {
+      "name": "/_next/static/css/10d068b31dbc4d49.css",
+      "type": "link",
+      "start": 146.80000000004657,
+      "duration": 4.5,
+      "transfer": 0,
+      "encoded": 115379,
+      "decoded": 115379
+    },
+    {
+      "name": "/_next/static/chunks/webpack-50b6521d18506e69.js",
+      "type": "link",
+      "start": 147.9000000001397,
+      "duration": 30.5,
+      "transfer": 0,
+      "encoded": 3498,
+      "decoded": 3498
+    },
+    {
+      "name": "/_next/static/chunks/87c73c54-dd8d81ac9604067c.js",
+      "type": "script",
+      "start": 148.10000000009313,
+      "duration": 32.39999999990687,
+      "transfer": 0,
+      "encoded": 173023,
+      "decoded": 173023
+    },
+    {
+      "name": "/_next/static/chunks/18-94afe61f15789e06.js",
+      "type": "script",
+      "start": 148.69999999995343,
+      "duration": 68.5,
+      "transfer": 0,
+      "encoded": 174209,
+      "decoded": 174209
+    },
+    {
+      "name": "/_next/static/chunks/main-app-1b4249da1a5d893c.js",
+      "type": "script",
+      "start": 148.9000000001397,
+      "duration": 71.89999999990687,
+      "transfer": 0,
+      "encoded": 570,
+      "decoded": 570
+    },
+    {
+      "name": "/_next/static/chunks/7283-f1e1247528aca409.js",
+      "type": "script",
+      "start": 149,
+      "duration": 76.19999999995343,
+      "transfer": 0,
+      "encoded": 8555,
+      "decoded": 8555
+    },
+    {
+      "name": "/_next/static/chunks/612-9c360be286377cda.js",
+      "type": "script",
+      "start": 150.30000000004657,
+      "duration": 82.5,
+      "transfer": 0,
+      "encoded": 212253,
+      "decoded": 212253
+    },
+    {
+      "name": "/_next/static/chunks/9664-4bead6cd06a85437.js",
+      "type": "script",
+      "start": 150.4000000001397,
+      "duration": 82.69999999995343,
+      "transfer": 0,
+      "encoded": 8925,
+      "decoded": 8925
+    },
+    {
+      "name": "/_next/static/chunks/4159-4524a53eeeb992af.js",
+      "type": "script",
+      "start": 151.30000000004657,
+      "duration": 81.80000000004657,
+      "transfer": 0,
+      "encoded": 12883,
+      "decoded": 12883
+    },
+    {
+      "name": "/_next/static/chunks/922-36cb889d8a78c9e9.js",
+      "type": "script",
+      "start": 151.4000000001397,
+      "duration": 81.89999999990687,
+      "transfer": 0,
+      "encoded": 9436,
+      "decoded": 9436
+    },
+    {
+      "name": "/_next/static/chunks/1140-3282b57ff3d332fe.js",
+      "type": "script",
+      "start": 152.4000000001397,
+      "duration": 80.89999999990687,
+      "transfer": 0,
+      "encoded": 20277,
+      "decoded": 20277
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/layout-6a9b9b951f570000.js",
+      "type": "script",
+      "start": 152.60000000009313,
+      "duration": 85.39999999990687,
+      "transfer": 0,
+      "encoded": 6439,
+      "decoded": 6439
+    },
+    {
+      "name": "/_next/static/chunks/4737-b9435b98fbb3c365.js",
+      "type": "script",
+      "start": 153.69999999995343,
+      "duration": 79.70000000018626,
+      "transfer": 0,
+      "encoded": 57621,
+      "decoded": 57621
+    },
+    {
+      "name": "/_next/static/chunks/9461-25c487bb36994b55.js",
+      "type": "script",
+      "start": 153.80000000004657,
+      "duration": 79.80000000004657,
+      "transfer": 0,
+      "encoded": 12329,
+      "decoded": 12329
+    },
+    {
+      "name": "/_next/static/chunks/app/layout-a377c5f5ad22f81f.js",
+      "type": "script",
+      "start": 154.69999999995343,
+      "duration": 84.10000000009313,
+      "transfer": 0,
+      "encoded": 18394,
+      "decoded": 18394
+    },
+    {
+      "name": "/_next/static/chunks/app/error-482cb912af31630e.js",
+      "type": "script",
+      "start": 154.80000000004657,
+      "duration": 85.80000000004657,
+      "transfer": 0,
+      "encoded": 1140,
+      "decoded": 1140
+    },
+    {
+      "name": "/_next/static/chunks/3671-7a65dbaeafe4c092.js",
+      "type": "script",
+      "start": 155.69999999995343,
+      "duration": 84.9000000001397,
+      "transfer": 0,
+      "encoded": 157102,
+      "decoded": 157102
+    },
+    {
+      "name": "/_next/static/chunks/6005-b648b00388e32889.js",
+      "type": "script",
+      "start": 155.80000000004657,
+      "duration": 85.10000000009313,
+      "transfer": 0,
+      "encoded": 10087,
+      "decoded": 10087
+    },
+    {
+      "name": "/_next/static/chunks/6926-eaa04380686830b3.js",
+      "type": "script",
+      "start": 156.60000000009313,
+      "duration": 84.39999999990687,
+      "transfer": 0,
+      "encoded": 40407,
+      "decoded": 40407
+    },
+    {
+      "name": "/_next/static/chunks/3594-995a965781e222a7.js",
+      "type": "script",
+      "start": 157.69999999995343,
+      "duration": 93.80000000004657,
+      "transfer": 0,
+      "encoded": 10378,
+      "decoded": 10378
+    },
+    {
+      "name": "/_next/static/chunks/6937-2e1fa6e0cb9911ff.js",
+      "type": "script",
+      "start": 157.9000000001397,
+      "duration": 96,
+      "transfer": 0,
+      "encoded": 27553,
+      "decoded": 27553
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/catalog/page-22b157c2801ffea4.js",
+      "type": "script",
+      "start": 158.69999999995343,
+      "duration": 95.20000000018626,
+      "transfer": 0,
+      "encoded": 166,
+      "decoded": 166
+    },
+    {
+      "name": "/?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 895.8000000000466,
+      "duration": 167.80000000004657,
+      "transfer": 427,
+      "encoded": 127,
+      "decoded": 132
+    },
+    {
+      "name": "/login?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 898.1999999999534,
+      "duration": 177.60000000009313,
+      "transfer": 441,
+      "encoded": 141,
+      "decoded": 152
+    },
+    {
+      "name": "/catalog/malts?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 904.3000000000466,
+      "duration": 175.60000000009313,
+      "transfer": 459,
+      "encoded": 159,
+      "decoded": 203
+    },
+    {
+      "name": "/catalog/fermentables?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 906.6999999999534,
+      "duration": 178.9000000001397,
+      "transfer": 464,
+      "encoded": 164,
+      "decoded": 217
+    },
+    {
+      "name": "/catalog/system/dingemans-amber-aromatic-md-be-specialty?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 918,
+      "duration": 174.80000000004657,
+      "transfer": 499,
+      "encoded": 199,
+      "decoded": 274
+    },
+    {
+      "name": "/catalog/system/malteurop-american-2-row-pale-malt?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 1075.8000000000466,
+      "duration": 164.5,
+      "transfer": 491,
+      "encoded": 191,
+      "decoded": 268
+    },
+    {
+      "name": "/catalog/system/castle-malting-arome?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 1098.6000000000931,
+      "duration": 164.5,
+      "transfer": 479,
+      "encoded": 179,
+      "decoded": 254
+    },
+    {
+      "name": "/catalog/system/ireks--aroma?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 1099.5,
+      "duration": 172.10000000009313,
+      "transfer": 476,
+      "encoded": 176,
+      "decoded": 246
+    },
+    {
+      "name": "/catalog/system/dingemans-aroma-100-be-special?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 1130.5,
+      "duration": 176.9000000001397,
+      "transfer": 489,
+      "encoded": 189,
+      "decoded": 264
+    },
+    {
+      "name": "/catalog/system/dingemans-aroma-150-be-special?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 1154.5,
+      "duration": 160.5,
+      "transfer": 489,
+      "encoded": 189,
+      "decoded": 264
+    }
+  ]
+}

@@ -1,0 +1,1138 @@
+{
+  "url": "http://127.0.0.1:3016/app/recipes/new?recipeId=1a691f83-3b27-4e21-ab9e-c3377c9c8115",
+  "ttfbMs": 23.5,
+  "fcpMs": 76,
+  "lcpMs": 236,
+  "cls": 0.014509244255829903,
+  "domContentLoadedMs": 92.0999999998603,
+  "loadMs": 128,
+  "htmlTransfer": 119039,
+  "htmlDecoded": 118739,
+  "resourceTransfer": 13280,
+  "resourceDecoded": 3437298,
+  "jsDecoded": 2180151,
+  "domElements": 919,
+  "incompleteImages": [],
+  "viewport": {
+    "width": 1440,
+    "height": 900,
+    "scrollWidth": 1440,
+    "scrollHeight": 2715
+  },
+  "totalLongTaskBlockingMs": 3,
+  "lcp": [
+    {
+      "start": 76,
+      "size": 5115,
+      "url": "",
+      "tag": "P",
+      "text": "18+ · Употребление алкоголя вредит здоровью"
+    },
+    {
+      "start": 236,
+      "size": 6424,
+      "url": ""
+    }
+  ],
+  "shifts": [
+    {
+      "start": 188.5,
+      "value": 0.0002016460905349794,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "OL",
+          "text": "",
+          "previous": {
+            "x": 12,
+            "y": 880,
+            "width": 392,
+            "height": 8,
+            "top": 880,
+            "right": 404,
+            "bottom": 888,
+            "left": 12
+          },
+          "current": {
+            "x": 12,
+            "y": 820,
+            "width": 392,
+            "height": 8,
+            "top": 820,
+            "right": 404,
+            "bottom": 828,
+            "left": 12
+          }
+        }
+      ]
+    },
+    {
+      "start": 409.69999999995343,
+      "value": 0.000030160643861454044,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "DL",
+          "text": "НП11.7 °P· 1.047 SGКП2.8 °P(2.6–3.3 °P)· 1.011 SGABV4.7%IBU—SRM3.2",
+          "previous": {
+            "x": 405,
+            "y": 36,
+            "width": 466.25,
+            "height": 16.5,
+            "top": 36,
+            "right": 871.25,
+            "bottom": 52.5,
+            "left": 405
+          },
+          "current": {
+            "x": 412,
+            "y": 36,
+            "width": 466.25,
+            "height": 16.5,
+            "top": 36,
+            "right": 878.25,
+            "bottom": 52.5,
+            "left": 412
+          }
+        }
+      ]
+    },
+    {
+      "start": 1925.0999999998603,
+      "value": 0.014509244255829903,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "SECTION",
+          "text": "Параметры партииЦвет3.2 SRM / 6 EBCСветло-золотистыйНП11.7 °P1.047 SGКП⚙2.8 °P1.",
+          "previous": {
+            "x": 288,
+            "y": 353.5,
+            "width": 1109,
+            "height": 320.5,
+            "top": 353.5,
+            "right": 1397,
+            "bottom": 674,
+            "left": 288
+          },
+          "current": {
+            "x": 288,
+            "y": 397.5,
+            "width": 1109,
+            "height": 320.5,
+            "top": 397.5,
+            "right": 1397,
+            "bottom": 718,
+            "left": 288
+          }
+        },
+        {
+          "tag": "DIV",
+          "text": "Солод и другое сырьё(4.50 кг)ДобавитьПильзнер•WeyermannPilsner MaltСо склада2.5-",
+          "previous": {
+            "x": 283,
+            "y": 684,
+            "width": 1114,
+            "height": 216,
+            "top": 684,
+            "right": 1397,
+            "bottom": 900,
+            "left": 283
+          },
+          "current": {
+            "x": 283,
+            "y": 728,
+            "width": 1114,
+            "height": 172,
+            "top": 728,
+            "right": 1397,
+            "bottom": 900,
+            "left": 283
+          }
+        },
+        {
+          "tag": "DL",
+          "text": "НП11.7 °P· 1.047 SGКП2.8 °P(2.6–3.3 °P)· 1.011 SGABV4.7%IBU—SRM3.2",
+          "previous": {
+            "x": 412,
+            "y": 36,
+            "width": 466.25,
+            "height": 16.5,
+            "top": 36,
+            "right": 878.25,
+            "bottom": 52.5,
+            "left": 412
+          },
+          "current": {
+            "x": 455,
+            "y": 36,
+            "width": 466.25,
+            "height": 16.5,
+            "top": 36,
+            "right": 921.25,
+            "bottom": 52.5,
+            "left": 455
+          }
+        },
+        {
+          "tag": "DIV",
+          "text": "",
+          "previous": {
+            "x": 285,
+            "y": 630,
+            "width": 98,
+            "height": 42,
+            "top": 630,
+            "right": 383,
+            "bottom": 672,
+            "left": 285
+          },
+          "current": {
+            "x": 285,
+            "y": 674,
+            "width": 98,
+            "height": 42,
+            "top": 674,
+            "right": 383,
+            "bottom": 716,
+            "left": 285
+          }
+        }
+      ]
+    }
+  ],
+  "longtasks": [
+    {
+      "start": 200.0999999998603,
+      "duration": 53
+    }
+  ],
+  "events": [
+    {
+      "name": "pointerover",
+      "start": 55.89999999990687,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.39999999990686774,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 55.89999999990687,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.39999999990686774,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 55.89999999990687,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.39999999990686774,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 55.89999999990687,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.39999999990686774,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 55.89999999990687,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.39999999990686774,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 55.89999999990687,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.39999999990686774,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 55.89999999990687,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.39999999990686774,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 55.89999999990687,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.39999999990686774,
+      "interactionId": 0
+    },
+    {
+      "name": "mouseover",
+      "start": 55.89999999990687,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.39999999990686774,
+      "interactionId": 0,
+      "tag": "MAIN",
+      "text": ""
+    },
+    {
+      "name": "pointerout",
+      "start": 197.29999999981374,
+      "duration": 40,
+      "processing": 0.30000000004656613,
+      "delay": 0.10000000009313226,
+      "interactionId": 0,
+      "tag": "MAIN",
+      "text": "СохраненоНП11.7 °P· 1.047 SGКП2.8 °P(2.6–3.3 °P)· 1.011 SGABV4.7%IBU—S"
+    },
+    {
+      "name": "pointerover",
+      "start": 197.29999999981374,
+      "duration": 40,
+      "processing": 0.09999999986030161,
+      "delay": 0.4000000001396984,
+      "interactionId": 0,
+      "tag": "DIV",
+      "text": "Пильзнер•WeyermannPilsner MaltСо склада"
+    },
+    {
+      "name": "pointerenter",
+      "start": 197.29999999981374,
+      "duration": 40,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 197.29999999981374,
+      "duration": 40,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 197.29999999981374,
+      "duration": 40,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 197.29999999981374,
+      "duration": 40,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 197.29999999981374,
+      "duration": 40,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 197.29999999981374,
+      "duration": 40,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 197.29999999981374,
+      "duration": 40,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 197.29999999981374,
+      "duration": 40,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 197.29999999981374,
+      "duration": 40,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 197.29999999981374,
+      "duration": 40,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 197.29999999981374,
+      "duration": 40,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "mouseout",
+      "start": 197.29999999981374,
+      "duration": 40,
+      "processing": 0.30000000004656613,
+      "delay": 0.5,
+      "interactionId": 0,
+      "tag": "MAIN",
+      "text": "СохраненоНП11.7 °P· 1.047 SGКП2.8 °P(2.6–3.3 °P)· 1.011 SGABV4.7%IBU—S"
+    },
+    {
+      "name": "mouseover",
+      "start": 197.29999999981374,
+      "duration": 40,
+      "processing": 0,
+      "delay": 0.8000000000465661,
+      "interactionId": 0,
+      "tag": "DIV",
+      "text": "Пильзнер•WeyermannPilsner MaltСо склада"
+    },
+    {
+      "name": "beforeinput",
+      "start": 394.89999999990687,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0,
+      "interactionId": 0,
+      "tag": "INPUT",
+      "text": ""
+    },
+    {
+      "name": "input",
+      "start": 395.89999999990687,
+      "duration": 24,
+      "processing": 8,
+      "delay": 0.19999999995343387,
+      "interactionId": 0,
+      "tag": "INPUT",
+      "text": ""
+    },
+    {
+      "name": "pointerout",
+      "start": 1923.7999999998137,
+      "duration": 40,
+      "processing": 0.30000000004656613,
+      "delay": 1.5,
+      "interactionId": 0,
+      "tag": "DIV",
+      "text": "Пильзнер•WeyermannPilsner MaltСо склада"
+    },
+    {
+      "name": "pointerleave",
+      "start": 1923.7999999998137,
+      "duration": 40,
+      "processing": 0,
+      "delay": 1.8000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 1923.7999999998137,
+      "duration": 40,
+      "processing": 0,
+      "delay": 1.8000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 1923.7999999998137,
+      "duration": 40,
+      "processing": 0,
+      "delay": 1.8000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 1923.7999999998137,
+      "duration": 40,
+      "processing": 0,
+      "delay": 1.8000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 1923.7999999998137,
+      "duration": 40,
+      "processing": 0,
+      "delay": 1.8000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerover",
+      "start": 1923.7999999998137,
+      "duration": 40,
+      "processing": 0,
+      "delay": 1.8000000000465661,
+      "interactionId": 0,
+      "tag": "DIV",
+      "text": "Пильзнер•WeyermannPilsner MaltСо склада2.5-4.5 EBCЭкстрактивность 80.5"
+    },
+    {
+      "name": "mouseout",
+      "start": 1923.7999999998137,
+      "duration": 40,
+      "processing": 0.10000000009313226,
+      "delay": 1.8000000000465661,
+      "interactionId": 0,
+      "tag": "DIV",
+      "text": "Пильзнер•WeyermannPilsner MaltСо склада"
+    },
+    {
+      "name": "mouseover",
+      "start": 1923.7999999998137,
+      "duration": 40,
+      "processing": 0,
+      "delay": 1.9000000001396984,
+      "interactionId": 0,
+      "tag": "DIV",
+      "text": "Пильзнер•WeyermannPilsner MaltСо склада2.5-4.5 EBCЭкстрактивность 80.5"
+    }
+  ],
+  "errors": [],
+  "resources": [
+    {
+      "name": "/_next/static/media/32425b6d39044b3c-s.p.ttf",
+      "type": "link",
+      "start": 29.199999999953434,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 359804,
+      "decoded": 359804
+    },
+    {
+      "name": "/_next/static/media/d703e6352f035923-s.p.ttf",
+      "type": "link",
+      "start": 29.399999999906868,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 744936,
+      "decoded": 744936
+    },
+    {
+      "name": "/_next/static/css/688dbf7110800d11.css",
+      "type": "link",
+      "start": 29.5,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 7335,
+      "decoded": 7335
+    },
+    {
+      "name": "/_next/static/css/10d068b31dbc4d49.css",
+      "type": "link",
+      "start": 29.799999999813735,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 115379,
+      "decoded": 115379
+    },
+    {
+      "name": "/_next/static/chunks/webpack-50b6521d18506e69.js",
+      "type": "link",
+      "start": 30.399999999906868,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 3498,
+      "decoded": 3498
+    },
+    {
+      "name": "/_next/static/chunks/87c73c54-dd8d81ac9604067c.js",
+      "type": "script",
+      "start": 30.5,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 173023,
+      "decoded": 173023
+    },
+    {
+      "name": "/_next/static/chunks/18-94afe61f15789e06.js",
+      "type": "script",
+      "start": 30.699999999953434,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 174209,
+      "decoded": 174209
+    },
+    {
+      "name": "/_next/static/chunks/main-app-1b4249da1a5d893c.js",
+      "type": "script",
+      "start": 30.799999999813735,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 570,
+      "decoded": 570
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/error-f2109ab5bea0953a.js",
+      "type": "script",
+      "start": 30.899999999906868,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 1327,
+      "decoded": 1327
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/new/error-08fa6ef3d7e910aa.js",
+      "type": "script",
+      "start": 31,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 1245,
+      "decoded": 1245
+    },
+    {
+      "name": "/_next/static/chunks/7283-f1e1247528aca409.js",
+      "type": "script",
+      "start": 31.0999999998603,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 8555,
+      "decoded": 8555
+    },
+    {
+      "name": "/_next/static/chunks/612-9c360be286377cda.js",
+      "type": "script",
+      "start": 31.0999999998603,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 212253,
+      "decoded": 212253
+    },
+    {
+      "name": "/_next/static/chunks/4737-b9435b98fbb3c365.js",
+      "type": "script",
+      "start": 31.299999999813735,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 57621,
+      "decoded": 57621
+    },
+    {
+      "name": "/_next/static/chunks/4159-4524a53eeeb992af.js",
+      "type": "script",
+      "start": 31.399999999906868,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 12883,
+      "decoded": 12883
+    },
+    {
+      "name": "/_next/static/chunks/9461-25c487bb36994b55.js",
+      "type": "script",
+      "start": 31.399999999906868,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 12329,
+      "decoded": 12329
+    },
+    {
+      "name": "/_next/static/chunks/app/layout-a377c5f5ad22f81f.js",
+      "type": "script",
+      "start": 31.5,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 18394,
+      "decoded": 18394
+    },
+    {
+      "name": "/_next/static/chunks/app/error-482cb912af31630e.js",
+      "type": "script",
+      "start": 31.5999999998603,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 1140,
+      "decoded": 1140
+    },
+    {
+      "name": "/_next/static/chunks/9664-4bead6cd06a85437.js",
+      "type": "script",
+      "start": 31.699999999953434,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 8925,
+      "decoded": 8925
+    },
+    {
+      "name": "/_next/static/chunks/922-36cb889d8a78c9e9.js",
+      "type": "script",
+      "start": 31.899999999906868,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 9436,
+      "decoded": 9436
+    },
+    {
+      "name": "/_next/static/chunks/1140-3282b57ff3d332fe.js",
+      "type": "script",
+      "start": 31.899999999906868,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 20277,
+      "decoded": 20277
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/layout-7999a595026f1b2e.js",
+      "type": "script",
+      "start": 32,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 206,
+      "decoded": 206
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/layout-6a9b9b951f570000.js",
+      "type": "script",
+      "start": 32.0999999998603,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 6439,
+      "decoded": 6439
+    },
+    {
+      "name": "/_next/static/chunks/489-fc96c5688a515719.js",
+      "type": "script",
+      "start": 32.299999999813735,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 13661,
+      "decoded": 13661
+    },
+    {
+      "name": "/_next/static/chunks/8732-787a7f6fb004de98.js",
+      "type": "script",
+      "start": 32.5,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 7620,
+      "decoded": 7620
+    },
+    {
+      "name": "/_next/static/chunks/3671-7a65dbaeafe4c092.js",
+      "type": "script",
+      "start": 32.699999999953434,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 157102,
+      "decoded": 157102
+    },
+    {
+      "name": "/_next/static/chunks/6005-b648b00388e32889.js",
+      "type": "script",
+      "start": 33,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 10087,
+      "decoded": 10087
+    },
+    {
+      "name": "/_next/static/chunks/1639-5eecbdf20c5b9d47.js",
+      "type": "script",
+      "start": 33.5,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 19895,
+      "decoded": 19895
+    },
+    {
+      "name": "/_next/static/chunks/6973-56369b621a01f5bf.js",
+      "type": "script",
+      "start": 33.699999999953434,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 8656,
+      "decoded": 8656
+    },
+    {
+      "name": "/_next/static/chunks/6120-07b333e4541a8fe9.js",
+      "type": "script",
+      "start": 33.89999999990687,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 28632,
+      "decoded": 28632
+    },
+    {
+      "name": "/_next/static/chunks/4258-e3283a4ddd5fcff4.js",
+      "type": "script",
+      "start": 34.0999999998603,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 9107,
+      "decoded": 9107
+    },
+    {
+      "name": "/_next/static/chunks/1623-4bd7af5960049a45.js",
+      "type": "script",
+      "start": 34.39999999990687,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 11086,
+      "decoded": 11086
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/page-9d4bb3298e0e98f2.js",
+      "type": "script",
+      "start": 34.699999999953434,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 22018,
+      "decoded": 22018
+    },
+    {
+      "name": "/_next/static/chunks/9439-93a957586341ba22.js",
+      "type": "script",
+      "start": 84.5999999998603,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 11208,
+      "decoded": 11208
+    },
+    {
+      "name": "/_next/static/chunks/4139-a2bcd9cff08ba4b8.js",
+      "type": "script",
+      "start": 84.79999999981374,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 170375,
+      "decoded": 170375
+    },
+    {
+      "name": "/_next/static/chunks/6926-eaa04380686830b3.js",
+      "type": "script",
+      "start": 85.0999999998603,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 40407,
+      "decoded": 40407
+    },
+    {
+      "name": "/_next/static/chunks/3931-5e2f6415202a03df.js",
+      "type": "script",
+      "start": 85.39999999990687,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 11113,
+      "decoded": 11113
+    },
+    {
+      "name": "/_next/static/chunks/3594-995a965781e222a7.js",
+      "type": "script",
+      "start": 85.5999999998603,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 10378,
+      "decoded": 10378
+    },
+    {
+      "name": "/_next/static/chunks/7937-28c93b4ad94e37c4.js",
+      "type": "script",
+      "start": 85.79999999981374,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 61264,
+      "decoded": 61264
+    },
+    {
+      "name": "/_next/static/chunks/1269-703da73ea98b41fe.js",
+      "type": "script",
+      "start": 86.19999999995343,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 6409,
+      "decoded": 6409
+    },
+    {
+      "name": "/_next/static/chunks/6707-dfb5ad6fca8c13e5.js",
+      "type": "script",
+      "start": 86.29999999981374,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 11547,
+      "decoded": 11547
+    },
+    {
+      "name": "/_next/static/chunks/3490-9afb0f63887ccb10.js",
+      "type": "script",
+      "start": 86.69999999995343,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 463146,
+      "decoded": 463146
+    },
+    {
+      "name": "/_next/static/chunks/1520-73a8c1d586705037.js",
+      "type": "script",
+      "start": 86.89999999990687,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 14917,
+      "decoded": 14917
+    },
+    {
+      "name": "/_next/static/chunks/3787-2580d1338d3639bd.js",
+      "type": "script",
+      "start": 87.0999999998603,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 4507,
+      "decoded": 4507
+    },
+    {
+      "name": "/_next/static/chunks/7638-76017a88badfc52c.js",
+      "type": "script",
+      "start": 87.39999999990687,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 43829,
+      "decoded": 43829
+    },
+    {
+      "name": "/_next/static/chunks/5023-1625f10f6620c8cd.js",
+      "type": "script",
+      "start": 87.5999999998603,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 18411,
+      "decoded": 18411
+    },
+    {
+      "name": "/_next/static/chunks/5645-97906930e38c25dc.js",
+      "type": "script",
+      "start": 87.89999999990687,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 20695,
+      "decoded": 20695
+    },
+    {
+      "name": "/_next/static/chunks/4929-b1213b7624143ad9.js",
+      "type": "script",
+      "start": 88.0999999998603,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 280266,
+      "decoded": 280266
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/new/page-7154287afe5a5341.js",
+      "type": "script",
+      "start": 88.29999999981374,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 245,
+      "decoded": 245
+    },
+    {
+      "name": "/api/recipes/water-profiles",
+      "type": "fetch",
+      "start": 161.69999999995343,
+      "duration": 12.899999999906868,
+      "transfer": 351,
+      "encoded": 51,
+      "decoded": 51
+    },
+    {
+      "name": "/app?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 195.5999999998603,
+      "duration": 15.600000000093132,
+      "transfer": 429,
+      "encoded": 129,
+      "decoded": 146
+    },
+    {
+      "name": "/app/recipes?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 195.79999999981374,
+      "duration": 38.200000000186265,
+      "transfer": 438,
+      "encoded": 138,
+      "decoded": 167
+    },
+    {
+      "name": "/app/ingredients?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 196.0999999998603,
+      "duration": 40.800000000046566,
+      "transfer": 2391,
+      "encoded": 2091,
+      "decoded": 7404
+    },
+    {
+      "name": "/app/brew-batches?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 196.29999999981374,
+      "duration": 40.9000000001397,
+      "transfer": 1958,
+      "encoded": 1658,
+      "decoded": 4531
+    },
+    {
+      "name": "/app/equipment?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 196.5,
+      "duration": 40.89999999990687,
+      "transfer": 2088,
+      "encoded": 1788,
+      "decoded": 7448
+    },
+    {
+      "name": "/app/master?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 283.29999999981374,
+      "duration": 24.200000000186265,
+      "transfer": 444,
+      "encoded": 144,
+      "decoded": 168
+    },
+    {
+      "name": "/catalog?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 284,
+      "duration": 24.899999999906868,
+      "transfer": 456,
+      "encoded": 156,
+      "decoded": 192
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/ingredients/error-cf62132f9ffaac08.js",
+      "type": "script",
+      "start": 284.69999999995343,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 1134,
+      "decoded": 1134
+    },
+    {
+      "name": "/articles?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 285.5999999998603,
+      "duration": 24.4000000001397,
+      "transfer": 457,
+      "encoded": 157,
+      "decoded": 193
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/brew-batches/error-7638144f5a85e143.js",
+      "type": "script",
+      "start": 286.0999999998603,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 1136,
+      "decoded": 1136
+    },
+    {
+      "name": "/bjcp?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 286.69999999995343,
+      "duration": 24.699999999953434,
+      "transfer": 454,
+      "encoded": 154,
+      "decoded": 189
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/equipment/error-9480ae60c9b68fd4.js",
+      "type": "script",
+      "start": 287.19999999995343,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 1148,
+      "decoded": 1148
+    },
+    {
+      "name": "/calculators?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 287.89999999990687,
+      "duration": 24.699999999953434,
+      "transfer": 459,
+      "encoded": 159,
+      "decoded": 196
+    },
+    {
+      "name": "/market?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 327.0999999998603,
+      "duration": 21.9000000001397,
+      "transfer": 456,
+      "encoded": 156,
+      "decoded": 191
+    },
+    {
+      "name": "/profile?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 328,
+      "duration": 22.0999999998603,
+      "transfer": 440,
+      "encoded": 140,
+      "decoded": 153
+    },
+    {
+      "name": "/legal?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 329,
+      "duration": 22.199999999953434,
+      "transfer": 454,
+      "encoded": 154,
+      "decoded": 190
+    },
+    {
+      "name": "/app/recipes/1a691f83-3b27-4e21-ab9e-c3377c9c8115/labels?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 329.89999999990687,
+      "duration": 22.5,
+      "transfer": 2005,
+      "encoded": 1705,
+      "decoded": 4976
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/%5Bid%5D/error-2e9aee9567f38e0a.js",
+      "type": "script",
+      "start": 353.0999999998603,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 1320,
+      "decoded": 1320
+    },
+    {
+      "name": "/app/recipes/new?recipeId=1a691f83-3b27-4e21-ab9e-c3377c9c8115",
+      "type": "fetch",
+      "start": 805.1999999999534,
+      "duration": 8.199999999953434,
+      "transfer": 0,
+      "encoded": 0,
+      "decoded": 0
+    },
+    {
+      "name": "/app/recipes/new?recipeId=1a691f83-3b27-4e21-ab9e-c3377c9c8115",
+      "type": "fetch",
+      "start": 1906.8999999999069,
+      "duration": 4.199999999953434,
+      "transfer": 0,
+      "encoded": 0,
+      "decoded": 0
+    }
+  ]
+}

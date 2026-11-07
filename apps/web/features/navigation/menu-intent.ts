@@ -1,0 +1,3 @@
+// Runs before the application bundle. Keep an early menu click until React can
+// open the drawer; intercept it so React event replay cannot toggle it twice.
+export const menuIntentInitScript = `(()=>{document.addEventListener("click",e=>{const b=e.target instanceof Element?e.target.closest("[data-nb-menu-trigger]"):null;if(!b||b.dataset.nbMenuReady==="true")return;const open=b.dataset.nbMenuPending!=="open";document.querySelectorAll("[data-nb-menu-trigger]").forEach(t=>{if(t.dataset.nbMenuTrigger!==b.dataset.nbMenuTrigger)return;t.dataset.nbMenuPending=open?"open":"closed";t.setAttribute("aria-busy",String(open))});e.preventDefault();e.stopImmediatePropagation()},true)})();`;

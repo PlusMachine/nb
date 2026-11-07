@@ -1,0 +1,21 @@
+{
+  "minimalText": {
+    "fragment": "<text x=\"10\" y=\"30\" text-anchor=\"start\" font-family=\"Rubik\" font-weight=\"500\" font-size=\"20\" fill=\"black\">QA</text>",
+    "error": null
+  },
+  "recipeTitle": "Fuller's ESB",
+  "cases": [
+    {
+      "template": "typographic",
+      "error": null,
+      "chars": 18375,
+      "fragmentAtError": "mily=\"Rubik\" font-weight=\"500\" font-size=\"24\" letter-spacing=\"7\" fill=\"black\">СТРОНГ БИТТЕР</text><text x=\"263\" y=\"225\" text-anchor=\"middle\" font-family=\"IBM Plex Mono\" font-weight=\"500\" font-size=\"22"
+    },
+    {
+      "template": "craft",
+      "error": null,
+      "chars": 115746,
+      "fragmentAtError": "\" cy=\"12\" r=\"11.5\" fill=\"none\" stroke=\"black\" stroke-width=\"0.45\"/><circle cx=\"12\" cy=\"12\" r=\"10.4\" fill=\"none\" stroke=\"black\" stroke-width=\"0.25\"/><g transform=\"translate(2.432 3.615) scale(0.017918)"
+    }
+  ]
+}

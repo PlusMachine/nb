@@ -1,0 +1,54 @@
+[
+  {
+    "name": "Find a recipe by search and open its mobile detail",
+    "ok": true,
+    "evidence": {
+      "url": "http://127.0.0.1:3104/recipes/pilsner-urquell"
+    }
+  },
+  {
+    "name": "Public menu fits a short landscape viewport and toggles theme",
+    "ok": true,
+    "evidence": {
+      "width": 844,
+      "height": 390,
+      "menu": {
+        "x": 0,
+        "y": 56,
+        "width": 844,
+        "height": 334
+      },
+      "themeCycle": "light-dark-light"
+    }
+  },
+  {
+    "name": "Tall label preview leaves text fields clickable at 320px",
+    "ok": true,
+    "evidence": {
+      "documentWidth": 320,
+      "fields": [
+        "Название",
+        "Стиль",
+        "Автор"
+      ]
+    }
+  },
+  {
+    "name": "Account drawer opens and closes in landscape",
+    "ok": false,
+    "error": "The expression evaluated to a falsy value:\n\n  assert(box.x>=0&&box.y>=0&&box.y+box.height<=391)\n"
+  },
+  {
+    "name": "First visit consent fits a narrow phone and persists",
+    "ok": true,
+    "evidence": {
+      "button": {
+        "x": 16,
+        "y": 522,
+        "width": 151,
+        "height": 36
+      },
+      "cookiePersisted": true
+    }
+  }
+]

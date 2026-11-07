@@ -8,6 +8,7 @@ import { Button } from "@nb/ui";
 import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 import { setBrewBatchStatusAction } from "@/app/(app)/app/brew-batches/[id]/actions";
 import { type BrewBatchStatus } from "@/features/brew-batches/contracts";
+import { useOfflineBrew } from "../offline/context";
 
 type ButtonVariant = "default" | "primary" | "outline" | "ghost" | "danger" | "dangerOutline";
 
@@ -51,6 +52,7 @@ export function BrewTransitionButton({
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  const offline = useOfflineBrew(brewBatchId);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -64,6 +66,12 @@ export function BrewTransitionButton({
     setBusy(true);
     setError(null);
     try {
+      if (offline && (to === "brewing" || to === "fermenting")) {
+        const result = await offline.save({ kind: "transition", to });
+        if (result.ok) setConfirmOpen(false);
+        else setError(result.message);
+        return;
+      }
       const result = await setBrewBatchStatusAction(brewBatchId, to);
       if (!result.ok) {
         setError(result.message);

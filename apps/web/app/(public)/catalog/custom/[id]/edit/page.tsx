@@ -28,8 +28,8 @@ export default async function EditCustomIngredientPage({
         mode="edit"
         initial={buildCustomFormInitialValueFromCustomItem(item)}
         submitLabel="Сохранить изменения"
-        onSubmit={(payload) => updateCatalogCustomIngredientAction(id, payload)}
-        onDelete={() => deleteCatalogCustomIngredientAction(id)}
+        onSubmit={updateCatalogCustomIngredientAction.bind(null, id)}
+        onDelete={deleteCatalogCustomIngredientAction.bind(null, id)}
       />
     </main>
   );

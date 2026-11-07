@@ -1,0 +1,803 @@
+{
+  "name": "editor-desktop",
+  "path": "/app/recipes/new",
+  "mobile": false,
+  "slow": false,
+  "warm": false,
+  "freshConsent": false,
+  "status": 200,
+  "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+  "url": "http://127.0.0.1:3016/app/recipes/new",
+  "ttfbMs": 20.20000000006985,
+  "fcpMs": 188,
+  "lcpMs": 188,
+  "cls": 0.00976727537722908,
+  "domContentLoadedMs": 68.40000000002328,
+  "loadMs": 328.80000000004657,
+  "htmlTransfer": 21422,
+  "htmlDecoded": 102766,
+  "resourceTransfer": 1051570,
+  "resourceDecoded": 3431430,
+  "jsDecoded": 2178831,
+  "domElements": 797,
+  "viewport": {
+    "width": 1440,
+    "height": 900,
+    "scrollWidth": 1440,
+    "scrollHeight": 2568
+  },
+  "totalLongTaskBlockingMs": 17,
+  "lcp": [
+    {
+      "start": 188,
+      "size": 5115,
+      "url": "",
+      "tag": "P",
+      "text": "18+ · Употребление алкоголя вредит здоровью"
+    }
+  ],
+  "shifts": [
+    {
+      "start": 340.70000000006985,
+      "value": 0.0002016460905349794,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "OL",
+          "text": "",
+          "previous": {
+            "x": 12,
+            "y": 880,
+            "width": 392,
+            "height": 8,
+            "top": 880,
+            "right": 404,
+            "bottom": 888,
+            "left": 12
+          },
+          "current": {
+            "x": 12,
+            "y": 820,
+            "width": 392,
+            "height": 8,
+            "top": 820,
+            "right": 404,
+            "bottom": 828,
+            "left": 12
+          }
+        }
+      ]
+    },
+    {
+      "start": 740.6000000000931,
+      "value": 0.009565629286694102,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "DIV",
+          "text": "Солод и другое сырьёДобавитьДобавить солод, сахар или экстрактХмельВнесение при ",
+          "previous": {
+            "x": 283,
+            "y": 562.5,
+            "width": 1114,
+            "height": 337.5,
+            "top": 562.5,
+            "right": 1397,
+            "bottom": 900,
+            "left": 283
+          },
+          "current": {
+            "x": 283,
+            "y": 594.5,
+            "width": 1114,
+            "height": 305.5,
+            "top": 594.5,
+            "right": 1397,
+            "bottom": 900,
+            "left": 283
+          }
+        },
+        {
+          "tag": "DIV",
+          "text": "Объём, лЭффективность, %Кипячение, минОборудованиеGrainfather G30Ввести параметр",
+          "previous": {
+            "x": 288,
+            "y": 481,
+            "width": 601.390625,
+            "height": 69.5,
+            "top": 481,
+            "right": 889.390625,
+            "bottom": 550.5,
+            "left": 288
+          },
+          "current": {
+            "x": 288,
+            "y": 513,
+            "width": 601.390625,
+            "height": 69.5,
+            "top": 513,
+            "right": 889.390625,
+            "bottom": 582.5,
+            "left": 288
+          }
+        },
+        {
+          "tag": "DIV",
+          "text": "IBU⚙—",
+          "previous": {
+            "x": 288,
+            "y": 382,
+            "width": 194.125,
+            "height": 78,
+            "top": 382,
+            "right": 482.125,
+            "bottom": 460,
+            "left": 288
+          },
+          "current": {
+            "x": 288,
+            "y": 419,
+            "width": 194.125,
+            "height": 78,
+            "top": 419,
+            "right": 482.125,
+            "bottom": 497,
+            "left": 288
+          }
+        },
+        {
+          "tag": "DIV",
+          "text": "ABV—",
+          "previous": {
+            "x": 490.125,
+            "y": 382,
+            "width": 194.125,
+            "height": 78,
+            "top": 382,
+            "right": 684.25,
+            "bottom": 460,
+            "left": 490.125
+          },
+          "current": {
+            "x": 490.125,
+            "y": 419,
+            "width": 194.125,
+            "height": 78,
+            "top": 419,
+            "right": 684.25,
+            "bottom": 497,
+            "left": 490.125
+          }
+        },
+        {
+          "tag": "DIV",
+          "text": "СтильВне BJCP",
+          "previous": {
+            "x": 692.25,
+            "y": 382,
+            "width": 194.125,
+            "height": 78,
+            "top": 382,
+            "right": 886.375,
+            "bottom": 460,
+            "left": 692.25
+          },
+          "current": {
+            "x": 692.25,
+            "y": 419,
+            "width": 194.125,
+            "height": 78,
+            "top": 419,
+            "right": 886.375,
+            "bottom": 497,
+            "left": 692.25
+          }
+        }
+      ]
+    }
+  ],
+  "longtasks": [
+    {
+      "start": 261,
+      "duration": 67
+    }
+  ],
+  "events": [],
+  "errors": [],
+  "resources": [
+    {
+      "name": "/_next/static/media/32425b6d39044b3c-s.p.ttf",
+      "type": "link",
+      "start": 23.300000000046566,
+      "duration": 51.300000000046566,
+      "transfer": 149811,
+      "encoded": 149511,
+      "decoded": 359804
+    },
+    {
+      "name": "/_next/static/css/688dbf7110800d11.css",
+      "type": "link",
+      "start": 23.600000000093132,
+      "duration": 24.5,
+      "transfer": 2181,
+      "encoded": 1881,
+      "decoded": 7335
+    },
+    {
+      "name": "/_next/static/media/d703e6352f035923-s.p.ttf",
+      "type": "link",
+      "start": 23.600000000093132,
+      "duration": 50.39999999990687,
+      "transfer": 300789,
+      "encoded": 300489,
+      "decoded": 744936
+    },
+    {
+      "name": "/_next/static/css/10d068b31dbc4d49.css",
+      "type": "link",
+      "start": 23.70000000006985,
+      "duration": 32.29999999993015,
+      "transfer": 20713,
+      "encoded": 20413,
+      "decoded": 115379
+    },
+    {
+      "name": "/_next/static/chunks/webpack-50b6521d18506e69.js",
+      "type": "link",
+      "start": 45,
+      "duration": 17.400000000023283,
+      "transfer": 2110,
+      "encoded": 1810,
+      "decoded": 3498
+    },
+    {
+      "name": "/_next/static/chunks/87c73c54-dd8d81ac9604067c.js",
+      "type": "script",
+      "start": 45,
+      "duration": 31.5,
+      "transfer": 54664,
+      "encoded": 54364,
+      "decoded": 173023
+    },
+    {
+      "name": "/_next/static/chunks/main-app-1b4249da1a5d893c.js",
+      "type": "script",
+      "start": 45.10000000009313,
+      "duration": 25.599999999976717,
+      "transfer": 870,
+      "encoded": 570,
+      "decoded": 570
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/error-f2109ab5bea0953a.js",
+      "type": "script",
+      "start": 45.10000000009313,
+      "duration": 26.199999999953434,
+      "transfer": 998,
+      "encoded": 698,
+      "decoded": 1327
+    },
+    {
+      "name": "/_next/static/chunks/18-94afe61f15789e06.js",
+      "type": "script",
+      "start": 45.10000000009313,
+      "duration": 31.099999999976717,
+      "transfer": 47088,
+      "encoded": 46788,
+      "decoded": 174209
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/new/error-08fa6ef3d7e910aa.js",
+      "type": "script",
+      "start": 45.20000000006985,
+      "duration": 37.90000000002328,
+      "transfer": 942,
+      "encoded": 642,
+      "decoded": 1245
+    },
+    {
+      "name": "/_next/static/chunks/7283-f1e1247528aca409.js",
+      "type": "script",
+      "start": 45.20000000006985,
+      "duration": 38.09999999997672,
+      "transfer": 3701,
+      "encoded": 3401,
+      "decoded": 8555
+    },
+    {
+      "name": "/_next/static/chunks/612-9c360be286377cda.js",
+      "type": "script",
+      "start": 45.20000000006985,
+      "duration": 40.199999999953434,
+      "transfer": 63319,
+      "encoded": 63019,
+      "decoded": 212253
+    },
+    {
+      "name": "/_next/static/chunks/4737-b9435b98fbb3c365.js",
+      "type": "script",
+      "start": 45.300000000046566,
+      "duration": 38.5,
+      "transfer": 13380,
+      "encoded": 13080,
+      "decoded": 57621
+    },
+    {
+      "name": "/_next/static/chunks/4159-4524a53eeeb992af.js",
+      "type": "script",
+      "start": 45.300000000046566,
+      "duration": 49,
+      "transfer": 4445,
+      "encoded": 4145,
+      "decoded": 12883
+    },
+    {
+      "name": "/_next/static/chunks/9461-25c487bb36994b55.js",
+      "type": "script",
+      "start": 45.300000000046566,
+      "duration": 50.199999999953434,
+      "transfer": 5129,
+      "encoded": 4829,
+      "decoded": 12329
+    },
+    {
+      "name": "/_next/static/chunks/app/error-482cb912af31630e.js",
+      "type": "script",
+      "start": 45.40000000002328,
+      "duration": 49.5,
+      "transfer": 953,
+      "encoded": 653,
+      "decoded": 1140
+    },
+    {
+      "name": "/_next/static/chunks/9664-4bead6cd06a85437.js",
+      "type": "script",
+      "start": 45.40000000002328,
+      "duration": 49.800000000046566,
+      "transfer": 3455,
+      "encoded": 3155,
+      "decoded": 8925
+    },
+    {
+      "name": "/_next/static/chunks/app/layout-a377c5f5ad22f81f.js",
+      "type": "script",
+      "start": 45.40000000002328,
+      "duration": 50.40000000002328,
+      "transfer": 7444,
+      "encoded": 7144,
+      "decoded": 18394
+    },
+    {
+      "name": "/_next/static/chunks/922-36cb889d8a78c9e9.js",
+      "type": "script",
+      "start": 45.5,
+      "duration": 55,
+      "transfer": 3775,
+      "encoded": 3475,
+      "decoded": 9436
+    },
+    {
+      "name": "/_next/static/chunks/1140-3282b57ff3d332fe.js",
+      "type": "script",
+      "start": 45.5,
+      "duration": 55.800000000046566,
+      "transfer": 5548,
+      "encoded": 5248,
+      "decoded": 20277
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/layout-7999a595026f1b2e.js",
+      "type": "script",
+      "start": 45.60000000009313,
+      "duration": 64.19999999995343,
+      "transfer": 506,
+      "encoded": 206,
+      "decoded": 206
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/layout-6a9b9b951f570000.js",
+      "type": "script",
+      "start": 54.70000000006985,
+      "duration": 55.29999999993015,
+      "transfer": 2491,
+      "encoded": 2191,
+      "decoded": 6439
+    },
+    {
+      "name": "/_next/static/chunks/489-fc96c5688a515719.js",
+      "type": "script",
+      "start": 54.800000000046566,
+      "duration": 56.40000000002328,
+      "transfer": 5524,
+      "encoded": 5224,
+      "decoded": 13661
+    },
+    {
+      "name": "/_next/static/chunks/8732-787a7f6fb004de98.js",
+      "type": "script",
+      "start": 54.90000000002328,
+      "duration": 55.59999999997672,
+      "transfer": 3000,
+      "encoded": 2700,
+      "decoded": 7620
+    },
+    {
+      "name": "/_next/static/chunks/3671-7a65dbaeafe4c092.js",
+      "type": "script",
+      "start": 55.10000000009313,
+      "duration": 59.199999999953434,
+      "transfer": 30297,
+      "encoded": 29997,
+      "decoded": 157102
+    },
+    {
+      "name": "/_next/static/chunks/6005-b648b00388e32889.js",
+      "type": "script",
+      "start": 55.20000000006985,
+      "duration": 58.79999999993015,
+      "transfer": 3664,
+      "encoded": 3364,
+      "decoded": 10087
+    },
+    {
+      "name": "/_next/static/chunks/1639-5eecbdf20c5b9d47.js",
+      "type": "script",
+      "start": 55.300000000046566,
+      "duration": 66.40000000002328,
+      "transfer": 5727,
+      "encoded": 5427,
+      "decoded": 19895
+    },
+    {
+      "name": "/_next/static/chunks/6973-56369b621a01f5bf.js",
+      "type": "script",
+      "start": 55.40000000002328,
+      "duration": 69.90000000002328,
+      "transfer": 4065,
+      "encoded": 3765,
+      "decoded": 8656
+    },
+    {
+      "name": "/_next/static/chunks/6120-07b333e4541a8fe9.js",
+      "type": "script",
+      "start": 55.5,
+      "duration": 70,
+      "transfer": 8647,
+      "encoded": 8347,
+      "decoded": 28632
+    },
+    {
+      "name": "/_next/static/chunks/4258-e3283a4ddd5fcff4.js",
+      "type": "script",
+      "start": 55.70000000006985,
+      "duration": 68.90000000002328,
+      "transfer": 3237,
+      "encoded": 2937,
+      "decoded": 9107
+    },
+    {
+      "name": "/_next/static/chunks/1623-4bd7af5960049a45.js",
+      "type": "script",
+      "start": 55.800000000046566,
+      "duration": 69.09999999997672,
+      "transfer": 3938,
+      "encoded": 3638,
+      "decoded": 11086
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/page-9d4bb3298e0e98f2.js",
+      "type": "script",
+      "start": 55.90000000002328,
+      "duration": 70.20000000006985,
+      "transfer": 8601,
+      "encoded": 8301,
+      "decoded": 22018
+    },
+    {
+      "name": "/_next/static/chunks/9439-93a957586341ba22.js",
+      "type": "script",
+      "start": 56,
+      "duration": 72.40000000002328,
+      "transfer": 4362,
+      "encoded": 4062,
+      "decoded": 11208
+    },
+    {
+      "name": "/_next/static/chunks/4139-a2bcd9cff08ba4b8.js",
+      "type": "script",
+      "start": 56.20000000006985,
+      "duration": 85.90000000002328,
+      "transfer": 56714,
+      "encoded": 56414,
+      "decoded": 170375
+    },
+    {
+      "name": "/_next/static/chunks/6926-eaa04380686830b3.js",
+      "type": "script",
+      "start": 56.40000000002328,
+      "duration": 81.5,
+      "transfer": 13028,
+      "encoded": 12728,
+      "decoded": 40407
+    },
+    {
+      "name": "/_next/static/chunks/3931-5e2f6415202a03df.js",
+      "type": "script",
+      "start": 56.5,
+      "duration": 77.80000000004657,
+      "transfer": 2865,
+      "encoded": 2565,
+      "decoded": 11113
+    },
+    {
+      "name": "/_next/static/chunks/3594-995a965781e222a7.js",
+      "type": "script",
+      "start": 56.70000000006985,
+      "duration": 81.40000000002328,
+      "transfer": 4241,
+      "encoded": 3941,
+      "decoded": 10378
+    },
+    {
+      "name": "/_next/static/chunks/7937-28c93b4ad94e37c4.js",
+      "type": "script",
+      "start": 56.90000000002328,
+      "duration": 81.40000000002328,
+      "transfer": 17425,
+      "encoded": 17125,
+      "decoded": 61264
+    },
+    {
+      "name": "/_next/static/chunks/1269-703da73ea98b41fe.js",
+      "type": "script",
+      "start": 57,
+      "duration": 80.60000000009313,
+      "transfer": 2706,
+      "encoded": 2406,
+      "decoded": 6409
+    },
+    {
+      "name": "/_next/static/chunks/6707-dfb5ad6fca8c13e5.js",
+      "type": "script",
+      "start": 57.20000000006985,
+      "duration": 89.29999999993015,
+      "transfer": 4226,
+      "encoded": 3926,
+      "decoded": 11547
+    },
+    {
+      "name": "/_next/static/chunks/3490-9afb0f63887ccb10.js",
+      "type": "script",
+      "start": 57.300000000046566,
+      "duration": 93.90000000002328,
+      "transfer": 54920,
+      "encoded": 54620,
+      "decoded": 463146
+    },
+    {
+      "name": "/_next/static/chunks/1520-73a8c1d586705037.js",
+      "type": "script",
+      "start": 57.5,
+      "duration": 90.90000000002328,
+      "transfer": 5419,
+      "encoded": 5119,
+      "decoded": 14917
+    },
+    {
+      "name": "/_next/static/chunks/3787-2580d1338d3639bd.js",
+      "type": "script",
+      "start": 57.60000000009313,
+      "duration": 91.29999999993015,
+      "transfer": 1855,
+      "encoded": 1555,
+      "decoded": 4507
+    },
+    {
+      "name": "/_next/static/chunks/7638-76017a88badfc52c.js",
+      "type": "script",
+      "start": 57.70000000006985,
+      "duration": 92.40000000002328,
+      "transfer": 12996,
+      "encoded": 12696,
+      "decoded": 43829
+    },
+    {
+      "name": "/_next/static/chunks/5023-1625f10f6620c8cd.js",
+      "type": "script",
+      "start": 57.800000000046566,
+      "duration": 100.09999999997672,
+      "transfer": 7265,
+      "encoded": 6965,
+      "decoded": 18411
+    },
+    {
+      "name": "/_next/static/chunks/5645-97906930e38c25dc.js",
+      "type": "script",
+      "start": 58,
+      "duration": 100.70000000006985,
+      "transfer": 5869,
+      "encoded": 5569,
+      "decoded": 20695
+    },
+    {
+      "name": "/_next/static/chunks/4929-b1213b7624143ad9.js",
+      "type": "script",
+      "start": 58,
+      "duration": 102.60000000009313,
+      "transfer": 71385,
+      "encoded": 71085,
+      "decoded": 280266
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/new/page-7154287afe5a5341.js",
+      "type": "script",
+      "start": 58.10000000009313,
+      "duration": 100.09999999997672,
+      "transfer": 545,
+      "encoded": 245,
+      "decoded": 245
+    },
+    {
+      "name": "/api/recipes/water-profiles",
+      "type": "fetch",
+      "start": 305.30000000004657,
+      "duration": 17.5,
+      "transfer": 351,
+      "encoded": 51,
+      "decoded": 51
+    },
+    {
+      "name": "/app?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 345.30000000004657,
+      "duration": 35,
+      "transfer": 429,
+      "encoded": 129,
+      "decoded": 146
+    },
+    {
+      "name": "/app/recipes?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 345.4000000000233,
+      "duration": 35.20000000006985,
+      "transfer": 438,
+      "encoded": 138,
+      "decoded": 167
+    },
+    {
+      "name": "/app/ingredients?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 345.60000000009313,
+      "duration": 37.39999999990687,
+      "transfer": 2394,
+      "encoded": 2094,
+      "decoded": 7404
+    },
+    {
+      "name": "/app/brew-batches?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 345.70000000006985,
+      "duration": 37.79999999993015,
+      "transfer": 1959,
+      "encoded": 1659,
+      "decoded": 4531
+    },
+    {
+      "name": "/app/equipment?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 345.80000000004657,
+      "duration": 37.90000000002328,
+      "transfer": 2088,
+      "encoded": 1788,
+      "decoded": 7448
+    },
+    {
+      "name": "/app/master?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 377.60000000009313,
+      "duration": 23.599999999976717,
+      "transfer": 444,
+      "encoded": 144,
+      "decoded": 168
+    },
+    {
+      "name": "/catalog?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 378.10000000009313,
+      "duration": 23.899999999906868,
+      "transfer": 456,
+      "encoded": 156,
+      "decoded": 192
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/ingredients/error-cf62132f9ffaac08.js",
+      "type": "script",
+      "start": 378.9000000000233,
+      "duration": 29.300000000046566,
+      "transfer": 958,
+      "encoded": 658,
+      "decoded": 1134
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/brew-batches/error-7638144f5a85e143.js",
+      "type": "script",
+      "start": 379.30000000004657,
+      "duration": 29.099999999976717,
+      "transfer": 960,
+      "encoded": 660,
+      "decoded": 1136
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/equipment/error-9480ae60c9b68fd4.js",
+      "type": "script",
+      "start": 379.9000000000233,
+      "duration": 28.70000000006985,
+      "transfer": 961,
+      "encoded": 661,
+      "decoded": 1148
+    },
+    {
+      "name": "/articles?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 380.60000000009313,
+      "duration": 22.399999999906868,
+      "transfer": 457,
+      "encoded": 157,
+      "decoded": 193
+    },
+    {
+      "name": "/bjcp?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 382.4000000000233,
+      "duration": 47.20000000006985,
+      "transfer": 454,
+      "encoded": 154,
+      "decoded": 189
+    },
+    {
+      "name": "/calculators?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 382.9000000000233,
+      "duration": 48.300000000046566,
+      "transfer": 459,
+      "encoded": 159,
+      "decoded": 196
+    },
+    {
+      "name": "/market?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 402,
+      "duration": 28.5,
+      "transfer": 456,
+      "encoded": 156,
+      "decoded": 191
+    },
+    {
+      "name": "/profile?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 402.9000000000233,
+      "duration": 29.099999999976717,
+      "transfer": 440,
+      "encoded": 140,
+      "decoded": 153
+    },
+    {
+      "name": "/legal?_rsc=uFL31h8W6vlWym10",
+      "type": "fetch",
+      "start": 403.80000000004657,
+      "duration": 29,
+      "transfer": 454,
+      "encoded": 154,
+      "decoded": 190
+    },
+    {
+      "name": "/app/recipes/new",
+      "type": "fetch",
+      "start": 707.5,
+      "duration": 25.100000000093132,
+      "transfer": 579,
+      "encoded": 279,
+      "decoded": 428
+    }
+  ]
+}

@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 
 import { publicLinks } from "@/lib/navigation";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { useMenuIntent } from "./use-menu-intent";
 
 const isActivePath = (pathname: string, href: string) => (
   pathname === href || pathname.startsWith(`${href}/`)
@@ -54,6 +55,8 @@ export function SiteHeader() {
     };
   }, [mobileOpen]);
 
+  useMenuIntent("site", setMobileOpen);
+
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur" style={{ fontFamily: "var(--font-sans)" }}>
       <div
@@ -100,9 +103,11 @@ export function SiteHeader() {
           <button
             type="button"
             onClick={() => setMobileOpen((value) => !value)}
+            data-nb-menu-trigger="site"
+            suppressHydrationWarning
             aria-label={mobileOpen ? "Закрыть меню" : "Открыть меню"}
             aria-expanded={mobileOpen}
-            className="grid min-h-11 min-w-11 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground xl:hidden"
+            className="relative grid min-h-11 min-w-11 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground xl:hidden"
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>

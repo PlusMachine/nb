@@ -1,0 +1,57 @@
+[
+  {
+    "name": "Find a recipe by search and open its mobile detail",
+    "ok": false,
+    "error": "locator.fill: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Поиск рецептов', exact: true })\u001b[22m\n"
+  },
+  {
+    "name": "Public menu fits a short landscape viewport and toggles theme",
+    "ok": true,
+    "evidence": {
+      "width": 844,
+      "height": 390,
+      "menu": {
+        "x": 0,
+        "y": 56,
+        "width": 844,
+        "height": 334
+      },
+      "themeCycle": "light-dark-light"
+    }
+  },
+  {
+    "name": "Tall label preview leaves text fields clickable at 320px",
+    "ok": true,
+    "evidence": {
+      "documentWidth": 320,
+      "fields": [
+        "Название",
+        "Стиль",
+        "Автор"
+      ]
+    }
+  },
+  {
+    "name": "Account drawer opens and closes in landscape",
+    "ok": true,
+    "evidence": {
+      "x": -134.53256225585938,
+      "y": 0,
+      "width": 288,
+      "height": 390
+    }
+  },
+  {
+    "name": "First visit consent fits a narrow phone and persists",
+    "ok": true,
+    "evidence": {
+      "button": {
+        "x": 16,
+        "y": 522,
+        "width": 151,
+        "height": 36
+      },
+      "cookiePersisted": true
+    }
+  }
+]

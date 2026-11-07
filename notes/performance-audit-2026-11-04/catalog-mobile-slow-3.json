@@ -1,0 +1,554 @@
+{
+  "name": "catalog-mobile-slow-3",
+  "path": "/catalog",
+  "mobile": true,
+  "slow": true,
+  "warm": false,
+  "freshConsent": false,
+  "status": 200,
+  "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+  "url": "http://127.0.0.1:3016/catalog",
+  "ttfbMs": 113.69999999995343,
+  "fcpMs": 1220,
+  "lcpMs": 1220,
+  "cls": 0.24684764147601912,
+  "domContentLoadedMs": 1717.3000000000466,
+  "loadMs": 4562.09999999986,
+  "htmlTransfer": 87900,
+  "htmlDecoded": 435371,
+  "resourceTransfer": 758086,
+  "resourceDecoded": 2194973,
+  "jsDecoded": 961747,
+  "domElements": 2192,
+  "incompleteImages": [],
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "scrollWidth": 390,
+    "scrollHeight": 6898
+  },
+  "totalLongTaskBlockingMs": 561,
+  "lcp": [
+    {
+      "start": 1220,
+      "size": 22464,
+      "url": "",
+      "tag": "P",
+      "text": "Открытый справочник ингредиентов для домашних пивоваров: солод, хмель, дрожжи и не только."
+    }
+  ],
+  "shifts": [
+    {
+      "start": 3790.5,
+      "value": 0.24558289692159105,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "SECTION",
+          "text": "СолодВсе 457ИнгредиентПараметрыАмбер / Ароматик MDAmber - Aromatic MD·Dingemans·",
+          "previous": {
+            "x": 16,
+            "y": 389,
+            "width": 358,
+            "height": 455,
+            "top": 389,
+            "right": 374,
+            "bottom": 844,
+            "left": 16
+          },
+          "current": {
+            "x": 16,
+            "y": 329,
+            "width": 358,
+            "height": 515,
+            "top": 329,
+            "right": 374,
+            "bottom": 844,
+            "left": 16
+          }
+        },
+        {
+          "tag": "ARTICLE",
+          "text": "Американский светлый 2-рядныйAmerican 2-Row Pale Malt·Malteurop·FR3,5 EBCЭкстрак",
+          "previous": {
+            "x": 13,
+            "y": 571,
+            "width": 364,
+            "height": 138,
+            "top": 571,
+            "right": 377,
+            "bottom": 709,
+            "left": 13
+          },
+          "current": {
+            "x": 13,
+            "y": 485,
+            "width": 364,
+            "height": 112,
+            "top": 485,
+            "right": 377,
+            "bottom": 597,
+            "left": 13
+          }
+        },
+        {
+          "tag": "ARTICLE",
+          "text": "АромаArome·Castle Malting·BE95–105 EBCЭкстрактивность 78%",
+          "previous": {
+            "x": 13,
+            "y": 715,
+            "width": 364,
+            "height": 112,
+            "top": 715,
+            "right": 377,
+            "bottom": 827,
+            "left": 13
+          },
+          "current": {
+            "x": 13,
+            "y": 603,
+            "width": 364,
+            "height": 112,
+            "top": 603,
+            "right": 377,
+            "bottom": 715,
+            "left": 13
+          }
+        },
+        {
+          "tag": "SECTION",
+          "text": "Все1402Солод457Сбраживаемое сырьё174Хмель248Дрожжи349Водоподготовка28Специи и до",
+          "previous": {
+            "x": 13,
+            "y": 227,
+            "width": 364,
+            "height": 142,
+            "top": 227,
+            "right": 377,
+            "bottom": 369,
+            "left": 13
+          },
+          "current": {
+            "x": 13,
+            "y": 167,
+            "width": 364,
+            "height": 142,
+            "top": 167,
+            "right": 377,
+            "bottom": 309,
+            "left": 13
+          }
+        },
+        {
+          "tag": "ARTICLE",
+          "text": "Амбер / Ароматик MDAmber - Aromatic MD·Dingemans·BE40–60 EBCЭкстрактивность 79%Б",
+          "previous": {
+            "x": 13,
+            "y": 427,
+            "width": 364,
+            "height": 138,
+            "top": 427,
+            "right": 377,
+            "bottom": 565,
+            "left": 13
+          },
+          "current": {
+            "x": 13,
+            "y": 367,
+            "width": 364,
+            "height": 112,
+            "top": 367,
+            "right": 377,
+            "bottom": 479,
+            "left": 13
+          }
+        }
+      ]
+    },
+    {
+      "start": 4025.5999999998603,
+      "value": 0.0012647445544280746,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "OL",
+          "text": "",
+          "previous": {
+            "x": 12,
+            "y": 824,
+            "width": 366,
+            "height": 8,
+            "top": 824,
+            "right": 378,
+            "bottom": 832,
+            "left": 12
+          },
+          "current": {
+            "x": 12,
+            "y": 764,
+            "width": 366,
+            "height": 8,
+            "top": 764,
+            "right": 378,
+            "bottom": 772,
+            "left": 12
+          }
+        }
+      ]
+    }
+  ],
+  "longtasks": [
+    {
+      "start": 1009.3999999999069,
+      "duration": 180
+    },
+    {
+      "start": 2058.5,
+      "duration": 260
+    },
+    {
+      "start": 3032.1999999999534,
+      "duration": 138
+    },
+    {
+      "start": 3551,
+      "duration": 103
+    },
+    {
+      "start": 3726.5,
+      "duration": 84
+    },
+    {
+      "start": 3888.6999999999534,
+      "duration": 81
+    },
+    {
+      "start": 3970.399999999907,
+      "duration": 64
+    },
+    {
+      "start": 4532.199999999953,
+      "duration": 51
+    }
+  ],
+  "events": [],
+  "errors": [],
+  "menuInteractiveAt": 3312.6999999999534,
+  "resources": [
+    {
+      "name": "/_next/static/media/32425b6d39044b3c-s.p.ttf",
+      "type": "link",
+      "start": 178.0999999998603,
+      "duration": 3509.7000000001863,
+      "transfer": 149811,
+      "encoded": 149511,
+      "decoded": 359804
+    },
+    {
+      "name": "/_next/static/media/d703e6352f035923-s.p.ttf",
+      "type": "link",
+      "start": 180.39999999990687,
+      "duration": 4346.90000000014,
+      "transfer": 300789,
+      "encoded": 300489,
+      "decoded": 744936
+    },
+    {
+      "name": "/_next/static/css/688dbf7110800d11.css",
+      "type": "link",
+      "start": 201.69999999995343,
+      "duration": 209.89999999990687,
+      "transfer": 2181,
+      "encoded": 1881,
+      "decoded": 7335
+    },
+    {
+      "name": "/_next/static/css/10d068b31dbc4d49.css",
+      "type": "link",
+      "start": 203.0999999998603,
+      "duration": 686.8000000000466,
+      "transfer": 20713,
+      "encoded": 20413,
+      "decoded": 115379
+    },
+    {
+      "name": "/_next/static/chunks/webpack-50b6521d18506e69.js",
+      "type": "link",
+      "start": 203.69999999995343,
+      "duration": 253.30000000004657,
+      "transfer": 2110,
+      "encoded": 1810,
+      "decoded": 3498
+    },
+    {
+      "name": "/_next/static/chunks/87c73c54-dd8d81ac9604067c.js",
+      "type": "script",
+      "start": 203.89999999990687,
+      "duration": 1849.5,
+      "transfer": 54664,
+      "encoded": 54364,
+      "decoded": 173023
+    },
+    {
+      "name": "/_next/static/chunks/18-94afe61f15789e06.js",
+      "type": "script",
+      "start": 205.39999999990687,
+      "duration": 1721.8000000000466,
+      "transfer": 47088,
+      "encoded": 46788,
+      "decoded": 174209
+    },
+    {
+      "name": "/_next/static/chunks/main-app-1b4249da1a5d893c.js",
+      "type": "script",
+      "start": 205.5,
+      "duration": 883.3000000000466,
+      "transfer": 870,
+      "encoded": 570,
+      "decoded": 570
+    },
+    {
+      "name": "/_next/static/chunks/7283-f1e1247528aca409.js",
+      "type": "script",
+      "start": 205.5999999998603,
+      "duration": 1171.8000000000466,
+      "transfer": 3701,
+      "encoded": 3401,
+      "decoded": 8555
+    },
+    {
+      "name": "/_next/static/chunks/612-9c360be286377cda.js",
+      "type": "script",
+      "start": 207,
+      "duration": 2806.0999999998603,
+      "transfer": 63319,
+      "encoded": 63019,
+      "decoded": 212253
+    },
+    {
+      "name": "/_next/static/chunks/9664-4bead6cd06a85437.js",
+      "type": "script",
+      "start": 207.0999999998603,
+      "duration": 1755.4000000001397,
+      "transfer": 3455,
+      "encoded": 3155,
+      "decoded": 8925
+    },
+    {
+      "name": "/_next/static/chunks/4159-4524a53eeeb992af.js",
+      "type": "script",
+      "start": 207.19999999995343,
+      "duration": 2002.6999999999534,
+      "transfer": 4445,
+      "encoded": 4145,
+      "decoded": 12883
+    },
+    {
+      "name": "/_next/static/chunks/922-36cb889d8a78c9e9.js",
+      "type": "script",
+      "start": 207.30000000004657,
+      "duration": 2017.6999999999534,
+      "transfer": 3775,
+      "encoded": 3475,
+      "decoded": 9436
+    },
+    {
+      "name": "/_next/static/chunks/1140-3282b57ff3d332fe.js",
+      "type": "script",
+      "start": 207.39999999990687,
+      "duration": 2130.1999999999534,
+      "transfer": 5548,
+      "encoded": 5248,
+      "decoded": 20277
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/layout-6a9b9b951f570000.js",
+      "type": "script",
+      "start": 209,
+      "duration": 2220,
+      "transfer": 2491,
+      "encoded": 2191,
+      "decoded": 6439
+    },
+    {
+      "name": "/_next/static/chunks/4737-b9435b98fbb3c365.js",
+      "type": "script",
+      "start": 209.0999999998603,
+      "duration": 2503.5,
+      "transfer": 13380,
+      "encoded": 13080,
+      "decoded": 57621
+    },
+    {
+      "name": "/_next/static/chunks/9461-25c487bb36994b55.js",
+      "type": "script",
+      "start": 210,
+      "duration": 2435.1999999999534,
+      "transfer": 5129,
+      "encoded": 4829,
+      "decoded": 12329
+    },
+    {
+      "name": "/_next/static/chunks/app/layout-a377c5f5ad22f81f.js",
+      "type": "script",
+      "start": 210.0999999998603,
+      "duration": 2595.8000000000466,
+      "transfer": 7444,
+      "encoded": 7144,
+      "decoded": 18394
+    },
+    {
+      "name": "/_next/static/chunks/app/error-482cb912af31630e.js",
+      "type": "script",
+      "start": 210.69999999995343,
+      "duration": 2624.5,
+      "transfer": 953,
+      "encoded": 653,
+      "decoded": 1140
+    },
+    {
+      "name": "/_next/static/chunks/6005-b648b00388e32889.js",
+      "type": "script",
+      "start": 211.0999999998603,
+      "duration": 2863,
+      "transfer": 3664,
+      "encoded": 3364,
+      "decoded": 10087
+    },
+    {
+      "name": "/_next/static/chunks/3671-7a65dbaeafe4c092.js",
+      "type": "script",
+      "start": 211.0999999998603,
+      "duration": 3333.8000000000466,
+      "transfer": 30297,
+      "encoded": 29997,
+      "decoded": 157102
+    },
+    {
+      "name": "/_next/static/chunks/6926-eaa04380686830b3.js",
+      "type": "script",
+      "start": 211.30000000004657,
+      "duration": 3113,
+      "transfer": 13028,
+      "encoded": 12728,
+      "decoded": 40407
+    },
+    {
+      "name": "/_next/static/chunks/3594-995a965781e222a7.js",
+      "type": "script",
+      "start": 212.19999999995343,
+      "duration": 3071,
+      "transfer": 4241,
+      "encoded": 3941,
+      "decoded": 10378
+    },
+    {
+      "name": "/_next/static/chunks/6937-2e1fa6e0cb9911ff.js",
+      "type": "script",
+      "start": 212.30000000004657,
+      "duration": 3266.5999999998603,
+      "transfer": 9810,
+      "encoded": 9510,
+      "decoded": 27553
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/catalog/page-22b157c2801ffea4.js",
+      "type": "script",
+      "start": 213.30000000004657,
+      "duration": 3265.1999999999534,
+      "transfer": 466,
+      "encoded": 166,
+      "decoded": 166
+    },
+    {
+      "name": "/?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 4060.6999999999534,
+      "duration": 161.60000000009313,
+      "transfer": 427,
+      "encoded": 127,
+      "decoded": 132
+    },
+    {
+      "name": "/login?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 4062.1999999999534,
+      "duration": 173.89999999990687,
+      "transfer": 441,
+      "encoded": 141,
+      "decoded": 152
+    },
+    {
+      "name": "/catalog/malts?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 4063.399999999907,
+      "duration": 184.69999999995343,
+      "transfer": 459,
+      "encoded": 159,
+      "decoded": 203
+    },
+    {
+      "name": "/catalog/fermentables?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 4064.899999999907,
+      "duration": 188.9000000001397,
+      "transfer": 464,
+      "encoded": 164,
+      "decoded": 217
+    },
+    {
+      "name": "/catalog/system/dingemans-amber-aromatic-md-be-specialty?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 4066.5,
+      "duration": 194.39999999990687,
+      "transfer": 499,
+      "encoded": 199,
+      "decoded": 274
+    },
+    {
+      "name": "/catalog/system/malteurop-american-2-row-pale-malt?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 4231.899999999907,
+      "duration": 162.60000000009313,
+      "transfer": 491,
+      "encoded": 191,
+      "decoded": 268
+    },
+    {
+      "name": "/catalog/system/castle-malting-arome?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 4241.199999999953,
+      "duration": 169.39999999990687,
+      "transfer": 479,
+      "encoded": 179,
+      "decoded": 254
+    },
+    {
+      "name": "/catalog/system/ireks--aroma?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 4252.199999999953,
+      "duration": 172.30000000004657,
+      "transfer": 476,
+      "encoded": 176,
+      "decoded": 246
+    },
+    {
+      "name": "/catalog/system/dingemans-aroma-100-be-special?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 4258.59999999986,
+      "duration": 175.4000000001397,
+      "transfer": 489,
+      "encoded": 189,
+      "decoded": 264
+    },
+    {
+      "name": "/catalog/system/dingemans-aroma-150-be-special?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 4267.300000000047,
+      "duration": 180.29999999981374,
+      "transfer": 489,
+      "encoded": 189,
+      "decoded": 264
+    }
+  ]
+}

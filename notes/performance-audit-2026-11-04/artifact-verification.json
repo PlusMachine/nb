@@ -1,0 +1,559 @@
+{
+  "markdownLocalLinks": 69,
+  "missingLocalLinks": [],
+  "jsonFiles": 69,
+  "jsonErrors": [],
+  "screenshots": 39,
+  "scriptSyntax": [
+    {
+      "file": "http-smoke.mjs",
+      "ok": true,
+      "error": null
+    },
+    {
+      "file": "trace-label.cjs",
+      "ok": true,
+      "error": null
+    },
+    {
+      "file": "browser-helpers.mjs",
+      "ok": true,
+      "error": null
+    }
+  ],
+  "cleanupOk": true,
+  "files": {
+    "editor-desktop.json": {
+      "bytes": 20528,
+      "sha256": "00ecfefddd74a324368c95d36b1a1e2288c5b8a925694e6a238f4904e75227d5"
+    },
+    "desktop-summary.json": {
+      "bytes": 1255,
+      "sha256": "6d6c07b7a30b5bdd319896f51b1d132ffcd8002a25d7c2295198b1f51c68420c"
+    },
+    "README.md": {
+      "bytes": 35365,
+      "sha256": "669830dd88a905e158095e9cae43c25d2e9c53e3c16c71e750e2ca636ecf6c15"
+    },
+    "inventory-after-clear.json": {
+      "bytes": 46934,
+      "sha256": "ff1d857325a12ba0be0c63ae3ef53b1fd88b5258674ce5d37937c2ba9748272c"
+    },
+    "editor-mobile-slow-3.json": {
+      "bytes": 18976,
+      "sha256": "1c7d74042bb7696c67a84c2279463062c7387926c9ea08fa7c595a48e7146299"
+    },
+    "mobile-editor-fit.json": {
+      "bytes": 557,
+      "sha256": "2ccf46eba7ace9e320e6f1555a979b8508cadceca9bd20070ecaef0c64e1b348"
+    },
+    "catalog-navigation.json": {
+      "bytes": 201,
+      "sha256": "19e8296a5f7adab6693765e634979f8fa8d556555b14777c6952d039f4a469fd"
+    },
+    "mobile-editor-fab-hit.json": {
+      "bytes": 25629,
+      "sha256": "4b48eff043625006e2e6d81436cb6921e4a540d849021e439f9a0a954738c3b0"
+    },
+    "dashboard-desktop.json": {
+      "bytes": 19764,
+      "sha256": "03a1e39cb428e34662aca63d62690edba8295914262ef33e9b3d7d0f1c43d1d9"
+    },
+    "calculator-mobile-slow-2.json": {
+      "bytes": 14946,
+      "sha256": "2d760945837f1513cd4f364215fb06f91bc2a3ac9d4da771c7854602fa994fca"
+    },
+    "recipe-mobile-dark.json": {
+      "bytes": 35833,
+      "sha256": "234c5b42566a2fd0e924a1867c66dfc5140961e9cd96425a8236f7b1f5239145"
+    },
+    "summary.json": {
+      "bytes": 2499,
+      "sha256": "1d80a79d22fc9bbca67ff15a656f04a0baed92b5143cfdd87cf58129846e9d83"
+    },
+    "catalog-ingredient-detail.json": {
+      "bytes": 11042,
+      "sha256": "69e861fb5897688b6399b953b9ba9b532a1a959065970866048f4911fa0ae708"
+    },
+    "label-craft.svg": {
+      "bytes": 115924,
+      "sha256": "d1c625947d22f0e2fbbee439aa8282d3432c137e98daf4541631a1fea72817f0"
+    },
+    "label-svg-reproduction.json": {
+      "bytes": 930,
+      "sha256": "683f2f2d76cf478caba6235f175eb71ba4201d7076866aaadd937048a428a083"
+    },
+    "recipes-mobile-slow-1.json": {
+      "bytes": 20052,
+      "sha256": "deb0611182e2cfcb3707c894b119e06f8f613dab20751163e4b297fd71c25607"
+    },
+    "font-blocked-control.json": {
+      "bytes": 10955,
+      "sha256": "fb1068c7571bc82b69256105fc99df9d91ae9cdbc61d293020173e56fdb42b53"
+    },
+    "fab-hit-test.json": {
+      "bytes": 451,
+      "sha256": "69eaec6a2432b42cb8efe5edfef7b458ec0b0cbcd9df133b7c9b739a21a90acb"
+    },
+    "catalog-mobile-slow-2.json": {
+      "bytes": 14072,
+      "sha256": "b0e596987b13be8e9e81224ca9c23dc5b21e74a333392cb978c255e5ec54608e"
+    },
+    "bjcp-search.json": {
+      "bytes": 19518,
+      "sha256": "a31cde08ac84a9c0a70a2d67e50558fafd48540bce841e6cb61de5ca2860068d"
+    },
+    "lighthouse-catalog.report.json": {
+      "bytes": 657191,
+      "sha256": "b0a99deada7c74e72dda1b0f81cea6d42e41e5fe5ac809418524228a0da7a2b1"
+    },
+    "calculator-mobile-slow-3.json": {
+      "bytes": 14980,
+      "sha256": "24389a68498a60ea09b3688f0965339324261393f7a3e4eebcd000ad7e64f251"
+    },
+    "batches-mobile.json": {
+      "bytes": 12954,
+      "sha256": "000495f2f8b02054d0a1ddd91843142605dc40940cc6758d5dddf843bff81da9"
+    },
+    "production-label-failure-1.svg.json": {
+      "bytes": 714,
+      "sha256": "1cddd6763317cde005d328192ecfec25ee0154241257ac6c1960814780486eab"
+    },
+    "lighthouse-catalog.report.html": {
+      "bytes": 701874,
+      "sha256": "18e90f320858e70069438b16509e48076e505ddb8944c193bba0ad931a711fe6"
+    },
+    "catalog-early-tap.json": {
+      "bytes": 21571,
+      "sha256": "a36cceebc1a0fb2a590bc6a6fe3217f181ac0769d6fb8870fd4057520a0e6c5c"
+    },
+    "lighthouse-catalog-summary.json": {
+      "bytes": 131114,
+      "sha256": "f0c9a540fd1c589fa9a046608e1f574f59b510ee2fa59070e840a9638a0e2f7f"
+    },
+    "editor-width-834.json": {
+      "bytes": 16800,
+      "sha256": "8573fb50b058540fe1db3e5fc0e2a95d575ceca880c76b697ec168b87da56019"
+    },
+    "editor-mobile-slow-1.json": {
+      "bytes": 18685,
+      "sha256": "7c05d84c5e8c73e2a24576dd11ac3f11e0e862ede825f2656b3f3b80ae9bc810"
+    },
+    "mobile-editor-fab-overlap.json": {
+      "bytes": 19988,
+      "sha256": "45b84879abb805a11c21061c0663af2b8899e8e531ed8c8fc321494a91964752"
+    },
+    "inventory-mobile-slow-1.json": {
+      "bytes": 15458,
+      "sha256": "309ef9a7bed5adaf5d8594e5a5e70867c0a2f4763539989409ecb37fb1c414b3"
+    },
+    "production-label-failure-1.svg": {
+      "bytes": 115871,
+      "sha256": "031cd458c21012802d812d30db34948837607926a888dc455d337f4bd296b5c2"
+    },
+    "home-error-desktop.json": {
+      "bytes": 8777,
+      "sha256": "cc57bd3e8d7fb8263aa7057b08cd37d32ed765f8562777ba51c172628b96a277"
+    },
+    "image-compression-experiment.json": {
+      "bytes": 281,
+      "sha256": "34997716e1b1f65c1f631892d581f3b3f185de07d8fee94d7c41612fb54d4f76"
+    },
+    "dashboard-mobile-slow-1.json": {
+      "bytes": 15593,
+      "sha256": "307cd37af78bc0669c0d9f664d342298b8612ca067c455f4e7af1047dcb774cc"
+    },
+    "editor-mobile-slow-2.json": {
+      "bytes": 18707,
+      "sha256": "7bca6953a3d475042a368a39413f670f4d8faf9575ecc1672f33045c11cff93b"
+    },
+    "browser-final-checks.json": {
+      "bytes": 972,
+      "sha256": "170363a01168dcffebc6b66d61d45f766118bd14d0f3a6a6f82169b05380cc43"
+    },
+    "catalog-mobile-warm.json": {
+      "bytes": 10432,
+      "sha256": "94955629b8e1ad4c106894861342f723ae348c298baf2273e7088acb53ae10fa"
+    },
+    "bjcp-detail.json": {
+      "bytes": 30977,
+      "sha256": "fb34803bf96fd6cf60c7f7cbb83854c5c9908f252862cfbcf6c8e0697469ca89"
+    },
+    "catalog-search.json": {
+      "bytes": 25899,
+      "sha256": "b7ed034da80ce5a713cbe99cbb64114a73336fc9b1552b4c8a2abca12fe09d1c"
+    },
+    "catalog-desktop.json": {
+      "bytes": 13465,
+      "sha256": "7951333febbe5bd3947d8edf6fc69208d530d826601a262d8ec9101426dd4ac1"
+    },
+    "recipe-saved.json": {
+      "bytes": 61879,
+      "sha256": "054685857a92b3c57452878524840c74c5e9cd35428f8018acf5a80c2bdff4ce"
+    },
+    "mobile-repeats-summary.json": {
+      "bytes": 1491,
+      "sha256": "b246d9ba375b1d17c6714040771ee6ccb1d1fdc7b24ce5605d06f8c3e62916af"
+    },
+    "mobile-summary.json": {
+      "bytes": 1450,
+      "sha256": "309d9bced92e1dd38f04f0d3d273d2f7dfec0443cbc7b68ef0c8d85d9ba7ce11"
+    },
+    "viewport-checks.json": {
+      "bytes": 538,
+      "sha256": "05d927943d481e41afc0d68b3863da1f5b583de31934f00f333b6d1ce6c01d2d"
+    },
+    "http-smoke.json": {
+      "bytes": 17320,
+      "sha256": "091ffe7aee2ff6213526b4e0c33671444225f181771da10051b847c4fe4ee854"
+    },
+    "lighthouse-recipes.report.json": {
+      "bytes": 574780,
+      "sha256": "78c56a192d6b467aee5abb81a54a182a3a7541684ae8cc36e0ccff0455423bbe"
+    },
+    "catalog-second-tap.json": {
+      "bytes": 22127,
+      "sha256": "6943abb36c83dccd954687571ecde5e38d6153f721b024aa62d07f3a48038e23"
+    },
+    "cleanup.json": {
+      "bytes": 681,
+      "sha256": "3a9ce344ba4bbb127524ecd1a390e9632a57b0af1c1dec39ba7128ed443cbd38"
+    },
+    "inventory-mobile-search.json": {
+      "bytes": 41075,
+      "sha256": "912f351952b60b826ad20160c2c309b33c6e151fa3e2be0d6f56e698b0d4d71c"
+    },
+    "recipe-save-error.json": {
+      "bytes": 27870,
+      "sha256": "7e3c70162f9ccbed0f069fa695513d2329e536ba9bad3bcebec86e55e242607d"
+    },
+    "catalog-empty.json": {
+      "bytes": 29250,
+      "sha256": "f13386c74e5353d29d57beb075c8900c5582c024b466b9998cc1e486944bae63"
+    },
+    "coverage.md": {
+      "bytes": 6731,
+      "sha256": "62b0ea48a5e537021c3b3f8ccff961c41330cfe6592f665167359bf8a78eedd7"
+    },
+    "bjcp-desktop.json": {
+      "bytes": 7116,
+      "sha256": "ccd94e2098731c41241160e397b052e5a20665a665ff3783b395eee23824fea1"
+    },
+    "mobile-app-menu.json": {
+      "bytes": 22941,
+      "sha256": "84a375125bc806c33a54ac047c6b85630ea7b0598f3a300514070454807cd7c6"
+    },
+    "calculator-interaction.json": {
+      "bytes": 27710,
+      "sha256": "6b9e249cb61d15dfcd1b35ca7e6a0a5b84942b9f7cb8001f30577995ec62d3e3"
+    },
+    "early-interaction.json": {
+      "bytes": 150,
+      "sha256": "32022d780971906905caaa3f2fa857e59c121601aaee8b4003fd94aef2d1771b"
+    },
+    "shopping-mobile.json": {
+      "bytes": 9741,
+      "sha256": "63b4652256fef2dbf53c90170a46894d5391b8a9505cfe094469338a51267cb1"
+    },
+    "inventory-mobile-filters.json": {
+      "bytes": 30563,
+      "sha256": "4088109b79bb49c25900e7688fe94c5806dfa426fc5a46644462400942c9169a"
+    },
+    "recipe-mobile-saved.json": {
+      "bytes": 15073,
+      "sha256": "dad1ecec229fdf4f82514bd230a01cdc4f02210f205aa8b57792bd84ec3cf0b8"
+    },
+    "editor-width-360.json": {
+      "bytes": 18328,
+      "sha256": "3b4cd49a2c09ef51f96b78b8e64eb406f60183c66203a6d21bbfbda604bd7b1a"
+    },
+    "inventory-clear-repetitions.json": {
+      "bytes": 312,
+      "sha256": "6fb0eeb153d5fc0f96de71ab88b9064754c081fe4abb04682f1b248605287a6e"
+    },
+    "catalog-mobile-slow-3.json": {
+      "bytes": 14124,
+      "sha256": "c532b1d4f32119cefe20913c3c46b356a02858138327bf040d03e9b687afe379"
+    },
+    "lighthouse-recipes.report.html": {
+      "bytes": 626924,
+      "sha256": "624d827dd4499b4d5ee858bfd4743def849b86df66440c7bebe17f992b50586b"
+    },
+    "environment.json": {
+      "bytes": 3177,
+      "sha256": "91cc1e6ffb5a75ce6f4da54b706efb28b9fe6a18ce2bbb2b11862e9d5c131396"
+    },
+    "calculator-desktop.json": {
+      "bytes": 12001,
+      "sha256": "3e3375d3ae7c3f8156cf71a85ca6885ffa1f1dadbd07ba1afcdcfd42087d20c8"
+    },
+    "inventory-add-mobile.json": {
+      "bytes": 49990,
+      "sha256": "ce47961ad34daecf1c15d64abd937d889233bb51e58d647a091e22fd6e3ead80"
+    },
+    "interactions.json": {
+      "bytes": 1396,
+      "sha256": "b320cbc676e094f388331c25000a55c7d44dbf5028786fb7359d6df8676100eb"
+    },
+    "label-typographic.svg": {
+      "bytes": 18549,
+      "sha256": "f3ae8e57f76b4d812fb0994dfe4279f13b4363592021882ce935f9cb0fb96233"
+    },
+    "inventory-desktop.json": {
+      "bytes": 20067,
+      "sha256": "c6c80b1ea3d27d3feb5dedb1dc9f4abe6ec5d8c39f7605afc5b64487a5b4f8f9"
+    },
+    "recipes-desktop.json": {
+      "bytes": 19677,
+      "sha256": "d2d09211c8664fd4a9870b195d70b9622890742af691c13b36299ac5c3779f5c"
+    },
+    "inventory-clear-recheck.json": {
+      "bytes": 27462,
+      "sha256": "79a44277f132cefc02a3741ff001794731ef42ece37895cac73b5d0566ea327f"
+    },
+    "production-minified-svg-snippet.txt": {
+      "bytes": 801,
+      "sha256": "ac2f5b7795ec037d905c64bc55b35fc999246e5417298a5534e56b09553a3be7"
+    },
+    "catalog-mobile-slow-1.json": {
+      "bytes": 13224,
+      "sha256": "794fd5ed64c82f4f76567dbba26df5d8298a289e095416a02d11e53f1f702edb"
+    },
+    "calculator-mobile-slow-1.json": {
+      "bytes": 14508,
+      "sha256": "a51f41ee124493ac4e38a551d4ceb89d9fb7f09a2475744f68f1cad4053dce01"
+    },
+    "tools/lighthouse-recipes.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tools/http-smoke.mjs": {
+      "bytes": 1606,
+      "sha256": "6402065a2b174657bac980395c670533dcff6fa2d48be4ddd98225fc278c5e8c"
+    },
+    "tools/lighthouse-version.log": {
+      "bytes": 7,
+      "sha256": "66bcc7471f4ca6bed3b255adacc2804880b4ab2adb78324996de8f1c0cde6bb1"
+    },
+    "tools/verify-artifacts.py": {
+      "bytes": 2601,
+      "sha256": "fa534be6bf5a2dafdbe8c1d46cc72f32795b3289e83b156f44aba97b47e28361"
+    },
+    "tools/build.log": {
+      "bytes": 19367,
+      "sha256": "6f6126f256fbf10dcf2ec082afd13a793574c9d9c40a811ce84e595955469298"
+    },
+    "tools/cleanup.py": {
+      "bytes": 2587,
+      "sha256": "793a717ed1048ada912ecce6a6abc9d69334281824ced8dac3c44233eef13ff3"
+    },
+    "tools/trace-label.cjs": {
+      "bytes": 751,
+      "sha256": "4f4b7f03b5f49716a871dafba9c37487a9cfb981dd9e2fff020b5d2fc559606d"
+    },
+    "tools/summary-output.log": {
+      "bytes": 2499,
+      "sha256": "1d80a79d22fc9bbca67ff15a656f04a0baed92b5143cfdd87cf58129846e9d83"
+    },
+    "tools/tsconfig-before.json": {
+      "bytes": 686,
+      "sha256": "0e6ba1408f44452f40521ded5ee27df54ba5f5d8e784cdaa68dad359aca7abee"
+    },
+    "tools/browser-helpers.mjs": {
+      "bytes": 6117,
+      "sha256": "9569bfdf37cb84758b67f386eb2996dd2dccd6734019c3836e4f6efa01011b90"
+    },
+    "tools/next-env-before.txt": {
+      "bytes": 262,
+      "sha256": "85ae5aee75f011967cf2d25cbc342f62d69314e9d925f7f4aa3456fc2cffcca6"
+    },
+    "tools/lighthouse-catalog.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tools/auth.mts": {
+      "bytes": 921,
+      "sha256": "9f36e9ace00625af4d7f380a1a965773149c93f8aa1c4e1330bb6e83de8e6fd6"
+    },
+    "tools/http-smoke.log": {
+      "bytes": 1723,
+      "sha256": "6537fc9e626182b0ad72bd6b9309b0d09404f91de10dc277b04cae5d6f3907ea"
+    },
+    "tools/server.log": {
+      "bytes": 2144,
+      "sha256": "c864542d90cefab6621f7a058ba38840e8f78f33ab1b66c91aa0b7b29015037e"
+    },
+    "tools/trace-server.log": {
+      "bytes": 905,
+      "sha256": "0607225f70518595b5f3a20609583ab775862a4d2200ae8e4e282859cc9116bd"
+    },
+    "tools/summarize.py": {
+      "bytes": 1439,
+      "sha256": "a6af5baf4f5a4fc73d8ffc910a5e72e48735dbe7ff9d68e68a2517a027fa1015"
+    },
+    "tools/qa-env.sh": {
+      "bytes": 486,
+      "sha256": "3948e9637b1eaf8bc49e9f4374336e9559b84271bef1be391fbef1e7ee8fd39c"
+    },
+    "tools/reproduce-label.mts": {
+      "bytes": 2059,
+      "sha256": "8f6edf2dd33d2583f153c9692a00568c2a7c77fa54e7bdda64b237ffd669f1f7"
+    },
+    "screenshots/editor-mobile-slow-1.png": {
+      "bytes": 42815,
+      "sha256": "fb8574a26da6a6eb977ea3ca29a178a300a811e4a42850c74f86dcd97730e0fa"
+    },
+    "screenshots/recipes-desktop.png": {
+      "bytes": 189483,
+      "sha256": "5fcd267fc009b7ced858003adfcaf275afd80d4cdb9aa01fb5b94fd9bcb2e75a"
+    },
+    "screenshots/mobile-editor-fab-hit.png": {
+      "bytes": 42552,
+      "sha256": "f21ac4952bb1463475f71ae3e43aa8adf41cf872b3b926293c3be2b9167c7356"
+    },
+    "screenshots/inventory-mobile-slow-1.png": {
+      "bytes": 62149,
+      "sha256": "a0f5b0e544d93c0ad64b1be8d4d9deaede328c6a912869f0017cf22578ecf773"
+    },
+    "screenshots/dashboard-desktop.png": {
+      "bytes": 118206,
+      "sha256": "fd08e026bed8df3ca21b56db657c8f0cba829de07a50518f166265a0e279e94a"
+    },
+    "screenshots/recipe-mobile-dark.png": {
+      "bytes": 53827,
+      "sha256": "c9ac1cefec1deb1bf01a57ee885ba23715c1b1feb81dbd94e11bd03e1b5b486c"
+    },
+    "screenshots/recipes-mobile-slow-1.png": {
+      "bytes": 64929,
+      "sha256": "eeca6fcf161ce5afa6102083d44bb83e96c07ba810b8bd5c0078d3a937050c90"
+    },
+    "screenshots/catalog-ingredient-detail.png": {
+      "bytes": 135505,
+      "sha256": "ec770f7fc4238ff82bf53a308d6a35e3c921a13a4e5d9d854e5a0ca85627db36"
+    },
+    "screenshots/catalog-mobile-slow-1.png": {
+      "bytes": 62631,
+      "sha256": "57ffdc1c987a080e18fd63732fbbfe8b69e770038d55827a41a91b55d3572192"
+    },
+    "screenshots/catalog-desktop.png": {
+      "bytes": 112340,
+      "sha256": "43e1bbba58b6ca1d445331f2ad66b99652df3c5577287a49bbbc30eb4263f158"
+    },
+    "screenshots/catalog-early-tap.png": {
+      "bytes": 67193,
+      "sha256": "a8edfeabf652d2cf6f2eb46a8f23b657c5e4cb9cef190c031a3c2e139ef6212c"
+    },
+    "screenshots/mobile-editor-fab-overlap.png": {
+      "bytes": 42738,
+      "sha256": "a0c1ebcf023b25e9a1a7f1d9d6d0cbfc4a3d62695c3562eed72821df0c157de7"
+    },
+    "screenshots/editor-width-360.png": {
+      "bytes": 38473,
+      "sha256": "3a536a215344f5d83b80f6899b4bc08286381a45c08769a81163dbd18af7332a"
+    },
+    "screenshots/catalog-search.png": {
+      "bytes": 91779,
+      "sha256": "cc522da72689d5c583029364e40a9b2f02c1d912861f55e6100d9f5bea768e55"
+    },
+    "screenshots/calculator-mobile-slow-1.png": {
+      "bytes": 49425,
+      "sha256": "9286761ce8b21a811e136021ee8546796c143f46074bb68778e12767525ecadc"
+    },
+    "screenshots/catalog-empty.png": {
+      "bytes": 84518,
+      "sha256": "4ce5034ff06178cc41cc7bc4c9bfa3d2132adf42299ea143f5d26c4ad3bcee3e"
+    },
+    "screenshots/recipe-save-error.png": {
+      "bytes": 132912,
+      "sha256": "d7da068bad9296bb71ca0d8a56f7902217a846ddd5fefbb3e976959733952c33"
+    },
+    "screenshots/bjcp-detail.png": {
+      "bytes": 671310,
+      "sha256": "2bb3e3d539f3345bd610eba69ec3a345e1a8e1d4eac95fe673c1bb99efe29c3d"
+    },
+    "screenshots/editor-width-834.png": {
+      "bytes": 68195,
+      "sha256": "057803ceef191df8cca3bb585171667b21dda41ec7e5aaa291db21705e09f53a"
+    },
+    "screenshots/inventory-mobile-search.png": {
+      "bytes": 36349,
+      "sha256": "c4c81db7002d8d09c82d5d2609ff108cf23bc3c61ca8e68471f3ae40608030de"
+    },
+    "screenshots/editor-desktop.png": {
+      "bytes": 105274,
+      "sha256": "1ceb477167190cb0fc6126dff1a84a4074299d4f39836e25f8ef442dbbfa9576"
+    },
+    "screenshots/recipe-saved.png": {
+      "bytes": 129253,
+      "sha256": "51b97819a15983b78889ed07d76716df692468c3b3d69af01b5ee3cd5ac8c345"
+    },
+    "screenshots/batches-mobile.png": {
+      "bytes": 25066,
+      "sha256": "1c599a545837b42663db67a45d4e7d4ea9bc10a9d8b22199a3011a0c6b0c93ab"
+    },
+    "screenshots/home-error-desktop.png": {
+      "bytes": 37501,
+      "sha256": "5ed2ec5ce64ed1826289272463d25c70f17dcef76f2cbeb8b7d96971aa5a6b7a"
+    },
+    "screenshots/calculator-desktop.png": {
+      "bytes": 107365,
+      "sha256": "2b9abafc21875feb269edf060c630f751cb8c6bc03d771a5c2bc9f17f0639800"
+    },
+    "screenshots/recipe-mobile-saved.png": {
+      "bytes": 51609,
+      "sha256": "7ff04bfc7a9ee2a344b3521851a5763c86a888502d0ba163e43a71dd01778c7f"
+    },
+    "screenshots/inventory-desktop.png": {
+      "bytes": 157770,
+      "sha256": "fcfbeaa2b84df6414783cdf6f0ce3290da94eb31280aafa55fd5e2f1838c0c20"
+    },
+    "screenshots/home-desktop-first.png": {
+      "bytes": 37501,
+      "sha256": "5ed2ec5ce64ed1826289272463d25c70f17dcef76f2cbeb8b7d96971aa5a6b7a"
+    },
+    "screenshots/bjcp-search.png": {
+      "bytes": 264298,
+      "sha256": "6032a1788f396e66d1eceb18186beed838f58e2c45c4043896b0417f04efe013"
+    },
+    "screenshots/bjcp-desktop.png": {
+      "bytes": 168607,
+      "sha256": "799bf3fb581c7c19761dccb9d5aac4ac9679b9221be1f36a201a5d13ec961341"
+    },
+    "screenshots/inventory-clear-recheck.png": {
+      "bytes": 59836,
+      "sha256": "a65852f8ec8e91f5d26019546175bd9ece544d7ce6a264acece1f4a21fcc398a"
+    },
+    "screenshots/inventory-add-mobile.png": {
+      "bytes": 63498,
+      "sha256": "a880074188912ffeeb575cc9eccd5a3d7f88a3e7dcf291b2f51a055d04588e46"
+    },
+    "screenshots/shopping-mobile.png": {
+      "bytes": 32760,
+      "sha256": "b2eb742af10ae6a24235afd07786b5655459387323614bc7a0468ce0f5fcd3de"
+    },
+    "screenshots/inventory-mobile-filters.png": {
+      "bytes": 71286,
+      "sha256": "9552fcaaaf955ad30f34f9bac2d6cc587d240bc5afa8772f4aef4983fcad642d"
+    },
+    "screenshots/catalog-second-tap.png": {
+      "bytes": 52059,
+      "sha256": "07f1da8ce840b1df215c31196f5b157036fe7faa5a8062d94871b9daa9486021"
+    },
+    "screenshots/calculator-interaction.png": {
+      "bytes": 107354,
+      "sha256": "8c97a32346e9269234875037eb178a78c4998a5da4d9345bfc5e4fc3ce53cea2"
+    },
+    "screenshots/mobile-app-menu.png": {
+      "bytes": 47766,
+      "sha256": "fa57773c9e56d9284b814f4943613967cb7431bc3532225f04f82660bd174d28"
+    },
+    "screenshots/inventory-after-clear.png": {
+      "bytes": 38990,
+      "sha256": "9e3cc19b93671befec492bd28cea52160ff49ab1673d4e6280d5a0b7747dbc78"
+    },
+    "screenshots/dashboard-mobile-slow-1.png": {
+      "bytes": 54811,
+      "sha256": "44e5d4d8707c9c0fccd4a9e4e204b4ba27eb192254dbdac4b977680326c54c1e"
+    }
+  }
+}

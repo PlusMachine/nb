@@ -2,18 +2,18 @@ import { and, asc, brewBatches, brewBatchTasks, count, db, eq, equipmentProfiles
 import { assertRateLimit } from "@nb/auth";
 
 import { formatBrewBatchDisplayTitle } from "./contracts";
-import { getBrewBatchById } from "./service";
+import { getBrewBatchById, lockOwnedBrewBatch, type BrewBatchTransaction } from "./service";
 import { batchTaskInputSchema, calibrationSchema, calculateBatchCalibration, readVolumeMeasurements, volumeMeasurementsSchema, type BatchTaskDto, type BatchTaskInput, type OverviewTaskDto, type VolumeMeasurements } from "./records";
 
-export const saveBatchVolumes = async (userId: string, id: string, input: unknown) => {
+export const saveBatchVolumes = async (userId: string, id: string, input: unknown, transaction?: BrewBatchTransaction) => {
   const patch = volumeMeasurementsSchema.parse(input);
-  return db.transaction(async tx => {
-    const [batch] = await tx.select().from(brewBatches).where(and(eq(brewBatches.id, id), eq(brewBatches.userId, userId))).for("update");
-    if (!batch) throw new Error("NOT_FOUND");
+  const write = async (tx: BrewBatchTransaction) => {
+    const batch = await lockOwnedBrewBatch(tx, userId, id);
     const volumes = { ...readVolumeMeasurements(batch.volumeMeasurements), ...patch };
     await tx.update(brewBatches).set({ volumeMeasurements: volumes, updatedAt: new Date() }).where(eq(brewBatches.id, id));
     return volumes;
-  });
+  };
+  return transaction ? write(transaction) : db.transaction(write);
 };
 
 export const updateEquipmentFromBatch = async (userId: string, id: string, input: {

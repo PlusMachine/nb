@@ -1,0 +1,66 @@
+{
+  "viewports": [
+    [
+      320,
+      740
+    ],
+    [
+      360,
+      800
+    ],
+    [
+      390,
+      844
+    ],
+    [
+      430,
+      932
+    ],
+    [
+      768,
+      1024
+    ],
+    [
+      1024,
+      768
+    ]
+  ],
+  "primary": "390x844",
+  "groups": {
+    "public": [
+      "home: top, all sections, menus, consent overlays",
+      "recipes: list, filters, detail, actions",
+      "catalog: groups, category, detail, add form",
+      "bjcp: list, filter, style detail",
+      "calculators: hub, each calculator, unit modes and explanation",
+      "labels: preview formats, fields, downloads",
+      "market and master detail",
+      "articles list and article",
+      "brewforge, demo, legal, login, offline, not-found"
+    ],
+    "account": [
+      "dashboard, navigation drawer, bottom navigation",
+      "recipes list, filled recipe, new editor, picker, dialogs",
+      "inventory, add dialog, equipment form",
+      "shopping, saved, batches, batch detail and device UI",
+      "profile, master cabinet"
+    ],
+    "admin": [
+      "all static pages and sampled record forms, table scrolling, filters, menus"
+    ]
+  },
+  "checks": [
+    "document width, inner container clipping and actual screenshots",
+    "title hierarchy, typography, text wrapping, spacing, mobile density",
+    "touch targets, input font sizes, dialog and keyboard viewport fit",
+    "sticky layers, bottom navigation, safe-area rules",
+    "light and dark themes, orientation, breakpoint edges",
+    "normal control input, open/close cycles, navigation updates"
+  ],
+  "exploratory": [
+    "long recipe and ingredient names on 320px",
+    "short landscape viewport with open menu and dialog",
+    "200% text size and validation message wrapping"
+  ],
+  "policy": "Fix unambiguous layout bugs. Produce current/proposed screenshots for significant design changes before adoption. Do not redesign main UI without approval."
+}

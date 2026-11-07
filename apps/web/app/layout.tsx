@@ -7,6 +7,7 @@ import { Providers } from "../components/providers";
 import { DevGuestBadge } from "@/components/shared/dev-guest-badge";
 import { getSessionUser, getDevAuthState } from "@/lib/auth";
 import { getServerEnv } from "@/lib/env";
+import { menuIntentInitScript } from "@/features/navigation/menu-intent";
 import {
   SKIN_COOKIE,
   THEME_COOKIE,
@@ -101,10 +102,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     >
       <body className="min-h-screen bg-background text-foreground antialiased" style={{ fontFamily: "var(--font-sans)" }}>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <script dangerouslySetInnerHTML={{ __html: menuIntentInitScript }} />
         <Providers
           initialThemePreference={themePreference}
           initialSkinPreference={skinPreference}
           isAuthenticated={Boolean(sessionUser)}
+          userId={sessionUser?.id ?? null}
         >
           <div className="flex min-h-screen flex-col">
             <div className="flex-1">{children}</div>

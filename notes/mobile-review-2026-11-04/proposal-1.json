@@ -1,0 +1,9 @@
+{
+  "status": "preview-only",
+  "description": "Collapse detailed mobile recipe metrics and BJCP comparison by default; preserve access through disclosures",
+  "offsets": {
+    "before": 1471,
+    "after": 761
+  },
+  "detailsToggleVerified": true
+}

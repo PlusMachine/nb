@@ -1,0 +1,2739 @@
+{
+  "lighthouse": "13.6.0",
+  "categories": {
+    "performance": 0.78,
+    "accessibility": 0.96
+  },
+  "metrics": {
+    "first-contentful-paint": "1.5 s",
+    "largest-contentful-paint": "5.6 s",
+    "total-blocking-time": "130 ms",
+    "cumulative-layout-shift": "0.015",
+    "speed-index": "1.5 s",
+    "interactive": "5.6 s"
+  },
+  "findings": [
+    {
+      "id": "largest-contentful-paint",
+      "title": "Largest Contentful Paint",
+      "value": "5.6 s"
+    },
+    {
+      "id": "max-potential-fid",
+      "title": "Max Potential First Input Delay",
+      "value": "130 ms"
+    },
+    {
+      "id": "interactive",
+      "title": "Time to Interactive",
+      "value": "5.6 s"
+    },
+    {
+      "id": "color-contrast",
+      "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+      "details": {
+        "type": "table",
+        "headings": [
+          {
+            "key": "node",
+            "valueType": "node",
+            "subItemsHeading": {
+              "key": "relatedNode",
+              "valueType": "node"
+            },
+            "label": "Failing Elements"
+          }
+        ],
+        "items": [
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-0-P",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,0,SECTION,0,DIV,1,P",
+              "selector": "main.space-y-6 > section.space-y-2 > div.space-y-1 > p.max-w-3xl",
+              "boundingRect": {
+                "top": 97,
+                "bottom": 145,
+                "left": 16,
+                "right": 396,
+                "width": 380,
+                "height": 48
+              },
+              "snippet": "<p class=\"max-w-3xl text-sm leading-6 text-muted-foreground\">",
+              "nodeLabel": "Открытый справочник ингредиентов для домашних пивоваров: солод, хмель, дрожжи и…",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f6, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            "subItems": {
+              "type": "subitems",
+              "items": [
+                {
+                  "relatedNode": {
+                    "type": "node",
+                    "lhId": "1-1-BODY",
+                    "path": "1,HTML,1,BODY",
+                    "selector": "body.min-h-screen",
+                    "boundingRect": {
+                      "top": 0,
+                      "bottom": 6994,
+                      "left": 0,
+                      "right": 412,
+                      "width": 412,
+                      "height": 6994
+                    },
+                    "snippet": "<body class=\"min-h-screen bg-background text-foreground antialiased\" style=\"font-family:var(--font-sans)\">",
+                    "nodeLabel": "body.min-h-screen"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-2-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,1,SECTION,1,DIV,0,DIV,0,A,1,SPAN",
+              "selector": "div.-mx-5 > div.flex > a.inline-flex > span.tabular-nums",
+              "boundingRect": {
+                "top": 255,
+                "bottom": 275,
+                "left": 82,
+                "right": 118,
+                "width": 36,
+                "height": 20
+              },
+              "snippet": "<span class=\"tabular-nums text-muted-foreground\">",
+              "nodeLabel": "1402",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.11 (foreground color: #71717a, background color: #09090b, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            "subItems": {
+              "type": "subitems",
+              "items": [
+                {
+                  "relatedNode": {
+                    "type": "node",
+                    "lhId": "1-3-A",
+                    "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,1,SECTION,1,DIV,0,DIV,0,A",
+                    "selector": "section.space-y-3 > div.-mx-5 > div.flex > a.inline-flex",
+                    "boundingRect": {
+                      "top": 246,
+                      "bottom": 284,
+                      "left": 37,
+                      "right": 131,
+                      "width": 94,
+                      "height": 38
+                    },
+                    "snippet": "<a class=\"inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full b…\" href=\"/catalog\">",
+                    "nodeLabel": "Все\n1402"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-4-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,2,SECTION,2,SECTION,0,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 438,
+                "bottom": 458,
+                "left": 33,
+                "right": 126,
+                "width": 93,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "40–60 EBC",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-5-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,2,SECTION,2,SECTION,0,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 438,
+                "bottom": 458,
+                "left": 132,
+                "right": 273,
+                "width": 141,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Экстрактивность 79%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-6-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,2,SECTION,2,SECTION,0,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 438,
+                "bottom": 458,
+                "left": 279,
+                "right": 354,
+                "width": 75,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Белок 12%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-7-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,2,SECTION,2,SECTION,1,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 556,
+                "bottom": 576,
+                "left": 33,
+                "right": 107,
+                "width": 74,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "3,5 EBC",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-8-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,2,SECTION,2,SECTION,1,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 556,
+                "bottom": 576,
+                "left": 113,
+                "right": 256,
+                "width": 143,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Экстрактивность 80%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-9-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,2,SECTION,2,SECTION,1,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 556,
+                "bottom": 576,
+                "left": 262,
+                "right": 337,
+                "width": 75,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Белок 10%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-10-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,2,SECTION,2,SECTION,2,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 674,
+                "bottom": 694,
+                "left": 33,
+                "right": 130,
+                "width": 97,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "95–105 EBC",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-11-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,2,SECTION,2,SECTION,2,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 674,
+                "bottom": 694,
+                "left": 136,
+                "right": 278,
+                "width": 142,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Экстрактивность 78%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-12-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,2,SECTION,2,SECTION,3,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 792,
+                "bottom": 812,
+                "left": 33,
+                "right": 119,
+                "width": 86,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "281,5 EBC",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-13-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,2,SECTION,2,SECTION,3,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 792,
+                "bottom": 812,
+                "left": 125,
+                "right": 268,
+                "width": 143,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Экстрактивность 80%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-14-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,2,SECTION,2,SECTION,4,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 910,
+                "bottom": 930,
+                "left": 33,
+                "right": 110,
+                "width": 77,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "99,1 EBC",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-15-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,2,SECTION,2,SECTION,4,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 910,
+                "bottom": 930,
+                "left": 116,
+                "right": 256,
+                "width": 140,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Экстрактивность 77%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-16-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,2,SECTION,2,SECTION,4,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 910,
+                "bottom": 930,
+                "left": 262,
+                "right": 337,
+                "width": 75,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Белок 12%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-17-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,2,SECTION,2,SECTION,5,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 1028,
+                "bottom": 1048,
+                "left": 33,
+                "right": 120,
+                "width": 87,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "144,8 EBC",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-18-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,2,SECTION,2,SECTION,5,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 1028,
+                "bottom": 1048,
+                "left": 126,
+                "right": 266,
+                "width": 140,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Экстрактивность 77%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-19-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,2,SECTION,2,SECTION,5,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 1028,
+                "bottom": 1048,
+                "left": 272,
+                "right": 347,
+                "width": 75,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Белок 12%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-20-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,3,SECTION,2,SECTION,0,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 1198,
+                "bottom": 1218,
+                "left": 33,
+                "right": 96,
+                "width": 63,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "2 EBC",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-21-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,3,SECTION,2,SECTION,0,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 1198,
+                "bottom": 1218,
+                "left": 102,
+                "right": 237,
+                "width": 135,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Экстрактивность 9%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-22-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,3,SECTION,2,SECTION,1,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 1316,
+                "bottom": 1336,
+                "left": 33,
+                "right": 114,
+                "width": 81,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "32.3 EBC",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-23-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,3,SECTION,2,SECTION,1,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 1316,
+                "bottom": 1336,
+                "left": 120,
+                "right": 271,
+                "width": 151,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Экстрактивность 81.6%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-24-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,3,SECTION,2,SECTION,2,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 1434,
+                "bottom": 1454,
+                "left": 33,
+                "right": 110,
+                "width": 77,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "19.7 EBC",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-25-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,3,SECTION,2,SECTION,2,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 1434,
+                "bottom": 1454,
+                "left": 116,
+                "right": 258,
+                "width": 142,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Экстрактивность 95%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-26-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,3,SECTION,2,SECTION,3,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 1552,
+                "bottom": 1572,
+                "left": 33,
+                "right": 94,
+                "width": 61,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "1 EBC",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-27-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,3,SECTION,2,SECTION,3,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 1552,
+                "bottom": 1572,
+                "left": 100,
+                "right": 236,
+                "width": 135,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Экстрактивность 5%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-28-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,3,SECTION,2,SECTION,4,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 1670,
+                "bottom": 1690,
+                "left": 33,
+                "right": 96,
+                "width": 63,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "2 EBC",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-29-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,3,SECTION,2,SECTION,4,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 1670,
+                "bottom": 1690,
+                "left": 102,
+                "right": 243,
+                "width": 141,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Экстрактивность 10%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-30-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,3,SECTION,2,SECTION,5,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 1788,
+                "bottom": 1808,
+                "left": 33,
+                "right": 104,
+                "width": 71,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "7.9 EBC",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-31-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,3,SECTION,2,SECTION,5,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 1788,
+                "bottom": 1808,
+                "left": 110,
+                "right": 253,
+                "width": 142,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Экстрактивность 65%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-32-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,4,SECTION,2,SECTION,0,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 1958,
+                "bottom": 1978,
+                "left": 33,
+                "right": 120,
+                "width": 87,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Альфа 14.5%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-33-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,4,SECTION,2,SECTION,0,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 1958,
+                "bottom": 1978,
+                "left": 126,
+                "right": 252,
+                "width": 127,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Бета-кислоты 5.9%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-34-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,4,SECTION,2,SECTION,0,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 1958,
+                "bottom": 1978,
+                "left": 258,
+                "right": 352,
+                "width": 93,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "гранулы T-90",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-35-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,4,SECTION,2,SECTION,1,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 2076,
+                "bottom": 2096,
+                "left": 33,
+                "right": 115,
+                "width": 82,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Альфа 5.5%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-36-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,4,SECTION,2,SECTION,1,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 2076,
+                "bottom": 2096,
+                "left": 121,
+                "right": 248,
+                "width": 127,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Бета-кислоты 6.6%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-37-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,4,SECTION,2,SECTION,1,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 2076,
+                "bottom": 2096,
+                "left": 254,
+                "right": 347,
+                "width": 93,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "гранулы T-90",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-38-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,4,SECTION,2,SECTION,2,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 2194,
+                "bottom": 2214,
+                "left": 33,
+                "right": 105,
+                "width": 72,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Альфа 8%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-39-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,4,SECTION,2,SECTION,2,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 2194,
+                "bottom": 2214,
+                "left": 111,
+                "right": 238,
+                "width": 127,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Бета-кислоты 5.5%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-40-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,4,SECTION,2,SECTION,2,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 2194,
+                "bottom": 2214,
+                "left": 244,
+                "right": 337,
+                "width": 93,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "гранулы T-90",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-41-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,4,SECTION,2,SECTION,3,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 2312,
+                "bottom": 2332,
+                "left": 33,
+                "right": 113,
+                "width": 80,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Альфа 7.5%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-42-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,4,SECTION,2,SECTION,3,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 2312,
+                "bottom": 2332,
+                "left": 119,
+                "right": 246,
+                "width": 127,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Бета-кислоты 4.5%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-43-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,4,SECTION,2,SECTION,3,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 2312,
+                "bottom": 2332,
+                "left": 252,
+                "right": 346,
+                "width": 93,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "гранулы T-90",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-44-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,4,SECTION,2,SECTION,4,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 2430,
+                "bottom": 2450,
+                "left": 33,
+                "right": 110,
+                "width": 77,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Альфа 13%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-45-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,4,SECTION,2,SECTION,4,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 2430,
+                "bottom": 2450,
+                "left": 116,
+                "right": 243,
+                "width": 127,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Бета-кислоты 5.2%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-46-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,4,SECTION,2,SECTION,4,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 2430,
+                "bottom": 2450,
+                "left": 249,
+                "right": 342,
+                "width": 93,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "гранулы T-90",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-47-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,4,SECTION,2,SECTION,5,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 2548,
+                "bottom": 2568,
+                "left": 33,
+                "right": 120,
+                "width": 87,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Альфа 14.5%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-48-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,4,SECTION,2,SECTION,5,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 2548,
+                "bottom": 2568,
+                "left": 126,
+                "right": 253,
+                "width": 127,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Бета-кислоты 5.4%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-49-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,4,SECTION,2,SECTION,5,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 2548,
+                "bottom": 2568,
+                "left": 259,
+                "right": 353,
+                "width": 93,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "гранулы T-90",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-50-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,0,ARTICLE,1,DIV,0,DIV,0,DIV,1,SPAN",
+              "selector": "div.relative > div.min-w-0 > div.flex > span.rounded-md",
+              "boundingRect": {
+                "top": 2669,
+                "bottom": 2688,
+                "left": 170,
+                "right": 221,
+                "width": 51,
+                "height": 19
+              },
+              "snippet": "<span class=\"rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreg…\">",
+              "nodeLabel": "жидкие",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-51-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,0,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 2718,
+                "bottom": 2738,
+                "left": 33,
+                "right": 204,
+                "width": 171,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Степень сбраживания 75%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-52-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,0,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 2718,
+                "bottom": 2738,
+                "left": 210,
+                "right": 271,
+                "width": 61,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "13-20°C",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-53-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,0,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 2744,
+                "bottom": 2764,
+                "left": 33,
+                "right": 164,
+                "width": 131,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Флокуляция низкая",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-54-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,1,ARTICLE,1,DIV,0,DIV,0,DIV,1,SPAN",
+              "selector": "div.relative > div.min-w-0 > div.flex > span.rounded-md",
+              "boundingRect": {
+                "top": 2813,
+                "bottom": 2832,
+                "left": 146,
+                "right": 196,
+                "width": 51,
+                "height": 19
+              },
+              "snippet": "<span class=\"rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreg…\">",
+              "nodeLabel": "жидкие",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-55-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,1,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 2862,
+                "bottom": 2882,
+                "left": 33,
+                "right": 204,
+                "width": 171,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Степень сбраживания 73%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-56-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,1,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 2862,
+                "bottom": 2882,
+                "left": 210,
+                "right": 271,
+                "width": 60,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "16-22°C",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-57-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,1,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 2888,
+                "bottom": 2908,
+                "left": 33,
+                "right": 172,
+                "width": 139,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Флокуляция средняя",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-58-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,2,ARTICLE,1,DIV,0,DIV,0,DIV,1,SPAN",
+              "selector": "div.relative > div.min-w-0 > div.flex > span.rounded-md",
+              "boundingRect": {
+                "top": 2957,
+                "bottom": 2976,
+                "left": 325,
+                "right": 376,
+                "width": 51,
+                "height": 19
+              },
+              "snippet": "<span class=\"rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreg…\">",
+              "nodeLabel": "жидкие",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-59-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,2,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 3006,
+                "bottom": 3026,
+                "left": 33,
+                "right": 204,
+                "width": 171,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Степень сбраживания 73%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-60-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,2,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 3006,
+                "bottom": 3026,
+                "left": 210,
+                "right": 271,
+                "width": 61,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "18-22°C",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-61-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,2,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 3032,
+                "bottom": 3052,
+                "left": 33,
+                "right": 172,
+                "width": 139,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Флокуляция высокая",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-62-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,3,ARTICLE,1,DIV,0,DIV,0,DIV,1,SPAN",
+              "selector": "div.relative > div.min-w-0 > div.flex > span.rounded-md",
+              "boundingRect": {
+                "top": 3101,
+                "bottom": 3120,
+                "left": 182,
+                "right": 232,
+                "width": 51,
+                "height": 19
+              },
+              "snippet": "<span class=\"rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreg…\">",
+              "nodeLabel": "жидкие",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-63-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,3,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 3150,
+                "bottom": 3170,
+                "left": 33,
+                "right": 205,
+                "width": 172,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Степень сбраживания 70%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-64-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,3,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 3150,
+                "bottom": 3170,
+                "left": 211,
+                "right": 272,
+                "width": 61,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "18-23°C",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-65-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,3,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 3176,
+                "bottom": 3196,
+                "left": 33,
+                "right": 172,
+                "width": 139,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Флокуляция средняя",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-66-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,4,ARTICLE,1,DIV,0,DIV,0,DIV,1,SPAN",
+              "selector": "div.relative > div.min-w-0 > div.flex > span.rounded-md",
+              "boundingRect": {
+                "top": 3245,
+                "bottom": 3264,
+                "left": 262,
+                "right": 313,
+                "width": 51,
+                "height": 19
+              },
+              "snippet": "<span class=\"rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreg…\">",
+              "nodeLabel": "жидкие",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-67-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,4,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 3294,
+                "bottom": 3314,
+                "left": 33,
+                "right": 203,
+                "width": 170,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Степень сбраживания 77%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-68-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,4,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 3294,
+                "bottom": 3314,
+                "left": 209,
+                "right": 272,
+                "width": 63,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "20-26°C",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-69-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,4,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 3320,
+                "bottom": 3340,
+                "left": 33,
+                "right": 164,
+                "width": 131,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Флокуляция низкая",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-70-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,5,ARTICLE,1,DIV,0,DIV,0,DIV,1,SPAN",
+              "selector": "div.relative > div.min-w-0 > div.flex > span.rounded-md",
+              "boundingRect": {
+                "top": 3389,
+                "bottom": 3408,
+                "left": 175,
+                "right": 226,
+                "width": 51,
+                "height": 19
+              },
+              "snippet": "<span class=\"rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreg…\">",
+              "nodeLabel": "жидкие",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-71-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,5,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 3438,
+                "bottom": 3458,
+                "left": 33,
+                "right": 204,
+                "width": 171,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Степень сбраживания 75%",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-72-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,5,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 3438,
+                "bottom": 3458,
+                "left": 210,
+                "right": 271,
+                "width": 61,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "13-24°C",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-73-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,5,SECTION,2,SECTION,5,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 3464,
+                "bottom": 3484,
+                "left": 33,
+                "right": 172,
+                "width": 139,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Флокуляция высокая",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-74-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,6,SECTION,2,SECTION,0,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 3634,
+                "bottom": 3654,
+                "left": 33,
+                "right": 88,
+                "width": 55,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "другое",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-75-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,6,SECTION,2,SECTION,0,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 3634,
+                "bottom": 3654,
+                "left": 122,
+                "right": 201,
+                "width": 80,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Кристаллы",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-76-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,6,SECTION,2,SECTION,1,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 3752,
+                "bottom": 3772,
+                "left": 33,
+                "right": 88,
+                "width": 55,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "другое",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-77-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,6,SECTION,2,SECTION,1,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 3752,
+                "bottom": 3772,
+                "left": 94,
+                "right": 124,
+                "width": 29,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "мг",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-78-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,6,SECTION,2,SECTION,1,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 3752,
+                "bottom": 3772,
+                "left": 130,
+                "right": 198,
+                "width": 68,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Порошок",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-79-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,6,SECTION,2,SECTION,2,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 3870,
+                "bottom": 3890,
+                "left": 33,
+                "right": 88,
+                "width": 55,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "другое",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-80-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,6,SECTION,2,SECTION,2,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 3870,
+                "bottom": 3890,
+                "left": 122,
+                "right": 188,
+                "width": 66,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Процесс",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-81-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,6,SECTION,2,SECTION,3,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 3988,
+                "bottom": 4008,
+                "left": 33,
+                "right": 134,
+                "width": 101,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "исходная вода",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-82-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,6,SECTION,2,SECTION,3,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 3988,
+                "bottom": 4008,
+                "left": 169,
+                "right": 244,
+                "width": 74,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Жидкость",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-83-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,6,SECTION,2,SECTION,4,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 4106,
+                "bottom": 4126,
+                "left": 33,
+                "right": 88,
+                "width": 55,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "другое",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-84-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,6,SECTION,2,SECTION,4,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 4106,
+                "bottom": 4126,
+                "left": 122,
+                "right": 190,
+                "width": 68,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Порошок",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-85-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,6,SECTION,2,SECTION,5,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 4224,
+                "bottom": 4244,
+                "left": 33,
+                "right": 88,
+                "width": 55,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "другое",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-86-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,6,SECTION,2,SECTION,5,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 4224,
+                "bottom": 4244,
+                "left": 122,
+                "right": 190,
+                "width": 68,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Порошок",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-87-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,7,SECTION,2,SECTION,0,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 4394,
+                "bottom": 4414,
+                "left": 33,
+                "right": 199,
+                "width": 166,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "технологическая добавка",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-88-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,7,SECTION,2,SECTION,0,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 4394,
+                "bottom": 4414,
+                "left": 232,
+                "right": 300,
+                "width": 68,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Порошок",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-89-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,7,SECTION,2,SECTION,1,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 4536,
+                "bottom": 4556,
+                "left": 33,
+                "right": 199,
+                "width": 166,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "технологическая добавка",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-90-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,7,SECTION,2,SECTION,1,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 4536,
+                "bottom": 4556,
+                "left": 232,
+                "right": 300,
+                "width": 68,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Порошок",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-91-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,7,SECTION,2,SECTION,2,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 4678,
+                "bottom": 4698,
+                "left": 33,
+                "right": 199,
+                "width": 166,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "технологическая добавка",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-92-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,7,SECTION,2,SECTION,2,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 4678,
+                "bottom": 4698,
+                "left": 232,
+                "right": 300,
+                "width": 68,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Порошок",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-93-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,7,SECTION,2,SECTION,3,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 4796,
+                "bottom": 4816,
+                "left": 33,
+                "right": 199,
+                "width": 166,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "технологическая добавка",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-94-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,7,SECTION,2,SECTION,3,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 4796,
+                "bottom": 4816,
+                "left": 232,
+                "right": 300,
+                "width": 68,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Порошок",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-95-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,7,SECTION,2,SECTION,4,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 4914,
+                "bottom": 4934,
+                "left": 33,
+                "right": 199,
+                "width": 166,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "технологическая добавка",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-96-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,7,SECTION,2,SECTION,4,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 4914,
+                "bottom": 4934,
+                "left": 232,
+                "right": 300,
+                "width": 68,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Порошок",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-97-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,7,SECTION,2,SECTION,5,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 5032,
+                "bottom": 5052,
+                "left": 33,
+                "right": 131,
+                "width": 98,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "ароматизатор",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-98-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,7,SECTION,2,SECTION,5,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 5032,
+                "bottom": 5052,
+                "left": 137,
+                "right": 168,
+                "width": 31,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "мл",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-99-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,7,SECTION,2,SECTION,5,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 5032,
+                "bottom": 5052,
+                "left": 174,
+                "right": 243,
+                "width": 69,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Экстракт",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-100-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,8,SECTION,2,SECTION,0,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 5202,
+                "bottom": 5222,
+                "left": 33,
+                "right": 143,
+                "width": 110,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "тара и укупорка",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-101-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,8,SECTION,2,SECTION,0,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 5202,
+                "bottom": 5222,
+                "left": 149,
+                "right": 183,
+                "width": 35,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "шт.",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-102-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,8,SECTION,2,SECTION,0,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 5202,
+                "bottom": 5222,
+                "left": 189,
+                "right": 242,
+                "width": 53,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Штука",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-103-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,8,SECTION,2,SECTION,1,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 5320,
+                "bottom": 5340,
+                "left": 33,
+                "right": 143,
+                "width": 110,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "тара и укупорка",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-104-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,8,SECTION,2,SECTION,1,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 5320,
+                "bottom": 5340,
+                "left": 149,
+                "right": 183,
+                "width": 35,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "шт.",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-105-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,8,SECTION,2,SECTION,1,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 5320,
+                "bottom": 5340,
+                "left": 189,
+                "right": 242,
+                "width": 53,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Штука",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-106-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,8,SECTION,2,SECTION,2,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 5438,
+                "bottom": 5458,
+                "left": 33,
+                "right": 143,
+                "width": 110,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "тара и укупорка",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-107-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,8,SECTION,2,SECTION,2,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 5438,
+                "bottom": 5458,
+                "left": 149,
+                "right": 183,
+                "width": 35,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "шт.",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-108-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,8,SECTION,2,SECTION,2,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 5438,
+                "bottom": 5458,
+                "left": 189,
+                "right": 242,
+                "width": 53,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Штука",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-109-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,8,SECTION,2,SECTION,3,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 5580,
+                "bottom": 5600,
+                "left": 33,
+                "right": 218,
+                "width": 185,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "дезинфицирующее средство",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-110-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,8,SECTION,2,SECTION,3,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 5580,
+                "bottom": 5600,
+                "left": 224,
+                "right": 255,
+                "width": 31,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "мл",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-111-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,8,SECTION,2,SECTION,3,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 5580,
+                "bottom": 5600,
+                "left": 261,
+                "right": 335,
+                "width": 74,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Жидкость",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-112-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,8,SECTION,2,SECTION,4,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 5722,
+                "bottom": 5742,
+                "left": 33,
+                "right": 154,
+                "width": 121,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "моющее средство",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-113-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,8,SECTION,2,SECTION,4,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 5722,
+                "bottom": 5742,
+                "left": 160,
+                "right": 191,
+                "width": 31,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "мл",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-114-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,8,SECTION,2,SECTION,4,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 5722,
+                "bottom": 5742,
+                "left": 197,
+                "right": 271,
+                "width": 74,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Жидкость",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-115-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,8,SECTION,2,SECTION,5,ARTICLE,2,DIV,0,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 5840,
+                "bottom": 5860,
+                "left": 33,
+                "right": 67,
+                "width": 34,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "газ",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-116-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,8,SECTION,2,SECTION,5,ARTICLE,2,DIV,1,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 5840,
+                "bottom": 5860,
+                "left": 73,
+                "right": 108,
+                "width": 35,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "шт.",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          },
+          {
+            "node": {
+              "type": "node",
+              "lhId": "1-117-SPAN",
+              "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,1,DIV,0,MAIN,8,SECTION,2,SECTION,5,ARTICLE,2,DIV,2,SPAN",
+              "selector": "section.catalog-search-dim > article.relative > div.relative > span.inline-flex",
+              "boundingRect": {
+                "top": 5840,
+                "bottom": 5860,
+                "left": 114,
+                "right": 172,
+                "width": 58,
+                "height": 20
+              },
+              "snippet": "<span class=\"inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs tex…\">",
+              "nodeLabel": "Баллон",
+              "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.39 (foreground color: #71717a, background color: #f4f4f5, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          }
+        ],
+        "debugData": {
+          "type": "debugdata",
+          "impact": "serious",
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ]
+        }
+      }
+    },
+    {
+      "id": "unused-css-rules",
+      "title": "Reduce unused CSS",
+      "value": "Est savings of 18 KiB",
+      "details": {
+        "type": "opportunity",
+        "headings": [
+          {
+            "key": "url",
+            "valueType": "url",
+            "label": "URL"
+          },
+          {
+            "key": "totalBytes",
+            "valueType": "bytes",
+            "label": "Transfer Size"
+          },
+          {
+            "key": "wastedBytes",
+            "valueType": "bytes",
+            "label": "Est Savings"
+          }
+        ],
+        "items": [
+          {
+            "url": "http://127.0.0.1:3016/_next/static/css/10d068b31dbc4d49.css",
+            "wastedBytes": 18156,
+            "wastedPercent": 88.83332322173013,
+            "totalBytes": 20438
+          }
+        ],
+        "overallSavingsMs": 0,
+        "overallSavingsBytes": 18156,
+        "sortedBy": [
+          "wastedBytes"
+        ],
+        "debugData": {
+          "type": "debugdata",
+          "metricSavings": {
+            "FCP": 150,
+            "LCP": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "unused-javascript",
+      "title": "Reduce unused JavaScript",
+      "value": "Est savings of 45 KiB",
+      "details": {
+        "type": "opportunity",
+        "headings": [
+          {
+            "key": "url",
+            "valueType": "url",
+            "subItemsHeading": {
+              "key": "source",
+              "valueType": "code"
+            },
+            "label": "URL"
+          },
+          {
+            "key": "totalBytes",
+            "valueType": "bytes",
+            "subItemsHeading": {
+              "key": "sourceBytes"
+            },
+            "label": "Transfer Size"
+          },
+          {
+            "key": "wastedBytes",
+            "valueType": "bytes",
+            "subItemsHeading": {
+              "key": "sourceWastedBytes"
+            },
+            "label": "Est Savings"
+          }
+        ],
+        "items": [
+          {
+            "url": "http://127.0.0.1:3016/_next/static/chunks/612-9c360be286377cda.js",
+            "totalBytes": 63075,
+            "wastedBytes": 46395,
+            "wastedPercent": 73.55536605245676
+          }
+        ],
+        "overallSavingsMs": 150,
+        "overallSavingsBytes": 46395,
+        "sortedBy": [
+          "wastedBytes"
+        ],
+        "debugData": {
+          "type": "debugdata",
+          "metricSavings": {
+            "FCP": 0,
+            "LCP": 150
+          }
+        }
+      }
+    },
+    {
+      "id": "bf-cache",
+      "title": "Page prevented back/forward cache restoration",
+      "value": "2 failure reasons",
+      "details": {
+        "type": "table",
+        "headings": [
+          {
+            "key": "reason",
+            "valueType": "text",
+            "subItemsHeading": {
+              "key": "frameUrl",
+              "valueType": "url"
+            },
+            "label": "Failure reason"
+          },
+          {
+            "key": "failureType",
+            "valueType": "text",
+            "label": "Failure type"
+          }
+        ],
+        "items": [
+          {
+            "reason": "Pages whose main resource has cache-control:no-store can’t enter back/forward cache",
+            "failureType": "Not actionable",
+            "subItems": {
+              "type": "subitems",
+              "items": [
+                {
+                  "frameUrl": "http://127.0.0.1:3016/catalog"
+                }
+              ]
+            },
+            "protocolReason": "MainResourceHasCacheControlNoStore"
+          },
+          {
+            "reason": "Back/forward cache is disabled because some JavaScript network request received resource with Cache-Control: no-store header",
+            "failureType": "Not actionable",
+            "subItems": {
+              "type": "subitems",
+              "items": [
+                {
+                  "frameUrl": "http://127.0.0.1:3016/catalog"
+                }
+              ]
+            },
+            "protocolReason": "JsNetworkRequestReceivedCacheControlNoStoreResource"
+          }
+        ]
+      }
+    },
+    {
+      "id": "legacy-javascript-insight",
+      "title": "Legacy JavaScript",
+      "value": "Est savings of 12 KiB",
+      "details": {
+        "type": "table",
+        "headings": [
+          {
+            "key": "url",
+            "valueType": "url",
+            "subItemsHeading": {
+              "key": "location",
+              "valueType": "source-location"
+            },
+            "label": "URL"
+          },
+          {
+            "key": null,
+            "valueType": "code",
+            "subItemsHeading": {
+              "key": "signal"
+            },
+            "label": ""
+          },
+          {
+            "key": "wastedBytes",
+            "valueType": "bytes",
+            "label": "Wasted bytes"
+          }
+        ],
+        "items": [
+          {
+            "url": "http://127.0.0.1:3016/_next/static/chunks/18-94afe61f15789e06.js",
+            "wastedBytes": 11973,
+            "subItems": {
+              "type": "subitems",
+              "items": [
+                {
+                  "signal": "Array.prototype.at",
+                  "location": {
+                    "type": "source-location",
+                    "url": "http://127.0.0.1:3016/_next/static/chunks/18-94afe61f15789e06.js",
+                    "urlProvider": "network",
+                    "line": 0,
+                    "column": 37746
+                  }
+                },
+                {
+                  "signal": "Array.prototype.flat",
+                  "location": {
+                    "type": "source-location",
+                    "url": "http://127.0.0.1:3016/_next/static/chunks/18-94afe61f15789e06.js",
+                    "urlProvider": "network",
+                    "line": 0,
+                    "column": 37134
+                  }
+                },
+                {
+                  "signal": "Array.prototype.flatMap",
+                  "location": {
+                    "type": "source-location",
+                    "url": "http://127.0.0.1:3016/_next/static/chunks/18-94afe61f15789e06.js",
+                    "urlProvider": "network",
+                    "line": 0,
+                    "column": 37247
+                  }
+                },
+                {
+                  "signal": "Object.fromEntries",
+                  "location": {
+                    "type": "source-location",
+                    "url": "http://127.0.0.1:3016/_next/static/chunks/18-94afe61f15789e06.js",
+                    "urlProvider": "network",
+                    "line": 0,
+                    "column": 37623
+                  }
+                },
+                {
+                  "signal": "Object.hasOwn",
+                  "location": {
+                    "type": "source-location",
+                    "url": "http://127.0.0.1:3016/_next/static/chunks/18-94afe61f15789e06.js",
+                    "urlProvider": "network",
+                    "line": 0,
+                    "column": 37881
+                  }
+                },
+                {
+                  "signal": "String.prototype.trimEnd",
+                  "location": {
+                    "type": "source-location",
+                    "url": "http://127.0.0.1:3016/_next/static/chunks/18-94afe61f15789e06.js",
+                    "urlProvider": "network",
+                    "line": 0,
+                    "column": 36876
+                  }
+                },
+                {
+                  "signal": "String.prototype.trimStart",
+                  "location": {
+                    "type": "source-location",
+                    "url": "http://127.0.0.1:3016/_next/static/chunks/18-94afe61f15789e06.js",
+                    "urlProvider": "network",
+                    "line": 0,
+                    "column": 36791
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "debugData": {
+          "type": "debugdata",
+          "wastedBytes": 11973
+        }
+      }
+    },
+    {
+      "id": "network-dependency-tree-insight",
+      "title": "Network dependency tree",
+      "details": {
+        "type": "list",
+        "items": [
+          {
+            "type": "list-section",
+            "value": {
+              "type": "network-tree",
+              "chains": {
+                "A3D6C4D3B6F55C6928D0E1CE7B167B56": {
+                  "url": "http://127.0.0.1:3016/catalog",
+                  "navStartToEndTime": 349,
+                  "transferSize": 88960,
+                  "isLongest": true,
+                  "children": {
+                    "27096.5": {
+                      "url": "http://127.0.0.1:3016/_next/static/css/10d068b31dbc4d49.css",
+                      "navStartToEndTime": 207,
+                      "transferSize": 20804,
+                      "children": {}
+                    },
+                    "27096.4": {
+                      "url": "http://127.0.0.1:3016/_next/static/css/688dbf7110800d11.css",
+                      "navStartToEndTime": 188,
+                      "transferSize": 2263,
+                      "children": {}
+                    }
+                  }
+                }
+              },
+              "longestChain": {
+                "duration": 349
+              }
+            }
+          },
+          {
+            "type": "list-section",
+            "title": "Preconnected origins",
+            "description": "[preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to.",
+            "value": {
+              "type": "text",
+              "value": "No origins were preconnected"
+            }
+          },
+          {
+            "type": "list-section",
+            "title": "Preconnect candidates",
+            "description": "Add [preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints to your most important origins, but try to use no more than 4",
+            "value": {
+              "type": "text",
+              "value": "No additional origins are good candidates for preconnecting"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "render-blocking-insight",
+      "title": "Render-blocking requests",
+      "value": "Est savings of 370 ms",
+      "details": {
+        "type": "table",
+        "headings": [
+          {
+            "key": "url",
+            "valueType": "url",
+            "label": "URL"
+          },
+          {
+            "key": "totalBytes",
+            "valueType": "bytes",
+            "label": "Transfer Size"
+          },
+          {
+            "key": "wastedMs",
+            "valueType": "timespanMs",
+            "label": "Duration"
+          }
+        ],
+        "items": [
+          {
+            "url": "http://127.0.0.1:3016/_next/static/css/10d068b31dbc4d49.css",
+            "totalBytes": 20804,
+            "wastedMs": 457
+          },
+          {
+            "url": "http://127.0.0.1:3016/_next/static/css/688dbf7110800d11.css",
+            "totalBytes": 2263,
+            "wastedMs": 157
+          }
+        ]
+      }
+    }
+  ],
+  "settings": {
+    "output": [
+      "json",
+      "html"
+    ],
+    "maxWaitForFcp": 30000,
+    "maxWaitForLoad": 45000,
+    "pauseAfterFcpMs": 1000,
+    "pauseAfterLoadMs": 1000,
+    "networkQuietThresholdMs": 1000,
+    "cpuQuietThresholdMs": 1000,
+    "formFactor": "mobile",
+    "throttling": {
+      "rttMs": 150,
+      "throughputKbps": 1638.4,
+      "requestLatencyMs": 562.5,
+      "downloadThroughputKbps": 1474.5600000000002,
+      "uploadThroughputKbps": 675,
+      "cpuSlowdownMultiplier": 4
+    },
+    "throttlingMethod": "simulate",
+    "screenEmulation": {
+      "mobile": true,
+      "width": 412,
+      "height": 823,
+      "deviceScaleFactor": 1.75,
+      "disabled": false
+    },
+    "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+    "auditMode": false,
+    "gatherMode": false,
+    "clearStorageTypes": [
+      "file_systems",
+      "shader_cache",
+      "service_workers",
+      "cache_storage"
+    ],
+    "disableStorageReset": false,
+    "debugNavigation": false,
+    "channel": "cli",
+    "usePassiveGathering": false,
+    "disableFullPageScreenshot": false,
+    "skipAboutBlank": false,
+    "blankPage": "about:blank",
+    "ignoreStatusCode": false,
+    "locale": "en-US",
+    "blockedUrlPatterns": null,
+    "additionalTraceCategories": null,
+    "extraHeaders": null,
+    "precomputedLanternData": null,
+    "onlyAudits": null,
+    "onlyCategories": [
+      "performance",
+      "accessibility"
+    ],
+    "skipAudits": null
+  }
+}

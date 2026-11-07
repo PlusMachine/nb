@@ -1,16 +1,13 @@
-import React, { Suspense } from "react";
+import React from "react";
 
 import { MyIngredientsContent } from "./content";
-import { IngredientsLoadingSkeleton } from "./loading";
 
 type Props = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export default function MyIngredientsPage(props: Props) {
-  return (
-    <Suspense fallback={<IngredientsLoadingSkeleton />}>
-      <MyIngredientsContent {...props} />
-    </Suspense>
-  );
+  // loading.tsx already provides the route's Suspense boundary. A second,
+  // unkeyed boundary can restore a stale search branch from the router cache.
+  return <MyIngredientsContent {...props} />;
 }

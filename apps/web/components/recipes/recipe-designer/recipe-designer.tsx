@@ -1476,7 +1476,7 @@ export function RecipeDesigner({
   ];
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4 sm:space-y-5">
       <ConfirmActionDialog
         open={waterResetConfirmOpen}
         title="Сбросить настройку воды?"
@@ -1697,7 +1697,7 @@ export function RecipeDesigner({
         ) : null}
       </section>
 
-      <section className="grid items-start gap-4 lg:grid-cols-[11fr_9fr]">
+      <section className={`grid items-start gap-4 ${ingredients.length ? "lg:grid-cols-[11fr_9fr]" : ""}`}>
         <RecipeBatchParametersBlock
           batchSize={batchSize}
           setBatchSize={setBatchSize}
@@ -1720,14 +1720,22 @@ export function RecipeDesigner({
           canRescaleToVolume={canRescaleToVolume}
           onRescaleToVolume={handleRescaleToVolume}
           onOpenBitternessSettings={() => setBitternessSettingsOpen(true)}
+          hasIngredients={ingredients.length > 0}
           preferredGravityUnit={preferredGravityUnit}
         />
-        <RecipeStyleStatsBlock
+        {ingredients.length > 0 ? <RecipeStyleStatsBlock
           preview={preview}
           recalculating={recalculating}
           previewError={previewError}
           preferredGravityUnit={preferredGravityUnit}
-        />
+        /> : styleId.trim() ? (
+          <details className="rounded-2xl border border-border bg-card p-3">
+            <summary className="cursor-pointer text-sm font-medium text-muted-foreground">Диапазоны выбранного стиля</summary>
+            <div className="mt-3">
+              <RecipeStyleStatsBlock preview={preview} recalculating={recalculating} previewError={previewError} preferredGravityUnit={preferredGravityUnit} />
+            </div>
+          </details>
+        ) : null}
       </section>
 
       {importedIngredientsCount > 0 ? (
@@ -1757,14 +1765,14 @@ export function RecipeDesigner({
             section.category !== "hop" && !isWaterTreatmentSection;
           return (
             <section key={section.category} className={`overflow-hidden rounded-2xl border ${hasError ? "border-destructive-border" : "border-border/70"} bg-card shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)]`}>
-              <header className="flex items-center justify-between gap-3 border-b border-border bg-muted/40 px-4 py-3 sm:px-5">
-                <div className="flex min-w-0 items-center gap-2.5">
+              <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-muted/40 px-4 py-3 sm:px-5">
+                <div className="flex min-w-0 flex-1 basis-48 items-center gap-2.5">
                   <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${iconBg}`}>
                     <IconComponent className="h-4 w-4" />
                   </div>
                   <div className="min-w-0">
-                    <div className="flex items-baseline gap-2">
-                      <h2 className="truncate text-base font-semibold text-foreground">{section.title}</h2>
+                    <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                      <h2 className="min-w-0 break-words text-base font-semibold text-foreground">{section.title}</h2>
                       {section.subtitle ? <span className="text-sm tabular-nums text-muted-foreground">({section.subtitle})</span> : null}
                     </div>
                     {hasError ? <p className="mt-0.5 text-xs text-destructive">{sectionErrors[`ingredients.${section.category}`]}</p> : null}
@@ -1844,10 +1852,12 @@ export function RecipeDesigner({
                     type="button"
                     onClick={() => section.category !== "hop" ? openAddEditor(section.category) : undefined}
                     disabled={section.category === "hop"}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-muted/40 px-4 py-6 text-sm text-muted-foreground transition-colors hover:border-ring hover:bg-muted hover:text-foreground disabled:cursor-default disabled:hover:border-border disabled:hover:bg-muted/40 disabled:hover:text-muted-foreground"
+                    aria-label={section.empty}
+                    className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-muted/40 px-3 py-3 text-sm text-muted-foreground transition-colors hover:border-ring hover:bg-muted hover:text-foreground disabled:cursor-default disabled:hover:border-border disabled:hover:bg-muted/40 disabled:hover:text-muted-foreground sm:px-4 sm:py-6"
                   >
                     {section.category !== "hop" ? <Plus className="h-4 w-4" /> : null}
-                    <span>{section.empty}</span>
+                    <span className="sm:hidden">Добавить ингредиент</span>
+                    <span className="hidden sm:inline">{section.empty}</span>
                   </button>
                 )}
               </div>

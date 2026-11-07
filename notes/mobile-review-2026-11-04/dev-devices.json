@@ -1,0 +1,164 @@
+[
+  {
+    "route": "/app/devices",
+    "status": 200,
+    "url": "/app/devices",
+    "width": 360,
+    "height": 800,
+    "client": 360,
+    "scroll": 360,
+    "scrollHeight": 832,
+    "headings": [
+      {
+        "text": "Приборы",
+        "x": 16,
+        "y": 80,
+        "w": 126.2,
+        "h": 32
+      },
+      {
+        "text": "Демо-пивоварня",
+        "x": 33,
+        "y": 423,
+        "w": 98.3,
+        "h": 24
+      }
+    ],
+    "outside": [],
+    "clippedText": [
+      {
+        "tag": "H3",
+        "text": "Демо-пивоварня",
+        "x": 33,
+        "y": 423,
+        "w": 98.3,
+        "h": 24,
+        "classes": "truncate text-base font-semibold text-foreground"
+      }
+    ],
+    "smallControls": [],
+    "smallInputs": [],
+    "fixed": [
+      {
+        "tag": "HEADER",
+        "text": "NB",
+        "x": 0,
+        "y": 0,
+        "w": 360,
+        "h": 56,
+        "classes": "sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur lg:hidden"
+      },
+      {
+        "tag": "NAV",
+        "text": "Быстрая навигация",
+        "x": 0,
+        "y": 744,
+        "w": 360,
+        "h": 56,
+        "classes": "fixed inset-x-0 bottom-0 z-40 flex min-h-14 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Обратная связь",
+        "x": 294,
+        "y": 684,
+        "w": 50,
+        "h": 44,
+        "classes": "fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px)+var(--nb-sticky-bar-h,0px))] min-h-11 px-4 py-2.5 right-4 z-40 inline-flex items-center g"
+      }
+    ],
+    "screenshot": "/home/dopefish/projects/nb/notes/mobile-review-2026-11-04/screenshots/dev-device-_app_devices-360.png"
+  },
+  {
+    "route": "/app/devices/4c8a9d03-ea60-4f3b-b922-450696562011",
+    "status": 200,
+    "url": "/app/devices/4c8a9d03-ea60-4f3b-b922-450696562011",
+    "width": 360,
+    "height": 800,
+    "client": 360,
+    "scroll": 360,
+    "scrollHeight": 1740,
+    "headings": [
+      {
+        "text": "Демо-пивоварня",
+        "x": 44,
+        "y": 92,
+        "w": 165,
+        "h": 28
+      },
+      {
+        "text": "История температуры",
+        "x": 37,
+        "y": 698,
+        "w": 160,
+        "h": 20
+      }
+    ],
+    "outside": [],
+    "clippedText": [],
+    "smallControls": [
+      {
+        "tag": "A",
+        "text": "Приборы",
+        "x": 16,
+        "y": 98,
+        "w": 16,
+        "h": 16,
+        "classes": "inline-flex items-center gap-1 text-sm text-muted-foreground transition hover:text-foreground"
+      }
+    ],
+    "smallInputs": [],
+    "fixed": [
+      {
+        "tag": "HEADER",
+        "text": "NB",
+        "x": 0,
+        "y": 0,
+        "w": 360,
+        "h": 56,
+        "classes": "sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur lg:hidden"
+      },
+      {
+        "tag": "HEADER",
+        "text": "ПриборыДемо-пивоварняДемоПодключение…Управление свободно",
+        "x": 16,
+        "y": 80,
+        "w": 328,
+        "h": 129,
+        "classes": "sticky top-[var(--chrome-top)] z-20 border-b border-border bg-card/90 py-3 backdrop-blur"
+      },
+      {
+        "tag": "DIV",
+        "text": "УправлениеКнопки паузы, перехода между этапами и остановки появятся после начала варки.Аварийный ост",
+        "x": 16,
+        "y": 501,
+        "w": 328,
+        "h": 235,
+        "classes": "sticky bottom-16 z-10 lg:static lg:bottom-auto"
+      },
+      {
+        "tag": "NAV",
+        "text": "Быстрая навигация",
+        "x": 0,
+        "y": 744,
+        "w": 360,
+        "h": 56,
+        "classes": "fixed inset-x-0 bottom-0 z-40 flex min-h-14 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Обратная связь",
+        "x": 294,
+        "y": 740,
+        "w": 50,
+        "h": 44,
+        "classes": "fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px)+var(--nb-sticky-bar-h,0px))] min-h-11 px-4 py-2.5 right-4 z-40 inline-flex items-center g"
+      }
+    ],
+    "screenshot": "/home/dopefish/projects/nb/notes/mobile-review-2026-11-04/screenshots/dev-device-_app_devices_4c8a9d03_ea60_4f3b_b922_450696562011-360.png"
+  },
+  {
+    "route": "/app/devices/4c8a9d03-ea60-4f3b-b922-450696562011/settings",
+    "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3105/app/devices/4c8a9d03-ea60-4f3b-b922-450696562011/settings\", waiting until \"domcontentloaded\"\u001b[22m\n"
+  }
+]

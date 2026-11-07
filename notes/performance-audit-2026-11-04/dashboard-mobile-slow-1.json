@@ -1,0 +1,618 @@
+{
+  "name": "dashboard-mobile-slow-1",
+  "path": "/app",
+  "mobile": true,
+  "slow": true,
+  "warm": false,
+  "freshConsent": false,
+  "status": 200,
+  "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+  "url": "http://127.0.0.1:3016/app",
+  "ttfbMs": 247.69999999995343,
+  "fcpMs": 1260,
+  "lcpMs": 1260,
+  "cls": 0.007322963119104266,
+  "domContentLoadedMs": 1044.1999999999534,
+  "loadMs": 4658.899999999907,
+  "htmlTransfer": 30274,
+  "htmlDecoded": 119747,
+  "resourceTransfer": 803295,
+  "resourceDecoded": 2337196,
+  "jsDecoded": 1060092,
+  "domElements": 633,
+  "incompleteImages": [
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/16B%20%E2%80%94%20Oatmeal%20Stout.png",
+      "top": 2164.81884765625
+    },
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/18B%20%E2%80%94%20American%20Pale%20Ale.png",
+      "top": 2286.06884765625
+    },
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/21C%20%E2%80%94%20Hazy%20IPA.png",
+      "top": 2786.14990234375
+    },
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/21A%20%E2%80%94%20American%20IPA.png",
+      "top": 2996.64990234375
+    }
+  ],
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "scrollWidth": 390,
+    "scrollHeight": 3684
+  },
+  "totalLongTaskBlockingMs": 411,
+  "lcp": [
+    {
+      "start": 1260,
+      "size": 6118,
+      "url": "",
+      "tag": "P",
+      "text": "Sample · American Stout · партия №2"
+    }
+  ],
+  "shifts": [
+    {
+      "start": 3723,
+      "value": 0.0006004081047319069,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "DIV",
+          "text": "Все партииСварить",
+          "previous": {
+            "x": 174,
+            "y": 132,
+            "width": 200,
+            "height": 36,
+            "top": 132,
+            "right": 374,
+            "bottom": 168,
+            "left": 174
+          },
+          "current": {
+            "x": 182,
+            "y": 132,
+            "width": 192,
+            "height": 36,
+            "top": 132,
+            "right": 374,
+            "bottom": 168,
+            "left": 182
+          }
+        },
+        {
+          "text": "QA Admin",
+          "previous": {
+            "x": 16,
+            "y": 82,
+            "width": 358,
+            "height": 17,
+            "top": 82,
+            "right": 374,
+            "bottom": 99,
+            "left": 16
+          },
+          "current": {
+            "x": 16,
+            "y": 81,
+            "width": 358,
+            "height": 17,
+            "top": 81,
+            "right": 374,
+            "bottom": 98,
+            "left": 16
+          }
+        },
+        {
+          "tag": "SPAN",
+          "text": "8",
+          "previous": {
+            "x": 97,
+            "y": 143,
+            "width": 8,
+            "height": 16,
+            "top": 143,
+            "right": 105,
+            "bottom": 159,
+            "left": 97
+          },
+          "current": {
+            "x": 86,
+            "y": 142,
+            "width": 8,
+            "height": 16,
+            "top": 142,
+            "right": 94,
+            "bottom": 158,
+            "left": 86
+          }
+        }
+      ]
+    },
+    {
+      "start": 3991.100000000093,
+      "value": 0.006722555014372359,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "BUTTON",
+          "text": "Обратная связь",
+          "previous": {
+            "x": 304,
+            "y": 774,
+            "width": 86,
+            "height": 70,
+            "top": 774,
+            "right": 390,
+            "bottom": 844,
+            "left": 304
+          },
+          "current": {
+            "x": 304,
+            "y": 718,
+            "width": 86,
+            "height": 84,
+            "top": 718,
+            "right": 390,
+            "bottom": 802,
+            "left": 304
+          }
+        },
+        {
+          "tag": "OL",
+          "text": "",
+          "previous": {
+            "x": 12,
+            "y": 824,
+            "width": 366,
+            "height": 8,
+            "top": 824,
+            "right": 378,
+            "bottom": 832,
+            "left": 12
+          },
+          "current": {
+            "x": 12,
+            "y": 708,
+            "width": 366,
+            "height": 8,
+            "top": 708,
+            "right": 378,
+            "bottom": 716,
+            "left": 12
+          }
+        }
+      ]
+    }
+  ],
+  "longtasks": [
+    {
+      "start": 1044.1000000000931,
+      "duration": 71
+    },
+    {
+      "start": 1119.1999999999534,
+      "duration": 109
+    },
+    {
+      "start": 2025.6999999999534,
+      "duration": 226
+    },
+    {
+      "start": 2683.5,
+      "duration": 116
+    },
+    {
+      "start": 3739.600000000093,
+      "duration": 115
+    },
+    {
+      "start": 3888.6999999999534,
+      "duration": 74
+    }
+  ],
+  "events": [],
+  "errors": [],
+  "resources": [
+    {
+      "name": "/_next/static/media/32425b6d39044b3c-s.p.ttf",
+      "type": "link",
+      "start": 292.5,
+      "duration": 3388.3000000000466,
+      "transfer": 149811,
+      "encoded": 149511,
+      "decoded": 359804
+    },
+    {
+      "name": "/_next/static/media/d703e6352f035923-s.p.ttf",
+      "type": "link",
+      "start": 295.19999999995343,
+      "duration": 4344.90000000014,
+      "transfer": 300789,
+      "encoded": 300489,
+      "decoded": 744936
+    },
+    {
+      "name": "/_next/static/css/688dbf7110800d11.css",
+      "type": "link",
+      "start": 295.30000000004657,
+      "duration": 199.0999999998603,
+      "transfer": 2181,
+      "encoded": 1881,
+      "decoded": 7335
+    },
+    {
+      "name": "/_next/static/css/10d068b31dbc4d49.css",
+      "type": "link",
+      "start": 295.39999999990687,
+      "duration": 684.6000000000931,
+      "transfer": 20713,
+      "encoded": 20413,
+      "decoded": 115379
+    },
+    {
+      "name": "/_next/static/chunks/webpack-50b6521d18506e69.js",
+      "type": "link",
+      "start": 320.30000000004657,
+      "duration": 263.30000000004657,
+      "transfer": 2110,
+      "encoded": 1810,
+      "decoded": 3498
+    },
+    {
+      "name": "/_next/static/chunks/87c73c54-dd8d81ac9604067c.js",
+      "type": "script",
+      "start": 321.19999999995343,
+      "duration": 1694.1000000000931,
+      "transfer": 54664,
+      "encoded": 54364,
+      "decoded": 173023
+    },
+    {
+      "name": "/_next/static/chunks/18-94afe61f15789e06.js",
+      "type": "script",
+      "start": 322,
+      "duration": 1588.5,
+      "transfer": 47088,
+      "encoded": 46788,
+      "decoded": 174209
+    },
+    {
+      "name": "/_next/static/chunks/main-app-1b4249da1a5d893c.js",
+      "type": "script",
+      "start": 322.19999999995343,
+      "duration": 457.4000000001397,
+      "transfer": 870,
+      "encoded": 570,
+      "decoded": 570
+    },
+    {
+      "name": "/_next/static/chunks/7283-f1e1247528aca409.js",
+      "type": "script",
+      "start": 324.39999999990687,
+      "duration": 700.9000000001397,
+      "transfer": 3701,
+      "encoded": 3401,
+      "decoded": 8555
+    },
+    {
+      "name": "/_next/static/chunks/612-9c360be286377cda.js",
+      "type": "script",
+      "start": 324.60000000009313,
+      "duration": 2350.5999999998603,
+      "transfer": 63319,
+      "encoded": 63019,
+      "decoded": 212253
+    },
+    {
+      "name": "/_next/static/chunks/4737-b9435b98fbb3c365.js",
+      "type": "script",
+      "start": 325.5,
+      "duration": 1262.6000000000931,
+      "transfer": 13380,
+      "encoded": 13080,
+      "decoded": 57621
+    },
+    {
+      "name": "/_next/static/chunks/4159-4524a53eeeb992af.js",
+      "type": "script",
+      "start": 325.60000000009313,
+      "duration": 1593.5,
+      "transfer": 4445,
+      "encoded": 4145,
+      "decoded": 12883
+    },
+    {
+      "name": "/_next/static/chunks/9461-25c487bb36994b55.js",
+      "type": "script",
+      "start": 326.60000000009313,
+      "duration": 1876,
+      "transfer": 5129,
+      "encoded": 4829,
+      "decoded": 12329
+    },
+    {
+      "name": "/_next/static/chunks/app/layout-a377c5f5ad22f81f.js",
+      "type": "script",
+      "start": 326.89999999990687,
+      "duration": 1958.9000000001397,
+      "transfer": 7444,
+      "encoded": 7144,
+      "decoded": 18394
+    },
+    {
+      "name": "/_next/static/chunks/app/error-482cb912af31630e.js",
+      "type": "script",
+      "start": 327.39999999990687,
+      "duration": 1884.8000000000466,
+      "transfer": 953,
+      "encoded": 653,
+      "decoded": 1140
+    },
+    {
+      "name": "/_next/static/chunks/9664-4bead6cd06a85437.js",
+      "type": "script",
+      "start": 327.60000000009313,
+      "duration": 2130.1999999999534,
+      "transfer": 3455,
+      "encoded": 3155,
+      "decoded": 8925
+    },
+    {
+      "name": "/_next/static/chunks/922-36cb889d8a78c9e9.js",
+      "type": "script",
+      "start": 328.80000000004657,
+      "duration": 2144.3000000000466,
+      "transfer": 3775,
+      "encoded": 3475,
+      "decoded": 9436
+    },
+    {
+      "name": "/_next/static/chunks/1140-3282b57ff3d332fe.js",
+      "type": "script",
+      "start": 329.69999999995343,
+      "duration": 2240.4000000001397,
+      "transfer": 5548,
+      "encoded": 5248,
+      "decoded": 20277
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/layout-7999a595026f1b2e.js",
+      "type": "script",
+      "start": 330.10000000009313,
+      "duration": 2309.399999999907,
+      "transfer": 506,
+      "encoded": 206,
+      "decoded": 206
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/layout-6a9b9b951f570000.js",
+      "type": "script",
+      "start": 330.5,
+      "duration": 2361,
+      "transfer": 2491,
+      "encoded": 2191,
+      "decoded": 6439
+    },
+    {
+      "name": "/_next/static/chunks/489-fc96c5688a515719.js",
+      "type": "script",
+      "start": 330.60000000009313,
+      "duration": 2488.0999999998603,
+      "transfer": 5524,
+      "encoded": 5224,
+      "decoded": 13661
+    },
+    {
+      "name": "/_next/static/chunks/5132-670c74aadff796fb.js",
+      "type": "script",
+      "start": 330.80000000004657,
+      "duration": 2539.8000000000466,
+      "transfer": 2967,
+      "encoded": 2667,
+      "decoded": 7178
+    },
+    {
+      "name": "/_next/static/chunks/3671-7a65dbaeafe4c092.js",
+      "type": "script",
+      "start": 333.10000000009313,
+      "duration": 3182.5,
+      "transfer": 30297,
+      "encoded": 29997,
+      "decoded": 157102
+    },
+    {
+      "name": "/_next/static/chunks/6005-b648b00388e32889.js",
+      "type": "script",
+      "start": 333.89999999990687,
+      "duration": 2603.600000000093,
+      "transfer": 3664,
+      "encoded": 3364,
+      "decoded": 10087
+    },
+    {
+      "name": "/_next/static/chunks/1639-5eecbdf20c5b9d47.js",
+      "type": "script",
+      "start": 334,
+      "duration": 2769.1999999999534,
+      "transfer": 5727,
+      "encoded": 5427,
+      "decoded": 19895
+    },
+    {
+      "name": "/_next/static/chunks/6973-56369b621a01f5bf.js",
+      "type": "script",
+      "start": 334,
+      "duration": 2806.1999999999534,
+      "transfer": 4065,
+      "encoded": 3765,
+      "decoded": 8656
+    },
+    {
+      "name": "/_next/static/chunks/6120-07b333e4541a8fe9.js",
+      "type": "script",
+      "start": 335,
+      "duration": 2963.1999999999534,
+      "transfer": 8647,
+      "encoded": 8347,
+      "decoded": 28632
+    },
+    {
+      "name": "/_next/static/chunks/8492-57e6f77fefcecfaa.js",
+      "type": "script",
+      "start": 335.80000000004657,
+      "duration": 3239.399999999907,
+      "transfer": 13129,
+      "encoded": 12829,
+      "decoded": 52172
+    },
+    {
+      "name": "/_next/static/chunks/4258-e3283a4ddd5fcff4.js",
+      "type": "script",
+      "start": 336.69999999995343,
+      "duration": 3065.6999999999534,
+      "transfer": 3237,
+      "encoded": 2937,
+      "decoded": 9107
+    },
+    {
+      "name": "/_next/static/chunks/1623-4bd7af5960049a45.js",
+      "type": "script",
+      "start": 337.69999999995343,
+      "duration": 3215.5,
+      "transfer": 3938,
+      "encoded": 3638,
+      "decoded": 11086
+    },
+    {
+      "name": "/_next/static/chunks/6273-f1f24032028dd111.js",
+      "type": "script",
+      "start": 338.60000000009313,
+      "duration": 3311.7999999998137,
+      "transfer": 4666,
+      "encoded": 4366,
+      "decoded": 10855
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/page-9f8334c1db744cff.js",
+      "type": "script",
+      "start": 342.89999999990687,
+      "duration": 3389.5,
+      "transfer": 4757,
+      "encoded": 4457,
+      "decoded": 11804
+    },
+    {
+      "name": "/app/brew-batches?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 4007.5,
+      "duration": 207.30000000004657,
+      "transfer": 1959,
+      "encoded": 1659,
+      "decoded": 4531
+    },
+    {
+      "name": "/app/recipes?intent=brew&_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 4008.6999999999534,
+      "duration": 212,
+      "transfer": 1986,
+      "encoded": 1686,
+      "decoded": 4895
+    },
+    {
+      "name": "/app/brew-batches/81a037e1-9760-49d9-adb1-3c4149fd5b8d?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 4009.6999999999534,
+      "duration": 225.9000000001397,
+      "transfer": 2002,
+      "encoded": 1702,
+      "decoded": 4887
+    },
+    {
+      "name": "/app/brew-batches/0208eef3-8aaa-44ca-a7b8-387c3099cb7d?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 4010,
+      "duration": 233.60000000009313,
+      "transfer": 2000,
+      "encoded": 1700,
+      "decoded": 4887
+    },
+    {
+      "name": "/app/brew-batches/b8c653fb-0425-40e6-865c-c15688779648?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 4010.899999999907,
+      "duration": 239.9000000001397,
+      "transfer": 2002,
+      "encoded": 1702,
+      "decoded": 4887
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/brew-batches/error-7638144f5a85e143.js",
+      "type": "script",
+      "start": 4215.800000000047,
+      "duration": 162.89999999990687,
+      "transfer": 960,
+      "encoded": 660,
+      "decoded": 1136
+    },
+    {
+      "name": "/app/brew-batches/b4c46f5c-b414-4984-b624-1be951ba2aa3?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 4218.699999999953,
+      "duration": 198.19999999995343,
+      "transfer": 2001,
+      "encoded": 1701,
+      "decoded": 4887
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/error-f2109ab5bea0953a.js",
+      "type": "script",
+      "start": 4222.300000000047,
+      "duration": 186.5,
+      "transfer": 998,
+      "encoded": 698,
+      "decoded": 1327
+    },
+    {
+      "name": "/app/brew-batches/44dc5c3b-6c1b-4061-88a2-a83ab22be31f?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 4225.300000000047,
+      "duration": 221.0999999998603,
+      "transfer": 2001,
+      "encoded": 1701,
+      "decoded": 4887
+    },
+    {
+      "name": "/app/brew-batches/2a9d77a8-408c-41c4-a525-afa8363ab472?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 4237.699999999953,
+      "duration": 222.9000000001397,
+      "transfer": 2004,
+      "encoded": 1704,
+      "decoded": 4887
+    },
+    {
+      "name": "/app/ingredients?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 4244.699999999953,
+      "duration": 313.9000000001397,
+      "transfer": 2392,
+      "encoded": 2092,
+      "decoded": 7404
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/ingredients/error-cf62132f9ffaac08.js",
+      "type": "script",
+      "start": 4560.199999999953,
+      "duration": 7.600000000093132,
+      "transfer": 0,
+      "encoded": 1134,
+      "decoded": 1134
+    }
+  ]
+}

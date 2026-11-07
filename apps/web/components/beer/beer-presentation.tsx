@@ -156,9 +156,9 @@ export function BeerPresentation({ beer, bottle, embedded = false }: { beer: Bee
           alt=""
           aria-hidden
           fill
-          unoptimized
-          priority
-          sizes="100vw"
+          unoptimized={coverIsRecipePhoto}
+          priority={!embedded}
+          sizes={embedded ? "(max-width: 768px) 100vw, 420px" : "100vw"}
           className={
             coverIsRecipePhoto ? "object-cover" : "scale-110 object-cover blur-[10px] saturate-[1.25]"
           }

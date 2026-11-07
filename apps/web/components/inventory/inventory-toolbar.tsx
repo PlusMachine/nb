@@ -55,6 +55,8 @@ type Props = {
   sort: InventorySortOption;
   summary: InventorySummaryDto;
   visibleItemCount?: number;
+  onNavigate?: (href: string) => void;
+  resultsPending?: boolean;
 };
 
 type PrimaryButtonKey =
@@ -152,7 +154,9 @@ export function InventoryToolbar({
   showFinished,
   sort,
   summary,
-  visibleItemCount
+  visibleItemCount,
+  onNavigate,
+  resultsPending = false
 }: Props) {
   const pathname = usePathname();
   const router = useRouter();
@@ -175,10 +179,15 @@ export function InventoryToolbar({
       return;
     }
 
+    if (onNavigate) {
+      onNavigate(href);
+      return;
+    }
+
     startTransition(() => {
       router.replace(href, { scroll: false });
     });
-  }, [currentHref, router]);
+  }, [currentHref, router, onNavigate]);
 
   const buildSearchHref = useCallback((nextSearch: string) => buildInventoryToolbarHref(pathname, {
     search: nextSearch,
@@ -192,8 +201,10 @@ export function InventoryToolbar({
   const {
     inputValue: searchValue,
     setInputValue: setSearchValue,
-    isPending: isSearchPending
-  } = useDebouncedUrlSearch({ value: search, buildHref: buildSearchHref, debounceMs: searchDebounceMs });
+    isPending: isSearchPending,
+    onFocus: onSearchFocus,
+    onBlur: onSearchBlur
+  } = useDebouncedUrlSearch({ value: search, buildHref: buildSearchHref, debounceMs: searchDebounceMs, navigate: onNavigate });
 
   const hasFilters = hasActiveInventoryFilters({
     search: searchValue,
@@ -341,6 +352,8 @@ export function InventoryToolbar({
             <InventorySearchInput
               value={searchValue}
               onValueChange={setSearchValue}
+              onFocus={onSearchFocus}
+              onBlur={onSearchBlur}
             />
           </div>
         ) : null}
@@ -551,7 +564,7 @@ export function InventoryToolbar({
       ) : null}
 
 
-      {isPending || isSearchPending ? (
+      {isPending || isSearchPending || resultsPending ? (
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <div className="h-3 w-3 animate-spin rounded-full border-2 border-border border-t-foreground" />
           Обновляем список…

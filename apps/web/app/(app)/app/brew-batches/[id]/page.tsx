@@ -21,6 +21,8 @@ import {
 } from "@/features/brew-batches/brew-day";
 import { resolveBrewNudge } from "@/features/brew-batches/dashboard";
 import { buildManualBrewSteps } from "@/features/brew-batches/manual-brew";
+import { makeOfflineBrewSnapshot, supportsOfflineBrew } from "@/features/brew-batches/offline/model";
+import { OfflineBrewSession } from "@/features/brew-batches/offline/session";
 import { resolveBrewCompletionRatingSlug } from "@/features/brew-batches/completion";
 import {
   brewBatchStatusBadgeClass,
@@ -303,7 +305,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
     labelsHref = `/labels?${labelParams.toString()}`;
   }
 
-  return (
+  const page = (
     <div className="space-y-6">
       <div>
         <Link href="/app/brew-batches" className="inline-flex items-center gap-1 text-sm text-muted-foreground transition hover:text-foreground">
@@ -535,4 +537,9 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
       )}
     </div>
   );
+  return supportsOfflineBrew(batch) ? (
+    <OfflineBrewSession key={`${user.id}:${batch.id}`} ownerId={user.id} batchId={batch.id} initial={makeOfflineBrewSnapshot(detail, user.preferredGravityUnit)}>
+      {page}
+    </OfflineBrewSession>
+  ) : page;
 }

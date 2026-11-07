@@ -12,6 +12,9 @@ import {
 } from "@/app/(app)/app/brew-batches/[id]/actions";
 import { NumericInput } from "@/components/shared/numeric-input";
 import { resolveBrewGravityPlaceholderSg } from "@/features/brew-batches/brew-day";
+import { summarizeBrewMeasurements } from "../measurements";
+import { useOfflineBrew } from "../offline/context";
+import { readOfflineMeasurements, type OfflineBrewCommand } from "../offline/model";
 import {
   GRAVITY_SG_MAX,
   GRAVITY_SG_MIN,
@@ -71,8 +74,8 @@ function StatTile({
 
 export function BrewJournal({
   brewBatchId,
-  measurements,
-  summary,
+  measurements: serverMeasurements,
+  summary: serverSummary,
   preferredGravityUnit,
   measurementKind,
   hideStats = false,
@@ -89,6 +92,10 @@ export function BrewJournal({
   /** Контекстный заголовок секции (OG на варочном дне, FG на брожении). */
   title?: string;
 }) {
+  const offline = useOfflineBrew(brewBatchId);
+  const snapshot = offline?.snapshot;
+  const measurements = snapshot ? readOfflineMeasurements(snapshot) : serverMeasurements;
+  const summary = snapshot ? summarizeBrewMeasurements(measurements, snapshot.target) : serverSummary;
   const [gravityDraft, setGravityDraft] = useState({ value: "", unit: preferredGravityUnit });
   const gravity = convertGravityFieldValue(gravityDraft.value, toCalculatorGravityUnit(gravityDraft.unit), toCalculatorGravityUnit(preferredGravityUnit));
   const setGravity = (value: string) => setGravityDraft({ value, unit: preferredGravityUnit });
@@ -138,14 +145,23 @@ export function BrewJournal({
     setBusy(true);
     setError(null);
     try {
-      const result = await addBrewMeasurementAction(brewBatchId, {
-        gravitySg: String(gravitySg),
+      const input = {
+        gravitySg,
         // datetime-local — наивное локальное время; переводим в абсолютный момент
         // (ISO с таймзоной браузера), иначе сервер распарсит его в своей TZ.
         takenAt: takenAt ? new Date(takenAt).toISOString() : null,
-        note: note || null,
-        isFinal: measurementKind === "og" ? false : markFinal
-      });
+        note: note || null
+      };
+      const isFinal = measurementKind !== "og" && markFinal;
+      let result;
+      if (offline) {
+        const id = crypto.randomUUID();
+        const commands: OfflineBrewCommand[] = [{ kind: "add-measurement", id, input: { ...input, takenAt: input.takenAt ?? new Date().toISOString() } }];
+        if (isFinal) commands.push({ kind: "final-measurement", id });
+        result = await offline.save(...commands);
+      } else {
+        result = await addBrewMeasurementAction(brewBatchId, { ...input, isFinal });
+      }
       if (!result.ok) {
         setError(result.message);
         return;
@@ -154,6 +170,8 @@ export function BrewJournal({
       setTakenAt("");
       setNote("");
       setMarkFinal(false);
+    } catch {
+      setError("Не удалось сохранить замер. Проверьте дату и повторите.");
     } finally {
       inFlight.current = false;
       setBusy(false);
@@ -169,10 +187,12 @@ export function BrewJournal({
     setDeletingId(id);
     setError(null);
     try {
-      const result = await deleteBrewMeasurementAction(brewBatchId, id);
+      const result = offline ? await offline.save({ kind: "delete-measurement", id }) : await deleteBrewMeasurementAction(brewBatchId, id);
       if (!result.ok) {
         setError(result.message);
       }
+    } catch {
+      setError("Не удалось удалить замер. Попробуйте ещё раз.");
     } finally {
       inFlight.current = false;
       setBusy(false);
@@ -189,10 +209,12 @@ export function BrewJournal({
     setTogglingId(id);
     setError(null);
     try {
-      const result = await setBrewMeasurementFinalAction(brewBatchId, id, next);
+      const result = offline ? await offline.save({ kind: "final-measurement", id: next ? id : null }) : await setBrewMeasurementFinalAction(brewBatchId, id, next);
       if (!result.ok) {
         setError(result.message);
       }
+    } catch {
+      setError("Не удалось изменить итоговый замер. Попробуйте ещё раз.");
     } finally {
       inFlight.current = false;
       setBusy(false);

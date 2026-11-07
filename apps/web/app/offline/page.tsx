@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 
 import { OfflineConsoleList } from "./offline-console-list";
 import { OfflineRetryButton } from "./offline-retry-button";
+import { OfflineBrewAccess } from "./offline-brew-access";
 
 // ============================================================================
 // Страница «Нет сети».
 //
-// Отдаётся service worker'ом (public/sw.js) из кэша при обрыве навигации, поэтому
+// Отдаётся service worker'ом (/sw.js) из кэша при обрыве навигации, поэтому
 // должна быть полностью самодостаточной: глобальный CSS (globals.css) к моменту
 // показа может быть не закэширован, поэтому вся критичная вёрстка — на инлайн
 // <style> ниже, без Tailwind-классов. Поддержка тёмной темы — и через системную
@@ -19,7 +20,7 @@ import { OfflineRetryButton } from "./offline-retry-button";
 // (offline-retry-button.tsx, offline-console-list.tsx), а не инлайн-скрипты:
 // мутация DOM инлайн-скриптом до гидратации ловила hydration mismatch (React
 // выбрасывал добавленные скриптом узлы, фича не работала никогда). Нужные для
-// гидратации чанки precache'ит public/sw.js.
+// гидратации чанки precache'ит /sw.js.
 // ============================================================================
 
 export const metadata: Metadata = {
@@ -27,7 +28,7 @@ export const metadata: Metadata = {
   robots: { index: false }
 };
 
-export default function OfflinePage() {
+function OfflineFallback() {
   return (
     <div className="offline-page">
       <style>{`
@@ -114,14 +115,14 @@ export default function OfflinePage() {
         }
 
         @media (prefers-color-scheme: dark) {
-          .offline-page { background: #09090b; color: #f4f4f6; }
-          .offline-card { background: #17171b; border-color: #2c2c33; }
-          .offline-text { color: #9d9da8; }
-          .offline-button { background: #10b981; color: #052e1f; }
-          .offline-button:hover { background: #34d399; }
-          .offline-device { border-top-color: #2c2c33; }
-          .offline-device-link { color: #34d399; }
-          .offline-device-fallback code { background: #232329; }
+          :root:not([style*="color-scheme"]) .offline-page { background: #09090b; color: #f4f4f6; }
+          :root:not([style*="color-scheme"]) .offline-card { background: #17171b; border-color: #2c2c33; }
+          :root:not([style*="color-scheme"]) .offline-text { color: #9d9da8; }
+          :root:not([style*="color-scheme"]) .offline-button { background: #10b981; color: #052e1f; }
+          :root:not([style*="color-scheme"]) .offline-button:hover { background: #34d399; }
+          :root:not([style*="color-scheme"]) .offline-device { border-top-color: #2c2c33; }
+          :root:not([style*="color-scheme"]) .offline-device-link { color: #34d399; }
+          :root:not([style*="color-scheme"]) .offline-device-fallback code { background: #232329; }
         }
         :root.dark .offline-page { background: #09090b; color: #f4f4f6; }
         :root.dark .offline-card { background: #17171b; border-color: #2c2c33; }
@@ -135,7 +136,10 @@ export default function OfflinePage() {
 
       <div className="offline-card">
         <div className="offline-icon" aria-hidden="true">
-          📡
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ display: "inline-block" }}>
+            <path d="m2 2 20 20M8.5 16.5a5 5 0 0 1 7 0M5 13a10 10 0 0 1 2.5-1.8M11 10a10 10 0 0 1 8 3M2 9a15 15 0 0 1 2-1.5M8 5.5A15 15 0 0 1 22 9" />
+            <circle cx="12" cy="20" r=".5" />
+          </svg>
         </div>
         <h1 className="offline-title">Нет соединения</h1>
         <p className="offline-text">Проверьте интернет и попробуйте ещё раз.</p>
@@ -149,6 +153,14 @@ export default function OfflinePage() {
           <OfflineConsoleList />
         </div>
       </div>
+    </div>
+  );
+}
+
+export default function OfflinePage() {
+  return (
+    <div data-nb-offline-shell>
+      <OfflineBrewAccess><OfflineFallback /></OfflineBrewAccess>
     </div>
   );
 }

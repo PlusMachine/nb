@@ -1,0 +1,613 @@
+{
+  "name": "calculator-mobile-slow-2",
+  "path": "/calculators/abv-attenuation",
+  "mobile": true,
+  "slow": true,
+  "warm": false,
+  "freshConsent": false,
+  "status": 200,
+  "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+  "url": "http://127.0.0.1:3016/calculators/abv-attenuation",
+  "ttfbMs": 22.4000000001397,
+  "fcpMs": 1048,
+  "lcpMs": 1048,
+  "cls": 0.2098740352435238,
+  "domContentLoadedMs": 864.1000000000931,
+  "loadMs": 4904,
+  "htmlTransfer": 16644,
+  "htmlDecoded": 55008,
+  "resourceTransfer": 881417,
+  "resourceDecoded": 2924344,
+  "jsDecoded": 1692559,
+  "domElements": 283,
+  "incompleteImages": [],
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "scrollWidth": 390,
+    "scrollHeight": 3033
+  },
+  "totalLongTaskBlockingMs": 549,
+  "lcp": [
+    {
+      "start": 1048,
+      "size": 18568,
+      "url": "",
+      "tag": "H1",
+      "text": "Крепость, сбраживание и калории"
+    }
+  ],
+  "shifts": [
+    {
+      "start": 3976.1999999999534,
+      "value": 0.2016653621828708,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "DIV",
+          "text": "Замеры плотностиСброситьНачальная плотность (OG)°PКонечная плотность (FG)°PШкала",
+          "previous": {
+            "x": 13,
+            "y": 391,
+            "width": 364,
+            "height": 453,
+            "top": 391,
+            "right": 377,
+            "bottom": 844,
+            "left": 13
+          },
+          "current": {
+            "x": 13,
+            "y": 361,
+            "width": 364,
+            "height": 483,
+            "top": 361,
+            "right": 377,
+            "bottom": 844,
+            "left": 13
+          }
+        },
+        {
+          "tag": "P",
+          "text": "Крепость и степень сбраживания по начальной и конечной плотности.",
+          "previous": {
+            "x": 16,
+            "y": 304,
+            "width": 318,
+            "height": 48,
+            "top": 304,
+            "right": 334,
+            "bottom": 352,
+            "left": 16
+          },
+          "current": {
+            "x": 16,
+            "y": 274,
+            "width": 318,
+            "height": 48,
+            "top": 274,
+            "right": 334,
+            "bottom": 322,
+            "left": 16
+          }
+        },
+        {
+          "tag": "DIV",
+          "text": "Войти",
+          "previous": {
+            "x": 233,
+            "y": 6,
+            "width": 133,
+            "height": 44,
+            "top": 6,
+            "right": 366,
+            "bottom": 50,
+            "left": 233
+          },
+          "current": {
+            "x": 238,
+            "y": 6,
+            "width": 128,
+            "height": 44,
+            "top": 6,
+            "right": 366,
+            "bottom": 50,
+            "left": 238
+          }
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Сбросить",
+          "previous": {
+            "x": 258,
+            "y": 378,
+            "width": 95,
+            "height": 24,
+            "top": 378,
+            "right": 353,
+            "bottom": 402,
+            "left": 258
+          },
+          "current": {
+            "x": 262,
+            "y": 378,
+            "width": 91,
+            "height": 24,
+            "top": 378,
+            "right": 353,
+            "bottom": 402,
+            "left": 262
+          }
+        },
+        {
+          "tag": "LI",
+          "text": "Калькуляторы",
+          "previous": {
+            "x": 98,
+            "y": 81,
+            "width": 106,
+            "height": 20,
+            "top": 81,
+            "right": 204,
+            "bottom": 101,
+            "left": 98
+          },
+          "current": {
+            "x": 93,
+            "y": 81,
+            "width": 97,
+            "height": 20,
+            "top": 81,
+            "right": 190,
+            "bottom": 101,
+            "left": 93
+          }
+        }
+      ]
+    },
+    {
+      "start": 4627.90000000014,
+      "value": 0.0012647445544280746,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "OL",
+          "text": "",
+          "previous": {
+            "x": 12,
+            "y": 824,
+            "width": 366,
+            "height": 8,
+            "top": 824,
+            "right": 378,
+            "bottom": 832,
+            "left": 12
+          },
+          "current": {
+            "x": 12,
+            "y": 764,
+            "width": 366,
+            "height": 8,
+            "top": 764,
+            "right": 378,
+            "bottom": 772,
+            "left": 12
+          }
+        }
+      ]
+    },
+    {
+      "start": 5032.100000000093,
+      "value": 0.006943928506224951,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "BUTTON",
+          "text": "Обратная связь",
+          "previous": {
+            "x": 304,
+            "y": 774,
+            "width": 86,
+            "height": 70,
+            "top": 774,
+            "right": 390,
+            "bottom": 844,
+            "left": 304
+          },
+          "current": {
+            "x": 304,
+            "y": 673,
+            "width": 86,
+            "height": 84,
+            "top": 673,
+            "right": 390,
+            "bottom": 757,
+            "left": 304
+          }
+        },
+        {
+          "tag": "OL",
+          "text": "",
+          "previous": {
+            "x": 12,
+            "y": 764,
+            "width": 366,
+            "height": 8,
+            "top": 764,
+            "right": 378,
+            "bottom": 772,
+            "left": 12
+          },
+          "current": {
+            "x": 12,
+            "y": 663,
+            "width": 366,
+            "height": 8,
+            "top": 663,
+            "right": 378,
+            "bottom": 671,
+            "left": 12
+          }
+        }
+      ]
+    }
+  ],
+  "longtasks": [
+    {
+      "start": 945.6000000000931,
+      "duration": 76
+    },
+    {
+      "start": 1831.8000000000466,
+      "duration": 196
+    },
+    {
+      "start": 2558.100000000093,
+      "duration": 80
+    },
+    {
+      "start": 3814.100000000093,
+      "duration": 52
+    },
+    {
+      "start": 3867,
+      "duration": 71
+    },
+    {
+      "start": 4160.5,
+      "duration": 270
+    },
+    {
+      "start": 4449.90000000014,
+      "duration": 146
+    },
+    {
+      "start": 4866.90000000014,
+      "duration": 53
+    },
+    {
+      "start": 4983,
+      "duration": 55
+    }
+  ],
+  "events": [],
+  "errors": [],
+  "menuInteractiveAt": 4022.8000000000466,
+  "resources": [
+    {
+      "name": "/_next/static/media/32425b6d39044b3c-s.p.ttf",
+      "type": "link",
+      "start": 168.10000000009313,
+      "duration": 3709.6999999999534,
+      "transfer": 149811,
+      "encoded": 149511,
+      "decoded": 359804
+    },
+    {
+      "name": "/_next/static/media/d703e6352f035923-s.p.ttf",
+      "type": "link",
+      "start": 173.10000000009313,
+      "duration": 4684.800000000047,
+      "transfer": 300789,
+      "encoded": 300489,
+      "decoded": 744936
+    },
+    {
+      "name": "/_next/static/css/688dbf7110800d11.css",
+      "type": "link",
+      "start": 190.19999999995343,
+      "duration": 191.60000000009313,
+      "transfer": 2181,
+      "encoded": 1881,
+      "decoded": 7335
+    },
+    {
+      "name": "/_next/static/css/10d068b31dbc4d49.css",
+      "type": "link",
+      "start": 190.4000000001397,
+      "duration": 639.8999999999069,
+      "transfer": 20713,
+      "encoded": 20413,
+      "decoded": 115379
+    },
+    {
+      "name": "/_next/static/chunks/webpack-50b6521d18506e69.js",
+      "type": "link",
+      "start": 190.5,
+      "duration": 260,
+      "transfer": 2110,
+      "encoded": 1810,
+      "decoded": 3498
+    },
+    {
+      "name": "/_next/static/chunks/87c73c54-dd8d81ac9604067c.js",
+      "type": "script",
+      "start": 190.69999999995343,
+      "duration": 1636,
+      "transfer": 54664,
+      "encoded": 54364,
+      "decoded": 173023
+    },
+    {
+      "name": "/_next/static/chunks/18-94afe61f15789e06.js",
+      "type": "script",
+      "start": 193.60000000009313,
+      "duration": 1596.1999999999534,
+      "transfer": 47088,
+      "encoded": 46788,
+      "decoded": 174209
+    },
+    {
+      "name": "/_next/static/chunks/main-app-1b4249da1a5d893c.js",
+      "type": "script",
+      "start": 194.60000000009313,
+      "duration": 449.39999999990687,
+      "transfer": 870,
+      "encoded": 570,
+      "decoded": 570
+    },
+    {
+      "name": "/_next/static/chunks/7283-f1e1247528aca409.js",
+      "type": "script",
+      "start": 195.10000000009313,
+      "duration": 717.5,
+      "transfer": 3701,
+      "encoded": 3401,
+      "decoded": 8555
+    },
+    {
+      "name": "/_next/static/chunks/612-9c360be286377cda.js",
+      "type": "script",
+      "start": 195.60000000009313,
+      "duration": 2352.8000000000466,
+      "transfer": 63319,
+      "encoded": 63019,
+      "decoded": 212253
+    },
+    {
+      "name": "/_next/static/chunks/9664-4bead6cd06a85437.js",
+      "type": "script",
+      "start": 195.69999999995343,
+      "duration": 1001.4000000001397,
+      "transfer": 3455,
+      "encoded": 3155,
+      "decoded": 8925
+    },
+    {
+      "name": "/_next/static/chunks/4159-4524a53eeeb992af.js",
+      "type": "script",
+      "start": 195.9000000001397,
+      "duration": 1331.2999999998137,
+      "transfer": 4445,
+      "encoded": 4145,
+      "decoded": 12883
+    },
+    {
+      "name": "/_next/static/chunks/922-36cb889d8a78c9e9.js",
+      "type": "script",
+      "start": 195.9000000001397,
+      "duration": 1617,
+      "transfer": 3775,
+      "encoded": 3475,
+      "decoded": 9436
+    },
+    {
+      "name": "/_next/static/chunks/1140-3282b57ff3d332fe.js",
+      "type": "script",
+      "start": 195.9000000001397,
+      "duration": 1893.2999999998137,
+      "transfer": 5548,
+      "encoded": 5248,
+      "decoded": 20277
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/layout-6a9b9b951f570000.js",
+      "type": "script",
+      "start": 196,
+      "duration": 1849.1000000000931,
+      "transfer": 2491,
+      "encoded": 2191,
+      "decoded": 6439
+    },
+    {
+      "name": "/_next/static/chunks/4737-b9435b98fbb3c365.js",
+      "type": "script",
+      "start": 197.9000000001397,
+      "duration": 2116.6999999999534,
+      "transfer": 13380,
+      "encoded": 13080,
+      "decoded": 57621
+    },
+    {
+      "name": "/_next/static/chunks/3671-7a65dbaeafe4c092.js",
+      "type": "script",
+      "start": 198.4000000001397,
+      "duration": 2730.899999999907,
+      "transfer": 30297,
+      "encoded": 29997,
+      "decoded": 157102
+    },
+    {
+      "name": "/_next/static/chunks/6005-b648b00388e32889.js",
+      "type": "script",
+      "start": 199.10000000009313,
+      "duration": 2166.1999999999534,
+      "transfer": 3664,
+      "encoded": 3364,
+      "decoded": 10087
+    },
+    {
+      "name": "/_next/static/chunks/6926-eaa04380686830b3.js",
+      "type": "script",
+      "start": 199.19999999995343,
+      "duration": 2587.3000000000466,
+      "transfer": 13028,
+      "encoded": 12728,
+      "decoded": 40407
+    },
+    {
+      "name": "/_next/static/chunks/3931-5e2f6415202a03df.js",
+      "type": "script",
+      "start": 199.9000000001397,
+      "duration": 2400.2999999998137,
+      "transfer": 2865,
+      "encoded": 2565,
+      "decoded": 11113
+    },
+    {
+      "name": "/_next/static/chunks/3594-995a965781e222a7.js",
+      "type": "script",
+      "start": 200,
+      "duration": 2617,
+      "transfer": 4241,
+      "encoded": 3941,
+      "decoded": 10378
+    },
+    {
+      "name": "/_next/static/chunks/7937-28c93b4ad94e37c4.js",
+      "type": "script",
+      "start": 200.10000000009313,
+      "duration": 2984.3000000000466,
+      "transfer": 17425,
+      "encoded": 17125,
+      "decoded": 61264
+    },
+    {
+      "name": "/_next/static/chunks/8492-57e6f77fefcecfaa.js",
+      "type": "script",
+      "start": 200.19999999995343,
+      "duration": 3081.600000000093,
+      "transfer": 13129,
+      "encoded": 12829,
+      "decoded": 52172
+    },
+    {
+      "name": "/_next/static/chunks/6448-1be500d6ab18eefb.js",
+      "type": "script",
+      "start": 200.30000000004657,
+      "duration": 3914.1999999999534,
+      "transfer": 46929,
+      "encoded": 46629,
+      "decoded": 170650
+    },
+    {
+      "name": "/_next/static/chunks/3490-9afb0f63887ccb10.js",
+      "type": "script",
+      "start": 200.30000000004657,
+      "duration": 3944.6999999999534,
+      "transfer": 54920,
+      "encoded": 54620,
+      "decoded": 463146
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/calculators/%5Bslug%5D/page-aeab8568652ca1ce.js",
+      "type": "script",
+      "start": 200.4000000001397,
+      "duration": 3174.399999999907,
+      "transfer": 486,
+      "encoded": 186,
+      "decoded": 186
+    },
+    {
+      "name": "/_next/static/chunks/9461-25c487bb36994b55.js",
+      "type": "script",
+      "start": 200.4000000001397,
+      "duration": 3389.5,
+      "transfer": 5129,
+      "encoded": 4829,
+      "decoded": 12329
+    },
+    {
+      "name": "/_next/static/chunks/app/layout-a377c5f5ad22f81f.js",
+      "type": "script",
+      "start": 203.10000000009313,
+      "duration": 3558.899999999907,
+      "transfer": 7444,
+      "encoded": 7144,
+      "decoded": 18394
+    },
+    {
+      "name": "/_next/static/chunks/app/error-482cb912af31630e.js",
+      "type": "script",
+      "start": 203.9000000001397,
+      "duration": 3582.5,
+      "transfer": 953,
+      "encoded": 653,
+      "decoded": 1140
+    },
+    {
+      "name": "/calculators/abv-attenuation",
+      "type": "fetch",
+      "start": 4594.100000000093,
+      "duration": 175.30000000004657,
+      "transfer": 405,
+      "encoded": 105,
+      "decoded": 92
+    },
+    {
+      "name": "/?_rsc=-3g0w2g9Zpx4mstX",
+      "type": "fetch",
+      "start": 4650.100000000093,
+      "duration": 165.5,
+      "transfer": 427,
+      "encoded": 127,
+      "decoded": 132
+    },
+    {
+      "name": "/login?_rsc=-3g0w2g9Zpx4mstX",
+      "type": "fetch",
+      "start": 4651.800000000047,
+      "duration": 174.5,
+      "transfer": 441,
+      "encoded": 141,
+      "decoded": 152
+    },
+    {
+      "name": "/calculators?_rsc=-3g0w2g9Zpx4mstX",
+      "type": "fetch",
+      "start": 4652.100000000093,
+      "duration": 185.30000000004657,
+      "transfer": 440,
+      "encoded": 140,
+      "decoded": 157
+    },
+    {
+      "name": "/calculators/refractometer-correction?_rsc=-3g0w2g9Zpx4mstX",
+      "type": "fetch",
+      "start": 4652.300000000047,
+      "duration": 191.19999999995343,
+      "transfer": 475,
+      "encoded": 175,
+      "decoded": 241
+    },
+    {
+      "name": "/calculators/abv-attenuation",
+      "type": "fetch",
+      "start": 4780.100000000093,
+      "duration": 176.19999999995343,
+      "transfer": 379,
+      "encoded": 79,
+      "decoded": 59
+    }
+  ]
+}

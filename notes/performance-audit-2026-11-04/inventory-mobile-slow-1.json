@@ -1,0 +1,609 @@
+{
+  "name": "inventory-mobile-slow-1",
+  "path": "/app/ingredients",
+  "mobile": true,
+  "slow": true,
+  "warm": false,
+  "freshConsent": false,
+  "status": 200,
+  "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+  "url": "http://127.0.0.1:3016/app/ingredients",
+  "ttfbMs": 24,
+  "fcpMs": 1036,
+  "lcpMs": 1392,
+  "cls": 0.006722555014372359,
+  "domContentLoadedMs": 1173.1999999999534,
+  "loadMs": 4898.800000000047,
+  "htmlTransfer": 66981,
+  "htmlDecoded": 303862,
+  "resourceTransfer": 846895,
+  "resourceDecoded": 2501388,
+  "jsDecoded": 1254943,
+  "domElements": 1471,
+  "incompleteImages": [
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/5D%20%E2%80%94%20German%20Pils.png",
+      "top": 3471.06884765625
+    },
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/18B%20%E2%80%94%20American%20Pale%20Ale.png",
+      "top": 3591.83740234375
+    },
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/18B%20%E2%80%94%20American%20Pale%20Ale.png",
+      "top": 3732.78759765625
+    },
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/18B%20%E2%80%94%20American%20Pale%20Ale.png",
+      "top": 3855.768798828125
+    },
+    {
+      "src": "http://127.0.0.1:3016/api/recipe-images/d6440bba-d9f9-4d11-b3df-e57a67f1eebd/thumb?v=2",
+      "top": 3959.018798828125
+    },
+    {
+      "src": "http://127.0.0.1:3016/images/bjcp/16B%20%E2%80%94%20Oatmeal%20Stout.png",
+      "top": 4062.268798828125
+    }
+  ],
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "scrollWidth": 390,
+    "scrollHeight": 4311
+  },
+  "totalLongTaskBlockingMs": 299,
+  "lcp": [
+    {
+      "start": 1036,
+      "size": 2112,
+      "url": "",
+      "tag": "DIV",
+      "text": "Загружаем склад"
+    },
+    {
+      "start": 1392,
+      "size": 7704,
+      "url": "",
+      "tag": "P",
+      "text": "21 в наличии · 3 закончились · рецепты: 6"
+    }
+  ],
+  "shifts": [
+    {
+      "start": 3118.9000000001397,
+      "value": 0.006722555014372359,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "BUTTON",
+          "text": "Обратная связь",
+          "previous": {
+            "x": 304,
+            "y": 774,
+            "width": 86,
+            "height": 70,
+            "top": 774,
+            "right": 390,
+            "bottom": 844,
+            "left": 304
+          },
+          "current": {
+            "x": 304,
+            "y": 718,
+            "width": 86,
+            "height": 84,
+            "top": 718,
+            "right": 390,
+            "bottom": 802,
+            "left": 304
+          }
+        },
+        {
+          "tag": "OL",
+          "text": "",
+          "previous": {
+            "x": 12,
+            "y": 824,
+            "width": 366,
+            "height": 8,
+            "top": 824,
+            "right": 378,
+            "bottom": 832,
+            "left": 12
+          },
+          "current": {
+            "x": 12,
+            "y": 708,
+            "width": 366,
+            "height": 8,
+            "top": 708,
+            "right": 378,
+            "bottom": 716,
+            "left": 12
+          }
+        }
+      ]
+    }
+  ],
+  "longtasks": [
+    {
+      "start": 1291.6000000000931,
+      "duration": 89
+    },
+    {
+      "start": 1995.9000000001397,
+      "duration": 168
+    },
+    {
+      "start": 2882.600000000093,
+      "duration": 79
+    },
+    {
+      "start": 3018.4000000001397,
+      "duration": 90
+    },
+    {
+      "start": 4253.5,
+      "duration": 111
+    },
+    {
+      "start": 4586,
+      "duration": 62
+    }
+  ],
+  "events": [],
+  "errors": [],
+  "resources": [
+    {
+      "name": "/_next/static/media/32425b6d39044b3c-s.p.ttf",
+      "type": "link",
+      "start": 170,
+      "duration": 3585.6999999999534,
+      "transfer": 149811,
+      "encoded": 149511,
+      "decoded": 359804
+    },
+    {
+      "name": "/_next/static/media/d703e6352f035923-s.p.ttf",
+      "type": "link",
+      "start": 171.5,
+      "duration": 4710,
+      "transfer": 300789,
+      "encoded": 300489,
+      "decoded": 744936
+    },
+    {
+      "name": "/_next/static/css/688dbf7110800d11.css",
+      "type": "link",
+      "start": 172.10000000009313,
+      "duration": 202,
+      "transfer": 2181,
+      "encoded": 1881,
+      "decoded": 7335
+    },
+    {
+      "name": "/_next/static/css/10d068b31dbc4d49.css",
+      "type": "link",
+      "start": 172.80000000004657,
+      "duration": 703.8999999999069,
+      "transfer": 20713,
+      "encoded": 20413,
+      "decoded": 115379
+    },
+    {
+      "name": "/_next/static/chunks/webpack-50b6521d18506e69.js",
+      "type": "link",
+      "start": 185.80000000004657,
+      "duration": 240.89999999990687,
+      "transfer": 2110,
+      "encoded": 1810,
+      "decoded": 3498
+    },
+    {
+      "name": "/_next/static/chunks/main-app-1b4249da1a5d893c.js",
+      "type": "script",
+      "start": 186,
+      "duration": 886.4000000001397,
+      "transfer": 870,
+      "encoded": 570,
+      "decoded": 570
+    },
+    {
+      "name": "/_next/static/chunks/18-94afe61f15789e06.js",
+      "type": "script",
+      "start": 186,
+      "duration": 1664.9000000001397,
+      "transfer": 47088,
+      "encoded": 46788,
+      "decoded": 174209
+    },
+    {
+      "name": "/_next/static/chunks/87c73c54-dd8d81ac9604067c.js",
+      "type": "script",
+      "start": 186,
+      "duration": 1807.3000000000466,
+      "transfer": 54664,
+      "encoded": 54364,
+      "decoded": 173023
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/ingredients/error-cf62132f9ffaac08.js",
+      "type": "script",
+      "start": 186.80000000004657,
+      "duration": 1073.3999999999069,
+      "transfer": 958,
+      "encoded": 658,
+      "decoded": 1134
+    },
+    {
+      "name": "/_next/static/chunks/7283-f1e1247528aca409.js",
+      "type": "script",
+      "start": 186.9000000001397,
+      "duration": 1229.5999999998603,
+      "transfer": 3701,
+      "encoded": 3401,
+      "decoded": 8555
+    },
+    {
+      "name": "/_next/static/chunks/4737-b9435b98fbb3c365.js",
+      "type": "script",
+      "start": 187.4000000001397,
+      "duration": 1769,
+      "transfer": 13380,
+      "encoded": 13080,
+      "decoded": 57621
+    },
+    {
+      "name": "/_next/static/chunks/4159-4524a53eeeb992af.js",
+      "type": "script",
+      "start": 187.4000000001397,
+      "duration": 1934,
+      "transfer": 4445,
+      "encoded": 4145,
+      "decoded": 12883
+    },
+    {
+      "name": "/_next/static/chunks/612-9c360be286377cda.js",
+      "type": "script",
+      "start": 187.4000000001397,
+      "duration": 2691.2999999998137,
+      "transfer": 63319,
+      "encoded": 63019,
+      "decoded": 212253
+    },
+    {
+      "name": "/_next/static/chunks/9461-25c487bb36994b55.js",
+      "type": "script",
+      "start": 187.5,
+      "duration": 2069.1999999999534,
+      "transfer": 5129,
+      "encoded": 4829,
+      "decoded": 12329
+    },
+    {
+      "name": "/_next/static/chunks/app/layout-a377c5f5ad22f81f.js",
+      "type": "script",
+      "start": 188.19999999995343,
+      "duration": 2165.600000000093,
+      "transfer": 7444,
+      "encoded": 7144,
+      "decoded": 18394
+    },
+    {
+      "name": "/_next/static/chunks/app/error-482cb912af31630e.js",
+      "type": "script",
+      "start": 188.30000000004657,
+      "duration": 2121.3000000000466,
+      "transfer": 953,
+      "encoded": 653,
+      "decoded": 1140
+    },
+    {
+      "name": "/_next/static/chunks/9664-4bead6cd06a85437.js",
+      "type": "script",
+      "start": 188.30000000004657,
+      "duration": 2315.5,
+      "transfer": 3455,
+      "encoded": 3155,
+      "decoded": 8925
+    },
+    {
+      "name": "/_next/static/chunks/922-36cb889d8a78c9e9.js",
+      "type": "script",
+      "start": 188.30000000004657,
+      "duration": 2382.5,
+      "transfer": 3775,
+      "encoded": 3475,
+      "decoded": 9436
+    },
+    {
+      "name": "/_next/static/chunks/1140-3282b57ff3d332fe.js",
+      "type": "script",
+      "start": 188.4000000001397,
+      "duration": 2450.1999999999534,
+      "transfer": 5548,
+      "encoded": 5248,
+      "decoded": 20277
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/layout-7999a595026f1b2e.js",
+      "type": "script",
+      "start": 189.10000000009313,
+      "duration": 2495.399999999907,
+      "transfer": 506,
+      "encoded": 206,
+      "decoded": 206
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/layout-6a9b9b951f570000.js",
+      "type": "script",
+      "start": 224.60000000009313,
+      "duration": 2550.0999999998603,
+      "transfer": 2491,
+      "encoded": 2191,
+      "decoded": 6439
+    },
+    {
+      "name": "/_next/static/chunks/489-fc96c5688a515719.js",
+      "type": "script",
+      "start": 224.80000000004657,
+      "duration": 2691.6999999999534,
+      "transfer": 5524,
+      "encoded": 5224,
+      "decoded": 13661
+    },
+    {
+      "name": "/_next/static/chunks/6253-7f094e7d3be73d7e.js",
+      "type": "script",
+      "start": 224.80000000004657,
+      "duration": 2714.3000000000466,
+      "transfer": 4400,
+      "encoded": 4100,
+      "decoded": 11767
+    },
+    {
+      "name": "/_next/static/chunks/3671-7a65dbaeafe4c092.js",
+      "type": "script",
+      "start": 224.9000000001397,
+      "duration": 3366,
+      "transfer": 30297,
+      "encoded": 29997,
+      "decoded": 157102
+    },
+    {
+      "name": "/_next/static/chunks/6005-b648b00388e32889.js",
+      "type": "script",
+      "start": 225.80000000004657,
+      "duration": 2908.5,
+      "transfer": 3664,
+      "encoded": 3364,
+      "decoded": 10087
+    },
+    {
+      "name": "/_next/static/chunks/3931-5e2f6415202a03df.js",
+      "type": "script",
+      "start": 226,
+      "duration": 2945.9000000001397,
+      "transfer": 2865,
+      "encoded": 2565,
+      "decoded": 11113
+    },
+    {
+      "name": "/_next/static/chunks/6926-eaa04380686830b3.js",
+      "type": "script",
+      "start": 226,
+      "duration": 3155,
+      "transfer": 13028,
+      "encoded": 12728,
+      "decoded": 40407
+    },
+    {
+      "name": "/_next/static/chunks/3594-995a965781e222a7.js",
+      "type": "script",
+      "start": 227.10000000009313,
+      "duration": 3176.6999999999534,
+      "transfer": 4241,
+      "encoded": 3941,
+      "decoded": 10378
+    },
+    {
+      "name": "/_next/static/chunks/1269-703da73ea98b41fe.js",
+      "type": "script",
+      "start": 227.19999999995343,
+      "duration": 3156.5,
+      "transfer": 0,
+      "encoded": 2406,
+      "decoded": 6409
+    },
+    {
+      "name": "/_next/static/chunks/7937-28c93b4ad94e37c4.js",
+      "type": "script",
+      "start": 227.19999999995343,
+      "duration": 3514.3000000000466,
+      "transfer": 17425,
+      "encoded": 17125,
+      "decoded": 61264
+    },
+    {
+      "name": "/_next/static/chunks/6973-56369b621a01f5bf.js",
+      "type": "script",
+      "start": 228.5,
+      "duration": 3422.8000000000466,
+      "transfer": 4065,
+      "encoded": 3765,
+      "decoded": 8656
+    },
+    {
+      "name": "/_next/static/chunks/6120-07b333e4541a8fe9.js",
+      "type": "script",
+      "start": 228.60000000009313,
+      "duration": 3534.8000000000466,
+      "transfer": 8647,
+      "encoded": 8347,
+      "decoded": 28632
+    },
+    {
+      "name": "/_next/static/chunks/6707-dfb5ad6fca8c13e5.js",
+      "type": "script",
+      "start": 229.5,
+      "duration": 3572.4000000001397,
+      "transfer": 4226,
+      "encoded": 3926,
+      "decoded": 11547
+    },
+    {
+      "name": "/_next/static/chunks/1520-73a8c1d586705037.js",
+      "type": "script",
+      "start": 230,
+      "duration": 3630.9000000001397,
+      "transfer": 5419,
+      "encoded": 5119,
+      "decoded": 14917
+    },
+    {
+      "name": "/_next/static/chunks/5645-97906930e38c25dc.js",
+      "type": "script",
+      "start": 230,
+      "duration": 3766,
+      "transfer": 5869,
+      "encoded": 5569,
+      "decoded": 20695
+    },
+    {
+      "name": "/_next/static/chunks/331-5733bca92425ac7b.js",
+      "type": "script",
+      "start": 231,
+      "duration": 3751,
+      "transfer": 3576,
+      "encoded": 3276,
+      "decoded": 12772
+    },
+    {
+      "name": "/_next/static/chunks/7588-dbda4ffde268c75c.js",
+      "type": "script",
+      "start": 231.5,
+      "duration": 3997.1999999999534,
+      "transfer": 16067,
+      "encoded": 15767,
+      "decoded": 60232
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/ingredients/page-c6a0bdf78a0ffb82.js",
+      "type": "script",
+      "start": 231.9000000001397,
+      "duration": 4019.7999999998137,
+      "transfer": 15084,
+      "encoded": 14784,
+      "decoded": 55447
+    },
+    {
+      "name": "/app?_rsc=Y_oY8w0H4DtxBg1k",
+      "type": "fetch",
+      "start": 3131,
+      "duration": 911.1000000000931,
+      "transfer": 429,
+      "encoded": 129,
+      "decoded": 146
+    },
+    {
+      "name": "/app/recipes?_rsc=Y_oY8w0H4DtxBg1k",
+      "type": "fetch",
+      "start": 3131.8000000000466,
+      "duration": 1067.3000000000466,
+      "transfer": 1968,
+      "encoded": 1668,
+      "decoded": 4873
+    },
+    {
+      "name": "/app/brew-batches?_rsc=Y_oY8w0H4DtxBg1k",
+      "type": "fetch",
+      "start": 3132,
+      "duration": 1082.3000000000466,
+      "transfer": 1959,
+      "encoded": 1659,
+      "decoded": 4531
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/error-f2109ab5bea0953a.js",
+      "type": "script",
+      "start": 4201.199999999953,
+      "duration": 5.800000000046566,
+      "transfer": 0,
+      "encoded": 1327,
+      "decoded": 1327
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/brew-batches/error-7638144f5a85e143.js",
+      "type": "script",
+      "start": 4215.100000000093,
+      "duration": 5.599999999860302,
+      "transfer": 0,
+      "encoded": 1136,
+      "decoded": 1136
+    },
+    {
+      "name": "/app/shopping?_rsc=Y_oY8w0H4DtxBg1k",
+      "type": "fetch",
+      "start": 4652.100000000093,
+      "duration": 207.5999999998603,
+      "transfer": 1814,
+      "encoded": 1514,
+      "decoded": 4230
+    },
+    {
+      "name": "/catalog/system/castle-malting--cara-cafe?_rsc=Y_oY8w0H4DtxBg1k",
+      "type": "fetch",
+      "start": 4653.199999999953,
+      "duration": 169.80000000004657,
+      "transfer": 499,
+      "encoded": 199,
+      "decoded": 285
+    },
+    {
+      "name": "/catalog/system/castle-malting--cara-clair?_rsc=Y_oY8w0H4DtxBg1k",
+      "type": "fetch",
+      "start": 4654.100000000093,
+      "duration": 176.5,
+      "transfer": 500,
+      "encoded": 200,
+      "decoded": 286
+    },
+    {
+      "name": "/catalog/system/kurskiy-solod--caramel-150?_rsc=Y_oY8w0H4DtxBg1k",
+      "type": "fetch",
+      "start": 4654.90000000014,
+      "duration": 189.5,
+      "transfer": 502,
+      "encoded": 202,
+      "decoded": 286
+    },
+    {
+      "name": "/catalog/system/castle-malting-pilsen-2rs-be-base?_rsc=Y_oY8w0H4DtxBg1k",
+      "type": "fetch",
+      "start": 4656,
+      "duration": 196.69999999995343,
+      "transfer": 504,
+      "encoded": 204,
+      "decoded": 293
+    },
+    {
+      "name": "/catalog/system/kurskiy-solod--wheat?_rsc=Y_oY8w0H4DtxBg1k",
+      "type": "fetch",
+      "start": 4827.5,
+      "duration": 160.10000000009313,
+      "transfer": 494,
+      "encoded": 194,
+      "decoded": 280
+    },
+    {
+      "name": "/catalog/system/kurskiy-solod--pale-ale?_rsc=Y_oY8w0H4DtxBg1k",
+      "type": "fetch",
+      "start": 4833.100000000093,
+      "duration": 161.80000000004657,
+      "transfer": 499,
+      "encoded": 199,
+      "decoded": 283
+    }
+  ]
+}

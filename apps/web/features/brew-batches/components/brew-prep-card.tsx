@@ -32,7 +32,8 @@ export function BrewPrepCard({
   plannedForIso,
   equipmentWarnings = [],
   groups,
-  snapshot
+  snapshot,
+  showDateEditor = true
 }: {
   brewBatchId: string;
   planSummary: BrewDayPlanSummary;
@@ -41,6 +42,7 @@ export function BrewPrepCard({
   equipmentWarnings?: string[];
   groups?: BrewDayStageGroup[];
   snapshot?: BrewPlanSnapshot;
+  showDateEditor?: boolean;
 }) {
   const timerTotal = fmtTimerTotal(planSummary.totalTimerSeconds);
   const hasPlan = planSummary.stages.length > 0;
@@ -87,7 +89,7 @@ export function BrewPrepCard({
         </p>
       )}
 
-      <details><summary className="min-h-11 cursor-pointer py-3 text-sm text-muted-foreground">{plannedForIso ? "Изменить дату" : "Запланировать дату"}</summary><BrewPlannedDate brewBatchId={brewBatchId} plannedForIso={plannedForIso} /></details>
+      {showDateEditor ? <details><summary className="min-h-11 cursor-pointer py-3 text-sm text-muted-foreground">{plannedForIso ? "Изменить дату" : "Запланировать дату"}</summary><BrewPlannedDate brewBatchId={brewBatchId} plannedForIso={plannedForIso} /></details> : null}
 
       <BrewTransitionButton
         brewBatchId={brewBatchId}

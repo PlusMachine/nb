@@ -108,8 +108,8 @@ export function RecipeStyleStatsBlock({
     <section className="flex h-full flex-col overflow-hidden rounded-2xl border border-border/70 bg-card shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)]">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-muted/40 px-4 py-3">
         <div className="flex min-w-0 flex-col gap-0.5">
-          <div className="flex min-w-0 items-center gap-2">
-            <h2 className="truncate text-sm font-semibold text-foreground">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <h2 className="min-w-0 break-words text-sm font-semibold text-foreground">
               {hasSelectedStyle ? "Сравнение со стилем" : "Расчёт показателей"}
             </h2>
             {comparableItems.length > 0 ? (

@@ -1,0 +1,526 @@
+{
+  "markdownLocalLinks": 27,
+  "missingLocalLinks": [],
+  "jsonErrors": [],
+  "scriptSyntax": [
+    {
+      "file": "http-smoke.mjs",
+      "ok": true
+    },
+    {
+      "file": "run-lighthouse.sh",
+      "ok": true
+    },
+    {
+      "file": "finish-audit.sh",
+      "ok": true
+    },
+    {
+      "file": "browser-helpers.mjs",
+      "ok": true
+    },
+    {
+      "file": "run-browser.mjs",
+      "ok": true
+    },
+    {
+      "file": "qa-env.sh",
+      "ok": true
+    }
+  ],
+  "cleanupOk": true,
+  "files": {
+    "README.md": {
+      "bytes": 9886,
+      "sha256": "28620dfb23bc1bb2b3f86caa4e2039aa4413b3a6d8799e4bb0aec039c5eddbda"
+    },
+    "editor-mobile-slow-3.json": {
+      "bytes": 15780,
+      "sha256": "a322102ba6cbe346600ba7dbf7a78c4416dc7323803cbfcd127a28cb38f06ef1"
+    },
+    "calculator-mobile-slow-2.json": {
+      "bytes": 11097,
+      "sha256": "2bb6ce5a0b69a06d0d4efc6e79a1f0762a28f5677a50a0f9349bc1dd941509da"
+    },
+    "recipe-thumbnails-dpr-1.json": {
+      "bytes": 804,
+      "sha256": "c66ebb79ba3b9c213aef8f76cd751dd9b9350727213f964bdef99dcc1d20a01d"
+    },
+    "inventory-clear-after.json": {
+      "bytes": 379,
+      "sha256": "0de03e95582ac76d6836ea00c4f4d156edd27f2a59d17fe122af0195c17b1c0d"
+    },
+    "home-mobile-slow-1.json": {
+      "bytes": 11875,
+      "sha256": "f346d4605806b6b05c50a2b15f73f8a96a27a271d94dbf4d72c6a8bbf21195e6"
+    },
+    "summary.json": {
+      "bytes": 4582,
+      "sha256": "f16a00e897170581281ed46dc01b4f9da06fbd5fb5b1dcd9b5a2b1f4f622a18e"
+    },
+    "recipes-mobile-slow-1.json": {
+      "bytes": 17508,
+      "sha256": "0961dea4edc8ab60c7874497b9be55ce4f57f7f647d18351f67dfe787db2c19e"
+    },
+    "catalog-mobile-slow-2.json": {
+      "bytes": 10747,
+      "sha256": "f669b8e96f9b9b74f9434e330b0276caebe682177815a8d2d02cccab33e4f14d"
+    },
+    "lighthouse-catalog.report.json": {
+      "bytes": 525304,
+      "sha256": "4f1c94c119f6a5a60210530bf1c367b5dc5cc2167a5f04b4f2caa16048b136bd"
+    },
+    "calculator-mobile-slow-3.json": {
+      "bytes": 11100,
+      "sha256": "a32635bf75681ace6ba235b819f491aa5a40f2b0b58973f103242e73fcd55b9c"
+    },
+    "recipe-thumbnails-dpr-2.json": {
+      "bytes": 809,
+      "sha256": "9c86b6536b1d090faab14ed9edf232e0166e411d6d09d44857a479286a8a8b06"
+    },
+    "lighthouse-catalog.report.html": {
+      "bytes": 614526,
+      "sha256": "5ded044116a7cc58df87a7220aba28dcf129213fcf707393753f318912612e96"
+    },
+    "home-desktop.json": {
+      "bytes": 13739,
+      "sha256": "4b2e8fa1fa45a2b751a9eda22a681d13ad7eb3e10c43f41934d602b21eab0724"
+    },
+    "measurements.json": {
+      "bytes": 4168,
+      "sha256": "018b13c79eb37d699203837e096b8db9c996e286bc2a2ee4fb74d3e8eb54a37b"
+    },
+    "editor-mobile-slow-1.json": {
+      "bytes": 15804,
+      "sha256": "d5a7d6e2e803314d0b3e1ded2d94b37adaa2ab3cc086756c7bc084980cb016b2"
+    },
+    "inventory-mobile-slow-1.json": {
+      "bytes": 17675,
+      "sha256": "7c471caf50676a583a382f4498f400d556f28cb0036d7387fce0669a016c35d4"
+    },
+    "dashboard-mobile-slow-1.json": {
+      "bytes": 13980,
+      "sha256": "13e7b395e5594cb07204206c81a0596bd033d83f24577f7f18be2b93f06a1209"
+    },
+    "editor-mobile-slow-2.json": {
+      "bytes": 15705,
+      "sha256": "1d08d384d69cfdf5918aad8322e823b5f684c599b2d0e10763d558a1c459a646"
+    },
+    "browser-final-checks.json": {
+      "bytes": 1015,
+      "sha256": "b7ee56d106fc2a1565f702789dc69e0b2b6e1bdc906390f418853bb7d307112a"
+    },
+    "catalog-mobile-warm.json": {
+      "bytes": 10556,
+      "sha256": "57aebeb4c67091227ca74d053e3b1038d6336624ac714702f365df1ebe050d7a"
+    },
+    "http-smoke.json": {
+      "bytes": 18279,
+      "sha256": "ecf02fdbe4feb80922709d599e871b2a52bc9bc3ddc59f0b0a94ec127ad44b7a"
+    },
+    "lighthouse-recipes.report.json": {
+      "bytes": 546693,
+      "sha256": "caa6eb087ec8604b049d4fbf381720387a40456a5b5801f9574e8ea222c75911"
+    },
+    "cleanup.json": {
+      "bytes": 758,
+      "sha256": "daebda9318638618a269c4b6b992ed38f06e1875d13a52b90c343a18736c01e6"
+    },
+    "home-production-labels.json": {
+      "bytes": 110,
+      "sha256": "deff9db79abb38daae7d4171b294cc087b6e2194e8783ce0b7402b41885cdd3f"
+    },
+    "coverage.md": {
+      "bytes": 3573,
+      "sha256": "b1e5eb24f761a813b5bd04693d69d41807d2655008c99b6949716e8bbb035c47"
+    },
+    "catalog-mobile-slow-3.json": {
+      "bytes": 10615,
+      "sha256": "9598f85a78e9786fd73e537c49365b42e531d9d924aa6ab0b4167cbf8ad51035"
+    },
+    "lighthouse-recipes.report.html": {
+      "bytes": 608724,
+      "sha256": "66fefdc0ee5bf841887057c4a14ea0ea3e179c685e23598bd8b4a57ac02ee6a3"
+    },
+    "environment.json": {
+      "bytes": 162616,
+      "sha256": "82365cab5c5e61cbd60a4c58e844cd3074bd4a76313f6c7fe55236afce5aeb36"
+    },
+    "inventory-desktop.json": {
+      "bytes": 22285,
+      "sha256": "cae881cf740adc2f1a4c9327f531a8176d3c4bd362fe9ab13eac3cdf3c4a389e"
+    },
+    "recipes-desktop.json": {
+      "bytes": 20325,
+      "sha256": "5c6fef1334ff3d375cb9c96dc77b4b2accfd4b7a2169a069b0bb86201b39fca4"
+    },
+    "editor-fit-after.json": {
+      "bytes": 519,
+      "sha256": "b5a893d6c723e211a55e45e395257237981d21ad680b292fdf18b6f5d4f73bdd"
+    },
+    "catalog-mobile-slow-1.json": {
+      "bytes": 10628,
+      "sha256": "78c01f1e618bd2b6a932f8ca5c1c400b9ec312c4856f0580758398a74171c5f0"
+    },
+    "font-assets.json": {
+      "bytes": 878,
+      "sha256": "6dcbff285ec05cf3453ed1da8a4482d3d9d70f227f127492ae8a63c7974fb35c"
+    },
+    "calculator-mobile-slow-1.json": {
+      "bytes": 11190,
+      "sha256": "c27abec62ff74967a1a6baa3274213c1a00a76f324af213858b629e1dde68cea"
+    },
+    "tools/lighthouse-recipes.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tools/search-dev-warm-e2e.log": {
+      "bytes": 3326,
+      "sha256": "a3235f0bbc8fda878e22a2f06709ab76df6bbaa5a24c085e63fbc210711c9203"
+    },
+    "tools/preexisting.patch": {
+      "bytes": 41731,
+      "sha256": "504c733b79e0dfe70ba8352fc77cc95e4cf3e9a8ce291db94115dbc350c34561"
+    },
+    "tools/http-smoke.mjs": {
+      "bytes": 1624,
+      "sha256": "25d9ac4b99a25acc807eaf8b7284683dbefe493f91356d11567d506b9a58487c"
+    },
+    "tools/inventory-client-unit.log": {
+      "bytes": 468,
+      "sha256": "f107aa5f07793f097211f5cf89615ec2e42ef224b050fb628ab1c1d168eb6b2b"
+    },
+    "tools/all-unit-second.log": {
+      "bytes": 37242,
+      "sha256": "c1405a54044a2a23db0dddc1aa7bf27484a5b44810c100ec8a0af17b077e4250"
+    },
+    "tools/e2e-fifth.log": {
+      "bytes": 4154,
+      "sha256": "68f5b36060a781c7f5fe1bf947bb6ccc5a559aa0738276a3e8705fa7f1df45fe"
+    },
+    "tools/inventory-client-types.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tools/search-dev.log": {
+      "bytes": 5529,
+      "sha256": "7104b4497b069f97efbdb90e852cdf130ca78193c938fc09781ae78c05907268"
+    },
+    "tools/auth-final.log": {
+      "bytes": 69,
+      "sha256": "c95b7218504e2351961e9d71713c0b0e025871cc5029bbc30b085b5a3cb6e4d7"
+    },
+    "tools/verify-artifacts.py": {
+      "bytes": 2561,
+      "sha256": "c0f0fbd7c6323251772a6842a9e17ccfe16a72772ab12b6da10a0e43afb73860"
+    },
+    "tools/all-unit-resource-contended.log": {
+      "bytes": 5740,
+      "sha256": "0eebe310ef5436d05403d2674911349e609329e3fdbdec5355c50f82d7ea9128"
+    },
+    "tools/all-unit-router-mock.log": {
+      "bytes": 44325,
+      "sha256": "0d15ba8652b7f96b4e3e9e84a484f12caa60419510da96cd1c790bba863fb4bc"
+    },
+    "tools/production-svg-unit.log": {
+      "bytes": 277,
+      "sha256": "3c9e524531217397179b8d64a040e6291614e0c457f3b8836eb4a3b77351339f"
+    },
+    "tools/prepare-fonts.py": {
+      "bytes": 1298,
+      "sha256": "ebb9e065efdd96f47cc9c6a7308afb46f81c55f66d002368c5bc17f8bca23d03"
+    },
+    "tools/search-race-fourth.log": {
+      "bytes": 3179,
+      "sha256": "ba2aea92fd81bde52fc692fa1cc6b212ba2c937c6c30ebccd2f528f3c2359c6f"
+    },
+    "tools/build-final.log": {
+      "bytes": 19223,
+      "sha256": "4d5574114a69aa383c55b1143ea3788974ffb8e422b017d6b342069328ffe2fa"
+    },
+    "tools/final-server.pid": {
+      "bytes": 6,
+      "sha256": "fbc8a2259f8749a71751e6257518e5b22957f957fb89b52d006cb73b4f76c481"
+    },
+    "tools/baseline-status.txt": {
+      "bytes": 3487,
+      "sha256": "29cd9bc2b30898249a64033558c1a94dbe65d2b16f93e6edb72936bf98c4d232"
+    },
+    "tools/build-verified.log": {
+      "bytes": 19220,
+      "sha256": "32ffeb9e94a04ff2d4eed788d6f1f813c71b1b8630817f6c1719068c2fd89d53"
+    },
+    "tools/server-second.log": {
+      "bytes": 143,
+      "sha256": "118adb64c260a365ef81993b4b33e338e13d32dd1b3ebbc834f4ad9df5123106"
+    },
+    "tools/server-first.log": {
+      "bytes": 144,
+      "sha256": "d740964e38737d5d49596844d737c124a08c58a843e9e67eba854d26fdc654d3"
+    },
+    "tools/cleanup.py": {
+      "bytes": 3150,
+      "sha256": "ff98d7f0a49cdd637aa98185dbbaec089ac24ed8429dc646099a08224c1dab67"
+    },
+    "tools/browser-final.log": {
+      "bytes": 2941,
+      "sha256": "2669a0de6fc09d8a56055a0eb1edc1b0b571a60e40038bddc3294452b623b3c2"
+    },
+    "tools/build-accepted.log": {
+      "bytes": 18882,
+      "sha256": "18063bc25379f17adb2288e8d4f50af7966a0110498e9d457669dd5a8ca6d4af"
+    },
+    "tools/db-copy.log": {
+      "bytes": 177,
+      "sha256": "d228d3129fdfb8f44bd0ad8ac5708c6b41b2da74962c55b52d2069cfb4a89434"
+    },
+    "tools/fonttools-install.log": {
+      "bytes": 1163,
+      "sha256": "badf4aea0261c55d4ee23cc57dd41988c4596ce2a5b8aadc94a178c9da93db5b"
+    },
+    "tools/search-final.log": {
+      "bytes": 1379,
+      "sha256": "2e8c1b01601375fd4aa84b4fe4afd47c2bfae531dff700cbc6626ca1a66d50c6"
+    },
+    "tools/search-accepted.log": {
+      "bytes": 3221,
+      "sha256": "3e5763d384bf2ec304332e323a8ed1a4e501d4e6dcafcd0c48bb2826346deed8"
+    },
+    "tools/server-final.log": {
+      "bytes": 144,
+      "sha256": "76a6d2ade0351ed3c83c430462d73e37493320a407d8a9db18a66ae8847a0b74"
+    },
+    "tools/summary-output.log": {
+      "bytes": 4582,
+      "sha256": "f16a00e897170581281ed46dc01b4f9da06fbd5fb5b1dcd9b5a2b1f4f622a18e"
+    },
+    "tools/editor-unit-recheck.log": {
+      "bytes": 478,
+      "sha256": "d4803292801b8f01c3e01fb4d07642cdf12684c935029f1e4e60567daadb4146"
+    },
+    "tools/run-lighthouse.sh": {
+      "bytes": 671,
+      "sha256": "2edda3e8b96eaac66099489d26bdd6d4e0cefd3d5f962ec9840fdd614d7d637a"
+    },
+    "tools/finish-audit.sh": {
+      "bytes": 3633,
+      "sha256": "2ad2014712f0ed9c0d2d306e82c1433b245ed81b419e1a9dd9d00c33aa134ab3"
+    },
+    "tools/browser-helpers.mjs": {
+      "bytes": 6117,
+      "sha256": "2035a7e3c1947eb119f9eb4fde36a1365d3193ecc04fd55431f8d4b1ffa44e47"
+    },
+    "tools/search-race-final.log": {
+      "bytes": 1593,
+      "sha256": "bb63b4de3c9767a78b97568acdf886384a476a9b2a043e9f6222fdf0fd6cc727"
+    },
+    "tools/write-final-report.py": {
+      "bytes": 13483,
+      "sha256": "4932f931eaed3227bceef825124a3722b2b9b228930a3072662db0e224881c65"
+    },
+    "tools/lighthouse-catalog.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tools/all-unit-final.log": {
+      "bytes": 37395,
+      "sha256": "7350698d2661db575f5c72f5a88cfe430e4eaba88ed39269024a2360b5c33648"
+    },
+    "tools/auth.mts": {
+      "bytes": 927,
+      "sha256": "63bf9e6800b39fadef29f786ce5e04d0fb9938c46decdba631d9969e56c1d62d"
+    },
+    "tools/http-smoke.log": {
+      "bytes": 1808,
+      "sha256": "49e81a431d996dece30074a80408bae1ec89bf9397bc860242eff8d3ab38ea64"
+    },
+    "tools/e2e-final.log": {
+      "bytes": 1442,
+      "sha256": "8882613e011b104e673b4457b901d22625488f76c49215c2c5b76b210c413315"
+    },
+    "tools/e2e-first.log": {
+      "bytes": 6722,
+      "sha256": "05ecfb12d0c9fda8a1fd6f861a2f72e2d2518c717e09f0c8bd0b8f11107de07a"
+    },
+    "tools/build-inventory-client.log": {
+      "bytes": 18954,
+      "sha256": "eda18761b29da1f38b98d0c3e8734bdb6bd852a2e896ae5f46e29d31775f0e7e"
+    },
+    "tools/e2e-second.log": {
+      "bytes": 6981,
+      "sha256": "bc77f3d40fa53f34bff12546615de623c504b43b0c39397ff817b8bdd58b8b62"
+    },
+    "tools/focused-unit.log": {
+      "bytes": 1489,
+      "sha256": "1003226f63077ceac47099dd57250647da4498562254b5b80ac56f6abdfb02f9"
+    },
+    "tools/build-final-search.log": {
+      "bytes": 19220,
+      "sha256": "218c28d14dc44682feaa9d1a586a12346bd8b719b0248215559582b6a710b8c3"
+    },
+    "tools/run-browser.mjs": {
+      "bytes": 6887,
+      "sha256": "3246e288d085477f421ee1b23a9bf074481df6a3d1776e42f192778566ae85bf"
+    },
+    "tools/final-run.log": {
+      "bytes": 1477,
+      "sha256": "adf561f9136d687be1fde5536ea3accf33fd00567b62c251070cb4187f119a38"
+    },
+    "tools/all-unit-first.log": {
+      "bytes": 95166,
+      "sha256": "d91a125a713c75dfc378b1d8008d177746947a4223e21498a16c2da034f8e04e"
+    },
+    "tools/build-second.log": {
+      "bytes": 19223,
+      "sha256": "8b1e7c7d203b78c656cfca2257c3987a68f04bf292bec79d0cb164ebae6f180a"
+    },
+    "tools/search-dev-e2e.log": {
+      "bytes": 3324,
+      "sha256": "c067b553a17b59eebdb3c08bde71329ae356da23b56827018ca8128c7a2aa62a"
+    },
+    "tools/summarize.py": {
+      "bytes": 1790,
+      "sha256": "d2104e5c3c3906bce2ce82ea741783e98a087341e86cb69289a39f411f1e38f6"
+    },
+    "tools/e2e-third.log": {
+      "bytes": 4140,
+      "sha256": "1e14c8e943500c1fca9b11032c1cddf083cf0530282bd53c4632d1775f393694"
+    },
+    "tools/build-first.log": {
+      "bytes": 19218,
+      "sha256": "e3cc6c6ab745824a508efb26efcef1800f659e1dc7d0bc527891c7d0fa3e02ce"
+    },
+    "tools/pwa-final.log": {
+      "bytes": 581,
+      "sha256": "ce365d4fb95de623816b44615f2c492660fe6403a56b1291b14018fb7df15180"
+    },
+    "tools/qa-env.sh": {
+      "bytes": 492,
+      "sha256": "f3474b93bffc26110ca271acd9d97dcc591f0df436c02bd6014a6695b93adbf8"
+    },
+    "tools/search-unit-final.log": {
+      "bytes": 344,
+      "sha256": "01995e17c0695f7e54c993b21370df2fdb2b521a406a9929511b83853fba9ec2"
+    },
+    "tools/cleanup.log": {
+      "bytes": 760,
+      "sha256": "2eb062e0b550c7f98391374207dd1f950faef615992a9530c9359cf1cbc469c1"
+    },
+    "tools/db-restore-final.log": {
+      "bytes": 177,
+      "sha256": "d228d3129fdfb8f44bd0ad8ac5708c6b41b2da74962c55b52d2069cfb4a89434"
+    },
+    "screenshots/editor-mobile-slow-1.png": {
+      "bytes": 48925,
+      "sha256": "86c6c6436799af05a690cd871a841198830bdaf2bc9740d6e577f4cef74e9641"
+    },
+    "screenshots/recipes-desktop.png": {
+      "bytes": 190046,
+      "sha256": "b66a68afcc7aee7e595234cd1909304d03b5e5d4cdca59d69995db3438e808d3"
+    },
+    "screenshots/inventory-mobile-slow-1.png": {
+      "bytes": 61923,
+      "sha256": "6e3c83ddaacfdbb8bd28652ddf5d1913e7095070baa19ed3cbb3eec2aaf6047e"
+    },
+    "screenshots/recipes-mobile-slow-1.png": {
+      "bytes": 65842,
+      "sha256": "aea3111701e1ee7f4594a79539961c3c8c10b36d8f7f011393b4479bfcf81aa8"
+    },
+    "screenshots/inventory-final-dark.png": {
+      "bytes": 61677,
+      "sha256": "5222e07de7e08202fcc4955466a286d931b91b924831c86f045a8ee17dacb59e"
+    },
+    "screenshots/catalog-mobile-slow-1.png": {
+      "bytes": 61028,
+      "sha256": "827b0f94b243b66add49ede2afc8dd66960b5ff7c634782b2c5ca35c52fed91a"
+    },
+    "screenshots/editor-390-final-dark.png": {
+      "bytes": 49627,
+      "sha256": "82722e41f06f5e349167f6830a8287888231a377e9aa9222a5a5042652fa0dc8"
+    },
+    "screenshots/calculator-mobile-slow-1.png": {
+      "bytes": 52138,
+      "sha256": "2a5b2f4ef7e8a897276716ebff6d88bb41d4805691599ee8451fc77b9ed45121"
+    },
+    "screenshots/recipes-390-final.png": {
+      "bytes": 65072,
+      "sha256": "3a0fa7467d525fa7ccc67336c73ac2b0ebdc589a4854b4d9c8c058f52ee40c74"
+    },
+    "screenshots/editor-390-final-light.png": {
+      "bytes": 47947,
+      "sha256": "03e1933a96d355f7a648665a19c05f3146a7cfd37662edbf6a2c40f9e2853151"
+    },
+    "screenshots/app-menu-final.png": {
+      "bytes": 42585,
+      "sha256": "a0ae8e3b2d861d02acb538673503d1f9579b49e136cb0393a9e3434a6f174161"
+    },
+    "screenshots/editor-360-final-light.png": {
+      "bytes": 43735,
+      "sha256": "13f74b4bca8d327097464b0e6660717ce50c85f46073bbf62ba2517d4f5f7cbf"
+    },
+    "screenshots/catalog-mobile-warm.png": {
+      "bytes": 62935,
+      "sha256": "6e950c2013349fada4848b09856bdd6055570b325490151973855db3a49ef00b"
+    },
+    "screenshots/inventory-desktop.png": {
+      "bytes": 158273,
+      "sha256": "848e0ccf119ba06953ad523eaadb00ee3843d1ed205fe8495dd6ba7ffa7bc0a5"
+    },
+    "screenshots/editor-390-light.png": {
+      "bytes": 47847,
+      "sha256": "6313bff66dc29cabca68576a63b16d3303bfb18d2eae2bd74665d870e56aae32"
+    },
+    "screenshots/home-desktop.png": {
+      "bytes": 267029,
+      "sha256": "56f134e373a510c57719295b191ca4aa242d7d973ce98e42f25d42cbee93ce11"
+    },
+    "screenshots/editor-390-dark.png": {
+      "bytes": 49477,
+      "sha256": "84ccde7c1b8eaa2a1d80fedbc0ce012189be725a6b09caa6e79636a81b6a89e6"
+    },
+    "screenshots/editor-834-final-light.png": {
+      "bytes": 73395,
+      "sha256": "1d94ec0c0849f52afa6b67e10de73e4a866d13c33066f050355121f6a6bf8adb"
+    },
+    "screenshots/editor-360-dark.png": {
+      "bytes": 47934,
+      "sha256": "bf9618a2d2f886bedf8177dca7a3084772b9827ce521c11c5359bd50d422595a"
+    },
+    "screenshots/dashboard-mobile-slow-1.png": {
+      "bytes": 55505,
+      "sha256": "b4629752493666b2fa654be17aeb536ab0a6eeed4a44b306fe23f89169557d0f"
+    },
+    "screenshots/home-mobile-slow-1.png": {
+      "bytes": 60783,
+      "sha256": "119b50148e0b58e3c50a21cd18825d2fbcbb852e87361d8e5bb4587e817c2f00"
+    },
+    "screenshots/home-390-final.png": {
+      "bytes": 60892,
+      "sha256": "4a255fa352e8647aeee777f19c5b6881fcae0623b4031e2addde0758be5206c9"
+    },
+    "screenshots/home-1440-final.png": {
+      "bytes": 266994,
+      "sha256": "34e70f5f0fc98bcd187c4728091f56ecaad35d1818a287f0e64898ec7d18f2bc"
+    },
+    "tools/before/apps/web/next-env.d.ts": {
+      "bytes": 262,
+      "sha256": "85ae5aee75f011967cf2d25cbc342f62d69314e9d925f7f4aa3456fc2cffcca6"
+    },
+    "tools/before/apps/web/tsconfig.json": {
+      "bytes": 686,
+      "sha256": "0e6ba1408f44452f40521ded5ee27df54ba5f5d8e784cdaa68dad359aca7abee"
+    },
+    "tools/before/apps/web/next.config.ts": {
+      "bytes": 5179,
+      "sha256": "ce83ff30b14e2a4586f6a9fc855fc87a65268ae8a77f0cbf21bc6f1224709b11"
+    },
+    "tools/before/apps/web/app/layout.tsx": {
+      "bytes": 4184,
+      "sha256": "45e0ed7bf229db53abef6d324db47a8aa22a32f1cfabafc80a9ecb01b91365f1"
+    },
+    "tools/before/apps/web/app/(app)/app/ingredients/content.tsx": {
+      "bytes": 13285,
+      "sha256": "241ec05a572498581b9f35f39345de949a45776ca0f6a74ed1e4b3b44be69986"
+    }
+  }
+}

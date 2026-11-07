@@ -1,0 +1,448 @@
+{
+  "url": "http://127.0.0.1:3016/catalog/system/us-citra-beervingem-standard",
+  "ttfbMs": 276.09999999962747,
+  "fcpMs": 328,
+  "lcpMs": 328,
+  "cls": 0.0002016460905349794,
+  "domContentLoadedMs": 322.1999999997206,
+  "loadMs": 333.6999999997206,
+  "htmlTransfer": 126592,
+  "htmlDecoded": 126292,
+  "resourceTransfer": 2917515,
+  "resourceDecoded": 6691187,
+  "jsDecoded": 1003220,
+  "domElements": 623,
+  "incompleteImages": [],
+  "viewport": {
+    "width": 1440,
+    "height": 900,
+    "scrollWidth": 1440,
+    "scrollHeight": 2297
+  },
+  "totalLongTaskBlockingMs": 0,
+  "lcp": [
+    {
+      "start": 328,
+      "size": 10044,
+      "url": "",
+      "tag": "H1",
+      "text": "Цитра · Beervingem"
+    }
+  ],
+  "shifts": [
+    {
+      "start": 369.09999999962747,
+      "value": 0.0002016460905349794,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "OL",
+          "text": "",
+          "previous": {
+            "x": 12,
+            "y": 880,
+            "width": 392,
+            "height": 8,
+            "top": 880,
+            "right": 404,
+            "bottom": 888,
+            "left": 12
+          },
+          "current": {
+            "x": 12,
+            "y": 820,
+            "width": 392,
+            "height": 8,
+            "top": 820,
+            "right": 404,
+            "bottom": 828,
+            "left": 12
+          }
+        }
+      ]
+    }
+  ],
+  "longtasks": [],
+  "events": [],
+  "errors": [],
+  "resources": [
+    {
+      "name": "/_next/static/media/32425b6d39044b3c-s.p.ttf",
+      "type": "link",
+      "start": 280,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 359804,
+      "decoded": 359804
+    },
+    {
+      "name": "/_next/static/media/d703e6352f035923-s.p.ttf",
+      "type": "link",
+      "start": 280.09999999962747,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 744936,
+      "decoded": 744936
+    },
+    {
+      "name": "/_next/static/css/688dbf7110800d11.css",
+      "type": "link",
+      "start": 280.1999999997206,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 7335,
+      "decoded": 7335
+    },
+    {
+      "name": "/_next/static/css/10d068b31dbc4d49.css",
+      "type": "link",
+      "start": 280.29999999981374,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 115379,
+      "decoded": 115379
+    },
+    {
+      "name": "/_next/static/chunks/webpack-50b6521d18506e69.js",
+      "type": "link",
+      "start": 281.09999999962747,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 3498,
+      "decoded": 3498
+    },
+    {
+      "name": "/_next/static/chunks/87c73c54-dd8d81ac9604067c.js",
+      "type": "script",
+      "start": 281.1999999997206,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 173023,
+      "decoded": 173023
+    },
+    {
+      "name": "/_next/static/chunks/18-94afe61f15789e06.js",
+      "type": "script",
+      "start": 281.29999999981374,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 174209,
+      "decoded": 174209
+    },
+    {
+      "name": "/_next/static/chunks/main-app-1b4249da1a5d893c.js",
+      "type": "script",
+      "start": 281.5,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 570,
+      "decoded": 570
+    },
+    {
+      "name": "/_next/static/chunks/7283-f1e1247528aca409.js",
+      "type": "script",
+      "start": 281.5,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 8555,
+      "decoded": 8555
+    },
+    {
+      "name": "/_next/static/chunks/612-9c360be286377cda.js",
+      "type": "script",
+      "start": 281.6999999997206,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 212253,
+      "decoded": 212253
+    },
+    {
+      "name": "/_next/static/chunks/4737-b9435b98fbb3c365.js",
+      "type": "script",
+      "start": 281.79999999981374,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 57621,
+      "decoded": 57621
+    },
+    {
+      "name": "/_next/static/chunks/4159-4524a53eeeb992af.js",
+      "type": "script",
+      "start": 281.89999999990687,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 12883,
+      "decoded": 12883
+    },
+    {
+      "name": "/_next/static/chunks/9461-25c487bb36994b55.js",
+      "type": "script",
+      "start": 282,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 12329,
+      "decoded": 12329
+    },
+    {
+      "name": "/_next/static/chunks/app/layout-a377c5f5ad22f81f.js",
+      "type": "script",
+      "start": 282,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 18394,
+      "decoded": 18394
+    },
+    {
+      "name": "/_next/static/chunks/app/error-482cb912af31630e.js",
+      "type": "script",
+      "start": 282.1999999997206,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 1140,
+      "decoded": 1140
+    },
+    {
+      "name": "/_next/static/chunks/9664-4bead6cd06a85437.js",
+      "type": "script",
+      "start": 282.39999999990687,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 8925,
+      "decoded": 8925
+    },
+    {
+      "name": "/_next/static/chunks/922-36cb889d8a78c9e9.js",
+      "type": "script",
+      "start": 282.5,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 9436,
+      "decoded": 9436
+    },
+    {
+      "name": "/_next/static/chunks/1140-3282b57ff3d332fe.js",
+      "type": "script",
+      "start": 282.59999999962747,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 20277,
+      "decoded": 20277
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/layout-6a9b9b951f570000.js",
+      "type": "script",
+      "start": 282.6999999997206,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 6439,
+      "decoded": 6439
+    },
+    {
+      "name": "/_next/static/chunks/489-fc96c5688a515719.js",
+      "type": "script",
+      "start": 282.79999999981374,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 13661,
+      "decoded": 13661
+    },
+    {
+      "name": "/_next/static/chunks/9233-62febaec14b0e0ba.js",
+      "type": "script",
+      "start": 282.89999999990687,
+      "duration": 3.1000000000931323,
+      "transfer": 0,
+      "encoded": 7034,
+      "decoded": 7034
+    },
+    {
+      "name": "/_next/static/chunks/3671-7a65dbaeafe4c092.js",
+      "type": "script",
+      "start": 283.39999999990687,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 157102,
+      "decoded": 157102
+    },
+    {
+      "name": "/_next/static/chunks/6005-b648b00388e32889.js",
+      "type": "script",
+      "start": 283.5,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 10087,
+      "decoded": 10087
+    },
+    {
+      "name": "/_next/static/chunks/6926-eaa04380686830b3.js",
+      "type": "script",
+      "start": 283.59999999962747,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 40407,
+      "decoded": 40407
+    },
+    {
+      "name": "/_next/static/chunks/3931-5e2f6415202a03df.js",
+      "type": "script",
+      "start": 283.6999999997206,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 11113,
+      "decoded": 11113
+    },
+    {
+      "name": "/_next/static/chunks/9424-e2fa84445238d854.js",
+      "type": "script",
+      "start": 283.6999999997206,
+      "duration": 3.6000000000931323,
+      "transfer": 0,
+      "encoded": 25215,
+      "decoded": 25215
+    },
+    {
+      "name": "/_next/static/chunks/6707-dfb5ad6fca8c13e5.js",
+      "type": "script",
+      "start": 284,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 11547,
+      "decoded": 11547
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/catalog/%5Bsource%5D/%5Bid%5D/page-56d1ac924fdca26f.js",
+      "type": "script",
+      "start": 284.09999999962747,
+      "duration": 6.900000000372529,
+      "transfer": 0,
+      "encoded": 6049,
+      "decoded": 6049
+    },
+    {
+      "name": "/images/bjcp/21C%20%E2%80%94%20Hazy%20IPA.png",
+      "type": "img",
+      "start": 302.79999999981374,
+      "duration": 20.600000000093132,
+      "transfer": 1465226,
+      "encoded": 1464926,
+      "decoded": 1464926
+    },
+    {
+      "name": "/images/bjcp/21A%20%E2%80%94%20American%20IPA.png",
+      "type": "img",
+      "start": 302.89999999990687,
+      "duration": 20.100000000093132,
+      "transfer": 300,
+      "encoded": 1521695,
+      "decoded": 1521695
+    },
+    {
+      "name": "/images/bjcp/18B%20%E2%80%94%20American%20Pale%20Ale.png",
+      "type": "img",
+      "start": 302.89999999990687,
+      "duration": 20.799999999813735,
+      "transfer": 1440821,
+      "encoded": 1440521,
+      "decoded": 1440521
+    },
+    {
+      "name": "/app?_rsc=9fdCQps6GhquQcvd",
+      "type": "fetch",
+      "start": 372.1999999997206,
+      "duration": 44.200000000186265,
+      "transfer": 449,
+      "encoded": 149,
+      "decoded": 182
+    },
+    {
+      "name": "/app/recipes?_rsc=9fdCQps6GhquQcvd",
+      "type": "fetch",
+      "start": 372.29999999981374,
+      "duration": 58.700000000186265,
+      "transfer": 2434,
+      "encoded": 2134,
+      "decoded": 6183
+    },
+    {
+      "name": "/app/ingredients?_rsc=9fdCQps6GhquQcvd",
+      "type": "fetch",
+      "start": 372.59999999962747,
+      "duration": 58.700000000186265,
+      "transfer": 2858,
+      "encoded": 2558,
+      "decoded": 8710
+    },
+    {
+      "name": "/app/brew-batches?_rsc=9fdCQps6GhquQcvd",
+      "type": "fetch",
+      "start": 372.6999999997206,
+      "duration": 58.89999999990687,
+      "transfer": 2421,
+      "encoded": 2121,
+      "decoded": 5836
+    },
+    {
+      "name": "/app/equipment?_rsc=9fdCQps6GhquQcvd",
+      "type": "fetch",
+      "start": 373,
+      "duration": 58.799999999813735,
+      "transfer": 2550,
+      "encoded": 2250,
+      "decoded": 8756
+    },
+    {
+      "name": "/app/master?_rsc=9fdCQps6GhquQcvd",
+      "type": "fetch",
+      "start": 413.59999999962747,
+      "duration": 17.200000000186265,
+      "transfer": 456,
+      "encoded": 156,
+      "decoded": 206
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/error-f2109ab5bea0953a.js",
+      "type": "script",
+      "start": 414.39999999990687,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 1327,
+      "decoded": 1327
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/ingredients/error-cf62132f9ffaac08.js",
+      "type": "script",
+      "start": 415,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 1134,
+      "decoded": 1134
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/brew-batches/error-7638144f5a85e143.js",
+      "type": "script",
+      "start": 415.89999999990687,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 1136,
+      "decoded": 1136
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/equipment/error-9480ae60c9b68fd4.js",
+      "type": "script",
+      "start": 416.79999999981374,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 1148,
+      "decoded": 1148
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/layout-7999a595026f1b2e.js",
+      "type": "script",
+      "start": 425.59999999962747,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 206,
+      "decoded": 206
+    }
+  ]
+}

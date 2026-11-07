@@ -1,0 +1,277 @@
+[
+  {
+    "kind": 0,
+    "ok": true,
+    "width": 320,
+    "scroll": 320,
+    "fields": 5,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 1,
+    "ok": true,
+    "width": 320,
+    "scroll": 320,
+    "fields": 5,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 2,
+    "ok": true,
+    "width": 320,
+    "scroll": 320,
+    "fields": 5,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 3,
+    "ok": true,
+    "width": 320,
+    "scroll": 320,
+    "fields": 5,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 4,
+    "ok": true,
+    "width": 320,
+    "scroll": 320,
+    "fields": 5,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 5,
+    "ok": true,
+    "width": 320,
+    "scroll": 320,
+    "fields": 5,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 0,
+    "ok": true,
+    "width": 360,
+    "scroll": 360,
+    "fields": 6,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 1,
+    "ok": true,
+    "width": 360,
+    "scroll": 360,
+    "fields": 6,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 2,
+    "ok": true,
+    "width": 360,
+    "scroll": 360,
+    "fields": 7,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 3,
+    "ok": true,
+    "width": 360,
+    "scroll": 360,
+    "fields": 9,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 4,
+    "ok": true,
+    "width": 360,
+    "scroll": 360,
+    "fields": 5,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 5,
+    "ok": true,
+    "width": 360,
+    "scroll": 360,
+    "fields": 5,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 0,
+    "ok": true,
+    "width": 390,
+    "scroll": 390,
+    "fields": 6,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 1,
+    "ok": true,
+    "width": 390,
+    "scroll": 390,
+    "fields": 6,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 2,
+    "ok": true,
+    "width": 390,
+    "scroll": 390,
+    "fields": 7,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 3,
+    "ok": true,
+    "width": 390,
+    "scroll": 390,
+    "fields": 9,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 4,
+    "ok": true,
+    "width": 390,
+    "scroll": 390,
+    "fields": 5,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 5,
+    "ok": true,
+    "width": 390,
+    "scroll": 390,
+    "fields": 5,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 0,
+    "ok": true,
+    "width": 768,
+    "scroll": 768,
+    "fields": 6,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 1,
+    "ok": true,
+    "width": 768,
+    "scroll": 768,
+    "fields": 6,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 2,
+    "ok": true,
+    "width": 768,
+    "scroll": 768,
+    "fields": 7,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 3,
+    "ok": true,
+    "width": 768,
+    "scroll": 768,
+    "fields": 9,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 4,
+    "ok": true,
+    "width": 768,
+    "scroll": 768,
+    "fields": 5,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 5,
+    "ok": true,
+    "width": 768,
+    "scroll": 768,
+    "fields": 5,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 0,
+    "ok": true,
+    "width": 1280,
+    "scroll": 1280,
+    "fields": 6,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 1,
+    "ok": true,
+    "width": 1280,
+    "scroll": 1280,
+    "fields": 6,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 2,
+    "ok": true,
+    "width": 1280,
+    "scroll": 1280,
+    "fields": 7,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 3,
+    "ok": true,
+    "width": 1280,
+    "scroll": 1280,
+    "fields": 9,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 4,
+    "ok": true,
+    "width": 1280,
+    "scroll": 1280,
+    "fields": 5,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "kind": 5,
+    "ok": true,
+    "width": 1280,
+    "scroll": 1280,
+    "fields": 5,
+    "bad": [],
+    "labels": []
+  },
+  {
+    "create": true,
+    "width": 320,
+    "ok": true
+  }
+]

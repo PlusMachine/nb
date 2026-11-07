@@ -1,0 +1,53 @@
+[
+  {
+    "id": "bc6142736d96da3ff69dddfb18f939b49cd4f719fcf8bd8fd30c4b29cef038d7",
+    "name": "nb-postgres",
+    "image": "postgres:16-alpine",
+    "state": {
+      "running": true,
+      "health": "healthy"
+    },
+    "mounts": [
+      {
+        "type": "volume",
+        "name": "nb_pg_data",
+        "source": "/var/lib/docker/volumes/nb_pg_data/_data",
+        "destination": "/var/lib/postgresql/data"
+      }
+    ],
+    "ports": {
+      "5432/tcp": [
+        {
+          "HostIp": "0.0.0.0",
+          "HostPort": "5432"
+        },
+        {
+          "HostIp": "::",
+          "HostPort": "5432"
+        }
+      ]
+    },
+    "tmpfs": {}
+  },
+  {
+    "id": "11887afdc5e2caea9f2004d4d699006f03b7b727322a29f3f6ff963c73dd7c41",
+    "name": "nb-qa-pwa-20261104",
+    "image": "postgres:16-alpine",
+    "state": {
+      "running": true,
+      "health": null
+    },
+    "mounts": [],
+    "ports": {
+      "5432/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "55435"
+        }
+      ]
+    },
+    "tmpfs": {
+      "/var/lib/postgresql/data": "rw"
+    }
+  }
+]

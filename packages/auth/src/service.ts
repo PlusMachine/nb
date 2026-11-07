@@ -92,7 +92,8 @@ export const assertRateLimit = async (
   action: string,
   limit: number,
   windowSeconds: number,
-  increment = 1
+  increment = 1,
+  source: Pick<typeof db, "execute"> = db
 ): Promise<void> => {
   // Атомарный fixed-window счётчик одним запросом. Раньше это был SELECT, затем
   // отдельный UPDATE count+1 — между ними нет блокировки, и N параллельных
@@ -104,7 +105,7 @@ export const assertRateLimit = async (
   // продлевает собственную блокировку в пределах окна.
   // increment позволяет списывать лимит пачкой (напр. массовый перенос N
   // позиций одним действием) вместо N последовательных вызовов по 1.
-  const result = await db.execute(sql`
+  const result = await source.execute(sql`
     INSERT INTO auth_rate_limits (key, action, count, reset_at, updated_at)
     VALUES (${key}, ${action}, ${increment}, now() + ${windowSeconds} * interval '1 second', now())
     ON CONFLICT (key, action) DO UPDATE SET

@@ -1,0 +1,1128 @@
+{
+  "url": "http://127.0.0.1:3016/calculators/abv-attenuation",
+  "ttfbMs": 184.89999999990687,
+  "fcpMs": 272,
+  "lcpMs": 272,
+  "cls": 0.16933350480109738,
+  "domContentLoadedMs": 253.19999999995343,
+  "loadMs": 320.89999999990687,
+  "htmlTransfer": 55308,
+  "htmlDecoded": 55008,
+  "resourceTransfer": 7596,
+  "resourceDecoded": 2930976,
+  "jsDecoded": 1693904,
+  "domElements": 295,
+  "incompleteImages": [],
+  "viewport": {
+    "width": 1440,
+    "height": 900,
+    "scrollWidth": 1440,
+    "scrollHeight": 1626
+  },
+  "totalLongTaskBlockingMs": 0,
+  "lcp": [
+    {
+      "start": 272,
+      "size": 19008,
+      "url": "",
+      "tag": "H1",
+      "text": "Крепость, сбраживание и калории"
+    }
+  ],
+  "shifts": [
+    {
+      "start": 249.39999999990687,
+      "value": 0.1691318587105624,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "FOOTER",
+          "text": "NBРецепты, склад ингредиентов и расчёты для домашнего пивоварения.18+ · Материал",
+          "previous": {
+            "x": 0,
+            "y": 639,
+            "width": 1440,
+            "height": 261,
+            "top": 639,
+            "right": 1440,
+            "bottom": 900,
+            "left": 0
+          },
+          "current": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          }
+        },
+        {
+          "tag": "DETAILS",
+          "text": "Как считаем??ABV ≈ (OG − FG) × 131,25. Альтернативная формула точнее для крепког",
+          "previous": {
+            "x": 101,
+            "y": 285,
+            "width": 1238,
+            "height": 68,
+            "top": 285,
+            "right": 1339,
+            "bottom": 353,
+            "left": 101
+          },
+          "current": {
+            "x": 101,
+            "y": 865,
+            "width": 1238,
+            "height": 35,
+            "top": 865,
+            "right": 1339,
+            "bottom": 900,
+            "left": 101
+          }
+        },
+        {
+          "tag": "DETAILS",
+          "text": "Частые ошибкиFG снята рефрактометром без поправки на спирт — ABV получится заниж",
+          "previous": {
+            "x": 101,
+            "y": 367,
+            "width": 1238,
+            "height": 68,
+            "top": 367,
+            "right": 1339,
+            "bottom": 435,
+            "left": 101
+          },
+          "current": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          }
+        }
+      ]
+    },
+    {
+      "start": 352.0999999998603,
+      "value": 0.0002016460905349794,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "OL",
+          "text": "",
+          "previous": {
+            "x": 12,
+            "y": 880,
+            "width": 392,
+            "height": 8,
+            "top": 880,
+            "right": 404,
+            "bottom": 888,
+            "left": 12
+          },
+          "current": {
+            "x": 12,
+            "y": 820,
+            "width": 392,
+            "height": 8,
+            "top": 820,
+            "right": 404,
+            "bottom": 828,
+            "left": 12
+          }
+        }
+      ]
+    }
+  ],
+  "longtasks": [],
+  "events": [
+    {
+      "name": "pointerover",
+      "start": 240.39999999990687,
+      "duration": 32,
+      "processing": 0.19999999995343387,
+      "delay": 0.5,
+      "interactionId": 0,
+      "tag": "MAIN",
+      "text": "Все калькуляторыКрепость, сбраживание и калорииКрепость и степень сбра"
+    },
+    {
+      "name": "pointerenter",
+      "start": 240.39999999990687,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 240.39999999990687,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 240.39999999990687,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 240.39999999990687,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 240.39999999990687,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 240.39999999990687,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 240.39999999990687,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 240.39999999990687,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "mouseover",
+      "start": 240.39999999990687,
+      "duration": 32,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0,
+      "tag": "MAIN",
+      "text": "Все калькуляторыКрепость, сбраживание и калорииКрепость и степень сбра"
+    },
+    {
+      "name": "pointerout",
+      "start": 256.89999999990687,
+      "duration": 16,
+      "processing": 0.09999999986030161,
+      "delay": 0.10000000009313226,
+      "interactionId": 0,
+      "tag": "MAIN",
+      "text": "Все калькуляторыКрепость, сбраживание и калорииКрепость и степень сбра"
+    },
+    {
+      "name": "pointerover",
+      "start": 256.89999999990687,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.19999999995343387,
+      "interactionId": 0,
+      "tag": "P",
+      "text": "Измеряете рефрактометром? Сначала внесите поправку на спирт — показани"
+    },
+    {
+      "name": "pointerenter",
+      "start": 256.89999999990687,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.19999999995343387,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 256.89999999990687,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.19999999995343387,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 256.89999999990687,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.19999999995343387,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 256.89999999990687,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.19999999995343387,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 256.89999999990687,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.19999999995343387,
+      "interactionId": 0
+    },
+    {
+      "name": "mouseout",
+      "start": 256.89999999990687,
+      "duration": 16,
+      "processing": 0.19999999995343387,
+      "delay": 0.19999999995343387,
+      "interactionId": 0,
+      "tag": "MAIN",
+      "text": "Все калькуляторыКрепость, сбраживание и калорииКрепость и степень сбра"
+    },
+    {
+      "name": "mouseover",
+      "start": 256.89999999990687,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.39999999990686774,
+      "interactionId": 0,
+      "tag": "P",
+      "text": "Измеряете рефрактометром? Сначала внесите поправку на спирт — показани"
+    },
+    {
+      "name": "beforeinput",
+      "start": 26122.699999999953,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0,
+      "interactionId": 0,
+      "tag": "INPUT",
+      "text": ""
+    },
+    {
+      "name": "input",
+      "start": 26123.299999999814,
+      "duration": 16,
+      "processing": 2.1000000000931323,
+      "delay": 0,
+      "interactionId": 0,
+      "tag": "INPUT",
+      "text": ""
+    },
+    {
+      "name": "pointerout",
+      "start": 26171.699999999953,
+      "duration": 16,
+      "processing": 0.19999999995343387,
+      "delay": 0.5,
+      "interactionId": 0,
+      "tag": "P",
+      "text": "Измеряете рефрактометром? Сначала внесите поправку на спирт — показани"
+    },
+    {
+      "name": "pointerleave",
+      "start": 26171.699999999953,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerover",
+      "start": 26171.699999999953,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0,
+      "tag": "BUTTON",
+      "text": "SG"
+    },
+    {
+      "name": "pointerenter",
+      "start": 26171.699999999953,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 26171.699999999953,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 26171.699999999953,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 26171.699999999953,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 26171.699999999953,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "mouseout",
+      "start": 26171.699999999953,
+      "duration": 16,
+      "processing": 0.10000000009313226,
+      "delay": 0.6999999999534339,
+      "interactionId": 0,
+      "tag": "P",
+      "text": "Измеряете рефрактометром? Сначала внесите поправку на спирт — показани"
+    },
+    {
+      "name": "mouseover",
+      "start": 26171.699999999953,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.8000000000465661,
+      "interactionId": 0,
+      "tag": "BUTTON",
+      "text": "SG"
+    },
+    {
+      "name": "pointerdown",
+      "start": 26171.799999999814,
+      "duration": 16,
+      "processing": 0.30000000004656613,
+      "delay": 1.1000000000931323,
+      "interactionId": 4930,
+      "tag": "BUTTON",
+      "text": "SG"
+    },
+    {
+      "name": "mousedown",
+      "start": 26171.799999999814,
+      "duration": 16,
+      "processing": 0,
+      "delay": 1.4000000001396984,
+      "interactionId": 0,
+      "tag": "BUTTON",
+      "text": "SG"
+    },
+    {
+      "name": "pointerup",
+      "start": 26171.899999999907,
+      "duration": 16,
+      "processing": 0,
+      "delay": 1.8999999999068677,
+      "interactionId": 4930,
+      "tag": "BUTTON",
+      "text": "SG"
+    },
+    {
+      "name": "mouseup",
+      "start": 26171.899999999907,
+      "duration": 16,
+      "processing": 0.10000000009313226,
+      "delay": 1.8999999999068677,
+      "interactionId": 0,
+      "tag": "BUTTON",
+      "text": "SG"
+    },
+    {
+      "name": "click",
+      "start": 26171.899999999907,
+      "duration": 16,
+      "processing": 1.6000000000931323,
+      "delay": 2,
+      "interactionId": 4930,
+      "tag": "BUTTON",
+      "text": "SG"
+    },
+    {
+      "name": "pointerout",
+      "start": 26220.399999999907,
+      "duration": 16,
+      "processing": 0.30000000004656613,
+      "delay": 0.39999999990686774,
+      "interactionId": 0,
+      "tag": "BUTTON",
+      "text": "SG"
+    },
+    {
+      "name": "pointerleave",
+      "start": 26220.399999999907,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerover",
+      "start": 26220.399999999907,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0,
+      "tag": "BUTTON",
+      "text": "°P"
+    },
+    {
+      "name": "pointerenter",
+      "start": 26220.399999999907,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0
+    },
+    {
+      "name": "mouseout",
+      "start": 26220.399999999907,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0,
+      "tag": "BUTTON",
+      "text": "SG"
+    },
+    {
+      "name": "mouseover",
+      "start": 26220.399999999907,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.6999999999534339,
+      "interactionId": 0,
+      "tag": "BUTTON",
+      "text": "°P"
+    },
+    {
+      "name": "pointerdown",
+      "start": 26220.5,
+      "duration": 16,
+      "processing": 0.30000000004656613,
+      "delay": 0.8999999999068677,
+      "interactionId": 4937,
+      "tag": "BUTTON",
+      "text": "°P"
+    },
+    {
+      "name": "mousedown",
+      "start": 26220.5,
+      "duration": 16,
+      "processing": 0,
+      "delay": 1.1999999999534339,
+      "interactionId": 0,
+      "tag": "BUTTON",
+      "text": "°P"
+    },
+    {
+      "name": "pointerup",
+      "start": 26220.59999999986,
+      "duration": 16,
+      "processing": 0.09999999986030161,
+      "delay": 1.4000000001396984,
+      "interactionId": 4937,
+      "tag": "BUTTON",
+      "text": "°P"
+    },
+    {
+      "name": "mouseup",
+      "start": 26220.59999999986,
+      "duration": 16,
+      "processing": 0,
+      "delay": 1.5,
+      "interactionId": 0,
+      "tag": "BUTTON",
+      "text": "°P"
+    },
+    {
+      "name": "click",
+      "start": 26220.59999999986,
+      "duration": 16,
+      "processing": 1.3000000000465661,
+      "delay": 1.5,
+      "interactionId": 4937,
+      "tag": "BUTTON",
+      "text": "°P"
+    },
+    {
+      "name": "pointerout",
+      "start": 26254.299999999814,
+      "duration": 16,
+      "processing": 0.09999999986030161,
+      "delay": 0.4000000001396984,
+      "interactionId": 0,
+      "tag": "BUTTON",
+      "text": "°P"
+    },
+    {
+      "name": "pointerleave",
+      "start": 26254.299999999814,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 26254.299999999814,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 26254.299999999814,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 26254.299999999814,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 26254.299999999814,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 26254.299999999814,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerover",
+      "start": 26254.299999999814,
+      "duration": 16,
+      "processing": 0.10000000009313226,
+      "delay": 0.5,
+      "interactionId": 0,
+      "tag": "BUTTON",
+      "text": "Сбросить"
+    },
+    {
+      "name": "pointerenter",
+      "start": 26254.299999999814,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.6000000000931323,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 26254.299999999814,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.6000000000931323,
+      "interactionId": 0
+    },
+    {
+      "name": "mouseout",
+      "start": 26254.299999999814,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.6000000000931323,
+      "interactionId": 0,
+      "tag": "BUTTON",
+      "text": "°P"
+    },
+    {
+      "name": "mouseover",
+      "start": 26254.299999999814,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.6000000000931323,
+      "interactionId": 0,
+      "tag": "BUTTON",
+      "text": "Сбросить"
+    },
+    {
+      "name": "pointerdown",
+      "start": 26254.399999999907,
+      "duration": 16,
+      "processing": 0.30000000004656613,
+      "delay": 0.6999999999534339,
+      "interactionId": 4944,
+      "tag": "BUTTON",
+      "text": "Сбросить"
+    },
+    {
+      "name": "mousedown",
+      "start": 26254.399999999907,
+      "duration": 16,
+      "processing": 0,
+      "delay": 1,
+      "interactionId": 0,
+      "tag": "BUTTON",
+      "text": "Сбросить"
+    },
+    {
+      "name": "pointerup",
+      "start": 26254.5,
+      "duration": 16,
+      "processing": 0.10000000009313226,
+      "delay": 1.3999999999068677,
+      "interactionId": 4944,
+      "tag": "BUTTON",
+      "text": "Сбросить"
+    },
+    {
+      "name": "mouseup",
+      "start": 26254.5,
+      "duration": 16,
+      "processing": 0,
+      "delay": 1.5,
+      "interactionId": 0,
+      "tag": "BUTTON",
+      "text": "Сбросить"
+    },
+    {
+      "name": "click",
+      "start": 26254.5,
+      "duration": 16,
+      "processing": 1.5,
+      "delay": 1.5,
+      "interactionId": 4944,
+      "tag": "BUTTON",
+      "text": "Сбросить"
+    }
+  ],
+  "errors": [],
+  "resources": [
+    {
+      "name": "/_next/static/media/32425b6d39044b3c-s.p.ttf",
+      "type": "link",
+      "start": 194.0999999998603,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 359804,
+      "decoded": 359804
+    },
+    {
+      "name": "/_next/static/media/d703e6352f035923-s.p.ttf",
+      "type": "link",
+      "start": 194.19999999995343,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 744936,
+      "decoded": 744936
+    },
+    {
+      "name": "/_next/static/css/688dbf7110800d11.css",
+      "type": "link",
+      "start": 199.0999999998603,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 7335,
+      "decoded": 7335
+    },
+    {
+      "name": "/_next/static/css/10d068b31dbc4d49.css",
+      "type": "link",
+      "start": 199.39999999990687,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 115379,
+      "decoded": 115379
+    },
+    {
+      "name": "/_next/static/chunks/webpack-50b6521d18506e69.js",
+      "type": "link",
+      "start": 199.5,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 3498,
+      "decoded": 3498
+    },
+    {
+      "name": "/_next/static/chunks/87c73c54-dd8d81ac9604067c.js",
+      "type": "script",
+      "start": 199.79999999981374,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 173023,
+      "decoded": 173023
+    },
+    {
+      "name": "/_next/static/chunks/18-94afe61f15789e06.js",
+      "type": "script",
+      "start": 200,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 174209,
+      "decoded": 174209
+    },
+    {
+      "name": "/_next/static/chunks/main-app-1b4249da1a5d893c.js",
+      "type": "script",
+      "start": 200.19999999995343,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 570,
+      "decoded": 570
+    },
+    {
+      "name": "/_next/static/chunks/7283-f1e1247528aca409.js",
+      "type": "script",
+      "start": 200.39999999990687,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 8555,
+      "decoded": 8555
+    },
+    {
+      "name": "/_next/static/chunks/612-9c360be286377cda.js",
+      "type": "script",
+      "start": 200.5,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 212253,
+      "decoded": 212253
+    },
+    {
+      "name": "/_next/static/chunks/9664-4bead6cd06a85437.js",
+      "type": "script",
+      "start": 200.69999999995343,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 8925,
+      "decoded": 8925
+    },
+    {
+      "name": "/_next/static/chunks/4159-4524a53eeeb992af.js",
+      "type": "script",
+      "start": 200.79999999981374,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 12883,
+      "decoded": 12883
+    },
+    {
+      "name": "/_next/static/chunks/922-36cb889d8a78c9e9.js",
+      "type": "script",
+      "start": 201,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 9436,
+      "decoded": 9436
+    },
+    {
+      "name": "/_next/static/chunks/1140-3282b57ff3d332fe.js",
+      "type": "script",
+      "start": 201.0999999998603,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 20277,
+      "decoded": 20277
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/layout-6a9b9b951f570000.js",
+      "type": "script",
+      "start": 201.29999999981374,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 6439,
+      "decoded": 6439
+    },
+    {
+      "name": "/_next/static/chunks/4737-b9435b98fbb3c365.js",
+      "type": "script",
+      "start": 201.5,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 57621,
+      "decoded": 57621
+    },
+    {
+      "name": "/_next/static/chunks/3671-7a65dbaeafe4c092.js",
+      "type": "script",
+      "start": 202,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 157102,
+      "decoded": 157102
+    },
+    {
+      "name": "/_next/static/chunks/6005-b648b00388e32889.js",
+      "type": "script",
+      "start": 202.0999999998603,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 10087,
+      "decoded": 10087
+    },
+    {
+      "name": "/_next/static/chunks/6926-eaa04380686830b3.js",
+      "type": "script",
+      "start": 202.29999999981374,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 40407,
+      "decoded": 40407
+    },
+    {
+      "name": "/_next/static/chunks/3931-5e2f6415202a03df.js",
+      "type": "script",
+      "start": 202.39999999990687,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 11113,
+      "decoded": 11113
+    },
+    {
+      "name": "/_next/static/chunks/3594-995a965781e222a7.js",
+      "type": "script",
+      "start": 202.69999999995343,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 10378,
+      "decoded": 10378
+    },
+    {
+      "name": "/_next/static/chunks/7937-28c93b4ad94e37c4.js",
+      "type": "script",
+      "start": 202.69999999995343,
+      "duration": 28.0999999998603,
+      "transfer": 0,
+      "encoded": 61264,
+      "decoded": 61264
+    },
+    {
+      "name": "/_next/static/chunks/8492-57e6f77fefcecfaa.js",
+      "type": "script",
+      "start": 203.19999999995343,
+      "duration": 18.199999999953434,
+      "transfer": 0,
+      "encoded": 52172,
+      "decoded": 52172
+    },
+    {
+      "name": "/_next/static/chunks/3490-9afb0f63887ccb10.js",
+      "type": "script",
+      "start": 203.39999999990687,
+      "duration": 38.39999999990687,
+      "transfer": 0,
+      "encoded": 463146,
+      "decoded": 463146
+    },
+    {
+      "name": "/_next/static/chunks/6448-1be500d6ab18eefb.js",
+      "type": "script",
+      "start": 203.5,
+      "duration": 34.89999999990687,
+      "transfer": 0,
+      "encoded": 170650,
+      "decoded": 170650
+    },
+    {
+      "name": "/_next/static/chunks/9461-25c487bb36994b55.js",
+      "type": "script",
+      "start": 203.79999999981374,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 12329,
+      "decoded": 12329
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/calculators/%5Bslug%5D/page-aeab8568652ca1ce.js",
+      "type": "script",
+      "start": 203.79999999981374,
+      "duration": 23.600000000093132,
+      "transfer": 0,
+      "encoded": 186,
+      "decoded": 186
+    },
+    {
+      "name": "/_next/static/chunks/app/layout-a377c5f5ad22f81f.js",
+      "type": "script",
+      "start": 204,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 18394,
+      "decoded": 18394
+    },
+    {
+      "name": "/_next/static/chunks/app/error-482cb912af31630e.js",
+      "type": "script",
+      "start": 204.19999999995343,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 1140,
+      "decoded": 1140
+    },
+    {
+      "name": "/calculators/abv-attenuation",
+      "type": "fetch",
+      "start": 342.5999999998603,
+      "duration": 17.4000000001397,
+      "transfer": 405,
+      "encoded": 105,
+      "decoded": 92
+    },
+    {
+      "name": "/?_rsc=-3g0w2g9Zpx4mstX",
+      "type": "fetch",
+      "start": 362,
+      "duration": 56.89999999990687,
+      "transfer": 427,
+      "encoded": 127,
+      "decoded": 132
+    },
+    {
+      "name": "/recipes?_rsc=-3g0w2g9Zpx4mstX",
+      "type": "fetch",
+      "start": 362.29999999981374,
+      "duration": 81.20000000018626,
+      "transfer": 1875,
+      "encoded": 1575,
+      "decoded": 4051
+    },
+    {
+      "name": "/bjcp?_rsc=-3g0w2g9Zpx4mstX",
+      "type": "fetch",
+      "start": 362.5,
+      "duration": 57,
+      "transfer": 440,
+      "encoded": 140,
+      "decoded": 150
+    },
+    {
+      "name": "/calculators?_rsc=-3g0w2g9Zpx4mstX",
+      "type": "fetch",
+      "start": 362.79999999981374,
+      "duration": 56.800000000046566,
+      "transfer": 440,
+      "encoded": 140,
+      "decoded": 157
+    },
+    {
+      "name": "/articles?_rsc=-3g0w2g9Zpx4mstX",
+      "type": "fetch",
+      "start": 363.19999999995343,
+      "duration": 56.699999999953434,
+      "transfer": 443,
+      "encoded": 143,
+      "decoded": 158
+    },
+    {
+      "name": "/calculators/abv-attenuation",
+      "type": "fetch",
+      "start": 365.19999999995343,
+      "duration": 56.300000000046566,
+      "transfer": 379,
+      "encoded": 79,
+      "decoded": 59
+    },
+    {
+      "name": "/catalog?_rsc=-3g0w2g9Zpx4mstX",
+      "type": "fetch",
+      "start": 413,
+      "duration": 38.5,
+      "transfer": 443,
+      "encoded": 143,
+      "decoded": 156
+    },
+    {
+      "name": "/market?_rsc=-3g0w2g9Zpx4mstX",
+      "type": "fetch",
+      "start": 414.19999999995343,
+      "duration": 38.800000000046566,
+      "transfer": 443,
+      "encoded": 143,
+      "decoded": 154
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/recipes/error-ce8f980d58254598.js",
+      "type": "script",
+      "start": 415.29999999981374,
+      "duration": 0,
+      "transfer": 0,
+      "encoded": 1345,
+      "decoded": 1345
+    },
+    {
+      "name": "/brewforge?_rsc=-3g0w2g9Zpx4mstX",
+      "type": "fetch",
+      "start": 417.69999999995343,
+      "duration": 37.300000000046566,
+      "transfer": 444,
+      "encoded": 144,
+      "decoded": 160
+    },
+    {
+      "name": "/login?_rsc=-3g0w2g9Zpx4mstX",
+      "type": "fetch",
+      "start": 418.5999999998603,
+      "duration": 37.60000000009313,
+      "transfer": 441,
+      "encoded": 141,
+      "decoded": 152
+    },
+    {
+      "name": "/calculators/refractometer-correction?_rsc=-3g0w2g9Zpx4mstX",
+      "type": "fetch",
+      "start": 429.0999999998603,
+      "duration": 28,
+      "transfer": 475,
+      "encoded": 175,
+      "decoded": 241
+    },
+    {
+      "name": "/calculators/keg-carbonation?_rsc=-3g0w2g9Zpx4mstX",
+      "type": "fetch",
+      "start": 452.29999999981374,
+      "duration": 20.200000000186265,
+      "transfer": 468,
+      "encoded": 168,
+      "decoded": 223
+    },
+    {
+      "name": "/calculators/hydrometer-correction?_rsc=-3g0w2g9Zpx4mstX",
+      "type": "fetch",
+      "start": 455.19999999995343,
+      "duration": 18.399999999906868,
+      "transfer": 473,
+      "encoded": 173,
+      "decoded": 235
+    }
+  ]
+}

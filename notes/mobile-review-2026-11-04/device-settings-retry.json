@@ -1,0 +1,70 @@
+{
+  "route": "/app/devices/4c8a9d03-ea60-4f3b-b922-450696562011/settings",
+  "status": 200,
+  "url": "/app/devices/4c8a9d03-ea60-4f3b-b922-450696562011/settings",
+  "width": 360,
+  "height": 800,
+  "client": 360,
+  "scroll": 360,
+  "scrollHeight": 1341,
+  "headings": [
+    {
+      "text": "Демо-пивоварня",
+      "x": 16,
+      "y": 108,
+      "w": 328,
+      "h": 32
+    },
+    {
+      "text": "Профили настроек",
+      "x": 37,
+      "y": 754,
+      "w": 286,
+      "h": 20
+    }
+  ],
+  "outside": [],
+  "clippedText": [],
+  "smallControls": [
+    {
+      "tag": "A",
+      "text": "← К устройствам",
+      "x": 16,
+      "y": 84,
+      "w": 115.7,
+      "h": 17,
+      "classes": "text-sm text-muted-foreground hover:text-foreground"
+    }
+  ],
+  "smallInputs": [],
+  "fixed": [
+    {
+      "tag": "HEADER",
+      "text": "NB",
+      "x": 0,
+      "y": 0,
+      "w": 360,
+      "h": 56,
+      "classes": "sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur lg:hidden"
+    },
+    {
+      "tag": "NAV",
+      "text": "Быстрая навигация",
+      "x": 0,
+      "y": 744,
+      "w": 360,
+      "h": 56,
+      "classes": "fixed inset-x-0 bottom-0 z-40 flex min-h-14 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Обратная связь",
+      "x": 294,
+      "y": 740,
+      "w": 50,
+      "h": 44,
+      "classes": "fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px)+var(--nb-sticky-bar-h,0px))] min-h-11 px-4 py-2.5 right-4 z-40 inline-flex items-center g"
+    }
+  ],
+  "screenshot": "/home/dopefish/projects/nb/notes/mobile-review-2026-11-04/screenshots/verified-device-settings-360.png"
+}

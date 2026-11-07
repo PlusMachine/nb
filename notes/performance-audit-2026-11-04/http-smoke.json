@@ -1,0 +1,690 @@
+{
+  "concurrency": 1,
+  "scope": "HTML only; no browser resources; warmed local process",
+  "records": [
+    {
+      "path": "/catalog",
+      "authenticated": false,
+      "p50Ms": 137.358432,
+      "maxMs": 369.36821599999996,
+      "samples": [
+        {
+          "status": 200,
+          "ttfbMs": 162.84885100000002,
+          "totalMs": 369.36821599999996,
+          "decodedBytes": 435371
+        },
+        {
+          "status": 200,
+          "ttfbMs": 97.26391900000004,
+          "totalMs": 137.358432,
+          "decodedBytes": 435371
+        },
+        {
+          "status": 200,
+          "ttfbMs": 89.34367599999996,
+          "totalMs": 146.22673399999996,
+          "decodedBytes": 435371
+        },
+        {
+          "status": 200,
+          "ttfbMs": 72.59755899999993,
+          "totalMs": 115.38455999999996,
+          "decodedBytes": 435371
+        },
+        {
+          "status": 200,
+          "ttfbMs": 75.28179499999999,
+          "totalMs": 117.644452,
+          "decodedBytes": 435371
+        }
+      ]
+    },
+    {
+      "path": "/catalog/hops",
+      "authenticated": false,
+      "p50Ms": 226.643732,
+      "maxMs": 381.111574,
+      "samples": [
+        {
+          "status": 200,
+          "ttfbMs": 110.77690800000005,
+          "totalMs": 180.599058,
+          "decodedBytes": 604545
+        },
+        {
+          "status": 200,
+          "ttfbMs": 114.00084300000003,
+          "totalMs": 208.07669899999996,
+          "decodedBytes": 604545
+        },
+        {
+          "status": 200,
+          "ttfbMs": 115.02928199999997,
+          "totalMs": 381.111574,
+          "decodedBytes": 604545
+        },
+        {
+          "status": 200,
+          "ttfbMs": 128.09656800000016,
+          "totalMs": 226.643732,
+          "decodedBytes": 604545
+        },
+        {
+          "status": 200,
+          "ttfbMs": 138.41975799999977,
+          "totalMs": 366.07954300000006,
+          "decodedBytes": 604545
+        }
+      ]
+    },
+    {
+      "path": "/recipes",
+      "authenticated": false,
+      "p50Ms": 123.33717999999999,
+      "maxMs": 166.005044,
+      "samples": [
+        {
+          "status": 200,
+          "ttfbMs": 16.542609000000084,
+          "totalMs": 166.005044,
+          "decodedBytes": 505686
+        },
+        {
+          "status": 200,
+          "ttfbMs": 16.868403999999828,
+          "totalMs": 123.33717999999999,
+          "decodedBytes": 505686
+        },
+        {
+          "status": 200,
+          "ttfbMs": 12.280504000000292,
+          "totalMs": 100.03290100000004,
+          "decodedBytes": 505686
+        },
+        {
+          "status": 200,
+          "ttfbMs": 13.342890999999781,
+          "totalMs": 108.46119399999998,
+          "decodedBytes": 505686
+        },
+        {
+          "status": 200,
+          "ttfbMs": 21.10765100000026,
+          "totalMs": 165.3318790000003,
+          "decodedBytes": 505686
+        }
+      ]
+    },
+    {
+      "path": "/bjcp",
+      "authenticated": false,
+      "p50Ms": 186.52419999999984,
+      "maxMs": 216.72170400000005,
+      "samples": [
+        {
+          "status": 200,
+          "ttfbMs": 96.51175599999988,
+          "totalMs": 216.72170400000005,
+          "decodedBytes": 1419455
+        },
+        {
+          "status": 200,
+          "ttfbMs": 86.09738500000003,
+          "totalMs": 216.16000500000018,
+          "decodedBytes": 1419455
+        },
+        {
+          "status": 200,
+          "ttfbMs": 85.90481499999987,
+          "totalMs": 167.7530200000001,
+          "decodedBytes": 1419455
+        },
+        {
+          "status": 200,
+          "ttfbMs": 82.72422499999993,
+          "totalMs": 163.62241600000016,
+          "decodedBytes": 1419455
+        },
+        {
+          "status": 200,
+          "ttfbMs": 99.04888600000004,
+          "totalMs": 186.52419999999984,
+          "decodedBytes": 1419455
+        }
+      ]
+    },
+    {
+      "path": "/bjcp/bjcp-21a-american-ipa",
+      "authenticated": false,
+      "p50Ms": 49.20810699999993,
+      "maxMs": 53.65864899999997,
+      "samples": [
+        {
+          "status": 200,
+          "ttfbMs": 35.99072500000011,
+          "totalMs": 53.65864899999997,
+          "decodedBytes": 118319
+        },
+        {
+          "status": 200,
+          "ttfbMs": 28.2123160000001,
+          "totalMs": 49.20810699999993,
+          "decodedBytes": 118319
+        },
+        {
+          "status": 200,
+          "ttfbMs": 23.536861000000044,
+          "totalMs": 40.89893600000005,
+          "decodedBytes": 118319
+        },
+        {
+          "status": 200,
+          "ttfbMs": 24.46270800000002,
+          "totalMs": 47.46734900000001,
+          "decodedBytes": 118319
+        },
+        {
+          "status": 200,
+          "ttfbMs": 33.322757999999794,
+          "totalMs": 52.81295300000011,
+          "decodedBytes": 118319
+        }
+      ]
+    },
+    {
+      "path": "/calculators",
+      "authenticated": false,
+      "p50Ms": 21.83357100000012,
+      "maxMs": 29.886610999999903,
+      "samples": [
+        {
+          "status": 200,
+          "ttfbMs": 22.74040200000036,
+          "totalMs": 28.329412000000048,
+          "decodedBytes": 43873
+        },
+        {
+          "status": 200,
+          "ttfbMs": 15.130568000000494,
+          "totalMs": 21.190190999999686,
+          "decodedBytes": 43873
+        },
+        {
+          "status": 200,
+          "ttfbMs": 12.402944000000389,
+          "totalMs": 21.83357100000012,
+          "decodedBytes": 43873
+        },
+        {
+          "status": 200,
+          "ttfbMs": 21.750748999999814,
+          "totalMs": 29.886610999999903,
+          "decodedBytes": 43873
+        },
+        {
+          "status": 200,
+          "ttfbMs": 16.298319999999876,
+          "totalMs": 21.001875999999356,
+          "decodedBytes": 43873
+        }
+      ]
+    },
+    {
+      "path": "/calculators/abv-attenuation",
+      "authenticated": false,
+      "p50Ms": 27.954288999999335,
+      "maxMs": 30.52998099999968,
+      "samples": [
+        {
+          "status": 200,
+          "ttfbMs": 15.755481999999574,
+          "totalMs": 23.211921000000075,
+          "decodedBytes": 55008
+        },
+        {
+          "status": 200,
+          "ttfbMs": 15.362691999999697,
+          "totalMs": 23.228000999999495,
+          "decodedBytes": 55008
+        },
+        {
+          "status": 200,
+          "ttfbMs": 17.546269999999822,
+          "totalMs": 30.52998099999968,
+          "decodedBytes": 55008
+        },
+        {
+          "status": 200,
+          "ttfbMs": 17.995562000000064,
+          "totalMs": 27.954288999999335,
+          "decodedBytes": 55008
+        },
+        {
+          "status": 200,
+          "ttfbMs": 20.106110000000626,
+          "totalMs": 28.68131799999992,
+          "decodedBytes": 55008
+        }
+      ]
+    },
+    {
+      "path": "/articles",
+      "authenticated": false,
+      "p50Ms": 28.25528800000029,
+      "maxMs": 30.539590999999746,
+      "samples": [
+        {
+          "status": 200,
+          "ttfbMs": 22.30408299999999,
+          "totalMs": 30.269898000000467,
+          "decodedBytes": 45986
+        },
+        {
+          "status": 200,
+          "ttfbMs": 18.854934999999386,
+          "totalMs": 30.539590999999746,
+          "decodedBytes": 45986
+        },
+        {
+          "status": 200,
+          "ttfbMs": 21.418596999999863,
+          "totalMs": 28.25528800000029,
+          "decodedBytes": 45986
+        },
+        {
+          "status": 200,
+          "ttfbMs": 19.062183000000005,
+          "totalMs": 26.12259400000039,
+          "decodedBytes": 45986
+        },
+        {
+          "status": 200,
+          "ttfbMs": 15.635637000000315,
+          "totalMs": 23.242302999999993,
+          "decodedBytes": 45986
+        }
+      ]
+    },
+    {
+      "path": "/brewforge",
+      "authenticated": false,
+      "p50Ms": 21.907062000000224,
+      "maxMs": 23.81048499999997,
+      "samples": [
+        {
+          "status": 200,
+          "ttfbMs": 18.167634000000362,
+          "totalMs": 23.81048499999997,
+          "decodedBytes": 37570
+        },
+        {
+          "status": 200,
+          "ttfbMs": 12.627548999999817,
+          "totalMs": 21.907062000000224,
+          "decodedBytes": 37582
+        },
+        {
+          "status": 200,
+          "ttfbMs": 16.881454999999733,
+          "totalMs": 23.76839999999993,
+          "decodedBytes": 37582
+        },
+        {
+          "status": 200,
+          "ttfbMs": 13.638412999999673,
+          "totalMs": 20.529993000000104,
+          "decodedBytes": 37582
+        },
+        {
+          "status": 200,
+          "ttfbMs": 14.502112000000125,
+          "totalMs": 21.226996000000327,
+          "decodedBytes": 37582
+        }
+      ]
+    },
+    {
+      "path": "/market",
+      "authenticated": false,
+      "p50Ms": 21.807410999999775,
+      "maxMs": 31.523035999999593,
+      "samples": [
+        {
+          "status": 200,
+          "ttfbMs": 19.835879000000205,
+          "totalMs": 27.196891000000505,
+          "decodedBytes": 31307
+        },
+        {
+          "status": 200,
+          "ttfbMs": 16.73939100000007,
+          "totalMs": 21.807410999999775,
+          "decodedBytes": 31307
+        },
+        {
+          "status": 200,
+          "ttfbMs": 14.684662000000571,
+          "totalMs": 19.590331000000333,
+          "decodedBytes": 31307
+        },
+        {
+          "status": 200,
+          "ttfbMs": 21.567896999999903,
+          "totalMs": 31.523035999999593,
+          "decodedBytes": 31307
+        },
+        {
+          "status": 200,
+          "ttfbMs": 15.867369999999937,
+          "totalMs": 20.27512300000035,
+          "decodedBytes": 31307
+        }
+      ]
+    },
+    {
+      "path": "/app",
+      "authenticated": true,
+      "p50Ms": 159.98917100000017,
+      "maxMs": 176.65269999999964,
+      "samples": [
+        {
+          "status": 200,
+          "ttfbMs": 156.0134419999995,
+          "totalMs": 176.65269999999964,
+          "decodedBytes": 119747
+        },
+        {
+          "status": 200,
+          "ttfbMs": 150.759094,
+          "totalMs": 174.77937900000052,
+          "decodedBytes": 119747
+        },
+        {
+          "status": 200,
+          "ttfbMs": 138.99573200000032,
+          "totalMs": 153.41577299999972,
+          "decodedBytes": 119747
+        },
+        {
+          "status": 200,
+          "ttfbMs": 128.803003,
+          "totalMs": 153.97768300000007,
+          "decodedBytes": 119747
+        },
+        {
+          "status": 200,
+          "ttfbMs": 142.84159,
+          "totalMs": 159.98917100000017,
+          "decodedBytes": 119747
+        }
+      ]
+    },
+    {
+      "path": "/app/recipes",
+      "authenticated": true,
+      "p50Ms": 62.01253200000065,
+      "maxMs": 69.43718499999977,
+      "samples": [
+        {
+          "status": 200,
+          "ttfbMs": 42.55580099999952,
+          "totalMs": 69.43718499999977,
+          "decodedBytes": 129194
+        },
+        {
+          "status": 200,
+          "ttfbMs": 21.837195000000065,
+          "totalMs": 68.01686400000017,
+          "decodedBytes": 129194
+        },
+        {
+          "status": 200,
+          "ttfbMs": 23.449327000000267,
+          "totalMs": 59.51629099999991,
+          "decodedBytes": 129194
+        },
+        {
+          "status": 200,
+          "ttfbMs": 30.590422000000217,
+          "totalMs": 59.099254000000656,
+          "decodedBytes": 129194
+        },
+        {
+          "status": 200,
+          "ttfbMs": 19.521694000000025,
+          "totalMs": 62.01253200000065,
+          "decodedBytes": 129194
+        }
+      ]
+    },
+    {
+      "path": "/app/ingredients",
+      "authenticated": true,
+      "p50Ms": 218.54558799999995,
+      "maxMs": 248.1837340000002,
+      "samples": [
+        {
+          "status": 200,
+          "ttfbMs": 50.655329000000165,
+          "totalMs": 216.65517399999953,
+          "decodedBytes": 303862
+        },
+        {
+          "status": 200,
+          "ttfbMs": 29.015445,
+          "totalMs": 239.82810100000006,
+          "decodedBytes": 303862
+        },
+        {
+          "status": 200,
+          "ttfbMs": 87.19744999999966,
+          "totalMs": 248.1837340000002,
+          "decodedBytes": 303862
+        },
+        {
+          "status": 200,
+          "ttfbMs": 50.06215799999973,
+          "totalMs": 187.7309179999993,
+          "decodedBytes": 303862
+        },
+        {
+          "status": 200,
+          "ttfbMs": 55.48584699999992,
+          "totalMs": 218.54558799999995,
+          "decodedBytes": 303862
+        }
+      ]
+    },
+    {
+      "path": "/app/recipes/new",
+      "authenticated": true,
+      "p50Ms": 50.71004399999947,
+      "maxMs": 75.37626700000055,
+      "samples": [
+        {
+          "status": 200,
+          "ttfbMs": 44.68170199999986,
+          "totalMs": 75.37626700000055,
+          "decodedBytes": 104590
+        },
+        {
+          "status": 200,
+          "ttfbMs": 32.105695999999625,
+          "totalMs": 50.71004399999947,
+          "decodedBytes": 104590
+        },
+        {
+          "status": 200,
+          "ttfbMs": 26.2774959999997,
+          "totalMs": 45.79184999999961,
+          "decodedBytes": 104163
+        },
+        {
+          "status": 200,
+          "ttfbMs": 26.189574999999422,
+          "totalMs": 44.489447999999356,
+          "decodedBytes": 104590
+        },
+        {
+          "status": 200,
+          "ttfbMs": 25.710790000000088,
+          "totalMs": 51.62446100000034,
+          "decodedBytes": 104590
+        }
+      ]
+    },
+    {
+      "path": "/app/brew-batches",
+      "authenticated": true,
+      "p50Ms": 38.2801500000005,
+      "maxMs": 44.342617000000246,
+      "samples": [
+        {
+          "status": 200,
+          "ttfbMs": 21.109183999999914,
+          "totalMs": 44.342617000000246,
+          "decodedBytes": 83319
+        },
+        {
+          "status": 200,
+          "ttfbMs": 19.204891000000316,
+          "totalMs": 36.98090899999988,
+          "decodedBytes": 83269
+        },
+        {
+          "status": 200,
+          "ttfbMs": 22.681955000000016,
+          "totalMs": 43.21937099999923,
+          "decodedBytes": 83319
+        },
+        {
+          "status": 200,
+          "ttfbMs": 19.163518999999724,
+          "totalMs": 37.796793000000434,
+          "decodedBytes": 83269
+        },
+        {
+          "status": 200,
+          "ttfbMs": 19.755818999999974,
+          "totalMs": 38.2801500000005,
+          "decodedBytes": 83319
+        }
+      ]
+    },
+    {
+      "path": "/app/shopping",
+      "authenticated": true,
+      "p50Ms": 124.5396410000003,
+      "maxMs": 138.31446400000004,
+      "samples": [
+        {
+          "status": 200,
+          "ttfbMs": 22.92700700000023,
+          "totalMs": 121.10519300000033,
+          "decodedBytes": 110755
+        },
+        {
+          "status": 200,
+          "ttfbMs": 34.69223299999976,
+          "totalMs": 138.31446400000004,
+          "decodedBytes": 110755
+        },
+        {
+          "status": 200,
+          "ttfbMs": 26.94355600000017,
+          "totalMs": 128.0518750000001,
+          "decodedBytes": 110755
+        },
+        {
+          "status": 200,
+          "ttfbMs": 22.04392800000005,
+          "totalMs": 124.5396410000003,
+          "decodedBytes": 110755
+        },
+        {
+          "status": 200,
+          "ttfbMs": 26.42812099999992,
+          "totalMs": 121.79585099999986,
+          "decodedBytes": 110755
+        }
+      ]
+    },
+    {
+      "path": "/app/equipment",
+      "authenticated": true,
+      "p50Ms": 43.49640199999976,
+      "maxMs": 55.79846499999985,
+      "samples": [
+        {
+          "status": 200,
+          "ttfbMs": 30.797112000000197,
+          "totalMs": 43.49640199999976,
+          "decodedBytes": 75073
+        },
+        {
+          "status": 200,
+          "ttfbMs": 26.766226999999162,
+          "totalMs": 37.689518000000135,
+          "decodedBytes": 75030
+        },
+        {
+          "status": 200,
+          "ttfbMs": 39.10758199999873,
+          "totalMs": 45.03740099999959,
+          "decodedBytes": 75030
+        },
+        {
+          "status": 200,
+          "ttfbMs": 32.69437300000027,
+          "totalMs": 55.79846499999985,
+          "decodedBytes": 75030
+        },
+        {
+          "status": 200,
+          "ttfbMs": 24.81974899999841,
+          "totalMs": 35.410415999998804,
+          "decodedBytes": 75030
+        }
+      ]
+    },
+    {
+      "path": "/app/devices",
+      "authenticated": true,
+      "p50Ms": 155.66007300000092,
+      "maxMs": 189.1455389999992,
+      "samples": [
+        {
+          "status": 200,
+          "ttfbMs": 22.51907399999982,
+          "totalMs": 189.1455389999992,
+          "decodedBytes": 55135
+        },
+        {
+          "status": 200,
+          "ttfbMs": 20.28890599999977,
+          "totalMs": 155.2939269999988,
+          "decodedBytes": 55135
+        },
+        {
+          "status": 200,
+          "ttfbMs": 19.44772700000067,
+          "totalMs": 155.66007300000092,
+          "decodedBytes": 55135
+        },
+        {
+          "status": 200,
+          "ttfbMs": 23.48139600000104,
+          "totalMs": 160.55146299999979,
+          "decodedBytes": 55135
+        },
+        {
+          "status": 200,
+          "ttfbMs": 19.704006999998455,
+          "totalMs": 134.84014599999864,
+          "decodedBytes": 55135
+        }
+      ]
+    }
+  ]
+}

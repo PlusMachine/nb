@@ -31,6 +31,8 @@ import {
   type TelemetryHistoryPoint
 } from "./contracts";
 
+export type BrewBatchTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
 const mapMeasurementDto = (row: typeof brewMeasurements.$inferSelect): BrewMeasurementDto => ({
   id: row.id,
   brewBatchId: row.brewBatchId,
@@ -211,9 +213,10 @@ export const createBrewBatchFromRecipe = async (
 /** Достать партию варки по id с проверкой владения (или null, если нет/чужая). */
 export const getBrewBatchById = async (
   userId: string,
-  brewBatchId: string
+  brewBatchId: string,
+  source: Pick<typeof db, "query"> = db
 ): Promise<BrewBatchDto | null> => {
-  const row = await db.query.brewBatches.findFirst({
+  const row = await source.query.brewBatches.findFirst({
     where: and(eq(brewBatches.id, brewBatchId), eq(brewBatches.userId, userId))
   });
 
@@ -405,25 +408,28 @@ export const getBrewBatchTelemetryHistory = async (
 export const updateBrewBatchStatus = async (
   userId: string,
   brewBatchId: string,
-  status: typeof brewBatches.$inferSelect.status
+  status: typeof brewBatches.$inferSelect.status,
+  options?: { transaction: BrewBatchTransaction; occurredAt: Date }
 ) => {
   const now = new Date();
+  const occurredAt = options?.occurredAt ?? now;
   if (status === "fermenting") {
-    return db.transaction(async tx => {
+    const write = async (tx: BrewBatchTransaction) => {
       const [batch] = await tx.select().from(brewBatches).where(and(eq(brewBatches.id, brewBatchId), eq(brewBatches.userId, userId))).for("update");
       if (!batch) throw new Error("NOT_FOUND");
       const progress = normalizeBrewDayProgress(batch.brewDayProgress);
       const [updated] = await tx.update(brewBatches).set({ status, updatedAt: now,
-        ...(!batch.deviceId ? { brewDayProgress: applyBrewDayStepPatch(progress, "brew:pitch", { done: true, completedAt: now.toISOString() }, now.toISOString()) as unknown as Record<string, unknown> } : {})
+        ...(!batch.deviceId ? { brewDayProgress: applyBrewDayStepPatch(progress, "brew:pitch", { done: true, completedAt: occurredAt.toISOString() }, now.toISOString()) as unknown as Record<string, unknown> } : {})
       }).where(eq(brewBatches.id, brewBatchId)).returning();
       if (!updated) throw new Error("NOT_FOUND");
       return mapBrewBatchDto(updated);
-    });
+    };
+    return options ? write(options.transaction) : db.transaction(write);
   }
-  const [updated] = await db.update(brewBatches).set({
+  const [updated] = await (options?.transaction ?? db).update(brewBatches).set({
     status,
-    startedAt: status === "brewing" ? now : undefined,
-    completedAt: status === "completed" ? now : undefined,
+    startedAt: status === "brewing" ? occurredAt : undefined,
+    completedAt: status === "completed" ? occurredAt : undefined,
     updatedAt: now
   }).where(and(eq(brewBatches.id, brewBatchId), eq(brewBatches.userId, userId))).returning();
 
@@ -481,27 +487,32 @@ export const listBrewMeasurements = async (
  * Вызывается после гейта владельца партии, поэтому brewBatchId гарантированно
  * принадлежит userId.
  */
-const assertBrewMeasurementCreationAllowed = async (userId: string, brewBatchId: string): Promise<void> => {
-  await assertRateLimit(userId, "brew_measurement_create", BREW_MEASUREMENT_RATE_LIMIT, BREW_MEASUREMENT_RATE_WINDOW_SECONDS);
-  const [row] = await db.select({ value: count() }).from(brewMeasurements).where(eq(brewMeasurements.brewBatchId, brewBatchId));
+const assertBrewMeasurementCreationAllowed = async (tx: BrewBatchTransaction, userId: string, brewBatchId: string): Promise<void> => {
+  await assertRateLimit(userId, "brew_measurement_create", BREW_MEASUREMENT_RATE_LIMIT, BREW_MEASUREMENT_RATE_WINDOW_SECONDS, 1, tx);
+  const [row] = await tx.select({ value: count() }).from(brewMeasurements).where(eq(brewMeasurements.brewBatchId, brewBatchId));
   if ((row?.value ?? 0) >= BREW_MEASUREMENT_MAX_COUNT_PER_BATCH) {
     throw new Error("BREW_MEASUREMENT_QUOTA_REACHED");
   }
 };
 
+export const lockOwnedBrewBatch = async (tx: BrewBatchTransaction, userId: string, batchId: string) => {
+  const [row] = await tx.select().from(brewBatches)
+    .where(and(eq(brewBatches.id, batchId), eq(brewBatches.userId, userId))).for("update");
+  if (!row) throw new Error("NOT_FOUND");
+  return row;
+};
+
 export const addBrewMeasurement = async (
   userId: string,
   brewBatchId: string,
-  input: { gravitySg: number; takenAt?: Date | null; note?: string | null; isFinal?: boolean }
+  input: { gravitySg: number; takenAt?: Date | null; note?: string | null; isFinal?: boolean; id?: string; createdAt?: Date },
+  transaction?: BrewBatchTransaction
 ): Promise<BrewMeasurementDto> => {
-  const batch = await getBrewBatchById(userId, brewBatchId);
-  if (!batch) {
-    throw new Error("NOT_FOUND");
-  }
-  await assertBrewMeasurementCreationAllowed(userId, brewBatchId);
   // Инвариант «один финальный замер на партию»: если новый помечен финальным,
   // снимаем флаг с прежнего в той же транзакции.
-  const created = await db.transaction(async (tx) => {
+  const write = async (tx: BrewBatchTransaction) => {
+    await lockOwnedBrewBatch(tx, userId, brewBatchId);
+    await assertBrewMeasurementCreationAllowed(tx, userId, brewBatchId);
     if (input.isFinal) {
       await tx.update(brewMeasurements)
         .set({ isFinal: false })
@@ -512,15 +523,18 @@ export const addBrewMeasurement = async (
         ));
     }
     const [row] = await tx.insert(brewMeasurements).values({
+      id: input.id,
       userId,
       brewBatchId,
       gravitySg: input.gravitySg,
       takenAt: input.takenAt ?? new Date(),
+      createdAt: input.createdAt,
       isFinal: input.isFinal ?? false,
       note: input.note?.trim() || null
     }).returning();
     return row;
-  });
+  };
+  const created = await (transaction ? write(transaction) : db.transaction(write));
   if (!created) {
     throw new Error("CREATE_FAILED");
   }
@@ -535,13 +549,11 @@ export const setBrewMeasurementFinal = async (
   userId: string,
   brewBatchId: string,
   measurementId: string,
-  isFinal: boolean
+  isFinal: boolean,
+  transaction?: BrewBatchTransaction
 ): Promise<BrewMeasurementDto> => {
-  const batch = await getBrewBatchById(userId, brewBatchId);
-  if (!batch) {
-    throw new Error("NOT_FOUND");
-  }
-  const updated = await db.transaction(async (tx) => {
+  const write = async (tx: BrewBatchTransaction) => {
+    await lockOwnedBrewBatch(tx, userId, brewBatchId);
     if (isFinal) {
       await tx.update(brewMeasurements)
         .set({ isFinal: false })
@@ -559,27 +571,29 @@ export const setBrewMeasurementFinal = async (
         eq(brewMeasurements.userId, userId)
       ))
       .returning();
+    if (!row) throw new Error("NOT_FOUND");
     return row;
-  });
-  if (!updated) {
-    throw new Error("NOT_FOUND");
-  }
+  };
+  const updated = await (transaction ? write(transaction) : db.transaction(write));
   return mapMeasurementDto(updated);
 };
 
 export const deleteBrewMeasurement = async (
   userId: string,
   brewBatchId: string,
-  measurementId: string
+  measurementId: string,
+  transaction?: BrewBatchTransaction
 ): Promise<void> => {
-  const deleted = await db.delete(brewMeasurements).where(and(
-    eq(brewMeasurements.id, measurementId),
-    eq(brewMeasurements.brewBatchId, brewBatchId),
-    eq(brewMeasurements.userId, userId)
-  )).returning();
-  if (deleted.length === 0) {
-    throw new Error("NOT_FOUND");
-  }
+  const write = async (tx: BrewBatchTransaction) => {
+    await lockOwnedBrewBatch(tx, userId, brewBatchId);
+    const deleted = await tx.delete(brewMeasurements).where(and(
+      eq(brewMeasurements.id, measurementId),
+      eq(brewMeasurements.brewBatchId, brewBatchId),
+      eq(brewMeasurements.userId, userId)
+    )).returning();
+    if (!deleted.length) throw new Error("NOT_FOUND");
+  };
+  await (transaction ? write(transaction) : db.transaction(write));
 };
 
 // --- Виртуальный гид варочного дня -------------------------------------------
@@ -593,11 +607,12 @@ export const setBrewDayStepState = async (
   userId: string,
   brewBatchId: string,
   stepId: string,
-  patch: BrewDayStepStatePatch
+  patch: BrewDayStepStatePatch,
+  transaction?: BrewBatchTransaction
 ): Promise<BrewDayProgress> => {
   // Атомарный read-modify-write: блокируем строку партии (SELECT … FOR UPDATE),
   // чтобы параллельные правки разных шагов не затирали друг друга (lost update).
-  return db.transaction(async (tx) => {
+  const write = async (tx: BrewBatchTransaction) => {
     const [row] = await tx
       .select({
         brewPlanSnapshot: brewBatches.brewPlanSnapshot,
@@ -631,43 +646,43 @@ export const setBrewDayStepState = async (
     }
 
     return normalizeBrewDayProgress(updated.brewDayProgress);
-  });
+  };
+  return transaction ? write(transaction) : db.transaction(write);
 };
 
 /** OG, fermenter volume and the transfer step commit together; retries keep the original measurement. */
-export const saveManualBrewTransfer = async (userId: string, batchId: string, input: ManualTransferInput): Promise<BrewDayProgress> => {
+export const saveManualBrewTransfer = async (userId: string, batchId: string, input: ManualTransferInput, transaction?: BrewBatchTransaction): Promise<BrewDayProgress> => {
   const parsed = manualTransferInputSchema.parse(input);
-  return db.transaction(async tx => {
-    const [batch] = await tx.select().from(brewBatches).where(and(eq(brewBatches.id, batchId), eq(brewBatches.userId, userId))).for("update");
-    if (!batch) throw new Error("NOT_FOUND");
+  const write = async (tx: BrewBatchTransaction) => {
+    const batch = await lockOwnedBrewBatch(tx, userId, batchId);
     const progress = normalizeBrewDayProgress(batch.brewDayProgress);
     if (progress.steps["brew:transfer"]?.measurementOperationId === parsed.operationId) return progress;
     if (batch.status !== "brewing" || batch.deviceId) throw new Error("INVALID_STAGE");
     if (parsed.gravitySg !== null) {
       const [existing] = await tx.select({ id: brewMeasurements.id }).from(brewMeasurements).where(eq(brewMeasurements.id, parsed.operationId));
       if (existing) throw new Error("INVALID_STAGE");
-      await assertRateLimit(userId, "brew_measurement_create", BREW_MEASUREMENT_RATE_LIMIT, BREW_MEASUREMENT_RATE_WINDOW_SECONDS);
-      const [quota] = await tx.select({ value: count() }).from(brewMeasurements).where(eq(brewMeasurements.brewBatchId, batchId));
-      if ((quota?.value ?? 0) >= BREW_MEASUREMENT_MAX_COUNT_PER_BATCH) throw new Error("BREW_MEASUREMENT_QUOTA_REACHED");
+      await assertBrewMeasurementCreationAllowed(tx, userId, batchId);
       await tx.insert(brewMeasurements).values({ id: parsed.operationId, userId, brewBatchId: batchId, gravitySg: parsed.gravitySg, takenAt: new Date(parsed.takenAt), isFinal: false });
     }
-    const next = applyBrewDayStepPatch(progress, "brew:transfer", { done: true, completedAt: parsed.takenAt, measurementOperationId: parsed.operationId, ...(parsed.gravitySg !== null ? { gravitySg: parsed.gravitySg } : {}) }, new Date().toISOString());
+    const next = applyBrewDayStepPatch(progress, "brew:transfer", { done: true, skipped: false, completedAt: parsed.takenAt, measurementOperationId: parsed.operationId, ...(parsed.gravitySg !== null ? { gravitySg: parsed.gravitySg } : {}) }, new Date().toISOString());
     await tx.update(brewBatches).set({
       brewDayProgress: next as unknown as Record<string, unknown>,
       ...(parsed.fermenterL !== null ? { volumeMeasurements: { ...batch.volumeMeasurements, fermenterL: parsed.fermenterL } } : {}),
       updatedAt: new Date()
     }).where(eq(brewBatches.id, batchId));
     return next;
-  });
+  };
+  return transaction ? write(transaction) : db.transaction(write);
 };
 
 /** Заметки о варке (brew_batches.notes) — журнал варки, живёт на всех этапах. */
 export const updateBrewBatchNotes = async (
   userId: string,
   brewBatchId: string,
-  notes: string | null
+  notes: string | null,
+  source: Pick<typeof db, "update"> = db
 ): Promise<BrewBatchDto> => {
-  const [updated] = await db.update(brewBatches).set({
+  const [updated] = await source.update(brewBatches).set({
     notes: notes?.trim() || null,
     updatedAt: new Date()
   }).where(and(eq(brewBatches.id, brewBatchId), eq(brewBatches.userId, userId))).returning();
@@ -728,14 +743,15 @@ export const updateBrewBatchPlannedFor = async (
 // только старым партиям без сохранённых целей: его объём и будущие правки
 // не должны менять сравнение плана с фактом начатой варки.
 const getRecipeBrewTargets = async (
-  batch: Pick<BrewBatchDto, "recipeId" | "recipeSnapshot">
+  batch: Pick<BrewBatchDto, "recipeId" | "recipeSnapshot">,
+  source: Pick<typeof db, "query"> = db
 ): Promise<{ og: number | null; fg: number | null; abv: number | null } | null> => {
   const snapshot = batch.recipeSnapshot as { og?: number | null; fg?: number | null; abv?: number | null } | null;
   if (snapshot && ["og", "fg", "abv"].some((key) => Object.prototype.hasOwnProperty.call(snapshot, key))) {
     return { og: snapshot.og ?? null, fg: snapshot.fg ?? null, abv: snapshot.abv ?? null };
   }
   if (batch.recipeId) {
-    const row = await db.query.recipes.findFirst({
+    const row = await source.query.recipes.findFirst({
       where: eq(recipes.id, batch.recipeId),
       columns: { og: true, fg: true, abv: true }
     });
@@ -749,18 +765,19 @@ const getRecipeBrewTargets = async (
 /** Сборка детальной страницы партии: партия + журнал + сводка (OG/FG/ABV vs цель). */
 export const getBrewBatchDetail = async (
   userId: string,
-  brewBatchId: string
+  brewBatchId: string,
+  source: Pick<typeof db, "query" | "select"> = db
 ): Promise<BrewBatchDetail | null> => {
-  const batch = await getBrewBatchById(userId, brewBatchId);
+  const batch = await getBrewBatchById(userId, brewBatchId, source);
   if (!batch) {
     return null;
   }
   const [measurements, targets] = await Promise.all([
-    db.select().from(brewMeasurements)
+    source.select().from(brewMeasurements)
       .where(and(eq(brewMeasurements.brewBatchId, brewBatchId), eq(brewMeasurements.userId, userId)))
       .orderBy(asc(brewMeasurements.takenAt), asc(brewMeasurements.createdAt))
       .then((rows) => rows.map(mapMeasurementDto)),
-    getRecipeBrewTargets(batch)
+    getRecipeBrewTargets(batch, source)
   ]);
   return {
     batch,

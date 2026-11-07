@@ -1,0 +1,47 @@
+[
+  {
+    "name": "catalog search citra",
+    "elapsedMs": 696,
+    "url": "http://127.0.0.1:3016/catalog?q=citra",
+    "focused": true
+  },
+  {
+    "name": "catalog no results",
+    "elapsedMs": 367
+  },
+  {
+    "name": "calculator change OG",
+    "elapsedMs": 23,
+    "result": "КРЕПОСТЬ\n\n6.2\n% ABV\nABW 4.8%\nOG 14.5 °P · 1.059 SG\nFG 3.1 °P · 1.012 SG\nСБРАЖИВАНИЕ\n80%\nКАЛОРИИ\n54 ккал / 100 мл\n\nВидимая степень сбраживания: 65–80% — распространённый диапазон для элей. Сравните результат с характеристиками дрожжей и расчётом рецепта."
+  },
+  {
+    "name": "calculator units and reset",
+    "restored": true
+  },
+  {
+    "name": "BJCP search 21A",
+    "elapsedMs": 374
+  },
+  {
+    "name": "recipe create autosave",
+    "elapsedMs": 1864,
+    "url": "http://127.0.0.1:3016/app/recipes/new?recipeId=1a691f83-3b27-4e21-ab9e-c3377c9c8115"
+  },
+  {
+    "name": "recipe select stocked malt",
+    "elapsedMs": 86
+  },
+  {
+    "name": "recipe add ingredient visible",
+    "elapsedMs": 159
+  },
+  {
+    "name": "recipe ingredient autosaved",
+    "elapsedMs": 2479
+  },
+  {
+    "name": "recipe save retry after network failure",
+    "elapsedMs": 196,
+    "titlePreserved": "QA быстродействие — сетевой сбой"
+  }
+]

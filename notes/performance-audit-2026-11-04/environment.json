@@ -1,0 +1,77 @@
+{
+  "date": "2026-11-04",
+  "timezone": "Europe/Moscow",
+  "gitCommit": "241d4cc4bc2405e50f5eb91fe80986e5a6a7c0e3",
+  "node": "24.13.1",
+  "next": "15.5.28",
+  "chromium": "149.0.7827.55",
+  "lighthouse": "13.6.0",
+  "buildId": "xxWdP7cFoMdl3Tx8lp1CR",
+  "browser": "headless Linux Chromium; real browser, emulated mobile viewport and touch",
+  "viewportProfiles": [
+    [
+      360,
+      800
+    ],
+    [
+      390,
+      844
+    ],
+    [
+      834,
+      1112
+    ],
+    [
+      1440,
+      900
+    ]
+  ],
+  "directMobileThrottle": {
+    "downloadBytesPerSecond": 200000,
+    "uploadBytesPerSecond": 93750,
+    "configuredLatencyMs": 150,
+    "cpuRate": 4
+  },
+  "dataset": {
+    "recipes": 126,
+    "publishedRecipes": 46,
+    "ingredients": 1403,
+    "batches": 36,
+    "inventoryItems": 103,
+    "telemetryPoints": 43263
+  },
+  "sourceSha256": {
+    "apps/web/app/layout.tsx": "45e0ed7bf229db53abef6d324db47a8aa22a32f1cfabafc80a9ecb01b91365f1",
+    "apps/web/app/(public)/page.tsx": "3979b85d8ecb8775bcc3a3c9e46c0023889749b18bde923b4bee9357edebad6a",
+    "apps/web/next.config.ts": "ce83ff30b14e2a4586f6a9fc855fc87a65268ae8a77f0cbf21bc6f1224709b11",
+    "apps/web/features/home/landing-data.ts": "76c7473ed831159bca09b191d1eb69e0a8b07ed6e3d7ad2ea50b47bafbe1d7b8",
+    "apps/web/features/labels/svg.ts": "eb54e4c25841330f230eef6b4b8049fca5e9e4d14751b45684372fb3b1b35be8",
+    "apps/web/features/labels/render.ts": "67f68d02eb11b2b52b68138d218c340343013667a7731137a722afc9b77ebaf9",
+    "apps/web/components/recipes/recipe-card-parts.tsx": "d3bb461255ab18ac29e41c34967d204e760bac1db933c2529e483ba1cfcaee81",
+    "apps/web/components/feedback/feedback-launcher.tsx": "b23603c2563da56a4f1e35cbe63a1f95f368b3fce3d0bb45652e2a5c71a56109",
+    "apps/web/components/shared/use-debounced-url-search.ts": "b7a9a198c7967a1a4205ac8b613878589fb42968b236872814eef17a6984c64f",
+    "apps/web/components/inventory/inventory-toolbar.tsx": "6708859439d111ca6ad1d4c6138f9eea6c35fbf7a4693366488c04baf0b4fdc0",
+    "apps/web/components/calculators/calculator-page-client.tsx": "b89767df2a14b81e1dc1f6fee4076f16f06f1df8dce7baad63336e79e422d424",
+    "apps/web/app/globals.css": "58e5b5d500512ca7dd32f269bb9a53c6b5f222646052c6741d16dc0343f7a834",
+    "apps/web/components/providers.tsx": "a0ba8e517d91558f1bdd209f8ba988f3ce0877be4c1d16b2b857180ec954b941",
+    "apps/web/package.json": "1771218a5fcab390f674adcd4f28527f72246d19d7d48f85e4997ea5a94f75a6",
+    "pnpm-lock.yaml": "25e271e47024f78fc26eba5be67eb131e3c4c7138d56730b13b15df3b15121f5"
+  },
+  "sourceChangesPresentBeforeAudit": [
+    ".env.example",
+    "README.md",
+    "apps/web/app/layout.tsx",
+    "apps/web/app/offline/page.tsx",
+    "apps/web/components/app/app-sidebar-nav.tsx",
+    "apps/web/components/app/profile-logout-button.tsx",
+    "apps/web/components/providers.tsx",
+    "apps/web/components/theme/theme-provider.tsx",
+    "apps/web/e2e/pwa-prod.config.ts",
+    "apps/web/features/pwa/use-service-worker.ts",
+    "apps/web/integration/recipe-persistence-browser.integration.test.ts",
+    "apps/web/next.config.ts",
+    "apps/web/public/sw.js",
+    "docs/qa-test-plan.md",
+    "notes/qa-interop-2026-11-03/README.md"
+  ]
+}

@@ -829,7 +829,19 @@ export const brewMeasurements = pgTable("brew_measurements", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
 }, (table) => ({
   batchTakenIdx: index("brew_measurements_batch_taken_idx").on(table.brewBatchId, table.takenAt),
-  userIdx: index("brew_measurements_user_idx").on(table.userId)
+  userIdx: index("brew_measurements_user_idx").on(table.userId),
+  finalPerBatchIdx: uniqueIndex("brew_measurements_final_batch_uidx").on(table.brewBatchId).where(sql`${table.isFinal}`)
+}));
+
+export const brewOfflineOperations = pgTable("brew_offline_operations", {
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  batchId: uuid("batch_id").notNull().references(() => brewBatches.id, { onDelete: "cascade" }),
+  operationId: uuid("operation_id").notNull(),
+  payloadHash: varchar("payload_hash", { length: 64 }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  operationIdx: uniqueIndex("brew_offline_operations_user_op_uidx").on(table.userId, table.operationId),
+  batchIdx: index("brew_offline_operations_batch_idx").on(table.batchId)
 }));
 
 export const recipeInventoryAllocations = pgTable("recipe_inventory_allocations", {

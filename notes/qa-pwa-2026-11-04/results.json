@@ -1,0 +1,113 @@
+{
+  "date": "2026-11-04",
+  "timezone": "Europe/Moscow",
+  "status": "complete",
+  "bugs": [
+    {
+      "id": "B14",
+      "priority": "P1",
+      "status": "fixed"
+    },
+    {
+      "id": "B15",
+      "priority": "P1",
+      "status": "fixed"
+    },
+    {
+      "id": "B16",
+      "priority": "P1",
+      "status": "fixed"
+    },
+    {
+      "id": "B17",
+      "priority": "P2",
+      "status": "fixed"
+    },
+    {
+      "id": "B18",
+      "priority": "P2",
+      "status": "fixed"
+    },
+    {
+      "id": "B19",
+      "priority": "P2",
+      "status": "fixed"
+    },
+    {
+      "id": "B20",
+      "priority": "P1",
+      "status": "fixed"
+    },
+    {
+      "id": "B21",
+      "priority": "P3",
+      "status": "fixed"
+    },
+    {
+      "id": "B22",
+      "priority": "P3",
+      "status": "fixed"
+    }
+  ],
+  "fullPlanComplete": false,
+  "baseCommit": "241d4cc4bc2405e50f5eb91fe80986e5a6a7c0e3",
+  "verification": {
+    "productionBuilds": {
+      "fixed-f": 0,
+      "fixed-g": 0
+    },
+    "pwaChromium": {
+      "passed": 19,
+      "failed": 0
+    },
+    "productionRecipeRegression": {
+      "passed": 8,
+      "failed": 0
+    },
+    "webUnit": {
+      "passed": 4428,
+      "files": 321,
+      "failed": 0
+    },
+    "typescriptWeb": {
+      "exitCode": 0,
+      "generatedNextConfigsRestored": true
+    },
+    "gitDiffCheck": {
+      "exitCode": 0
+    }
+  },
+  "cleanup": {
+    "completedAt": "2026-11-03T22:56:23.483570+00:00",
+    "qaContainerDeleted": "nb-qa-pwa-20261104",
+    "qaDataStorage": "tmpfs removed with container",
+    "qaPortsReleased": [
+      3011,
+      3012,
+      3013,
+      3014,
+      55435
+    ],
+    "ownBuildDirectoriesRemoved": [
+      "apps/web/.next-qa-pwa-fixed-f-20261104",
+      "apps/web/.next-qa-pwa-fixed-g-20261104"
+    ],
+    "privateMockStorage": [],
+    "mainContainerIdUnchanged": true,
+    "mainMountsUnchanged": true,
+    "mainDatabaseMigratedOrUsedForFixtures": false,
+    "mainPostgresHealthy": true,
+    "mailpitRunning": true,
+    "mosquittoRunning": true,
+    "nextGeneratedConfigsRestored": true,
+    "dbBackupsPreserved": true
+  },
+  "limitations": [
+    "Physical Android/iOS install, OS sleep/termination",
+    "Firefox/WebKit",
+    "Real HTTPS/CDN and Web Push",
+    "Hardware BrewForge",
+    "Load/performance budgets",
+    "Full HTTP password login with external CAPTCHA"
+  ]
+}

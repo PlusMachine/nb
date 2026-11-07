@@ -1,0 +1,466 @@
+{
+  "chromiumMeasurements": 194,
+  "chromiumRouteRequests": 98,
+  "widths": [
+    320,
+    390,
+    430,
+    768,
+    1024
+  ],
+  "horizontalOverflow": 0,
+  "httpStatuses": {
+    "200": 165,
+    "404": 28,
+    "500": 1
+  },
+  "privateCalculatorsAt320And390": 34,
+  "webkitMeasurements": 8,
+  "webkitHorizontalOverflow": 0,
+  "editorChecks": [
+    {
+      "name": "Ingredient categories: full labels and selection at 320px",
+      "ok": true,
+      "ms": 10485,
+      "evidence": {
+        "width": 320,
+        "documentWidth": 320
+      }
+    },
+    {
+      "name": "Ingredient categories: full labels and selection at 360px",
+      "ok": true,
+      "ms": 9185,
+      "evidence": {
+        "width": 360,
+        "documentWidth": 360
+      }
+    },
+    {
+      "name": "Ingredient categories: full labels and selection at 390px",
+      "ok": true,
+      "ms": 10640,
+      "evidence": {
+        "width": 390,
+        "documentWidth": 390
+      }
+    },
+    {
+      "name": "Ingredient categories: full labels and selection at 768px",
+      "ok": true,
+      "ms": 19153,
+      "evidence": {
+        "width": 768,
+        "documentWidth": 768
+      }
+    },
+    {
+      "name": "Recipe section headings remain readable at 320px",
+      "ok": true,
+      "ms": 430,
+      "evidence": [
+        {
+          "text": "Сравнение со стилем",
+          "client": 152,
+          "scroll": 152,
+          "height": 20
+        },
+        {
+          "text": "Солод и другое сырьё",
+          "client": 178,
+          "scroll": 178,
+          "height": 24
+        },
+        {
+          "text": "Водоподготовка",
+          "client": 135,
+          "scroll": 135,
+          "height": 24
+        },
+        {
+          "text": "Специи и добавки",
+          "client": 146,
+          "scroll": 146,
+          "height": 24
+        }
+      ]
+    },
+    {
+      "name": "Recipe actions: two import dialog cycles then brew dialog",
+      "ok": true,
+      "ms": 13605,
+      "evidence": {
+        "cycles": 2,
+        "brewDialog": true
+      }
+    }
+  ],
+  "flows": [
+    {
+      "name": "Find a recipe by search and open its mobile detail",
+      "ok": true,
+      "evidence": {
+        "url": "http://127.0.0.1:3104/recipes/pilsner-urquell"
+      }
+    },
+    {
+      "name": "Public menu fits a short landscape viewport and toggles theme",
+      "ok": true,
+      "evidence": {
+        "width": 844,
+        "height": 390,
+        "menu": {
+          "x": 0,
+          "y": 56,
+          "width": 844,
+          "height": 334
+        },
+        "themeCycle": "light-dark-light"
+      }
+    },
+    {
+      "name": "Tall label preview leaves text fields clickable at 320px",
+      "ok": true,
+      "evidence": {
+        "documentWidth": 320,
+        "fields": [
+          "Название",
+          "Стиль",
+          "Автор"
+        ]
+      }
+    },
+    {
+      "name": "Account drawer opens and closes in landscape",
+      "ok": true,
+      "evidence": {
+        "x": 0,
+        "y": 0,
+        "width": 288,
+        "height": 390
+      }
+    },
+    {
+      "name": "First visit consent fits a narrow phone and persists",
+      "ok": true,
+      "evidence": {
+        "button": {
+          "x": 16,
+          "y": 522,
+          "width": 151,
+          "height": 36
+        },
+        "cookiePersisted": true
+      }
+    }
+  ],
+  "typecheck": "passed after final layout changes (exit 0)",
+  "diffCheck": "passed (exit 0)",
+  "proposals": [
+    {
+      "status": "preview-only",
+      "description": "Collapse detailed mobile recipe metrics and BJCP comparison by default; preserve access through disclosures",
+      "offsets": {
+        "before": 1471,
+        "after": 761
+      },
+      "detailsToggleVerified": true
+    },
+    {
+      "status": "preview-only",
+      "description": "Put mobile sorting and a labelled Filters button in one row; keep full-width search",
+      "offsets": {
+        "before": 4926,
+        "after": 4870
+      },
+      "filterOpenCloseVerified": true
+    }
+  ],
+  "customEdit": {
+    "status": 200,
+    "width": 320,
+    "scroll": 320,
+    "saved": true,
+    "url": "http://127.0.0.1:3105/catalog/custom/aa33e3d6-610f-4f53-9a32-83e12ddb32b6"
+  },
+  "finalTypecheckExit": "0",
+  "auditServerProcessesStopped": [],
+  "cleanup": "Audit browsers and servers closed; temporary tsconfig include removed",
+  "customLayout": [
+    {
+      "kind": 0,
+      "ok": true,
+      "width": 320,
+      "scroll": 320,
+      "fields": 5,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 1,
+      "ok": true,
+      "width": 320,
+      "scroll": 320,
+      "fields": 5,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 2,
+      "ok": true,
+      "width": 320,
+      "scroll": 320,
+      "fields": 5,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 3,
+      "ok": true,
+      "width": 320,
+      "scroll": 320,
+      "fields": 5,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 4,
+      "ok": true,
+      "width": 320,
+      "scroll": 320,
+      "fields": 5,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 5,
+      "ok": true,
+      "width": 320,
+      "scroll": 320,
+      "fields": 5,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 0,
+      "ok": true,
+      "width": 360,
+      "scroll": 360,
+      "fields": 6,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 1,
+      "ok": true,
+      "width": 360,
+      "scroll": 360,
+      "fields": 6,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 2,
+      "ok": true,
+      "width": 360,
+      "scroll": 360,
+      "fields": 7,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 3,
+      "ok": true,
+      "width": 360,
+      "scroll": 360,
+      "fields": 9,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 4,
+      "ok": true,
+      "width": 360,
+      "scroll": 360,
+      "fields": 5,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 5,
+      "ok": true,
+      "width": 360,
+      "scroll": 360,
+      "fields": 5,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 0,
+      "ok": true,
+      "width": 390,
+      "scroll": 390,
+      "fields": 6,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 1,
+      "ok": true,
+      "width": 390,
+      "scroll": 390,
+      "fields": 6,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 2,
+      "ok": true,
+      "width": 390,
+      "scroll": 390,
+      "fields": 7,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 3,
+      "ok": true,
+      "width": 390,
+      "scroll": 390,
+      "fields": 9,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 4,
+      "ok": true,
+      "width": 390,
+      "scroll": 390,
+      "fields": 5,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 5,
+      "ok": true,
+      "width": 390,
+      "scroll": 390,
+      "fields": 5,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 0,
+      "ok": true,
+      "width": 768,
+      "scroll": 768,
+      "fields": 6,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 1,
+      "ok": true,
+      "width": 768,
+      "scroll": 768,
+      "fields": 6,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 2,
+      "ok": true,
+      "width": 768,
+      "scroll": 768,
+      "fields": 7,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 3,
+      "ok": true,
+      "width": 768,
+      "scroll": 768,
+      "fields": 9,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 4,
+      "ok": true,
+      "width": 768,
+      "scroll": 768,
+      "fields": 5,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 5,
+      "ok": true,
+      "width": 768,
+      "scroll": 768,
+      "fields": 5,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 0,
+      "ok": true,
+      "width": 1280,
+      "scroll": 1280,
+      "fields": 6,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 1,
+      "ok": true,
+      "width": 1280,
+      "scroll": 1280,
+      "fields": 6,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 2,
+      "ok": true,
+      "width": 1280,
+      "scroll": 1280,
+      "fields": 7,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 3,
+      "ok": true,
+      "width": 1280,
+      "scroll": 1280,
+      "fields": 9,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 4,
+      "ok": true,
+      "width": 1280,
+      "scroll": 1280,
+      "fields": 5,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "kind": 5,
+      "ok": true,
+      "width": 1280,
+      "scroll": 1280,
+      "fields": 5,
+      "bad": [],
+      "labels": []
+    },
+    {
+      "create": true,
+      "width": 320,
+      "ok": true
+    }
+  ]
+}

@@ -1,0 +1,293 @@
+import React from "react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { GroupedInventoryList } from "@/components/inventory/grouped-inventory-list";
+import { InventoryTabs } from "@/components/inventory/inventory-tabs";
+import { InventoryEmptyState } from "@/components/inventory/inventory-empty-state";
+import { AddIngredientTrigger } from "@/components/inventory/add-ingredient-trigger";
+import { InventoryToolbar } from "@/components/inventory/inventory-toolbar";
+import { BrewableRecipesSection } from "@/components/recipes/brewable-recipes-section";
+import {
+  buildInventoryToolbarHref,
+  defaultInventorySortOption,
+  hasActiveInventoryFilters,
+  resolveInventoryShowFinished
+} from "@/features/inventory/page-model";
+import { getInventorySummaries, listInventoryForUserWithMeta } from "@/features/inventory/service";
+import {
+  ingredientCategories,
+  ingredientTypes,
+  type IngredientSubtype,
+  type IngredientCategory,
+  type IngredientType
+} from "@/features/ingredients/contracts";
+import {
+  inventorySortOptions,
+  type InventorySortOption
+} from "@/features/inventory/contracts";
+import { resolveIngredientCategory } from "@/features/ingredients/taxonomy";
+import {
+  getIngredientSuggestionByRef
+} from "@/features/ingredients/catalog-service";
+import { listSystemCurrencyRates } from "@/features/system/currency-rates";
+import { findBrewableRecipesForUser } from "@/features/recipes/match-service";
+import { buildShoppingListForUser } from "@/features/shopping/service";
+import { requireUser } from "@/lib/auth";
+
+type Props = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+const parseType = (value: string | undefined): IngredientType | undefined => {
+  if (!value || value === "all") {
+    return undefined;
+  }
+
+  return ingredientTypes.includes(value as IngredientType) ? value as IngredientType : undefined;
+};
+
+const parseCategory = (
+  categoryValue: string | undefined,
+  legacyTypeValue: string | undefined
+): IngredientCategory | undefined => {
+  if (categoryValue && ingredientCategories.includes(categoryValue as IngredientCategory)) {
+    return categoryValue as IngredientCategory;
+  }
+
+  const legacyType = parseType(legacyTypeValue);
+  return legacyType ? resolveIngredientCategory({ type: legacyType }) ?? undefined : undefined;
+};
+
+const parseSubtype = (value: string | undefined): Extract<IngredientSubtype, "malt" | "fermentable"> | undefined => (
+  value === "malt" || value === "fermentable" ? value : undefined
+);
+
+const parseGroup = (value: string | undefined): string | undefined => {
+  const normalized = value?.trim();
+  return normalized ? normalized : undefined;
+};
+
+const parseShowFinished = (
+  finishedValue: string | undefined,
+  legacyStockValue: string | undefined
+) => {
+  if (finishedValue != null) {
+    return finishedValue === "true";
+  }
+
+  return legacyStockValue === "all" || legacyStockValue === "empty";
+};
+
+const parseSort = (value: string | undefined): InventorySortOption => (
+  inventorySortOptions.includes(value as InventorySortOption)
+    ? value as InventorySortOption
+    : defaultInventorySortOption
+);
+
+export async function MyIngredientsContent({ searchParams }: Props = {}) {
+  const user = await requireUser();
+  const resolvedParams = searchParams ? await searchParams : {};
+  const rawSearch = String(resolvedParams.search ?? "").trim();
+  const category = parseCategory(
+    typeof resolvedParams.category === "string" ? resolvedParams.category : undefined,
+    typeof resolvedParams.type === "string" ? resolvedParams.type : undefined
+  );
+  const parsedSubtype = parseSubtype(typeof resolvedParams.subtype === "string" ? resolvedParams.subtype : undefined)
+    ?? (typeof resolvedParams.type === "string" && resolvedParams.type === "malt" ? "malt" : undefined);
+  const subtype = parsedSubtype;
+  const group = parseGroup(typeof resolvedParams.group === "string" ? resolvedParams.group : undefined);
+  const requestedShowFinished = parseShowFinished(
+    typeof resolvedParams.finished === "string" ? resolvedParams.finished : undefined,
+    typeof resolvedParams.stock === "string" ? resolvedParams.stock : undefined
+  );
+  const sort = parseSort(typeof resolvedParams.sort === "string" ? resolvedParams.sort : undefined);
+  const addSource = typeof resolvedParams.addSource === "string" ? resolvedParams.addSource : undefined;
+  const addId = typeof resolvedParams.addId === "string" ? resolvedParams.addId : undefined;
+  // Дефицит из «Чего не хватает» (UX-находка #20): предзаполнить количество/единицу.
+  const addQty = typeof resolvedParams.addQty === "string" ? resolvedParams.addQty : undefined;
+  const addUnit = typeof resolvedParams.addUnit === "string" ? resolvedParams.addUnit : undefined;
+  // Строка-нехватка без каталожной/кастомной привязки (П3): живёт только именем
+  // из снапшота, у неё нет addSource/addId — deeplink несёт голое имя (+
+  // опционально категорию), открываем модалку сразу в режиме «Добавить свой».
+  const rawAddName = typeof resolvedParams.addName === "string" ? resolvedParams.addName.trim() : "";
+  const addName = rawAddName.length > 0 ? rawAddName : undefined;
+  const rawAddCategory = typeof resolvedParams.addCategory === "string" ? resolvedParams.addCategory : undefined;
+  const addCategory = rawAddCategory && ingredientCategories.includes(rawAddCategory as IngredientCategory)
+    ? (rawAddCategory as IngredientCategory)
+    : undefined;
+
+  const [{ items, searchRescue }, summary, currencyRates, initialSelection, missingCount] = await Promise.all([
+    listInventoryForUserWithMeta(user.id, {
+      category,
+      subtype,
+      group,
+      includeEmpty: requestedShowFinished,
+      stockState: requestedShowFinished ? "all" : "in_stock",
+      sort,
+      search: rawSearch
+    }),
+    getInventorySummaries(user.id),
+    listSystemCurrencyRates(),
+    addSource === "catalog" || addSource === "custom"
+      ? getIngredientSuggestionByRef(user.id, addSource, addId ?? "").then((item) => item?.inventoryEnabled === false ? null : item)
+      : Promise.resolve(null),
+    // Счётчик для таба «Чего не хватает» (без opportunities — дешёвый путь,
+    // как у виджета дашборда). При сбое таб просто остаётся без цифры.
+    buildShoppingListForUser(user.id).then((list) => list.totalItems).catch(() => 0)
+  ]);
+  const showFinished = resolveInventoryShowFinished(requestedShowFinished, summary);
+
+  if (requestedShowFinished && !showFinished) {
+    redirect(buildInventoryToolbarHref("/app/ingredients", {
+      search: rawSearch,
+      category: category ?? "all",
+      subtype: subtype ?? null,
+      group: group ?? null,
+      showFinished: false,
+      sort
+    }));
+  }
+
+  const hasAnyItems = summary.totalItems > 0;
+  // Суженный вид (поиск/категория/подгруппа) — пользователь ищет конкретную
+  // позицию; секция «Можно сварить» про весь склад, поэтому под отфильтрованным
+  // списком она только мешает — и заодно не гоняем под неё тяжёлый запрос.
+  const isNarrowedView = Boolean(rawSearch) || category != null || subtype != null || Boolean(group);
+  // Обратный матчинг «склад → рецепты» считаем только при наличии запасов,
+  // чтобы не гонять тяжёлый запрос на пустом складе. Вторичная секция — при сбое
+  // деградируем тихо, не роняя страницу склада.
+  const brewableRecipes = !isNarrowedView && summary.inStockItems > 0
+    ? await findBrewableRecipesForUser({ userId: user.id, limit: 6 }).catch(() => [])
+    : [];
+  const hasFilters = hasActiveInventoryFilters({
+    search: rawSearch,
+    category: category ?? "all",
+    subtype: subtype ?? null,
+    group: group ?? null,
+    showFinished,
+    sort
+  });
+  const finishedHref = buildInventoryToolbarHref("/app/ingredients", {
+    search: rawSearch,
+    category: category ?? "all",
+    subtype: subtype ?? null,
+    group: group ?? null,
+    showFinished: true,
+    sort
+  });
+
+  const inventoryList = items.length === 0 ? (
+    <InventoryEmptyState
+      hasAnyItems={hasAnyItems}
+      hasFilters={hasFilters}
+      search={rawSearch}
+      category={category}
+      subtype={subtype ?? null}
+      group={group ?? null}
+      showFinished={showFinished}
+    />
+  ) : (
+    <div className="space-y-3">
+      {searchRescue === "layout" ? (
+        <p className="text-sm text-muted-foreground">Возможно, вы имели в виду:</p>
+      ) : null}
+      <GroupedInventoryList
+        items={items}
+        preferredCurrency={user.preferredCurrency}
+        currencyRates={currencyRates}
+        layout={sort === "price" || sort === "best_before" ? "flat" : "grouped"}
+        sortEmphasis={sort === "price" ? "price" : sort === "best_before" ? "best_before" : null}
+      />
+    </div>
+  );
+
+  // «Можно сварить» — главный мотиватор страницы. На десктопе выносим в правый
+  // sticky-rail (виден без скролла, заполняет пустое место рядом с узкими
+  // карточками); на мобиле секция стекается под список (+ якорь в шапке). Без
+  // подходящих рецептов rail не занимает место — список во всю ширину.
+  const inventoryBody = brewableRecipes.length > 0 ? (
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+      <div className="min-w-0">{inventoryList}</div>
+      <aside className="lg:sticky lg:top-4">
+        <BrewableRecipesSection recipes={brewableRecipes} />
+      </aside>
+    </div>
+  ) : (
+    inventoryList
+  );
+
+  return (
+    <main className="space-y-5">
+      <section className="flex items-start justify-between gap-3 sm:items-center">
+        <div className="space-y-1">
+          <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">Мой склад</h1>
+          {hasAnyItems ? (
+            <p className="text-sm text-muted-foreground">
+              {summary.inStockItems} в наличии
+              {summary.emptyItems > 0 ? (
+                showFinished ? (
+                  <> · {summary.emptyItems} закончились</>
+                ) : (
+                  <>
+                    {" · "}
+                    <Link
+                      href={finishedHref}
+                      className="underline decoration-dotted underline-offset-2 transition-colors hover:text-foreground"
+                    >
+                      {summary.emptyItems} закончились
+                    </Link>
+                  </>
+                )
+              ) : null}
+              {/* На мобиле секция «Можно сварить» уходит в самый низ — даём якорь
+                  прямо в шапке. На десктопе она в правом rail, якорь не нужен. */}
+              {brewableRecipes.length > 0 ? (
+                <span className="lg:hidden">
+                  {" · "}
+                  <a
+                    href="#brewable"
+                    className="underline decoration-dotted underline-offset-2 transition-colors hover:text-foreground"
+                  >
+                    рецепты: {brewableRecipes.length}
+                  </a>
+                </span>
+              ) : null}
+            </p>
+          ) : null}
+        </div>
+        <div className="flex shrink-0 items-center gap-2">
+          <AddIngredientTrigger
+            preferredCurrency={user.preferredCurrency}
+            initialSelection={initialSelection}
+            initialCategory={initialSelection?.category ?? addCategory ?? category ?? null}
+            initialSubtype={
+              initialSelection?.subtype === "malt" || initialSelection?.subtype === "fermentable"
+                ? initialSelection.subtype
+                : (subtype ?? null)
+            }
+            initialGroup={group ?? null}
+            initialDisplayName={addName ?? null}
+            initialQuantity={(initialSelection || addName) ? addQty ?? null : null}
+            initialUnit={(initialSelection || addName) ? addUnit ?? null : null}
+            openOnMount={resolvedParams.add === "1" || Boolean(initialSelection) || Boolean(addName)}
+          />
+        </div>
+      </section>
+
+      <InventoryTabs active="stock" missingCount={missingCount} />
+
+      <InventoryToolbar
+        search={rawSearch}
+        category={category ?? "all"}
+        subtype={subtype ?? null}
+        group={group ?? null}
+        showFinished={showFinished}
+        sort={sort}
+        summary={summary}
+        visibleItemCount={items.length}
+      />
+
+      {inventoryBody}
+    </main>
+  );
+}

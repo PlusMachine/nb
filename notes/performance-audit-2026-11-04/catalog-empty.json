@@ -1,0 +1,1155 @@
+{
+  "url": "http://127.0.0.1:3016/catalog?q=zzzznotfound984631",
+  "ttfbMs": 219.19999999995343,
+  "fcpMs": 308,
+  "lcpMs": 376,
+  "cls": 0.3002698859739369,
+  "domContentLoadedMs": 302.9000000001397,
+  "loadMs": 314.30000000004657,
+  "htmlTransfer": 434525,
+  "htmlDecoded": 434225,
+  "resourceTransfer": 45642,
+  "resourceDecoded": 2302618,
+  "jsDecoded": 963092,
+  "domElements": 283,
+  "incompleteImages": [],
+  "viewport": {
+    "width": 1440,
+    "height": 900,
+    "scrollWidth": 1440,
+    "scrollHeight": 1024
+  },
+  "totalLongTaskBlockingMs": 0,
+  "lcp": [
+    {
+      "start": 308,
+      "size": 11844,
+      "url": "",
+      "tag": "H1",
+      "text": "Каталог ингредиентов"
+    },
+    {
+      "start": 376,
+      "size": 31777,
+      "url": "",
+      "tag": "P",
+      "text": "Мы используем cookie: обязательные — для работы сайта и входа, аналитические — чтобы улучшать сервис. Подробнее в Политике cookie."
+    }
+  ],
+  "shifts": [
+    {
+      "start": 356.4000000001397,
+      "value": 0.0033849987139917695,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "BUTTON",
+          "text": "Обратная связь",
+          "previous": {
+            "x": 1238,
+            "y": 830,
+            "width": 202,
+            "height": 70,
+            "top": 830,
+            "right": 1440,
+            "bottom": 900,
+            "left": 1238
+          },
+          "current": {
+            "x": 1238,
+            "y": 721,
+            "width": 202,
+            "height": 84,
+            "top": 721,
+            "right": 1440,
+            "bottom": 805,
+            "left": 1238
+          }
+        },
+        {
+          "tag": "OL",
+          "text": "",
+          "previous": {
+            "x": 12,
+            "y": 880,
+            "width": 392,
+            "height": 8,
+            "top": 880,
+            "right": 404,
+            "bottom": 888,
+            "left": 12
+          },
+          "current": {
+            "x": 12,
+            "y": 711,
+            "width": 392,
+            "height": 8,
+            "top": 711,
+            "right": 404,
+            "bottom": 719,
+            "left": 12
+          }
+        }
+      ]
+    },
+    {
+      "start": 399.4000000001397,
+      "value": 0.002183224022633745,
+      "recentInput": true,
+      "sources": [
+        {
+          "tag": "BUTTON",
+          "text": "Обратная связь",
+          "previous": {
+            "x": 1238,
+            "y": 721,
+            "width": 202,
+            "height": 84,
+            "top": 721,
+            "right": 1440,
+            "bottom": 805,
+            "left": 1238
+          },
+          "current": {
+            "x": 1238,
+            "y": 830,
+            "width": 202,
+            "height": 70,
+            "top": 830,
+            "right": 1440,
+            "bottom": 900,
+            "left": 1238
+          }
+        },
+        {
+          "tag": "OL",
+          "text": "",
+          "previous": {
+            "x": 12,
+            "y": 711,
+            "width": 392,
+            "height": 8,
+            "top": 711,
+            "right": 404,
+            "bottom": 719,
+            "left": 12
+          },
+          "current": {
+            "x": 12,
+            "y": 820,
+            "width": 392,
+            "height": 8,
+            "top": 820,
+            "right": 404,
+            "bottom": 828,
+            "left": 12
+          }
+        }
+      ]
+    },
+    {
+      "start": 32403.90000000014,
+      "value": 0.3002698859739369,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "SECTION",
+          "text": "Хмель5ИнгредиентПараметрыЦитраCitra·Beervingem·USАльфа 12.5%гранулы T-90ЦитраCit",
+          "previous": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "current": {
+            "x": 104,
+            "y": 305,
+            "width": 1232,
+            "height": 423,
+            "top": 305,
+            "right": 1336,
+            "bottom": 728,
+            "left": 104
+          }
+        },
+        {
+          "tag": "SECTION",
+          "text": "ИнгредиентПараметрыЦитраCitra·Beervingem·USАльфа 12.5%гранулы T-90ЦитраCitra·Yak",
+          "previous": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "current": {
+            "x": 101,
+            "y": 343,
+            "width": 1238,
+            "height": 389,
+            "top": 343,
+            "right": 1339,
+            "bottom": 732,
+            "left": 101
+          }
+        },
+        {
+          "tag": "A",
+          "text": "Хмель5",
+          "previous": {
+            "x": 600,
+            "y": 222,
+            "width": 123,
+            "height": 38,
+            "top": 222,
+            "right": 723,
+            "bottom": 260,
+            "left": 600
+          },
+          "current": {
+            "x": 530,
+            "y": 222,
+            "width": 105,
+            "height": 38,
+            "top": 222,
+            "right": 635,
+            "bottom": 260,
+            "left": 530
+          }
+        }
+      ]
+    },
+    {
+      "start": 52929.69999999995,
+      "value": 0.038371141975308644,
+      "recentInput": true,
+      "sources": [
+        {
+          "tag": "FOOTER",
+          "text": "NBРецепты, склад ингредиентов и расчёты для домашнего пивоварения.18+ · Материал",
+          "previous": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "current": {
+            "x": 0,
+            "y": 677,
+            "width": 1440,
+            "height": 223,
+            "top": 677,
+            "right": 1440,
+            "bottom": 900,
+            "left": 0
+          }
+        }
+      ]
+    }
+  ],
+  "longtasks": [],
+  "events": [
+    {
+      "name": "pointerover",
+      "start": 386.19999999995343,
+      "duration": 32,
+      "processing": 0.39999999990686774,
+      "delay": 0.6000000000931323,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 386.19999999995343,
+      "duration": 32,
+      "processing": 0,
+      "delay": 1,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 386.19999999995343,
+      "duration": 32,
+      "processing": 0,
+      "delay": 1,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 386.19999999995343,
+      "duration": 32,
+      "processing": 0,
+      "delay": 1,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 386.19999999995343,
+      "duration": 32,
+      "processing": 0,
+      "delay": 1,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 386.19999999995343,
+      "duration": 32,
+      "processing": 0,
+      "delay": 1,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 386.19999999995343,
+      "duration": 32,
+      "processing": 0,
+      "delay": 1.1000000000931323,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 386.19999999995343,
+      "duration": 32,
+      "processing": 0,
+      "delay": 1.1000000000931323,
+      "interactionId": 0
+    },
+    {
+      "name": "mouseover",
+      "start": 386.19999999995343,
+      "duration": 32,
+      "processing": 0,
+      "delay": 1.1000000000931323,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerdown",
+      "start": 386.4000000001397,
+      "duration": 32,
+      "processing": 0.30000000004656613,
+      "delay": 1.1999999999534339,
+      "interactionId": 3172
+    },
+    {
+      "name": "mousedown",
+      "start": 386.4000000001397,
+      "duration": 32,
+      "processing": 0.09999999986030161,
+      "delay": 1.5,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerup",
+      "start": 386.5,
+      "duration": 32,
+      "processing": 0.10000000009313226,
+      "delay": 1.6999999999534339,
+      "interactionId": 3172
+    },
+    {
+      "name": "mouseup",
+      "start": 386.5,
+      "duration": 32,
+      "processing": 0.19999999995343387,
+      "delay": 1.8000000000465661,
+      "interactionId": 0
+    },
+    {
+      "name": "click",
+      "start": 386.5,
+      "duration": 32,
+      "processing": 1.4000000001396984,
+      "delay": 2,
+      "interactionId": 3172
+    },
+    {
+      "name": "beforeinput",
+      "start": 31783.100000000093,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0,
+      "interactionId": 0,
+      "tag": "INPUT",
+      "text": ""
+    },
+    {
+      "name": "input",
+      "start": 31783.5,
+      "duration": 16,
+      "processing": 2.0999999998603016,
+      "delay": 0.4000000001396984,
+      "interactionId": 0,
+      "tag": "INPUT",
+      "text": ""
+    },
+    {
+      "name": "pointerout",
+      "start": 32403.40000000014,
+      "duration": 16,
+      "processing": 0.39999999990686774,
+      "delay": 0.5,
+      "interactionId": 0,
+      "tag": "MAIN",
+      "text": "Каталог ингредиентовОткрытый справочник ингредиентов для домашних пиво"
+    },
+    {
+      "name": "pointerleave",
+      "start": 32403.40000000014,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.8999999999068677,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerleave",
+      "start": 32403.40000000014,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.8999999999068677,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerover",
+      "start": 32403.40000000014,
+      "duration": 16,
+      "processing": 0.10000000009313226,
+      "delay": 0.8999999999068677,
+      "interactionId": 0,
+      "tag": "DIV",
+      "text": "NBРецептыСтили пиваКалькуляторыСтатьиИнгредиентыМаркетBrewForgeВойтиКа"
+    },
+    {
+      "name": "mouseout",
+      "start": 32403.40000000014,
+      "duration": 16,
+      "processing": 0.09999999986030161,
+      "delay": 1,
+      "interactionId": 0,
+      "tag": "MAIN",
+      "text": "Каталог ингредиентовОткрытый справочник ингредиентов для домашних пиво"
+    },
+    {
+      "name": "mouseover",
+      "start": 32403.40000000014,
+      "duration": 16,
+      "processing": 0.10000000009313226,
+      "delay": 1.0999999998603016,
+      "interactionId": 0,
+      "tag": "DIV",
+      "text": "NBРецептыСтили пиваКалькуляторыСтатьиИнгредиентыМаркетBrewForgeВойтиКа"
+    },
+    {
+      "name": "beforeinput",
+      "start": 52431.30000000005,
+      "duration": 16,
+      "processing": 0.10000000009313226,
+      "delay": 0,
+      "interactionId": 0,
+      "tag": "INPUT",
+      "text": ""
+    },
+    {
+      "name": "input",
+      "start": 52433,
+      "duration": 16,
+      "processing": 1.7999999998137355,
+      "delay": 0.4000000001396984,
+      "interactionId": 0,
+      "tag": "INPUT",
+      "text": ""
+    },
+    {
+      "name": "beforeinput",
+      "start": 52448.69999999995,
+      "duration": 16,
+      "processing": 0.10000000009313226,
+      "delay": 0,
+      "interactionId": 0,
+      "tag": "INPUT",
+      "text": ""
+    },
+    {
+      "name": "input",
+      "start": 52449.10000000009,
+      "duration": 16,
+      "processing": 1.6999999999534339,
+      "delay": 0.19999999995343387,
+      "interactionId": 0,
+      "tag": "INPUT",
+      "text": ""
+    },
+    {
+      "name": "beforeinput",
+      "start": 52567.5,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0,
+      "interactionId": 0,
+      "tag": "INPUT",
+      "text": ""
+    },
+    {
+      "name": "input",
+      "start": 52568,
+      "duration": 16,
+      "processing": 0.9000000001396984,
+      "delay": 0,
+      "interactionId": 0,
+      "tag": "INPUT",
+      "text": ""
+    },
+    {
+      "name": "pointerout",
+      "start": 52929.5,
+      "duration": 16,
+      "processing": 0.10000000009313226,
+      "delay": 0.30000000004656613,
+      "interactionId": 0,
+      "tag": "DIV",
+      "text": "NBРецептыСтили пиваКалькуляторыСтатьиИнгредиентыМаркетBrewForgeВойтиКа"
+    },
+    {
+      "name": "pointerover",
+      "start": 52929.5,
+      "duration": 16,
+      "processing": 0.19999999995343387,
+      "delay": 0.4000000001396984,
+      "interactionId": 0,
+      "tag": "DIV",
+      "text": "АккаунтВойти"
+    },
+    {
+      "name": "pointerenter",
+      "start": 52929.5,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.6000000000931323,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 52929.5,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.6000000000931323,
+      "interactionId": 0
+    },
+    {
+      "name": "pointerenter",
+      "start": 52929.5,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.6000000000931323,
+      "interactionId": 0
+    },
+    {
+      "name": "mouseout",
+      "start": 52929.5,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.6000000000931323,
+      "interactionId": 0,
+      "tag": "DIV",
+      "text": "NBРецептыСтили пиваКалькуляторыСтатьиИнгредиентыМаркетBrewForgeВойтиКа"
+    },
+    {
+      "name": "mouseover",
+      "start": 52929.5,
+      "duration": 16,
+      "processing": 0,
+      "delay": 0.6000000000931323,
+      "interactionId": 0,
+      "tag": "DIV",
+      "text": "АккаунтВойти"
+    }
+  ],
+  "errors": [],
+  "resources": [
+    {
+      "name": "/_next/static/media/32425b6d39044b3c-s.p.ttf",
+      "type": "link",
+      "start": 223.19999999995343,
+      "duration": 10.600000000093132,
+      "transfer": 0,
+      "encoded": 359804,
+      "decoded": 359804
+    },
+    {
+      "name": "/_next/static/media/d703e6352f035923-s.p.ttf",
+      "type": "link",
+      "start": 223.5,
+      "duration": 17.600000000093132,
+      "transfer": 0,
+      "encoded": 744936,
+      "decoded": 744936
+    },
+    {
+      "name": "/_next/static/css/688dbf7110800d11.css",
+      "type": "link",
+      "start": 223.69999999995343,
+      "duration": 2.9000000001396984,
+      "transfer": 0,
+      "encoded": 7335,
+      "decoded": 7335
+    },
+    {
+      "name": "/_next/static/css/10d068b31dbc4d49.css",
+      "type": "link",
+      "start": 223.69999999995343,
+      "duration": 4.600000000093132,
+      "transfer": 0,
+      "encoded": 115379,
+      "decoded": 115379
+    },
+    {
+      "name": "/_next/static/chunks/webpack-50b6521d18506e69.js",
+      "type": "link",
+      "start": 231,
+      "duration": 13.600000000093132,
+      "transfer": 0,
+      "encoded": 3498,
+      "decoded": 3498
+    },
+    {
+      "name": "/_next/static/chunks/87c73c54-dd8d81ac9604067c.js",
+      "type": "script",
+      "start": 231.19999999995343,
+      "duration": 22.200000000186265,
+      "transfer": 0,
+      "encoded": 173023,
+      "decoded": 173023
+    },
+    {
+      "name": "/_next/static/chunks/18-94afe61f15789e06.js",
+      "type": "script",
+      "start": 231.5,
+      "duration": 24.699999999953434,
+      "transfer": 0,
+      "encoded": 174209,
+      "decoded": 174209
+    },
+    {
+      "name": "/_next/static/chunks/main-app-1b4249da1a5d893c.js",
+      "type": "script",
+      "start": 231.69999999995343,
+      "duration": 25.600000000093132,
+      "transfer": 0,
+      "encoded": 570,
+      "decoded": 570
+    },
+    {
+      "name": "/_next/static/chunks/7283-f1e1247528aca409.js",
+      "type": "script",
+      "start": 231.9000000001397,
+      "duration": 25.399999999906868,
+      "transfer": 0,
+      "encoded": 8555,
+      "decoded": 8555
+    },
+    {
+      "name": "/_next/static/chunks/612-9c360be286377cda.js",
+      "type": "script",
+      "start": 232,
+      "duration": 26.600000000093132,
+      "transfer": 0,
+      "encoded": 212253,
+      "decoded": 212253
+    },
+    {
+      "name": "/_next/static/chunks/9664-4bead6cd06a85437.js",
+      "type": "script",
+      "start": 232.10000000009313,
+      "duration": 26.699999999953434,
+      "transfer": 0,
+      "encoded": 8925,
+      "decoded": 8925
+    },
+    {
+      "name": "/_next/static/chunks/4159-4524a53eeeb992af.js",
+      "type": "script",
+      "start": 232.19999999995343,
+      "duration": 26.700000000186265,
+      "transfer": 0,
+      "encoded": 12883,
+      "decoded": 12883
+    },
+    {
+      "name": "/_next/static/chunks/922-36cb889d8a78c9e9.js",
+      "type": "script",
+      "start": 232.30000000004657,
+      "duration": 26.600000000093132,
+      "transfer": 0,
+      "encoded": 9436,
+      "decoded": 9436
+    },
+    {
+      "name": "/_next/static/chunks/1140-3282b57ff3d332fe.js",
+      "type": "script",
+      "start": 232.4000000001397,
+      "duration": 27.5999999998603,
+      "transfer": 0,
+      "encoded": 20277,
+      "decoded": 20277
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/layout-6a9b9b951f570000.js",
+      "type": "script",
+      "start": 232.5,
+      "duration": 35.800000000046566,
+      "transfer": 0,
+      "encoded": 6439,
+      "decoded": 6439
+    },
+    {
+      "name": "/_next/static/chunks/4737-b9435b98fbb3c365.js",
+      "type": "script",
+      "start": 232.69999999995343,
+      "duration": 28,
+      "transfer": 0,
+      "encoded": 57621,
+      "decoded": 57621
+    },
+    {
+      "name": "/_next/static/chunks/9461-25c487bb36994b55.js",
+      "type": "script",
+      "start": 232.69999999995343,
+      "duration": 28.700000000186265,
+      "transfer": 0,
+      "encoded": 12329,
+      "decoded": 12329
+    },
+    {
+      "name": "/_next/static/chunks/app/layout-a377c5f5ad22f81f.js",
+      "type": "script",
+      "start": 232.80000000004657,
+      "duration": 28.800000000046566,
+      "transfer": 0,
+      "encoded": 18394,
+      "decoded": 18394
+    },
+    {
+      "name": "/_next/static/chunks/app/error-482cb912af31630e.js",
+      "type": "script",
+      "start": 233,
+      "duration": 28.699999999953434,
+      "transfer": 0,
+      "encoded": 1140,
+      "decoded": 1140
+    },
+    {
+      "name": "/_next/static/chunks/3671-7a65dbaeafe4c092.js",
+      "type": "script",
+      "start": 233,
+      "duration": 29.5,
+      "transfer": 0,
+      "encoded": 157102,
+      "decoded": 157102
+    },
+    {
+      "name": "/_next/static/chunks/6005-b648b00388e32889.js",
+      "type": "script",
+      "start": 233.10000000009313,
+      "duration": 29.699999999953434,
+      "transfer": 0,
+      "encoded": 10087,
+      "decoded": 10087
+    },
+    {
+      "name": "/_next/static/chunks/6926-eaa04380686830b3.js",
+      "type": "script",
+      "start": 233.19999999995343,
+      "duration": 30.100000000093132,
+      "transfer": 0,
+      "encoded": 40407,
+      "decoded": 40407
+    },
+    {
+      "name": "/_next/static/chunks/3594-995a965781e222a7.js",
+      "type": "script",
+      "start": 233.4000000001397,
+      "duration": 41.799999999813735,
+      "transfer": 0,
+      "encoded": 10378,
+      "decoded": 10378
+    },
+    {
+      "name": "/_next/static/chunks/6937-2e1fa6e0cb9911ff.js",
+      "type": "script",
+      "start": 233.4000000001397,
+      "duration": 42.39999999990687,
+      "transfer": 0,
+      "encoded": 27553,
+      "decoded": 27553
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/catalog/page-22b157c2801ffea4.js",
+      "type": "script",
+      "start": 233.60000000009313,
+      "duration": 41.0999999998603,
+      "transfer": 0,
+      "encoded": 166,
+      "decoded": 166
+    },
+    {
+      "name": "/?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 367.9000000001397,
+      "duration": 24.899999999906868,
+      "transfer": 427,
+      "encoded": 127,
+      "decoded": 132
+    },
+    {
+      "name": "/recipes?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 368.10000000009313,
+      "duration": 26.699999999953434,
+      "transfer": 1877,
+      "encoded": 1577,
+      "decoded": 4051
+    },
+    {
+      "name": "/bjcp?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 368.30000000004657,
+      "duration": 24.800000000046566,
+      "transfer": 440,
+      "encoded": 140,
+      "decoded": 150
+    },
+    {
+      "name": "/calculators?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 368.5,
+      "duration": 24.800000000046566,
+      "transfer": 446,
+      "encoded": 146,
+      "decoded": 164
+    },
+    {
+      "name": "/articles?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 368.69999999995343,
+      "duration": 25.4000000001397,
+      "transfer": 443,
+      "encoded": 143,
+      "decoded": 158
+    },
+    {
+      "name": "/market?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 410.19999999995343,
+      "duration": 21.300000000046566,
+      "transfer": 443,
+      "encoded": 143,
+      "decoded": 154
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/recipes/error-ce8f980d58254598.js",
+      "type": "script",
+      "start": 410.80000000004657,
+      "duration": 25.800000000046566,
+      "transfer": 0,
+      "encoded": 1345,
+      "decoded": 1345
+    },
+    {
+      "name": "/brewforge?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 411.69999999995343,
+      "duration": 20,
+      "transfer": 444,
+      "encoded": 144,
+      "decoded": 160
+    },
+    {
+      "name": "/login?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 412.60000000009313,
+      "duration": 19.300000000046566,
+      "transfer": 441,
+      "encoded": 141,
+      "decoded": 152
+    },
+    {
+      "name": "/catalog/malts?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 413.9000000001397,
+      "duration": 18.299999999813735,
+      "transfer": 459,
+      "encoded": 159,
+      "decoded": 203
+    },
+    {
+      "name": "/catalog/fermentables?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 414.80000000004657,
+      "duration": 21.100000000093132,
+      "transfer": 464,
+      "encoded": 164,
+      "decoded": 217
+    },
+    {
+      "name": "/catalog/hops?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 453.19999999995343,
+      "duration": 20.9000000001397,
+      "transfer": 459,
+      "encoded": 159,
+      "decoded": 201
+    },
+    {
+      "name": "/catalog/yeast?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 453.9000000001397,
+      "duration": 20.899999999906868,
+      "transfer": 460,
+      "encoded": 160,
+      "decoded": 203
+    },
+    {
+      "name": "/catalog/water?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 454.80000000004657,
+      "duration": 20.800000000046566,
+      "transfer": 459,
+      "encoded": 159,
+      "decoded": 203
+    },
+    {
+      "name": "/catalog/additives?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 455.60000000009313,
+      "duration": 21.0999999998603,
+      "transfer": 462,
+      "encoded": 162,
+      "decoded": 211
+    },
+    {
+      "name": "/catalog/consumables?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 456.30000000004657,
+      "duration": 21.199999999953434,
+      "transfer": 464,
+      "encoded": 164,
+      "decoded": 215
+    },
+    {
+      "name": "/catalog/system/dingemans-amber-aromatic-md-be-specialty?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 474.60000000009313,
+      "duration": 22.899999999906868,
+      "transfer": 499,
+      "encoded": 199,
+      "decoded": 274
+    },
+    {
+      "name": "/catalog/system/malteurop-american-2-row-pale-malt?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 475.30000000004657,
+      "duration": 23.699999999953434,
+      "transfer": 491,
+      "encoded": 191,
+      "decoded": 268
+    },
+    {
+      "name": "/catalog/system/castle-malting-arome?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 476.30000000004657,
+      "duration": 24.399999999906868,
+      "transfer": 479,
+      "encoded": 179,
+      "decoded": 254
+    },
+    {
+      "name": "/catalog/system/ireks--aroma?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 476.9000000001397,
+      "duration": 25.699999999953434,
+      "transfer": 476,
+      "encoded": 176,
+      "decoded": 246
+    },
+    {
+      "name": "/catalog/system/dingemans-aroma-100-be-special?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 478,
+      "duration": 26.199999999953434,
+      "transfer": 489,
+      "encoded": 189,
+      "decoded": 264
+    },
+    {
+      "name": "/catalog/system/dingemans-aroma-150-be-special?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 498.10000000009313,
+      "duration": 29.0999999998603,
+      "transfer": 489,
+      "encoded": 189,
+      "decoded": 264
+    },
+    {
+      "name": "/catalog/system/apricot-frukty-ovoschi?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 499.60000000009313,
+      "duration": 28.800000000046566,
+      "transfer": 484,
+      "encoded": 184,
+      "decoded": 256
+    },
+    {
+      "name": "/catalog/system/coopers-amber-liquid-malt-extract-ekstrakty-kontsentraty?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 501.19999999995343,
+      "duration": 27.9000000001397,
+      "transfer": 509,
+      "encoded": 209,
+      "decoded": 290
+    },
+    {
+      "name": "/catalog/system/muntons-amber-dme-ekstrakty-kontsentraty?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 503.10000000009313,
+      "duration": 26.899999999906868,
+      "transfer": 500,
+      "encoded": 200,
+      "decoded": 274
+    },
+    {
+      "name": "/legal/cookies?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 504.80000000004657,
+      "duration": 26.100000000093132,
+      "transfer": 449,
+      "encoded": 149,
+      "decoded": 177
+    },
+    {
+      "name": "/catalog?q=citra&_rsc=LPYxOug6j93zVl1m",
+      "type": "fetch",
+      "start": 32039.199999999953,
+      "duration": 340,
+      "transfer": 12528,
+      "encoded": 12228,
+      "decoded": 45138
+    },
+    {
+      "name": "/catalog?q=citra&_rsc=LPYxOug6j93zVl1m",
+      "type": "fetch",
+      "start": 32289.90000000014,
+      "duration": 89.69999999995343,
+      "transfer": 12526,
+      "encoded": 12226,
+      "decoded": 45138
+    },
+    {
+      "name": "/catalog?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 32417.300000000047,
+      "duration": 33.5,
+      "transfer": 436,
+      "encoded": 136,
+      "decoded": 153
+    },
+    {
+      "name": "/legal/terms?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 32417.600000000093,
+      "duration": 33.39999999990687,
+      "transfer": 448,
+      "encoded": 148,
+      "decoded": 175
+    },
+    {
+      "name": "/legal/privacy?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 32417.699999999953,
+      "duration": 33.700000000186265,
+      "transfer": 449,
+      "encoded": 149,
+      "decoded": 177
+    },
+    {
+      "name": "/legal/consent?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 32418,
+      "duration": 34.699999999953434,
+      "transfer": 449,
+      "encoded": 149,
+      "decoded": 177
+    },
+    {
+      "name": "/catalog/system/us-citra-beervingem-standard?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 32418.100000000093,
+      "duration": 36,
+      "transfer": 487,
+      "encoded": 187,
+      "decoded": 262
+    },
+    {
+      "name": "/catalog/system/us-citra-standard?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 32452.100000000093,
+      "duration": 25.199999999953434,
+      "transfer": 479,
+      "encoded": 179,
+      "decoded": 251
+    },
+    {
+      "name": "/catalog/system/us-citra-cryo-beervingem-cryo?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 32453.100000000093,
+      "duration": 25.300000000046566,
+      "transfer": 487,
+      "encoded": 187,
+      "decoded": 263
+    },
+    {
+      "name": "/catalog/system/us-citra-cryo-cryo?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 32454.90000000014,
+      "duration": 24.699999999953434,
+      "transfer": 478,
+      "encoded": 178,
+      "decoded": 252
+    },
+    {
+      "name": "/catalog/system/us-lupulin-citra-lupulin-concentrate?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 32456.90000000014,
+      "duration": 23.699999999953434,
+      "transfer": 486,
+      "encoded": 186,
+      "decoded": 270
+    },
+    {
+      "name": "/catalog?q=zzzznotfound984631&_rsc=LPYxOug6j93zVl1m",
+      "type": "fetch",
+      "start": 52820.90000000014,
+      "duration": 99.69999999995343,
+      "transfer": 2900,
+      "encoded": 2600,
+      "decoded": 7024
+    },
+    {
+      "name": "/catalog?_rsc=h4ehm-wjrgmeLdJP",
+      "type": "fetch",
+      "start": 52932.10000000009,
+      "duration": 10.5,
+      "transfer": 436,
+      "encoded": 136,
+      "decoded": 153
+    }
+  ]
+}

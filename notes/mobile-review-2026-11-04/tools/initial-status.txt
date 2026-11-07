@@ -1,0 +1,102 @@
+ M .env.example
+ M README.md
+ M apps/web/app/(public)/page.tsx
+ M apps/web/app/globals.css
+ M apps/web/app/layout.tsx
+ M apps/web/app/offline/page.tsx
+ M apps/web/components/app/app-shell.tsx
+ M apps/web/components/app/app-sidebar-nav.tsx
+ M apps/web/components/app/profile-logout-button.tsx
+ M apps/web/components/calculators/calculator-page-client.tsx
+ M apps/web/components/feedback/feedback-launcher.tsx
+ M apps/web/components/feedback/feedback-provider.tsx
+ M apps/web/components/home/home-experience.tsx
+ M apps/web/components/ingredients/ingredient-catalog-toolbar.tsx
+ M apps/web/components/providers.tsx
+ M apps/web/components/recipes/recipe-actions-menu.tsx
+ M apps/web/components/recipes/recipe-card-parts.tsx
+ M apps/web/components/recipes/recipe-designer/recipe-batch-parameters-block.tsx
+ M apps/web/components/recipes/recipe-designer/recipe-designer.tsx
+ M apps/web/components/shared/site-header.tsx
+ M apps/web/components/shared/use-debounced-url-search.ts
+ M apps/web/components/theme/theme-provider.tsx
+ M apps/web/e2e/pwa-prod.config.ts
+ M apps/web/features/home/landing-data.ts
+ M apps/web/features/labels/svg.ts
+ M apps/web/features/pwa/use-service-worker.ts
+ M apps/web/integration/recipe-persistence-browser.integration.test.ts
+ M apps/web/next-env.d.ts
+ M apps/web/next.config.ts
+ D apps/web/public/sw.js
+ M apps/web/tests/inventory-page-filters.test.ts
+ M apps/web/tests/inventory-usability-components.test.ts
+ M apps/web/tsconfig.json
+ M docs/qa-test-plan.md
+ M notes/qa-interop-2026-11-03/README.md
+?? apps/web/app/fonts/
+?? apps/web/app/sw.js/
+?? apps/web/components/shared/use-menu-intent.ts
+?? apps/web/e2e/performance-regression.config.ts
+?? apps/web/e2e/performance-regression.spec.ts
+?? apps/web/e2e/pwa-lifecycle.spec.ts
+?? apps/web/e2e/pwa-updates.spec.ts
+?? apps/web/features/navigation/
+?? apps/web/features/pwa/account-session-boundary.tsx
+?? apps/web/features/pwa/account-session.ts
+?? apps/web/features/pwa/service-worker.js
+?? apps/web/tests/home-label-fallback.test.ts
+?? apps/web/tests/labels-production-svg.test.ts
+?? apps/web/tests/pwa-account-session.test.ts
+?? notes/performance-audit-2026-11-04/
+?? notes/performance-fixes-2026-11-04/
+?? notes/qa-pwa-2026-11-04/README.md
+?? notes/qa-pwa-2026-11-04/account-local-storage.json
+?? notes/qa-pwa-2026-11-04/action-build-check.json
+?? notes/qa-pwa-2026-11-04/artifact-verification.json
+?? notes/qa-pwa-2026-11-04/backup-verification.json
+?? notes/qa-pwa-2026-11-04/build-update.json
+?? notes/qa-pwa-2026-11-04/cleanup-verification.json
+?? notes/qa-pwa-2026-11-04/container-baseline.json
+?? notes/qa-pwa-2026-11-04/corrections.patch
+?? notes/qa-pwa-2026-11-04/coverage.md
+?? notes/qa-pwa-2026-11-04/failed-update-recovery.json
+?? notes/qa-pwa-2026-11-04/failed-update-start.json
+?? notes/qa-pwa-2026-11-04/installability.json
+?? notes/qa-pwa-2026-11-04/intermediate-build-cleanup.json
+?? notes/qa-pwa-2026-11-04/lru-cache.json
+?? notes/qa-pwa-2026-11-04/offline-retry-before.json
+?? notes/qa-pwa-2026-11-04/private-cache-audit.json
+?? notes/qa-pwa-2026-11-04/qa-final-state.json
+?? notes/qa-pwa-2026-11-04/results.json
+?? notes/qa-pwa-2026-11-04/screenshots/
+?? notes/qa-pwa-2026-11-04/source-snapshot.json
+?? notes/qa-pwa-2026-11-04/tools/all-web-unit.exit
+?? notes/qa-pwa-2026-11-04/tools/build-fixed-b.exit
+?? notes/qa-pwa-2026-11-04/tools/build-fixed-c.exit
+?? notes/qa-pwa-2026-11-04/tools/build-fixed-d.exit
+?? notes/qa-pwa-2026-11-04/tools/build-fixed-e.exit
+?? notes/qa-pwa-2026-11-04/tools/build-fixed-f.exit
+?? notes/qa-pwa-2026-11-04/tools/build-fixed-g.exit
+?? notes/qa-pwa-2026-11-04/tools/build.sh
+?? notes/qa-pwa-2026-11-04/tools/fault-hits.txt
+?? notes/qa-pwa-2026-11-04/tools/fault-prefix.txt
+?? notes/qa-pwa-2026-11-04/tools/font-Montserrat.css
+?? notes/qa-pwa-2026-11-04/tools/font-Onest.css
+?? notes/qa-pwa-2026-11-04/tools/font-Rubik.css
+?? notes/qa-pwa-2026-11-04/tools/font-Unbounded.css
+?? notes/qa-pwa-2026-11-04/tools/font-sources.json
+?? notes/qa-pwa-2026-11-04/tools/git-diff-check.exit
+?? notes/qa-pwa-2026-11-04/tools/offline-boundary-theme-after.exit
+?? notes/qa-pwa-2026-11-04/tools/production-recipe-regression.exit
+?? notes/qa-pwa-2026-11-04/tools/proxy.mjs
+?? notes/qa-pwa-2026-11-04/tools/pwa-before-refined.exit
+?? notes/qa-pwa-2026-11-04/tools/pwa-before-verified.exit
+?? notes/qa-pwa-2026-11-04/tools/pwa-before.exit
+?? notes/qa-pwa-2026-11-04/tools/pwa-final.exit
+?? notes/qa-pwa-2026-11-04/tools/pwa-fixed-b.exit
+?? notes/qa-pwa-2026-11-04/tools/pwa-updates-first.exit
+?? notes/qa-pwa-2026-11-04/tools/pwa-updates-refined.exit
+?? notes/qa-pwa-2026-11-04/tools/pwa-updates-stable-key.exit
+?? notes/qa-pwa-2026-11-04/tools/service-worker-before.js
+?? notes/qa-pwa-2026-11-04/tools/types-check.exit
+?? notes/qa-pwa-2026-11-04/tools/upstream-port.txt

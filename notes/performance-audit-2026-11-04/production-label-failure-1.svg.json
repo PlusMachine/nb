@@ -1,0 +1,18 @@
+{
+  "error": "Error: SVG data parsing failed cause invalid attribute at 1:651 cause expected '\"' not '<' at 1:659",
+  "fragmentAtError": "e(6)\"><circle cx=\"12\" cy=\"12\" r=\"11.5\" fill=\"none\" stroke=\"black\" stroke-width=\"0.45\"/><circle cx=\"12\" cy=\"12\" r=\"10.4<g transform=\"translate(2.432 3.615) scale(0.017918<path d=\"M 542.785 38.447 C 540.239 40.214, 538.760 42.200, 538.083 44.762 C 536.303 51.496",
+  "options": {
+    "fitTo": {
+      "mode": "zoom",
+      "value": 2
+    },
+    "background": "white",
+    "font": {
+      "loadSystemFonts": false,
+      "fontDirs": [
+        "/home/dopefish/projects/nb/apps/web/features/labels/fonts"
+      ],
+      "defaultFontFamily": "Rubik"
+    }
+  }
+}

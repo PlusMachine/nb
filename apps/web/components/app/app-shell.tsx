@@ -15,6 +15,7 @@ import {
 } from "@/components/app/section-skeletons";
 import { isNavItemActive, primaryNavItems, resolveContentWidthClass, type AppChromeUser } from "@/lib/navigation";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { useMenuIntent } from "@/components/shared/use-menu-intent";
 
 import { AppSidebarNav } from "./app-sidebar-nav";
 
@@ -222,6 +223,8 @@ export function AppShell({ children, user }: AppShellProps) {
     };
   }, [pathname, searchParamsKey]);
 
+  useMenuIntent("app", setDrawerOpen);
+
   return (
     <div className="[--chrome-bottom:3.5rem] [--chrome-top:3.5rem] lg:flex lg:[--chrome-bottom:0px] lg:[--chrome-top:0px]">
       <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-border bg-background/80 px-3 py-4 backdrop-blur lg:flex">
@@ -248,8 +251,11 @@ export function AppShell({ children, user }: AppShellProps) {
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
+            data-nb-menu-trigger="app"
+            suppressHydrationWarning
+            aria-expanded={drawerOpen}
             aria-label="Открыть меню"
-            className="grid min-h-11 min-w-11 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className="relative grid min-h-11 min-w-11 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
             <Menu className="h-5 w-5" />
           </button>
@@ -327,7 +333,10 @@ export function AppShell({ children, user }: AppShellProps) {
         <button
           type="button"
           onClick={() => setDrawerOpen(true)}
-          className="flex flex-1 flex-col items-center justify-center gap-0.5 text-[11px] font-medium text-muted-foreground"
+          data-nb-menu-trigger="app"
+          suppressHydrationWarning
+          aria-expanded={drawerOpen}
+          className="relative flex flex-1 flex-col items-center justify-center gap-0.5 text-[11px] font-medium text-muted-foreground"
         >
           <Menu className="h-5 w-5" />
           Ещё

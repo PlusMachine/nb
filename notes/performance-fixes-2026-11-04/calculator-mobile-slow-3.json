@@ -1,0 +1,452 @@
+{
+  "name": "calculator-mobile-slow-3",
+  "path": "/calculators/abv-attenuation",
+  "mobile": true,
+  "slow": true,
+  "warm": false,
+  "freshConsent": false,
+  "status": 200,
+  "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+  "url": "http://127.0.0.1:3018/calculators/abv-attenuation",
+  "ttfbMs": 20.699999999953434,
+  "fcpMs": 1328,
+  "lcpMs": 1328,
+  "cls": 0.008208673060653026,
+  "domContentLoadedMs": 885.5,
+  "loadMs": 3592.600000000093,
+  "htmlTransfer": 16368,
+  "htmlDecoded": 55577,
+  "resourceTransfer": 564379,
+  "resourceDecoded": 1873672,
+  "jsDecoded": 1578774,
+  "domElements": 279,
+  "incompleteImages": [],
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "scrollWidth": 390,
+    "scrollHeight": 3063
+  },
+  "totalLongTaskBlockingMs": 476,
+  "lcp": [
+    {
+      "start": 1328,
+      "size": 18656,
+      "url": "",
+      "tag": "H1",
+      "text": "Крепость, сбраживание и калории"
+    }
+  ],
+  "shifts": [
+    {
+      "start": 3789.399999999907,
+      "value": 0.0012647445544280746,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "OL",
+          "text": "",
+          "previous": {
+            "x": 12,
+            "y": 824,
+            "width": 366,
+            "height": 8,
+            "top": 824,
+            "right": 378,
+            "bottom": 832,
+            "left": 12
+          },
+          "current": {
+            "x": 12,
+            "y": 764,
+            "width": 366,
+            "height": 8,
+            "top": 764,
+            "right": 378,
+            "bottom": 772,
+            "left": 12
+          }
+        }
+      ]
+    },
+    {
+      "start": 4360.800000000047,
+      "value": 0.006943928506224951,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "BUTTON",
+          "text": "Обратная связь",
+          "previous": {
+            "x": 304,
+            "y": 774,
+            "width": 86,
+            "height": 70,
+            "top": 774,
+            "right": 390,
+            "bottom": 844,
+            "left": 304
+          },
+          "current": {
+            "x": 304,
+            "y": 673,
+            "width": 86,
+            "height": 84,
+            "top": 673,
+            "right": 390,
+            "bottom": 757,
+            "left": 304
+          }
+        },
+        {
+          "tag": "OL",
+          "text": "",
+          "previous": {
+            "x": 12,
+            "y": 764,
+            "width": 366,
+            "height": 8,
+            "top": 764,
+            "right": 378,
+            "bottom": 772,
+            "left": 12
+          },
+          "current": {
+            "x": 12,
+            "y": 663,
+            "width": 366,
+            "height": 8,
+            "top": 663,
+            "right": 378,
+            "bottom": 671,
+            "left": 12
+          }
+        }
+      ]
+    }
+  ],
+  "longtasks": [
+    {
+      "start": 954.1999999999534,
+      "duration": 118
+    },
+    {
+      "start": 1605.3999999999069,
+      "duration": 219
+    },
+    {
+      "start": 2663.899999999907,
+      "duration": 59
+    },
+    {
+      "start": 3400.600000000093,
+      "duration": 185
+    },
+    {
+      "start": 3613.399999999907,
+      "duration": 145
+    }
+  ],
+  "events": [],
+  "errors": [],
+  "menuInteractiveAt": 3073.3000000000466,
+  "resources": [
+    {
+      "name": "/_next/static/media/b9eca90a0131f78f-s.p.woff2",
+      "type": "link",
+      "start": 166.19999999995343,
+      "duration": 1780.8000000000466,
+      "transfer": 59880,
+      "encoded": 59580,
+      "decoded": 59580
+    },
+    {
+      "name": "/_next/static/media/d8b2a445c537db1f-s.p.woff2",
+      "type": "link",
+      "start": 167.19999999995343,
+      "duration": 2439.600000000093,
+      "transfer": 107248,
+      "encoded": 106948,
+      "decoded": 106948
+    },
+    {
+      "name": "/_next/static/css/6d4618b30d970742.css",
+      "type": "link",
+      "start": 183.80000000004657,
+      "duration": 196.30000000004657,
+      "transfer": 2197,
+      "encoded": 1897,
+      "decoded": 7475
+    },
+    {
+      "name": "/_next/static/css/9a6ecbd4b42097db.css",
+      "type": "link",
+      "start": 185,
+      "duration": 652.1000000000931,
+      "transfer": 20911,
+      "encoded": 20611,
+      "decoded": 116459
+    },
+    {
+      "name": "/_next/static/chunks/webpack-485d001cb867c360.js",
+      "type": "link",
+      "start": 186,
+      "duration": 246.60000000009313,
+      "transfer": 2177,
+      "encoded": 1877,
+      "decoded": 3603
+    },
+    {
+      "name": "/_next/static/chunks/87c73c54-dd8d81ac9604067c.js",
+      "type": "script",
+      "start": 186.39999999990687,
+      "duration": 1415.4000000001397,
+      "transfer": 54664,
+      "encoded": 54364,
+      "decoded": 173023
+    },
+    {
+      "name": "/_next/static/chunks/18-94afe61f15789e06.js",
+      "type": "script",
+      "start": 186.89999999990687,
+      "duration": 1377.3000000000466,
+      "transfer": 47088,
+      "encoded": 46788,
+      "decoded": 174209
+    },
+    {
+      "name": "/_next/static/chunks/main-app-1b4249da1a5d893c.js",
+      "type": "script",
+      "start": 187.60000000009313,
+      "duration": 441.29999999981374,
+      "transfer": 870,
+      "encoded": 570,
+      "decoded": 570
+    },
+    {
+      "name": "/_next/static/chunks/7283-f1e1247528aca409.js",
+      "type": "script",
+      "start": 187.80000000004657,
+      "duration": 716.5999999998603,
+      "transfer": 3701,
+      "encoded": 3401,
+      "decoded": 8555
+    },
+    {
+      "name": "/_next/static/chunks/612-9c360be286377cda.js",
+      "type": "script",
+      "start": 188.80000000004657,
+      "duration": 2470,
+      "transfer": 63319,
+      "encoded": 63019,
+      "decoded": 212253
+    },
+    {
+      "name": "/_next/static/chunks/9664-4bead6cd06a85437.js",
+      "type": "script",
+      "start": 188.89999999990687,
+      "duration": 1147.6000000000931,
+      "transfer": 3455,
+      "encoded": 3155,
+      "decoded": 8925
+    },
+    {
+      "name": "/_next/static/chunks/4159-4524a53eeeb992af.js",
+      "type": "script",
+      "start": 189.80000000004657,
+      "duration": 1449,
+      "transfer": 4445,
+      "encoded": 4145,
+      "decoded": 12883
+    },
+    {
+      "name": "/_next/static/chunks/922-36cb889d8a78c9e9.js",
+      "type": "script",
+      "start": 190.30000000004657,
+      "duration": 1621.5999999998603,
+      "transfer": 3775,
+      "encoded": 3475,
+      "decoded": 9436
+    },
+    {
+      "name": "/_next/static/chunks/1140-9515ad38112779c8.js",
+      "type": "script",
+      "start": 190.39999999990687,
+      "duration": 1711.2000000001863,
+      "transfer": 5797,
+      "encoded": 5497,
+      "decoded": 20943
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/layout-fe9dfbb4b0f0fab7.js",
+      "type": "script",
+      "start": 190.5,
+      "duration": 1674.5,
+      "transfer": 2549,
+      "encoded": 2249,
+      "decoded": 6534
+    },
+    {
+      "name": "/_next/static/chunks/4737-b9435b98fbb3c365.js",
+      "type": "script",
+      "start": 191.5,
+      "duration": 2055,
+      "transfer": 13380,
+      "encoded": 13080,
+      "decoded": 57621
+    },
+    {
+      "name": "/_next/static/chunks/1053-a05a0d7a52af6fbd.js",
+      "type": "script",
+      "start": 192.39999999990687,
+      "duration": 1919,
+      "transfer": 3338,
+      "encoded": 3038,
+      "decoded": 8275
+    },
+    {
+      "name": "/_next/static/chunks/3671-7a65dbaeafe4c092.js",
+      "type": "script",
+      "start": 192.60000000009313,
+      "duration": 2541.6999999999534,
+      "transfer": 30297,
+      "encoded": 29997,
+      "decoded": 157102
+    },
+    {
+      "name": "/_next/static/chunks/461-cd8afebf08bfcd25.js",
+      "type": "script",
+      "start": 193.30000000004657,
+      "duration": 2061,
+      "transfer": 5071,
+      "encoded": 4771,
+      "decoded": 14939
+    },
+    {
+      "name": "/_next/static/chunks/8492-57e6f77fefcecfaa.js",
+      "type": "script",
+      "start": 193.30000000004657,
+      "duration": 2382.8000000000466,
+      "transfer": 13129,
+      "encoded": 12829,
+      "decoded": 52172
+    },
+    {
+      "name": "/_next/static/chunks/6927-aa9f8bb0fdfc9e74.js",
+      "type": "script",
+      "start": 193.5,
+      "duration": 2301.5,
+      "transfer": 2595,
+      "encoded": 2295,
+      "decoded": 5382
+    },
+    {
+      "name": "/_next/static/chunks/3490-9afb0f63887ccb10.js",
+      "type": "script",
+      "start": 193.5,
+      "duration": 3200.899999999907,
+      "transfer": 54920,
+      "encoded": 54620,
+      "decoded": 463146
+    },
+    {
+      "name": "/_next/static/chunks/8121-a80bdf6bcbc09255.js",
+      "type": "script",
+      "start": 195.19999999995343,
+      "duration": 3149.5,
+      "transfer": 43590,
+      "encoded": 43290,
+      "decoded": 162079
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/calculators/%5Bslug%5D/page-28159cee276be1da.js",
+      "type": "script",
+      "start": 195.39999999990687,
+      "duration": 2555.100000000093,
+      "transfer": 475,
+      "encoded": 175,
+      "decoded": 175
+    },
+    {
+      "name": "/_next/static/chunks/9461-25c487bb36994b55.js",
+      "type": "script",
+      "start": 196.19999999995343,
+      "duration": 2657.9000000001397,
+      "transfer": 5129,
+      "encoded": 4829,
+      "decoded": 12329
+    },
+    {
+      "name": "/_next/static/chunks/app/layout-bb7653f6407b165c.js",
+      "type": "script",
+      "start": 196.30000000004657,
+      "duration": 2740.0999999998603,
+      "transfer": 6859,
+      "encoded": 6559,
+      "decoded": 17083
+    },
+    {
+      "name": "/_next/static/chunks/app/error-482cb912af31630e.js",
+      "type": "script",
+      "start": 197.30000000004657,
+      "duration": 2718.1999999999534,
+      "transfer": 953,
+      "encoded": 653,
+      "decoded": 1140
+    },
+    {
+      "name": "/calculators/abv-attenuation",
+      "type": "fetch",
+      "start": 3757.8000000000466,
+      "duration": 171.39999999990687,
+      "transfer": 405,
+      "encoded": 105,
+      "decoded": 92
+    },
+    {
+      "name": "/?_rsc=-3g0w2g9Zpx4mstX",
+      "type": "fetch",
+      "start": 3819.899999999907,
+      "duration": 161.20000000018626,
+      "transfer": 427,
+      "encoded": 127,
+      "decoded": 132
+    },
+    {
+      "name": "/login?_rsc=-3g0w2g9Zpx4mstX",
+      "type": "fetch",
+      "start": 3820.899999999907,
+      "duration": 168.5,
+      "transfer": 441,
+      "encoded": 141,
+      "decoded": 152
+    },
+    {
+      "name": "/calculators?_rsc=-3g0w2g9Zpx4mstX",
+      "type": "fetch",
+      "start": 3822.6999999999534,
+      "duration": 174.10000000009313,
+      "transfer": 440,
+      "encoded": 140,
+      "decoded": 157
+    },
+    {
+      "name": "/calculators/refractometer-correction?_rsc=-3g0w2g9Zpx4mstX",
+      "type": "fetch",
+      "start": 3823,
+      "duration": 180.80000000004657,
+      "transfer": 475,
+      "encoded": 175,
+      "decoded": 241
+    },
+    {
+      "name": "/calculators/abv-attenuation",
+      "type": "fetch",
+      "start": 3953.8000000000466,
+      "duration": 169.69999999995343,
+      "transfer": 379,
+      "encoded": 79,
+      "decoded": 59
+    }
+  ]
+}

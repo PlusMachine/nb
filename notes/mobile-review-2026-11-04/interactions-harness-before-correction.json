@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Ingredient categories: full labels and selection at 320px",
+    "ok": false,
+    "ms": 15462,
+    "error": "locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('recipe-ingredient-category-grid') to be visible\u001b[22m\n"
+  },
+  {
+    "name": "Ingredient categories: full labels and selection at 360px",
+    "ok": false,
+    "ms": 19513,
+    "error": "locator.evaluate: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('recipe-ingredient-category-grid').getByRole('button', { name: 'Водоподготовка', exact: true })\u001b[22m\n"
+  },
+  {
+    "name": "Ingredient categories: full labels and selection at 390px",
+    "ok": false,
+    "ms": 15040,
+    "error": "locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('recipe-ingredient-category-grid') to be visible\u001b[22m\n"
+  },
+  {
+    "name": "Ingredient categories: full labels and selection at 768px",
+    "ok": false,
+    "ms": 15179,
+    "error": "locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('recipe-ingredient-category-grid') to be visible\u001b[22m\n"
+  },
+  {
+    "name": "Recipe section headings remain readable at 320px",
+    "ok": false,
+    "ms": 15047,
+    "error": "locator.scrollIntoViewIfNeeded: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('heading').filter({ hasText: 'Сравнение со стилем' }).first()\u001b[22m\n"
+  },
+  {
+    "name": "Recipe actions: two import dialog cycles then brew dialog",
+    "ok": false,
+    "ms": 15100,
+    "error": "locator.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('recipe-toolbar').getByRole('button', { name: 'Действия с рецептом', exact: true })\u001b[22m\n"
+  }
+]

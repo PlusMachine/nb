@@ -1,0 +1,536 @@
+{
+  "name": "dashboard-mobile-slow-1",
+  "path": "/app",
+  "mobile": true,
+  "slow": true,
+  "warm": false,
+  "freshConsent": false,
+  "status": 200,
+  "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+  "url": "http://127.0.0.1:3018/app",
+  "ttfbMs": 160.5,
+  "fcpMs": 1056,
+  "lcpMs": 1056,
+  "cls": 0.006722555014372359,
+  "domContentLoadedMs": 824.1999999999534,
+  "loadMs": 3120.3000000000466,
+  "htmlTransfer": 31277,
+  "htmlDecoded": 128052,
+  "resourceTransfer": 519944,
+  "resourceDecoded": 1399771,
+  "jsDecoded": 1059526,
+  "domElements": 634,
+  "incompleteImages": [
+    {
+      "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F16B%2520%25E2%2580%2594%2520Oatmeal%2520Stout.png&w=3840&q=75",
+      "top": 2165.81884765625
+    },
+    {
+      "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F18B%2520%25E2%2580%2594%2520American%2520Pale%2520Ale.png&w=3840&q=75",
+      "top": 2287.06884765625
+    },
+    {
+      "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F21C%2520%25E2%2580%2594%2520Hazy%2520IPA.png&w=3840&q=75",
+      "top": 2811.14990234375
+    },
+    {
+      "src": "http://127.0.0.1:3018/_next/image?url=%2Fimages%2Fbjcp%2F21A%2520%25E2%2580%2594%2520American%2520IPA.png&w=3840&q=75",
+      "top": 3021.64990234375
+    }
+  ],
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "scrollWidth": 390,
+    "scrollHeight": 3709
+  },
+  "totalLongTaskBlockingMs": 516,
+  "lcp": [
+    {
+      "start": 1056,
+      "size": 6118,
+      "url": "",
+      "tag": "P",
+      "text": "Sample · American Stout · партия №2"
+    }
+  ],
+  "shifts": [
+    {
+      "start": 3330.5999999998603,
+      "value": 0.006722555014372359,
+      "recentInput": false,
+      "sources": [
+        {
+          "tag": "BUTTON",
+          "text": "Обратная связь",
+          "previous": {
+            "x": 304,
+            "y": 774,
+            "width": 86,
+            "height": 70,
+            "top": 774,
+            "right": 390,
+            "bottom": 844,
+            "left": 304
+          },
+          "current": {
+            "x": 304,
+            "y": 718,
+            "width": 86,
+            "height": 84,
+            "top": 718,
+            "right": 390,
+            "bottom": 802,
+            "left": 304
+          }
+        },
+        {
+          "tag": "OL",
+          "text": "",
+          "previous": {
+            "x": 12,
+            "y": 824,
+            "width": 366,
+            "height": 8,
+            "top": 824,
+            "right": 378,
+            "bottom": 832,
+            "left": 12
+          },
+          "current": {
+            "x": 12,
+            "y": 708,
+            "width": 366,
+            "height": 8,
+            "top": 708,
+            "right": 378,
+            "bottom": 716,
+            "left": 12
+          }
+        }
+      ]
+    }
+  ],
+  "longtasks": [
+    {
+      "start": 823.8999999999069,
+      "duration": 52
+    },
+    {
+      "start": 904.5999999998603,
+      "duration": 129
+    },
+    {
+      "start": 1900.5999999998603,
+      "duration": 216
+    },
+    {
+      "start": 2362,
+      "duration": 116
+    },
+    {
+      "start": 2938.899999999907,
+      "duration": 168
+    },
+    {
+      "start": 3157.5999999998603,
+      "duration": 124
+    },
+    {
+      "start": 3282.3000000000466,
+      "duration": 61
+    }
+  ],
+  "events": [],
+  "errors": [],
+  "menuInteractiveAt": 2621.8000000000466,
+  "resources": [
+    {
+      "name": "/_next/static/media/b9eca90a0131f78f-s.p.woff2",
+      "type": "link",
+      "start": 173.30000000004657,
+      "duration": 1631.8999999999069,
+      "transfer": 59880,
+      "encoded": 59580,
+      "decoded": 59580
+    },
+    {
+      "name": "/_next/static/media/d8b2a445c537db1f-s.p.woff2",
+      "type": "link",
+      "start": 173.5,
+      "duration": 2329.8000000000466,
+      "transfer": 107248,
+      "encoded": 106948,
+      "decoded": 106948
+    },
+    {
+      "name": "/_next/static/css/6d4618b30d970742.css",
+      "type": "link",
+      "start": 175.5999999998603,
+      "duration": 197.80000000004657,
+      "transfer": 2197,
+      "encoded": 1897,
+      "decoded": 7475
+    },
+    {
+      "name": "/_next/static/css/9a6ecbd4b42097db.css",
+      "type": "link",
+      "start": 176.69999999995343,
+      "duration": 601.6000000000931,
+      "transfer": 20911,
+      "encoded": 20611,
+      "decoded": 116459
+    },
+    {
+      "name": "/_next/static/chunks/webpack-485d001cb867c360.js",
+      "type": "link",
+      "start": 193.19999999995343,
+      "duration": 240.89999999990687,
+      "transfer": 2177,
+      "encoded": 1877,
+      "decoded": 3603
+    },
+    {
+      "name": "/_next/static/chunks/87c73c54-dd8d81ac9604067c.js",
+      "type": "script",
+      "start": 193.5,
+      "duration": 1702.1999999999534,
+      "transfer": 54664,
+      "encoded": 54364,
+      "decoded": 173023
+    },
+    {
+      "name": "/_next/static/chunks/18-94afe61f15789e06.js",
+      "type": "script",
+      "start": 194.0999999998603,
+      "duration": 1626.4000000001397,
+      "transfer": 47088,
+      "encoded": 46788,
+      "decoded": 174209
+    },
+    {
+      "name": "/_next/static/chunks/main-app-1b4249da1a5d893c.js",
+      "type": "script",
+      "start": 194.19999999995343,
+      "duration": 436.30000000004657,
+      "transfer": 870,
+      "encoded": 570,
+      "decoded": 570
+    },
+    {
+      "name": "/_next/static/chunks/7283-f1e1247528aca409.js",
+      "type": "script",
+      "start": 194.19999999995343,
+      "duration": 696.6000000000931,
+      "transfer": 3701,
+      "encoded": 3401,
+      "decoded": 8555
+    },
+    {
+      "name": "/_next/static/chunks/612-9c360be286377cda.js",
+      "type": "script",
+      "start": 194.30000000004657,
+      "duration": 2158.5,
+      "transfer": 63319,
+      "encoded": 63019,
+      "decoded": 212253
+    },
+    {
+      "name": "/_next/static/chunks/4737-b9435b98fbb3c365.js",
+      "type": "script",
+      "start": 194.39999999990687,
+      "duration": 1251.1000000000931,
+      "transfer": 13380,
+      "encoded": 13080,
+      "decoded": 57621
+    },
+    {
+      "name": "/_next/static/chunks/4159-4524a53eeeb992af.js",
+      "type": "script",
+      "start": 194.5,
+      "duration": 1580.6999999999534,
+      "transfer": 4445,
+      "encoded": 4145,
+      "decoded": 12883
+    },
+    {
+      "name": "/_next/static/chunks/9461-25c487bb36994b55.js",
+      "type": "script",
+      "start": 194.5,
+      "duration": 1837.5,
+      "transfer": 5129,
+      "encoded": 4829,
+      "decoded": 12329
+    },
+    {
+      "name": "/_next/static/chunks/app/layout-bb7653f6407b165c.js",
+      "type": "script",
+      "start": 194.5999999998603,
+      "duration": 1919.7000000001863,
+      "transfer": 6859,
+      "encoded": 6559,
+      "decoded": 17083
+    },
+    {
+      "name": "/_next/static/chunks/app/error-482cb912af31630e.js",
+      "type": "script",
+      "start": 194.69999999995343,
+      "duration": 1807.1000000000931,
+      "transfer": 953,
+      "encoded": 653,
+      "decoded": 1140
+    },
+    {
+      "name": "/_next/static/chunks/9664-4bead6cd06a85437.js",
+      "type": "script",
+      "start": 194.89999999990687,
+      "duration": 1941.1999999999534,
+      "transfer": 3455,
+      "encoded": 3155,
+      "decoded": 8925
+    },
+    {
+      "name": "/_next/static/chunks/922-36cb889d8a78c9e9.js",
+      "type": "script",
+      "start": 194.89999999990687,
+      "duration": 2031.1000000000931,
+      "transfer": 3775,
+      "encoded": 3475,
+      "decoded": 9436
+    },
+    {
+      "name": "/_next/static/chunks/1140-9515ad38112779c8.js",
+      "type": "script",
+      "start": 195,
+      "duration": 2090.3000000000466,
+      "transfer": 5797,
+      "encoded": 5497,
+      "decoded": 20943
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/layout-7999a595026f1b2e.js",
+      "type": "script",
+      "start": 198.0999999998603,
+      "duration": 2096.600000000093,
+      "transfer": 506,
+      "encoded": 206,
+      "decoded": 206
+    },
+    {
+      "name": "/_next/static/chunks/app/(public)/layout-fe9dfbb4b0f0fab7.js",
+      "type": "script",
+      "start": 198.30000000004657,
+      "duration": 2140.5,
+      "transfer": 2549,
+      "encoded": 2249,
+      "decoded": 6534
+    },
+    {
+      "name": "/_next/static/chunks/489-fc96c5688a515719.js",
+      "type": "script",
+      "start": 199.0999999998603,
+      "duration": 2236.7000000001863,
+      "transfer": 5524,
+      "encoded": 5224,
+      "decoded": 13661
+    },
+    {
+      "name": "/_next/static/chunks/5132-6bcf285f01a53a39.js",
+      "type": "script",
+      "start": 199.30000000004657,
+      "duration": 2296.399999999907,
+      "transfer": 2964,
+      "encoded": 2664,
+      "decoded": 7173
+    },
+    {
+      "name": "/_next/static/chunks/3671-7a65dbaeafe4c092.js",
+      "type": "script",
+      "start": 199.39999999990687,
+      "duration": 2716.6999999999534,
+      "transfer": 30297,
+      "encoded": 29997,
+      "decoded": 157102
+    },
+    {
+      "name": "/_next/static/chunks/6005-b648b00388e32889.js",
+      "type": "script",
+      "start": 200.19999999995343,
+      "duration": 2363.1999999999534,
+      "transfer": 3664,
+      "encoded": 3364,
+      "decoded": 10087
+    },
+    {
+      "name": "/_next/static/chunks/1639-5eecbdf20c5b9d47.js",
+      "type": "script",
+      "start": 200.5999999998603,
+      "duration": 2385.5,
+      "transfer": 5727,
+      "encoded": 5427,
+      "decoded": 19895
+    },
+    {
+      "name": "/_next/static/chunks/8449-0f44935e189a56f6.js",
+      "type": "script",
+      "start": 201.0999999998603,
+      "duration": 2429.9000000001397,
+      "transfer": 4067,
+      "encoded": 3767,
+      "decoded": 8656
+    },
+    {
+      "name": "/_next/static/chunks/705-d7d72abd4e09b409.js",
+      "type": "script",
+      "start": 201.19999999995343,
+      "duration": 2639.1999999999534,
+      "transfer": 9341,
+      "encoded": 9041,
+      "decoded": 30480
+    },
+    {
+      "name": "/_next/static/chunks/8492-57e6f77fefcecfaa.js",
+      "type": "script",
+      "start": 201.30000000004657,
+      "duration": 2730.0999999998603,
+      "transfer": 13129,
+      "encoded": 12829,
+      "decoded": 52172
+    },
+    {
+      "name": "/_next/static/chunks/1623-5239695277fb4d71.js",
+      "type": "script",
+      "start": 201.39999999990687,
+      "duration": 2670.1999999999534,
+      "transfer": 5550,
+      "encoded": 5250,
+      "decoded": 18337
+    },
+    {
+      "name": "/_next/static/chunks/3057-83b41d58421925e9.js",
+      "type": "script",
+      "start": 201.39999999990687,
+      "duration": 2691.6999999999534,
+      "transfer": 4663,
+      "encoded": 4363,
+      "decoded": 10855
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/page-1314c85bbd422f41.js",
+      "type": "script",
+      "start": 203,
+      "duration": 2720.6999999999534,
+      "transfer": 4818,
+      "encoded": 4518,
+      "decoded": 11801
+    },
+    {
+      "name": "/app/brew-batches?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 3367.399999999907,
+      "duration": 194.69999999995343,
+      "transfer": 1961,
+      "encoded": 1661,
+      "decoded": 4531
+    },
+    {
+      "name": "/app/recipes?intent=brew&_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 3367.5999999998603,
+      "duration": 201.70000000018626,
+      "transfer": 2011,
+      "encoded": 1711,
+      "decoded": 4923
+    },
+    {
+      "name": "/app/brew-batches/81a037e1-9760-49d9-adb1-3c4149fd5b8d?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 3367.8000000000466,
+      "duration": 209.0999999998603,
+      "transfer": 2003,
+      "encoded": 1703,
+      "decoded": 4887
+    },
+    {
+      "name": "/app/brew-batches/0208eef3-8aaa-44ca-a7b8-387c3099cb7d?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 3368,
+      "duration": 216.0999999998603,
+      "transfer": 2000,
+      "encoded": 1700,
+      "decoded": 4887
+    },
+    {
+      "name": "/app/brew-batches/b8c653fb-0425-40e6-865c-c15688779648?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 3370.8000000000466,
+      "duration": 220.79999999981374,
+      "transfer": 2005,
+      "encoded": 1705,
+      "decoded": 4887
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/brew-batches/error-7638144f5a85e143.js",
+      "type": "script",
+      "start": 3566,
+      "duration": 164.30000000004657,
+      "transfer": 960,
+      "encoded": 660,
+      "decoded": 1136
+    },
+    {
+      "name": "/app/brew-batches/b4c46f5c-b414-4984-b624-1be951ba2aa3?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 3570.5,
+      "duration": 186.5999999998603,
+      "transfer": 2002,
+      "encoded": 1702,
+      "decoded": 4887
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/recipes/error-f2109ab5bea0953a.js",
+      "type": "script",
+      "start": 3576.5999999998603,
+      "duration": 166.5,
+      "transfer": 998,
+      "encoded": 698,
+      "decoded": 1327
+    },
+    {
+      "name": "/app/brew-batches/44dc5c3b-6c1b-4061-88a2-a83ab22be31f?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 3581.3000000000466,
+      "duration": 200.69999999995343,
+      "transfer": 2003,
+      "encoded": 1703,
+      "decoded": 4887
+    },
+    {
+      "name": "/app/brew-batches/2a9d77a8-408c-41c4-a525-afa8363ab472?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 3589.1999999999534,
+      "duration": 197.19999999995343,
+      "transfer": 2002,
+      "encoded": 1702,
+      "decoded": 4887
+    },
+    {
+      "name": "/app/ingredients?_rsc=wIIRI7Ze79RnFfEJ",
+      "type": "fetch",
+      "start": 3595.0999999998603,
+      "duration": 198.70000000018626,
+      "transfer": 2394,
+      "encoded": 2094,
+      "decoded": 7404
+    },
+    {
+      "name": "/_next/static/chunks/app/(app)/app/ingredients/error-cf62132f9ffaac08.js",
+      "type": "script",
+      "start": 3795.5999999998603,
+      "duration": 156.70000000018626,
+      "transfer": 958,
+      "encoded": 658,
+      "decoded": 1134
+    }
+  ]
+}

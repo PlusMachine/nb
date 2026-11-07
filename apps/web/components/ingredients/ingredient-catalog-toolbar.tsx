@@ -523,7 +523,7 @@ export function IngredientCatalogToolbar({
             className={pillClassName(category === "all", "border-transparent bg-foreground text-background")}
           >
             Все
-            <span className="tabular-nums text-muted-foreground">{counts.total}</span>
+            <span className={`tabular-nums ${category === "all" ? "text-background/80" : "text-muted-foreground"}`}>{counts.total}</span>
           </Link>
 
           {primaryButtons.map((button) => {
@@ -556,7 +556,7 @@ export function IngredientCatalogToolbar({
               >
                 <Icon className={`h-4 w-4 ${button.active ? button.meta.activeColor : button.meta.color}`} />
                 {button.label}
-                <span className={`tabular-nums ${button.active ? `${button.meta.activeColor} opacity-70` : "text-muted-foreground"}`}>
+                <span className={`tabular-nums ${button.active ? button.meta.activeColor : "text-muted-foreground"}`}>
                   {button.count}
                 </span>
               </Link>
@@ -571,7 +571,7 @@ export function IngredientCatalogToolbar({
               className={pillClassName(view === "mine", "border-transparent bg-foreground text-background")}
             >
               Мои
-              <span className="tabular-nums text-muted-foreground">{counts.customCount}</span>
+              <span className={`tabular-nums ${view === "mine" ? "text-background/80" : "text-muted-foreground"}`}>{counts.customCount}</span>
             </Link>
           ) : null}
         </div>

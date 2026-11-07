@@ -1,0 +1,704 @@
+{
+  "completedAt": "2026-11-03T22:58:52.433926+00:00",
+  "destination": "/mnt/d/CodexQA/nb-2026-11-03-01a1a0a2/workspace",
+  "filesCopied": 139,
+  "allSha256Match": true,
+  "files": [
+    {
+      "path": ".env.example",
+      "bytes": 8153,
+      "sha256": "625812afaf5b50de998e64ec28b789db525741e6f96b0959b90d468700304842"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4472,
+      "sha256": "7d6f668a69580178f99126063d7d1b9e078314f85cab219740a13dc9b28c5566"
+    },
+    {
+      "path": "apps/web/app/fonts/Montserrat-OFL.txt",
+      "bytes": 4400,
+      "sha256": "8b7141c03fa4f8d44e6345d5d4931709290f0f67875e452e95ac1fd3a027802e"
+    },
+    {
+      "path": "apps/web/app/fonts/Montserrat-Variable.ttf",
+      "bytes": 744936,
+      "sha256": "0f7b311b2f3279e4eef9b2f968bcdbab6e28f4daeb1f049f4f278a902bcd82f7"
+    },
+    {
+      "path": "apps/web/app/fonts/Onest-OFL.txt",
+      "bytes": 4384,
+      "sha256": "071195d8806e226faeee60259c28ca67b458227af5195a73f5cfcab06e3003bc"
+    },
+    {
+      "path": "apps/web/app/fonts/Onest-Variable.ttf",
+      "bytes": 193056,
+      "sha256": "966c5c29b4755da84b6854d5c21dd4eaa2420225d0e9874de602de176d4a9f31"
+    },
+    {
+      "path": "apps/web/app/fonts/Rubik-OFL.txt",
+      "bytes": 4384,
+      "sha256": "472cbe7c25441df63e9c7864b43eb3c0f4b3df950c66a76224e6cfe1eae843fb"
+    },
+    {
+      "path": "apps/web/app/fonts/Rubik-Variable.ttf",
+      "bytes": 359804,
+      "sha256": "1b3a7437ba2af80e465e773ed60c5036d1ba6ace492d89046dbcf18fb31e4e88"
+    },
+    {
+      "path": "apps/web/app/fonts/Unbounded-OFL.txt",
+      "bytes": 4392,
+      "sha256": "31e5d4e83955e7103c34570dd49b0570ef490800bd65b42923c0dd02445263b3"
+    },
+    {
+      "path": "apps/web/app/fonts/Unbounded-Variable.ttf",
+      "bytes": 778272,
+      "sha256": "323b511be380c8d474ef030686b71aedde501f8d9cd46da558b7c40454372c3f"
+    },
+    {
+      "path": "apps/web/app/layout.tsx",
+      "bytes": 4184,
+      "sha256": "45e0ed7bf229db53abef6d324db47a8aa22a32f1cfabafc80a9ecb01b91365f1"
+    },
+    {
+      "path": "apps/web/app/offline/page.tsx",
+      "bytes": 6750,
+      "sha256": "5a09a1b5f130d6ffe4d9c013c6b58080516026bccba8d2818575d32dec2d2727"
+    },
+    {
+      "path": "apps/web/app/sw.js/route.ts",
+      "bytes": 811,
+      "sha256": "f7424f7294ed549875f4491c4f4b14214fe1994a0a512b00559e65bab6dde10a"
+    },
+    {
+      "path": "apps/web/components/app/app-sidebar-nav.tsx",
+      "bytes": 5513,
+      "sha256": "d6c29a67752910f77197cee31c3f00313f222c97ed56fe47f8868587703573c4"
+    },
+    {
+      "path": "apps/web/components/app/profile-logout-button.tsx",
+      "bytes": 1359,
+      "sha256": "6693594d2dd73e25fb0b2452c1d03541bd482f8172ccce195b43921b1953ad69"
+    },
+    {
+      "path": "apps/web/components/providers.tsx",
+      "bytes": 3504,
+      "sha256": "a0ba8e517d91558f1bdd209f8ba988f3ce0877be4c1d16b2b857180ec954b941"
+    },
+    {
+      "path": "apps/web/components/theme/theme-provider.tsx",
+      "bytes": 5094,
+      "sha256": "295c156cfecfae634fa15688a8248a752d01d0fd7cf5b8856dfc8f01d4f18ce4"
+    },
+    {
+      "path": "apps/web/e2e/pwa-lifecycle.spec.ts",
+      "bytes": 15298,
+      "sha256": "8742be61fa1aceb56a804664b236be3badf3d42ffdb431f9b905f1508e4b0f7b"
+    },
+    {
+      "path": "apps/web/e2e/pwa-prod.config.ts",
+      "bytes": 1069,
+      "sha256": "c943a3b1571db0fcc6c7cadc93246e79f2bcdb2f0efeaedcd52c7d872dd5bc4a"
+    },
+    {
+      "path": "apps/web/e2e/pwa-updates.spec.ts",
+      "bytes": 10434,
+      "sha256": "68dbf2e2ca08bea5287f2ed32918d41338713753f9869b2978f460a410fe5a93"
+    },
+    {
+      "path": "apps/web/features/pwa/account-session-boundary.tsx",
+      "bytes": 2030,
+      "sha256": "5e83bd901be9ba3e81e3ed2a108b0c0a3ec6dc918e2b3c23e7053d6fa9e7e530"
+    },
+    {
+      "path": "apps/web/features/pwa/account-session.ts",
+      "bytes": 1980,
+      "sha256": "ac5a2bcbaa7c880c7ca0a82f9014e7b5fd6141da07d233fa888022eaa12c56f5"
+    },
+    {
+      "path": "apps/web/features/pwa/service-worker.js",
+      "bytes": 5729,
+      "sha256": "a3e02cbdbf81aa29cb2ba1385192497b21e2bb4e5ef4e4acbe1ba3356f5ad270"
+    },
+    {
+      "path": "apps/web/features/pwa/use-service-worker.ts",
+      "bytes": 2592,
+      "sha256": "544c12c0c32e70f026fd2a7d7aa7e15b58b4b768cafa333125b6e831f24217aa"
+    },
+    {
+      "path": "apps/web/integration/recipe-persistence-browser.integration.test.ts",
+      "bytes": 13229,
+      "sha256": "4b61aca4362bb03b47ec2f3bd30805ba6d1ff5481c1e946c4855bb9fb42c06a1"
+    },
+    {
+      "path": "apps/web/next.config.ts",
+      "bytes": 5179,
+      "sha256": "ce83ff30b14e2a4586f6a9fc855fc87a65268ae8a77f0cbf21bc6f1224709b11"
+    },
+    {
+      "path": "apps/web/tests/pwa-account-session.test.ts",
+      "bytes": 4240,
+      "sha256": "abe578591f3514b8252ac692670e71e22f9809664b98b4b89f2dbe81bc6ee166"
+    },
+    {
+      "path": "docs/qa-test-plan.md",
+      "bytes": 25735,
+      "sha256": "fb9c3361fa7f4bb4b9efe4fb30391b65e90775e3e42f5730971ffc7b6a12ae84"
+    },
+    {
+      "path": "notes/qa-interop-2026-11-03/README.md",
+      "bytes": 15667,
+      "sha256": "6d51dd0750c1c212329c4658d774683689ee85c0048d7802922fc7e5b60b4185"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/README.md",
+      "bytes": 21474,
+      "sha256": "81b9f5820e5c7d02e5e43f3abe7694ce06df24b3506ae2bca9a1961daa64da55"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/account-local-storage.json",
+      "bytes": 31,
+      "sha256": "7f25de444ac7d21b10aa8b5e1f4dc43310cf41df812574b302dd4dabdaac45d1"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/action-build-check.json",
+      "bytes": 980,
+      "sha256": "c7ca12451d8e1737edb536ef3172adf95b6c6e78e8e9f77576485360d4177e63"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/build-update.json",
+      "bytes": 131,
+      "sha256": "bac74042d9a6d455d3251ab660b7c5b69bfc2a5d69d5b832ee164ca507047259"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/cleanup-verification.json",
+      "bytes": 661,
+      "sha256": "ba59158a2d1c985593bb05296198ee41fc31cb55f3a82fbba9168f1fc94317fd"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/container-baseline.json",
+      "bytes": 1085,
+      "sha256": "79a140f37114809a23be455f0e1b93391ef75981536f1d9c8978bdc82d429692"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/corrections.patch",
+      "bytes": 1388019,
+      "sha256": "85936a4606f4ddbbcd2046752fe7cbe5a99c3d23a3e0ce606503b0d07b87f28f"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/coverage.md",
+      "bytes": 3730,
+      "sha256": "84bfd7df7bd91cf3fae00da46d1a9f53f8e389b8ae0bf440146b496c3984a4cc"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/failed-update-recovery.json",
+      "bytes": 130,
+      "sha256": "b34ac8199bcdffe532bf8a4c21dc8f8840fe44f308f62cb2f448a12fac00ca77"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/failed-update-start.json",
+      "bytes": 104,
+      "sha256": "a13a7e46eb9c5208319cac90b6d0593cd4f251c588e87533574b33a01e621cc2"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/installability.json",
+      "bytes": 148,
+      "sha256": "dce76bb46da33699357d72f8683086d072be0a03484a69b7d853f5c4330774c0"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/intermediate-build-cleanup.json",
+      "bytes": 287,
+      "sha256": "efba3a0dd80898db41d58d486dd0fbe987e41c078c128de7cb44ef3062b332a7"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/lru-cache.json",
+      "bytes": 5483,
+      "sha256": "de194f8debddce3b248709200f1ed193bea40e6bccb3ec7a05d6ee3a3881b1eb"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/offline-retry-before.json",
+      "bytes": 842,
+      "sha256": "9fd8cf9f620d55006bfea655f57cd639fa655b76183f5d0fda4aa93876344fcf"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/private-cache-audit.json",
+      "bytes": 4269,
+      "sha256": "325239a0e662e5da9e024d2730c00c31517f73509f04fd68e4ca5792225d7f40"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/qa-final-state.json",
+      "bytes": 121,
+      "sha256": "def39e58308f676bd380c80851f47e481c8361fee4219f7f5a1e7564d0839395"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/results.json",
+      "bytes": 2349,
+      "sha256": "7dd9383018d899526794fb4f3d7afe971d002dd32e20ae5716cb1860317d61d1"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/screenshots/offline-1280-dark.png",
+      "bytes": 37031,
+      "sha256": "d9d25938abd3bc8bc8f9fe9d38a6fb21c8ac60e5d409748bc2f147c4c0d1ad0f"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/screenshots/offline-1280-light.png",
+      "bytes": 37584,
+      "sha256": "a75e1a595af53ba85d51b09505336cefd401e48dc94dd534e978f45e4445a6a7"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/screenshots/offline-390-dark.png",
+      "bytes": 29816,
+      "sha256": "123eb19150193dcc39811f54ff2ba3bc4a2b3799d7538541c934d96ecc061ed0"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/screenshots/offline-390-light-before-svg.png",
+      "bytes": 28713,
+      "sha256": "c2f94841cc2cf3bef7d090042a9ff17695048f7c19b0c9dc202803bd5a5aeaea"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/screenshots/offline-390-light.png",
+      "bytes": 30062,
+      "sha256": "cb65c9f0d46b55edbea16dcbadc528dd88f1e2c9da94e09210d8a47bcea87948"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/screenshots/offline-after-lru.png",
+      "bytes": 35768,
+      "sha256": "3d0b21929b75d2e34bbdefe8bef2f745e41af0128abb89c15b81d99803c88c3b"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/screenshots/offline-fallback.png",
+      "bytes": 52772,
+      "sha256": "bb597a7b58d864b28699c6f4bfd770fa6d62829f3c3532deb5a1b09813a2d445"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/screenshots/recipe-regression/A01-retest-private-editor-closed.png",
+      "bytes": 48325,
+      "sha256": "6286208ed4eb3f1bd9eb611da1f8b6fd511c45e622337db3c37d323bf9964bb4"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/screenshots/recipe-regression/P01-retest-latest-saved.png",
+      "bytes": 104532,
+      "sha256": "35d212ba7d770847aa0a6be799768bafbefdbe1e763f13340f8b41aedacd4a39"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/screenshots/recipe-regression/P02-retest-input-preserved.png",
+      "bytes": 106699,
+      "sha256": "63ebaa3bfbc3d35517134a01ce4f1cbd9eca15cc26591e63a4f9e29fd18aba95"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/screenshots/recipe-regression/P03-after-retry.png",
+      "bytes": 106288,
+      "sha256": "0a5d06c9108dcd3066618b27e9bfc279471ea30099630f5420c2bb34cd45b25d"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/screenshots/recipe-regression/P03-creation-committed-response-lost.png",
+      "bytes": 105105,
+      "sha256": "86b54a81e62d54822ebfcae4e1d7cc0022b0b83ae833efd1bcbceaa0532aff18"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/screenshots/recipe-regression/P05-retest-conflict-local-input.png",
+      "bytes": 107177,
+      "sha256": "37b1ce7b87bfb3447ec05a2bf2e3f7490cf10a29386618739508efd0e1fd6ce0"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/screenshots/recipe-regression/P05-retest-owner-saved.png",
+      "bytes": 105439,
+      "sha256": "c8b3207271dba378eeca3a82898cc14d90d52eeca756aa1bdfef9c1e6ba84e51"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/source-snapshot.json",
+      "bytes": 5859,
+      "sha256": "b827e4b687956e28dd9633a31f521804639314ffeb2009c24cdf9e87def5a638"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/all-web-unit.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/all-web-unit.log",
+      "bytes": 36802,
+      "sha256": "ed9a937b6a1b16f9efc572725fb3044461886b76a1d1b138c4dbf9aedb173297"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/build-baseline.log",
+      "bytes": 19824,
+      "sha256": "5564888b461772c1c1561da60342284f77f744a3e4f0043ee97e9f6909482c8d"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/build-before.exit",
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/build-before.log",
+      "bytes": 1179,
+      "sha256": "e0c75832f4e120cec6567ccf9fe771ad2e2c3f38fb2982ff428fbb6eae60e7b1"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/build-fixed-b.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/build-fixed-b.log",
+      "bytes": 19895,
+      "sha256": "c9123365bf837214c31d7f36ab091cda8d37ba02c0e3cf6eb81b21a8934e45d8"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/build-fixed-c.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/build-fixed-c.log",
+      "bytes": 19895,
+      "sha256": "ec8129ee7d2e67b3b97c5ff1127eae438f3f19dd716a3921cb838a848d82094f"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/build-fixed-d.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/build-fixed-d.log",
+      "bytes": 19895,
+      "sha256": "9ee3d3bf652f353615242c3cd470d5acc5ebc938ca3442fb5b7867bd3edefabc"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/build-fixed-e.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/build-fixed-e.log",
+      "bytes": 19895,
+      "sha256": "4247e3d0f852cc8cbde3e524fbd1d721120e0985df824d30b411218c29cb4e07"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/build-fixed-f.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/build-fixed-f.log",
+      "bytes": 19558,
+      "sha256": "29c58180e76f8546339743baedbadddc80a5579fbbf3b061a3996237ce5e9aaf"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/build-fixed-g.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/build-fixed-g.log",
+      "bytes": 19558,
+      "sha256": "57ae578c572d92ddfc78168e8523fc7047149a2ee1b32b7607f22d2f8676568d"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/build.sh",
+      "bytes": 524,
+      "sha256": "26c115d63321df019e4c62861508489c2ec3111e62c58efdaaed26bdb8a8242f"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/fault-hits.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/fault-prefix.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/font-Montserrat.css",
+      "bytes": 5661,
+      "sha256": "de7b7ef3c1fdaf8d10398c7018ea2aa1ea39bca28399a3bd0ab083e10b12323f"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/font-Onest.css",
+      "bytes": 18564,
+      "sha256": "0ed08867f9a7bf6e3578d028eb9780c0f6034e2201b33f5d219a06e1f7d567f9"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/font-Rubik.css",
+      "bytes": 10320,
+      "sha256": "7f0dbcc8ec1b77eb0d7f6d55399602e7a0e24c3c0517f3d0243b017eec17bb0e"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/font-Unbounded.css",
+      "bytes": 5613,
+      "sha256": "802b6ae12a66a5c0f78794d115a5f5bcce058a740705848ebbebed0ab1ff80a1"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/font-sources.json",
+      "bytes": 2076,
+      "sha256": "d451e881321712a49791a8c8cbb5aa9efc8268c5508066486729f9fcd6502cd3"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/git-diff-check.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/next-env-before.txt",
+      "bytes": 262,
+      "sha256": "85ae5aee75f011967cf2d25cbc342f62d69314e9d925f7f4aa3456fc2cffcca6"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/offline-boundary-theme-after.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/offline-boundary-theme-after.log",
+      "bytes": 619,
+      "sha256": "b0cadb3da7ca3128b6664639ba6d3c9a6c0153430f81b4f5d9f296e92e586aee"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/offline-retry-isolated-before.log",
+      "bytes": 1803,
+      "sha256": "8774f9f85d69363435ad06258e0acc7f35c62aeb092c0ebb6eaab61088ac78c7"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/offline-tab-logout-before.log",
+      "bytes": 1781,
+      "sha256": "5e3c4b115a650cde34520682064f7ad0272024e407238cec5b2c4d809a8de5e3"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/offline-theme-before.log",
+      "bytes": 3480,
+      "sha256": "09814f27048b5dce97155ee425cf91c61b7c41c35e0b173adf7fca996cd9c609"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/production-recipe-regression-initial.log",
+      "bytes": 5991,
+      "sha256": "7c03697e8eb99c023bcdc193c5b53cf0cb05956908755fbe4eea64527cb77008"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/production-recipe-regression.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/production-recipe-regression.log",
+      "bytes": 1005,
+      "sha256": "78faa1477f8d37e314c7ba1850739af239d48a364cd6ecb3fb098d803c74d466"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/proxy.log",
+      "bytes": 4765,
+      "sha256": "05974389d3021aaf48cf13824ddf3857ec740a675256d90a340b63de655e3c79"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/proxy.mjs",
+      "bytes": 1418,
+      "sha256": "b75ae3f628d415a82720a50c7489840d9537669d9e1cc867ef9f9a81bfe7ab48"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/pwa-before-cache-pressure.log",
+      "bytes": 1913,
+      "sha256": "afdac48ba9dbf95f008b77974e3b93d6030e2fa4e4c3bbed6aed430eb1530801"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/pwa-before-refined.exit",
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/pwa-before-refined.log",
+      "bytes": 3763,
+      "sha256": "8d0d8f33c68e228aac789679df4352510aed7c41237891759d1bfcb223cee569"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/pwa-before-verified.exit",
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/pwa-before-verified.log",
+      "bytes": 8132,
+      "sha256": "a8b9d14f48c733650829d8f5379e55426a130b68bc23eee7fbf0648c7657eb15"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/pwa-before.exit",
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/pwa-before.log",
+      "bytes": 9801,
+      "sha256": "0894767713e3eac16a4688babc4c7cf5eeee98c0b3b7e92bf8e7af339f775cde"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/pwa-fault-after.log",
+      "bytes": 2136,
+      "sha256": "03a02f770ad88e321b86217539afc89484d597007aafdfcad3bc3f56f7912080"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/pwa-fault-diagnostic.log",
+      "bytes": 2136,
+      "sha256": "2585647b5cfa435d8f9dcb969d4252e21f44aae5f4ece9194edaaa1de15a8fa6"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/pwa-fault-sequential.log",
+      "bytes": 372,
+      "sha256": "bda4b93a1a4a3ab3248bc758902d8bdabe333cc9dd352e121dd9e34f01806264"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/pwa-final-before-stream-ready.log",
+      "bytes": 5447,
+      "sha256": "286093e79781ce273c794a744008fe007deeb6504d730f93e64bda71ac6d360d"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/pwa-final-initial.log",
+      "bytes": 7532,
+      "sha256": "8c11a63f54861f85f199c5fdb4be30c0551ef5ee3d29dffb799ca24e4619464b"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/pwa-final.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/pwa-final.log",
+      "bytes": 2984,
+      "sha256": "b16bb25b6a8bf7741344e5d23483b1b47c75436fe50ba9b309c56dabd3a4b55a"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/pwa-fixed-b.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/pwa-fixed-b.log",
+      "bytes": 1392,
+      "sha256": "bf96dab6d2c0133dab09e4f339e26d61c558627a8fef31a7dc12abdbeff89c9a"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/pwa-updates-first.exit",
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/pwa-updates-first.log",
+      "bytes": 3919,
+      "sha256": "7101183cc168dd9f0d877e09e18301a1b9b69abd18bda4def1809bd98cf6ef91"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/pwa-updates-refined.exit",
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/pwa-updates-refined.log",
+      "bytes": 3832,
+      "sha256": "654e97020b7712fd80ce905a639d17976712ad4ca381936a1fba28150ec45210"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/pwa-updates-stable-key.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/pwa-updates-stable-key.log",
+      "bytes": 793,
+      "sha256": "12999ef0599f8f0492a8e554ca0088041038e131be6318cbee3058c94f5c41c4"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/qa-env.sh",
+      "bytes": 564,
+      "sha256": "4b4f830785726ab8028ae6adf9d3d5a65f80d856985cdd4bf6a0eda8bc708ebe"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/server-baseline.log",
+      "bytes": 1395,
+      "sha256": "0c7a26ed8e8f99515691706902ce6775f9484154530ca97fa6b4fe6f5ac9443d"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/server-fixed-b.log",
+      "bytes": 142,
+      "sha256": "57b75ee6244c4cdeb1f205da54ed530cf6797cdea0e381a8ca880d1239b0ff55"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/server-fixed-c.log",
+      "bytes": 571,
+      "sha256": "36491d8385e237f416201af0e4854f3891c387085a073c9f03d7888b2f707ddf"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/server-fixed-d.log",
+      "bytes": 143,
+      "sha256": "a823fc92904bd141b954f3e6a16143ca0a41491563d91d36a14f8c6c247f379e"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/server-fixed-e.log",
+      "bytes": 143,
+      "sha256": "d9b6a7051462de7102357c9b167476eff4f516084038496545da8a3f14ad3efc"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/server-fixed-f.log",
+      "bytes": 143,
+      "sha256": "af2146b000bf30d0ba8cf69d2a273f8d410e620191b542681f99b2d9d20f5b9c"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/server-fixed-g.log",
+      "bytes": 885,
+      "sha256": "2636671cb6496823d9c8730e87861482d3c0f280ffa6be984a715e3d0df43f5d"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/service-worker-before.js",
+      "bytes": 11145,
+      "sha256": "56cdb29b978f7640733cb24d351a8e18bd0acec269751bd3c37f195f919aa1d0"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/session-expiry-before.log",
+      "bytes": 1859,
+      "sha256": "989ba2ff0f1f1ed8d529eec642b9ee2330e3f03a59ba1c22e15ac0e830a71842"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/setup-first-start.log",
+      "bytes": 588,
+      "sha256": "39aa9dc386c83edd7ae3836cd92932efbf4f76d64f3a3e63cc33e4e232e7032c"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/setup.log",
+      "bytes": 668,
+      "sha256": "0671dc741ee5e8b57f4cac472fef914b35f5bb2096869f0c52dbb26abd243c40"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/tsconfig-before.json",
+      "bytes": 686,
+      "sha256": "0e6ba1408f44452f40521ded5ee27df54ba5f5d8e784cdaa68dad359aca7abee"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/types-before-build.log",
+      "bytes": 186,
+      "sha256": "5183690617b44f1011195b33150b5259846123354ce192a76d27e0ed86bea2c5"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/types-check.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/types-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/unit-targeted.log",
+      "bytes": 386,
+      "sha256": "2d2ab1a1910c26eb1758558cf9dcf4c7ac0c98e79ed04b00297f4c9c403886b9"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/tools/upstream-port.txt",
+      "bytes": 4,
+      "sha256": "a38794ca63aaead5358bdec68ba550098879c8472d3a6b3cbfce0b5ec98fc08d"
+    },
+    {
+      "path": "notes/qa-pwa-2026-11-04/artifact-verification.json",
+      "bytes": 128,
+      "sha256": "7b60eab9cc9cf9d73175c0975511c765276406803ca75a50c605cedbee63df1d"
+    }
+  ],
+  "mainDatabaseBackupsPreserved": true
+}

@@ -1,0 +1,11 @@
+{
+  "removedOwnedBuilds": [
+    ".next-qa-pwa-20261104",
+    ".next-qa-pwa-baseline-20261104",
+    ".next-qa-pwa-fixed-b-20261104",
+    ".next-qa-pwa-fixed-c-20261104",
+    ".next-qa-pwa-fixed-d-20261104",
+    ".next-qa-pwa-fixed-e-20261104"
+  ],
+  "normalBuildFoldersPreserved": true
+}

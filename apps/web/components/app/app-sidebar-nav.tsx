@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { LogOut, Shield } from "lucide-react";
 
 import { isNavItemActive, isPublicPath, resolveAppNavGroups, type AppChromeUser } from "@/lib/navigation";
+import { logoutBrowserSession } from "@/features/pwa/account-session";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 type AppSidebarNavProps = {
@@ -18,22 +19,17 @@ export function AppSidebarNav({ user, onNavigate }: AppSidebarNavProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [loggingOut, setLoggingOut] = useState(false);
+  const [logoutError, setLogoutError] = useState<string | null>(null);
 
   const handleLogout = async () => {
     setLoggingOut(true);
+    setLogoutError(null);
     try {
-      await fetch("/api/auth/logout", { method: "POST" });
-    } finally {
+      await logoutBrowserSession(isPublicPath(pathname) ? window.location.pathname + window.location.search : "/");
       onNavigate?.();
-      // На витринной странице остаёмся на месте: сервер перерисует хром на
-      // анонимный (публичная шапка вместо сайдбара). Уводим на / только из
-      // страниц рабочей зоны, которых у анонима нет.
-      if (isPublicPath(pathname)) {
-        router.refresh();
-      } else {
-        router.push("/");
-        router.refresh();
-      }
+    } catch {
+      setLogoutError("Не удалось выйти. Проверьте соединение и повторите.");
+      setLoggingOut(false);
     }
   };
 
@@ -41,8 +37,9 @@ export function AppSidebarNav({ user, onNavigate }: AppSidebarNavProps) {
   const profileActive = pathname === "/profile" || pathname.startsWith("/profile/");
 
   return (
-    <div className="flex h-full flex-col">
-      <nav className="flex flex-1 flex-col gap-1" aria-label="Навигация по личному кабинету">
+    <div className="flex h-full min-h-0 flex-col">
+      {logoutError ? <p role="alert" className="p-3 text-sm text-destructive">{logoutError}</p> : null}
+      <nav className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto" aria-label="Навигация по личному кабинету">
         {resolveAppNavGroups(user).map((group, groupIndex) => (
           <React.Fragment key={groupIndex}>
             {groupIndex > 0 ? <div className="my-2 border-t border-border/70" /> : null}

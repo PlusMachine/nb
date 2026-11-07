@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState, useId, type ReactNode } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Check, FlaskConical, Expand, NotebookPen } from "lucide-react";
 import type { PublicRecipeDetailDto, PublicRecipeListItem } from "@/features/recipes/contracts";
 import { scaleRecipeDetailForBrew, scaleRecipeToVolume, scaleRecipeWaterPlan, type ScaledRecipeView } from "@/features/recipes/scale";
@@ -58,7 +59,7 @@ export function HomeExperience({
           const requirements = homeRequirements(item);
           const match = homeCoverage(requirements, stock);
           const image = card.heroImage?.thumbUrl || card.styleImageUrl;
-          return <article key={item.id} className="home-recipe-card"><Link href={`/recipes/${item.slug}`} className="home-recipe-photo" aria-label={`Рецепт: ${item.title}`}>{image ? <img src={image} alt={card.heroImage ? item.title : `Стиль: ${card.style?.name ?? "пиво"}`} loading="lazy" /> : <div className="home-photo-placeholder"><FlaskConical /></div>}</Link><div className="home-recipe-body"><h3><Link href={`/recipes/${item.slug}`}>{item.title}</Link></h3><ul className="home-recipe-values"><li>{metricValue(card.batchSizeL, " л")}</li><li>{metricValue(item.abv, "% об.")}</li><li>{metricValue(item.ibu, " IBU", 0)}</li></ul>
+          return <article key={item.id} className="home-recipe-card"><Link href={`/recipes/${item.slug}`} className="home-recipe-photo" aria-label={`Рецепт: ${item.title}`}>{image ? <Image src={image} alt={card.heroImage ? item.title : `Стиль: ${card.style?.name ?? "пиво"}`} fill sizes="(max-width: 1024px) 100vw, 33vw" unoptimized={Boolean(card.heroImage)} /> : <div className="home-photo-placeholder"><FlaskConical /></div>}</Link><div className="home-recipe-body"><h3><Link href={`/recipes/${item.slug}`}>{item.title}</Link></h3><ul className="home-recipe-values"><li>{metricValue(card.batchSizeL, " л")}</li><li>{metricValue(item.abv, "% об.")}</li><li>{metricValue(item.ibu, " IBU", 0)}</li></ul>
           <div className="home-recipe-stock home-recipe-availability" aria-live="polite"><p className="home-availability-title" data-missing={match.missing.length > 0}>{!requirements.length ? "Ингредиенты не указаны" : match.missing.length ? match.missing.length === 1 ? "Не хватает одного ингредиента" : `Не хватает ${match.missing.length} ингредиентов` : <><Check aria-hidden />{card.batchSizeL != null ? `Хватает на ${homeNumber(card.batchSizeL)} л` : "Все ингредиенты есть"}</>}</p><div className="home-recipe-ingredient-list">
             {!match.missing.length && requirements.length > 0 && <p className="home-recipe-composition-label">В составе</p>}
             {(match.missing.length ? match.missing.slice(0, 2) : ["fermentable", "hop", "yeast"].flatMap(category => {

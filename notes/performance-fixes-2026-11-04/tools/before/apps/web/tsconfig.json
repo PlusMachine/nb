@@ -1,0 +1,35 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "allowJs": false,
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".next-2/types/**/*.ts",
+    ".next-admin-check/types/**/*.ts",
+    ".next-catalog-approval/types/**/*.ts",
+    ".next-catalog-implementation/types/**/*.ts",
+    ".next-loadtest/types/**/*.ts",
+    ".next-manual-brew/types/**/*.ts",
+    ".next-qa/types/**/*.ts",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "randomKeysBeforeFixDiffer": true,
+  "keysAfterFixEqual": true,
+  "actionIdsAfterFixEqual": true,
+  "actionCount": 161,
+  "builds": {
+    "fixed-b": {
+      "buildId": "w2lX7lINn7MWqn3EimbvO",
+      "workerSourceTraced": true
+    },
+    "fixed-c": {
+      "buildId": "T_jO5I9Q6ymXGuun7KhNE",
+      "workerSourceTraced": true
+    },
+    "fixed-d": {
+      "buildId": "gkiGW9p7tS5Pc9iOOkgrX",
+      "workerSourceTraced": true
+    },
+    "fixed-e": {
+      "buildId": "gs7WDhnGrwLmcAmkm0yLI",
+      "workerSourceTraced": true
+    }
+  },
+  "workerSourceSha256": "a3e02cbdbf81aa29cb2ba1385192497b21e2bb4e5ef4e4acbe1ba3356f5ad270",
+  "finalBuilds": {
+    "fixed-f": {
+      "buildId": "AKM1bJwkB4tjhojpJnrjn",
+      "workerSourceTraced": true,
+      "buildExit": 0
+    },
+    "fixed-g": {
+      "buildId": "xbG3GhgycFykiGdd0JeAZ",
+      "workerSourceTraced": true,
+      "buildExit": 0
+    }
+  },
+  "finalKeysEqual": true,
+  "finalActionIdsEqual": true,
+  "finalActionCount": 161
+}

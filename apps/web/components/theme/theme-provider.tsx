@@ -4,6 +4,8 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 
 import {
   SKIN_COOKIE,
+  parseThemePreference,
+  parseSkinPreference,
   THEME_COLOR,
   THEME_COOKIE,
   THEME_COOKIE_MAX_AGE,
@@ -39,10 +41,9 @@ const applyResolvedTheme = (resolved: ResolvedTheme) => {
   const root = document.documentElement;
   root.classList.toggle("dark", resolved === "dark");
   root.style.colorScheme = resolved;
-  const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) {
+  document.querySelectorAll('meta[name="theme-color"]').forEach(meta => {
     meta.setAttribute("content", THEME_COLOR[resolved]);
-  }
+  });
 };
 
 export function ThemeProvider({
@@ -61,10 +62,22 @@ export function ThemeProvider({
   // Держим DOM в согласии с выбранным режимом. Инлайн-скрипт уже проставил класс
   // до пейнта — здесь только поддерживаем синхронизацию при смене выбора.
   useEffect(() => {
-    const resolved = resolvePreference(preference);
+    let currentPreference = preference;
+    if (document.querySelector("[data-nb-offline-shell]")) {
+      // The shared offline document was fetched anonymously. Restore this
+      // browser's choices instead of applying the precached default props.
+      const readCookie = (name: string) => document.cookie.split(";").map(part => part.trim())
+        .find(part => part.startsWith(name + "="))?.slice(name.length + 1);
+      currentPreference = parseThemePreference(readCookie(THEME_COOKIE));
+      const currentSkin = parseSkinPreference(readCookie(SKIN_COOKIE));
+      if (currentPreference !== preference) setPreferenceState(currentPreference);
+      if (currentSkin !== skin) setSkinState(currentSkin);
+      document.documentElement.classList.toggle("skin-hop", currentSkin === "hop");
+    }
+    const resolved = resolvePreference(currentPreference);
     setResolvedTheme(resolved);
     applyResolvedTheme(resolved);
-  }, [preference]);
+  }, [preference, skin]);
 
   // Режим «Как в системе» — следим за сменой системной темы на лету.
   useEffect(() => {

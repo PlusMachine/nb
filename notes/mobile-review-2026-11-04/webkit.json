@@ -1,0 +1,2761 @@
+[
+  {
+    "route": "/",
+    "status": 200,
+    "url": "/",
+    "width": 390,
+    "height": 844,
+    "client": 390,
+    "scroll": 390,
+    "scrollHeight": 9210,
+    "headings": [
+      {
+        "text": "Что сварить из ваших запасов",
+        "x": 18,
+        "y": 118,
+        "w": 354,
+        "h": 76.3
+      },
+      {
+        "text": "Ваши запасы",
+        "x": 33,
+        "y": 466.4,
+        "w": 163.8,
+        "h": 25.5
+      },
+      {
+        "text": "Что можно сварить",
+        "x": 18,
+        "y": 1111.3,
+        "w": 285.7,
+        "h": 32.4
+      },
+      {
+        "text": "Fuller's ESB",
+        "x": 37,
+        "y": 1346.4,
+        "w": 316,
+        "h": 26
+      },
+      {
+        "text": "Bohemian Pilsner «Nevermore» (Josh Weikert)",
+        "x": 37,
+        "y": 1781.5,
+        "w": 316,
+        "h": 52
+      },
+      {
+        "text": "Венский лагер «по мотивам Жигулёвского»",
+        "x": 37,
+        "y": 2234.6,
+        "w": 316,
+        "h": 52
+      },
+      {
+        "text": "Редактор рецептов",
+        "x": 18,
+        "y": 2633.6,
+        "w": 354,
+        "h": 32.4
+      },
+      {
+        "text": "Ингредиенты",
+        "x": 37,
+        "y": 3235.5,
+        "w": 316,
+        "h": 19.5
+      },
+      {
+        "text": "Сравнение со стилем",
+        "x": 37,
+        "y": 3053,
+        "w": 316,
+        "h": 19.5
+      },
+      {
+        "text": "Варочный день и журнал партии",
+        "x": 18,
+        "y": 3908.3,
+        "w": 354,
+        "h": 64.8
+      },
+      {
+        "text": "Fuller's ESB",
+        "x": 37,
+        "y": 4106.9,
+        "w": 126.3,
+        "h": 26
+      },
+      {
+        "text": "Осахаривание · 67 °C",
+        "x": 37,
+        "y": 4241.1,
+        "w": 316,
+        "h": 20.8
+      },
+      {
+        "text": "Журнал партии",
+        "x": 37,
+        "y": 4533,
+        "w": 316,
+        "h": 15.6
+      },
+      {
+        "text": "Списание ингредиентов на варку",
+        "x": 37,
+        "y": 4873.7,
+        "w": 316,
+        "h": 54.6
+      },
+      {
+        "text": "Этикетки для вашего пива",
+        "x": 18,
+        "y": 4912.7,
+        "w": 354,
+        "h": 64.8
+      },
+      {
+        "text": "Каталог ингредиентовна русском",
+        "x": 18,
+        "y": 5556.3,
+        "w": 335.4,
+        "h": 64.8
+      },
+      {
+        "text": "Стили пива",
+        "x": 18,
+        "y": 6086.2,
+        "w": 165.9,
+        "h": 32.4
+      },
+      {
+        "text": "Мюнхенский хеллес",
+        "x": 113,
+        "y": 6182.7,
+        "w": 244,
+        "h": 23.4
+      },
+      {
+        "text": "Американский IPA",
+        "x": 113,
+        "y": 6464.9,
+        "w": 244,
+        "h": 23.4
+      },
+      {
+        "text": "Ирландский стаут",
+        "x": 113,
+        "y": 6747,
+        "w": 244,
+        "h": 23.4
+      },
+      {
+        "text": "Калькуляторы",
+        "x": 18,
+        "y": 7011.2,
+        "w": 216.8,
+        "h": 32.4
+      },
+      {
+        "text": "Крепость и сбраживание",
+        "x": 35,
+        "y": 7085.4,
+        "w": 290,
+        "h": 22.1
+      },
+      {
+        "text": "Карбонизация в кеге",
+        "x": 35,
+        "y": 7181.4,
+        "w": 290,
+        "h": 22.1
+      },
+      {
+        "text": "Поправка рефрактометра",
+        "x": 35,
+        "y": 7277.4,
+        "w": 290,
+        "h": 22.1
+      },
+      {
+        "text": "Поправка ареометра",
+        "x": 35,
+        "y": 7373.4,
+        "w": 290,
+        "h": 22.1
+      },
+      {
+        "text": "Перевод единиц",
+        "x": 35,
+        "y": 7466.6,
+        "w": 290,
+        "h": 22.1
+      },
+      {
+        "text": "Статьи о пивоварении",
+        "x": 18,
+        "y": 7587,
+        "w": 326.4,
+        "h": 32.4
+      },
+      {
+        "text": "Первая варка дома: пошаговый чек-лист",
+        "x": 18,
+        "y": 7693,
+        "w": 354,
+        "h": 53.2
+      },
+      {
+        "text": "Контроль температуры брожения",
+        "x": 18,
+        "y": 7885.4,
+        "w": 354,
+        "h": 53.2
+      },
+      {
+        "text": "Начните с рецепта или запасов",
+        "x": 40,
+        "y": 8046.6,
+        "w": 310,
+        "h": 62.4
+      }
+    ],
+    "outside": [],
+    "clippedText": [],
+    "smallControls": [
+      {
+        "tag": "A",
+        "text": "Все рецепты ↗",
+        "x": 18,
+        "y": 1186.8,
+        "w": 94.8,
+        "h": 18.6,
+        "classes": ""
+      },
+      {
+        "tag": "A",
+        "text": "Создать рецепт ↗",
+        "x": 18,
+        "y": 2736.2,
+        "w": 114.9,
+        "h": 18.6,
+        "classes": ""
+      },
+      {
+        "tag": "A",
+        "text": "Стронг биттер · BJCP 11C",
+        "x": 37,
+        "y": 3076.5,
+        "w": 316,
+        "h": 18.6,
+        "classes": ""
+      },
+      {
+        "tag": "A",
+        "text": "Все ингредиенты ↗",
+        "x": 18,
+        "y": 5633,
+        "w": 124.6,
+        "h": 18.6,
+        "classes": ""
+      },
+      {
+        "tag": "A",
+        "text": "Пэйл Эль",
+        "x": 32,
+        "y": 5687.6,
+        "w": 74.3,
+        "h": 20.3,
+        "classes": "home-ingredient-title underline-offset-2 transition hover:text-foreground hover:underline"
+      },
+      {
+        "tag": "A",
+        "text": "Кара Клэр",
+        "x": 215,
+        "y": 5687.6,
+        "w": 85.3,
+        "h": 20.3,
+        "classes": "home-ingredient-title underline-offset-2 transition hover:text-foreground hover:underline"
+      },
+      {
+        "tag": "A",
+        "text": "Амарилло",
+        "x": 32,
+        "y": 5889.9,
+        "w": 81.7,
+        "h": 20.3,
+        "classes": "home-ingredient-title underline-offset-2 transition hover:text-foreground hover:underline"
+      },
+      {
+        "tag": "A",
+        "text": "US-05",
+        "x": 215,
+        "y": 5889.9,
+        "w": 46.8,
+        "h": 20.3,
+        "classes": "home-ingredient-title underline-offset-2 transition hover:text-foreground hover:underline"
+      },
+      {
+        "tag": "A",
+        "text": "Справочник BJCP · 2021 ↗",
+        "x": 209.3,
+        "y": 6086.2,
+        "w": 162.7,
+        "h": 18.6,
+        "classes": ""
+      },
+      {
+        "tag": "A",
+        "text": "Мюнхенский хеллес",
+        "x": 113,
+        "y": 6183.9,
+        "w": 203.9,
+        "h": 21,
+        "classes": ""
+      },
+      {
+        "tag": "A",
+        "text": "Американский IPA",
+        "x": 113,
+        "y": 6466.1,
+        "w": 182.5,
+        "h": 21,
+        "classes": ""
+      },
+      {
+        "tag": "A",
+        "text": "Ирландский стаут",
+        "x": 113,
+        "y": 6748.2,
+        "w": 182.8,
+        "h": 21,
+        "classes": ""
+      },
+      {
+        "tag": "A",
+        "text": "Все статьи ↗",
+        "x": 18,
+        "y": 7631.4,
+        "w": 82.7,
+        "h": 18.6,
+        "classes": ""
+      },
+      {
+        "tag": "A",
+        "text": "Рецепты",
+        "x": 24,
+        "y": 8629.3,
+        "w": 63.6,
+        "h": 16,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Стили пива",
+        "x": 24,
+        "y": 8657.3,
+        "w": 84.6,
+        "h": 16,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Калькуляторы",
+        "x": 24,
+        "y": 8685.3,
+        "w": 106.5,
+        "h": 16,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Статьи",
+        "x": 24,
+        "y": 8713.3,
+        "w": 52,
+        "h": 16,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Ингредиенты",
+        "x": 24,
+        "y": 8741.3,
+        "w": 100.2,
+        "h": 16,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Маркет",
+        "x": 24,
+        "y": 8769.3,
+        "w": 54.8,
+        "h": 16,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "BrewForge",
+        "x": 24,
+        "y": 8797.3,
+        "w": 74.2,
+        "h": 16,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Пользовательское соглашение",
+        "x": 24,
+        "y": 8878.3,
+        "w": 230.3,
+        "h": 16,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Политика конфиденциальности",
+        "x": 24,
+        "y": 8906.3,
+        "w": 237.6,
+        "h": 16,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Согласие на обработку данных",
+        "x": 24,
+        "y": 8934.3,
+        "w": 232.4,
+        "h": 16,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Использование cookie",
+        "x": 24,
+        "y": 8962.3,
+        "w": 162.7,
+        "h": 16,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Войти",
+        "x": 24,
+        "y": 9043.4,
+        "w": 44.5,
+        "h": 16,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      }
+    ],
+    "smallInputs": [],
+    "fixed": [
+      {
+        "tag": "HEADER",
+        "text": "NBРецептыСтили пиваКалькуляторыСтатьиИнгредиентыМаркетBrewForgeВойти",
+        "x": 0,
+        "y": 0,
+        "w": 390,
+        "h": 57,
+        "classes": "sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Обратная связь",
+        "x": 324,
+        "y": 784,
+        "w": 50,
+        "h": 44,
+        "classes": "fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px)+var(--nb-sticky-bar-h,0px))] min-h-11 px-4 py-2.5 right-4 z-40 inline-flex items-center g"
+      }
+    ],
+    "screenshot": "/home/dopefish/projects/nb/notes/mobile-review-2026-11-04/screenshots/webkit-_-390.png"
+  },
+  {
+    "route": "/recipes",
+    "status": 200,
+    "url": "/recipes",
+    "width": 390,
+    "height": 844,
+    "client": 390,
+    "scroll": 390,
+    "scrollHeight": 5688,
+    "headings": [
+      {
+        "text": "Рецепты сообщества",
+        "x": 16,
+        "y": 89,
+        "w": 358,
+        "h": 32
+      },
+      {
+        "text": "Fuller's ESB",
+        "x": 101,
+        "y": 433.5,
+        "w": 224,
+        "h": 22
+      },
+      {
+        "text": "Bohemian Pilsner «Nevermore» (Josh Weikert)",
+        "x": 101,
+        "y": 597,
+        "w": 224,
+        "h": 44
+      },
+      {
+        "text": "Венский лагер «по мотивам Жигулёвского»",
+        "x": 101,
+        "y": 788,
+        "w": 224,
+        "h": 44
+      },
+      {
+        "text": "Не более трёх литров в одни руки (Golfovod, бир.рф)",
+        "x": 101,
+        "y": 957,
+        "w": 224,
+        "h": 44
+      },
+      {
+        "text": "Каскад цветочно-ванильный (Граф_Пивоварoff, бир.рф)",
+        "x": 101,
+        "y": 1148,
+        "w": 224,
+        "h": 44
+      },
+      {
+        "text": "Oatmeal Stout (Stephen Galante)",
+        "x": 101,
+        "y": 1317,
+        "w": 224,
+        "h": 44
+      },
+      {
+        "text": "Жигулёвское по ГОСТу",
+        "x": 101,
+        "y": 1508,
+        "w": 224,
+        "h": 22
+      },
+      {
+        "text": "Жигулёвское на отварках с Saaz (Pikabu)",
+        "x": 101,
+        "y": 1655,
+        "w": 224,
+        "h": 44
+      },
+      {
+        "text": "Wee Heavy (Jamil Zainasheff)",
+        "x": 101,
+        "y": 1846,
+        "w": 224,
+        "h": 44
+      },
+      {
+        "text": "Munich Helles (Horst Dornbusch)",
+        "x": 101,
+        "y": 2037,
+        "w": 224,
+        "h": 44
+      },
+      {
+        "text": "Motor Oil RIS",
+        "x": 101,
+        "y": 2228,
+        "w": 224,
+        "h": 22
+      },
+      {
+        "text": "Saison Dupont (версия Clone Brews)",
+        "x": 101,
+        "y": 2397,
+        "w": 224,
+        "h": 44
+      },
+      {
+        "text": "American Amber Ale (Gordon Strong)",
+        "x": 101,
+        "y": 2588,
+        "w": 224,
+        "h": 44
+      },
+      {
+        "text": "New England IPA (Gordon Strong)",
+        "x": 101,
+        "y": 2779,
+        "w": 224,
+        "h": 44
+      },
+      {
+        "text": "Fuller's London Pride",
+        "x": 101,
+        "y": 2970,
+        "w": 224,
+        "h": 22
+      },
+      {
+        "text": "Хмельная тропиканка (BodreevShow, бир.рф)",
+        "x": 101,
+        "y": 3139,
+        "w": 224,
+        "h": 44
+      },
+      {
+        "text": "Sierra Nevada Pale Ale",
+        "x": 101,
+        "y": 3330,
+        "w": 224,
+        "h": 22
+      },
+      {
+        "text": "Моя APA Amarillo+Cascade",
+        "x": 101,
+        "y": 3499,
+        "w": 224,
+        "h": 22
+      },
+      {
+        "text": "Stone Ruination IPA",
+        "x": 101,
+        "y": 3646,
+        "w": 224,
+        "h": 22
+      },
+      {
+        "text": "North Coast Old Rasputin",
+        "x": 101,
+        "y": 3815,
+        "w": 224,
+        "h": 22
+      },
+      {
+        "text": "Guinness Draught (Dry Stout)",
+        "x": 101,
+        "y": 3984,
+        "w": 224,
+        "h": 44
+      },
+      {
+        "text": "Моя APA Amarillo+Cascade",
+        "x": 101,
+        "y": 4175,
+        "w": 224,
+        "h": 22
+      },
+      {
+        "text": "Kölsch (Jamil Zainasheff)",
+        "x": 101,
+        "y": 4322,
+        "w": 224,
+        "h": 22
+      },
+      {
+        "text": "Baltic Porter (Tom Nolan, GABF Pro-Am)",
+        "x": 101,
+        "y": 4491,
+        "w": 224,
+        "h": 44
+      }
+    ],
+    "outside": [],
+    "clippedText": [
+      {
+        "tag": "LABEL",
+        "text": "Поиск рецептов",
+        "x": 15,
+        "y": 165,
+        "w": 1,
+        "h": 1,
+        "classes": "sr-only"
+      },
+      {
+        "tag": "LABEL",
+        "text": "Сортировка",
+        "x": 15,
+        "y": 165,
+        "w": 1,
+        "h": 1,
+        "classes": "sr-only"
+      }
+    ],
+    "smallControls": [
+      {
+        "tag": "A",
+        "text": "Рецепты",
+        "x": 24,
+        "y": 5167.5,
+        "w": 58.7,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Стили пива",
+        "x": 24,
+        "y": 5195.5,
+        "w": 77.5,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Калькуляторы",
+        "x": 24,
+        "y": 5223.5,
+        "w": 95.8,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Статьи",
+        "x": 24,
+        "y": 5251.5,
+        "w": 46.9,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Ингредиенты",
+        "x": 24,
+        "y": 5279.5,
+        "w": 91.5,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Маркет",
+        "x": 24,
+        "y": 5307.5,
+        "w": 49.4,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "BrewForge",
+        "x": 24,
+        "y": 5335.5,
+        "w": 70.8,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Пользовательское соглашение",
+        "x": 24,
+        "y": 5416,
+        "w": 209.1,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Политика конфиденциальности",
+        "x": 24,
+        "y": 5444,
+        "w": 216,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Согласие на обработку данных",
+        "x": 24,
+        "y": 5472,
+        "w": 210.9,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Использование cookie",
+        "x": 24,
+        "y": 5500,
+        "w": 150.8,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Войти",
+        "x": 24,
+        "y": 5580.5,
+        "w": 41.6,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      }
+    ],
+    "smallInputs": [],
+    "fixed": [
+      {
+        "tag": "HEADER",
+        "text": "NBРецептыСтили пиваКалькуляторыСтатьиИнгредиентыМаркетBrewForgeВойти",
+        "x": 0,
+        "y": 0,
+        "w": 390,
+        "h": 57,
+        "classes": "sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur"
+      },
+      {
+        "tag": "DIV",
+        "text": "Поиск рецептовСортировкаСначала новыеПопулярныеПо рейтингуКрепчеСлабееГорьчеМенее горькиеСветлееТемн",
+        "x": 16,
+        "y": 162,
+        "w": 358,
+        "h": 122,
+        "classes": "sticky top-[var(--chrome-top)] z-30 -my-1 bg-background/90 py-1 backdrop-blur"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Обратная связь",
+        "x": 324,
+        "y": 784,
+        "w": 50,
+        "h": 44,
+        "classes": "fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px)+var(--nb-sticky-bar-h,0px))] min-h-11 px-4 py-2.5 right-4 z-40 inline-flex items-center g"
+      }
+    ],
+    "screenshot": "/home/dopefish/projects/nb/notes/mobile-review-2026-11-04/screenshots/webkit-_recipes-390.png"
+  },
+  {
+    "route": "/catalog",
+    "status": 200,
+    "url": "/catalog",
+    "width": 390,
+    "height": 844,
+    "client": 390,
+    "scroll": 390,
+    "scrollHeight": 6898,
+    "headings": [
+      {
+        "text": "Каталог ингредиентов",
+        "x": 16,
+        "y": 57,
+        "w": 358,
+        "h": 36
+      },
+      {
+        "text": "Солод",
+        "x": 44,
+        "y": 329,
+        "w": 56.6,
+        "h": 28
+      },
+      {
+        "text": "Амбер / Ароматик MD",
+        "x": 33,
+        "y": 386,
+        "w": 174.8,
+        "h": 24
+      },
+      {
+        "text": "Американский светлый 2-рядный",
+        "x": 33,
+        "y": 504,
+        "w": 276.3,
+        "h": 24
+      },
+      {
+        "text": "Арома",
+        "x": 33,
+        "y": 622,
+        "w": 51.5,
+        "h": 24
+      },
+      {
+        "text": "Арома",
+        "x": 33,
+        "y": 740,
+        "w": 51.5,
+        "h": 24
+      },
+      {
+        "text": "Арома 100",
+        "x": 33,
+        "y": 858,
+        "w": 84.1,
+        "h": 24
+      },
+      {
+        "text": "Арома 150",
+        "x": 33,
+        "y": 976,
+        "w": 83.6,
+        "h": 24
+      },
+      {
+        "text": "Сбраживаемое сырьё",
+        "x": 44,
+        "y": 1089,
+        "w": 198.4,
+        "h": 28
+      },
+      {
+        "text": "Абрикос",
+        "x": 33,
+        "y": 1146,
+        "w": 69,
+        "h": 24
+      },
+      {
+        "text": "Амбер - Жидкий экстракт",
+        "x": 33,
+        "y": 1264,
+        "w": 210.3,
+        "h": 24
+      },
+      {
+        "text": "Амбер - Cухой Экстракт",
+        "x": 33,
+        "y": 1382,
+        "w": 194.4,
+        "h": 24
+      },
+      {
+        "text": "Ананас",
+        "x": 33,
+        "y": 1500,
+        "w": 59.3,
+        "h": 24
+      },
+      {
+        "text": "Апельсин",
+        "x": 33,
+        "y": 1618,
+        "w": 78.5,
+        "h": 24
+      },
+      {
+        "text": "Апельсиновый сок концентрированный",
+        "x": 33,
+        "y": 1736,
+        "w": 324,
+        "h": 48
+      },
+      {
+        "text": "Хмель",
+        "x": 44,
+        "y": 1873,
+        "w": 56.3,
+        "h": 28
+      },
+      {
+        "text": "92 Пи 2/4",
+        "x": 33,
+        "y": 1930,
+        "w": 77.4,
+        "h": 24
+      },
+      {
+        "text": "Авангард",
+        "x": 33,
+        "y": 2048,
+        "w": 76.9,
+        "h": 24
+      },
+      {
+        "text": "Аврора",
+        "x": 33,
+        "y": 2166,
+        "w": 59.6,
+        "h": 24
+      },
+      {
+        "text": "Аврора",
+        "x": 33,
+        "y": 2284,
+        "w": 59.6,
+        "h": 24
+      },
+      {
+        "text": "Агнус",
+        "x": 33,
+        "y": 2402,
+        "w": 46.9,
+        "h": 24
+      },
+      {
+        "text": "Адмирал",
+        "x": 33,
+        "y": 2520,
+        "w": 72.1,
+        "h": 24
+      },
+      {
+        "text": "Дрожжи",
+        "x": 44,
+        "y": 2633,
+        "w": 79,
+        "h": 28
+      },
+      {
+        "text": "1007 German Ale",
+        "x": 33,
+        "y": 2690,
+        "w": 131.7,
+        "h": 24
+      },
+      {
+        "text": "1084 Irish Ale",
+        "x": 33,
+        "y": 2834,
+        "w": 107,
+        "h": 24
+      },
+      {
+        "text": "1087-PC Wyeast Bohemian Ale Blend",
+        "x": 33,
+        "y": 2978,
+        "w": 286.4,
+        "h": 24
+      },
+      {
+        "text": "1187 Ringwood ale",
+        "x": 33,
+        "y": 3147,
+        "w": 142.7,
+        "h": 24
+      },
+      {
+        "text": "1214 Belgian Abbay Style Ale",
+        "x": 33,
+        "y": 3291,
+        "w": 223.9,
+        "h": 24
+      },
+      {
+        "text": "1728 Scottish Ale",
+        "x": 33,
+        "y": 3435,
+        "w": 136.4,
+        "h": 24
+      },
+      {
+        "text": "Водоподготовка",
+        "x": 44,
+        "y": 3574,
+        "w": 150.3,
+        "h": 28
+      },
+      {
+        "text": "Английская соль (сульфат магния)",
+        "x": 33,
+        "y": 3631,
+        "w": 278.8,
+        "h": 24
+      },
+      {
+        "text": "Аскорбиновая кислота",
+        "x": 33,
+        "y": 3749,
+        "w": 186.6,
+        "h": 24
+      },
+      {
+        "text": "Аэрация и отстаивание воды",
+        "x": 33,
+        "y": 3867,
+        "w": 236.4,
+        "h": 24
+      },
+      {
+        "text": "Вода после обратного осмоса",
+        "x": 33,
+        "y": 3985,
+        "w": 241,
+        "h": 24
+      },
+      {
+        "text": "Гашёная известь (гидроксид кальция)",
+        "x": 33,
+        "y": 4103,
+        "w": 308.4,
+        "h": 24
+      },
+      {
+        "text": "Гидрокарбонат калия",
+        "x": 33,
+        "y": 4221,
+        "w": 175.4,
+        "h": 24
+      },
+      {
+        "text": "Специи и добавки",
+        "x": 44,
+        "y": 4334,
+        "w": 164.2,
+        "h": 28
+      },
+      {
+        "text": "Агар-агар для осветления",
+        "x": 33,
+        "y": 4391,
+        "w": 213,
+        "h": 24
+      },
+      {
+        "text": "Альфа-амилаза / фермент разжижения затора",
+        "x": 33,
+        "y": 4509,
+        "w": 324,
+        "h": 48
+      },
+      {
+        "text": "Амилоглюкозидаза / фермент глубокого осахаривания",
+        "x": 33,
+        "y": 4651,
+        "w": 324,
+        "h": 48
+      },
+      {
+        "text": "Антиоксидант для готового пива",
+        "x": 33,
+        "y": 4793,
+        "w": 266.2,
+        "h": 24
+      },
+      {
+        "text": "Антиоксидант для сусла",
+        "x": 33,
+        "y": 4911,
+        "w": 199.7,
+        "h": 24
+      },
+      {
+        "text": "Апельсиновый экстракт / ароматизатор",
+        "x": 33,
+        "y": 5029,
+        "w": 324,
+        "h": 48
+      },
+      {
+        "text": "Расходники",
+        "x": 44,
+        "y": 5166,
+        "w": 110.3,
+        "h": 28
+      },
+      {
+        "text": "Алюминиевая банка 0,33 л с крышками",
+        "x": 33,
+        "y": 5223,
+        "w": 319.4,
+        "h": 24
+      },
+      {
+        "text": "Алюминиевая банка 0,5 л с крышками",
+        "x": 33,
+        "y": 5341,
+        "w": 309,
+        "h": 24
+      },
+      {
+        "text": "Бугельная бутылка 0,5 л",
+        "x": 33,
+        "y": 5459,
+        "w": 197.7,
+        "h": 24
+      },
+      {
+        "text": "Дезинфицирующее средство на основе надуксусной кислоты",
+        "x": 33,
+        "y": 5577,
+        "w": 324,
+        "h": 48
+      },
+      {
+        "text": "Жидкое средство для мойки пивных линий",
+        "x": 33,
+        "y": 5719,
+        "w": 324,
+        "h": 48
+      },
+      {
+        "text": "Заправленный баллон CO₂",
+        "x": 33,
+        "y": 5861,
+        "w": 214,
+        "h": 24
+      }
+    ],
+    "outside": [
+      {
+        "tag": "A",
+        "text": "Сбраживаемое сырьё174",
+        "x": 270.8,
+        "y": 246,
+        "w": 232.7,
+        "h": 38,
+        "classes": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foregroun"
+      },
+      {
+        "tag": "SPAN",
+        "text": "174",
+        "x": 463.6,
+        "y": 255,
+        "w": 26.9,
+        "h": 20,
+        "classes": "tabular-nums text-muted-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Хмель248",
+        "x": 511.5,
+        "y": 246,
+        "w": 123.9,
+        "h": 38,
+        "classes": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foregroun"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "x": 524.5,
+        "y": 257,
+        "w": 16,
+        "h": 16,
+        "classes": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "x": 531.7,
+        "y": 264.2,
+        "w": 4.1,
+        "h": 4.1,
+        "classes": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "x": 525.9,
+        "y": 258.3,
+        "w": 11.1,
+        "h": 11.1,
+        "classes": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "x": 532,
+        "y": 268.3,
+        "w": 3.3,
+        "h": 3.3,
+        "classes": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "x": 535.3,
+        "y": 267.8,
+        "w": 3.9,
+        "h": 3.9,
+        "classes": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "x": 535.8,
+        "y": 264.4,
+        "w": 3.3,
+        "h": 3.3,
+        "classes": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "x": 532.7,
+        "y": 260.7,
+        "w": 6,
+        "h": 3.8,
+        "classes": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "x": 528.2,
+        "y": 265.1,
+        "w": 3.8,
+        "h": 6,
+        "classes": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "SPAN",
+        "text": "248",
+        "x": 595.5,
+        "y": 255,
+        "w": 26.9,
+        "h": 20,
+        "classes": "tabular-nums text-muted-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Дрожжи349",
+        "x": 643.5,
+        "y": 246,
+        "w": 141,
+        "h": 38,
+        "classes": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foregroun"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "x": 656.5,
+        "y": 257,
+        "w": 16,
+        "h": 16,
+        "classes": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "x": 659.1,
+        "y": 258.3,
+        "w": 10.7,
+        "h": 13.3,
+        "classes": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "SPAN",
+        "text": "349",
+        "x": 744.5,
+        "y": 255,
+        "w": 26.9,
+        "h": 20,
+        "classes": "tabular-nums text-muted-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Водоподготовка28",
+        "x": 792.5,
+        "y": 246,
+        "w": 186.9,
+        "h": 38,
+        "classes": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foregroun"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "x": 805.5,
+        "y": 257,
+        "w": 16,
+        "h": 16,
+        "classes": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "x": 807.5,
+        "y": 260.5,
+        "w": 5.3,
+        "h": 7.3,
+        "classes": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "x": 811.5,
+        "y": 259,
+        "w": 7.9,
+        "h": 12.7,
+        "classes": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "SPAN",
+        "text": "28",
+        "x": 948.4,
+        "y": 255,
+        "w": 18,
+        "h": 20,
+        "classes": "tabular-nums text-muted-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Специи и добавки118",
+        "x": 987.4,
+        "y": 246,
+        "w": 207.1,
+        "h": 38,
+        "classes": "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors border-border bg-card text-muted-foregroun"
+      },
+      {
+        "tag": "svg",
+        "text": "",
+        "x": 1000.4,
+        "y": 257,
+        "w": 16,
+        "h": 16,
+        "classes": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "x": 1002.4,
+        "y": 258.3,
+        "w": 12,
+        "h": 13.3,
+        "classes": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "path",
+        "text": "",
+        "x": 1002.6,
+        "y": 261.7,
+        "w": 11.6,
+        "h": 3.3,
+        "classes": "[object SVGAnimatedString]"
+      }
+    ],
+    "clippedText": [],
+    "smallControls": [
+      {
+        "tag": "A",
+        "text": "Все 457",
+        "x": 319.7,
+        "y": 333,
+        "w": 54.3,
+        "h": 20,
+        "classes": "text-sm font-medium text-link hover:text-link/80"
+      },
+      {
+        "tag": "A",
+        "text": "Все 174",
+        "x": 322.4,
+        "y": 1093,
+        "w": 51.6,
+        "h": 20,
+        "classes": "text-sm font-medium text-link hover:text-link/80"
+      },
+      {
+        "tag": "A",
+        "text": "Все 248",
+        "x": 318.2,
+        "y": 1877,
+        "w": 55.8,
+        "h": 20,
+        "classes": "text-sm font-medium text-link hover:text-link/80"
+      },
+      {
+        "tag": "A",
+        "text": "Все 349",
+        "x": 318.6,
+        "y": 2637,
+        "w": 55.4,
+        "h": 20,
+        "classes": "text-sm font-medium text-link hover:text-link/80"
+      },
+      {
+        "tag": "A",
+        "text": "Все 28",
+        "x": 327.3,
+        "y": 3578,
+        "w": 46.8,
+        "h": 20,
+        "classes": "text-sm font-medium text-link hover:text-link/80"
+      },
+      {
+        "tag": "A",
+        "text": "Все 118",
+        "x": 323,
+        "y": 4338,
+        "w": 51,
+        "h": 20,
+        "classes": "text-sm font-medium text-link hover:text-link/80"
+      },
+      {
+        "tag": "A",
+        "text": "Все 28",
+        "x": 327.3,
+        "y": 5170,
+        "w": 46.8,
+        "h": 20,
+        "classes": "text-sm font-medium text-link hover:text-link/80"
+      },
+      {
+        "tag": "A",
+        "text": "Рецепты",
+        "x": 24,
+        "y": 6377,
+        "w": 58.7,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Стили пива",
+        "x": 24,
+        "y": 6405,
+        "w": 77.5,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Калькуляторы",
+        "x": 24,
+        "y": 6433,
+        "w": 95.8,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Статьи",
+        "x": 24,
+        "y": 6461,
+        "w": 46.9,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Ингредиенты",
+        "x": 24,
+        "y": 6489,
+        "w": 91.5,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Маркет",
+        "x": 24,
+        "y": 6517,
+        "w": 49.4,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "BrewForge",
+        "x": 24,
+        "y": 6545,
+        "w": 70.8,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Пользовательское соглашение",
+        "x": 24,
+        "y": 6625.5,
+        "w": 209.1,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Политика конфиденциальности",
+        "x": 24,
+        "y": 6653.5,
+        "w": 216,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Согласие на обработку данных",
+        "x": 24,
+        "y": 6681.5,
+        "w": 210.9,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Использование cookie",
+        "x": 24,
+        "y": 6709.5,
+        "w": 150.8,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Войти",
+        "x": 24,
+        "y": 6790,
+        "w": 41.6,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      }
+    ],
+    "smallInputs": [],
+    "fixed": [
+      {
+        "tag": "HEADER",
+        "text": "NBРецептыСтили пиваКалькуляторыСтатьиИнгредиентыМаркетBrewForgeВойти",
+        "x": 0,
+        "y": 0,
+        "w": 390,
+        "h": 57,
+        "classes": "sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Обратная связь",
+        "x": 324,
+        "y": 784,
+        "w": 50,
+        "h": 44,
+        "classes": "fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px)+var(--nb-sticky-bar-h,0px))] min-h-11 px-4 py-2.5 right-4 z-40 inline-flex items-center g"
+      }
+    ],
+    "screenshot": "/home/dopefish/projects/nb/notes/mobile-review-2026-11-04/screenshots/webkit-_catalog-390.png"
+  },
+  {
+    "route": "/bjcp",
+    "status": 200,
+    "url": "/bjcp",
+    "width": 390,
+    "height": 844,
+    "client": 390,
+    "scroll": 390,
+    "scrollHeight": 20097,
+    "headings": [
+      {
+        "text": "Стили пива по BJCP",
+        "x": 37,
+        "y": 150,
+        "w": 316,
+        "h": 72
+      },
+      {
+        "text": "Семейства",
+        "x": 37,
+        "y": 658,
+        "w": 316,
+        "h": 20
+      },
+      {
+        "text": "Светлое и питкое",
+        "x": 16,
+        "y": 1459,
+        "w": 358,
+        "h": 32
+      },
+      {
+        "text": "Американский лёгкий лагер",
+        "x": 33,
+        "y": 1666.3,
+        "w": 288,
+        "h": 48.9
+      },
+      {
+        "text": "Американский лагер",
+        "x": 33,
+        "y": 2262.5,
+        "w": 288,
+        "h": 24.5
+      },
+      {
+        "text": "Американское пшеничное пиво",
+        "x": 33,
+        "y": 2809.8,
+        "w": 288,
+        "h": 48.9
+      },
+      {
+        "text": "Международный светлый лагер",
+        "x": 33,
+        "y": 3416.1,
+        "w": 288,
+        "h": 48.9
+      },
+      {
+        "text": "Чешский светлый лагер",
+        "x": 33,
+        "y": 3987.8,
+        "w": 288,
+        "h": 48.9
+      },
+      {
+        "text": "Чешский премиальный светлый лагер",
+        "x": 33,
+        "y": 4535.1,
+        "w": 288,
+        "h": 73.4
+      },
+      {
+        "text": "Мюнхенский хеллес",
+        "x": 33,
+        "y": 5155.8,
+        "w": 288,
+        "h": 24.5
+      },
+      {
+        "text": "Фестбир",
+        "x": 33,
+        "y": 5727.5,
+        "w": 288,
+        "h": 24.5
+      },
+      {
+        "text": "Немецкий ляйхтбир",
+        "x": 33,
+        "y": 6299.3,
+        "w": 288,
+        "h": 24.5
+      },
+      {
+        "text": "Кёльш",
+        "x": 33,
+        "y": 6871,
+        "w": 288,
+        "h": 24.5
+      },
+      {
+        "text": "Немецкий хеллес экспортбир",
+        "x": 33,
+        "y": 7418.3,
+        "w": 288,
+        "h": 48.9
+      },
+      {
+        "text": "Немецкий пилс",
+        "x": 33,
+        "y": 8014.5,
+        "w": 288,
+        "h": 24.5
+      },
+      {
+        "text": "Британский голден-эль",
+        "x": 33,
+        "y": 8561.8,
+        "w": 288,
+        "h": 48.9
+      },
+      {
+        "text": "Австралийский спарклинг-эль",
+        "x": 33,
+        "y": 9133.6,
+        "w": 288,
+        "h": 48.9
+      },
+      {
+        "text": "Келлербир",
+        "x": 33,
+        "y": 9729.8,
+        "w": 288,
+        "h": 24.5
+      },
+      {
+        "text": "Лагер эпохи до сухого закона",
+        "x": 33,
+        "y": 10299.6,
+        "w": 288,
+        "h": 48.9
+      },
+      {
+        "text": "Дорада Пампеана",
+        "x": 33,
+        "y": 10895.8,
+        "w": 288,
+        "h": 24.5
+      },
+      {
+        "text": "Новозеландский пилснер",
+        "x": 33,
+        "y": 11443.1,
+        "w": 288,
+        "h": 48.9
+      },
+      {
+        "text": "Указатель стилей",
+        "x": 16,
+        "y": 12029,
+        "w": 358,
+        "h": 32
+      },
+      {
+        "text": "1. Стандартное американское пиво",
+        "x": 16,
+        "y": 12085,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "2. Международный лагер",
+        "x": 16,
+        "y": 12289,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "3. Чешский лагер",
+        "x": 16,
+        "y": 12457,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "4. Светлый солодовый европейский лагер",
+        "x": 16,
+        "y": 12661,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "5. Светлое горькое европейское пиво",
+        "x": 16,
+        "y": 12829,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "6. Янтарный солодовый европейский лагер",
+        "x": 16,
+        "y": 13033,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "7. Янтарное горькое европейское пиво",
+        "x": 16,
+        "y": 13201,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "8. Тёмный европейский лагер",
+        "x": 16,
+        "y": 13333,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "9. Крепкое европейское пиво",
+        "x": 16,
+        "y": 13465,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "10. Немецкое пшеничное пиво",
+        "x": 16,
+        "y": 13633,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "11. Британский биттер",
+        "x": 16,
+        "y": 13801,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "12. Светлое пиво стран Содружества",
+        "x": 16,
+        "y": 13969,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "13. Коричневое британское пиво",
+        "x": 16,
+        "y": 14137,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "14. Шотландский эль",
+        "x": 16,
+        "y": 14305,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "15. Ирландское пиво",
+        "x": 16,
+        "y": 14473,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "16. Тёмное британское пиво",
+        "x": 16,
+        "y": 14641,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "17. Крепкий британский эль",
+        "x": 16,
+        "y": 14845,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "18. Светлый американский эль",
+        "x": 16,
+        "y": 15049,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "19. Янтарное и коричневое американское пиво",
+        "x": 16,
+        "y": 15181,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "20. Американский портер и стаут",
+        "x": 16,
+        "y": 15349,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "21. IPA",
+        "x": 16,
+        "y": 15517,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "22. Крепкий американский эль",
+        "x": 16,
+        "y": 15937,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "23. Европейский кислый эль",
+        "x": 16,
+        "y": 16141,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "24. Бельгийский эль",
+        "x": 16,
+        "y": 16453,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "25. Крепкий бельгийский эль",
+        "x": 16,
+        "y": 16621,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "26. Монастырский эль",
+        "x": 16,
+        "y": 16789,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "27. Историческое пиво",
+        "x": 16,
+        "y": 16993,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "28. Американский вайлд-эль",
+        "x": 16,
+        "y": 17417,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "29. Фруктовое пиво",
+        "x": 16,
+        "y": 17621,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "30. Пиво со специями, травами и овощами",
+        "x": 16,
+        "y": 17825,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "31. Пиво с альтернативными зерновыми и сахарами",
+        "x": 16,
+        "y": 18049,
+        "w": 358,
+        "h": 40
+      },
+      {
+        "text": "32. Копчёное пиво",
+        "x": 16,
+        "y": 18201,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "33. Пиво с выдержкой на древесине",
+        "x": 16,
+        "y": 18333,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "34. Специальное пиво",
+        "x": 16,
+        "y": 18465,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "X-AR. Аргентинские стили",
+        "x": 16,
+        "y": 18633,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "X-BR. Бразильские стили",
+        "x": 16,
+        "y": 18765,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "X-IT. Итальянские стили",
+        "x": 16,
+        "y": 18861,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "X-NZ. Новозеландские стили",
+        "x": 16,
+        "y": 18957,
+        "w": 358,
+        "h": 20
+      }
+    ],
+    "outside": [],
+    "clippedText": [
+      {
+        "tag": "LABEL",
+        "text": "Поиск стилей BJCP",
+        "x": 36,
+        "y": 241,
+        "w": 1,
+        "h": 1,
+        "classes": "sr-only"
+      }
+    ],
+    "smallControls": [
+      {
+        "tag": "A",
+        "text": "Главная",
+        "x": 37,
+        "y": 111.5,
+        "w": 53.2,
+        "h": 17,
+        "classes": "transition hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Рецепты",
+        "x": 24,
+        "y": 19576,
+        "w": 58.7,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Стили пива",
+        "x": 24,
+        "y": 19604,
+        "w": 77.5,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Калькуляторы",
+        "x": 24,
+        "y": 19632,
+        "w": 95.8,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Статьи",
+        "x": 24,
+        "y": 19660,
+        "w": 46.9,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Ингредиенты",
+        "x": 24,
+        "y": 19688,
+        "w": 91.5,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Маркет",
+        "x": 24,
+        "y": 19716,
+        "w": 49.4,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "BrewForge",
+        "x": 24,
+        "y": 19744,
+        "w": 70.8,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Пользовательское соглашение",
+        "x": 24,
+        "y": 19824.5,
+        "w": 209.1,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Политика конфиденциальности",
+        "x": 24,
+        "y": 19852.5,
+        "w": 216,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Согласие на обработку данных",
+        "x": 24,
+        "y": 19880.5,
+        "w": 210.9,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Использование cookie",
+        "x": 24,
+        "y": 19908.5,
+        "w": 150.8,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Войти",
+        "x": 24,
+        "y": 19989,
+        "w": 41.6,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      }
+    ],
+    "smallInputs": [],
+    "fixed": [
+      {
+        "tag": "HEADER",
+        "text": "NBРецептыСтили пиваКалькуляторыСтатьиИнгредиентыМаркетBrewForgeВойти",
+        "x": 0,
+        "y": 0,
+        "w": 390,
+        "h": 57,
+        "classes": "sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Обратная связь",
+        "x": 324,
+        "y": 784,
+        "w": 50,
+        "h": 44,
+        "classes": "fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px)+var(--nb-sticky-bar-h,0px))] min-h-11 px-4 py-2.5 right-4 z-40 inline-flex items-center g"
+      }
+    ],
+    "screenshot": "/home/dopefish/projects/nb/notes/mobile-review-2026-11-04/screenshots/webkit-_bjcp-390.png"
+  },
+  {
+    "route": "/labels",
+    "status": 200,
+    "url": "/labels",
+    "width": 390,
+    "height": 844,
+    "client": 390,
+    "scroll": 390,
+    "scrollHeight": 3267,
+    "headings": [
+      {
+        "text": "Этикетки на бутылки",
+        "x": 16,
+        "y": 89.5,
+        "w": 358,
+        "h": 32
+      },
+      {
+        "text": "Формат",
+        "x": 16,
+        "y": 145.5,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "Шаблон",
+        "x": 16,
+        "y": 389.5,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "Рецепт",
+        "x": 16,
+        "y": 475.5,
+        "w": 358,
+        "h": 20
+      },
+      {
+        "text": "Предпросмотр",
+        "x": 16,
+        "y": 635.5,
+        "w": 103.3,
+        "h": 20
+      },
+      {
+        "text": "Данные",
+        "x": 16,
+        "y": 1141.6,
+        "w": 54.7,
+        "h": 20
+      }
+    ],
+    "outside": [],
+    "clippedText": [],
+    "smallControls": [
+      {
+        "tag": "A",
+        "text": "К инструментам",
+        "x": 16,
+        "y": 57,
+        "w": 130.4,
+        "h": 20,
+        "classes": "inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Показать как при печати",
+        "x": 230.2,
+        "y": 637.5,
+        "w": 143.8,
+        "h": 16,
+        "classes": "text-xs text-muted-foreground hover:text-foreground"
+      },
+      {
+        "tag": "INPUT",
+        "text": "",
+        "x": 16,
+        "y": 2261.6,
+        "w": 16,
+        "h": 16,
+        "classes": "h-4 w-4 rounded border-border disabled:cursor-not-allowed disabled:opacity-50"
+      },
+      {
+        "tag": "A",
+        "text": "Войдите",
+        "x": 300.6,
+        "y": 2288.6,
+        "w": 49.6,
+        "h": 14,
+        "classes": "underline underline-offset-2 transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Рецепты",
+        "x": 24,
+        "y": 2746.6,
+        "w": 58.7,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Стили пива",
+        "x": 24,
+        "y": 2774.6,
+        "w": 77.5,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Калькуляторы",
+        "x": 24,
+        "y": 2802.6,
+        "w": 95.8,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Статьи",
+        "x": 24,
+        "y": 2830.6,
+        "w": 46.9,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Ингредиенты",
+        "x": 24,
+        "y": 2858.6,
+        "w": 91.5,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Маркет",
+        "x": 24,
+        "y": 2886.6,
+        "w": 49.4,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "BrewForge",
+        "x": 24,
+        "y": 2914.6,
+        "w": 70.8,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Пользовательское соглашение",
+        "x": 24,
+        "y": 2995.1,
+        "w": 209.1,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Политика конфиденциальности",
+        "x": 24,
+        "y": 3023.1,
+        "w": 216,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Согласие на обработку данных",
+        "x": 24,
+        "y": 3051.1,
+        "w": 210.9,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Использование cookie",
+        "x": 24,
+        "y": 3079.1,
+        "w": 150.8,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Войти",
+        "x": 24,
+        "y": 3159.6,
+        "w": 41.6,
+        "h": 17,
+        "classes": "text-muted-foreground transition-colors hover:text-foreground"
+      }
+    ],
+    "smallInputs": [
+      {
+        "tag": "INPUT",
+        "text": "",
+        "x": 16,
+        "y": 2261.6,
+        "w": 16,
+        "h": 16,
+        "classes": "h-4 w-4 rounded border-border disabled:cursor-not-allowed disabled:opacity-50",
+        "font": "14px"
+      }
+    ],
+    "fixed": [
+      {
+        "tag": "HEADER",
+        "text": "NBРецептыСтили пиваКалькуляторыСтатьиИнгредиентыМаркетBrewForgeВойти",
+        "x": 0,
+        "y": 0,
+        "w": 390,
+        "h": 57,
+        "classes": "sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Обратная связь",
+        "x": 324,
+        "y": 784,
+        "w": 50,
+        "h": 44,
+        "classes": "fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px)+var(--nb-sticky-bar-h,0px))] min-h-11 px-4 py-2.5 right-4 z-40 inline-flex items-center g"
+      }
+    ],
+    "screenshot": "/home/dopefish/projects/nb/notes/mobile-review-2026-11-04/screenshots/webkit-_labels-390.png"
+  },
+  {
+    "route": "/calculators/abv-attenuation",
+    "role": "admin",
+    "status": 200,
+    "url": "/calculators/abv-attenuation",
+    "width": 390,
+    "height": 844,
+    "client": 390,
+    "scroll": 390,
+    "scrollHeight": 2163,
+    "headings": [
+      {
+        "text": "Крепость, сбраживание и калории",
+        "x": 16,
+        "y": 228.5,
+        "w": 318,
+        "h": 60
+      },
+      {
+        "text": "Замеры плотности",
+        "x": 37,
+        "y": 402.5,
+        "w": 133.4,
+        "h": 20
+      },
+      {
+        "text": "Дальше",
+        "x": 33,
+        "y": 1457.5,
+        "w": 324,
+        "h": 20
+      }
+    ],
+    "outside": [],
+    "clippedText": [],
+    "smallControls": [
+      {
+        "tag": "A",
+        "text": "Главная",
+        "x": 16,
+        "y": 105.5,
+        "w": 53.2,
+        "h": 17,
+        "classes": "transition hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Калькуляторы",
+        "x": 92,
+        "y": 105.5,
+        "w": 95.8,
+        "h": 17,
+        "classes": "transition hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Все калькуляторы",
+        "x": 16,
+        "y": 184,
+        "w": 149.8,
+        "h": 20,
+        "classes": "inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+      }
+    ],
+    "smallInputs": [],
+    "fixed": [
+      {
+        "tag": "HEADER",
+        "text": "NB",
+        "x": 0,
+        "y": 0,
+        "w": 390,
+        "h": 56,
+        "classes": "sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur lg:hidden"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Крепость (ABV)4.98%ABW 3.9%",
+        "x": 0,
+        "y": 687,
+        "w": 390,
+        "h": 101,
+        "classes": "fixed inset-x-0 bottom-[var(--chrome-bottom,0px)] z-40 flex w-full items-center gap-3 border-t border-border bg-card px-4 pt-2.5 text-left shadow-[0_-6px_16px_rgba(0,0,0,"
+      },
+      {
+        "tag": "NAV",
+        "text": "Быстрая навигация",
+        "x": 0,
+        "y": 788,
+        "w": 390,
+        "h": 56,
+        "classes": "fixed inset-x-0 bottom-0 z-40 flex min-h-14 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Обратная связь",
+        "x": 324,
+        "y": 728,
+        "w": 50,
+        "h": 44,
+        "classes": "fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px)+var(--nb-sticky-bar-h,0px))] min-h-11 px-4 py-2.5 right-4 z-40 inline-flex items-center g"
+      }
+    ],
+    "screenshot": "/home/dopefish/projects/nb/notes/mobile-review-2026-11-04/screenshots/webkit-private-_calculators_abv_attenuation-390.png"
+  },
+  {
+    "route": "/calculators/dilution-boiloff",
+    "role": "admin",
+    "status": 200,
+    "url": "/calculators/dilution-boiloff",
+    "width": 390,
+    "height": 844,
+    "client": 390,
+    "scroll": 390,
+    "scrollHeight": 2060,
+    "headings": [
+      {
+        "text": "Разбавить или уварить сусло",
+        "x": 16,
+        "y": 200.5,
+        "w": 318,
+        "h": 60
+      },
+      {
+        "text": "Дальше",
+        "x": 33,
+        "y": 1339,
+        "w": 324,
+        "h": 20
+      }
+    ],
+    "outside": [],
+    "clippedText": [],
+    "smallControls": [
+      {
+        "tag": "A",
+        "text": "Главная",
+        "x": 16,
+        "y": 105.5,
+        "w": 53.2,
+        "h": 17,
+        "classes": "transition hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Калькуляторы",
+        "x": 92,
+        "y": 105.5,
+        "w": 95.8,
+        "h": 17,
+        "classes": "transition hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Все калькуляторы",
+        "x": 16,
+        "y": 156,
+        "w": 149.8,
+        "h": 20,
+        "classes": "inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "INPUT",
+        "text": "",
+        "x": 33,
+        "y": 796.5,
+        "w": 20,
+        "h": 20,
+        "classes": "peer h-5 w-5 cursor-pointer appearance-none rounded border border-input bg-card transition-colors checked:border-primary checked:bg-primary indeterminate:border-primary i"
+      }
+    ],
+    "smallInputs": [
+      {
+        "tag": "INPUT",
+        "text": "",
+        "x": 33,
+        "y": 796.5,
+        "w": 20,
+        "h": 20,
+        "classes": "peer h-5 w-5 cursor-pointer appearance-none rounded border border-input bg-card transition-colors checked:border-primary checked:bg-primary indeterminate:border-primary i",
+        "font": "14px"
+      }
+    ],
+    "fixed": [
+      {
+        "tag": "HEADER",
+        "text": "NB",
+        "x": 0,
+        "y": 0,
+        "w": 390,
+        "h": 56,
+        "classes": "sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur lg:hidden"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Долить воды3.91 лПлотность станет 12.4 °P",
+        "x": 0,
+        "y": 687,
+        "w": 390,
+        "h": 101,
+        "classes": "fixed inset-x-0 bottom-[var(--chrome-bottom,0px)] z-40 flex w-full items-center gap-3 border-t border-border bg-card px-4 pt-2.5 text-left shadow-[0_-6px_16px_rgba(0,0,0,"
+      },
+      {
+        "tag": "NAV",
+        "text": "Быстрая навигация",
+        "x": 0,
+        "y": 788,
+        "w": 390,
+        "h": 56,
+        "classes": "fixed inset-x-0 bottom-0 z-40 flex min-h-14 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Обратная связь",
+        "x": 324,
+        "y": 627,
+        "w": 50,
+        "h": 44,
+        "classes": "fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px)+var(--nb-sticky-bar-h,0px))] min-h-11 px-4 py-2.5 right-4 z-40 inline-flex items-center g"
+      }
+    ],
+    "screenshot": "/home/dopefish/projects/nb/notes/mobile-review-2026-11-04/screenshots/webkit-private-_calculators_dilution_boiloff-390.png"
+  },
+  {
+    "route": "/calculators/dilution-boiloff",
+    "role": "admin",
+    "status": 200,
+    "url": "/calculators/dilution-boiloff",
+    "width": 320,
+    "height": 740,
+    "client": 320,
+    "scroll": 320,
+    "scrollHeight": 2170,
+    "headings": [
+      {
+        "text": "Разбавить или уварить сусло",
+        "x": 16,
+        "y": 228.5,
+        "w": 248,
+        "h": 60
+      },
+      {
+        "text": "Дальше",
+        "x": 33,
+        "y": 1407,
+        "w": 254,
+        "h": 20
+      }
+    ],
+    "outside": [],
+    "clippedText": [],
+    "smallControls": [
+      {
+        "tag": "A",
+        "text": "Главная",
+        "x": 16,
+        "y": 105.5,
+        "w": 53.2,
+        "h": 17,
+        "classes": "transition hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Калькуляторы",
+        "x": 92,
+        "y": 105.5,
+        "w": 95.8,
+        "h": 17,
+        "classes": "transition hover:text-foreground"
+      },
+      {
+        "tag": "A",
+        "text": "Все калькуляторы",
+        "x": 16,
+        "y": 184,
+        "w": 149.8,
+        "h": 20,
+        "classes": "inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+      },
+      {
+        "tag": "INPUT",
+        "text": "",
+        "x": 33,
+        "y": 848.5,
+        "w": 20,
+        "h": 20,
+        "classes": "peer h-5 w-5 cursor-pointer appearance-none rounded border border-input bg-card transition-colors checked:border-primary checked:bg-primary indeterminate:border-primary i"
+      }
+    ],
+    "smallInputs": [
+      {
+        "tag": "INPUT",
+        "text": "",
+        "x": 33,
+        "y": 848.5,
+        "w": 20,
+        "h": 20,
+        "classes": "peer h-5 w-5 cursor-pointer appearance-none rounded border border-input bg-card transition-colors checked:border-primary checked:bg-primary indeterminate:border-primary i",
+        "font": "14px"
+      }
+    ],
+    "fixed": [
+      {
+        "tag": "HEADER",
+        "text": "NB",
+        "x": 0,
+        "y": 0,
+        "w": 320,
+        "h": 56,
+        "classes": "sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur lg:hidden"
+      },
+      {
+        "tag": "NAV",
+        "text": "Быстрая навигация",
+        "x": 0,
+        "y": 684,
+        "w": 320,
+        "h": 56,
+        "classes": "fixed inset-x-0 bottom-0 z-40 flex min-h-14 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Обратная связь",
+        "x": 254,
+        "y": 624,
+        "w": 50,
+        "h": 44,
+        "classes": "fixed bottom-[calc(1rem+var(--nb-cookie-banner-h,0px)+var(--nb-bottom-nav-h,0px)+var(--nb-sticky-bar-h,0px))] min-h-11 px-4 py-2.5 right-4 z-40 inline-flex items-center g"
+      }
+    ],
+    "screenshot": "/home/dopefish/projects/nb/notes/mobile-review-2026-11-04/screenshots/webkit-private-_calculators_dilution_boiloff-320.png"
+  }
+]

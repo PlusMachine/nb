@@ -14,7 +14,8 @@ import { BrewQuickDock } from "./brew-quick-dock";
 import { BrewTransitionButton } from "./brew-transition-button";
 import { ManualBrewStep } from "./manual-brew-step";
 import { ManualBrewTransfer } from "./manual-brew-transfer";
-import { useBrewDayProgress } from "./use-brew-day-progress";
+import { useBrewProgress } from "../offline/use-brew-progress";
+import { useOfflineBrew } from "../offline/context";
 
 export function BrewDayBoard({ brewBatchId, ownerId, groups, initialProgress, hasOg, calibration, records, notes,
   preferredGravityUnit = "plato", targetOgSg = null, initialFermenterL = null, fermentationLabel }: {
@@ -22,7 +23,8 @@ export function BrewDayBoard({ brewBatchId, ownerId, groups, initialProgress, ha
   hasOg: boolean; calibration?: React.ReactNode; records?: React.ReactNode; notes?: React.ReactNode;
   preferredGravityUnit?: PreferredGravityUnit; targetOgSg?: number | null; initialFermenterL?: number | null; fermentationLabel?: string;
 }) {
-  const controller = useBrewDayProgress(brewBatchId, initialProgress, ownerId);
+  const offlineBrew = useOfflineBrew(brewBatchId);
+  const controller = useBrewProgress(brewBatchId, initialProgress, ownerId);
   const { progress, now, patchStep } = controller;
   const phases = manualBrewPhases(groups);
   const focus = resolveManualBrewFocus(phases, progress, now);
@@ -74,10 +76,10 @@ export function BrewDayBoard({ brewBatchId, ownerId, groups, initialProgress, ha
   </div> : activeTimerRemaining !== null && (panel !== null || preview !== null) ? <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-3 py-2.5 text-sm"><span>{step?.title}</span><strong className="tabular-nums">{fmtClock(activeTimerRemaining)}</strong></div> : null;
   const holdBar = focus.holdRemaining != null && step?.stage === "whirlpool" && !progress.steps[step.id]?.timerStartedAt ? <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-3 py-2.5 text-sm"><span>До конца выдержки</span><strong className="tabular-nums">{fmtClock(focus.holdRemaining)}</strong></div> : null;
   const transfer = progress.steps["brew:transfer"];
-  const ogRecorded = hasOg || transfer?.gravitySg != null;
+  const ogRecorded = (offlineBrew?.snapshot ? offlineBrew.snapshot.measurements.length > 0 : hasOg) || transfer?.gravitySg != null;
   const showPitch = step?.id === "brew:pitch" || !step;
   const previous = phases.flatMap(phase => phase.steps).reverse().filter(item => progress.steps[item.id]?.done).sort((a, b) => (Date.parse(progress.steps[b.id]?.completedAt ?? "") || 0) - (Date.parse(progress.steps[a.id]?.completedAt ?? "") || 0))[0];
-  const busySync = controller.queuedCount > 0;
+  const busySync = !offlineBrew && controller.queuedCount > 0;
   const nextHolding = focus.next?.stage === "whirlpool" && progress.steps[focus.next.id]?.timerStartedAt;
   const sanitationShownEarlier = phases.some(phase => phase.id === "dip" && phase.steps.some(item => progress.steps[item.id]?.done || progress.steps[item.id]?.timerStartedAt));
   const unscheduled = phases.filter(phase => phase.unordered).flatMap(phase => phase.steps).filter(item => !progress.steps[item.id]?.done);
@@ -86,11 +88,11 @@ export function BrewDayBoard({ brewBatchId, ownerId, groups, initialProgress, ha
     <BrewProcessPlan phases={phases} progress={progress} current={step} phaseIndex={focus.phaseIndex} now={now}
       storageKey={`nb:brew-plan:${ownerId ?? "local"}:${brewBatchId}`} onPreview={item => setPreview(item.id === step?.id ? null : item)} />
 
-    {controller.offline ? <div role="status" className="flex items-start gap-2 rounded-xl bg-warning-subtle p-3 text-sm text-warning-subtle-foreground">
+    {!offlineBrew && controller.offline ? <div role="status" className="flex items-start gap-2 rounded-xl bg-warning-subtle p-3 text-sm text-warning-subtle-foreground">
       <WifiOff className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
       <div><p className="font-medium">Нет связи</p><p className="text-xs">{controller.queuedCount ? `Изменения сохранены на устройстве. В очереди: ${controller.queuedCount}.` : "Можно продолжать варку: новые отметки сохраняются на устройстве."}</p></div>
     </div> : busySync ? <span role="status" className="sr-only">Отправляем сохранённые изменения</span> : null}
-    {controller.error ? <div role="alert" className="space-y-2 rounded-xl bg-destructive-subtle p-3 text-sm text-destructive-subtle-foreground"><p>{controller.error}</p><Button type="button" size="sm" variant="outline" onClick={() => controller.retry()}>Повторить отправку</Button></div> : null}
+    {controller.error ? <div role="alert" className="space-y-2 rounded-xl bg-destructive-subtle p-3 text-sm text-destructive-subtle-foreground"><p>{controller.error}</p>{!offlineBrew ? <Button type="button" size="sm" variant="outline" onClick={() => controller.retry()}>Повторить отправку</Button> : null}</div> : null}
 
     {runningBar}
     {holdBar}
@@ -115,7 +117,7 @@ export function BrewDayBoard({ brewBatchId, ownerId, groups, initialProgress, ha
         {calibration ? <div className="pt-2">{calibration}</div> : null}
       </> : step?.id === "brew:transfer" ? <>
         <h2 className="text-xl font-semibold">Перелейте сусло в ферментер</h2>
-        <ManualBrewTransfer controller={controller} preferredGravityUnit={preferredGravityUnit} targetOgSg={targetOgSg} initialFermenterL={initialFermenterL} />
+        <ManualBrewTransfer controller={controller} preferredGravityUnit={preferredGravityUnit} targetOgSg={targetOgSg} initialFermenterL={offlineBrew?.snapshot ? offlineBrew.snapshot.volumes.fermenterL ?? null : initialFermenterL} />
       </> : step ? <>
         {step.boilSecondsBeforeEnd != null && focus.boilRemaining != null ? <p className="text-sm text-success">{focus.boilRemaining < step.boilSecondsBeforeEnd - 5 ? `По плану — ${fmtClock(step.boilSecondsBeforeEnd - focus.boilRemaining)} назад` : "Пора внести"}</p> : null}
         <ManualBrewStep key={brewBatchId} step={step} companions={focus.companions} controller={controller} onInteract={unlockAudio} showSanitationReminder={!sanitationShownEarlier} />

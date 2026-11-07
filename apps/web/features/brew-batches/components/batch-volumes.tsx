@@ -5,22 +5,25 @@ import { useRouter } from "next/navigation";
 import { Button, Dialog, DialogCloseButton, DialogFooter, DialogHeader } from "@nb/ui";
 import { calibrateBatchEquipmentAction, saveBatchVolumesAction } from "@/app/(app)/app/brew-batches/[id]/records-actions";
 import { calculateBatchCalibration, volumeLabels, type VolumeMeasurements } from "../records";
+import { useOfflineBrew } from "../offline/context";
 
 const fieldClass = "mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-base text-foreground sm:text-sm";
 const fmt = (n: number) => n.toLocaleString("ru-RU", { maximumFractionDigits: 2 });
 export type CalibrationProfile = { id: string; name: string; evaporationRateLPerHr: number; trubChillerLossL: number; coolingShrinkagePct: number; updatedAt: string };
 
-export function BatchCalibration({ brewBatchId, volumes, profile, boilMinutes }: {
+export function BatchCalibration({ brewBatchId, volumes: serverVolumes, profile, boilMinutes }: {
   brewBatchId: string; volumes: VolumeMeasurements; profile: CalibrationProfile | null; boilMinutes: number;
 }) {
   const router = useRouter();
+  const offline = useOfflineBrew(brewBatchId);
+  const volumes = offline?.snapshot?.volumes ?? serverVolumes;
   const [open, setOpen] = useState(false), [duration, setDuration] = useState(String(boilMinutes));
   const [confirmed, setConfirmed] = useState(false), [busy, setBusy] = useState(false), [error, setError] = useState("");
   const inFlight = useRef(false);
   const next = profile ? calculateBatchCalibration(volumes, Number(duration.replace(",", ".")), profile.coolingShrinkagePct) : null;
   if (!profile || !calculateBatchCalibration(volumes, boilMinutes, profile.coolingShrinkagePct)) return null;
   return <>
-    <Button type="button" variant="outline" size="sm" onClick={() => { setOpen(true); setConfirmed(false); setError(""); }}>Обновить настройки пивоварни</Button>
+    <Button type="button" variant="outline" size="sm" disabled={Boolean(offline && (offline.network !== "online" || offline.record?.queue.length))} onClick={() => { setOpen(true); setConfirmed(false); setError(""); }}>Обновить настройки пивоварни</Button>
     <Dialog open={open} onOpenChange={value => { if (!busy) setOpen(value); }} title="Обновить настройки пивоварни" hideTitle size="md">
       <DialogHeader><h2 className="text-base font-semibold">Обновить настройки пивоварни</h2><DialogCloseButton disabled={busy} /></DialogHeader>
       <form onSubmit={async event => {
@@ -50,10 +53,12 @@ export function BatchCalibration({ brewBatchId, volumes, profile, boilMinutes }:
   </>;
 }
 
-export function BatchVolumes({ brewBatchId, volumes, stage, calibration }: {
+export function BatchVolumes({ brewBatchId, volumes: serverVolumes, stage, calibration }: {
   brewBatchId: string; volumes: VolumeMeasurements; stage: "brew" | "bottling"; calibration?: { profile: CalibrationProfile | null; boilMinutes: number };
 }) {
   const router = useRouter();
+  const offline = useOfflineBrew(brewBatchId);
+  const volumes = offline?.snapshot?.volumes ?? serverVolumes;
   const [values, setValues] = useState<Record<string, string>>(() => Object.fromEntries(Object.entries(volumes).map(([key, value]) => [key, value == null ? "" : String(value).replace(".", ",")])) ), [busy, setBusy] = useState(false), [message, setMessage] = useState(""), [error, setError] = useState("");
   const inFlight = useRef(false);
   const dirtyFields = useRef(new Set<keyof VolumeMeasurements>());
@@ -74,7 +79,15 @@ export function BatchVolumes({ brewBatchId, volumes, stage, calibration }: {
       const editedKeys = keys.filter(key => dirtyFields.current.has(key));
       const patch = Object.fromEntries(editedKeys.map(key => [key, values[key]?.trim() ? Number(values[key]!.trim().replace(",", ".")) : null]));
       inFlight.current = true; setBusy(true); setError(""); setMessage("");
-      try { const result = await saveBatchVolumesAction(brewBatchId, patch); if (!result.ok) setError(result.message); else { editedKeys.forEach(key => dirtyFields.current.delete(key)); setMessage("Сохранено"); router.refresh(); } }
+      try {
+        const result = offline ? await offline.save({ kind: "volumes", patch }) : await saveBatchVolumesAction(brewBatchId, patch);
+        if (!result.ok) setError(result.message);
+        else {
+          editedKeys.forEach(key => dirtyFields.current.delete(key));
+          setMessage(result.message);
+          if (!offline) router.refresh();
+        }
+      }
       catch { setError("Не удалось сохранить объёмы."); } finally { inFlight.current = false; setBusy(false); }
     }}>
       {stage === "brew" ? <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">{keys.map(input)}</div> : <>

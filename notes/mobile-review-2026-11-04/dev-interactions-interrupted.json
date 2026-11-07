@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Ingredient categories: full labels and selection at 320px",
+    "ok": false,
+    "ms": 34873,
+    "error": "locator.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('recipe-ingredient-category-grid').getByRole('button', { name: 'Хмель', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"min-h-11 min-w-0 rounded-md border px-2 py-2 text-xs transition sm:px-3 border-border bg-card text-muted-foreground hover:border-border hover:bg-muted\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - performing click action\u001b[22m\n"
+  },
+  {
+    "name": "Ingredient categories: full labels and selection at 360px",
+    "ok": false,
+    "ms": 17810,
+    "error": "locator.evaluate: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('recipe-ingredient-category-grid').getByRole('button', { name: 'Водоподготовка', exact: true })\u001b[22m\n"
+  },
+  {
+    "name": "Ingredient categories: full labels and selection at 390px",
+    "ok": false,
+    "ms": 15107,
+    "error": "locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('recipe-ingredient-category-grid') to be visible\u001b[22m\n"
+  },
+  {
+    "name": "Ingredient categories: full labels and selection at 768px",
+    "ok": false,
+    "ms": 22307,
+    "error": "locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('recipe-ingredient-category-grid') to be visible\u001b[22m\n"
+  },
+  {
+    "name": "Recipe section headings remain readable at 320px",
+    "ok": false,
+    "ms": 15175,
+    "error": "locator.scrollIntoViewIfNeeded: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('heading').filter({ hasText: 'Сравнение со стилем' }).first()\u001b[22m\n"
+  },
+  {
+    "name": "Recipe actions: two import dialog cycles then brew dialog",
+    "ok": false,
+    "ms": 15019,
+    "error": "locator.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('recipe-toolbar').getByRole('button', { name: 'Действия с рецептом', exact: true })\u001b[22m\n"
+  }
+]

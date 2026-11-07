@@ -1,0 +1,40 @@
+{
+  "stableServer": {
+    "url": "http://127.0.0.1:3104",
+    "distDir": ".next-mobile-review-production-20261104",
+    "copiedFrom": ".next-perf-fixes-final-20261104",
+    "buildId": "IZkEY2FLdSUW6O3BKRIr2",
+    "sourceBuildLocalTime": "2026-11-04T18:13:47.240961+03:00"
+  },
+  "currentSourceServer": {
+    "url": "http://127.0.0.1:3105",
+    "distDir": ".next-mobile-review-20261104",
+    "scope": "editor corrections, interactions and recipe proposal"
+  },
+  "database": "isolated clone nb_mobile_review_20261104",
+  "changedFiles": [
+    {
+      "path": "apps/web/components/ingredients/custom-catalog-ingredient-form.tsx",
+      "sha256": "4e365a75cd7c57bdc7ef7248b2be7c24b6bfb51ee9ea5c52d0e33a854cc56e68"
+    },
+    {
+      "path": "apps/web/components/recipes/recipe-designer/recipe-designer.tsx",
+      "sha256": "e861fe9978107a63c1fa0a18adcd280ea83cec2764da801a1cb4f5ae16f6b98a"
+    },
+    {
+      "path": "apps/web/components/recipes/recipe-designer/recipe-style-stats-block.tsx",
+      "sha256": "74afb2157e678a4bb72511170262802931d364d91e8e35890e0f1051d438ef93"
+    },
+    {
+      "path": "apps/web/components/recipes/recipe-designer/recipe-ingredient-category-grid.tsx",
+      "sha256": "c8596f2f4730622d992164f1c52e4e4c05383494af0efc78c5a01cfd02648c69"
+    },
+    {
+      "path": "apps/web/app/(public)/catalog/custom/[id]/edit/page.tsx",
+      "sha256": "70710b62133ced6ea72bc48952d4904db9566a0d0fba1f2594618f23685921ed"
+    }
+  ],
+  "chromium": "Playwright 1.61.1",
+  "webkit": "Playwright WebKit 2311 with existing isolated runtime libraries",
+  "prototypeMethod": "Temporary DOM and CSS changes in dedicated browser views; no application source changes for proposals"
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "file": "apps/web/app/fonts/Rubik-Variable.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/rubik/Rubik%5Bwght%5D.ttf",
+    "bytes": 359804,
+    "sha256": "1b3a7437ba2af80e465e773ed60c5036d1ba6ace492d89046dbcf18fb31e4e88"
+  },
+  {
+    "file": "apps/web/app/fonts/Rubik-OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/rubik/OFL.txt",
+    "bytes": 4384,
+    "sha256": "472cbe7c25441df63e9c7864b43eb3c0f4b3df950c66a76224e6cfe1eae843fb"
+  },
+  {
+    "file": "apps/web/app/fonts/Montserrat-Variable.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/montserrat/Montserrat%5Bwght%5D.ttf",
+    "bytes": 744936,
+    "sha256": "0f7b311b2f3279e4eef9b2f968bcdbab6e28f4daeb1f049f4f278a902bcd82f7"
+  },
+  {
+    "file": "apps/web/app/fonts/Montserrat-OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/montserrat/OFL.txt",
+    "bytes": 4400,
+    "sha256": "8b7141c03fa4f8d44e6345d5d4931709290f0f67875e452e95ac1fd3a027802e"
+  },
+  {
+    "file": "apps/web/app/fonts/Onest-Variable.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/onest/Onest%5Bwght%5D.ttf",
+    "bytes": 193056,
+    "sha256": "966c5c29b4755da84b6854d5c21dd4eaa2420225d0e9874de602de176d4a9f31"
+  },
+  {
+    "file": "apps/web/app/fonts/Onest-OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/onest/OFL.txt",
+    "bytes": 4384,
+    "sha256": "071195d8806e226faeee60259c28ca67b458227af5195a73f5cfcab06e3003bc"
+  },
+  {
+    "file": "apps/web/app/fonts/Unbounded-Variable.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/unbounded/Unbounded%5Bwght%5D.ttf",
+    "bytes": 778272,
+    "sha256": "323b511be380c8d474ef030686b71aedde501f8d9cd46da558b7c40454372c3f"
+  },
+  {
+    "file": "apps/web/app/fonts/Unbounded-OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/unbounded/OFL.txt",
+    "bytes": 4392,
+    "sha256": "31e5d4e83955e7103c34570dd49b0570ef490800bd65b42923c0dd02445263b3"
+  }
+]
